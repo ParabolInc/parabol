@@ -2,7 +2,7 @@ import {
   AZURE_DEVOPS_IS_OPEN,
   AZURE_DEVOPS_IS_WORK,
   quoteWiql
-} from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
+} from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 
 const IS_WORK = AZURE_DEVOPS_IS_WORK
 const IS_OPEN = AZURE_DEVOPS_IS_OPEN

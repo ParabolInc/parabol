@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {cn} from '~/ui/cn'
-import {AssignmentInd as AssignmentIndIcon} from '~/ui/icons'
+import {ArrowDropDown, AssignmentInd as AssignmentIndIcon} from '~/ui/icons'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
@@ -16,6 +16,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 interface Props {
   area: string
   canAssign: boolean
+  isCardActive: boolean
   task: TaskFooterUserAssignee_task$key
   useTaskChild: UseTaskChild
 }
@@ -28,7 +29,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
-  const {area, canAssign, task: taskRef, useTaskChild} = props
+  const {area, canAssign, isCardActive, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooterUserAssignee_task on Task {
@@ -49,7 +50,11 @@ const TaskFooterUserAssignee = (props: Props) => {
   const preferredName = user?.preferredName || 'Unassigned'
   const trigger = (
     <button
-      className='flex h-6 max-w-full border-0 bg-transparent p-0 text-inherit leading-inherit shadow-none outline-none hover:shadow-none focus:shadow-none [&:focus>div]:border-fg-primary [&:focus>div]:text-fg-primary [&:hover>div]:border-fg-primary [&:hover>div]:text-fg-primary'
+      className={cn(
+        'flex h-6 max-w-full items-center border-0 bg-transparent p-0 text-inherit leading-inherit shadow-none outline-none hover:shadow-none focus:shadow-none [&:focus>div]:border-fg-primary [&:focus>div]:text-fg-primary [&:hover>div]:border-fg-primary [&:hover>div]:text-fg-primary',
+        canAssign &&
+          '-ml-1 rounded-sm pr-0.5 pl-1 hover:bg-surface-hover focus-visible:bg-surface-hover data-[state=open]:bg-surface-hover'
+      )}
       aria-label='Assign this task to a teammate'
       onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
     >
@@ -67,9 +72,12 @@ const TaskFooterUserAssignee = (props: Props) => {
           </div>
         )}
       </div>
-      <div className='block min-w-0 max-w-full flex-1 truncate break-words text-left font-semibold text-fg-secondary text-xs leading-6'>
+      <div className='block min-w-0 max-w-full truncate break-words text-left font-semibold text-fg-secondary text-xs leading-6'>
         {preferredName}
       </div>
+      {canAssign && isCardActive && (
+        <ArrowDropDown className='h-4 w-4 flex-none text-fg-secondary' />
+      )}
     </button>
   )
 

@@ -10,8 +10,16 @@ enum ReportMeasureEnum {
   ACTIVE_SHARE
   "When each user last used Parabol, in milliseconds since the epoch. The period doesn't change it"
   LAST_SEEN
+  "The teams each person leads now. The period doesn't change it, and it can't be compared"
+  TEAMS_LED
+  "People invited to a team, counting each person once per team in each step. A link join counts when it happens, as invited by whoever made the link"
+  INVITATIONS
   "Meetings that at least 2 people joined"
   MEETINGS
+  "Meetings that at least 2 people joined. By user, who facilitated each"
+  MEETINGS_FACILITATED
+  "Standups each person shared an answer in, counting a person once per standup"
+  STANDUP_RESPONSES
   "Teams with at least 2 members that started or ended a meeting at least 2 people joined"
   TEAMS_THAT_MET
   "When the latest meeting that at least 2 people joined started, in milliseconds since the epoch"
@@ -32,6 +40,10 @@ enum ReportMeasureEnum {
   USER_INTEGRATIONS
   "Tasks sent to an integration, including stories pulled into Sprint Poker"
   TASKS_PUSHED
+  "Team pages made, not counting private pages or the pages Parabol writes for meetings"
+  NEW_PAGES
   "The average 1 to 5 answer in each team's latest Team Health check that asked about each category, from the 90 days before each reading or from the period. Compared with an earlier period, only the teams and categories this period has count. A check fewer than 3 people answered is hidden"
   HEALTH_SCORE
+  "What the organization paid for Parabol in US dollars, by when each invoice was paid. Only for billing leaders, org admins and super users"
+  SPEND
 }

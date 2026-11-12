@@ -1,14 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {marked} from 'marked'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import sanitizeHtml from 'sanitize-html'
 import type {WholeMeetingSummaryResult_meeting$key} from '../../../../../__generated__/WholeMeetingSummaryResult_meeting.graphql'
-import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {AIExplainer} from '../../../../../types/constEnums'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {
@@ -42,8 +39,6 @@ interface Props {
 }
 
 const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
-  const atmosphere = useAtmosphere()
-
   const meeting = useFragment(
     graphql`
       fragment WholeMeetingSummaryResult_meeting on NewMeeting {
@@ -52,20 +47,11 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
         summary
         team {
           tier
-          billingTier
         }
       }
     `,
     meetingRef
   )
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
-      source: 'Meeting Summary',
-      tier: meeting.team.billingTier,
-      meetingId: meeting.id
-    })
-  }, [atmosphere, meeting.id, meeting.team.billingTier])
-
   const {summary: wholeMeetingSummary, team} = meeting
 
   if (!wholeMeetingSummary) return null

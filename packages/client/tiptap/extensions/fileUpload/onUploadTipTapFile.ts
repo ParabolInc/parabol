@@ -6,6 +6,9 @@ import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileU
 import {checkFileMimeType} from '../../../shared/utils/checkFileMimeType'
 import {MAX_FILE_SIZE_FREE, MAX_FILE_SIZE_PAID, MAX_IMAGE_SIZE} from '../../../utils/constants'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
+import getServerError from '../../../utils/relay/getServerError'
+
+export const fileUploadSettledMeta = 'fileUploadSettled'
 
 export const onUploadTipTapFile =
   (
@@ -57,34 +60,43 @@ export const onUploadTipTapFile =
       console.error('Unknown target type', targetType)
     }
     return new Promise<void>((resolve) => {
+      const failUpload = (message: string) => {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'errorUploadUserAsset',
+          message,
+          autoDismiss: 5
+        })
+        const {state, view} = editor
+        state.doc.descendants((node, pos) => {
+          if (node.type.name === nodeType && node.attrs.src === localSrc) {
+            const tr = state.tr
+              .deleteRange(pos, pos + node.nodeSize)
+              .setMeta(fileUploadSettledMeta, true)
+            view.dispatch(tr)
+            return false
+          }
+          return true
+        })
+        resolve()
+      }
       commit({
         variables: {scope: assetScope, scopeKey},
         uploadables: {file: file},
+        onError: (error) => failUpload(getServerError(error)?.message ?? error.message),
         onCompleted: (res, errors) => {
           const {uploadUserAsset} = res
           const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
-          const {state, view} = editor
           if (message) {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              key: 'errorUploadUserAsset',
-              message,
-              autoDismiss: 5
-            })
-            state.doc.descendants((node, pos) => {
-              if (node.type.name === nodeType && node.attrs.src === localSrc) {
-                const tr = state.tr.deleteRange(pos, pos + node.nodeSize)
-                view.dispatch(tr)
-                return false
-              }
-              return true
-            })
-            resolve()
+            failUpload(message)
             return
           }
+          const {state, view} = editor
           const src = uploadUserAsset!.url!
           state.doc.descendants((node, pos) => {
             if (node.type.name === nodeType && node.attrs.src === localSrc) {
-              const tr = state.tr.setNodeAttribute(pos, 'src', src)
+              const tr = state.tr
+                .setNodeAttribute(pos, 'src', src)
+                .setMeta(fileUploadSettledMeta, true)
               view.dispatch(tr)
               return false
             }

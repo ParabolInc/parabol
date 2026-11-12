@@ -1,3 +1,4 @@
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
@@ -11,6 +12,9 @@ import {authenticateYjsConnection} from '../authenticateYjsConnection'
 const pg = getKysely()
 const ownerId = `authOwner|${generateUID()}`
 const viewerId = `authViewer|${generateUID()}`
+const orgId = generateUID()
+const teamId = generateUID()
+const meetingId = generateUID()
 
 const authenticate = async (
   documentName: string,
@@ -55,9 +59,32 @@ beforeAll(async () => {
     ])
     .execute()
   await updatePageAccessTable(pg, pageId)
+  await pg.insertInto('Organization').values({id: orgId, name: 'Yjs Auth Org'}).execute()
+  await pg.insertInto('Team').values({id: teamId, name: 'Yjs Auth Team', orgId}).execute()
+  await pg
+    .insertInto('TeamMember')
+    .values({id: TeamMemberId.join(teamId, ownerId), teamId, userId: ownerId})
+    .execute()
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      facilitatorStageId: 'stage1',
+      meetingType: 'retrospective',
+      name: 'Yjs Auth Meeting',
+      meetingCount: 1,
+      meetingNumber: 1,
+      phases: JSON.stringify([])
+    })
+    .execute()
 })
 
 afterAll(async () => {
+  await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
+  await pg.deleteFrom('TeamMember').where('teamId', '=', teamId).execute()
+  await pg.deleteFrom('Team').where('id', '=', teamId).execute()
+  await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
   await pg.deleteFrom('Page').where('userId', '=', ownerId).execute()
   await pg.deleteFrom('User').where('id', 'in', [ownerId, viewerId]).execute()
   const pubSub = getPubSub()
@@ -98,6 +125,22 @@ test('keeps a refreshed session working only on sockets opened before the refres
   await expect(
     authenticate(documentName, ownerId, {jti, connectedAt: refreshedAt + 1000})
   ).rejects.toMatchObject({reason: 'Unauthenticated'})
+})
+
+test('gives team members read-only meeting awareness and denies everyone else as Unauthorized', async () => {
+  const documentName = `meeting:${meetingId}`
+  expect(await authenticate(documentName, ownerId)).toMatchObject({readOnly: true})
+  await expect(authenticate(documentName, viewerId)).rejects.toMatchObject({
+    reason: 'Unauthorized'
+  })
+  // Unauthenticated would sign the tab out, but a socket opened on a public page before signing in has no session either
+  await expect(
+    authenticateYjsConnection({
+      documentName,
+      context: {connectedAt: Date.now()},
+      connectionConfig: {readOnly: false, isAuthenticated: false}
+    })
+  ).rejects.toMatchObject({reason: 'Unauthorized'})
 })
 
 test('rejects a session that was invalidated after the socket opened', async () => {

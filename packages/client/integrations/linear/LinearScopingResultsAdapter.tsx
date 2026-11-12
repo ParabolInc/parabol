@@ -4,12 +4,12 @@ import {usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {LinearScopingResultsAdapter_query$key} from '../../__generated__/LinearScopingResultsAdapter_query.graphql'
 import type {LinearScopingResultsAdapterPaginationQuery} from '../../__generated__/LinearScopingResultsAdapterPaginationQuery.graphql'
 import type {LinearScopingResultsAdapterQuery} from '../../__generated__/LinearScopingResultsAdapterQuery.graphql'
-import LinearIssueId from '../../shared/gqlIds/LinearIssueId'
-import LinearProjectId from '../../shared/gqlIds/LinearProjectId'
 import type {GQLType} from '../../types/generics'
 import {getLinearRepoName} from '../../utils/getLinearRepoName'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
+import LinearIssueId from './shared/LinearIssueId'
+import LinearProjectId from './shared/LinearProjectId'
 
 const query = graphql`
   query LinearScopingResultsAdapterQuery($teamId: ID!, $filter: _xLinearIssueFilter) {

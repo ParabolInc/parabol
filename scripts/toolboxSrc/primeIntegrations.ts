@@ -76,6 +76,14 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://api.github.com',
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET
+    },
+    {
+      service: 'clickup',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      serverBaseUrl: 'https://api.clickup.com/api/v2',
+      clientId: process.env.CLICKUP_CLIENT_ID,
+      clientSecret: process.env.CLICKUP_CLIENT_SECRET
     }
   ] as const
 

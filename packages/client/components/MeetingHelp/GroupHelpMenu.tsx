@@ -1,4 +1,3 @@
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {GROUP} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -13,7 +12,6 @@ interface Props {
 
 const GroupHelpMenu = (props: Props) => {
   const {onClose} = props
-  useClientSideTrack('Help Menu Open', {phase: 'group'})
   return (
     <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>

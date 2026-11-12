@@ -19,6 +19,7 @@ const OrgPlansAndBillingRoot = (props: Props) => {
       fragment OrgPlansAndBillingRoot_organization on Organization {
         ...OrgPlansAndBilling_organization
         id
+        isBillingLeader
       }
     `,
     organizationRef
@@ -26,7 +27,8 @@ const OrgPlansAndBillingRoot = (props: Props) => {
 
   const queryRef = useQueryLoaderNow<OrgPlansAndBillingQuery>(orgPlansAndBillingQuery, {
     orgId: organization.id,
-    first: 4
+    first: 4,
+    isBillingLeader: !!organization.isBillingLeader
   })
   return (
     <Suspense fallback={''}>

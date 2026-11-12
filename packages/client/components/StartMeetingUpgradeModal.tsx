@@ -1,13 +1,11 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router'
 import {SALES_EMAIL} from '~/utils/constants'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface Props {
   isOpen: boolean
@@ -31,16 +29,11 @@ export const upgradeTitles = [
 
 const StartMeetingUpgradeModal = (props: Props) => {
   const {isOpen, isHardBlock, teamCount, meetingCount, orgId, onClose, onStartAnyway} = props
-  const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const [title] = useState(() => {
     return upgradeTitles[Math.floor(Math.random() * upgradeTitles.length)]!
   })
   const goToUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'startMeetingLimitModal',
-      title
-    })
     if (orgId) {
       navigate(`/me/organizations/${orgId}`)
     }

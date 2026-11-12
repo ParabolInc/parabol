@@ -1,6 +1,2 @@
 "A Linear issue linked to a Parabol task"
 type _xLinearIssue implements TaskIntegration
-
-extend type _xLinearIssue {
-  service: IntegrationProviderServiceEnum!
-}

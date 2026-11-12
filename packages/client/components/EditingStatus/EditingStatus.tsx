@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ReactNode, useEffect, useState} from 'react'
+import {type ReactNode, useContext, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
@@ -9,7 +9,11 @@ import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {cn} from '../../ui/cn'
+import {DONE} from '../../utils/constants'
+import getLongOpenMonths from '../../utils/getLongOpenMonths'
+import isNewSince from '../../utils/isNewSince'
 import DueDateToggle from '../DueDateToggle'
+import LastRetroEndedAtContext from '../LastRetroEndedAtContext'
 import CreatedInLink from './CreatedInLink'
 import EditingStatusText from './EditingStatusText'
 import nextMetaField, {type TaskMetaField} from './nextMetaField'
@@ -41,6 +45,7 @@ const EditingStatus = (props: Props) => {
       fragment EditingStatus_task on Task {
         createdAt
         updatedAt
+        status
         meetingId
         meeting {
           id
@@ -66,12 +71,13 @@ const EditingStatus = (props: Props) => {
     `,
     taskRef
   )
-  const {createdAt, updatedAt, meetingId, meeting, discussion, editors} = task
+  const {createdAt, updatedAt, status, meetingId, meeting, discussion, editors} = task
   const reflectionGroup = discussion?.stage?.reflectionGroup
   const topicTitle = reflectionGroup?.title ?? 'Untitled topic'
   const stageIdx = discussion?.stage?.stageIdx
   const hasRetro = !!(meetingId && meeting && reflectionGroup && stageIdx !== undefined)
   const atmosphere = useAtmosphere()
+  const lastRetroEndedAt = useContext(LastRetroEndedAtContext)
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
@@ -93,11 +99,25 @@ const EditingStatus = (props: Props) => {
 
   const effectiveField: 'createdAt' | 'updatedAt' =
     metaField === 'createdIn' ? 'createdAt' : metaField
+  const isOpen = status !== DONE && !isArchived
+  const isNew = isOpen && isNewSince(createdAt, lastRetroEndedAt)
+  const longOpenMonths =
+    !isNew && isOpen && defaultMetaField === 'createdIn' && metaField === 'createdIn' && hasRetro
+      ? getLongOpenMonths(createdAt)
+      : null
 
   return (
     <div className='flex min-h-[20px] items-start justify-between pr-2 pb-1 pl-4 text-left font-semibold text-fg-secondary text-xs leading-5'>
       <div className='w-full'>
         {children}
+        {isNew && (
+          <span className='mr-1.5 rounded bg-surface-well px-1 py-px text-fg-primary'>New</span>
+        )}
+        {longOpenMonths !== null && (
+          <span className='mr-1.5 rounded bg-surface-well px-1 py-px text-fg-primary'>
+            Open {longOpenMonths} months
+          </span>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <span

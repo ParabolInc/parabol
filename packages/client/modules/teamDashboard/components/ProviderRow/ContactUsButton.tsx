@@ -5,21 +5,14 @@ import ProviderRowActionButton from './ProviderRowActionButton'
 
 interface Props {
   contactUsUrl: string
-  onContactUsSubmit: () => void
 }
 
 const ContactUsButton = (props: Props) => {
-  const {contactUsUrl, onContactUsSubmit} = props
+  const {contactUsUrl} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
-    <form
-      className='flex flex-1'
-      method='get'
-      target='_blank'
-      action={contactUsUrl}
-      onSubmit={onContactUsSubmit}
-    >
+    <form className='flex flex-1' method='get' target='_blank' action={contactUsUrl}>
       <ProviderRowActionButton key='request'>
         {isDesktop ? 'Contact Us' : <MailOutlined />}
       </ProviderRowActionButton>

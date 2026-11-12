@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventCompletedActionMeeting_timelineEvent$key} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import relativeDate from '../utils/date/relativeDate'
 import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import StyledLink from './StyledLink'
 import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'
@@ -67,14 +65,6 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
   const summaryURL = summaryPageId
     ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
-  const atmosphere = useAtmosphere()
-  const onUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'timelineHistoryLock',
-      upgradeTier: 'team',
-      meetingId
-    })
-  }
 
   const meetingDuration = relativeDate(createdAt, {
     now: endedAt,
@@ -99,11 +89,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         {locked ? (
           canUpgrade && (
             <>
-              <StyledLink
-                className='font-semibold'
-                to={`/me/organizations/${orgId}`}
-                onClick={onUpgrade}
-              >
+              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
                 Upgrade now
               </StyledLink>{' '}
               to see the discussion in your meeting or review a summary

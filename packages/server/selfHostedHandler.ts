@@ -1,40 +1,64 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
-import mime from 'mime-types'
 import path from 'path'
-import pipeStreamOverResponse from './pipeStreamOverResponse'
+import getProjectRoot from '../../scripts/webpack/utils/getProjectRoot'
+import {
+  getContentType,
+  makeDiskETag,
+  readStaticRequest,
+  sendStaticFile,
+  sendStatus
+} from './utils/StaticServer'
 
-const getProjectRoot = () => {
-  let cd = __dirname
-  while (cd !== '/') {
-    if (fs.existsSync(path.join(cd, 'pnpm-lock.yaml'))) return cd
-    cd = path.join(cd, '..')
+const ROUTE = '/self-hosted/'
+
+// Serves what LocalFileStoreManager stored under rootDir, & nothing outside it
+export const createSelfHostedHandler = (rootDir: string) => {
+  const root = path.resolve(rootDir)
+  return async (res: HttpResponse, req: HttpRequest) => {
+    // uWS frees the request at the first await
+    const request = readStaticRequest(req)
+    const url = req.getUrl()
+    res.onAborted(() => {
+      res.aborted = true
+    })
+    let pathname: string
+    try {
+      pathname = path.resolve(root, `.${path.sep}${decodeURIComponent(url.slice(ROUTE.length))}`)
+    } catch {
+      sendStatus(res, '400 Bad Request')
+      return
+    }
+    // a .. or an encoded %2e%2e must not climb out of the store, e.g. to the .env beside it
+    if (!pathname.startsWith(root + path.sep)) {
+      sendStatus(res, '404 Not Found')
+      return
+    }
+    let stats: fs.Stats
+    try {
+      stats = await fs.promises.stat(pathname)
+    } catch {
+      sendStatus(res, '404 Not Found')
+      return
+    }
+    if (!stats.isFile()) {
+      sendStatus(res, '404 Not Found')
+      return
+    }
+    sendStaticFile(res, request, {
+      type: getContentType(pathname),
+      // an upload can be replaced under the same name, so the client checks its copy each time
+      cacheControl: 'no-cache',
+      etag: makeDiskETag(stats),
+      size: stats.size,
+      pathname,
+      // like the cloud file stores, an upload opened on its own is downloaded, not shown,
+      // so an uploaded page or SVG can't run a script on the app's origin
+      headers: {'Content-Disposition': 'attachment'}
+    })
   }
-  return cd
 }
 
-const PROJECT_ROOT = getProjectRoot()
-
-const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
-  const url = path.join(PROJECT_ROOT, decodeURI(req.getUrl()))
-  if (!url.startsWith(PROJECT_ROOT + path.sep)) {
-    res.cork(() => res.writeStatus('403').end())
-    return
-  }
-  let stats: fs.Stats
-  try {
-    stats = fs.statSync(url)
-  } catch {
-    res.cork(() => res.writeStatus('404').end())
-    return
-  }
-  const {size} = stats
-  const ext = path.extname(url).slice(1)
-  const contentType = mime.types[ext] ?? 'application/octet-stream'
-
-  res.cork(() => res.writeHeader('content-type', contentType))
-  const readStream = fs.createReadStream(url)
-  pipeStreamOverResponse(res, readStream, size)
-}
+const selfHostedHandler = createSelfHostedHandler(path.join(getProjectRoot(), 'self-hosted'))
 
 export default selfHostedHandler

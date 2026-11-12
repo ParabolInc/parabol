@@ -2,13 +2,14 @@ import {generateText} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
+import JiraServerIssueId from 'parabol-client/integrations/jiraServer/shared/JiraServerIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import JiraServerIssueId from 'parabol-client/shared/gqlIds/JiraServerIssueId'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
+import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
@@ -139,11 +140,17 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return json.errorMessages?.join('\n')
   }
 
-  async parseJsonResponse<T>(response: Response): Promise<T | Error> {
+  async parseJsonResponse<T>(response: Response, method?: string): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
-      await response.body?.cancel()
-      return new Error('Received non-JSON Jira Data Center Response')
+      const thirdPartyResponse = await readThirdPartyResponse('jiraServer', response, {
+        method,
+        url: response.url
+      })
+      return new ThirdPartyResponseError(
+        'Received non-JSON Jira Data Center Response',
+        thirdPartyResponse
+      )
     }
     const json = await response.json()
 
@@ -176,7 +183,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
 
   async request<T>(method: string, path: string, body?: any) {
     const response = await this.requestRaw(method, path, body)
-    return this.parseJsonResponse<T>(response)
+    return this.parseJsonResponse<T>(response, method)
   }
 
   async requestAll<T>(method: string, path: string, body?: any): Promise<T[] | Error> {

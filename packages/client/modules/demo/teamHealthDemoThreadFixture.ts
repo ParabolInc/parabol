@@ -90,7 +90,6 @@ const createDiscussion = (topic: DemoTopic): DemoDiscussion => {
   const nodes = [...comments, ...tasks]
   return {
     id: discussionId,
-    discussionTopicId: `teamHealthDemoQuestion:${topic.id}`,
     meetingId: MEETING_ID,
     teamId: TEAM_ID,
     team: {id: TEAM_ID},
@@ -110,7 +109,6 @@ export const createTeamHealthDemoThreadResponse = (
     viewer: {
       id: demoViewer.id,
       picture: demoViewer.picture,
-      highestTier: 'team',
       discussion: topic ? createDiscussion(topic) : null
     }
   }

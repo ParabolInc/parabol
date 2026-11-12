@@ -6,7 +6,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import {Button} from '../ui/Button/Button'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const RequestToJoinComponent = () => {
   const atmosphere = useAtmosphere()
@@ -17,9 +16,6 @@ const RequestToJoinComponent = () => {
 
   const handleRequestJoin = () => {
     if (!teamId) return
-    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {
-      teamId
-    })
     PushInvitationMutation(
       atmosphere,
       {teamId},

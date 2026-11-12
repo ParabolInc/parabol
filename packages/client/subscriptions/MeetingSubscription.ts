@@ -17,6 +17,7 @@ import {
   endDraggingReflectionMeetingOnNext,
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
+import {joinMeetingMeetingUpdater} from '../mutations/JoinMeetingMutation'
 import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
@@ -127,6 +128,9 @@ const subscription = graphql`
       SetTeamHealthVoteSuccess {
         ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
       }
+      DragEstimatingTaskSuccess {
+        ...DragEstimatingTaskMutation_meeting @relay(mask: false)
+      }
       DragTeamHealthResultStageSuccess {
         ...useDragTeamHealthResultStageMutation_meeting @relay(mask: false)
       }
@@ -201,6 +205,7 @@ const updateHandlers = {
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
+  JoinMeetingSuccess: joinMeetingMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,

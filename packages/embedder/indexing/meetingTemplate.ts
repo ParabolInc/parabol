@@ -1,5 +1,5 @@
-import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import type MeetingTemplate from '../../server/database/types/MeetingTemplate'
+import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import isValid from '../../server/graphql/isValid'
 import {inferLanguage} from '../inferLanguage'
 

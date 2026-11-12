@@ -1,4 +1,5 @@
 import azureDevOpsSearchMeta from '../../azureDevOps/azureDevOpsSearchMeta'
+import clickUpSearchMeta from '../../clickup/clickUpSearchMeta'
 import gitLabSearchMeta from '../../gitlab/gitLabSearchMeta'
 import jiraSearchMeta from '../../jira/jiraSearchMeta'
 import linearSearchMeta from '../../linear/linearSearchMeta'
@@ -50,6 +51,16 @@ const codecs = [
       filters: [{key: 'project', value: 'Web'}]
     },
     wire: {isWIQL: true, projectNames: ['Web']}
+  },
+  {
+    name: 'clickup',
+    codec: clickUpSearchMeta,
+    state: {
+      queryString: 'login',
+      isAdvancedQuery: false,
+      filters: [{key: 'listIds', value: '2'}]
+    },
+    wire: {listIds: ['2']}
   }
 ] satisfies {name: string; codec: unknown; state: ScopingSearchState; wire: object}[]
 

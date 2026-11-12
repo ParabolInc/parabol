@@ -27,6 +27,8 @@ const noop = (): any => {
   /* noop */
 }
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
+// the demo sends @defer fragments inline, so relay must treat each payload as final or it waits forever for the deferred part
+const finalPayloadExtensions = {is_final: true}
 export default class LocalAtmosphere extends Environment {
   eventEmitter = new EventEmitter()
   clientGraphQLServer = new ClientGraphQLServer(this)
@@ -52,16 +54,10 @@ export default class LocalAtmosphere extends Environment {
     return name
   }
 
-  registerQuery: Atmosphere['registerQuery'] = async (
-    _queryKey,
-    subscription,
-    variables,
-    router
-  ) => {
-    const {name} = subscription
-    // runtime error in case relay changes
-    if (!name) throw new Error(`Missing name for sub`)
+  // the demo's subscriptions last as long as the demo, so there is nothing to release
+  retainSubscription: Atmosphere['retainSubscription'] = (subscription, variables, router) => {
     subscription(this as any, variables, router)
+    return () => undefined
   }
 
   fetchLocal: FetchFunction = (operation, variables) => {
@@ -77,7 +73,7 @@ export default class LocalAtmosphere extends Environment {
       this.clientGraphQLServer.db._updatedAt = new Date()
       window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
     }
-    return res
+    return {...res, extensions: finalPayloadExtensions}
   }
 
   fetchQuery = async <T extends OperationType>(
@@ -128,7 +124,8 @@ export default class LocalAtmosphere extends Environment {
                 fieldName: data.__typename,
                 [data.__typename]: data
               }
-            }
+            },
+            extensions: finalPayloadExtensions
           })
         })
       }

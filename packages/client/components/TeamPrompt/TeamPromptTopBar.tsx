@@ -11,7 +11,6 @@ import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGro
 import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
 import {EditMeetingSeriesModal} from '../EditMeetingSeriesModal'
 import IconLabel from '../IconLabel'
@@ -53,7 +52,6 @@ const TeamPromptTopBar = (props: Props) => {
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
-        teamId
         rightDrawerOpen
         facilitatorUserId
         localStageId
@@ -112,12 +110,6 @@ const TeamPromptTopBar = (props: Props) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'rightDrawerOpen')
-
-        SendClientSideEvent(atmosphere, 'Inspiration Drawer Closed', {
-          teamId: meeting.teamId,
-          meetingId: meeting.id,
-          source: 'top bar'
-        })
       })
     } else {
       commitLocalUpdate(atmosphere, (store) => {
@@ -125,18 +117,12 @@ const TeamPromptTopBar = (props: Props) => {
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'localStageId')
         meetingProxy.setValue('inspiration', 'rightDrawerOpen')
-
-        SendClientSideEvent(atmosphere, 'Inspiration Drawer Opened', {
-          teamId: meeting.teamId,
-          meetingId: meeting.id,
-          source: 'top bar'
-        })
       })
     }
   }
 
   const buttons = (
-    <div className='ml-4 flex items-center justify-center xl:ml-[10px] xl:h-12 min-[1600px]:h-14'>
+    <div className='ml-4 flex items-center justify-center min-[1280px]:ml-[10px] min-[1280px]:h-12 min-[1600px]:h-14'>
       <button
         className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm'
         onClick={onOpenWorkSidebar}

@@ -1,14 +1,13 @@
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import InspirationSourceTile from './InspirationSourceTile'
 import type {InspirationSourceSettings} from './inspirationSources'
-import type {InspirationSourceAvailability} from './useInspirationSourceAvailability'
+import type {InspirationSourceAvailability} from './listInspirationSources'
 
 interface Props {
   sources: InspirationSourceAvailability[]
   issueCounts: Partial<Record<string, number>>
   countingServices: string[]
   canDraft: boolean
-  meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
   onPopoverClose: () => void

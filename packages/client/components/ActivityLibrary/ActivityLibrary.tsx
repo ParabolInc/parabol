@@ -2,7 +2,6 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useState} from 'react'
 import {
-  commitLocalUpdate,
   fetchQuery,
   type PreloadedQuery,
   usePreloadedQuery,
@@ -19,7 +18,6 @@ import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {cn} from '../../ui/cn'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import ActivityGrid from './ActivityGrid'
@@ -31,6 +29,7 @@ import {
   CATEGORY_THEMES,
   type CategoryID,
   CUSTOM_CATEGORY_ID,
+  FAVORITE_CATEGORY_ID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import SearchBar from './SearchBar'
@@ -232,14 +231,6 @@ export const ActivityLibrary = (props: Props) => {
     ActivityLibraryTemplateSearch_query$key
   >(templateSearchFragment, data)
 
-  const setSearch = (value: string) => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')
-      if (!viewer) return
-      viewer.setValue(value, 'activityLibrarySearch')
-    })
-  }
-
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
     return templatesMap
@@ -275,7 +266,6 @@ export const ActivityLibrary = (props: Props) => {
       },
       error: () => setIsSearching(false)
     })
-    SendClientSideEvent(atmosphere, 'Activity Library Searched', {debouncedSearchQuery})
     return () => subscription.unsubscribe()
   }, [debouncedSearchQuery])
 
@@ -320,7 +310,9 @@ export const ActivityLibrary = (props: Props) => {
   }, [categoryId, templatesToRender])
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
-    return <Navigate to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} replace />
+    const defaultCategoryId =
+      viewer.favoriteTemplates.length > 0 ? FAVORITE_CATEGORY_ID : QUICK_START_CATEGORY_ID
+    return <Navigate to={`/activity-library/category/${defaultCategoryId}`} replace />
   }
 
   return (
@@ -344,13 +336,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
             <div className='hidden grow md:block'>
-              <SearchBar
-                searchQuery={searchQuery}
-                onChange={(e) => {
-                  onQueryChange(e)
-                  setSearch(e.target.value)
-                }}
-              />
+              <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
             </div>
 
             <Link
@@ -361,13 +347,7 @@ export const ActivityLibrary = (props: Props) => {
             </Link>
           </div>
           <div className='mt-4 flex w-full md:hidden'>
-            <SearchBar
-              searchQuery={searchQuery}
-              onChange={(e) => {
-                onQueryChange(e)
-                setSearch(e.target.value)
-              }}
-            />
+            <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
           </div>
         </div>
       </div>

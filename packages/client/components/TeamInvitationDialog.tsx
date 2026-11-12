@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {useParams} from 'react-router'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
@@ -43,6 +43,8 @@ const TeamInvitationDialog = (props: Props) => {
     verifiedInvitationRef
   )
   const isLoggedIn = useIsAuthenticated()
+  // a sign-in from this dialog accepts the invitation and redirects by itself
+  const isInitiallyLoggedInRef = useRef(isLoggedIn)
   useEffect(() => {
     window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, invitationToken)
   }, [invitationToken])
@@ -60,7 +62,7 @@ const TeamInvitationDialog = (props: Props) => {
     case 'expired':
       return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
   }
-  if (isLoggedIn) {
+  if (isInitiallyLoggedInRef.current) {
     return <TeamInvitationAccept invitationToken={invitationToken} />
   }
   if (ssoURL) {

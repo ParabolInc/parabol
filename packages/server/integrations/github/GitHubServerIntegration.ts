@@ -1,12 +1,11 @@
-import {githubIntegrationMeta} from 'parabol-client/shared/integrations/githubIntegrationMeta'
+import {githubIntegrationMeta} from 'parabol-client/integrations/github/shared/githubIntegrationMeta'
 import {Providers} from 'parabol-client/types/constEnums'
-import fetchGitHubRepos from '../../graphql/queries/helpers/fetchGitHubRepos'
 import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
-import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
 import {
   type EstimatePushCapability,
   type IntegrationCtx,
   type IssueCreateCapability,
+  type IssueListCapability,
   type IssueReadCapability,
   type IssueSearchCapability,
   type RepoListCapability,
@@ -14,8 +13,10 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
+import fetchGitHubRepos, {type GitHubRepo} from './fetchGitHubRepos'
 import GitHubServerManager from './GitHubServerManager'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
+import listGitHubIssues from './listGitHubIssues'
 import parseGitHubIntegrationHash from './parseGitHubIntegrationHash'
 import pushEstimateToGitHub from './pushEstimateToGitHub'
 import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
@@ -50,6 +51,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
     repoList: RepoListCapability<GitHubRepo>
     estimatePush: EstimatePushCapability
+    issueList: IssueListCapability
   } = {
     issueCreate: {
       initManager: async ({dataLoader, teamId, userId, context, info}) => {
@@ -74,6 +76,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
       resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
       describeDimensionField: describeGitHubDimensionField,
       listDimensionFields: listGitHubDimensionFields
-    }
+    },
+    issueList: {listIssues: listGitHubIssues}
   }
 }

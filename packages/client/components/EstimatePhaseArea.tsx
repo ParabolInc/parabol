@@ -60,7 +60,8 @@ const EstimatePhaseArea = (props: Props) => {
   const localStageId = estimateStage?.id
   const taskId = estimateStage?.taskId
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const dimensionStages = stages!.filter((stage) => stage.taskId === taskId)
+  // The facilitator's navigation can reach the viewer before the stages it points to have loaded
+  const dimensionStages = taskId ? stages!.filter((stage) => stage.taskId === taskId) : []
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const estimateAreaRef = useRef<HTMLDivElement>(null)

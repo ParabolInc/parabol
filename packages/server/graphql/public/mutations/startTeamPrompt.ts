@@ -1,8 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
@@ -30,9 +30,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
 
-  const [unpaidError, viewer, meetingSettings] = await Promise.all([
+  const [unpaidError, meetingSettings] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
@@ -60,7 +59,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       facilitatorId: viewerId,
       templateId
     })
-    analytics.recurrenceStarted(viewer, meetingSeries)
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
       name: eventName,
       gcalInput,
@@ -110,10 +108,9 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
-    analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error, gcalSeriesId} = await createGcalEvent({
     name: eventName,
     gcalInput,

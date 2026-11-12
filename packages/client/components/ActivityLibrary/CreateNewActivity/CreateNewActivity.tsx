@@ -12,14 +12,12 @@ import teamPromptTemplate from '../../../../../static/images/illustrations/teamP
 import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
 import type {useAddPromptTemplateMutation$data} from '../../../__generated__/useAddPromptTemplateMutation.graphql'
 import type {useAddTeamHealthTemplateMutation$data} from '../../../__generated__/useAddTeamHealthTemplateMutation.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
 import useAddPromptTemplateMutation from '../../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../../mutations/useAddTeamHealthTemplateMutation'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
 import IconLabel from '../../IconLabel'
 import TeamPicker from '../../TeamPicker/TeamPicker'
@@ -173,7 +171,6 @@ interface Props {
 
 export const CreateNewActivity = (props: Props) => {
   const {queryRef} = props
-  const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<CreateNewActivityQuery>(query, queryRef)
 
   const {categoryId} = useParams()
@@ -298,10 +295,6 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'createNewTemplateAL',
-      meetingType: selectedActivity.type
-    })
     navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 

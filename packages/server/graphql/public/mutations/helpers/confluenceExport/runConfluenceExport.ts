@@ -1,5 +1,5 @@
+import AtlassianServerManager from '../../../../../integrations/jira/AtlassianServerManager'
 import {selectPageExports} from '../../../../../postgres/select'
-import AtlassianServerManager from '../../../../../utils/AtlassianServerManager'
 import {ConfluenceServerManager} from '../../../../../utils/ConfluenceServerManager'
 import type {DegradedItem} from '../../../../../utils/confluence/types'
 import {Logger} from '../../../../../utils/Logger'
@@ -27,7 +27,6 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
   const {userId, teamId, cloudId, spaceId, targetParentPageId} = exportRow
   const pagesJson = exportRow.pagesJson
   const degraded: DegradedItem[] = [...exportRow.degradedJson]
-  let attachmentCount = 0
 
   const {persistAndPublish, failAllPending, finalize} = createPageExportPersistence({
     pageExportId,
@@ -47,7 +46,7 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
   } catch (e) {
     Logger.error(e)
     await failAllPending('Another export is already running for your account. Try again shortly.')
-    await finalize(attachmentCount)
+    await finalize()
     return
   }
   try {
@@ -106,7 +105,6 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
           entry.title = result.finalTitle
           entry.status = 'success'
           degraded.push(...result.degraded)
-          attachmentCount += result.attachmentCount
         } else {
           entry.status = 'error'
           entry.error = result.error
@@ -115,11 +113,11 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
         await persistAndPublish()
       }
     }
-    await finalize(attachmentCount)
+    await finalize()
   } catch (e) {
     Logger.error(e)
     await failAllPending(e instanceof Error ? e.message : 'Export failed')
-    await finalize(attachmentCount)
+    await finalize()
   } finally {
     await redisLock.unlock()
   }

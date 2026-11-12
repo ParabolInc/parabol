@@ -23,6 +23,7 @@ export interface AgendaItemStage extends GenericMeetingStage {
 export interface CheckInStage extends GenericMeetingStage {
   phaseType: 'checkin'
   teamMemberId: string
+  sortOrder?: string
   durations?: number[]
 }
 
@@ -67,12 +68,14 @@ export interface TeamHealthStage extends GenericMeetingStage {
 export interface TeamPromptResponseStage extends GenericMeetingStage {
   phaseType: 'RESPONSES'
   teamMemberId: string
+  sortOrder?: string
   discussionId: string
 }
 
 export interface UpdatesStage extends GenericMeetingStage {
   phaseType: 'updates'
   teamMemberId: string
+  sortOrder?: string
   durations?: number[]
 }
 

@@ -1,11 +1,12 @@
 import type * as React from 'react'
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import useSubmitErrorFeedbackMutation from '../mutations/useSubmitErrorFeedbackMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import getServerError from '../utils/relay/getServerError'
 import BasicTextArea from './InputField/BasicTextArea'
 
 interface Props {
@@ -15,48 +16,11 @@ interface Props {
   eventId: string
 }
 
-const parseFormConfig = () => {
-  const rawUrl = window.__ACTION__.GOOGLE_ERROR_FORM_URL
-  if (!rawUrl) return null
-  try {
-    const parsed = new URL(rawUrl)
-    const emailField = parsed.searchParams.get('_email')
-    const subjectField = parsed.searchParams.get('_subject')
-    const contentField = parsed.searchParams.get('_content')
-    const eventIdField = parsed.searchParams.get('_eventId')
-    if (!emailField || !subjectField || !contentField || !eventIdField) return null
-    parsed.searchParams.delete('_email')
-    parsed.searchParams.delete('_subject')
-    parsed.searchParams.delete('_content')
-    parsed.searchParams.delete('_eventId')
-    return {url: parsed.toString(), emailField, subjectField, contentField, eventIdField}
-  } catch {
-    return null
-  }
-}
-
-const formConfig = parseFormConfig()
-
-// Dual-write during the CRM decoupling transition: Postgres is the system of
-// record; the Google Form post is best-effort until ops confirms the PG path.
-const postToGoogleForm = (email: string | null, error: Error, text: string, eventId: string) => {
-  if (!formConfig) return
-  const {url, emailField, subjectField, contentField, eventIdField} = formConfig
-  const body = new URLSearchParams({
-    [emailField]: email || 'errors@parabol.co',
-    [subjectField]: error.message,
-    [contentField]: text,
-    [eventIdField]: eventId
-  })
-  fetch(url, {method: 'POST', mode: 'no-cors', body})
-}
-
 const ReportErrorFeedback = (props: Props) => {
   const {isOpen, onClose, error, eventId} = props
   const [text, setText] = useState('')
   const [submitError, setSubmitError] = useState<string>()
   const [execute, submitting] = useSubmitErrorFeedbackMutation()
-  const formPostedRef = useRef(false)
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
     setSubmitError(undefined)
@@ -65,10 +29,6 @@ const ReportErrorFeedback = (props: Props) => {
   const onSubmit = () => {
     if (!text.trim() || submitting) return
     const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-    if (!formPostedRef.current) {
-      formPostedRef.current = true
-      postToGoogleForm(email, error, text, eventId)
-    }
     execute({
       variables: {
         errorMessage: error.message,
@@ -82,10 +42,9 @@ const ReportErrorFeedback = (props: Props) => {
           return
         }
         setText('')
-        formPostedRef.current = false
         onClose()
       },
-      onError: (err) => setSubmitError(err.message)
+      onError: (err) => setSubmitError(getServerError(err)?.message ?? err.message)
     })
   }
 

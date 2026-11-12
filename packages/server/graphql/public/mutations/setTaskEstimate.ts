@@ -8,7 +8,6 @@ import {estimatePushColumns} from '../../../integrations/platform/estimatePushCo
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimatePushResult} from '../../../postgres/types/EstimatePushResult'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -27,10 +26,9 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
   const {taskId, value, dimensionName, meetingId} = taskEstimate
 
   //AUTH
-  const [task, meeting, viewer] = await Promise.all([
+  const [task, meeting] = await Promise.all([
     dataLoader.get('tasks').load(taskId),
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!meeting) {
     return {error: {message: 'Meeting not found'}}
@@ -72,7 +70,6 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
 
   // RESOLUTION
   const {integration} = task
-  const service = integration?.service
   const stageIdx = stages.findIndex((stage) => stage.id === stageId)
   const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
 
@@ -141,15 +138,6 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       })
   const success = !(pushResult instanceof Error)
   const errorMessage = pushResult instanceof Error ? pushResult.message : undefined
-
-  analytics.taskEstimateSet(viewer, {
-    taskId,
-    meetingId,
-    dimensionName,
-    service,
-    success,
-    errorMessage
-  })
 
   if (success) {
     await getKysely()

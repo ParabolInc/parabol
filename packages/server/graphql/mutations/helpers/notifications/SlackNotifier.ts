@@ -8,11 +8,11 @@ import type {ErrorResponse, PostMessageResponse} from '../../../../../client/uti
 import appOrigin from '../../../../appOrigin'
 import type SlackAuth from '../../../../database/types/SlackAuth'
 import type {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
+import {chatNotificationsSent} from '../../../../metricsHandler'
 import getKysely from '../../../../postgres/getKysely'
 import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import type {AnyNotification} from '../../../../postgres/types/Notification'
-import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import logError from '../../../../utils/logError'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -20,6 +20,7 @@ import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import type {DataLoaderWorker} from '../../../graphql'
 import type {TeamPromptMemberResponse} from '../groupTeamPromptResponsesByUser'
 import joinSlackChannel from '../joinSlackChannel'
+import removeSlackAuths from '../removeSlackAuths'
 import getSummaryText from './getSummaryText'
 import {getTeamHealthQuestionCount} from './getTeamHealthQuestionCount'
 import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
@@ -36,6 +37,9 @@ type NotificationChannel = {
   channelId: string | null
 }
 
+const isRevokedTokenError = (error: string) =>
+  error === 'account_inactive' || error === 'token_revoked'
+
 const handleError = async (
   res: PostMessageResponse | ErrorResponse,
   teamId: string,
@@ -44,13 +48,18 @@ const handleError = async (
   const {channelId, auth} = notificationChannel
   if ('error' in res) {
     const {error} = res
-    if (error === 'channel_not_found' || error === 'not_in_channel') {
+    if (error === 'channel_not_found' || error === 'not_in_channel' || error === 'is_archived') {
       await getKysely()
         .updateTable('SlackNotification')
         .set({channelId: null})
         .where('teamId', '=', teamId)
         .where('channelId', '=', channelId)
         .execute()
+      return {
+        error: new Error(error)
+      }
+    } else if (isRevokedTokenError(error)) {
+      await removeSlackAuths(auth.userId, auth.teamId, true)
       return {
         error: new Error(error)
       }
@@ -73,12 +82,9 @@ const handleError = async (
 const notifySlack = async (
   notificationChannel: NotificationChannel,
   event: SlackNotification['event'],
-  teamId: string,
-  user: User,
   slackMessage: string | Array<{type: string}>,
   notificationText?: string,
-  ts?: string,
-  reflectionGroupId?: string
+  ts?: string
 ): Promise<PostMessageResponse | ErrorResponse> => {
   const {channelId, auth} = notificationChannel
   const {botAccessToken} = auth
@@ -89,7 +95,7 @@ const notifySlack = async (
     const joinRes = await manager.joinConversation(channelId!)
     if (joinRes.ok) res = await post()
   }
-  analytics.slackNotificationSent(user, teamId, event, reflectionGroupId)
+  if (res.ok) chatNotificationsSent.inc({service: 'slack', event})
 
   return res
 }
@@ -233,21 +239,12 @@ const addStandupResponsesToThread = async (
   res: PostMessageResponse,
   standupResponses: Array<{user: User; response: TeamPromptMemberResponse}> | null,
   team: Team,
-  user: User,
   meeting: AnyMeeting,
   notificationChannel: NotificationChannel
 ) => {
   if (!standupResponses || standupResponses.length === 0) {
     const message = 'No responses were submitted'
-    const threadRes = await notifySlack(
-      notificationChannel,
-      'meetingEnd',
-      team.id,
-      user,
-      message,
-      message,
-      res.ts
-    )
+    const threadRes = await notifySlack(notificationChannel, 'meetingEnd', message, message, res.ts)
     if ('error' in threadRes) {
       return handleError(threadRes, team.id, notificationChannel)
     }
@@ -274,8 +271,6 @@ const addStandupResponsesToThread = async (
       const threadRes = await notifySlack(
         notificationChannel,
         'meetingEnd',
-        team.id,
-        user,
         threadBlocks,
         undefined,
         res.ts
@@ -412,7 +407,7 @@ const getSlackMessageForNotification = async (
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
-  async startMeeting(meeting, team, user) {
+  async startMeeting(meeting, team) {
     const searchParams = {
       utm_source: 'slack meeting start',
       utm_medium: 'product',
@@ -426,7 +421,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       meetingUrl
     )
 
-    const res = await notifySlack(notificationChannel, 'meetingStart', team.id, user, blocks, title)
+    const res = await notifySlack(notificationChannel, 'meetingStart', blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -481,7 +476,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     return 'success'
   },
 
-  async endMeeting(meeting, team, user, standupResponses) {
+  async endMeeting(meeting, team, _user, standupResponses) {
     const summaryText = await getSummaryText(meeting)
     const title = 'Meeting completed :tada:'
     const blocks: Array<{type: string}> = [
@@ -494,7 +489,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       blocks.push(makeSection(`*${aiSummaryTitle}*:\n${meeting.summary}`))
     }
     blocks.push(makeEndMeetingButtons(meeting))
-    const res = await notifySlack(notificationChannel, 'meetingEnd', team.id, user, blocks, title)
+    const res = await notifySlack(notificationChannel, 'meetingEnd', blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -502,17 +497,10 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return 'success'
     }
 
-    return addStandupResponsesToThread(
-      res,
-      standupResponses,
-      team,
-      user,
-      meeting,
-      notificationChannel
-    )
+    return addStandupResponsesToThread(res, standupResponses, team, meeting, notificationChannel)
   },
 
-  async startTimeLimit(scheduledEndTime, meeting, team, user) {
+  async startTimeLimit(scheduledEndTime, meeting, team) {
     const {phases, facilitatorStageId} = meeting
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
@@ -536,8 +524,6 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const res = await notifySlack(
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_START',
-      team.id,
-      user,
       blocks,
       title
     )
@@ -547,7 +533,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     return 'success'
   },
 
-  async endTimeLimit(meeting, team, user) {
+  async endTimeLimit(meeting, team) {
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const title = `Time’s up! Advance your meeting to the next phase :alarm_clock:`
     const button = {
@@ -564,8 +550,6 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const res = await notifySlack(
       notificationChannel,
       'MEETING_STAGE_TIME_LIMIT_END',
-      team.id,
-      user,
       blocks,
       title
     )
@@ -576,7 +560,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     return 'success'
   },
 
-  async teamHealthResponseReminder(meeting, team, user, progress) {
+  async teamHealthResponseReminder(meeting, team, _user, progress) {
     const {scheduledEndTime} = meeting
     if (!scheduledEndTime) return 'success'
     const {respondentCount, eligibleCount, stragglerNames} = progress
@@ -599,7 +583,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
         : []),
       makeTeamHealthRespondButton(meetingUrl)
     ]
-    const res = await notifySlack(notificationChannel, 'meetingStart', team.id, user, blocks, title)
+    const res = await notifySlack(notificationChannel, 'meetingStart', blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -626,14 +610,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       makeSection(title),
       makeButtons([{text: 'See their response', url: responseUrl, type: 'primary'}])
     ]
-    const res = await notifySlack(
-      notificationChannel,
-      'STANDUP_RESPONSE_SUBMITTED',
-      team.id,
-      user,
-      blocks,
-      title
-    )
+    const res = await notifySlack(notificationChannel, 'STANDUP_RESPONSE_SUBMITTED', blocks, title)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -701,9 +678,8 @@ export const SlackNotifier = {
     stageIndex: number,
     channelId: string
   ) {
-    const [team, user, meeting, reflectionGroup, reflections, userSlackAuths] = await Promise.all([
+    const [team, meeting, reflectionGroup, reflections, userSlackAuths] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').loadNonNull(meetingId),
       dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
       dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId),
@@ -755,16 +731,7 @@ export const SlackNotifier = {
       auth: slackAuth
     }
 
-    const res = await notifySlack(
-      notificationChannel,
-      'TOPIC_SHARED',
-      team.id,
-      user,
-      slackBlocks,
-      undefined,
-      undefined,
-      reflectionGroupId
-    )
+    const res = await notifySlack(notificationChannel, 'TOPIC_SHARED', slackBlocks)
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
@@ -833,7 +800,11 @@ export const SlackNotifier = {
     const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(userSlackAuth.slackUserId, blocks, title)
     if ('error' in res) {
-      logError(new Error(res.error), {userId, tags: {notificationId, type: notification.type}})
+      if (isRevokedTokenError(res.error)) {
+        await removeSlackAuths(userSlackAuth.userId, userSlackAuth.teamId, true)
+      } else {
+        logError(new Error(res.error), {userId, tags: {notificationId, type: notification.type}})
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import GitLabProjectId from 'parabol-client/shared/gqlIds/GitLabProjectId'
+import GitLabProjectId from 'parabol-client/integrations/gitlab/shared/GitLabProjectId'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -6,11 +6,11 @@ import interpolateVotingLabelTemplate from '../../../client/shared/interpolateVo
 import appOrigin from '../../appOrigin'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import getPhase from '../../utils/getPhase'
-import makeScoreGitLabComment from '../../utils/makeScoreGitLabComment'
 import pickDimensionField from '../platform/pickDimensionField'
 import {previousPushLabelId} from '../platform/previousPushLabel'
 import type {EstimatePushCtx} from '../platform/ServerIntegrationDefinition'
 import GitLabServerManager from './GitLabServerManager'
+import makeScoreGitLabComment from './makeScoreGitLabComment'
 
 const pushEstimateToGitLab = async ({
   taskEstimate,

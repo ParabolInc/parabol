@@ -1,6 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -22,7 +21,6 @@ const togglePageInvitationEmail: MutationResolvers['togglePageInvitationEmail'] 
     .set({sendPageInvitationEmail: !sendPageInvitationEmail})
     .where('id', '=', viewerId)
     .execute()
-  analytics.toggleSubToPageInvitationEmail(viewer, !sendPageInvitationEmail)
 
   return true
 }

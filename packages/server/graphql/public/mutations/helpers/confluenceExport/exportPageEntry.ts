@@ -35,7 +35,6 @@ export type PageEntryExportResult =
       targetUrl: string | undefined
       finalTitle: string
       degraded: DegradedItem[]
-      attachmentCount: number
     }
   | {status: 'error'; error: string; errorClass: PageExportPageState['errorClass']}
 
@@ -117,7 +116,6 @@ export const exportPageEntry = async (input: {
       ...item,
       pageId: entry.pageId
     }))
-    let attachmentCount = 0
     for (const asset of conversion.assets) {
       const assetData = await fetchAssetBuffer(asset.srcUrl, userId)
       if (!assetData) {
@@ -136,7 +134,6 @@ export const exportPageEntry = async (input: {
           assetData.buffer,
           assetData.mimeType
         )
-        attachmentCount++
       } catch (e) {
         // the page exists — a failed upload degrades that file, it doesn't fail the page
         degraded.push({
@@ -156,8 +153,7 @@ export const exportPageEntry = async (input: {
       confluencePageId: created.id,
       targetUrl: siteUrl ? `${siteUrl}/wiki${created.webui}` : undefined,
       finalTitle,
-      degraded,
-      attachmentCount
+      degraded
     }
   } catch (e) {
     if (e instanceof ConfluenceApiError) {

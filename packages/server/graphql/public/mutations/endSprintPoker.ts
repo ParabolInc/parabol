@@ -5,8 +5,8 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 // TODO: TimelineEventPokerComplete is from the deprecated /database directory
 import TimelineEventPokerComplete from '../../../database/types/TimelineEventPokerComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
@@ -62,12 +62,16 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
     estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
   ).size
   const discussionIds = estimateStages.map((stage) => stage.discussionId)
-  const insights = await gatherInsights(meeting, dataLoader)
-  const commentCounts = (
-    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
-  ).filter(isValid)
-  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-  await getKysely()
+  const [insights, commentCounts, team, teamMembers, removedTaskIds] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    removeEmptyTasks(meetingId)
+  ])
+  const commentCount = commentCounts.filter(isValid).reduce((cumSum, count) => cumSum + count, 0)
+  const pg = getKysely()
+  await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
@@ -80,18 +84,6 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
-  const completedMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  if (completedMeeting.meetingType !== 'poker') {
-    return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
-  }
-  const {templateId} = completedMeeting
-  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId)
-  ])
   const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
   const events = teamMembers.map(
     (teamMember) =>
@@ -102,15 +94,16 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
         meetingId
       })
   )
-  const pg = getKysely()
-  await pg.insertInto('TimelineEvent').values(events).execute()
-  const page = await publishSummaryPage(meetingId, context, info)
-  completedMeeting.summaryPageId = page.id
+  const [page] = await Promise.all([
+    publishSummaryPage(meetingId, context, info),
+    pg.insertInto('TimelineEvent').values(events).execute()
+  ])
+  meeting.summaryPageId = page.id
   const data = {meetingId, teamId, isKill, removedTaskIds}
   publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
-  analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader).catch(Logger.log)
+  meetingsEnded.inc({meeting_type: meeting.meetingType})
   return data
 }
 

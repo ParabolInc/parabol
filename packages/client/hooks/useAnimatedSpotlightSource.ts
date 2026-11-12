@@ -6,7 +6,6 @@ import {Elevation} from '~/styles/elevation'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import clientTempId from '~/utils/relay/clientTempId'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 const useAnimatedSpotlightSource = (
   isOpen: boolean,
@@ -50,7 +49,6 @@ const useAnimatedSpotlightSource = (
     }, 0)
     dragIdRef.current = clientTempId()
     startDrag(reflectionId, dragIdRef.current)
-    SendClientSideEvent(atmosphere, 'Opened Spotlight', {reflectionId})
     const dragInterval = setInterval(() => {
       if (!dragIdRef.current) return
       startDrag(reflectionId, dragIdRef.current)

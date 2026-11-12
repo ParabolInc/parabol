@@ -1,4 +1,3 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence} from 'motion/react'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -16,6 +15,7 @@ import useThrottledEvent from '../hooks/useThrottledEvent'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import {Breakpoint, Times} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import reportClientError from '../utils/reportClientError'
 import {getMergeableSuggestedGroupIds} from '../utils/smartGroup/suggestionLookup'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
@@ -85,7 +85,6 @@ const GroupingKanban = (props: Props) => {
             id
           }
         }
-        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -229,9 +228,7 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        datadogLogs.logger.error('Invalid invariant: reflectionGroup.reflections is null', {
-          reflectionGroupId: group.id
-        })
+        reportClientError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }

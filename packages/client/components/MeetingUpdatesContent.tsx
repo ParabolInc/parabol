@@ -11,6 +11,7 @@ import TaskColumns from './TaskColumns/TaskColumns'
 
 interface Props {
   avatarGroup: ReactElement
+  emptyState: {title: string; description: string} | null
   endedAt: Date | string | null | undefined
   headerPrompt: ReactNode
   isViewerStageOwner: boolean
@@ -25,6 +26,7 @@ interface Props {
 const MeetingUpdatesContent = (props: Props) => {
   const {
     avatarGroup,
+    emptyState,
     endedAt,
     headerPrompt,
     isViewerStageOwner,
@@ -60,6 +62,16 @@ const MeetingUpdatesContent = (props: Props) => {
                 tasks={tasks}
                 teams={null}
               />
+              {emptyState && (
+                <div className='pointer-events-none absolute inset-x-0 top-[200px] flex flex-col items-center px-6 text-center'>
+                  <h2 className='font-semibold text-fg-primary text-xl leading-7'>
+                    {emptyState.title}
+                  </h2>
+                  <p className='mt-2 max-w-[570px] text-fg-secondary text-sm leading-5'>
+                    {emptyState.description}
+                  </p>
+                </div>
+              )}
             </div>
           </MeetingPhaseWrapper>
         </PhaseWrapper>

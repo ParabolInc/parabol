@@ -1,15 +1,11 @@
 ARG _NODE_MAJOR=${_NODE_MAJOR}
 FROM gcr.io/distroless/nodejs${_NODE_MAJOR}-debian13
 
-ARG DD_GIT_REPOSITORY_URL
-ARG DD_GIT_COMMIT_SHA
-
 # node is only the entrypoint in distroless, add it to PATH so it also works as a command
 ENV HOME=/home/node \
     PATH=/nodejs/bin:${PATH} \
     PORT=3000 \
-    DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} \
-    DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
+    NODE_COMPILE_CACHE=/home/node/parabol/dist/compile-cache
 
 USER 1000:1000
 
@@ -21,6 +17,7 @@ WORKDIR ${HOME}/parabol
 COPY --chown=1000:1000 .env.example pnpm-lock.yaml ./
 COPY --chown=1000:1000 build ./build
 COPY --chown=1000:1000 dist ./dist
+RUN --mount=type=bind,source=docker/images/parabol-ubi/compileBundles.js,target=/tmp/compileBundles.js ["node", "/tmp/compileBundles.js"]
 
 EXPOSE ${PORT}
 

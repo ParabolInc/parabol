@@ -1,4 +1,3 @@
-import {useEffect} from 'react'
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
@@ -7,7 +6,6 @@ import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
@@ -19,9 +17,6 @@ interface Props {
 export const ConfluenceConnectState = (props: Props) => {
   const {teamId, provider, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Confluence Export Connect Shown')
-  }, [atmosphere])
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const mutationProps = {
     submitting,

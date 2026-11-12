@@ -172,7 +172,14 @@
       "attributePosition": "auto",
       "bracketSpacing": false
     },
-    "globals": ["__PRODUCTION__", "__APP_VERSION__", "__webpack_public_path__", "__COMMIT_HASH__"]
+    "globals": [
+      "__PRODUCTION__",
+      "__APP_VERSION__",
+      "__webpack_public_path__",
+      "__COMMIT_HASH__",
+      "__NESTED_USAGE__",
+      "__NESTED_TYPE_DEFS__"
+    ]
   },
   "html": {"formatter": {"selfCloseVoidElements": "always"}},
   "css": {
@@ -196,6 +203,45 @@
                   {
                     "group": ["**/server/**"],
                     "message": "Do not import server code from the client. This pulls the entire server dependency graph into the client TS project and degrades IDE performance."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/client/integrations/*/shared/**", "!**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/server/**"],
+                    "message": "Do not import server code from the client. This pulls the entire server dependency graph into the client TS project and degrades IDE performance."
+                  },
+                  {
+                    "group": [
+                      "react",
+                      "react/**",
+                      "react-dom",
+                      "react-dom/**",
+                      "react-relay",
+                      "react-relay/**",
+                      "relay-runtime",
+                      "relay-runtime/**",
+                      "babel-plugin-relay/macro",
+                      "../**",
+                      "parabol-client/**",
+                      "~/**",
+                      "!**/shared/**",
+                      "!**/types/constEnums"
+                    ],
+                    "message": "Server code imports this folder, so files here may import only from shared/ folders and types/constEnums, never React, Relay or the rest of the integration."
                   }
                 ]
               }
@@ -234,7 +280,18 @@
               "options": {
                 "paths": {
                   "googleapis": "Import a single API instead, e.g. googleapis/build/src/apis/calendar. The package root pulls every Google API (32MB) into the server bundle."
-                }
+                },
+                "patterns": [
+                  {
+                    "group": [
+                      "parabol-client/integrations/**",
+                      "~/integrations/**",
+                      "**/client/integrations/**",
+                      "!**/integrations/*/shared/**"
+                    ],
+                    "message": "The server may import only from client/integrations/<service>/shared/. Everything else there is client UI: importing it drags integration components, their Relay queries and logo assets into the server bundle."
+                  }
+                ]
               }
             }
           }

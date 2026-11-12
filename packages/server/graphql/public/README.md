@@ -23,7 +23,7 @@ All new schema additions should be added in this directory.
 
 2. Write the mutation resolver
    If you need to write to the DB, add a DB query in [postgres/queries](../../postgres/queries)
-   If you need to call a service, use the service Manager (e.g. [AtlassianManager](../../utils/AtlassianServerManager.ts))
+   If you need to call a service, use the service Manager (e.g. [AtlassianServerManager](../../integrations/jira/AtlassianServerManager.ts))
    Publish the event to a subscription channel to alert others users who are interested in the event
    Return the smallest possible object you can.
    For example, instead of returning an entire meeting object, return `{meetingId}`.

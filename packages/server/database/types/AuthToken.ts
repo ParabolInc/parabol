@@ -4,15 +4,22 @@ import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import {toEpochSeconds} from '../../utils/epochTime'
 
+// RFC 8693 actor claim: the staff member acting as `sub` during an impersonation
+interface Actor {
+  sub: string
+}
+
 interface Input {
   sub: string
   tms: string[]
   rol?: 'su' | 'impersonate' | null
   bet?: 1
   lifespan_ms?: number
+  exp?: number
   scope?: string[]
   aud?: string
   jti?: string
+  act?: Actor
   client_id?: string
 }
 
@@ -27,16 +34,19 @@ export default class AuthToken {
   exp: number
   aud: string
   jti: string
+  act?: Actor
   client_id?: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti, client_id} = input
+    const {act, bet, rol, sub, tms, lifespan_ms, exp, scope, aud, jti, client_id} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
     this.iat = toEpochSeconds(now)
     this.aud = aud ?? 'action'
     this.iss = makeAppURL(appOrigin, '/')
-    this.exp = toEpochSeconds(now.getTime() + (lifespan_ms ?? Threshold.JWT_LIFESPAN))
+    const lifespanExp = toEpochSeconds(now.getTime() + (lifespan_ms ?? Threshold.JWT_LIFESPAN))
+    // re-issuing a token refreshes the session, but an impersonation can't outlive its first token
+    this.exp = rol === 'impersonate' && exp ? Math.min(exp, lifespanExp) : lifespanExp
     this.rol = rol ?? null
     this.scope = scope
     this.jti = jti ?? randomUUID()
@@ -44,6 +54,9 @@ export default class AuthToken {
 
     if (bet) {
       this.bet = bet
+    }
+    if (act) {
+      this.act = act
     }
   }
 }

@@ -14,11 +14,7 @@ import {
   listServiceProviders,
   type ProviderRowEntryModel
 } from '../../../../integrations/platform/integrationServiceProviders'
-import {
-  getClientIntegration,
-  isRegisteredClientIntegration
-} from '../../../../integrations/platform/registry'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
 import ConnectButton from './ConnectButton'
 import ContactUsButton from './ContactUsButton'
 import IntegrationServiceConfigMenu from './IntegrationServiceConfigMenu'
@@ -46,24 +42,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
         auth {
           providerId
         }
-        cloudProvider {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
-        sharedProviders {
-          id
-          scope
-          ... on IntegrationProviderOAuth2 {
-            clientId
-            serverBaseUrl
-            tenantId
-          }
-        }
+        ...integrationServiceProviders_service @relay(mask: false)
       }
     `,
     serviceRef
@@ -88,8 +67,8 @@ const IntegrationServiceProviderRow = (props: Props) => {
     cloudProvider,
     sharedProviders
   } = integrationService
-  if (!isRegisteredClientIntegration(service)) return null
   const definition = getClientIntegration(service)
+  if (!definition) return null
   const {description, contactUs, logo} = definition
 
   if (!isAvailable) {
@@ -101,12 +80,7 @@ const IntegrationServiceProviderRow = (props: Props) => {
           description={description}
           connected={false}
           configMenu={null}
-          connectButton={
-            <ContactUsButton
-              contactUsUrl={contactUs.url}
-              onContactUsSubmit={() => SendClientSideEvent(atmosphere, contactUs.clickEvent)}
-            />
-          }
+          connectButton={<ContactUsButton contactUsUrl={contactUs.url} />}
         />
       </ProviderRowShell>
     )

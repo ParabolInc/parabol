@@ -7,10 +7,8 @@ import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import type {GitLabObjectCard_issue$key} from '../../../__generated__/GitLabObjectCard_issue.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import relativeDate from '../../../utils/date/relativeDate'
 import {parseWebPath} from '../../../utils/parseWebPath'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitLabSVG from '../../GitLabSVG'
 
 interface Props {
@@ -34,26 +32,11 @@ const GitLabObjectCard = memo((props: Props) => {
     issueRef
   )
 
-  const atmosphere = useAtmosphere()
-
   const [isHovered, setIsHovered] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'gitlab'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'gitlab'
-    })
-  }
-
   const handleCopy = () => {
     setIsCopied(true)
-    trackCopy()
     setTimeout(() => {
       setIsCopied(false)
     }, 2000)
@@ -70,25 +53,13 @@ const GitLabObjectCard = memo((props: Props) => {
   return (
     <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
       <div className='flex gap-2 text-fg-secondary text-xs'>
-        <a
-          href={webUrl}
-          target='_blank'
-          className='font-medium hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={webUrl} target='_blank' className='font-medium hover:underline' rel='noreferrer'>
           #{iid}
         </a>
         <div>Updated {relativeDate(updatedAt)}</div>
       </div>
       <div className='my-2 text-sm'>
-        <a
-          href={webUrl}
-          target='_blank'
-          className='hover:underline'
-          rel='noreferrer'
-          onClick={trackLinkClick}
-        >
+        <a href={webUrl} target='_blank' className='hover:underline' rel='noreferrer'>
           {title}
         </a>
       </div>
@@ -102,7 +73,6 @@ const GitLabObjectCard = memo((props: Props) => {
             target='_blank'
             className='text-fg-secondary text-xs hover:underline'
             rel='noreferrer'
-            onClick={trackLinkClick}
           >
             {fullPath}
           </a>

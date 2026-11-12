@@ -29,7 +29,6 @@ const TeamPromptSharedResponseCard = (props: Props) => {
       fragment TeamPromptSharedResponseCard_stage on TeamPromptResponseStage {
         id
         meetingId
-        teamId
         teamMember {
           user {
             preferredName
@@ -53,7 +52,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
     `,
     stageRef
   )
-  const {id: stageId, meetingId, teamId, teamMember, discussion, responses} = stage
+  const {id: stageId, meetingId, teamMember, discussion, responses} = stage
   const sharedResponses = getSharedResponses(responses)
   const sharedAt = getMemberSharedAt(sharedResponses)
   const firstResponse = sharedResponses[0]
@@ -79,11 +78,7 @@ const TeamPromptSharedResponseCard = (props: Props) => {
             updatedAt={lastAnswerUpdatedAt(sharedResponses, sharedAt)}
           />
         </span>
-        <TeamPromptResponsePermalink
-          meetingId={meetingId}
-          teamId={teamId}
-          responseId={firstResponse.id}
-        />
+        <TeamPromptResponsePermalink meetingId={meetingId} responseId={firstResponse.id} />
       </div>
       <div
         className={cn(

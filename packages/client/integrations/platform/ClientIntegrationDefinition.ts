@@ -1,4 +1,6 @@
 import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
+import type {PreloadedQuery} from 'react-relay'
+import type {OperationType} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
@@ -57,6 +59,8 @@ export interface ScopingCapability extends SearchMetaCodec {
   currentFilters?(state: ScopingSearchState, context: ScopingSearchContext): ReactNode
   /** What the search history shows for a saved filter; absent when the value is already readable */
   filterChipLabel?(filter: IntegrationSearchFilter): string
+  /** What the search history shows for all of a saved query's filters, e.g. a count when no value is readable without a lookup; defaults to joining each filterChipLabel */
+  savedFiltersLabel?(filters: readonly IntegrationSearchFilter[]): string
   /** What the search history shows for a saved query; defaults to quoting a plain search */
   savedQueryLabel?(savedQuery: ScopingSavedQuery): string
   /** How the service's server integration normalizes a queryString before storing it, so the host can spot an already saved search */
@@ -79,6 +83,24 @@ export interface SettingsPanelProps {
   isNewlyConnected: boolean
 }
 
+export interface WorkDrawerPanelProps {
+  meetingId: string
+  teamId: string
+}
+
+export interface WorkDrawerQueryPanelProps<TQuery extends OperationType>
+  extends WorkDrawerPanelProps {
+  queryRef: PreloadedQuery<TQuery>
+}
+
+/** The retro work drawer tab for a service the team can use */
+export interface WorkDrawerCapability {
+  /** The tab body once the viewer is connected; build it with makeWorkDrawerPanel, or makeQueryRoot when it only needs the team */
+  Panel: ComponentType<WorkDrawerPanelProps>
+  /** Ends the connect prompt: "Connect to {title} to view your {connectDescription}." */
+  connectDescription: string
+}
+
 export interface SettingsCapability {
   /** Second line under the Remove menu item for services whose grant covers more than themselves */
   getDisconnectSubline?(grantedScopes: readonly string[]): string | undefined
@@ -90,6 +112,7 @@ export interface SettingsCapability {
 export interface ClientIntegrationCapabilities {
   scoping?: ScopingCapability
   settings?: SettingsCapability
+  workDrawer?: WorkDrawerCapability
 }
 
 /** The brand art for the 48px settings row; darkSrc is only for marks that vanish on a dark surface */
@@ -101,6 +124,7 @@ export interface ProviderLogoAsset {
 export abstract class ClientIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
+  readonly searchKeywords?: readonly string[]
   abstract readonly description: string
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string
@@ -111,8 +135,9 @@ export abstract class ClientIntegrationDefinition {
   readonly authorizationHelpUrl?: string
   /**
    * Advertises the service on the settings row and the scope tab even when the team cannot use it,
-   * and points the Contact Us button at url; clickEvent is the client analytics event name
+   * and points the Contact Us button at url
    */
-  readonly contactUs?: {url: string; clickEvent: string}
-  abstract connect(atmosphere: Atmosphere, params: ConnectParams): void
+  readonly contactUs?: {url: string}
+  /** Opens the service's sign-in; false when the provider lacks what that sign-in needs */
+  abstract connect(atmosphere: Atmosphere, params: ConnectParams): boolean
 }

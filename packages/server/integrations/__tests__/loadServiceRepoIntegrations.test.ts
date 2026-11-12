@@ -79,6 +79,22 @@ test('a miss fetches inside the store thunk', async () => {
   expect(fetchRepos).toHaveBeenCalledWith(ctx)
 })
 
+test('a repo list with its own refresh interval is refreshed on that interval', async () => {
+  mockGetServerIntegration.mockReturnValue({
+    isConnected,
+    resolveAuth,
+    capabilities: {repoList: {fetchRepos, refreshAfterMs: 10 * 60 * 1000}}
+  } as unknown as ReturnType<typeof getServerIntegration>)
+  fetchRepos.mockResolvedValue([githubRepo])
+  await loadServiceRepoIntegrations('github', ctx)
+  expect(mockStoreAndNetwork).toHaveBeenCalledWith(
+    'repoIntegrations:v2:github:t1:u1',
+    expect.any(Function),
+    expect.any(Function),
+    {...expectedOptions, maxAge: 10 * 60 * 1000}
+  )
+})
+
 test('an unconnected service is [] and never touches the store', async () => {
   isConnected.mockResolvedValue(false)
   await expect(loadServiceRepoIntegrations('github', ctx)).resolves.toEqual([])

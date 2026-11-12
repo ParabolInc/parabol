@@ -5,7 +5,7 @@ import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import createTeamAndLeader from '../graphql/mutations/helpers/createTeamAndLeader'
-import removeTeamMember from '../graphql/mutations/helpers/removeTeamMember'
+import removeTeamMembers from '../graphql/mutations/helpers/removeTeamMembers'
 import promptTemplateRules from '../graphql/public/mutations/helpers/promptTemplateRules'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
@@ -17,6 +17,10 @@ import {logSCIMRequest} from './logSCIMRequest'
 import {mapGroupToSCIM} from './mapToSCIM'
 import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
+
+// Limits the whole member list, not the change: a PATCH reaches ingress merged with the group's
+// current members
+const MAX_GROUP_MEMBERS = 100
 
 const createEmptyTeam = async (team: Team) => {
   const pg = getKysely()
@@ -66,9 +70,6 @@ const applyMembers = async (
   dataLoader: DataLoaderWorker
 ) => {
   const members = group.members || []
-  if (members.length > 100) {
-    throw new SCIMMY.Types.Error(400, 'invalidValue', 'Too many members')
-  }
 
   const [team, existingMembers] = await Promise.all([
     dataLoader.get('teams').load(group.id),
@@ -101,15 +102,6 @@ const applyMembers = async (
   }
 
   await Promise.all(
-    toRemove.map(async (member) => {
-      const res = await removeTeamMember(member.id, {}, dataLoader)
-      if (!res.user) {
-        Logger.error(`Failed to remove team member ${member.id} from team ${group.id}`)
-      }
-    })
-  )
-
-  await Promise.all(
     toAdd.map(async (member) => {
       try {
         await acceptTeamInvitation(team, member.value, dataLoader)
@@ -118,6 +110,16 @@ const applyMembers = async (
       }
     })
   )
+
+  // Add before removing, so replacing every member hands the lead to a new member instead of archiving the team
+  if (toRemove.length > 0) {
+    const userIdsToRemove = toRemove.map(({userId}) => userId)
+    const {removedUserIds} = await removeTeamMembers(group.id, userIdsToRemove, {}, dataLoader)
+    const notRemovedUserIds = userIdsToRemove.filter((userId) => !removedUserIds.includes(userId))
+    if (notRemovedUserIds.length > 0) {
+      Logger.error(`Failed to remove users ${notRemovedUserIds.join(', ')} from team ${group.id}`)
+    }
+  }
 
   dataLoader.get('teamMembersByTeamId').clear(group.id)
   return group
@@ -144,6 +146,14 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
     const {displayName, members} = instance
     if (displayName && displayName.length > USER_PREFERRED_NAME_LIMIT) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'displayName is too long')
+    }
+    // checked before any write, so a group that's too big isn't half created or renamed
+    if (members && members.length > MAX_GROUP_MEMBERS) {
+      throw new SCIMMY.Types.Error(
+        400,
+        'invalidValue',
+        `Too many members: a group can have at most ${MAX_GROUP_MEMBERS}`
+      )
     }
 
     const pg = getKysely()
@@ -182,6 +192,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         await applyMembers({...instance, id: teamId}, saml, dataLoader)
         return mapGroupToSCIM(updatedTeam, saml, dataLoader)
       } catch (error) {
+        // the IdP shows its admin the message, which a 500 would hide
+        if (error instanceof SCIMMY.Types.Error) throw error
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'Team exists')
         }
@@ -229,6 +241,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
 
         return mapGroupToSCIM(validNewTeam, saml, dataLoader)
       } catch (error) {
+        if (error instanceof SCIMMY.Types.Error) throw error
         Logger.error('Failed to create team for SCIM group', {displayName, error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }

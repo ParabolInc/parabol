@@ -1013,6 +1013,102 @@ describe('Microsoft Entra SCIM 2.0', () => {
     })
   })
 
+  describe('Update User with enterprise extension attributes', () => {
+    // see https://learn.microsoft.com/en-us/entra/identity/app-provisioning/application-provisioning-config-problem-scim-compatibility
+    const userName = faker.internet.userName().toLowerCase()
+    const testEmail = getTestEmail(domain)
+    const givenName = faker.name.firstName()
+    const displayName = `${givenName} ${faker.name.lastName()}`
+
+    let id: string
+    test('Create User for Update', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName,
+          active: true,
+          emails: [
+            {
+              primary: true,
+              type: 'work',
+              value: testEmail
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      id = data.id
+    })
+
+    test('PATCH /Users/{id} ignores employeeNumber and applies the other attributes', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'add',
+              value: {
+                displayName,
+                'name.givenName': givenName,
+                'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:employeeNumber': '1234'
+              }
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        displayName,
+        name: {
+          givenName
+        }
+      })
+    })
+
+    test('PATCH /Users/{id} ignores a manager sent as a bare id', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'Add',
+              path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager',
+              value: faker.datatype.uuid()
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        displayName
+      })
+    })
+  })
+
   describe('Soft delete and re-provision user', () => {
     const userName = faker.internet.userName().toLowerCase()
     const lastName = faker.name.firstName()
@@ -2509,6 +2605,105 @@ describe('Groups', () => {
         id: groupId,
         isArchived: false,
         scimCreated: true
+      })
+    })
+  })
+
+  test('Replacing every member keeps the team and makes a new member the team lead', async () => {
+    const [firstUser, secondUser, newUser] = await Promise.all(
+      Array.from({length: 3}, () => signUpWithEmail(getTestEmail(domain)))
+    )
+    const createRes = await fetch(`${SCIM_URL}/Groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName: faker.internet.userName(),
+        members: [{value: firstUser!.userId}, {value: secondUser!.userId}]
+      })
+    })
+    expect(createRes.status).toBe(201)
+    const groupId = (await createRes.json()).id
+
+    const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [{op: 'replace', path: 'members', value: [{value: newUser!.userId}]}]
+      })
+    })
+    expect(res.status).toBe(200)
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(groupId)
+    expect(teamMembers).toEqual([expect.objectContaining({userId: newUser!.userId, isLead: true})])
+    const team = await dataLoader.get('teams').load(groupId)
+    expect(team).toMatchObject({id: groupId, isArchived: false})
+  })
+
+  describe('Groups at the member limit', () => {
+    let groupId: string
+    let memberIds: string[]
+
+    const scimFetch = (path: string, method: string, body: object) =>
+      fetch(`${SCIM_URL}${path}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify(body)
+      })
+
+    const addMembers = (userIds: string[]) =>
+      scimFetch(`/Groups/${groupId}`, 'PATCH', {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [{op: 'add', path: 'members', value: userIds.map((value) => ({value}))}]
+      })
+
+    test('Create group and 100 users', async () => {
+      const groupRes = await scimFetch('/Groups', 'POST', {
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName: faker.internet.userName()
+      })
+      expect(groupRes.status).toBe(201)
+      groupId = (await groupRes.json()).id
+
+      memberIds = await Promise.all(
+        Array.from({length: 100}, async () => {
+          const email = getTestEmail()
+          const res = await scimFetch('/Users', 'POST', {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            userName: email,
+            active: true,
+            emails: [{type: 'work', value: email}]
+          })
+          expect(res.status).toBe(201)
+          return (await res.json()).id as string
+        })
+      )
+    }, 60_000)
+
+    test('A group can have 100 members', async () => {
+      const res = await addMembers(memberIds)
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.members).toHaveLength(100)
+    }, 60_000)
+
+    test('Adding a member to a group of 100 gets a 400 that says why', async () => {
+      const res = await addMembers(['sso|not-a-user'])
+      expect(res.status).toBe(400)
+      expect(await res.json()).toMatchObject({
+        scimType: 'invalidValue',
+        detail: expect.stringContaining('Too many members')
       })
     })
   })

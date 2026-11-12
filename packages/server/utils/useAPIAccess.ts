@@ -20,6 +20,7 @@ interface APIGrant {
   scopes: string[]
   aud: 'action-pat' | 'action-oauth2'
   resourceGrants: ResourceGrants
+  personalAccessTokenId?: string
 }
 
 const PREFIX_LENGTH = 8
@@ -59,6 +60,7 @@ const getPersonalAccessTokenGrant = async (
     userId: token.userId,
     scopes: token.scopes,
     aud: 'action-pat',
+    personalAccessTokenId: `${PAT_PREFIX}${prefix}`,
     // All granted resources are untrusted! We must verify before executing a query against them
     resourceGrants: new ResourceGrants(
       token.userId,
@@ -110,7 +112,7 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
           )
         : await getOAuthAccessTokenGrant(bearerToken, context.dataLoader)
       if (!grant) return
-      const {userId, scopes, aud, resourceGrants} = grant
+      const {userId, scopes, aud, resourceGrants, personalAccessTokenId} = grant
 
       const [teamMembers, user] = await Promise.all([
         context.dataLoader.get('teamMembersByUserId').load(userId),
@@ -130,7 +132,7 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
         lifespan_ms: ms('1h'),
         aud
       })
-      extendContext({resourceGrants, authToken})
+      extendContext({resourceGrants, authToken, personalAccessTokenId})
     }
   }
 }

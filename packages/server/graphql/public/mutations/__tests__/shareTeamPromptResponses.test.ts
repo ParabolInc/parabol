@@ -38,10 +38,6 @@ jest.mock('../../../mutations/helpers/notifications/IntegrationNotifier', () => 
     sendNotificationToUser: jest.fn()
   }
 }))
-jest.mock('../../../../utils/analytics/analytics', () => ({
-  __esModule: true,
-  analytics: {responseAdded: jest.fn()}
-}))
 jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../helpers/publishNotification', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../helpers/publishTeamPromptMentions', () => ({
@@ -52,9 +48,6 @@ jest.mock('../helpers/publishTeamPromptMentions', () => ({
 const {updatedIdBatches, updateResult} = jest.requireMock('../../../../postgres/getKysely') as {
   updatedIdBatches: number[][]
   updateResult: {rows: {id: number}[]}
-}
-const {analytics} = jest.requireMock('../../../../utils/analytics/analytics') as {
-  analytics: {responseAdded: jest.Mock}
 }
 const standupResponseSubmitted = jest.mocked(IntegrationNotifier.standupResponseSubmitted)
 const publishMention = jest.mocked(publishNotification)
@@ -117,7 +110,7 @@ describe('shareTeamPromptResponses', () => {
     createMentions.mockResolvedValue([])
   })
 
-  it('shares every draft, notifies Slack once and tracks each shared answer', async () => {
+  it('shares every draft and notifies Slack once', async () => {
     updateResult.rows = [{id: 1}, {id: 2}]
     createMentions.mockResolvedValueOnce([
       {
@@ -142,7 +135,6 @@ describe('shareTeamPromptResponses', () => {
       'team1',
       viewerId
     )
-    expect(analytics.responseAdded).toHaveBeenCalledTimes(2)
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -154,7 +146,6 @@ describe('shareTeamPromptResponses', () => {
     expect(updatedIdBatches).toEqual([])
     expect(createMentions).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(analytics.responseAdded).not.toHaveBeenCalled()
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 
@@ -168,7 +159,6 @@ describe('shareTeamPromptResponses', () => {
     expect(createMentions).not.toHaveBeenCalled()
     expect(publishMention).not.toHaveBeenCalled()
     expect(standupResponseSubmitted).not.toHaveBeenCalled()
-    expect(analytics.responseAdded).not.toHaveBeenCalled()
     expect(res).toEqual({meetingId, userId: viewerId})
   })
 

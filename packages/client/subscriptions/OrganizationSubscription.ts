@@ -24,6 +24,9 @@ const subscription = graphql`
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
       }
+      DowngradeToStarterPayload {
+        ...DowngradeToStarterMutation_organization @relay(mask: false)
+      }
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
       }
@@ -38,6 +41,9 @@ const subscription = graphql`
       }
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
+      }
+      ToggleAIFeaturesSuccess {
+        ...ToggleAIFeaturesMutation_organization @relay(mask: false)
       }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_organization @relay(mask: false)

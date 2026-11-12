@@ -2,6 +2,7 @@ import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {isIgnoredError, isNotSignedInError} from '../utils/errorFilters'
+import reportClientError from '../utils/reportClientError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
@@ -26,7 +27,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {error, isIgnoredError} = this.state
+    const {error} = this.state
     if (error && prevProps.resetKey !== this.props.resetKey) {
       this.setState({
         error: undefined,
@@ -34,14 +35,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
         eventId: undefined,
         isIgnoredError: false
       })
-      return
     }
-    if (!error || isIgnoredError) return
-    const {atmosphere} = this.props
-    // the analytics libraries stay out of the entry bundle. AnalyticsPage has already loaded them by now
-    import('~/utils/SendClientSideEvent')
-      .then(({default: SendClientSideEvent}) => SendClientSideEvent(atmosphere, 'Fatal Error'))
-      .catch(() => {})
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -49,9 +43,6 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     if (isNotSignedInError(error)) {
       atmosphere.invalidateSession('Not signed in')
     }
-    const {viewerId} = atmosphere
-    const store = atmosphere.getStore()
-    const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
     const ignoredError = isIgnoredError(error)
     const eventId = crypto.randomUUID()
     this.setState({
@@ -62,11 +53,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     })
 
     const {componentStack} = errorInfo
-    import('@datadog/browser-logs')
-      .then(({datadogLogs}) => {
-        datadogLogs.logger.error(error.message, {viewerId, email, componentStack, eventId}, error)
-      })
-      .catch(() => {})
+    reportClientError(error, {componentStack, eventId})
   }
 
   render() {

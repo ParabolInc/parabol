@@ -1,9 +1,7 @@
 import {Database} from '@hocuspocus/extension-database'
-import {Throttle} from '@hocuspocus/extension-throttle'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import tracer from 'dd-trace'
 import {pack, unpack} from 'msgpackr'
 import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
@@ -24,7 +22,9 @@ import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {RedisServerAffinity, type SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 import {SafeHocuspocus} from './utils/tiptap/SafeHocuspocus'
 import {sanitizeAwarenessStates} from './utils/tiptap/sanitizeAwarenessStates'
+import {throttleRefusedAuthentication} from './utils/tiptap/throttleRefusedAuthentication'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
+import {CLIENT_IP_POS} from './utils/uwsGetIP'
 
 const SERVER_ID = process.env.SERVER_ID!
 
@@ -41,16 +41,20 @@ const pushGQLTitleUpdates = async (pageId: number) => {
 // Verify the JWT once per socket (and once per proxied socket on the doc owner)
 // instead of once per document in onConnect/onAuthenticate
 const deriveContext = (serializedHTTPRequest: SerializedHTTPRequest): YjsContext => {
-  const {headers, url, connectedAt} = serializedHTTPRequest
+  const {headers, url, connectedAt, socket} = serializedHTTPRequest
   const cookieToken = getAuthTokenFromCookie(headers['cookie'] as string)
   const queryToken = new URL(url, 'http://localhost').searchParams.get('token')
   const token = cookieToken || queryToken
   const authToken = getVerifiedAuthToken(token)
   // OAuth, PAT and SCIM tokens carry narrower grants than a session
   const sessionToken = authToken?.aud === 'action' ? authToken : null
+  const forwarded = headers['x-forwarded-for']
+  const clientIP =
+    typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
   // Unauthenticated users are allowed for public pages, but a bad token is rejected in onAuthenticate
   return {
     userId: sessionToken?.sub,
+    ip: clientIP || socket.remoteAddress,
     iat: sessionToken?.iat,
     exp: sessionToken?.exp,
     jti: sessionToken?.jti,
@@ -70,7 +74,10 @@ export const redisHocusPocus = new RedisServerAffinity({
 
 export const hocuspocus = new SafeHocuspocus<YjsContext>({
   quiet: true,
-  onAuthenticate: authenticateYjsConnection,
+  // A tab authenticates every doc on its socket at once when it reconnects; the default of 100 closes it and it loops.
+  // Each pending doc queues ~2 messages, so maxUnauthenticatedQueueMessages (1000) bounds this near 500 anyway
+  maxPendingDocuments: 500,
+  onAuthenticate: throttleRefusedAuthentication(authenticateYjsConnection),
   async beforeHandleAwareness({documentName, context, states}) {
     sanitizeAwarenessStates(documentName, context?.userId, states)
   },
@@ -117,18 +124,10 @@ export const hocuspocus = new SafeHocuspocus<YjsContext>({
             // a document too deep to convert must still be saved
             logError(e instanceof Error ? e : new Error(String(e)), {tags: {documentName}})
           }
-          const {updatedTitle} = await tracer.trace(
-            'hocusPocus.updatePageContent',
-            {
-              tags: {documentName}
-            },
-            () => updatePageContent(dbId, content, state)
-          )
+          const {updatedTitle} = await updatePageContent(dbId, content, state)
           if (updatedTitle) {
             await Promise.all([
-              tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
-                pushGQLTitleUpdates(dbId)
-              ),
+              pushGQLTitleUpdates(dbId),
               updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
             ])
           }
@@ -141,10 +140,6 @@ export const hocuspocus = new SafeHocuspocus<YjsContext>({
       }
     }),
     redisHocusPocus,
-    new Throttle({
-      throttle: 100,
-      banTime: 1
-    }),
     new RedisPublisher()
   ]
 })

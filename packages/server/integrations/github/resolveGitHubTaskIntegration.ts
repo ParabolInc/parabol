@@ -1,7 +1,7 @@
-import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
-import getGitHubRequest from '../../utils/getGitHubRequest'
+import GitHubRepoId from '../../../client/integrations/github/shared/GitHubRepoId'
 import logError from '../../utils/logError'
 import type {IssueReadCtx} from '../platform/ServerIntegrationDefinition'
+import getGitHubRequest from './getGitHubRequest'
 
 const resolveGitHubTaskIntegration = async ({
   task,

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthHelpMenu_stage$key} from '~/__generated__/TeamHealthHelpMenu_stage.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'
@@ -82,7 +81,6 @@ const VeryMixed = () => (
 
 const TeamHealthHelpMenu = (props: Props) => {
   const {stageRef, onClose} = props
-  useClientSideTrack('Help Menu Open', {phase: 'TEAM_HEALTH'})
 
   const stage = useFragment(
     graphql`

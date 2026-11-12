@@ -40,7 +40,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     if (meeting.meetingType !== 'poker') {
       throw new GraphQLError('Not a poker meeting')
     }
-    const {endedAt, teamId, phases, templateRefId, facilitatorStageId} = meeting
+    const {endedAt, teamId, phases, templateRefId} = meeting
     if (endedAt) {
       throw new GraphQLError('Meeting already ended')
     }
@@ -96,7 +96,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       )
       if (removingTatorStage) {
         const nextStage = getNextFacilitatorStageAfterStageRemoved(
-          facilitatorStageId,
+          meeting.facilitatorStageId,
           removingTatorStage.id,
           phases
         )

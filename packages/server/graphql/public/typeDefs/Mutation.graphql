@@ -264,6 +264,21 @@ type Mutation {
   ): DisconnectSAMLSuccess! @scope(name: ORGS_WRITE)
 
   """
+  Start replacing a SAML identity provider's metadata. Nothing is saved until the requesting org admin signs in through the returned URL
+  """
+  requestSAMLMetadataChange(
+    """
+    The SAML identity provider whose metadata will change
+    """
+    samlId: ID!
+
+    """
+    URL of a blob of XML from the IdP describing how to handle authentication
+    """
+    metadataURL: String!
+  ): RequestSAMLMetadataChangeSuccess! @scope(name: ORGS_WRITE)
+
+  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload
@@ -992,7 +1007,7 @@ type Mutation {
     errorMessage: String!
     "What the user was doing when the error happened"
     content: String!
-    "Client-generated UUID correlating this feedback with Datadog RUM"
+    "Client-generated UUID correlating this feedback with the client error report that carries the same eventId"
     eventId: ID!
     "Contact email; only used when the submitter is not authenticated"
     email: String
@@ -2587,6 +2602,19 @@ type Mutation {
     """
     title: String
   ): LogReportQuestionUseSuccess! @scope(name: REPORTS_WRITE)
+
+  """
+  Say whether the report AI made for one of the viewer's questions answered it
+  """
+  rateReportQuestion(
+    orgId: ID!
+    reportQuestionId: ID!
+
+    """
+    Null clears the rating
+    """
+    rating: ReportQuestionRatingEnum
+  ): RateReportQuestionSuccess! @scope(name: REPORTS_WRITE)
 
   """
   Pin a report to the organization's Reports page, for everyone who can see Reports

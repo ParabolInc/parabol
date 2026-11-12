@@ -1,3 +1,4 @@
+import {randomUUIDv7} from 'crypto'
 import dayjs from 'dayjs'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
@@ -227,6 +228,9 @@ const UPDATE_TEMPLATE_SCOPE = `
         template {
           id
           scope
+        }
+        clonedTemplate {
+          id
         }
       }
     }
@@ -802,7 +806,7 @@ test('a draft cannot be reacted to until it is shared', async () => {
     })
 
   const onDraft = await react()
-  expect(onDraft.data.addReactjiToReactable.error.message).toBe('Item does not exist')
+  expect(onDraft.errors?.[0]?.message).toBe('Item does not exist')
 
   await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
   const onShared = await react()
@@ -823,6 +827,151 @@ test('updateMeetingTemplate rejects a stand-up instead of throwing', async () =>
   })
   expect(res.errors).toBeUndefined()
   expect(res.data.updateMeetingTemplate.error.message).toBe('Meeting has no template')
+})
+
+const addBorrowerTeam = async (orgId: string) => {
+  const borrowerTeamId = randomUUIDv7()
+  await getKysely()
+    .insertInto('Team')
+    .values({id: borrowerTeamId, name: `Team ${borrowerTeamId}`, orgId})
+    .execute()
+  return borrowerTeamId
+}
+
+const addEndedStandupMeeting = (teamId: string, templateId: string, facilitatorUserId: string) =>
+  getKysely()
+    .insertInto('NewMeeting')
+    .values({
+      id: randomUUIDv7(),
+      teamId,
+      templateId,
+      meetingType: 'teamPrompt',
+      name: 'Standup #1',
+      meetingCount: 0,
+      meetingNumber: 1,
+      facilitatorUserId,
+      facilitatorStageId: 'stage1',
+      phases: JSON.stringify([{id: 'phase1', phaseType: 'RESPONSES', stages: [{id: 'stage1'}]}]),
+      endedAt: new Date()
+    })
+    .execute()
+
+const addStandupSeries = async (teamId: string, templateId: string, facilitatorId: string) => {
+  const series = await getKysely()
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'teamPrompt',
+      title: 'Daily Standup',
+      recurrenceRule: RRULE,
+      duration: 24 * 60,
+      teamId,
+      facilitatorId,
+      templateId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return series.id
+}
+
+test('downscoping a template another team used moves the owning team onto the clone', async () => {
+  const pg = getKysely()
+  const {userId, teamId, orgId, cookie} = await signUp()
+  const created = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
+  await selectTemplate({cookie}, teamId, templateId)
+  const seriesId = await addStandupSeries(teamId, templateId, userId)
+  const cancelledSeriesId = await addStandupSeries(teamId, templateId, userId)
+  await pg
+    .updateTable('MeetingSeries')
+    .set({cancelledAt: new Date()})
+    .where('id', '=', cancelledSeriesId)
+    .execute()
+  await addEndedStandupMeeting(await addBorrowerTeam(orgId), templateId, userId)
+
+  const downscoped = await sendPublic({
+    query: UPDATE_TEMPLATE_SCOPE,
+    variables: {templateId, scope: 'TEAM'},
+    cookie
+  })
+  expect(downscoped.errors).toBeUndefined()
+  const clonedTemplateId = downscoped.data.updateTemplateScope.clonedTemplate.id
+  expect(clonedTemplateId).not.toBe(templateId)
+
+  const settings = await pg
+    .selectFrom('MeetingSettings')
+    .select('selectedTemplateId')
+    .where('teamId', '=', teamId)
+    .where('meetingType', '=', 'teamPrompt')
+    .executeTakeFirstOrThrow()
+  expect(settings.selectedTemplateId).toBe(clonedTemplateId)
+  const cancelledSeries = await pg
+    .selectFrom('MeetingSeries')
+    .select('templateId')
+    .where('id', '=', cancelledSeriesId)
+    .executeTakeFirstOrThrow()
+  expect(cancelledSeries.templateId).toBe(clonedTemplateId)
+
+  const next = await sendPublic({
+    query: START_SERIES_NOW,
+    variables: {meetingSeriesId: MeetingSeriesId.join(seriesId)},
+    cookie
+  })
+  expect(next.errors).toBeUndefined()
+  expect(next.data.startMeetingSeriesNow.meeting.template.id).toBe(clonedTemplateId)
+  expect(next.data.startMeetingSeriesNow.meeting.prompts).toHaveLength(3)
+})
+
+test('a template on another team recurring stand-up cannot be downscoped', async () => {
+  const pg = getKysely()
+  const {userId, teamId, orgId, cookie} = await signUp()
+  const created = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
+    cookie
+  })
+  const {id: templateId} = created.data.addPromptTemplate.template
+  const borrowerTeamId = await addBorrowerTeam(orgId)
+  await addEndedStandupMeeting(borrowerTeamId, templateId, userId)
+  const borrowerSeriesId = await addStandupSeries(borrowerTeamId, templateId, userId)
+
+  const refused = await sendPublic({
+    query: UPDATE_TEMPLATE_SCOPE,
+    variables: {templateId, scope: 'TEAM'},
+    cookie
+  })
+  expect(refused.errors).toEqual([
+    expect.objectContaining({message: "Another team's recurring meeting uses this template"})
+  ])
+
+  const template = await pg
+    .selectFrom('MeetingTemplate')
+    .select(['isActive', 'scope'])
+    .where('id', '=', templateId)
+    .executeTakeFirstOrThrow()
+  expect(template).toEqual({isActive: true, scope: 'ORGANIZATION'})
+  const borrowerSeries = await pg
+    .selectFrom('MeetingSeries')
+    .select('templateId')
+    .where('id', '=', borrowerSeriesId)
+    .executeTakeFirstOrThrow()
+  expect(borrowerSeries.templateId).toBe(templateId)
+
+  await pg
+    .updateTable('MeetingSeries')
+    .set({cancelledAt: new Date()})
+    .where('id', '=', borrowerSeriesId)
+    .execute()
+  const allowed = await sendPublic({
+    query: UPDATE_TEMPLATE_SCOPE,
+    variables: {templateId, scope: 'TEAM'},
+    cookie
+  })
+  expect(allowed.errors).toBeUndefined()
+  expect(allowed.data.updateTemplateScope.clonedTemplate.id).not.toBe(templateId)
 })
 
 test('a template downscoped to another team cannot be selected or started', async () => {

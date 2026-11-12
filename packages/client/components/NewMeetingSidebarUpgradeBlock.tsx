@@ -1,28 +1,19 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {useNavigate} from 'react-router'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Button} from '../ui/Button/Button'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import IconButton from './IconButton'
 
 interface Props {
   onClick?: () => void
   orgId: string
-  meetingId: string
 }
 
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
-  const {onClick, orgId, meetingId} = props
+  const {onClick, orgId} = props
   const navigate = useNavigate()
   const [closed, setClosed] = useState(false)
-  const atmosphere = useAtmosphere()
 
   const handleUpgradeClick = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'meetingSidebar',
-      orgId,
-      meetingId
-    })
     onClick?.()
     navigate(`/me/organizations/${orgId}`)
   }
@@ -30,16 +21,6 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const handleClose = () => {
     setClosed(true)
   }
-
-  useEffect(() => {
-    if (!closed) {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'meetingSidebar',
-        orgId,
-        meetingId
-      })
-    }
-  }, [closed])
 
   if (closed) {
     return null

@@ -1,14 +1,14 @@
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
+import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
 import type {AtlassianAuth} from '../../postgres/types'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import AtlassianServerManager from './AtlassianServerManager'
 import createJiraTask from './createJiraTask'
+import makeCreateJiraTaskComment from './makeCreateJiraTaskComment'
 
 export default class JiraIntegrationManager
   extends AtlassianServerManager

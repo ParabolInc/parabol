@@ -209,8 +209,7 @@ const fetchOnce = async (
     signal?: AbortSignal
   }
 ) => {
-  // Reject a bad destination before a request exists. Once one does, dd-trace marks its span as
-  // errored when the guard kills the connection, and Error Tracking files that as a bug.
+  // Reject a bad destination before a request exists, so the guard never has to kill a connection.
   // IP literals also need this: net.connect skips the lookup for them, leaving only verifyPeer.
   await resolveSafeAddresses(getHostname(url))
   return fetch(url, {

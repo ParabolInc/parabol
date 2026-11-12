@@ -7,6 +7,8 @@ const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const getCommitHash = require('./utils/getCommitHash')
+const getNestedUsage = require('./utils/getNestedUsage')
+const pruneNestedTypeDefs = require('./utils/pruneNestedTypeDefs')
 const persistentCache = require('./utils/persistentCache')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -17,7 +19,6 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 const INIT_SERVER_ID = path.join(SERVER_ROOT, 'initServerId.ts')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
-const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
 const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
 
@@ -30,6 +31,7 @@ const SHARP_LIBVIPS_ROOT = path.dirname(
 
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
+  const nestedUsage = getNestedUsage()
   return {
     ...persistentCache(`servers-noDeps-${noDeps}`, __filename),
     mode: 'production',
@@ -42,11 +44,8 @@ module.exports = (config) => {
         DOTENV,
         INIT_SERVER_ID,
         INIT_PUBLIC_PATH,
-        INIT_LOGGING,
         MONKEYPATCHES,
         DUMP_ON_USR2,
-        // each instance of web needs to generate its own index.html to use on startup
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
       embedder: [DOTENV, INIT_SERVER_ID, DUMP_ON_USR2, path.join(EMBEDDER_ROOT, 'embedder.ts')],
@@ -56,28 +55,24 @@ module.exports = (config) => {
         INIT_PUBLIC_PATH,
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
       ],
-      pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
+      pushToCDN: [
+        DOTENV,
+        // index.html & the like need the public path
+        INIT_PUBLIC_PATH,
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')
+      ],
       migrate: [
         DOTENV,
         INIT_SERVER_ID,
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')
       ],
-      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')],
-      pg: {
-        // bundle pg with all its dependencies into a single file
-        // so dd-trace-js can monkeypatch require('pg')
-        import: [path.join(SERVER_ROOT, 'postgres/pg.ts')],
-        library: {
-          type: 'commonjs2'
-        }
-      }
+      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
     },
     output: {
-      filename: (pathData) => {
-        // trick dd-trace-js into thinking our standalone pg file is a node_module
-        return pathData.chunk.name === 'pg' ? 'node_modules/pg/lib/index.js' : '[name].js'
-      },
-      path: distPath
+      filename: '[name].js',
+      path: distPath,
+      // V8 compiles a parenthesized module factory with the bundle, so the factories land in the image's compile cache
+      environment: {methodShorthand: false}
     },
     resolve: {
       alias: {
@@ -111,6 +106,8 @@ module.exports = (config) => {
         __PRODUCTION__: true,
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
+        __NESTED_USAGE__: JSON.stringify(nestedUsage),
+        __NESTED_TYPE_DEFS__: JSON.stringify(nestedUsage && pruneNestedTypeDefs(nestedUsage)),
         // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
         'process.platform': JSON.stringify(process.platform),
         'process.arch': JSON.stringify(process.arch),
@@ -144,14 +141,8 @@ module.exports = (config) => {
             // copy sharp's libvips to the output
             from: SHARP_LIBVIPS_ROOT,
             to: `sharp-libvips-${runtimePlatform}`
-          },
-          noDeps && {
-            // dd-trace-js has a lookup table for hooks, which includes the key `pg`
-            // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
-            from: path.resolve(PROJECT_ROOT, 'node_modules', 'pg', 'package.json'),
-            to: 'node_modules/pg/package.json'
           }
-        ].filter(Boolean)
+        ]
       })
     ].filter(Boolean),
     module: {

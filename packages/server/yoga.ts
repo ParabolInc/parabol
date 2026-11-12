@@ -16,10 +16,14 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
+import {getFullSchema} from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
+import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
+import {TRACING_ENABLED} from './tracing/initTracing'
+import {useTracing} from './tracing/useTracing'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
@@ -27,10 +31,9 @@ import {useAPIAccess} from './utils/useAPIAccess'
 import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
-import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
-import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
+import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
 
@@ -51,6 +54,7 @@ export interface ServerContext {
   apiCost?: number
   // present if the request is from a Personal Access Token or an OAuth access token
   resourceGrants?: ResourceGrants
+  personalAccessTokenId?: string
   traceparent?: string
   sessionId?: string
   socketId?: string
@@ -117,6 +121,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
   plugins: [
     useRemoveDuplicateTransferEncoding,
     useSchemaLink,
+    useNestedSchemaFallback(),
     useDisposeDataloader,
     useAPIAccess(),
     useArmor(),
@@ -131,7 +136,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         uploadOrgImage: ['file'],
         uploadUserAsset: ['file'],
         uploadUserImage: ['file']
-      } as ExcludedArgs,
+      } satisfies ExcludedArgs,
       includeOps: new Set([
         'acceptRequestToJoinDomain',
         'acceptTeamInvitation',
@@ -139,16 +144,23 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'addIntegrationProvider',
         'addSlackAuth',
         'addTeamMemberIntegrationAuth',
+        'archiveOrganization',
+        'archiveTeam',
         'assignSAMLIdToOrg',
         'changeEmailDomain',
         'createImposterToken',
         'createOAuth1AuthorizeUrl',
         'createOAuthAPIProvider',
+        'createPersonalAccessToken',
+        'createStripeSubscription',
         'deleteOAuthAPIProvider',
         'deleteUser',
         'denyPushInvitation',
         'disconnectSAML',
+        'downgradeToStarter',
+        'dumpHeap',
         'emailPasswordReset',
+        'exportPagesToConfluence',
         'hardDeleteUser',
         'invalidateSessions',
         'inviteToTeam',
@@ -161,6 +173,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'moveTeamToOrg',
         'promoteToTeamLead',
         'pushInvitation',
+        'regenerateOAuthAPIProviderSecret',
         'removeAllSlackAuths',
         'removeApprovedOrganizationDomains',
         'removeAuthIdentity',
@@ -170,9 +183,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'removeSlackAuth',
         'removeTeamMember',
         'removeTeamMemberIntegrationAuth',
+        'requestSAMLMetadataChange',
         'resetPassword',
         'setOrgUserRole',
         'setOrganizationDomain',
+        'signOut',
         'signUpWithPassword',
         'stripeUpdateCreditCard',
         'toggleAIFeatures',
@@ -182,10 +197,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'updateAutoJoin',
         'updateCreditCard',
         'updateEmail',
-        'updateFeatureFlag',
         'updateIntegrationProvider',
+        'updateIntegrationRepoAccess',
         'updateOAuthAPIProvider',
         'updatePageAccess',
+        'updatePersonalAccessToken',
         'updateSAML',
         'updateSCIM',
         'updateUserProfile',
@@ -195,30 +211,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'uploadUserImage',
         'verifyDomain',
         'verifyEmail'
-      ] as ExcludedOps)
+      ] satisfies ExcludedOps)
     }),
     useErrorLogging(),
-    useDatadogTracing({
-      excludeArgs: {
-        acceptTeamInvitation: ['invitationToken'],
-        loginWithPassword: ['password'],
-        resetPassword: ['token', 'newPassword'],
-        signUpWithPassword: ['password', 'invitationToken'],
-        verifyEmail: ['verificationToken']
-      } as ExcludedArgs,
-      hooks: {
-        execute: (span, args) => {
-          const {authToken} = args.contextValue
-          if (authToken?.sub) {
-            span.setTag('userId', authToken.sub)
-          }
-          if (authToken?.aud) {
-            span.setTag('auth.aud', authToken.aud)
-          }
-        }
-      },
-      collapse: true
-    }),
+    ...(TRACING_ENABLED ? [useTracing()] : []),
+    ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
     useDeferStream(),
     usePersistedOperations({
       async allowArbitraryOperations(request) {
@@ -238,7 +235,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
-    usePrivateSchemaForSuperUser,
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {
@@ -264,9 +260,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCookies()
   ],
-  // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
-  // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
-  schema: rootSchema,
+  schema: ({authToken}) => (authToken?.rol === 'su' ? getFullSchema() : rootSchema),
 
   context: () => {
     const rateLimiter = getRateLimiter()

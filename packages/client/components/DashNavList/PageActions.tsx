@@ -6,6 +6,7 @@ import type * as Y from 'yjs'
 import {Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {snackOnError} from '../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {createPageLinkElement} from '../../shared/tiptap/createPageLinkElement'
@@ -48,6 +49,7 @@ export const PageActions = (props: Props) => {
   const archivePage = () => {
     executeArchive({
       variables: {pageId, action: 'archive'},
+      onError: snackOnError(atmosphere, 'PageActionsArchive'),
       onCompleted(_res, errors) {
         const firstError = errors?.[0]?.message
         if (firstError) {

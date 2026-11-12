@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useSetTeamHealthSpectateMutation as TSetTeamHealthSpectateMutation} from '../__generated__/useSetTeamHealthSpectateMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getServerError from '../utils/relay/getServerError'
 
 // selected by both the mutation payload and MeetingSubscription. Relay merges by meeting member id
 graphql`
@@ -29,7 +30,7 @@ const useSetTeamHealthSpectateMutation = () => {
       ...config,
       onError: (error) => {
         atmosphere.eventEmitter.emit('addSnackbar', {
-          message: error.message,
+          message: getServerError(error)?.message ?? error.message,
           autoDismiss: 5,
           key: 'setTeamHealthSpectateError'
         })

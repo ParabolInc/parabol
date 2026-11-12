@@ -17,6 +17,7 @@ const findLastMeeting = (query: ReportMeasureQuery) => {
       templateId: eb.ref('m.templateId'),
       teamId: eb.ref('m.teamId'),
       scope: eb.ref('tpl.scope'),
+      type: eb.ref('tpl.type'),
       name: eb.ref('tpl.name')
     },
     ownTeamIds

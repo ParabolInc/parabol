@@ -20,7 +20,7 @@ type RetrospectiveMeeting implements NewMeeting {
   """
   autogroupReflectionGroups: [AutogroupReflectionGroup!]
     @deprecated(
-      reason: "Use suggestedGrouping. Nothing writes this field any more, so it is null for every meeting grouped after the SuggestedGroups release. Retained only so the deprecated autogroup mutation still works for meetings pre-warmed before it, and so clients loaded before it do not error on the selection. Delete together with the autogroup mutation and the NewMeeting.autogroupReflectionGroups column once analytics show no more 'Suggest Groups Clicked' events with source: legacyAutogroup."
+      reason: "Use suggestedGrouping. Nothing writes this field any more, so it is null for every meeting grouped after the SuggestedGroups release. Retained only so the deprecated autogroup mutation still works for meetings pre-warmed before it, and so clients loaded before it do not error on the selection. Delete together with the autogroup mutation and the NewMeeting.autogroupReflectionGroups column once the parabol_legacy_autogroups_total metric stops increasing."
     )
 
   """
@@ -115,6 +115,11 @@ type RetrospectiveMeeting implements NewMeeting {
   The previous retrospective in the same meeting series, if any
   """
   prevMeeting: RetrospectiveMeeting
+
+  """
+  The team's most recent retrospective that ended before this one started, if any
+  """
+  prevCompletedMeeting: RetrospectiveMeeting
   meetingType: MeetingTypeEnum!
 
   """

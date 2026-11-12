@@ -14,7 +14,6 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
-const PRELOAD_TRACED_BUILTINS = path.join(SERVER_ROOT, 'preloadTracedBuiltins.ts')
 
 const devServersConfig: Configuration = {
   stats: 'errors-warnings',
@@ -25,15 +24,12 @@ const devServersConfig: Configuration = {
   },
   entry: {
     web: [
-      // must stay first, see the file for why
-      PRELOAD_TRACED_BUILTINS,
       DOTENV,
       INIT_PUBLIC_PATH,
       path.join(PROJECT_ROOT, 'scripts/toolboxSrc/primeIntegrations.ts'),
       path.join(SERVER_ROOT, 'server.ts')
     ],
     embedder: [
-      PRELOAD_TRACED_BUILTINS,
       DOTENV,
       INIT_PUBLIC_PATH,
       // make sure all the extensions (pgvector) exist & are updated
@@ -61,6 +57,8 @@ const devServersConfig: Configuration = {
   plugins: [
     new rspack.DefinePlugin({
       __PRODUCTION__: false,
+      __NESTED_USAGE__: 'null',
+      __NESTED_TYPE_DEFS__: 'null',
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __COMMIT_HASH__: JSON.stringify(getCommitHash())
     })

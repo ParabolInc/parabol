@@ -13,7 +13,7 @@ type Props = {
   note: string
   isTeamSelected: boolean
   canChangePlans: boolean
-  onAction: (action: PlanAction, tier: TierEnum) => void
+  onAction: (action: PlanAction) => void
 }
 
 const OrgPlan = (props: Props) => {
@@ -43,7 +43,7 @@ const OrgPlan = (props: Props) => {
           action={action}
           isSelected={isSelected}
           canChangePlans={canChangePlans}
-          onClick={() => onAction(action, tier)}
+          onClick={() => onAction(action)}
         />
       </div>
       <OrgPlanBenefits tier={tier} />

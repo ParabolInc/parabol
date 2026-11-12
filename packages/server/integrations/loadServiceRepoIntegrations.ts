@@ -15,7 +15,8 @@ const CACHE_TTL = ms('2d')
 
 /**
  * One service's repo list for the user on this team, served from Redis and refreshed in the
- * background once it is older than REFRESH_AFTER. A refresh that changes the list is pushed to the user.
+ * background once it is older than the service's refreshAfterMs, or REFRESH_AFTER by default.
+ * A refresh that changes the list is pushed to the user.
  * [] when the service is not connected; null when the fetch failed or the token is unusable
  */
 const loadServiceRepoIntegrations = async (
@@ -41,7 +42,7 @@ const loadServiceRepoIntegrations = async (
     fetchRepos,
     (repos) => repos,
     {
-      maxAge: REFRESH_AFTER,
+      maxAge: repoList.refreshAfterMs ?? REFRESH_AFTER,
       ttl: CACHE_TTL,
       onUpdate: () => {
         const dataLoader = getNewDataLoader('loadServiceRepoIntegrations')

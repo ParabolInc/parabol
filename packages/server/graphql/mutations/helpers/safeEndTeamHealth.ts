@@ -3,9 +3,9 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamHealthComplete from '../../../database/types/TimelineEventTeamHealthComplete'
 import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
@@ -50,9 +50,11 @@ const safeEndTeamHealth = async ({
     })
 
   // RESOLUTION
-  const [insights, phases] = await Promise.all([
+  const [insights, phases, team, teamMembers] = await Promise.all([
     gatherInsights(meeting, dataLoader),
-    sortTeamHealthResultStages(meeting, dataLoader)
+    sortTeamHealthResultStages(meeting, dataLoader),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId)
   ])
   // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
   // results" or the recurrence cron hit scheduledEndTime. The result stages render the reveal off
@@ -68,19 +70,17 @@ const safeEndTeamHealth = async ({
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
-  await queueTeamHealthCategorySummaries(meeting, dataLoader).catch((e) => {
-    logError(e instanceof Error ? e : new Error(`queueTeamHealthCategorySummaries failed: ${e}`), {
-      tags: {meetingId, op: 'queueTeamHealthCategorySummaries'}
-    })
-  })
-  summarizeTeamHealthCategories(meetingId).catch(Logger.log)
-
-  const [completedTeamHealth, meetingMembers, team, teamMembers] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamHealthMeeting>,
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId)
-  ])
+  const categorySummariesQueued = queueTeamHealthCategorySummaries(meeting, dataLoader).catch(
+    (e) => {
+      logError(
+        e instanceof Error ? e : new Error(`queueTeamHealthCategorySummaries failed: ${e}`),
+        {
+          tags: {meetingId, op: 'queueTeamHealthCategorySummaries'}
+        }
+      )
+    }
+  )
+  categorySummariesQueued.then(() => summarizeTeamHealthCategories(meetingId)).catch(Logger.log)
 
   const events = teamMembers.map(
     (teamMember) =>
@@ -91,16 +91,19 @@ const safeEndTeamHealth = async ({
         meetingId
       })
   )
-  await pg.insertInto('TimelineEvent').values(events).execute()
-  analytics.teamHealthEnd(completedTeamHealth, meetingMembers, dataLoader)
-  const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
-    logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
-      tags: {meetingId, op: 'publishSummaryPage'}
-    })
-    return null
-  })
-  if (page) completedTeamHealth.summaryPageId = page.id
-  await summarizeTeamHealth(completedTeamHealth, context)
+  meetingsEnded.inc({meeting_type: meeting.meetingType})
+  const [page] = await Promise.all([
+    publishSummaryPage(meetingId, context, info).catch((e) => {
+      logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
+        tags: {meetingId, op: 'publishSummaryPage'}
+      })
+      return null
+    }),
+    pg.insertInto('TimelineEvent').values(events).execute(),
+    categorySummariesQueued
+  ])
+  if (page) meeting.summaryPageId = page.id
+  await summarizeTeamHealth(meeting, context)
   const data = {
     meetingId,
     teamId

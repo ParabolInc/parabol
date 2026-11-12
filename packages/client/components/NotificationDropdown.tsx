@@ -8,10 +8,8 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useTimeout from '~/hooks/useTimeout'
 import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMutation'
 import type {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
-import useClientSideTrack from '../hooks/useClientSideTrack'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuContent} from '../ui/Menu/MenuContent'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationMenuItem from './NotificationMenuItem'
 import NotificationPicker from './NotificationPicker'
 
@@ -39,7 +37,6 @@ const NotificationDropdown = (props: Props) => {
               node {
                 id
                 status
-                type
                 ...NotificationPicker_notification
               }
             }
@@ -60,7 +57,6 @@ const NotificationDropdown = (props: Props) => {
   // clips it to what is visible in the menu
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {rootMargin: '8px'})
   const atmosphere = useAtmosphere()
-  useClientSideTrack('Notification Menu Opened', {})
   return (
     <MenuContent
       align='end'
@@ -74,15 +70,12 @@ const NotificationDropdown = (props: Props) => {
         </div>
       )}
       {edges.map(({node}) => {
-        const {id: notificationId, status, type} = node
+        const {id: notificationId, status} = node
         const onViewFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'READ'}, {})
         }
         const onClickFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'CLICKED'}, {})
-          SendClientSideEvent(atmosphere, 'Notification Clicked', {
-            notificationType: type
-          })
         }
         const onView = status === 'UNREAD' ? onViewFn : undefined
         return (

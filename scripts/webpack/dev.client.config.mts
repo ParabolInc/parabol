@@ -74,7 +74,9 @@ export const devServer: DevServerConfiguration = {
       'saml/',
       'scim',
       'oauth',
-      'zoom'
+      'zoom',
+      'client-errors',
+      'client-metrics'
     ].map((name) => ({
       context: [`/${name}`],
       target: `http://localhost:${SOCKET_PORT}`
@@ -151,8 +153,6 @@ const devClientConfig: Configuration = {
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),
       __ACTION__: JSON.stringify({
-        datadogClientToken: process.env.DD_CLIENTTOKEN,
-        datadogService: process.env.DD_SERVICE,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
         mattermostWebhookIntegrationDisabled:
@@ -168,7 +168,6 @@ const devClientConfig: Configuration = {
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
         AUTH_MICROSOFT_ENABLED: process.env.AUTH_MICROSOFT_DISABLED !== 'true',
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
-        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
         microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
         microsoft: process.env.MICROSOFT_CLIENT_ID,
         GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',
@@ -181,7 +180,6 @@ const devClientConfig: Configuration = {
             : process.env.GIF_SECRET
               ? 'klipy'
               : '',
-        GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL,
         IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
       })
     }),

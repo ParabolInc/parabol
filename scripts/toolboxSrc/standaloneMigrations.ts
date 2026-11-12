@@ -1,13 +1,25 @@
 // Should roughly match runMigrations.js except it isn't run in PM2 in dev
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
+import {sql} from 'kysely'
 import {Migrator} from 'kysely/migration'
 import path from 'path'
 import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
+import {getMigrationPlan} from '../../packages/server/postgres/getMigrationPlan'
 import {Logger} from '../../packages/server/utils/Logger'
 import '../webpack/utils/dotenv'
 import {pgEnsureExtensions} from './pgEnsureExtensions'
+
+const getAppliedMigrationNames = async () => {
+  const pg = getKysely()
+  const {rows} = await sql<{hasTable: boolean}>`
+    SELECT to_regclass('public."_migrationV2"') IS NOT NULL AS "hasTable"
+  `.execute(pg)
+  if (!rows[0]?.hasTable) return []
+  const appliedMigrations = await pg.selectFrom('_migrationV2').select('name').execute()
+  return appliedMigrations.map(({name}) => name)
+}
 
 const migratePG = async () => {
   Logger.log('🐘 Postgres Migration Started')
@@ -25,6 +37,13 @@ const migratePG = async () => {
     const {name} = path.parse(relativePath)
     collector[name] = context(relativePath)
   })
+  const migrationPlan = getMigrationPlan(Object.keys(collector), await getAppliedMigrationNames())
+  if (migrationPlan.type === 'skip') {
+    Logger.warn(
+      `🐘 Postgres Migration Skipped: the database is ahead of this build (${migrationPlan.newerMigrationNames.join(', ')})`
+    )
+    return
+  }
   const pg = getKysely()
   const migrator = new Migrator({
     ...migrations,

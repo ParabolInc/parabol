@@ -334,23 +334,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuQuery: (_teamId: unknown, userId: string) => {
+    TaskFooterIntegrateMenuQuery: () => {
       const user = this.db.users[0]
       return {
         viewer: {
           ...user,
-          assigneeTeamMember: this.db.teamMembers.find(
-            (teamMember) => teamMember.userId === userId
-          ),
+          team: null,
           viewerTeamMember: this.db.teamMembers[0]
         }
       }
     },
-    TaskFooterIntegrateMenuListLocalQuery: () => {
-      const user = this.db.users[0]
+    TaskSendControlQuery: () => {
       return {
         viewer: {
-          ...user
+          ...this.db.users[0],
+          team: null,
+          teamMember: this.db.teamMembers[0]
         }
       }
     },
@@ -558,10 +557,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (integrationProviderService === 'github') {
         Object.assign(task, {
           updatedAt: now,
+          taskService: 'github',
           integration: {
             __typename: '_xGitHubIssue',
             id: `${taskId}:GitHub`,
-            service: 'github',
             title,
             bodyHTML,
             repository: {
@@ -582,10 +581,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         Object.assign(task, {
           updatedAt: now,
           integrationHash: integrationRepoId,
+          taskService: 'jira',
           integration: {
             __typename: 'JiraIssue',
             id: `jira:${taskId}`,
-            service: 'jira',
             issueKey,
             projectKey: key,
             cloudId,
@@ -593,6 +592,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             descriptionHTML: bodyHTML,
             summary: title,
             url: ExternalLinks.INTEGRATIONS_JIRA,
+            extraFields: [],
             project: {
               id: `${key}:id`,
               key,
@@ -612,13 +612,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         Object.assign(task, {
           updatedAt: now,
           integrationHash: integrationRepoId,
+          taskService: 'gitlab',
           integration: {
             __typename: '_xGitLabIssue',
             id: `gitlab:${taskId}`,
-            service: 'gitlab',
             iid,
             title,
-            description: bodyHTML,
+            descriptionHtml: bodyHTML,
             webPath,
             webUrl: 'https://www.parabol.co/integrations/',
             state: 'opened'
@@ -1095,6 +1095,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setStageTimer: data}
     },
+    SetMeetingMusicMutation: ({
+      meetingId,
+      trackSrc,
+      isPlaying
+    }: {
+      meetingId: string
+      trackSrc: string | null
+      isPlaying: boolean
+    }) => {
+      return {
+        setMeetingMusic: {
+          __typename: 'SetMeetingMusicSuccess',
+          meetingId,
+          trackSrc,
+          isPlaying
+        }
+      }
+    },
     StartDraggingReflectionMutation: (
       {reflectionId, dragId}: {reflectionId: string; dragId: string},
       userId: string
@@ -1416,6 +1434,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         editors: [],
         integrationHash: null,
         integration: null,
+        taskService: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
         replies: [],

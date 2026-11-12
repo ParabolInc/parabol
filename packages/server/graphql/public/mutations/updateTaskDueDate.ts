@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -22,10 +21,7 @@ const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
   // VALIDATION
   const formattedDueDate = dueDate && new Date(dueDate)
   const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
-  const [task, viewer] = await Promise.all([
-    dataLoader.get('tasks').load(taskId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
     return standardError(new Error('Task not found'), {userId: viewerId})
   }
@@ -45,7 +41,6 @@ const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
       publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
     })
   }
-  analytics.taskDueDateSet(viewer, task.teamId, taskId)
   return data
 }
 

@@ -1,6 +1,2 @@
 "A GitHub issue linked to a Parabol task"
 type _xGitHubIssue implements TaskIntegration
-
-extend type _xGitHubIssue {
-  service: IntegrationProviderServiceEnum!
-}

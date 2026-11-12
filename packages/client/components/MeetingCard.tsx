@@ -1,4 +1,3 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
@@ -26,6 +25,7 @@ import {
   meetingTypeToLabelClass,
   phaseLabelLookup
 } from '../utils/meetings/lookups'
+import reportClientError from '../utils/reportClientError'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
@@ -107,7 +107,8 @@ const MeetingCard = (props: Props) => {
     locked,
     isViewerComplete
   } = meeting
-  const connectedUsers = useMeetingMemberAvatars(meeting)
+  const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null)
+  const connectedUsers = useMeetingMemberAvatars(meeting, cardElement)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const [isCopied, setIsCopied] = useState(false)
@@ -151,7 +152,7 @@ const MeetingCard = (props: Props) => {
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
+    reportClientError(new Error('Missing Team on Meeting'))
     return null
   }
   const {id: teamId, name: teamName, orgId} = team
@@ -196,6 +197,7 @@ const MeetingCard = (props: Props) => {
 
   return (
     <motion.div
+      ref={setCardElement}
       className='relative m-3 max-w-full shrink-0 select-none'
       style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 24px)'}}
       initial={{opacity: 0}}

@@ -21,7 +21,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 const getCardElementOptions = (): StripeCardNumberElementOptions => {
   const isDark = document.documentElement.classList.contains('theme-dark')
@@ -52,7 +51,6 @@ const BillingForm = (props: Props) => {
   const elements = useElements()
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
-  const [hasStarted, setHasStarted] = useState(false)
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()
@@ -124,14 +122,6 @@ const BillingForm = (props: Props) => {
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
       if (error) onCompleted()
-      if (!hasStarted && !event.empty) {
-        SendClientSideEvent(atmosphere, 'Payment Details Started', {orgId})
-        setHasStarted(true)
-      }
-      if (event.complete) {
-        SendClientSideEvent(atmosphere, 'Payment Details Complete', {orgId})
-      }
-
       const errorSetters = {
         CardNumber: setCardNumberError,
         ExpiryDate: setExpiryDateError,

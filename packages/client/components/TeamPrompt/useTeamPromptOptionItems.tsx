@@ -10,7 +10,6 @@ import {Edit, Flag, Link as MuiLink, Replay} from '~/ui/icons'
 import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
 import makeAppURL from '../../utils/makeAppURL'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import SlackSVG from '../SlackSVG'
 import countUnsharedDrafts from './structured/countUnsharedDrafts'
 
@@ -23,6 +22,7 @@ export interface TeamPromptOptionItem {
   isNewTab?: boolean
   isDisabled?: boolean
   isDestructive?: boolean
+  keepsMenuOpen?: boolean
 }
 
 interface Options {
@@ -45,6 +45,7 @@ const useTeamPromptOptionItems = (
         }
         template {
           id
+          isActive
           viewerLowestScope
         }
         meetingSeries {
@@ -69,7 +70,7 @@ const useTeamPromptOptionItems = (
   const {id: meetingId, meetingSeries, endedAt, team, template, responses} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
 
   const isEnded = !!endedAt
@@ -92,10 +93,6 @@ const useTeamPromptOptionItems = (
         onCopied()
         const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
         await navigator.clipboard.writeText(copyUrl)
-        SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
-          teamId: team?.id,
-          meetingId: meetingId
-        })
       }
     })
   }
@@ -111,15 +108,9 @@ const useTeamPromptOptionItems = (
     label: 'Configure Slack',
     icon: <SlackSVG />,
     to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
-    isNewTab: true,
-    onClick: () => {
-      SendClientSideEvent(atmosphere, 'Configure Slack Standup Clicked', {
-        teamId: team?.id,
-        meetingId: meetingId
-      })
-    }
+    isNewTab: true
   })
-  if (template?.viewerLowestScope === 'TEAM') {
+  if (template?.isActive && template.viewerLowestScope === 'TEAM') {
     items.push({
       key: 'template',
       label: 'Edit template',
@@ -127,18 +118,22 @@ const useTeamPromptOptionItems = (
       to: `/activity-library/details/${template.id}`
     })
   }
+  const endsWithoutConfirming = !hasRecurrenceEnabled && !hasUnsharedDraft
   items.push({
     key: 'end',
-    label: 'End this meeting',
+    label: submitting ? 'Ending this meeting…' : 'End this meeting',
     icon: <Flag className='text-fg-secondary' />,
-    isDisabled: isEnded,
+    isDisabled: isEnded || submitting,
     isDestructive: true,
+    keepsMenuOpen: endsWithoutConfirming,
     onClick: () => {
-      if (hasRecurrenceEnabled || hasUnsharedDraft) {
+      if (!endsWithoutConfirming) {
         openEndRecurringMeetingModal()
-      } else {
-        EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
+        return
       }
+      if (submitting) return
+      submitMutation()
+      EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
     }
   })
   return items

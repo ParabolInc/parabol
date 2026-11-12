@@ -18,6 +18,7 @@ const answer = (fields: Record<string, unknown>) =>
   JSON.stringify({
     canAnswer: true,
     reason: null,
+    suggestion: null,
     title: 'Retro tasks by team',
     spec: retroTasks,
     ...fields
@@ -80,11 +81,12 @@ test('an answer that is not JSON gets one more try', async () => {
   expect(result.spec).not.toBeNull()
 })
 
-test('a question Parabol has no data for says what is missing', async () => {
+test('a question Parabol has no data for says what is missing and what it can answer', async () => {
   const model = fakeModel([
     JSON.stringify({
       canAnswer: false,
-      reason: 'Parabol doesn’t track story points.',
+      reason: 'Parabol doesn’t track who thanks whom.',
+      suggestion: ' Who joined the most meetings? ',
       title: null,
       spec: null
     })
@@ -92,7 +94,8 @@ test('a question Parabol has no data for says what is missing', async () => {
   const result = await ask(model.complete)
   expect(result).toEqual({
     spec: null,
-    reason: 'Parabol doesn’t track story points.',
+    reason: 'Parabol doesn’t track who thanks whom.',
+    suggestion: 'Who joined the most meetings?',
     aiSpec: null,
     tokenCost: 100
   })
@@ -119,6 +122,7 @@ test('the prompt names every measure, the teams, the org structure and today', (
   expect(prompt).toContain('- level1: Business unit. Values: value1 (Platform), value2 (Custody)')
   expect(prompt).toContain('- TASKS_PUSHED (Tasks pushed to integrations)')
   expect(prompt).toContain('retrospective (Retrospective)')
+  expect(prompt).toContain('- Kudos, thanks or shout-outs')
 })
 
 test('the answer schema is strict all the way down', () => {

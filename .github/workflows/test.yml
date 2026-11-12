@@ -15,7 +15,6 @@ jobs:
     timeout-minutes: 12
     permissions:
       contents: "read"
-      id-token: "write"
     services:
       postgres:
         image: pgvector/pgvector:0.8.2-pg18-trixie

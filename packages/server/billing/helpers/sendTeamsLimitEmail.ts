@@ -13,10 +13,8 @@ type Props = {
 
 const sendTeamsLimitEmail = (props: Props) => {
   const {user, orgName, orgId, emailType} = props
-  const {id: userId, preferredName, email} = user
+  const {preferredName, email} = user
   const {subject, body, html} = teamLimitsEmailCreator({
-    userId,
-    email,
     orgId,
     preferredName,
     orgName,

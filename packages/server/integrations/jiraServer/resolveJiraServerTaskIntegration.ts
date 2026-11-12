@@ -1,4 +1,4 @@
-import JiraServerIssueId from '../../../client/shared/gqlIds/JiraServerIssueId'
+import JiraServerIssueId from '../../../client/integrations/jiraServer/shared/JiraServerIssueId'
 import type {IssueReadCtx} from '../platform/ServerIntegrationDefinition'
 
 const resolveJiraServerTaskIntegration = async ({task, dataLoader}: IssueReadCtx) => {

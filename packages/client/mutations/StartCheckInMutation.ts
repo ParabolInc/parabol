@@ -27,6 +27,14 @@ const mutation = graphql`
           message
         }
       }
+      ... on StartCheckInSuccess {
+        meeting {
+          # lets useJoinedMeetingQuery subscribe while the starter joins
+          viewerMeetingMember {
+            id
+          }
+        }
+      }
       ...StartCheckInMutation_team @relay(mask: false) @alias
     }
   }

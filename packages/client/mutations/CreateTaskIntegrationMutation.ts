@@ -9,10 +9,8 @@ import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {tipTapToMarkdown} from '../shared/tiptap/tipTapToMarkdown'
 import type {StandardMutation} from '../types/relayMutations'
-import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface OptimisticIntegrationFields {
   typename: string
@@ -59,6 +57,12 @@ const optimisticIntegrationFields: Partial<
     titleField: 'title',
     bodyField: 'description',
     bodyFormat: 'markdown'
+  },
+  clickup: {
+    typename: 'ClickUpTask',
+    titleField: 'title',
+    bodyField: 'description',
+    bodyFormat: 'markdown'
   }
 }
 
@@ -69,7 +73,6 @@ graphql`
       integration {
         __typename
         ... on JiraIssue {
-          service
           cloudId
           cloudName
           url
@@ -82,7 +85,6 @@ graphql`
           }
         }
         ... on _xGitHubIssue {
-          service
           bodyHTML
           title
           number
@@ -91,12 +93,10 @@ graphql`
           }
         }
         ... on JiraServerIssue {
-          service
           descriptionHTML
           summary
         }
         ... on _xGitLabIssue {
-          service
           descriptionHtml
           title
           iid
@@ -105,7 +105,6 @@ graphql`
         }
         ... on AzureDevOpsWorkItem {
           __typename
-          service
           id
           teamProject
           title
@@ -113,7 +112,6 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
-          service
           id
           description
           identifier
@@ -126,12 +124,24 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
         ...TaskIntegrationLinkIntegrationGitHub @alias
         ...TaskIntegrationLinkIntegrationJira @alias
         ...TaskIntegrationLinkIntegrationJiraServer @alias
         ...TaskIntegrationLinkIntegrationGitLab @alias
         ...TaskIntegrationLinkIntegrationAzure @alias
         ...TaskIntegrationLinkIntegrationLinear @alias
+        ...TaskIntegrationLinkIntegrationClickUp @alias
       }
       updatedAt
       teamId
@@ -184,7 +194,6 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
           : generateHTML(bodyContent, serverTipTapExtensions)
       const integration = createProxyRecord(store, typename, {
         id: clientTempId(taskId),
-        service: integrationProviderService,
         title,
         [titleField]: title,
         [bodyField]: body
@@ -195,21 +204,6 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
     onCompleted: (data, errors) => {
       if (onCompleted) {
         onCompleted(data, errors)
-      }
-      const {meetingId} = getMeetingPathParams()
-      const store = atmosphere.getStore()
-      const meetingType = meetingId
-        ? (store.getSource().get(meetingId) as any)?.meetingType
-        : undefined
-      if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
-        SendClientSideEvent(atmosphere, 'Task Published', {
-          taskId: data.createTaskIntegration.task?.id,
-          teamId: data.createTaskIntegration.task?.teamId,
-          inMeeting: !!meetingId,
-          meetingId,
-          meetingType,
-          service: data.createTaskIntegration.task?.taskService
-        })
       }
     },
     onError

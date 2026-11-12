@@ -5,7 +5,11 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
+import FileStoreManager, {
+  type FileAssetDir,
+  type PartialPath,
+  type PutFileOptions
+} from './FileStoreManager'
 
 interface CloudKey {
   clientEmail: string
@@ -118,9 +122,9 @@ export default class GCSManager extends FileStoreManager {
   protected async putFile(
     file: Buffer<ArrayBufferLike>,
     fullPath: string,
-    options?: {contentDisposition?: string}
+    options?: PutFileOptions
   ) {
-    const {contentDisposition} = options ?? {}
+    const {contentDisposition, cacheControl} = options ?? {}
     const contentType = mime.lookup(fullPath) || 'application/octet-stream'
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
     url.searchParams.append('name', fullPath)
@@ -128,13 +132,13 @@ export default class GCSManager extends FileStoreManager {
 
     let body: Buffer | any
     let uploadContentType: string
-    if (contentDisposition) {
+    if (contentDisposition || cacheControl) {
       // Use multipart upload to set metadata atomically during object creation.
       // This avoids a separate PATCH request which requires storage.objects.update permission.
       // https://cloud.google.com/storage/docs/uploading-objects#uploading-an-object-with-metadata
       // The boundary is a random UUID so it cannot collide with file content.
       const boundary = crypto.randomUUID()
-      const metadata = JSON.stringify({contentDisposition})
+      const metadata = JSON.stringify({contentDisposition, cacheControl})
       body = Buffer.concat([
         Buffer.from(
           `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}\r\n--${boundary}\r\nContent-Type: ${contentType}\r\n\r\n`
@@ -178,7 +182,7 @@ export default class GCSManager extends FileStoreManager {
 
   async putBuildFile(file: Buffer<ArrayBufferLike>, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
-    await this.putFile(file, fullPath)
+    await this.putFile(file, fullPath, {cacheControl: this.getBuildFileCacheControl(partialPath)})
     return this.getPublicFileLocation(fullPath)
   }
 
@@ -227,9 +231,16 @@ export default class GCSManager extends FileStoreManager {
   }
   async checkExists(partialPath: string, assetDir?: FileAssetDir) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
-    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
-    const res = await fetch(url)
-    return res.status !== 404
+    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}?fields=name`
+    const accessToken = await this.getAccessToken()
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      }
+    })
+    return res.ok
   }
   async presignUrl(partialPath: PartialPath, _expiresIn = 604800): Promise<string> {
     // for PPMIs where a public bucket is not allowed, we special case build files

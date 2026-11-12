@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../hooks/useInspirationDrawer'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {useTeamPromptComposerApi} from './structured/TeamPromptComposerApiContext'
 import buildInspirationSearchQuery from './WorkDrawer/buildInspirationSearchQuery'
 import InspirationDraftSection from './WorkDrawer/InspirationDraftSection'
@@ -33,7 +31,6 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
         ...useInspirationDrawer_meeting
         id
-        teamId
         organization {
           useAI
         }
@@ -52,9 +49,8 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, teamId, prompts} = meeting
+  const {id: meetingId, prompts} = meeting
   const teamMember = meeting.viewerMeetingMember?.teamMember
-  const atmosphere = useAtmosphere()
   const composer = useTeamPromptComposerApi()
   const availability = useInspirationSourceAvailability(teamMember)
   const {dateRange, setDateRange, isDefaultRange} = useInspirationDrawer('draft', meeting)
@@ -106,10 +102,6 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
     ])
   )
 
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {teamId, meetingId})
-  }, [])
-
   return (
     <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
       <div className='flex flex-col gap-3 px-4 pt-4'>
@@ -119,7 +111,6 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
             issueCounts={issueCounts}
             countingServices={countingServices}
             canDraft={canDraft}
-            meetingId={meetingId}
             settings={settings}
             setSettings={setSettings}
             onPopoverClose={() => requestRedraft()}
@@ -143,8 +134,6 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
       ) : (
         <InspirationDraftSection
           draft={draft}
-          meetingId={meetingId}
-          teamId={teamId}
           prompts={prompts}
           composer={composer}
           drafting={drafting}

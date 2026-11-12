@@ -1,6 +1,6 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
-import type {RepoAccessMeta} from '../../integrations/platform/RepoAccess'
+import type {RepoAccessMeta} from './RepoAccessMeta'
 import {
   type selectAgendaItems,
   type selectAtlassianAuth,
@@ -216,6 +216,7 @@ export type IntegrationSearchQueryJsonByService = {
   gitlab: GitLabSearchQueryJson
   linear: LinearSearchQueryJson
   azureDevOps: AzureDevOpsSearchQueryJson
+  clickup: {queryString: string; listIds: string[]}
 }
 
 export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<

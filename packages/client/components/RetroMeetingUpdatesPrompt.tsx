@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdatesPrompt_meeting$key} from '../__generated__/RetroMeetingUpdatesPrompt_meeting.graphql'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
+import getTurnToShareText from '../utils/getTurnToShareText'
 import Avatar from './Avatar/Avatar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
@@ -28,6 +30,11 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
             edges {
               node {
                 id
+                createdAt
+                dueDate
+                status
+                tags
+                userId
               }
             }
           }
@@ -41,16 +48,20 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
           teamMember {
             id
             isSelf
+            userId
           }
         }
         localStage {
           ...RetroMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
         }
+        prevCompletedMeeting {
+          endedAt
+        }
       }
     `,
     meetingRef
   )
-  const {localStage, team, meetingMembers} = meeting
+  const {localStage, team, meetingMembers, prevCompletedMeeting} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
     (meetingMember) =>
@@ -58,10 +69,14 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember
-  const {isSelf: isViewerMeetingSection} = teamMember
+  const {isSelf: isViewerMeetingSection, userId} = teamMember
   const {picture, preferredName} = user
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
-  const taskCount = tasks.edges.length
+  const teamMemberTasks = getTeamMemberTasks(
+    tasks.edges.map(({node}) => node),
+    userId
+  )
+  const taskCount = teamMemberTasks.length
   return (
     <div className='flex'>
       <Avatar picture={picture} className='h-16 w-16' />
@@ -74,7 +89,7 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
           {isViewerMeetingSection &&
             taskCount > 0 &&
-            'Your turn to share! Quick updates only, please.'}
+            getTurnToShareText(teamMemberTasks, prevCompletedMeeting?.endedAt)}
           {!isViewerMeetingSection && isConnectedAt && `${preferredName} is sharing.`}
         </PhaseHeaderDescription>
       </div>

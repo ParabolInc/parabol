@@ -1,10 +1,26 @@
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
 import getKysely from '../../getKysely'
 import {getPagesByRRF} from '../getPagesByRRF'
 import {decodePageSearchCursor} from '../pageSearchCursor'
+
+const mockActiveDefinition: {pageVectorFloor?: number} = {}
+jest.mock('../../../../embedder/activeEmbeddingModel', () => {
+  const actual = jest.requireActual<typeof import('../../../../embedder/activeEmbeddingModel')>(
+    '../../../../embedder/activeEmbeddingModel'
+  )
+  return {
+    ...actual,
+    get activeEmbeddingDefinition() {
+      return {...actual.activeEmbeddingDefinition, ...mockActiveDefinition}
+    }
+  }
+})
 
 const pg = getKysely()
 const suffix = `pbr-${Date.now()}`
@@ -16,7 +32,7 @@ const BULK_PAGE_COUNT = 101
 const orgId = `org-${suffix}`
 const teamId = `team-${suffix}`
 const chunkTable = getEmbeddingsPagesTableName(activeEmbeddingModelId)!
-const EMBEDDING_DIMENSIONS = 1024
+const EMBEDDING_DIMENSIONS = activeEmbeddingDefinition!.embeddingDimensions
 
 const queryVector = Float32Array.from({length: EMBEDDING_DIMENSIONS}, (_, i) => (i === 0 ? 1 : 0))
 const vectorWithCosine = (cosine: number) => [
@@ -287,6 +303,22 @@ it('gives pages with some of the words a keyword rank when the fallback applies'
   expect(await vectorOnlyKeywordRank(0)).toBeNull()
 })
 
+it('passes title typo matching to the keyword arm', async () => {
+  const keywordRank = async (titleTypoSimilarity: number) => {
+    const {edges} = await fused(0.5, {query: 'quartrly', titleTypoSimilarity})
+    return edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank ?? null
+  }
+  expect(await keywordRank(0.5)).toEqual(expect.any(Number))
+  expect(await keywordRank(0)).toBeNull()
+})
+
+it('matches misspelled title words by default', async () => {
+  const {edges} = await fused(0.5, {query: 'quartrly'})
+  expect(edges.find(({nodeId}) => nodeId === keywordOnlyId)?.score.keywordRank).toEqual(
+    expect.any(Number)
+  )
+})
+
 it('ranks by keyword when alpha is 0', async () =>
   expect((await fused(0)).edges.at(-1)!.nodeId).toBe(vectorOnlyId))
 
@@ -332,6 +364,16 @@ it('uses the given similarity floor', async () => {
     [keywordOnlyId, bothArmsId, vectorOnlyId].sort()
   )
   expect(edges.find((e) => e.nodeId === bothArmsId)!.score.vectorRank).toBeNull()
+})
+
+it("uses the active model's floor by default", async () => {
+  mockActiveDefinition.pageVectorFloor = 0.85
+  try {
+    const {edges} = await fused(0.5)
+    expect(edges.find((e) => e.nodeId === bothArmsId)!.score.vectorRank).toBeNull()
+  } finally {
+    delete mockActiveDefinition.pageVectorFloor
+  }
 })
 
 it('ranks by vectors alone when the query has no keyword terms', async () => {

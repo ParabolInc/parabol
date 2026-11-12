@@ -1,9 +1,10 @@
 import dayjs from 'dayjs'
+import type {ServiceEnum} from '../../../__generated__/useGenerateInspirationItemsMutation.graphql'
 import InspirationSourceLogo from './InspirationSourceLogo'
-import {serviceLabel} from './inspirationCopy'
+import inspirationServiceLabel from './inspirationServiceLabel'
 
 interface Props {
-  service: string
+  service: ServiceEnum
   title: string
   url?: string | null
   updatedAt?: string | null
@@ -20,8 +21,8 @@ const InspirationIssueRow = (props: Props) => {
     <li className='flex items-start gap-2 border-hairline border-b px-1 py-2 last:border-b-0'>
       <span
         role='img'
-        aria-label={serviceLabel(service)}
-        title={serviceLabel(service)}
+        aria-label={inspirationServiceLabel(service)}
+        title={inspirationServiceLabel(service)}
         className='mt-0.5 flex size-4 shrink-0 items-center justify-center [&>*]:size-full'
       >
         <InspirationSourceLogo service={service} />

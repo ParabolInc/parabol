@@ -10,6 +10,8 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
+import {addPokerTemplateDimensionTeamUpdater} from '../mutations/AddPokerTemplateDimensionMutation'
+import {addPokerTemplateScaleTeamUpdater} from '../mutations/AddPokerTemplateScaleMutation'
 import {addTemplatePromptTeamUpdater} from '../mutations/AddTemplatePromptMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
@@ -20,6 +22,7 @@ import {
 } from '../mutations/EndSprintPokerMutation'
 import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
 import {joinTeamTeamOnNext} from '../mutations/JoinTeamMutation'
+import {movePokerTemplateDimensionTeamUpdater} from '../mutations/MovePokerTemplateDimensionMutation'
 import {moveTemplatePromptTeamUpdater} from '../mutations/MoveTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -27,12 +30,15 @@ import {
   removeOrgUsersTeamOnNext,
   removeOrgUsersTeamUpdater
 } from '../mutations/RemoveOrgUsersMutation'
+import {removePokerTemplateDimensionTeamUpdater} from '../mutations/RemovePokerTemplateDimensionMutation'
+import {removePokerTemplateTeamUpdater} from '../mutations/RemovePokerTemplateMutation'
 import {removePromptTemplateTeamUpdater} from '../mutations/RemovePromptTemplateMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {removeTemplatePromptTeamUpdater} from '../mutations/RemoveTemplatePromptMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {addPokerTemplateTeamUpdater} from '../mutations/useAddPokerTemplateMutation'
 import {addPromptTemplateTeamUpdater} from '../mutations/useAddPromptTemplateMutation'
+import {addTeamHealthTemplateTeamUpdater} from '../mutations/useAddTeamHealthTemplateMutation'
 import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
@@ -55,6 +61,18 @@ const subscription = graphql`
       AddAgendaItemPayload {
         ...AddAgendaItemMutation_team @relay(mask: false)
       }
+      AddPokerTemplateDimensionPayload {
+        ...AddPokerTemplateDimensionMutation_dimension @relay(mask: false)
+      }
+      AddPokerTemplateScalePayload {
+        ...AddPokerTemplateScaleMutation_scale @relay(mask: false)
+      }
+      AddPokerTemplateScaleValuePayload {
+        ...AddPokerTemplateScaleValueMutation_scale @relay(mask: false)
+      }
+      AddTeamHealthTemplateSuccess {
+        ...useAddTeamHealthTemplateMutation_team @relay(mask: false)
+      }
       AddPromptTemplateSuccess {
         ...useAddPromptTemplateMutation_team @relay(mask: false)
       }
@@ -72,6 +90,9 @@ const subscription = graphql`
       }
       DenyPushInvitationPayload {
         ...DenyPushInvitationMutation_team @relay(mask: false)
+      }
+      DowngradeToStarterPayload {
+        ...DowngradeToStarterMutation_organization @relay(mask: false)
       }
       EndCheckInSuccess {
         ...EndCheckInMutation_team @relay(mask: false)
@@ -91,11 +112,20 @@ const subscription = graphql`
       JoinTeamSuccess {
         ...JoinTeamMutation_team @relay(mask: false)
       }
+      MovePokerTemplateDimensionPayload {
+        ...MovePokerTemplateDimensionMutation_team @relay(mask: false)
+      }
       MoveTemplatePromptSuccess {
         ...MoveTemplatePromptMutation_team @relay(mask: false)
       }
       NavigateMeetingPayload {
         ...NavigateMeetingMutation_team @relay(mask: false)
+      }
+      PokerTemplateDimensionUpdateDescriptionPayload {
+        dimension {
+          id
+          description
+        }
       }
       PromoteToTeamLeadPayload {
         ...PromoteToTeamLeadMutation_team @relay(mask: false)
@@ -111,6 +141,12 @@ const subscription = graphql`
       }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_team @relay(mask: false)
+      }
+      RemovePokerTemplatePayload {
+        ...RemovePokerTemplateMutation_team @relay(mask: false)
+      }
+      RemovePokerTemplateDimensionPayload {
+        ...RemovePokerTemplateDimensionMutation_team @relay(mask: false)
       }
       RemovePokerTemplateScalePayload {
         ...RemovePokerTemplateScaleMutation_team @relay(mask: false)
@@ -129,6 +165,12 @@ const subscription = graphql`
       }
       RenameMeetingTemplatePayload {
         ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
+      }
+      RenamePokerTemplateDimensionPayload {
+        ...RenamePokerTemplateDimensionMutation_dimension @relay(mask: false)
+      }
+      RenamePokerTemplateScalePayload {
+        ...RenamePokerTemplateScaleMutation_scale @relay(mask: false)
       }
       RenameTemplatePromptSuccess {
         ...RenameTemplatePromptMutation_team @relay(mask: false)
@@ -172,11 +214,23 @@ const subscription = graphql`
       UpdateFacilitatorRotationSuccess {
         ...useUpdateFacilitatorRotationMutation_team @relay(mask: false)
       }
+      UpdateMeetingSeriesSuccess {
+        ...UpdateMeetingSeriesMutation_series @relay(mask: false)
+      }
+      UpdatePokerTemplateDimensionScalePayload {
+        ...UpdatePokerTemplateDimensionScaleMutation_dimension @relay(mask: false)
+      }
+      UpdatePokerTemplateScaleValuePayload {
+        ...UpdatePokerTemplateScaleValueMutation_scale @relay(mask: false)
+      }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
       }
       UpdateTemplateCategorySuccess {
         ...UpdateTemplateCategoryMutation_team @relay(mask: false)
+      }
+      UpdateTemplatePromptDescriptionSuccess {
+        ...UpdateTemplatePromptDescriptionMutation_team @relay(mask: false)
       }
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
@@ -207,6 +261,9 @@ const updateHandlers = {
   RemoveAgendaItemPayload: removeAgendaItemUpdater,
   UpdateAgendaItemPayload: updateAgendaItemUpdater,
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
+  AddPokerTemplateDimensionPayload: addPokerTemplateDimensionTeamUpdater,
+  AddPokerTemplateScalePayload: addPokerTemplateScaleTeamUpdater,
+  AddTeamHealthTemplateSuccess: addTeamHealthTemplateTeamUpdater,
   AddPromptTemplateSuccess: addPromptTemplateTeamUpdater,
   AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
   AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,
@@ -217,9 +274,12 @@ const updateHandlers = {
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   EndTeamPromptSuccess: endTeamPromptTeamUpdater,
   EndTeamHealthSuccess: endTeamHealthTeamUpdater,
+  MovePokerTemplateDimensionPayload: movePokerTemplateDimensionTeamUpdater,
   MoveTemplatePromptSuccess: moveTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
+  RemovePokerTemplatePayload: removePokerTemplateTeamUpdater,
+  RemovePokerTemplateDimensionPayload: removePokerTemplateDimensionTeamUpdater,
   RemovePromptTemplateSuccess: removePromptTemplateTeamUpdater,
   RemoveTemplatePromptSuccess: removeTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater

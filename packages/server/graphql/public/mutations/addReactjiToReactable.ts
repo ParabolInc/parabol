@@ -4,7 +4,6 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
@@ -57,7 +56,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   if (verifiedType !== reactableType) {
     return {error: {message: `Unknown item`}}
   }
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // VALIDATION
   if (!emojiIds.includes(reactji)) {
@@ -98,25 +96,11 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     }
   }
 
-  const [meeting] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId),
-    updatePG(tableName)
-  ])
+  await updatePG(tableName)
   dataLoader.clearAll(['comments', 'teamPromptResponses', 'retroReflections'])
-
-  const {meetingType} = meeting
 
   const data = {reactableId: reactableDBId as any, reactableType}
 
-  analytics.reactjiInteracted(
-    viewer,
-    meetingId,
-    meetingType,
-    {...reactable, id: reactableId},
-    reactableType,
-    reactji,
-    !!isRemove
-  )
   if (meetingId) {
     publish(
       SubscriptionChannel.MEETING,

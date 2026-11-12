@@ -11,7 +11,6 @@ import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMu
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import TeamPrivacyConfirmModal from './TeamPrivacyConfirmModal'
 
 interface Props {
@@ -67,10 +66,6 @@ const TeamPrivacyToggle = (props: Props) => {
 
   const handleUpgradeClick = () => {
     navigate(`/me/organizations/${orgId}`)
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'publicTeams',
-      orgId
-    })
   }
 
   return (

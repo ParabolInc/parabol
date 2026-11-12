@@ -12,6 +12,8 @@ To build it locally (unsupported), use [act](https://github.com/nektos/act) to r
 
 The image is [distroless](https://github.com/GoogleContainerTools/distroless): it has no shell or package manager. The entrypoint is `node`, so the command is the script to run (`dist/web.js` by default, or `dist/preDeploy.js`, `dist/embedder.js`, `dist/migrate.js`). It runs as uid `1000` from `/home/node/parabol`.
 
+The root filesystem can be read-only. Mount a writable `/tmp` (an `emptyDir` in Kubernetes) for heap dumps, CPU profiles and `MAIL_PROVIDER=debug` emails. The image ships V8's code cache for its bundles in `dist/compile-cache` (`NODE_COMPILE_CACHE`), so a container starts without compiling them. Node uses it when running as uid `1000` and ignores it if a V8 flag that changes compilation is set. With `FILE_STORE_PROVIDER=local`, uploads are stored under `/home/node/parabol/self-hosted`, so it needs a persistent volume that the web servers and `dist/preDeploy.js` share.
+
 `dist/preDeploy.js` waits for Postgres and Redis to accept connections before it migrates.
 
 `SERVER_ID` must be unique per container. Either set it explicitly or set `POD_IP` (e.g. from the Kubernetes downward API `status.podIP`) and it is derived from the last 10 bits of the address.

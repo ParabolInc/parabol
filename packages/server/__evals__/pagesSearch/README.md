@@ -28,6 +28,7 @@ Reseed with `EVAL_RESEED=1` after you change how pages are indexed (`embedPage`,
 | `EVAL_STOP_WORDS` | each list's default | `sweep` only: `keep` and/or `drop`; `drop` takes English stop words out of the keyword terms |
 | `EVAL_ANY_WORD_FALLBACK_BELOW` | each list's default | `sweep` only: whole numbers; when fewer pages than this have every word, pages with some of them follow (0 turns this off) |
 | `EVAL_ANY_WORD_MIN_SHARES` | each list's default | `sweep` only: decimals between 0 and 1; the share of the words a page with some of them must contain (at least one) |
+| `EVAL_TITLE_TYPO_SIMILARITIES` | each list's default | `sweep` only: decimals between 0 and 1; a word that doesn't match a page still counts when its `pg_trgm` strict word similarity to the page's title reaches this (0 turns this off). It only acts when the any-word fallback is on (`EVAL_ANY_WORD_FALLBACK_BELOW` above 0) |
 | `EVAL_LABEL` | `local` | Names the results file |
 | `EVAL_RESEED` | unset | `1` deletes the eval user's pages and seeds them again |
 | `EVAL_DUMP` | unset | `1` writes the set's corpus to `results/<corpus>-corpus/` and skips seeding and ranking: one `<key>.md` per page (the title, a blank line, then the plain text that keyword search reads) plus `index.json` |
@@ -44,7 +45,7 @@ node __evals__/pagesSearch/compare.mjs \
 
 ## Sweep mode
 
-`EVAL_MODES=sweep` ranks every query with each combination of `EVAL_ALPHAS`, `EVAL_FLOORS`, `EVAL_MIN_BYTES`, `EVAL_STOP_WORDS`, `EVAL_ANY_WORD_FALLBACK_BELOW` and `EVAL_ANY_WORD_MIN_SHARES`, to pick the default alpha, the vector similarity floor, the minimum page length and how keywords match. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. `EVAL_ALPHAS`, `EVAL_FLOORS` and `EVAL_ANY_WORD_MIN_SHARES` are comma-separated decimals between 0 and 1, like `0.25`; `EVAL_MIN_BYTES` and `EVAL_ANY_WORD_FALLBACK_BELOW` are comma-separated whole numbers; `EVAL_STOP_WORDS` lists `keep` and/or `drop`. Each value may be listed once; anything else throws. An unset keyword variable takes the default of the list each row ranks: the quick list's for alpha 0, fused ranking's otherwise.
+`EVAL_MODES=sweep` ranks every query with each combination of `EVAL_ALPHAS`, `EVAL_FLOORS`, `EVAL_MIN_BYTES`, `EVAL_STOP_WORDS`, `EVAL_ANY_WORD_FALLBACK_BELOW`, `EVAL_ANY_WORD_MIN_SHARES` and `EVAL_TITLE_TYPO_SIMILARITIES`, to pick the default alpha, the vector similarity floor, the minimum page length and how keywords match. It combines with the other modes, for example `EVAL_MODES=fused,sweep`. `EVAL_ALPHAS`, `EVAL_FLOORS`, `EVAL_ANY_WORD_MIN_SHARES` and `EVAL_TITLE_TYPO_SIMILARITIES` are comma-separated decimals between 0 and 1, like `0.25`; `EVAL_MIN_BYTES` and `EVAL_ANY_WORD_FALLBACK_BELOW` are comma-separated whole numbers; `EVAL_STOP_WORDS` lists `keep` and/or `drop`. Each value may be listed once; anything else throws. An unset keyword variable takes the default of the list each row ranks: the quick list's for alpha 0, fused ranking's otherwise.
 
 ```bash
 EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
@@ -53,7 +54,7 @@ EVAL_LABEL=page-fusion EVAL_SET=dev EVAL_MODES=sweep pnpm eval:pagesSearch
 - **Ranking.** Each query is embedded once, by the same model call as `fused`. Then `getPagesByRRF` runs once per configuration with `first: 20` and the configuration's alpha, `vectorFloor`, `vectorMinBytes` and keyword options. Alpha 0 ranks like the quick list instead, as in the resolver: `getPagesByKeyword` runs with the keyword options, the floor and minimum length don't apply, and an embedding failure doesn't affect the row. It skips the resolver, so there is no embedding budget and no keyword fallback. Each list is scored with the same metrics as the other modes.
 - **Errors.** A query whose embedding fails (in rows with alpha above 0), a `getPagesByRRF` or `getPagesByKeyword` call that throws, and a list that holds the same page twice are errors in every affected configuration's results, and they fail the run after it writes its results.
 - **Latency.** `latencyMs` is the `getPagesByRRF` or `getPagesByKeyword` call alone, not the embedding. Results have no `embeddingMs`, `embeddingError` or `fallbackReason`.
-- **Output.** It prints one row per configuration: alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
+- **Output.** It prints one row per configuration: alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, titleTypoSimilarity, nDCG10, recall5, recall20, mrr, zeroResultRate, junkAt5 and noAnswerResults, sorted by nDCG10, best first. It writes `results/<label>-<set>-sweep.json` as `{label, set, mode: 'sweep', unindexed, configs: [{alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, titleTypoSimilarity, overall, byCategory, perQuery}]}`, with the configurations in grid order. `compare.mjs` doesn't read sweep files.
 - **Validity.** The validity rule below holds for every configuration: `errors` is 0, and `unindexed` lists exactly the fixtures it names.
 
 ## How it works
@@ -109,7 +110,7 @@ When a dev query matches a holdout query, the dev query changes. A unit test che
 
 **The holdout runs only at gates.** `heavy-holdout` was written by an independent agent that saw only the corpus dump: no code, results or dev queries. Run it once for the candidate and once for master in a PR that changes ranking, report both, and never tune on it. Whoever tunes ranking doesn't read either holdout file, so their unit tests report problems by query number, never by text, and `.gitattributes` keeps both files out of `git diff`, `git show` and `git log -p`.
 
-**Running a gate blind.** Run each side as a one-row sweep (`EVAL_MODES=sweep`, with one value in every sweep variable): unlike fused and quick runs, it prints no category rows and never falls back to keyword results. Send its output to a file and read only the overall row and the test summary, because a failed query is printed by its text. Afterwards, cut each results file down to its `overall` block and delete the logs. Never run `compare.mjs` on a holdout: it lists changed queries by text.
+**Running a gate blind.** Run each side as a sweep (`EVAL_MODES=sweep`) with one value in every sweep variable, except `EVAL_ALPHAS=0,<PAGE_SEARCH_ALPHA>` to score the quick list and fused ranking in the same run. Leave the keyword variables unset, so each row keeps its list's defaults: unlike fused and quick runs, a sweep prints no category rows and never falls back to keyword results. Send its output to a file and read only the overall row and the test summary, because a failed query is printed by its text. Afterwards, cut each results file down to its `overall` block and delete the logs. Never run `compare.mjs` on a holdout: it lists changed queries by text.
 
 **The final holdout waits for the re-embed.** `heavy-final` was written the same way after `heavy-holdout`'s eighth gate run, and its author never saw the other two query files either. It has 100 queries: title 13, prefix 9, body 16, paraphrase 14, typo 10, table 7, longDoc 10, person 11 and noAnswer 10, the mix `heavy-holdout`'s author was asked for, scaled by 1.25. The corpus has few one-off events, so the sets overlap in what they ask for, not in how they ask it. 69 of its 90 answerable queries want a page that a dev query also grades 3, but only 9 share half their words with such a query. Eight of its queries first matched another file word for word; they were reworded and kept their labels. Nothing runs it before Group B's final gate (B8). There, run it blind as above, once for master and once for the candidate, and never tune on it. Until then, ranking PRs gate on `heavy-holdout`.
 
@@ -557,3 +558,172 @@ On `dev`, prefix queries go from 0.76 to 1.00 and summary queries from 0.82 to 0
 - **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.072 and Recall@20 by 0.035.
 - **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
 - **Gate runs so far.** `heavy-holdout` has had eight: two for A4, four for A5 and two here.
+
+## Numbers in queries (2026-10-29)
+
+Keyword search used to drop every one-character word, so the "5" in "Beacon Retro #5" never became a term. Since A5b's alpha of 0.01, numbered titles depend on keyword terms, and these searches fell (see What it costs in Blend re-tune). Now a single digit stays in the query. It matches the number written on its own ("#5"), as the whole part of a decimal ("3.12") or after a hyphen ("SEV-1"): `( '5' | '5.':* | '-5' )`. It is never a prefix: as one, "2" would match the year on every page. Other words keep prefix matching, and single letters are still dropped.
+
+**How it was checked.** The plan fixed the rule before the runs:
+- On `heavy-dev` and `dev`, for both lists, nDCG@10 and Recall@20 may fall by at most 0.005, and `noAnswerResults` may rise by at most 1.
+- Report whether the three numbered queries A5b hurt get back to their A5 scores.
+- Gate on `heavy-holdout`, as before.
+
+| List | `heavy-dev` nDCG@10 | Recall@20 | `dev` nDCG@10 | Recall@20 |
+| --- | ---: | ---: | ---: | ---: |
+| Fused, before | 0.757 | 0.862 | 0.864 | 0.928 |
+| Fused, after | 0.814 | 0.881 | 0.867 | 0.928 |
+| Quick, before | 0.767 | 0.853 | 0.854 | 0.912 |
+| Quick, after | 0.825 | 0.872 | 0.859 | 0.916 |
+
+`noAnswerResults` doesn't change: 13.67 (fused) and 5 (quick) on `heavy-dev`, and 11.63 and 10.25 on `dev`.
+
+- **Numbered searches improve in both lists.** "Beacon Retro #5" goes from 0.39 to 1.00, "Atlas Sprint Poker #4" from 0.36 to 0.98 and "day 7 onboarding email" from 0 to 0.63. Fused ranking is back at or above its A5 scores of 0.96, 0.62 and 0.50. "Atlas Retro #6" goes from 0.43 to 0.98, and the typo "atlss standup aug 3" from 0 to 0.58. On `dev`, "which stories were estimated at 8 points" gains 0.31.
+- **Totals.** Each list has five wins and no losses on `heavy-dev`, and two wins and no losses on `dev`. An exact-only digit had cost "Team Health #3" 0.017, because "Team Health #4" writes its scores as 3.5 and 3.2; matching a decimal's whole part fixed that.
+- **What it costs.** A number glued to letters ("sev1", "v4", "9th", "2pm") is one word to Postgres, so a typed "1" can't match it. Such a page has one word fewer than pages that mention a standalone 1, so it drops below them, or out of the keyword list when 20 or more pages have every word. Neither corpus writes numbers this way, so the eval can't measure it.
+- **Fused ranking still trails the quick list on `heavy-dev`,** by about the same margin as before: 0.814 against 0.825.
+
+**Gate.** Master and this change each ran once, as a sweep of two rows: the quick list at alpha 0 and fused ranking at 0.01, each with its default keyword settings. The decimal and hyphen forms came after the gate. The heavy corpus has no words like "3.12" or "-1", so its results can't change (`heavy-dev` gives identical lists), and the fixture holdout ran again with the same results.
+
+| Holdout | List | Code | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | quick | master | 0.801 | 0.847 | 0.931 | 10.00 |
+| `heavy-holdout` | quick | numbers | 0.826 | 0.889 | 0.931 | 10.00 |
+| `heavy-holdout` | fused | master | 0.791 | 0.840 | 0.931 | 14.00 |
+| `heavy-holdout` | fused | numbers | 0.816 | 0.882 | 0.931 | 14.00 |
+| `holdout` (23 answerable, spent) | quick | master | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | quick | numbers | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | fused | master | 0.811 | 0.801 | 0.913 | 4.00 |
+| `holdout` | fused | numbers | 0.811 | 0.801 | 0.913 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, both lists gain 0.025 nDCG@10, and Recall@20 holds.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had ten: two for A4, four for A5, two for A5b and two here. Each of the two here scored both lists.
+
+## Typo-tolerant titles (2026-10-29)
+
+A misspelled word used to match nothing, so "whiteboad" found no page.
+- **What changed.** A query word that matches no word of a page now still counts for that page when it's close to a word of the page's title. Close means a `pg_trgm` strict word similarity of at least 0.45 (`titleTypoSimilarity`, the same for both lists). The migration `addPgTrgm` installs the extension.
+- **Which words.** Only words of at least 5 characters without digits match this way. Otherwise "2" would match the year in every summary title, and "plan" would match "Platform".
+- **Where those pages rank.** Such a page joins the pages with some of the words, ranked by how many words it matches. Among equals, the closer title comes first. It never counts as having every word, so pages with every word as typed still come first.
+- **Titles only.** A misspelled word that appears only in a page's text, like `rudderstak`, still matches nothing by keyword.
+- **The extension.** The migration needs a database role that can create extensions. `pg_trgm` ships with Postgres. On a self-hosted install, a DBA can create it ahead of time, and the migration then does nothing. It hasn't been tried on one.
+
+**How it was chosen.** The plan fixed a selection rule before the sweep ran:
+1. **Rows.** Thresholds 0 (off), 0.4, 0.45, 0.5, 0.55 and 0.6, for both lists with their other defaults.
+2. **Eligibility.** On `heavy-dev` and `dev`, for both lists, nDCG@10 and Recall@20 may be at most 0.005 below threshold 0, and `noAnswerResults` may rise by at most 1.
+3. **Pick.** The highest mean nDCG@10 over the four list-and-set cells. Thresholds within 0.005 tie, and ties go to higher mean Recall@20, then to the higher threshold.
+
+| Threshold | `heavy-dev` quick | `heavy-dev` fused | `dev` quick | `dev` fused | Mean nDCG@10 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 (A5c) | 0.825 | 0.814 | 0.859 | 0.867 | 0.841 |
+| 0.4 | 0.831 | 0.825 | 0.911 | 0.912 | 0.870 |
+| 0.45 | 0.832 | 0.826 | 0.911 | 0.912 | 0.870 |
+| **0.5** | 0.832 | 0.826 | 0.905 | 0.905 | 0.867 |
+| 0.55 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
+| 0.6 | 0.824 | 0.819 | 0.905 | 0.904 | 0.863 |
+
+- **The sweep ran before the review fixes** that added the 5-character rule and closeness ordering. Those fixes change no dev nDCG@10 or Recall@20, so the table stands. They bring `dev`'s quick junk@5 back from 0.592 to A5c's 0.584.
+- **Every threshold was eligible.** 0.4, 0.45 and 0.5 tie on nDCG@10 and have the same Recall@20, so the rule takes the strictest, 0.5. At 0.45, "onbaording checklist" (similarity 0.47) would also have found its page.
+- **Recall@20.** On `dev` it goes from 0.916 to 0.964 (quick) and from 0.928 to 0.960 (fused). It is unchanged on `heavy-dev`, and so is `noAnswerResults`.
+- **Typo queries.** nDCG@10 rises from 0.68 to 0.74 (quick) and from 0.68 to 0.79 (fused) on `heavy-dev`, and from 0.55 and 0.64 to 0.90 on `dev`.
+- **Wins.** "whiteboad", "vendr comparsion" and "standpu" now find their pages. "atlss standup aug 3" puts Atlas's standup first instead of Beacon's, and fused ranking moves "sesion store valky" up by 0.25. The Japanese "リリース計画の会議メモ" now finds its page as well: Postgres reads the query as one unbroken word, while the title splits into two, and the language gate leaves that page without vectors. One gain isn't a typo: "sprint poker estimates for webhook retries" (+0.071, fused) gets help from "retries" being close to "Retro".
+- **One loss.** On `heavy-dev`, "rate limiter load test results" drops by 0.018 in both lists. The rate limiting RFC now also matches "limiter" through its title, so it moves up past the standup that is graded 3.
+- **Latency.** The quick list on `heavy-dev` goes from 42/45 ms to 45/49 ms at p50/p90. The worst case, 8 words that match nothing against 488 titles, costs about 15–22 ms.
+- **What it costs.** A long word that shares half its letters with a title word still matches: "stale" scores the same against "Standup" as "atlss" does against "Atlas", so a threshold can't tell them apart.
+
+**Gate.** Each run is one sweep per holdout, scoring four rows: both lists at threshold 0 (A5c's ranking) and at 0.5. It ran twice: before the review fixes, and on the final code. The table shows the final run.
+
+| Holdout | List | Threshold | nDCG@10 | Recall@5 | Recall@20 | `noAnswerResults` |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `heavy-holdout` (72 answerable) | quick | 0 | 0.826 | 0.889 | 0.931 | 10.00 |
+| `heavy-holdout` | quick | 0.5 | 0.829 | 0.889 | 0.931 | 10.00 |
+| `heavy-holdout` | fused | 0 | 0.816 | 0.882 | 0.931 | 14.00 |
+| `heavy-holdout` | fused | 0.5 | 0.819 | 0.882 | 0.931 | 14.00 |
+| `holdout` (23 answerable, spent) | quick | 0 and 0.5 | 0.822 | 0.833 | 0.891 | 4.00 |
+| `holdout` | fused | 0 and 0.5 | 0.811 | 0.801 | 0.913 | 4.00 |
+
+- **The gate passes.** On `heavy-holdout`, nDCG@10 rises by 0.003 in both lists, and Recall@20 holds.
+- **The fixes cost most of the holdout gain.** Before them, the gain was 0.015 (quick) and 0.018 (fused), with Recall@20 up 0.007 in fused ranking. The fixes were chosen on dev evidence and committed before the second run was read, and nothing was re-tuned on it. The dev sets have no typos in words shorter than 5 letters, so they can't price the 5-character rule. Adding some to `heavy-dev` is the way to tune it.
+- **What was read.** Only overall rows. The local holdout results were scrubbed down to those rows.
+- **Gate runs so far.** `heavy-holdout` has had twelve; the two here each scored both lists at both thresholds.
+
+**Strict matching (2026-11-03).** Plain word similarity ignores the rest of a title word, so "julia" and "janet" matched every title with "Jul" or "Jan" in it, and generated meeting titles are full of those. Meanwhile "onbaording" and "metting" scored too low to match. Strict word similarity compares whole words, which fixes both. It's swept under the same rule as above:
+
+| Threshold | Mean nDCG@10 | Mean Recall@20 |
+| ---: | ---: | ---: |
+| 0 (off) | 0.843 | 0.902 |
+| 0.4 | 0.867 | 0.919 |
+| 0.44 | 0.867 | 0.919 |
+| **0.45** | 0.867 | 0.919 |
+| 0.5 | 0.853 | 0.911 |
+
+Every threshold was eligible. 0.4, 0.44 and 0.45 tie, so the rule takes the strictest. It keeps the gain of plain matching at 0.5 (0.867). What it costs: "vendr" (0.444), "atlss" and "retor" no longer match.
+
+On `heavy-holdout`, nDCG@10 and Recall@20 are the same as plain matching at 0.5: quick 0.829 and 0.931, fused 0.819 and 0.931. `noAnswerResults` holds at 10.00 and 14.00. This was the thirteenth gate run, and only overall rows were read.
+
+## Harrier (2026-11-03)
+
+Page vectors move to `microsoft/harrier-oss-v1-270m`, with the section chunker, `getSearchText` and a web search prompt on the query. Harrier is there for ranking by meaning, template search, Related Discussions and speed, so page ranking only has to hold.
+
+| | `heavy-dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` | `dev` nDCG@10 | Recall@20 | `junkAt5` | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Qwen3 (floor 0.4, alpha 0.01) | 0.819 | 0.881 | 0.623 | 13.67 | 0.911 | 0.960 | 0.655 | 11.62 |
+| Harrier (floor 0.4, alpha 0.005) | 0.833 | 0.893 | 0.512 | 3.50 | 0.917 | 0.976 | 0.582 | 4.50 |
+
+- **Harrier beats Qwen3 on every measure on both sets.** The biggest change is on searches with no answer: they return 3.5 pages instead of 13.7 on `heavy-dev`.
+- **Ranking by meaning alone** goes from 0.484 to 0.731, as the mean nDCG@10 over both sets.
+- **The blend is still led by keywords.** At this alpha meaning only adds pages after keyword hits, so the ceiling for any model is about 0.88.
+- **Serving.** On x86 with TEI's 3 CPU limit, Harrier embeds 369 tokens per second against Qwen3's 103. A query behind page edits takes 0.9 s at the 90th percentile, against 2.7 s, and it uses half the memory.
+
+| `heavy-holdout` (72 answerable) | nDCG@10 | Recall@5 | Recall@20 | `junkAt5` | `noAnswerResults` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Quick list, either model | 0.829 | 0.889 | 0.931 | 0.616 | 10.00 |
+| Qwen3, fused | 0.819 | 0.882 | 0.931 | 0.656 | 14.00 |
+| Harrier, fused | 0.842 | 0.903 | 0.944 | 0.605 | 5.38 |
+
+- **It passes the rule below.** Ungraded pages count as not relevant here, which can only count against Harrier.
+- **What was read.** Only overall rows. The local results were deleted.
+- **Gate runs so far.** `heavy-holdout` has had thirteen.
+
+**Settings.** The rule was fixed before the sweep: a change to chunks or text has to beat the base by 0.02 on mean nDCG@10 for ranking by meaning alone, because it can't be undone after a fill.
+
+| Chunks | Meaning alone | Blended |
+| --- | ---: | ---: |
+| **384/512 tokens, with `Title > H1 > H2`** | 0.731 | 0.879 |
+| 256/384 | 0.741 | 0.881 |
+| 512/768 | 0.738 | 0.882 |
+| No header | 0.621 | 0.883 |
+
+Nothing clears 0.02, so the base stays. The floor stays 0.40: 0.39 ties with twice the junk. Alpha 0.005 and 0.01 give the same lists.
+
+**The gate.** It runs once on `heavy-final`, when the stack's ranking code is reviewed. Whoever tunes ranking never reads `heavyFinalQueries.json` or a per-query result. Harrier ships only if, after grading, all four hold against Qwen3 on the same code:
+- nDCG@10 is at least Qwen3's minus 0.01;
+- Recall@20 is at least Qwen3's minus 0.01;
+- `noAnswerResults` is at most Qwen3's plus 1;
+- `junkAt5` is at most Qwen3's plus 0.02.
+
+0. **Prepare.** Start Harrier's service with `COMPOSE_PROFILES=harrier pnpm db:start`, and start the embedder once with both models listed, so both have tables.
+1. **Run both arms once on the same database.** From `packages/server`, with `.env` loaded. Neither log is ever opened:
+
+   ```sh
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-qwen3 AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8","url":"http://localhost:3040/","maxTokens":2048}]' pnpm eval:pagesSearch > "$TMPDIR/gate-qwen3.log" 2>&1; echo "exit $?"
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.4 EVAL_LABEL=gate-harrier AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:microsoft/harrier-oss-v1-270m","url":"http://localhost:3041/","maxTokens":1024}]' pnpm eval:pagesSearch > "$TMPDIR/gate-harrier.log" 2>&1; echo "exit $?"
+   ```
+
+   A nonzero exit means running that arm again, still without opening its log.
+2. **Pool.** From the repo root:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/poolUnjudged.ts packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-qwen3-heavy-final-sweep.json packages/server/__evals__/pagesSearch/results/gate-harrier-heavy-final-sweep.json
+   ```
+
+   It prints only a count. `gate-to-grade.json` lists, for each answerable query, the pages either arm ranked in its top 10 that the query doesn't label. They're sorted, with no arm, rank or score.
+3. **Grade.** A fresh agent that never tuned ranking reads `heavyFinalQueries.json`, `results/gate-to-grade.json`, the grading scale under Queries above and the corpus dump (`EVAL_DUMP=1 EVAL_SET=heavy-dev`). It grades every pooled page 3, 2, 1, or 0 for not relevant, and writes `results/gate-extra-grades.json` as `{"<query>": {"<page key>": <grade>}}`. It never opens a results file, and it reports back only how many pages it graded.
+4. **Score.** From the repo root, for each arm's results file:
+
+   ```sh
+   pnpm sucrase-node packages/server/__evals__/pagesSearch/rescore.ts <results file> packages/server/__evals__/pagesSearch/heavyFinalQueries.json packages/server/__evals__/pagesSearch/results/gate-to-grade.json packages/server/__evals__/pagesSearch/results/gate-extra-grades.json
+   ```
+
+   It refuses a run with errors, and grades that don't cover the pool exactly. It prints one row: the arm's model, alpha, floor and unindexed pages, then its scores. A valid arm names its own model and setting, and lists only `doc-q4-planning-draft` as unindexed.
+5. **Scrub.** Delete both results files, the pool, the extra grades and the logs, and keep the two rows.

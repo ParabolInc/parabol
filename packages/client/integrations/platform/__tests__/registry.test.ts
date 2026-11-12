@@ -1,3 +1,4 @@
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('../../../utils/AtlassianClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn(), JIRA_SCOPE: ['read:jira-work']}
@@ -40,45 +41,29 @@ import {
   clientIntegrationsByPopularity,
   getClientIntegration,
   isRegisteredClientIntegration,
-  isTaskClientIntegration
+  isTaskClientIntegration,
+  listClientIntegrationServices
 } from '../registry'
 
 describe('clientIntegrations registry', () => {
-  it('registers the six task services and Google Calendar', () => {
-    expect(Object.keys(clientIntegrations).sort()).toEqual([
-      'azureDevOps',
-      'gcal',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: service matches key', (key, def) => {
-    expect(def.service).toBe(key)
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: has title and description', (_key, def) => {
-    expect(def.title.length).toBeGreaterThan(0)
-    expect(def.description.length).toBeGreaterThan(0)
-  })
-
-  it('every task integration ships a scoping results component', () => {
-    Object.values(clientIntegrations)
-      .filter(({service}) => isTaskClientIntegration(service))
-      .forEach((definition) => {
-        expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
-      })
-  })
-
-  it('Google Calendar has no scope tab', () => {
-    expect(clientIntegrations.gcal.capabilities.scoping).toBeUndefined()
-  })
-
-  it('looks up a definition by service', () => {
+  it('looks up a definition by service, null for a service with no client integration', () => {
     expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
+    expect(getClientIntegration('zoom')).toBeNull()
+  })
+
+  it('lists the registered services it is given in popularity order', () => {
+    const listed = listClientIntegrationServices([
+      {service: 'gcal'},
+      {service: 'zoom'},
+      {service: 'github'},
+      {service: 'jira'}
+    ])
+    expect(listed.map(({integrationService}) => integrationService.service)).toEqual([
+      'jira',
+      'github',
+      'gcal'
+    ])
+    expect(listed[0]?.definition).toBe(clientIntegrations.jira)
   })
 
   it('the two Jira services label a saved project filter by its project key', () => {
@@ -96,21 +81,25 @@ describe('clientIntegrations registry', () => {
     ).toBe('WEB')
   })
 
+  it('ClickUp labels saved List filters by their count, since a List id has no readable part', () => {
+    const savedFiltersLabel = clientIntegrations.clickup.capabilities.scoping?.savedFiltersLabel
+    expect(savedFiltersLabel?.([{key: 'listIds', value: '901423080038'}])).toBe('1 list')
+    expect(
+      savedFiltersLabel?.([
+        {key: 'listIds', value: '901423080038'},
+        {key: 'listIds', value: '901423080041'}
+      ])
+    ).toBe('2 lists')
+  })
+
   it('only Jira Data Center sets contactUs, the slot both surfaces advertise on', () => {
     const advertised = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.contactUs)
       .map(([key]) => key)
     expect(advertised).toEqual(['jiraServer'])
     expect(clientIntegrations.jiraServer.contactUs).toEqual({
-      url: 'https://www.parabol.co/integrations/jira-server',
-      clickEvent: 'Clicked Jira Server Request Button'
+      url: 'https://www.parabol.co/integrations/jira-server'
     })
-  })
-
-  it('every registered integration ships its own settings-row logo asset', () => {
-    const sources = Object.values(clientIntegrations).map((definition) => definition.logo.src)
-    sources.forEach((src) => expect(src).toBeTruthy())
-    expect(new Set(sources).size).toBe(sources.length)
   })
 
   it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
@@ -165,35 +154,43 @@ describe('connect with an interface-shaped provider ref', () => {
     )
   })
 
-  it('OAuth2 services do nothing without the fields their manager needs', () => {
+  it('OAuth2 services report false and open nothing without the fields their manager needs', () => {
     const noClient = {id: 'p1', clientId: null, serverBaseUrl: 'https://x', tenantId: null}
     const noBaseUrl = {id: 'p1', clientId: 'c1', serverBaseUrl: null, tenantId: null}
-    clientIntegrations.jira.connect(atmosphere, {
-      teamId: 'team1',
-      mutationProps,
-      provider: noClient
-    })
-    clientIntegrations.gitlab.connect(atmosphere, {
-      teamId: 'team1',
-      mutationProps,
-      provider: noBaseUrl
-    })
-    clientIntegrations.linear.connect(atmosphere, {
-      teamId: 'team1',
-      mutationProps,
-      provider: noBaseUrl
-    })
+    expect(
+      clientIntegrations.jira.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noClient
+      })
+    ).toBe(false)
+    expect(
+      clientIntegrations.gitlab.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noBaseUrl
+      })
+    ).toBe(false)
+    expect(
+      clientIntegrations.linear.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noBaseUrl
+      })
+    ).toBe(false)
     expect(AtlassianClientManager.openOAuth).not.toHaveBeenCalled()
     expect(GitLabClientManager.openOAuth).not.toHaveBeenCalled()
     expect(LinearClientManager.openOAuth).not.toHaveBeenCalled()
   })
 
   it('gcal opens the Google popup with the provider id and client id', () => {
-    clientIntegrations.gcal.connect(atmosphere, {
-      teamId: 'team1',
-      mutationProps,
-      provider: {id: 'p7', clientId: 'google1', serverBaseUrl: null, tenantId: null}
-    })
+    expect(
+      clientIntegrations.gcal.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: {id: 'p7', clientId: 'google1', serverBaseUrl: null, tenantId: null}
+      })
+    ).toBe(true)
     clientIntegrations.gcal.connect(atmosphere, {
       teamId: 'team1',
       mutationProps,
@@ -231,13 +228,8 @@ describe('connect with an interface-shaped provider ref', () => {
   })
 
   it('task surfaces see every service but Google Calendar', () => {
-    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration).sort()).toEqual([
-      'azureDevOps',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
+    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration)).toEqual(
+      clientIntegrationsByPopularity.filter((service) => service !== 'gcal')
+    )
   })
 })

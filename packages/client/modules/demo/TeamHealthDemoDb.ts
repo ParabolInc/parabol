@@ -274,8 +274,8 @@ export default class TeamHealthDemoDb {
       return {createTask: {error: {message: 'Discussion not found'}, task: null}}
     }
     const assignee = demoTeammates.find(({id}) => id === userId) ?? null
-    const resultStage = discussion.discussionTopicId.replace(
-      'teamHealthDemoQuestion:',
+    const resultStage = discussionId.replace(
+      'teamHealthDemoDiscussion_',
       'teamHealthDemoResultStage:'
     )
     const taskContent = content ?? toTaskContent('')
@@ -369,21 +369,18 @@ export default class TeamHealthDemoDb {
 
   // the visitor has no integrations, so the integrate menu has nothing to list. The demo swaps that
   // menu for a preview dialog, see TaskFooterIntegrateToggle
-  integrateMenu: Resolver<TaskFooterIntegrateMenuQuery> = ({userId}) => {
-    const assignee = demoTeammates.find(({id}) => id === userId) ?? demoViewer
-    return {
-      viewer: {
-        id: demoViewer.id,
-        assigneeTeamMember: {
-          id: demoTeamMemberId(assignee.id),
-          user: {id: assignee.id, preferredName: assignee.preferredName},
-          prevUsedRepoIntegrations: {items: []},
-          services: []
-        },
-        viewerTeamMember: {id: demoTeamMemberId(demoViewer.id), services: []}
+  integrateMenu: Resolver<TaskFooterIntegrateMenuQuery> = ({teamId}) => ({
+    viewer: {
+      id: demoViewer.id,
+      team: {id: teamId, recentOrgTaskCounts: []},
+      viewerTeamMember: {
+        id: demoTeamMemberId(demoViewer.id),
+        teamId,
+        prevUsedRepoIntegrations: {items: []},
+        services: []
       }
     }
-  }
+  })
 
   assigneeMenu: Resolver<TaskFooterUserAssigneeMenuQuery> = ({teamId}) => ({
     viewer: {

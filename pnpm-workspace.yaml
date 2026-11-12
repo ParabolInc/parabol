@@ -9,17 +9,12 @@ minimumReleaseAgeExclude:
   - fast-xml-parser
 
 allowBuilds:
-  '@datadog/native-appsec': true
-  '@datadog/native-iast-taint-tracking': true
-  '@datadog/native-metrics': true
-  '@datadog/pprof': true
   '@parcel/watcher': true
   '@scarf/scarf': true
   '@swc/core': true
   core-js: true
   core-js-pure: true
   cpu-features: true
-  dd-trace: true
   es5-ext: true
   esbuild: true
   msgpackr-extract: true
@@ -43,7 +38,6 @@ overrides:
   json-schema: '^0.4.0'
   nanoid: '^3.3.18'
   '@xmldom/xmldom': '^0.8.15'
-  node-gyp: '^8.4.1'
   simple-get: '^4.0.1'
   caniuse-lite: '~1.0.0'
   git-url-parse: 12.0.0
@@ -55,16 +49,18 @@ overrides:
   react: '^19.3.1'
   react-dom: '^19.3.1'
   '@babel/runtime': '^7.27.1'
-  'brace-expansion@1.1.11': 1.1.12
-  'brace-expansion@2.0.1': 2.0.2
   source-map: 0.7.6
   qs: '^6.14.1'
   handlebars: '^4.7.9'
-  brace-expansion: '^1.1.18'
   '@graphql-tools/utils': '^12.0.3'
   'pm2>js-yaml': '^4.3.2'
   '@emotion/is-prop-valid': '-'
+  '@tiptap/html>happy-dom': '^21.0.4'
+  'sockjs>uuid': '^11.1.1'
 
 patchedDependencies:
   '@sereneinserenade/tiptap-search-and-replace@0.1.1': patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
   '@tiptap/core@3.31.2': patches/@tiptap__core@3.31.2.patch
+  '@tiptap/extension-details@3.31.2': patches/@tiptap__extension-details@3.31.2.patch
+  graphql-ws@6.2.1: patches/graphql-ws@6.2.1.patch
+  graphql-yoga@5.24.1: patches/graphql-yoga@5.24.1.patch

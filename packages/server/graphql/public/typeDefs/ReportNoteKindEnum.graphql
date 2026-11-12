@@ -18,4 +18,6 @@ enum ReportNoteKindEnum {
   FILTER_LEVEL_REMOVED
   "Nothing in the period the report compares with has a value, so there's no change to show. The count is how many values have nothing to compare with"
   NOTHING_TO_COMPARE
+  "Only billing leaders and org admins can see what the organization spends, so the report shows nothing. The count is 1"
+  SPEND_FOR_BILLING_LEADERS
 }

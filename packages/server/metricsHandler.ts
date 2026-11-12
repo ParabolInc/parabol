@@ -1,7 +1,16 @@
 import type {HttpResponse} from 'uWebSockets.js'
-import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
-import {collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
+import {createHistogram, usePrometheus} from '@graphql-yoga/plugin-prometheus'
+import {Counter, collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
+import {FIRST_FILL_PRIORITY} from '../embedder/getEmbedderJobPriority'
 import {activeClients} from './activeClients'
+import getKysely from './postgres/getKysely'
+import type {Embeddingsjobstateenum} from './postgres/types/pg'
+import {Logger} from './utils/Logger'
+
+export const ENABLE_METRICS = process.env.ENABLE_METRICS
+  ? process.env.ENABLE_METRICS === 'true'
+  : __PRODUCTION__
+export const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : 9090
 
 const register = new Registry()
 
@@ -63,14 +72,6 @@ new Gauge({
       }, 0)
     })
   }
-})
-
-const nodeGcDuration = new Histogram({
-  name: 'node_gc_duration_seconds',
-  help: 'Duration of garbage collection in seconds',
-  labelNames: ['type'],
-  buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5],
-  registers: [register]
 })
 
 new Gauge({
@@ -141,39 +142,230 @@ export const wsErrors = new Counter({
 })
 */
 
-// GraphQL Yoga Prometheus plugin configuration
-export const graphqlPrometheusPlugin = usePrometheus({
-  registry: register
+export const websocketConnects = new Counter({
+  name: 'parabol_websocket_connects_total',
+  help: 'Websocket connections accepted after authentication',
+  registers: [register]
 })
 
-const updateHistorgrams = () => {
-  const activeResources = process.getActiveResourcesInfo()
-  const gcCount = activeResources.reduce(
-    (count, resource) => (resource.includes('gc') ? count + 1 : count),
-    0
-  )
-  nodeGcDuration.observe({type: 'total'}, gcCount)
+export const websocketConnectAttempts = new Counter({
+  name: 'parabol_websocket_connect_attempts_total',
+  help: 'Websocket upgrades started, before authentication',
+  registers: [register]
+})
+
+export const websocketConnectDuration = new Histogram({
+  name: 'parabol_websocket_connect_duration_seconds',
+  help: 'Seconds from the websocket upgrade until the connection is accepted, rejected, fails or the client leaves, by outcome',
+  labelNames: ['outcome'] as const,
+  buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+  registers: [register]
+})
+// Managed Prometheus drops the first sample of a new series, so an outcome first seen between scrapes would lose every
+// connection before the next scrape, while the attempts counter, exported since startup, still counts them
+for (const outcome of ['connected', 'rejected', 'failed', 'abandoned']) {
+  websocketConnectDuration.zero({outcome})
 }
 
-if (process.env.ENABLE_METRICS === 'true') {
-  setInterval(() => {
-    updateHistorgrams()
-  }, 30000)
+export const websocketMessagesDropped = new Counter({
+  name: 'parabol_websocket_messages_dropped_total',
+  help: 'Messages the server never sent because the socket already had more than maxBackpressure queued, by route',
+  labelNames: ['route'] as const,
+  registers: [register]
+})
+
+export const unexpectedGraphQLErrors = new Counter({
+  name: 'parabol_graphql_unexpected_errors_total',
+  help: 'Queries and mutations that returned an error the server did not mean to, by operation type',
+  labelNames: ['operation_type'] as const,
+  registers: [register]
+})
+
+export const logins = new Counter({
+  name: 'parabol_logins_total',
+  help: 'Successful logins, including sign-ups through an identity provider, by method',
+  labelNames: ['method'] as const,
+  registers: [register]
+})
+
+export const meetingsEnded = new Counter({
+  name: 'parabol_meetings_ended_total',
+  help: 'Meetings ended, whether completed or ended early, by meeting type',
+  labelNames: ['meeting_type'] as const,
+  registers: [register]
+})
+
+export const meetingsStarted = new Counter({
+  name: 'parabol_meetings_started_total',
+  help: 'Meetings started, by a person or by a meeting series, by meeting type',
+  labelNames: ['meeting_type'] as const,
+  registers: [register]
+})
+
+export const suggestedGroupsDuration = new Histogram({
+  name: 'parabol_suggested_groups_duration_seconds',
+  help: 'Seconds to suggest reflection groups, by mode and whether a stored result was reused',
+  labelNames: ['mode', 'cache'] as const,
+  buckets: [0.1, 0.5, 1, 2.5, 5, 10, 20, 40, 60],
+  registers: [register]
+})
+
+export const legacyAutogroups = new Counter({
+  name: 'parabol_legacy_autogroups_total',
+  help: 'Boards rearranged by the deprecated autogroup mutation, which only clients older than suggested groups call',
+  registers: [register]
+})
+
+export const confluenceExportDuration = new Histogram({
+  name: 'parabol_confluence_export_duration_seconds',
+  help: 'Seconds to export pages to Confluence, by whether every, some or no page made it',
+  labelNames: ['status'] as const,
+  buckets: [1, 5, 15, 30, 60, 120, 300, 600, 1800],
+  registers: [register]
+})
+
+export const clientNavigationDuration = new Histogram({
+  name: 'parabol_client_navigation_duration_seconds',
+  help: 'Seconds from a page load or route change to the first frame after its last query returned, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 5, 8, 13, 20],
+  registers: [register]
+})
+
+export const clientNavigationQueriesInSequence = new Histogram({
+  name: 'parabol_client_navigation_queries_in_sequence',
+  help: 'GraphQL queries a page load or route change waited on one after another, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 5, 6],
+  registers: [register]
+})
+
+export const clientNavigationSuspendedQueries = new Histogram({
+  name: 'parabol_client_navigation_suspended_queries',
+  help: 'Queries that suspended a component during a page load or route change, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 6, 8],
+  registers: [register]
+})
+
+export const chatNotificationsSent = new Counter({
+  name: 'parabol_chat_notifications_sent_total',
+  help: 'Notifications delivered to Slack, Mattermost or Microsoft Teams, by service and event',
+  labelNames: ['service', 'event'] as const,
+  registers: [register]
+})
+
+const EMBEDDER_JOB_STATES = [
+  'queued',
+  'running',
+  'failed'
+] as const satisfies readonly Embeddingsjobstateenum[]
+
+new Gauge({
+  name: 'parabol_embedder_jobs',
+  help: "Jobs in the embedder queue by state, without a new model's fill. Every web server reports the same totals, so aggregate with max",
+  labelNames: ['state'] as const,
+  registers: [register],
+  async collect() {
+    try {
+      const jobCounts = await getKysely()
+        .selectFrom('EmbeddingsJobQueueV2')
+        .select(({fn}) => ['state', fn.countAll<string>().as('jobs')])
+        .where('priority', '<', FIRST_FILL_PRIORITY)
+        .groupBy('state')
+        .execute()
+      const jobsByState = new Map(jobCounts.map(({state, jobs}) => [state, Number(jobs)]))
+      EMBEDDER_JOB_STATES.forEach((state) => {
+        this.set({state}, jobsByState.get(state) ?? 0)
+      })
+    } catch (error) {
+      Logger.error('Could not count embedder jobs for metrics', error)
+    }
+  }
+})
+
+// Counting a fill reads most of the queue, and a fill takes days, so a count a few minutes old will do
+const FILL_COUNT_MAX_AGE_MS = 5 * 60_000
+let fillJobCounts: {model: string; workflow: string; state: string; jobs: number}[] = []
+let fillJobsCountedAt = -Infinity
+
+const countFillJobs = async () => {
+  if (Date.now() - fillJobsCountedAt < FILL_COUNT_MAX_AGE_MS) return fillJobCounts
+  const jobCounts = await getKysely()
+    .selectFrom('EmbeddingsJobQueueV2')
+    .select(({fn}) => ['modelId', 'jobType', 'state', fn.countAll<string>().as('jobs')])
+    .where('priority', '>=', FIRST_FILL_PRIORITY)
+    .groupBy(['modelId', 'jobType', 'state'])
+    .execute()
+  fillJobCounts = jobCounts.flatMap(({modelId, jobType, state, jobs}) =>
+    modelId ? [{model: modelId, workflow: jobType.split(':')[0]!, state, jobs: Number(jobs)}] : []
+  )
+  fillJobsCountedAt = Date.now()
+  return fillJobCounts
 }
+
+new Gauge({
+  name: 'parabol_embedder_fill_jobs',
+  help: 'Jobs in the embedder queue that fill a new model, by model, workflow (embed for templates, reflections and discussions, embedPage for pages) and state, counted every 5 minutes. A model appears while it has fill jobs and drops out when it has none. Every web server reports the same totals, so aggregate with max',
+  labelNames: ['model', 'workflow', 'state'] as const,
+  registers: [register],
+  async collect() {
+    try {
+      const jobCounts = await countFillJobs()
+      this.reset()
+      jobCounts.forEach(({model, workflow, state, jobs}) => {
+        this.inc({model, workflow, state}, jobs)
+      })
+    } catch (error) {
+      Logger.error("Could not count embedding models' fill jobs for metrics", error)
+    }
+  }
+})
+
+export const graphqlPrometheusPlugin = usePrometheus({
+  registry: register,
+  endpoint: false,
+  skipIntrospection: true,
+  labels: {
+    operationName: true,
+    operationType: true,
+    phase: true,
+    path: false,
+    fieldName: false,
+    typeName: false,
+    returnType: false
+  },
+  metrics: {
+    graphql_envelop_request: true,
+    graphql_envelop_error_result: true,
+    graphql_envelop_request_duration: createHistogram({
+      registry: register,
+      histogram: {
+        name: 'graphql_envelop_request_duration',
+        help: 'Time to execute or subscribe to a GraphQL operation, in seconds',
+        labelNames: ['operationType'] as const,
+        buckets: [0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+      },
+      fillLabelsFn: ({operationType}) => ({operationType: operationType ?? 'unknown'})
+    }),
+    graphql_envelop_request_time_summary: false,
+    graphql_envelop_phase_parse: false,
+    graphql_envelop_phase_validate: false,
+    graphql_envelop_phase_context: false,
+    graphql_envelop_phase_execute: false,
+    graphql_envelop_phase_subscribe: false,
+    graphql_envelop_deprecated_field: false,
+    graphql_envelop_schema_change: false,
+    graphql_envelop_execute_resolver: false,
+    graphql_yoga_http_duration: false
+  }
+})
 
 export const metricsHandler = async (res: HttpResponse) => {
   let aborted = false
   res.onAborted(() => {
     aborted = true
   })
-
-  if (process.env.ENABLE_METRICS !== 'true') {
-    if (!aborted) {
-      res.writeStatus('404 Not Found')
-      res.end()
-    }
-    return
-  }
 
   try {
     const metrics = await register.metrics()
@@ -186,7 +378,7 @@ export const metricsHandler = async (res: HttpResponse) => {
       })
     }
   } catch (error) {
-    console.error('Error generating metrics:', error)
+    Logger.error('Could not generate metrics', error)
     if (!aborted) {
       res.cork(() => {
         res.writeStatus('500 Internal Server Error')

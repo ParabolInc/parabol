@@ -1,8 +1,7 @@
-import {type RefObject, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type RefObject, useCallback, useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import type {GroupingKanban_meeting$data} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {Times} from '~/types/constEnums'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import useAtmosphere from './useAtmosphere'
 
@@ -13,11 +12,7 @@ const useSpotlightSimulatedDrag = (
   const atmosphere = useAtmosphere()
   const reflectionIdRef = useRef<string>(undefined)
   const timeoutRef = useRef(0)
-  const {id: meetingId, spotlightGroup, reflectionGroups, spotlightSearchQuery} = meeting
-  const reflectionsCount = useMemo(
-    () => reflectionGroups.map(({reflections}) => reflections).length,
-    [reflectionGroups]
-  )
+  const {id: meetingId, spotlightGroup} = meeting
 
   // handle the case when someone steals the reflection
   useEffect(() => {
@@ -52,12 +47,6 @@ const useSpotlightSimulatedDrag = (
       dropTargetType: null,
       dropTargetId: null,
       dragId: dragIdRef.current
-    })
-    SendClientSideEvent(atmosphere, 'Closed Spotlight', {
-      reflectionsCount,
-      meetingId,
-      reflectionId,
-      spotlightSearchQuery
     })
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)

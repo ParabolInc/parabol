@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import normalizeEmail from '../../../utils/normalizeEmail'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -18,19 +19,32 @@ const submitErrorFeedback: MutationResolvers['submitErrorFeedback'] = async (
 
   const viewerId = getUserId(authToken) || null
   const viewer = viewerId ? await dataLoader.get('users').load(viewerId) : null
-  const contactEmail = viewer ? viewer.email : email ? normalizeEmail(email).slice(0, 255) : null
+  const contactEmail =
+    (viewer ? viewer.email : email ? normalizeEmail(email).slice(0, 255) : null) || null
+  const storedErrorMessage = errorMessage.trim().slice(0, MAX_FIELD_LENGTH)
+  const storedContent = trimmedContent.slice(0, MAX_FIELD_LENGTH)
 
   await getKysely()
     .insertInto('ErrorFeedback')
     .values({
       userId: viewer?.id ?? null,
-      email: contactEmail || null,
+      email: contactEmail,
       ip: ip || null,
-      errorMessage: errorMessage.trim().slice(0, MAX_FIELD_LENGTH),
-      content: trimmedContent.slice(0, MAX_FIELD_LENGTH),
+      errorMessage: storedErrorMessage,
+      content: storedContent,
       eventId
     })
     .execute()
+  // Beetee's intake finds the reported error by this eventId, which the browser logged with it, and fixes those first
+  Logger.info('Error feedback', {
+    client: {eventId},
+    // left out when unknown, because Cloud Monitoring's Slack post would show a null as NULL_VALUE
+    extras: {
+      email: contactEmail ?? undefined,
+      content: storedContent,
+      errorMessage: storedErrorMessage
+    }
+  })
   return {success: true}
 }
 

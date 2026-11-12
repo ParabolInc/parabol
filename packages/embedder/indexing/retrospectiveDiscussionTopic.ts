@@ -1,4 +1,4 @@
-import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import type {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
 import type {ISO6391} from '../iso6393To1'
@@ -56,6 +56,61 @@ async function formatThread(
   // Resolve all promises and join the results
   const formattedComments = await Promise.all(formattedCommentsPromises)
   return formattedComments.join('')
+}
+
+const getThreadComments = async (discussionId: string, dataLoader: DataLoaderInstance) => {
+  const comments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
+  const sortedComments = comments
+    .map((comment) => {
+      if (!comment.threadParentId) {
+        return {
+          ...comment,
+          threadParentId: null
+        }
+      }
+      return comment
+    })
+    .sort((a, b) => {
+      if (a.threadParentId === b.threadParentId) {
+        return a.threadSortOrder - b.threadSortOrder
+      }
+      if (!a.threadParentId) return 1
+      if (!b.threadParentId) return -1
+      return a.threadParentId > b.threadParentId ? 1 : -1
+    }) as Comment[]
+  return sortedComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!))
+}
+
+const threadTexts = (comments: Comment[], parentId: string | null = null): string[] =>
+  comments
+    .filter((comment) => comment.threadParentId === parentId)
+    .sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
+    .flatMap((comment) => [
+      comment.plaintextContent?.slice(0, MAX_TEXT_LENGTH) ?? '',
+      ...threadTexts(comments, comment.id)
+    ])
+
+export const createPlainTextFromRetrospectiveDiscussionTopic = async (
+  discussionId: string,
+  dataLoader: DataLoaderInstance
+) => {
+  const discussion = await dataLoader.get('discussions').load(discussionId)
+  if (!discussion) throw new Error(`Discussion not found: ${discussionId}`)
+  const {discussionTopicId: reflectionGroupId, summary} = discussion
+  const [reflectionGroup, reflections] = await Promise.all([
+    dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
+    dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
+  ])
+  const reflectionTexts = reflections.map((r) => r.plaintextContent?.slice(0, MAX_TEXT_LENGTH))
+  const comments = summary ? [] : await getThreadComments(discussionId, dataLoader)
+  const commentTexts = threadTexts(comments)
+  const body = [reflectionGroup?.title, ...reflectionTexts, ...commentTexts, summary]
+    .filter(Boolean)
+    .join('\n')
+  const language =
+    (commentTexts.length ? inferLanguage(commentTexts.join(' ')) : undefined) ||
+    inferLanguage(reflectionTexts.join(' '))
+  return {body, language}
 }
 
 export const createTextFromRetrospectiveDiscussionTopic = async (
@@ -130,30 +185,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
-    const comments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
-
-    const sortedComments = comments
-      .map((comment) => {
-        if (!comment.threadParentId) {
-          return {
-            ...comment,
-            threadParentId: null
-          }
-        }
-        return comment
-      })
-      .sort((a, b) => {
-        if (a.threadParentId === b.threadParentId) {
-          return a.threadSortOrder - b.threadSortOrder
-        }
-        if (!a.threadParentId) return 1
-        if (!b.threadParentId) return -1
-        return a.threadParentId > b.threadParentId ? 1 : -1
-      }) as Comment[]
-
-    const filteredComments = sortedComments.filter(
-      (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!)
-    )
+    const filteredComments = await getThreadComments(discussionId, dataLoader)
     if (filteredComments.length) {
       markdown += `Further discussion was made:\n`
       markdown += await formatThread(dataLoader, filteredComments)

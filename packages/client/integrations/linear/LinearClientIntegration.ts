@@ -1,10 +1,12 @@
 import {lazy} from 'react'
+import linearIntegrationPanelQuery, {
+  type LinearIntegrationPanelQuery
+} from '../../__generated__/LinearIntegrationPanelQuery.graphql'
 import linearScopingResultsQuery, {
   type LinearScopingResultsAdapterQuery
 } from '../../__generated__/LinearScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import LinearSVG from '../../components/LinearSVG'
-import {linearIntegrationMeta} from '../../shared/integrations/linearIntegrationMeta'
 import linearLogo from '../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../utils/LinearClientManager'
 import lazyPreload from '../../utils/lazyPreload'
@@ -14,10 +16,13 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
+import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import linearSearchMeta from './linearSearchMeta'
+import {linearIntegrationMeta} from './shared/linearIntegrationMeta'
 
 const scoping: ScopingCapability = {
   ...linearSearchMeta,
@@ -50,6 +55,19 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeWorkDrawerPanel<LinearIntegrationPanelQuery>({
+    query: linearIntegrationPanelQuery,
+    Panel: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'LinearIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/LinearIntegrationPanel'
+        )
+    )
+  }),
+  connectDescription: 'issues'
+}
+
 export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly service = linearIntegrationMeta.service
   readonly title = linearIntegrationMeta.title
@@ -57,14 +75,15 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = LinearSVG
   readonly logo: ProviderLogoAsset = {src: linearLogo}
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider?.clientId || !provider.serverBaseUrl) return
+    if (!provider?.clientId || !provider.serverBaseUrl) return false
     void LinearClientManager.openOAuth(
       atmosphere,
       teamId,
       {id: provider.id, clientId: provider.clientId, serverBaseUrl: provider.serverBaseUrl},
       mutationProps
     )
+    return true
   }
 }

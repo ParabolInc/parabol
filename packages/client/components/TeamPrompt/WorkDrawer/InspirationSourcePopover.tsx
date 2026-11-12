@@ -5,11 +5,13 @@ import type {InspirationSourcePopover_teamMember$key} from '../../../__generated
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
+import ClickUpListFilterBar from './ClickUpListFilterBar'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
 import InspirationSourceLogo from './InspirationSourceLogo'
-import {issueCountLabel, serviceLabel} from './inspirationCopy'
+import {issueCountLabel} from './inspirationCopy'
+import inspirationServiceLabel from './inspirationServiceLabel'
 import {
   INSPIRATION_SOURCE_KINDS,
   type InspirationSourceService,
@@ -24,7 +26,6 @@ interface Props {
   issueCount: number | undefined
   isCounting: boolean
   canDraft: boolean
-  meetingId: string
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
   teamMemberRef: InspirationSourcePopover_teamMember$key
@@ -37,7 +38,6 @@ const InspirationSourcePopover = (props: Props) => {
     issueCount,
     isCounting,
     canDraft,
-    meetingId,
     settings,
     setSettings,
     teamMemberRef
@@ -50,11 +50,12 @@ const InspirationSourcePopover = (props: Props) => {
         ...JiraProjectFilterBar_teamMember @defer
         ...LinearProjectFilterBar_teamMember
         ...AzureDevOpsProjectFilterBar_teamMember
+        ...ClickUpListFilterBar_teamMember @defer
       }
     `,
     teamMemberRef
   )
-  const label = serviceLabel(service)
+  const label = inspirationServiceLabel(service)
   const destination = canDraft ? 'draft' : 'list'
   const enabledKinds = settings.kinds[service]
   const kinds = INSPIRATION_SOURCE_KINDS[service]
@@ -134,6 +135,15 @@ const InspirationSourcePopover = (props: Props) => {
                 }
               />
             )}
+            {service === 'clickup' && (
+              <ClickUpListFilterBar
+                teamMemberRef={teamMember}
+                selectedListIds={settings.clickupListIds}
+                setSelectedListIds={(clickupListIds) =>
+                  setSettings((prev) => ({...prev, clickupListIds}))
+                }
+              />
+            )}
           </Suspense>
           <p className='m-0 text-fg-muted text-xs'>
             {kinds.length > 1
@@ -142,11 +152,9 @@ const InspirationSourcePopover = (props: Props) => {
           </p>
         </>
       ) : (
-        <InspirationSourceConnectButton
-          service={service}
-          meetingId={meetingId}
-          teamMemberRef={teamMember}
-        />
+        service !== 'PARABOL' && (
+          <InspirationSourceConnectButton service={service} teamMemberRef={teamMember} />
+        )
       )}
     </div>
   )

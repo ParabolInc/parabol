@@ -15,7 +15,6 @@ import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOpti
 import {MENU_ITEM_ICON, MenuItem} from '../ui/Menu/MenuItem'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
@@ -71,9 +70,10 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const canManageMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const canEndMeeting = canManageMeeting && !endedAt
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
-  const [endTeamHealth] = useEndTeamHealthMutation()
+  const [endTeamHealth, isEndingTeamHealth] = useEndTeamHealthMutation()
+  const isEnding = submitting || isEndingTeamHealth
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   // an owned series answers to its owner alone, so the rest of the team cannot reschedule it
@@ -97,11 +97,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
               `meeting-series/${meetingSeries.urlSlug}`
             )
             await navigator.clipboard.writeText(copyUrl)
-
-            SendClientSideEvent(atmosphere, 'Copied Meeting Series Link', {
-              teamId: team?.id,
-              meetingId: meetingId
-            })
           }}
         >
           <Link className={MENU_ITEM_ICON} />
@@ -113,11 +108,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
           popTooltip()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
-
-          SendClientSideEvent(atmosphere, 'Copied Invite Link', {
-            teamId: team?.id,
-            meetingId: meetingId
-          })
         }}
       >
         <PersonAddIcon className={MENU_ITEM_ICON} />
@@ -137,22 +127,29 @@ const MeetingCardOptionsMenu = (props: Props) => {
       )}
       {canEndMeeting && (
         <MenuItem
-          onSelect={() => {
+          isDisabled={isEnding}
+          onSelect={(e) => {
             if (hasRecurrenceEnabled) {
               openEndRecurringMeetingModal()
-            } else if (meetingType === 'teamHealth') {
-              endTeamHealth({variables: {meetingId}, onCompleted, onError})
-            } else {
-              EndMeetingMutationLookup[meetingType]?.(
-                atmosphere,
-                {meetingId},
-                {onError, onCompleted, navigate}
-              )
+              return
             }
+            // stay open until the meeting ends, so the item can show the click went through
+            e.preventDefault()
+            if (isEnding) return
+            if (meetingType === 'teamHealth') {
+              endTeamHealth({variables: {meetingId}, onCompleted, onError})
+              return
+            }
+            submitMutation()
+            EndMeetingMutationLookup[meetingType]?.(
+              atmosphere,
+              {meetingId},
+              {onError, onCompleted, navigate}
+            )
           }}
         >
           <CloseIcon className={MENU_ITEM_ICON} />
-          End this meeting
+          {isEnding ? 'Ending this meeting…' : 'End this meeting'}
         </MenuItem>
       )}
     </>

@@ -1,6 +1,7 @@
 import fs from 'fs'
 import type {GraphQLResolveInfo} from 'graphql'
 import path from 'path'
+import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getModelManager} from '../../../embedder/ai_models/ModelManager'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import type {GQLContext} from '../../graphql/graphql'
@@ -49,7 +50,7 @@ interface EmbeddingCall {
 const mockEmbeddingCalls: EmbeddingCall[] = []
 const warnSpy = jest.spyOn(Logger, 'warn')
 const mockEmbedQueryText = (queryText: string) =>
-  getModelManager().getEmbedder().getEmbedding(queryText)
+  getModelManager().getEmbedder().getSearchEmbedding(queryText)
 
 jest.mock('../../graphql/mutations/helpers/publishToEmbedder', () => ({
   getUserQueryJobData: (query: string) => ({query}),
@@ -91,6 +92,7 @@ interface SweepConfig {
   stopWords: StopWords
   anyWordFallbackBelow: number
   anyWordMinShare: number
+  titleTypoSimilarity: number
 }
 
 interface SweepResult extends SweepConfig {
@@ -166,9 +168,20 @@ const parseKeywordMatchings = (defaults: KeywordMatching) => {
     'EVAL_ANY_WORD_MIN_SHARES',
     process.env.EVAL_ANY_WORD_MIN_SHARES ?? String(defaults.anyWordMinShare)
   )
+  const titleTypoSimilarities = parseFractions(
+    'EVAL_TITLE_TYPO_SIMILARITIES',
+    process.env.EVAL_TITLE_TYPO_SIMILARITIES ?? String(defaults.titleTypoSimilarity)
+  )
   return stopWordsList.flatMap((stopWords) =>
     fallbackBelowList.flatMap((anyWordFallbackBelow) =>
-      minShares.map((anyWordMinShare) => ({stopWords, anyWordFallbackBelow, anyWordMinShare}))
+      minShares.flatMap((anyWordMinShare) =>
+        titleTypoSimilarities.map((titleTypoSimilarity) => ({
+          stopWords,
+          anyWordFallbackBelow,
+          anyWordMinShare,
+          titleTypoSimilarity
+        }))
+      )
     )
   )
 }
@@ -365,7 +378,15 @@ const embedQueryVector = async (query: string) => {
 const scoreSweepQuery = async (
   gradedQuery: GradedQuery,
   queryVector: Float32Array | Error,
-  {alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare}: SweepConfig,
+  {
+    alpha,
+    floor,
+    minBytes,
+    stopWords,
+    anyWordFallbackBelow,
+    anyWordMinShare,
+    titleTypoSimilarity
+  }: SweepConfig,
   fixtureKeyByPageId: Map<number, string>,
   viewerId: string
 ) => {
@@ -385,7 +406,8 @@ const scoreSweepQuery = async (
     dateRange: null,
     dropStopWords: stopWords === 'drop',
     anyWordFallbackBelow,
-    anyWordMinShare
+    anyWordMinShare,
+    titleTypoSimilarity
   }
   try {
     const {edges} =
@@ -440,6 +462,7 @@ const toSweepRow = ({
   stopWords,
   anyWordFallbackBelow,
   anyWordMinShare,
+  titleTypoSimilarity,
   overall
 }: SweepResult) => ({
   alpha,
@@ -448,6 +471,7 @@ const toSweepRow = ({
   stopWords,
   anyWordFallbackBelow,
   anyWordMinShare,
+  titleTypoSimilarity,
   ...Object.fromEntries(
     SWEEP_TABLE_METRICS.map((metric) => [metric, roundForTable(overall[metric])])
   )
@@ -474,7 +498,14 @@ const runSweep = async ({
 }: SweepRun) => {
   const sweepResults = await scoreSweep(gradedQueries, configs, fixtureKeyByPageId, viewerId)
   const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-sweep.json`)
-  const results = {label, set: evalSet, mode: 'sweep', unindexed, configs: sweepResults}
+  const results = {
+    label,
+    set: evalSet,
+    mode: 'sweep',
+    modelId: activeEmbeddingModelId,
+    unindexed,
+    configs: sweepResults
+  }
   fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
   console.log(`${label} ${evalSet} sweep: ${resultsPath}`)
   console.table(
@@ -483,12 +514,21 @@ const runSweep = async ({
       .map(toSweepRow)
   )
   const failed = sweepResults.flatMap(
-    ({alpha, floor, minBytes, stopWords, anyWordFallbackBelow, anyWordMinShare, perQuery}) =>
+    ({
+      alpha,
+      floor,
+      minBytes,
+      stopWords,
+      anyWordFallbackBelow,
+      anyWordMinShare,
+      titleTypoSimilarity,
+      perQuery
+    }) =>
       perQuery
         .filter(({error}) => error !== undefined)
         .map(({query, error}) => ({
           query,
-          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}`,
+          config: `alpha ${alpha}, floor ${floor}, min bytes ${minBytes}, stop words ${stopWords}, any words below ${anyWordFallbackBelow}, min share ${anyWordMinShare}, title typo similarity ${titleTypoSimilarity}`,
           error
         }))
   )
@@ -565,7 +605,16 @@ test('pages search eval', async () => {
     const overall = summarizeWithErrors(perQuery)
     const byCategory = summarizeByCategory(perQuery)
     const resultsPath = path.join(RESULTS_DIR, `${label}-${evalSet}-${mode}.json`)
-    const results = {label, set: evalSet, mode, overall, byCategory, perQuery, unindexed}
+    const results = {
+      label,
+      set: evalSet,
+      mode,
+      modelId: activeEmbeddingModelId,
+      overall,
+      byCategory,
+      perQuery,
+      unindexed
+    }
     fs.writeFileSync(resultsPath, `${JSON.stringify(results, null, 2)}\n`)
     console.log(`${label} ${evalSet} ${mode}: ${resultsPath}`)
     console.table({

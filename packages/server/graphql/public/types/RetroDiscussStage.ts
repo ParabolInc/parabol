@@ -31,16 +31,18 @@ const RetroDiscussStage: RetroDiscussStageResolvers = {
   },
 
   reflectionGroup: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
-    if (!reflectionGroupId) {
-      const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
-      return new ReflectionGroup({
-        id: `${meetingId}:dummyGroup`,
-        meetingId,
-        promptId: prompts[0]!.id,
-        title: 'Unknown'
-      })
-    }
-    return dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId)
+    const reflectionGroup = reflectionGroupId
+      ? await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
+      : undefined
+    if (reflectionGroup) return reflectionGroup
+    // some old meetings have stages whose reflection group no longer exists
+    const prompts = await dataLoader.get('templatePromptsByMeetingId').load(meetingId)
+    return new ReflectionGroup({
+      id: reflectionGroupId || `${meetingId}:dummyGroup`,
+      meetingId,
+      promptId: prompts[0]!.id,
+      title: 'Unknown'
+    })
   }
 }
 

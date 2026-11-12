@@ -2,6 +2,7 @@ import type DataLoader from 'dataloader'
 import * as aiLoaderMakers from './aiLoaderMakers'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
+import * as clickUpLoaders from './clickUpLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
@@ -10,6 +11,7 @@ import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as integrationDimensionFieldMapLoaders from './integrationDimensionFieldMapLoaders'
 import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
+import * as integrationUsageLoaders from './integrationUsageLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
@@ -36,8 +38,10 @@ const loaderMakers = {
   ...integrationAuthLoaders,
   ...integrationDimensionFieldMapLoaders,
   ...integrationSearchQueryLoaders,
+  ...integrationUsageLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
+  ...clickUpLoaders,
   ...reportLoaderMakers
 } as const
 

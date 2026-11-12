@@ -12,6 +12,7 @@ import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
+import getServerError from '../../../utils/relay/getServerError'
 import isTempId from '../../../utils/relay/isTempId'
 import {getTeamHealthCategoryDotColor} from './getTeamHealthCategoryColor'
 import TeamHealthQuestionRow from './TeamHealthQuestionRow'
@@ -69,7 +70,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
     if (adding || removing || packQuestionIds.length === 0) return
     const onError = (err: Error) => {
       atmosphere.eventEmitter.emit('addSnackbar', {
-        message: err.message,
+        message: getServerError(err)?.message ?? err.message,
         autoDismiss: 5,
         key: 'toggleAllTeamHealthQuestionsError'
       })

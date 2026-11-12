@@ -3,8 +3,10 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import isTaskPrivate from '../utils/isTaskPrivate'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
+import getUpdatesEmptyState from '../utils/getUpdatesEmptyState'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import LastRetroEndedAtContext from './LastRetroEndedAtContext'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroMeetingUpdatesPrompt from './RetroMeetingUpdatesPrompt'
@@ -23,6 +25,9 @@ const RetroMeetingUpdates = (props: Props) => {
         id
         endedAt
         showSidebar
+        prevCompletedMeeting {
+          endedAt
+        }
         localStage {
           ...RetroMeetingUpdatesStage @relay(mask: false) @alias
         }
@@ -52,29 +57,39 @@ const RetroMeetingUpdates = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team, prevCompletedMeeting} = meeting
   const {id: teamId, tasks} = team
   const stageOwner = localStage?.RetroMeetingUpdatesStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
-  const teamMemberTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((task) => task.userId === stageOwnerUserId && !isTaskPrivate(task.tags))
-  }, [tasks, stageOwnerUserId])
+  const isViewerStageOwner = stageOwnerUserId === viewerId
+  const teamTasks = useMemo(() => tasks.edges.map(({node}) => node), [tasks])
+  const teamMemberTasks = useMemo(
+    () => getTeamMemberTasks(teamTasks, stageOwnerUserId),
+    [teamTasks, stageOwnerUserId]
+  )
+  const emptyState = getUpdatesEmptyState(
+    teamTasks,
+    teamMemberTasks.length,
+    stageOwner?.user.preferredName,
+    isViewerStageOwner
+  )
 
   return (
-    <MeetingUpdatesContent
-      avatarGroup={avatarGroup}
-      endedAt={endedAt}
-      headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
-      isViewerStageOwner={stageOwnerUserId === viewerId}
-      meetingId={meetingId}
-      meetingRef={meeting}
-      myTeamMemberId={toTeamMemberId(teamId, viewerId)}
-      showSidebar={showSidebar}
-      tasks={teamMemberTasks}
-      toggleSidebar={toggleSidebar}
-    />
+    <LastRetroEndedAtContext.Provider value={prevCompletedMeeting?.endedAt ?? null}>
+      <MeetingUpdatesContent
+        avatarGroup={avatarGroup}
+        emptyState={emptyState}
+        endedAt={endedAt}
+        headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
+        isViewerStageOwner={isViewerStageOwner}
+        meetingId={meetingId}
+        meetingRef={meeting}
+        myTeamMemberId={toTeamMemberId(teamId, viewerId)}
+        showSidebar={showSidebar}
+        tasks={teamMemberTasks}
+        toggleSidebar={toggleSidebar}
+      />
+    </LastRetroEndedAtContext.Provider>
   )
 }
 
@@ -82,6 +97,9 @@ graphql`
   fragment RetroMeetingUpdatesStage on UpdatesStage {
     teamMember {
       userId
+      user {
+        preferredName
+      }
     }
   }
 `

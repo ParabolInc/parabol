@@ -52,8 +52,9 @@ const ReportAskMenu = ({
             return (
               <div key={option.id} {...optionProps(index, option)}>
                 <AutoAwesome className='shrink-0 text-[18px] text-sky-600 dark:text-accent' />
-                <span className='min-w-0 flex-1 truncate'>
-                  Ask <strong className='font-semibold'>“{option.question}”</strong>
+                <span className={cn('min-w-0 flex-1', !option.isSuggestion && 'truncate')}>
+                  {option.isSuggestion ? 'Ask instead' : 'Ask'}{' '}
+                  <strong className='font-semibold'>“{option.question}”</strong>
                 </span>
                 <kbd className='font-sans text-fg-muted text-xs'>Enter</kbd>
               </div>

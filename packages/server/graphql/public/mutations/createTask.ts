@@ -12,7 +12,6 @@ import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePre
 import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types/index.d'
 import type {Notification} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -151,8 +150,7 @@ const createTask: MutationResolvers['createTask'] = async (
     teamId,
     userId
   } = newTask
-  const [viewer, ...errors] = await Promise.all([
-    dataLoader.get('users').loadNonNull(viewerId),
+  const errors = await Promise.all([
     validateTaskDiscussionId(discussionId, teamId, meetingId, dataLoader),
     validateTaskMeetingId(meetingId, viewerId, dataLoader),
     validateTaskUserIsTeamMember(userId, teamId, dataLoader)
@@ -221,19 +219,6 @@ const createTask: MutationResolvers['createTask'] = async (
       mutatorId
     }
   ).catch(() => [] as string[])
-
-  const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
-  const taskProperties = {
-    taskId,
-    teamId,
-    meetingId: meeting?.id,
-    meetingType: meeting?.meetingType,
-    inMeeting: !!meetingId
-  }
-  analytics.taskCreated(viewer, taskProperties)
-  if (integration?.service) {
-    analytics.taskPublished(viewer, taskProperties, integration.service)
-  }
 
   return {taskId, notificationIds}
 }

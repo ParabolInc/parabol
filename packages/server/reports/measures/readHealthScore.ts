@@ -44,6 +44,7 @@ const readHealthScore: ReportMeasureFunction = async (query, dataLoader) => {
         templateId: check.templateId,
         teamId: check.teamId,
         scope: check.templateScope,
+        type: check.templateType,
         name: check.templateName
       },
       ownTeamIds

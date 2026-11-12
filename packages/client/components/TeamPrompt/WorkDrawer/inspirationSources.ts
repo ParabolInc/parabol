@@ -1,9 +1,12 @@
+import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
+
 export type InspirationSourceService =
   | 'PARABOL'
   | 'github'
   | 'jira'
   | 'linear'
   | 'azureDevOps'
+  | 'clickup'
   | 'gcal'
 
 export interface InspirationSourceKind {
@@ -29,6 +32,7 @@ export const INSPIRATION_SOURCE_KINDS: Record<InspirationSourceService, Inspirat
     {key: 'assigned', label: 'Work items assigned to you'},
     {key: 'created', label: 'Work items you created'}
   ],
+  clickup: [{key: 'assigned', label: 'Tasks assigned to you'}],
   gcal: [{key: 'events', label: 'Meetings'}]
 }
 
@@ -38,7 +42,13 @@ export interface InspirationSourceSettings {
   jiraProjectIds: string[]
   linearIds: string[]
   azureDevOpsProjectIds: string[]
+  clickupListIds: string[]
 }
+
+export const isInspirationIntegration = (
+  service: IntegrationProviderServiceEnum
+): service is Exclude<InspirationSourceService, 'PARABOL'> =>
+  Object.hasOwn(INSPIRATION_SOURCE_KINDS, service)
 
 export const DEFAULT_INSPIRATION_SOURCE_SETTINGS: InspirationSourceSettings = {
   kinds: {
@@ -47,12 +57,14 @@ export const DEFAULT_INSPIRATION_SOURCE_SETTINGS: InspirationSourceSettings = {
     jira: ['assigned'],
     linear: ['involved'],
     azureDevOps: ['assigned'],
+    clickup: ['assigned'],
     gcal: ['events']
   },
   githubRepos: [],
   jiraProjectIds: [],
   linearIds: [],
-  azureDevOpsProjectIds: []
+  azureDevOpsProjectIds: [],
+  clickupListIds: []
 }
 
 export const withInspirationSourceDefaults = (

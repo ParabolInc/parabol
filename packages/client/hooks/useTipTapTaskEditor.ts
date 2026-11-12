@@ -2,23 +2,50 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {Placeholder} from '@tiptap/extensions'
-import {Extension, generateText, useEditor} from '@tiptap/react'
+import {Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {useMemo} from 'react'
 import {useUploadUserAsset} from '~/mutations/useUploadUserAsset'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
+import {fileUploadSettledMeta} from '../tiptap/extensions/fileUpload/onUploadTipTapFile'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {ElementWidth} from '../types/constEnums'
 import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
-import {useTipTapEditorContent} from './useTipTapEditorContent'
+import {useTipTapEditorSync} from './useTipTapEditorSync'
+
+const TASK_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': false,
+  'Heading 1': false,
+  'Heading 2': false,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Code: true,
+  'Table of contents': false,
+  Details: false,
+  Table: false,
+  Divider: true,
+  Embed: false,
+  'Link to page': false,
+  'Create page': false,
+  Database: false,
+  Insights: false,
+  Image: true,
+  File: true
+}
 
 export const useTipTapTaskEditor = (
   content: string,
@@ -30,22 +57,25 @@ export const useTipTapTaskEditor = (
     // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
     onBlur?: () => void
     onModEnter?: () => void
+    onUploadSettled?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, onBlur, onModEnter} = options
-  const [contentJSON, editorRef] = useTipTapEditorContent(content)
+  const {atmosphere, teamId, readOnly, onBlur, onModEnter, onUploadSettled} = options
+  const contentJSON = useMemo(() => JSON.parse(content) as JSONContent, [content])
   const [commit] = useUploadUserAsset()
 
-  editorRef.current = useEditor(
+  const editor = useEditor(
     {
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
         SafeTextStyleKit,
         Highlight,
+        FileBlock,
         FileUpload.configure({
           scopeKey: teamId,
           assetScope: 'Team',
+          atmosphere,
           highestTier: 'starter',
           commit
         }),
@@ -63,16 +93,7 @@ export const useTipTapTaskEditor = (
           showOnlyWhenEditable: false,
           placeholder: 'Describe what “Done” looks like'
         }),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false,
-          Insights: false,
-          Table: false,
-          Details: false,
-          'Create page': false,
-          Database: false
-        }),
+        SlashCommand.configure({commands: TASK_SLASH_COMMANDS}),
         TaskList,
         TaskItem.configure({
           nested: true
@@ -97,9 +118,13 @@ export const useTipTapTaskEditor = (
       ],
       editable: !readOnly,
       onBlur,
+      onUpdate: ({transaction}) => {
+        if (transaction.getMeta(fileUploadSettledMeta)) onUploadSettled?.()
+      },
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0
     },
-    [contentJSON, readOnly, onBlur]
+    []
   )
-  return {editor: editorRef.current}
+  useTipTapEditorSync(editor, contentJSON, !readOnly)
+  return {editor}
 }

@@ -1,11 +1,13 @@
 import {createElement, lazy} from 'react'
+import jiraServerIntegrationResultsQuery, {
+  type JiraServerIntegrationResultsQuery
+} from '../../__generated__/JiraServerIntegrationResultsQuery.graphql'
 import jiraServerScopingResultsQuery, {
   type JiraServerScopingResultsAdapterQuery
 } from '../../__generated__/JiraServerScopingResultsAdapterQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import JiraServerSVG from '../../components/JiraServerSVG'
 import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
-import {jiraServerIntegrationMeta} from '../../shared/integrations/jiraServerIntegrationMeta'
 import jiraServerLogo from '../../styles/theme/images/graphics/jira-software-blue.svg'
 import {ExternalLinks} from '../../types/constEnums'
 import JiraServerClientManager from '../../utils/JiraServerClientManager'
@@ -16,10 +18,14 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability
+  type ScopingCapability,
+  type WorkDrawerCapability,
+  type WorkDrawerPanelProps
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
+import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
+import {jiraServerIntegrationMeta} from './shared/jiraServerIntegrationMeta'
 
 const JiraServerScopingCurrentFiltersRoot = lazy(
   () =>
@@ -58,19 +64,32 @@ const scoping: ScopingCapability = {
   filterChipLabel: (filter) => IntegrationRepoId.split(filter.value).projectKey ?? filter.value
 }
 
+const workDrawer: WorkDrawerCapability = {
+  Panel: makeQueryRoot<WorkDrawerPanelProps, JiraServerIntegrationResultsQuery>({
+    query: jiraServerIntegrationResultsQuery,
+    getVariables: ({teamId}) => ({teamId}),
+    Component: lazy(
+      () =>
+        import(
+          /* webpackChunkName: 'JiraServerIntegrationResults' */ '../../components/TeamPrompt/WorkDrawer/JiraServerIntegrationResults'
+        )
+    )
+  }),
+  connectDescription: 'issues'
+}
+
 export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
+  readonly searchKeywords = ['atlassian', 'server', 'self-hosted', 'on-prem']
   readonly description = jiraServerIntegrationMeta.description
   readonly Icon = JiraServerSVG
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping}
-  readonly contactUs = {
-    url: ExternalLinks.INTEGRATIONS_JIRASERVER,
-    clickEvent: 'Clicked Jira Server Request Button'
-  }
+  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly contactUs = {url: ExternalLinks.INTEGRATIONS_JIRASERVER}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
-    if (!provider) return
+    if (!provider) return false
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
+    return true
   }
 }

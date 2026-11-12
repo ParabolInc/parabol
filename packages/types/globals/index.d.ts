@@ -39,13 +39,15 @@ declare module '*workerManifest.js' {
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: boolean
+// in a production build, the nested GitHub, GitLab & Linear fields that the app's persisted operations use
+declare const __NESTED_USAGE__: Record<string, readonly string[]> | null
+// in a production build, each nested endpoint's types pruned to that usage, keyed by its prefix
+declare const __NESTED_TYPE_DEFS__: Record<string, string> | null
 declare const __APP_VERSION__: string
 declare const __COMMIT_HASH__: string
 
 interface Window {
   __ACTION__: {
-    datadogClientToken: string | undefined
-    datadogService: string | undefined
     google: string
     googleAnalytics: string
     mattermostWebhookIntegrationDisabled: boolean | undefined
@@ -60,7 +62,6 @@ interface Window {
     AUTH_GOOGLE_ENABLED: boolean
     AUTH_MICROSOFT_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
-    AMPLITUDE_WRITE_KEY: string
     microsoftTenantId: string
     microsoft: string
     GLOBAL_BANNER_ENABLED: boolean
@@ -68,7 +69,6 @@ interface Window {
     GLOBAL_BANNER_BG_COLOR: string
     GLOBAL_BANNER_COLOR: string
     GIF_PROVIDER: 'gifabol' | 'klipy' | ''
-    GOOGLE_ERROR_FORM_URL: string
     IS_SINGLE_ORG: boolean
   }
 }

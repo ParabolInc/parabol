@@ -1,6 +1,9 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {cosineSimilarity, pageSnippet, RRF} from '../expressions'
 import {
@@ -11,12 +14,12 @@ import {
 } from './getPagesByKeyword'
 import {getPageSearchPageInfo} from './pageSearchCursor'
 
-export const VECTOR_SIMILARITY_FLOOR = 0.4
 export const VECTOR_MIN_PAGE_BYTES = 200
 export const FUSED_KEYWORD_MATCHING: KeywordMatching = {
   dropStopWords: true,
   anyWordFallbackBelow: 20,
-  anyWordMinShare: 0.5
+  anyWordMinShare: 0.5,
+  titleTypoSimilarity: 0.45
 }
 
 export const getPagesByRRF = async ({
@@ -29,11 +32,12 @@ export const getPagesByRRF = async ({
   viewerId,
   teamIds,
   dateRange,
-  vectorFloor = VECTOR_SIMILARITY_FLOOR,
+  vectorFloor = activeEmbeddingDefinition?.pageVectorFloor ?? 0,
   vectorMinBytes = VECTOR_MIN_PAGE_BYTES,
   dropStopWords = FUSED_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = FUSED_KEYWORD_MATCHING.anyWordFallbackBelow,
-  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare
+  anyWordMinShare = FUSED_KEYWORD_MATCHING.anyWordMinShare,
+  titleTypoSimilarity = FUSED_KEYWORD_MATCHING.titleTypoSimilarity
 }: PageKeywordSearchParams &
   Partial<KeywordMatching> & {
     queryVector: Float32Array
@@ -53,7 +57,8 @@ export const getPagesByRRF = async ({
     dateRange,
     dropStopWords,
     anyWordFallbackBelow,
-    anyWordMinShare
+    anyWordMinShare,
+    titleTypoSimilarity
   })
     .with('PageBestChunk', (qb) =>
       qb

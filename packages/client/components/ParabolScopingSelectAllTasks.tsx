@@ -50,7 +50,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
       const task = tasks.find((taskEdge) => taskEdge.node.id === update.serviceTaskId)
       return task?.node.plaintextContent ?? 'Unknown Story'
     })
-    updatePokerScope({variables, contents, selectedAll: true})
+    updatePokerScope({variables, contents})
   }
   if (tasks.length < 2) return null
   const title = getSelectAllTitle(unusedTasks.length, usedServiceTaskIds.size, 'task', allSelected)

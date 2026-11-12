@@ -35,12 +35,7 @@ export const addPokerTemplateScaleTeamUpdater: SharedUpdater<
   AddPokerTemplateScaleMutation_scale$data
 > = (payload, {store}) => {
   const scale = payload.getLinkedRecord('scale')
-  if (!scale) return
-  const scaleId = scale.getValue('id')
   handleAddPokerTemplateScale(scale, store)
-  const teamId = scale.getValue('teamId')
-  const team = store.get(teamId)!
-  team.setValue(scaleId, 'editingScaleId')
 }
 
 const AddPokerTemplateScaleMutation: StandardMutation<TAddPokerTemplateScaleMutation> = (
@@ -57,6 +52,9 @@ const AddPokerTemplateScaleMutation: StandardMutation<TAddPokerTemplateScaleMuta
       const payload = store.getRootField('addPokerTemplateScale')
       if (!payload) return
       addPokerTemplateScaleTeamUpdater(payload, {atmosphere, store})
+      const scale = payload.getLinkedRecord('scale')
+      if (!scale) return
+      store.get(variables.teamId)?.setValue(scale.getValue('id'), 'editingScaleId')
     },
     optimisticUpdater: (store) => {
       const {parentScaleId, teamId} = variables

@@ -1,4 +1,3 @@
-import {datadogLogs} from '@datadog/browser-logs'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
@@ -7,6 +6,7 @@ import {ArrowForward as ArrowForwardIcon, ChangeHistory, GroupWork, History} fro
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
 import {MenuItem} from '../ui/Menu/MenuItem'
+import reportClientError from '../utils/reportClientError'
 
 interface Props {
   meeting: SelectMeetingDropdownItem_meeting$key
@@ -39,7 +39,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this
-    datadogLogs.logger.error('Missing Team on Meeting', {meetingId})
+    reportClientError(new Error('Missing Team on Meeting'))
     return null
   }
   const {name: teamName} = team

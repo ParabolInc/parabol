@@ -1,4 +1,4 @@
-import {AZURE_DEVOPS_IS_WORK} from 'parabol-client/shared/integrations/buildAzureDevOpsWorkWiql'
+import {AZURE_DEVOPS_IS_WORK} from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import {buildAzureDevOpsSearchWiql, toWiqlQuery} from '../buildAzureDevOpsWiql'
 
 const IS_OPEN = "[System.State] NOT IN ('Closed', 'Done', 'Removed')"

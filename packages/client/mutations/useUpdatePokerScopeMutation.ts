@@ -8,7 +8,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
+import getServerError from '../utils/relay/getServerError'
 
 graphql`
   fragment useUpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -56,16 +56,6 @@ graphql`
       ...useUpdatedSafeRoute_meeting
       # Necessary to show the Next button if someone adds an issue and the facilitator is on the last one
       ...MeetingControlBar_meeting
-      scopingSearchQueries {
-        service
-        queryString
-        filters {
-          value
-        }
-      }
-      parabolSearchQuery {
-        queryString
-      }
       phases {
         ... on EstimatePhase {
           stages {
@@ -92,7 +82,6 @@ type PokerScopeMeeting = TUpdatePokerScopeMutation['response']['updatePokerScope
 
 type Config = UseMutationConfig<TUpdatePokerScopeMutation> & {
   contents: string[]
-  selectedAll?: boolean
 }
 
 const useUpdatePokerScopeMutation = () => {
@@ -105,7 +94,7 @@ const useUpdatePokerScopeMutation = () => {
       key: 'updatePokerScopeError'
     })
   }
-  const execute = ({contents, selectedAll, ...config}: Config) => {
+  const execute = ({contents, ...config}: Config) => {
     const {variables} = config
     return commit({
       optimisticUpdater: (store) => {
@@ -169,7 +158,8 @@ const useUpdatePokerScopeMutation = () => {
               tags: ['#archived'],
               teamId,
               title,
-              integrationHash: service === 'PARABOL' ? null : serviceTaskId
+              integrationHash: service === 'PARABOL' ? null : serviceTaskId,
+              taskService: service === 'PARABOL' ? null : service
             })
             optimisticTask
               .setLinkedRecord(viewer, 'createdByUser')
@@ -220,30 +210,13 @@ const useUpdatePokerScopeMutation = () => {
           }
         })
       },
-      onCompleted: (res, errors) => {
+      onCompleted: (_res, errors) => {
         const error = errors?.[0]
         if (error) {
           showError(error.message)
-          return
         }
-        const {meeting} = res.updatePokerScope
-        const {meetingId, updates} = variables
-        const update = updates[0]!
-        const {service, action} = update
-        const scopingSearchQuery = meeting.scopingSearchQueries.find(
-          (searchQuery) => searchQuery.service === service
-        )
-        const searchQuery = service === 'PARABOL' ? meeting.parabolSearchQuery : scopingSearchQuery
-        SendClientSideEvent(atmosphere, 'Updated Poker Scope', {
-          meetingId,
-          service,
-          action,
-          searchQueryString: searchQuery?.queryString ?? undefined,
-          searchQueryFilters: scopingSearchQuery?.filters.map(({value}) => value),
-          selectedAll
-        })
       },
-      onError: (error) => showError(error.message),
+      onError: (error) => showError(getServerError(error)?.message ?? error.message),
       ...config
     })
   }

@@ -7,6 +7,7 @@ import useTeamInviteeDrafts, {
 import useInviteToTeamMutation from '../mutations/useInviteToTeamMutation'
 import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
+import getServerError, {type ServerError} from '../utils/relay/getServerError'
 import TeamInviteeInput from './TeamInviteeInput'
 import TeamInviteeMessages from './TeamInviteeMessages'
 import TeamInviteSentList from './TeamInviteSentList'
@@ -23,6 +24,9 @@ const RATE_LIMIT_MESSAGE =
   'You’ve sent a lot of invitations in a short time. Wait a few minutes and try again, or share the invite link.'
 const NETWORK_ERROR_MESSAGE =
   'Your invitations didn’t go out because Parabol couldn’t be reached. Check your connection and try again.'
+
+const getRequestErrorMessage = (serverError: ServerError) =>
+  serverError.extensions?.code === 'TOO_MANY_REQUESTS' ? RATE_LIMIT_MESSAGE : serverError.message
 
 const AddTeamMemberEmailInvites = (props: Props) => {
   const {meetingId, teamId, teamEmails, initialResults, onClose} = props
@@ -57,13 +61,15 @@ const AddTeamMemberEmailInvites = (props: Props) => {
       onCompleted: (res, errors) => {
         const firstError = errors?.[0]
         if (firstError) {
-          const isRateLimited = firstError.extensions?.code === 'TOO_MANY_REQUESTS'
-          setRequestError(isRateLimited ? RATE_LIMIT_MESSAGE : firstError.message)
+          setRequestError(getRequestErrorMessage(firstError))
           return
         }
         invitees.applyResults(res.inviteToTeam.invitees)
       },
-      onError: () => setRequestError(NETWORK_ERROR_MESSAGE)
+      onError: (error) => {
+        const serverError = getServerError(error)
+        setRequestError(serverError ? getRequestErrorMessage(serverError) : NETWORK_ERROR_MESSAGE)
+      }
     })
   }
 

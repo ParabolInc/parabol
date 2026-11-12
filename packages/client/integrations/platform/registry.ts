@@ -1,6 +1,7 @@
 import type {IntegrationProviderServiceEnum} from '../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
 import {AzureDevOpsClientIntegration} from '../azureDevOps/AzureDevOpsClientIntegration'
+import {ClickUpClientIntegration} from '../clickup/ClickUpClientIntegration'
 import {GcalClientIntegration} from '../gcal/GcalClientIntegration'
 import {GitHubClientIntegration} from '../github/GitHubClientIntegration'
 import {GitLabClientIntegration} from '../gitlab/GitLabClientIntegration'
@@ -20,11 +21,12 @@ export type TaskClientIntegration = Extract<RegisteredClientIntegration, TaskSer
 
 const taskIntegrations = {
   jira: new JiraClientIntegration(),
-  jiraServer: new JiraServerClientIntegration(),
-  github: new GitHubClientIntegration(),
   linear: new LinearClientIntegration(),
+  github: new GitHubClientIntegration(),
   gitlab: new GitLabClientIntegration(),
-  azureDevOps: new AzureDevOpsClientIntegration()
+  azureDevOps: new AzureDevOpsClientIntegration(),
+  jiraServer: new JiraServerClientIntegration(),
+  clickup: new ClickUpClientIntegration()
 } satisfies Record<TaskClientIntegration, ClientIntegrationDefinition>
 
 export const clientIntegrations = {
@@ -39,19 +41,29 @@ export const clientIntegrationsByPopularity = Object.keys(
   clientIntegrations
 ) as RegisteredClientIntegration[]
 
-export const compareClientIntegrationPopularity = (
-  a: RegisteredClientIntegration,
-  b: RegisteredClientIntegration
-) => clientIntegrationsByPopularity.indexOf(a) - clientIntegrationsByPopularity.indexOf(b)
-
 export const isRegisteredClientIntegration = (
-  service: IntegrationProviderServiceEnum | TaskServiceEnum
+  service: string
 ): service is RegisteredClientIntegration => Object.hasOwn(clientIntegrations, service)
 
 export const isTaskClientIntegration = (
   service: IntegrationProviderServiceEnum | TaskServiceEnum
 ): service is TaskClientIntegration => Object.hasOwn(taskIntegrations, service)
 
-export const getClientIntegration = <N extends RegisteredClientIntegration>(
+export function getClientIntegration<N extends RegisteredClientIntegration>(
   service: N
-): ClientIntegrations[N] => clientIntegrations[service]
+): ClientIntegrations[N]
+export function getClientIntegration(service: string): ClientIntegrationDefinition | null
+export function getClientIntegration(service: string) {
+  return isRegisteredClientIntegration(service) ? clientIntegrations[service] : null
+}
+
+/** The registered services among these, in popularity order, each with its definition */
+export const listClientIntegrationServices = <T extends {service: string}>(
+  services: readonly T[]
+) =>
+  clientIntegrationsByPopularity.flatMap((service) => {
+    const integrationService = services.find((candidate) => candidate.service === service)
+    return integrationService
+      ? [{integrationService, definition: getClientIntegration(service)}]
+      : []
+  })

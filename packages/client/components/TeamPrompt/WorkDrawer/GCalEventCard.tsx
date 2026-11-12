@@ -4,12 +4,10 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {CheckCircle, Link, LocationOn, People, Schedule} from '~/ui/icons'
 import type {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_event.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -104,8 +102,6 @@ const GCalEventCard = (props: Props) => {
     eventRef
   )
 
-  const atmosphere = useAtmosphere()
-
   // A single tooltip that reads "Copy link" on hover and briefly flips to "Copied!" after a copy.
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -113,7 +109,6 @@ const GCalEventCard = (props: Props) => {
   const handleCopy = () => {
     if (!link) return
     navigator.clipboard.writeText(link)
-    trackCopy()
     setCopied(true)
     setTooltipOpen(true)
     setTimeout(() => {
@@ -135,18 +130,6 @@ const GCalEventCard = (props: Props) => {
     startDate && endDate ? Math.max(endDate.getTime() - startDate.getTime(), 0) : null
   // Scale the bar width with duration, saturating at 2h so a marathon meeting fills the track.
   const durationRatio = durationMs === null ? 0 : Math.min(durationMs / ms('2h'), 1)
-
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'gcal'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'gcal'
-    })
-  }
 
   return (
     <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
@@ -180,7 +163,6 @@ const GCalEventCard = (props: Props) => {
           href={link ?? undefined}
           target='_blank'
           rel='noreferrer'
-          onClick={trackLinkClick}
         >
           {summary || '(no title)'}
         </a>

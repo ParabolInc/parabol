@@ -47,11 +47,6 @@ type JiraServerIssue implements TaskIntegration {
   url: String!
 
   """
-  The service this issue comes from
-  """
-  service: IntegrationProviderServiceEnum!
-
-  """
   The plaintext summary of the jira issue
   """
   summary: String!

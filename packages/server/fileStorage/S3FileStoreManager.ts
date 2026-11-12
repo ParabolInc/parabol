@@ -14,7 +14,11 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
+import FileStoreManager, {
+  type FileAssetDir,
+  type PartialPath,
+  type PutFileOptions
+} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
   public async refreshRetryTokenForRetry(
@@ -104,17 +108,14 @@ export default class S3Manager extends FileStoreManager {
     })
   }
 
-  protected async putFile(
-    file: ArrayBufferLike,
-    fullPath: string,
-    options?: {contentDisposition?: string}
-  ) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string, options?: PutFileOptions) {
     const s3Params = {
       Body: Buffer.from(file),
       Bucket: this.bucket,
       Key: fullPath,
       ContentType: mime.lookup(fullPath) || 'application/octet-stream',
-      ...(options?.contentDisposition && {ContentDisposition: options.contentDisposition})
+      ...(options?.contentDisposition && {ContentDisposition: options.contentDisposition}),
+      ...(options?.cacheControl && {CacheControl: options.cacheControl})
     }
     await this.s3.send(new PutObjectCommand(s3Params))
   }
@@ -129,18 +130,20 @@ export default class S3Manager extends FileStoreManager {
 
   async putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
-    await this.putFile(file, fullPath)
+    await this.putFile(file, fullPath, {cacheControl: this.getBuildFileCacheControl(partialPath)})
     return this.getPublicFileLocation(fullPath)
   }
   async checkExists(key: string, assetDir?: FileAssetDir) {
     const Key = this.prependPath(key, assetDir)
     try {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
+      return true
     } catch (e) {
-      if (e instanceof Error && e.name === 'NotFound') return false
-      Logger.log(`Invalid error ${(e as Error).name}`)
+      if (!(e instanceof Error && e.name === 'NotFound')) {
+        Logger.log(`Invalid error ${(e as Error).name}`)
+      }
+      return false
     }
-    return true
   }
 
   async copyFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {

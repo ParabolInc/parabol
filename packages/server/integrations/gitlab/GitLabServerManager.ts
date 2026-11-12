@@ -1,5 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
+import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
@@ -28,12 +28,12 @@ import type {
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/gitlabTypes'
-import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'

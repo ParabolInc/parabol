@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import type {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import type {UnmaskedNotification} from './mapNotificationToToast'
 
@@ -21,7 +20,7 @@ graphql`
 
 const mapMentionedToToast = (
   notification: UnmaskedNotification<mapMentionedToToast_notification$data>,
-  {atmosphere, navigate}: OnNextNavigateContext
+  {navigate}: OnNextNavigateContext
 ): Snack | null => {
   const {
     id: notificationId,
@@ -37,13 +36,11 @@ const mapMentionedToToast = (
 
   let locationType = 'their response'
   let actionLabel = 'See their response'
-  let snackbarType = 'responseMentioned'
   let actionUrl = `/meet/${meetingId}`
 
   if (retroReflection) {
     actionLabel = 'See their reflection'
     locationType = 'their reflection'
-    snackbarType = 'reflectionMentioned'
     if (retroDiscussStageIdx) {
       actionUrl = `/meet/${meetingId}/discuss/${retroDiscussStageIdx}`
     }
@@ -62,16 +59,6 @@ const mapMentionedToToast = (
     action: {
       label: actionLabel,
       callback: goThere
-    },
-    onShow: () => {
-      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
-        snackbarType
-      })
-    },
-    onManualDismiss: () => {
-      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
-        snackbarType
-      })
     }
   }
 }

@@ -3,6 +3,7 @@ import {Add} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useAddTeamHealthQuestionMutation from '../../../mutations/useAddTeamHealthQuestionMutation'
 import {Button} from '../../../ui/Button/Button'
+import getServerError from '../../../utils/relay/getServerError'
 
 interface Props {
   templateId: string
@@ -17,7 +18,7 @@ const AddTeamHealthQuestion = (props: Props) => {
 
   const onError = (err: Error) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
-      message: err.message,
+      message: getServerError(err)?.message ?? err.message,
       autoDismiss: 5,
       key: 'addTeamHealthQuestionError'
     })

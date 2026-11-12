@@ -69,9 +69,7 @@ export default class TeamHealthDemoAtmosphere extends Environment {
 
   subscribeToNothing: SubscribeFunction = () => Observable.create(() => undefined)
 
-  registerQuery = async () => undefined
-
-  scheduleUnregisterQuery = () => undefined
+  retainSubscription = () => () => undefined
 
   fetchQuery = async <T extends OperationType>(
     taggedNode: GraphQLTaggedNode,

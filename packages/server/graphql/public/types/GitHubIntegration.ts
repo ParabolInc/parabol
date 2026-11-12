@@ -1,4 +1,4 @@
-import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
+import GitHubIntegrationId from '../../../../client/integrations/github/shared/GitHubIntegrationId'
 import {getUserId} from '../../../utils/authorization'
 import type {GitHubIntegrationResolvers} from '../resolverTypes'
 

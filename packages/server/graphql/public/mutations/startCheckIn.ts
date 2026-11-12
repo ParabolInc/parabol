@@ -2,15 +2,16 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
+import insertNewMeeting from '../../mutations/helpers/insertNewMeeting'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
@@ -29,16 +30,16 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-  const [unpaidError, viewer] = await Promise.all([
+  const meetingType: MeetingTypeEnum = 'action'
+  const [unpaidError, meetingCount, {facilitatorUserId, rotation}, teamMember] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('meetingCount').load({teamId, meetingType}),
+    getNextFacilitatorUserId(teamId, viewerId, dataLoader),
+    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  const meetingType: MeetingTypeEnum = 'action'
-
   // RESOLUTION
-  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
   const [phases, inserts] = await createNewMeetingPhases<CheckInPhase>(
@@ -50,7 +51,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     dataLoader
   )
 
-  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
@@ -60,23 +60,13 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     facilitatorUserId
   }) as CheckInMeeting
   try {
-    await pg.transaction().execute(async (pg) => {
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(phases)})
-        .execute()
-      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
-    })
+    await insertNewMeeting(meeting, inserts)
   } catch {
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')
-  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-  const teamMember = await dataLoader
-    .get('teamMembers')
-    .loadNonNull(toTeamMemberId(teamId, viewerId))
   const meetingMember = createMeetingMember(meeting, teamMember)
   await Promise.all([
     pg
@@ -87,10 +77,11 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .values(meetingMember)
       .execute(),
     agendaItemIds.length &&
-      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
+      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute(),
+    rotation && setFacilitatorRotation(teamId, rotation, dataLoader)
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error} = await createGcalEvent({
     name: meeting.name,
     gcalInput,

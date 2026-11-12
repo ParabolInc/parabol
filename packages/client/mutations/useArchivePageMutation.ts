@@ -54,11 +54,11 @@ export const handleArchivePage = (
     isArchived: true
   })
 
-  if (isRestore) {
+  if (isHardDelete) {
+    safeRemoveNodeFromConn(pageId, archivedConn)
+  } else if (isRestore) {
     safeRemoveNodeFromConn(pageId, archivedConn)
     safePutNodeInConn(conn, page, store, 'sortOrder', true)
-  } else if (isHardDelete) {
-    safeRemoveNodeFromConn(pageId, archivedConn)
   } else {
     // archive
     safeRemoveNodeFromConn(pageId, conn)

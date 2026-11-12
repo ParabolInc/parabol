@@ -120,7 +120,7 @@ const ActionMeetingLastCall = (props: Props) => {
                 aria-label='End Meeting'
                 size='lg'
                 onClick={endMeeting}
-                disabled={!!endedAt}
+                disabled={!!endedAt || submitting}
               >
                 End Check-in Meeting
               </Button>

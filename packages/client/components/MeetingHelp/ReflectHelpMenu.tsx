@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ReflectHelpMenu_settings$key} from '~/__generated__/ReflectHelpMenu_settings.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -27,7 +26,6 @@ const ReflectHelpMenu = (props: Props) => {
     meetingRef
   )
   const disableAnonymity = settings.disableAnonymity
-  useClientSideTrack('Help Menu Open', {phase: 'reflect'})
   return (
     <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.reflect}</HelpMenuHeader>

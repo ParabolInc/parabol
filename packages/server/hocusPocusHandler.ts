@@ -1,9 +1,13 @@
 import './hocusPocus'
-import type {WebSocketBehavior} from 'uWebSockets.js'
+import uws, {type WebSocketBehavior} from 'uWebSockets.js'
+import {activeYjsSockets} from './activeClients'
+import {getIsRefusingSockets} from './getIsShuttingDown'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import {redisHocusPocus} from './hocusPocus'
+import {websocketMessagesDropped} from './metricsHandler'
 import {Logger} from './utils/Logger'
 import parseSessionId from './utils/parseSessionId'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {runWithLogContext} from './utils/requestLogContext'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
@@ -23,7 +27,14 @@ const getSocketLogContext = ({ip, sessionId}: HocusPocusSocketData) => ({
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   maxPayloadLength: 1024 * 1024 * 64,
+  compression: uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR,
   upgrade(res, req, context) {
+    if (rejectNonWebSocketUpgrade(res, req)) return
+    // a server handing its documents to the others must not take them back
+    if (getIsRefusingSockets()) {
+      res.end()
+      return
+    }
     const headers = {} as SerializedHTTPRequest['headers']
     req.forEach((key, value) => {
       headers[key] = value
@@ -55,6 +66,7 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     )
   },
   open(ws) {
+    activeYjsSockets.add(ws)
     const userData = ws.getUserData()
     userData.socket = new HocusPocusWebSocket(ws)
     runWithLogContext(getSocketLogContext(userData), () => {
@@ -78,7 +90,11 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
       }
     })
   },
+  dropped() {
+    websocketMessagesDropped.inc({route: 'yjs'})
+  },
   close(ws, code, reason) {
+    activeYjsSockets.delete(ws)
     const userData = ws.getUserData()
     userData.closed = true
     userData.socket.readyState = 3

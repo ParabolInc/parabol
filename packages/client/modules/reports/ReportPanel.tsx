@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useId} from 'react'
+import {type ReactNode, useId} from 'react'
 import {useFragment} from 'react-relay'
 import {Close} from '~/ui/icons'
 import type {ReportPanel_organization$key} from '../../__generated__/ReportPanel_organization.graphql'
@@ -28,12 +28,13 @@ interface Props {
   isPageHeading?: boolean
   onSpecChange: (spec: ReportSpec) => void
   onClose?: () => void
+  footer?: ReactNode
 }
 
 const ReportPanel = (props: Props) => {
   const {organizationRef, orgId, spec, resultSpec, name, period, reportQuestionId} = props
   const {isUpdating, onRetry, isPageHeading} = props
-  const {onSpecChange, onClose} = props
+  const {onSpecChange, onClose, footer} = props
   const organization = useFragment(
     graphql`
       fragment ReportPanel_organization on Organization {
@@ -105,6 +106,7 @@ const ReportPanel = (props: Props) => {
       <div aria-busy={isUpdating} className={cn('transition-opacity', isUpdating && 'opacity-50')}>
         <ReportPageResult organizationRef={organization} orgId={orgId} spec={resultSpec} />
       </div>
+      {footer}
     </section>
   )
 }

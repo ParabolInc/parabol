@@ -1,6 +1,7 @@
-import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
-import getModelManager from './ai_models/ModelManager'
+import {type Kysely, sql} from 'kysely'
+import getKysely from '../server/postgres/getKysely'
+import type {DB} from '../server/postgres/types/pg'
+import {activeEmbeddingModelId} from './activeEmbeddingModel'
 import {getEmbedderJobPriority} from './getEmbedderJobPriority'
 
 export interface MeetingTemplateMeta {
@@ -10,9 +11,9 @@ export interface MeetingTemplateMeta {
 }
 
 export const insertMeetingTemplatesIntoMetadataAndQueue = async (
-  meetingTemplates: MeetingTemplateMeta[]
+  meetingTemplates: MeetingTemplateMeta[],
+  pg: Kysely<DB> = getKysely()
 ) => {
-  const pg = getKysely()
   const metadataRows = meetingTemplates.map(({id, teamId, updatedAt}) => ({
     refId: id,
     objectType: 'meetingTemplate' as const,
@@ -21,10 +22,7 @@ export const insertMeetingTemplatesIntoMetadataAndQueue = async (
   }))
   if (!metadataRows[0]) return
 
-  const modelManager = getModelManager()
-  const modelIds = [...modelManager.embeddingModels.keys()]
   const priority = await getEmbedderJobPriority('historicalUpdate', null, 0)
-  // This is ugly but it runs fast, which is what we need for historical data
   return pg
     .with('Insert', (qc) =>
       qc
@@ -33,23 +31,14 @@ export const insertMeetingTemplatesIntoMetadataAndQueue = async (
         .onConflict((oc) => oc.doNothing())
         .returning('id')
     )
-    .with('Metadata', (qc) =>
-      qc
-        .selectFrom('Insert')
-        .innerJoin(
-          sql<{modelId: string}>`UNNEST(ARRAY[${sql.join(modelIds)}])`.as('model'),
-          (join) => join.on('Insert.id', 'is not', null)
-        )
-        .select(['id', 'modelId'])
-    )
     .insertInto('EmbeddingsJobQueueV2')
     .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
     .expression(({selectFrom}) =>
-      selectFrom('Metadata').select(({ref}) => [
+      selectFrom('Insert').select(({ref}) => [
         sql.lit('embed:start').as('jobType'),
         sql.lit(priority).as('priority'),
-        ref('Metadata.id').as('embeddingsMetadataId'),
-        ref('Metadata.modelId').as('modelId')
+        ref('Insert.id').as('embeddingsMetadataId'),
+        sql.lit(activeEmbeddingModelId).as('modelId')
       ])
     )
     .execute()

@@ -1,6 +1,7 @@
 import type {WebSocket} from 'uWebSockets.js'
 import type {WebSocketLike} from '@hocuspocus/server'
 import type {HocusPocusSocketData} from './hocusPocusHandler'
+import isWorthCompressingSocketMessage from './utils/isWorthCompressingSocketMessage'
 import {Logger} from './utils/Logger'
 
 // This is a mock WebSocket that fills as much of the standard WebSocket contract that HocusPocus requires
@@ -23,7 +24,7 @@ export class HocusPocusWebSocket implements WebSocketLike {
   send(message: Uint8Array) {
     if (this.ws.getUserData().closed) return
     try {
-      this.ws.send(message, true)
+      this.ws.send(message, true, isWorthCompressingSocketMessage(message))
     } catch (e) {
       Logger.error({closed: this.ws.getUserData().closed, readyState: this.readyState})
       Logger.error(e)

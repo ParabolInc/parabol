@@ -1,6 +1,7 @@
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
+import {logins} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
@@ -50,6 +51,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
       localIdentity.isEmailVerified = true
       await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)
     }
+    logins.inc({method: 'password'})
     return {userId, isNewUser: false}
   }
   if (!hashedPassword) {
@@ -69,6 +71,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   const isOrganic = !invitationToken
   context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
   setAuthCookie(context, context.authToken)
+  logins.inc({method: 'password'})
   return {
     userId: newUser.id,
     isNewUser: true

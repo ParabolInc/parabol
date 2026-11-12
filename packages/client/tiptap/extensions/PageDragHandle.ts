@@ -1,12 +1,13 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
-import type {Node} from '@tiptap/pm/model'
+import type {Node, ResolvedPos} from '@tiptap/pm/model'
 import {NodeSelection} from '@tiptap/pm/state'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
+import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
 import DragHandleMenu from './DragHandleMenu'
@@ -32,6 +33,13 @@ const DRAG_HANDLE_ANCHOR_HEIGHT = 24
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
+}
+
+function isInside($pos: ResolvedPos, depth: number, typeName: string) {
+  for (let d = depth - 1; d >= 0; d--) {
+    if ($pos.node(d).type.name === typeName) return true
+  }
+  return false
 }
 
 interface NodeChangeData {
@@ -90,7 +98,7 @@ export const PageDragHandle = Extension.create<Options>({
         const node = selection.node
         const pos = selection.from
         if (node.type.name === 'pageLinkBlock' && node.attrs.canonical) return false
-        if (pos === 1) return false
+        if (pos === 0) return true
 
         editor.view.dispatch(editor.state.tr.delete(pos, pos + node.nodeSize))
         return true
@@ -135,7 +143,14 @@ export const PageDragHandle = Extension.create<Options>({
 
       menuRenderer = new ReactRenderer(DragHandleMenu, {
         editor: editorRef,
-        props: {editor: editorRef, node, pos, onClose: closeMenu, anchorElement: dragHandleElement}
+        props: {
+          editor: editorRef,
+          node,
+          pos,
+          onClose: closeMenu,
+          anchorElement: dragHandleElement,
+          canCreateSubPage: !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+        }
       })
 
       document.body.appendChild(menuRenderer.element)
@@ -236,8 +251,8 @@ export const PageDragHandle = Extension.create<Options>({
           const dom = editorRef.view.nodeDOM(dragHandleNodePos)
           if (!(dom instanceof HTMLElement)) return null
           // Walk up one DOM level for horizontal positioning so the handle stays in the
-          // gutter even when the extension detects a deeply nested node (e.g. <p> inside
-          // a <blockquote>). For <li> elements, walk up to the parent <ul>/<ol> so the
+          // gutter even when the extension detects a deeply nested node (e.g. a second <p>
+          // inside an <li>). For <li> elements, walk up to the parent <ul>/<ol> so the
           // handle sits in the list gutter (outside the bullet marker area).
           let horizontalRef: HTMLElement = dom
           if (dom.parentElement && dom.parentElement !== editorRef.view.dom) {
@@ -278,6 +293,7 @@ export const PageDragHandle = Extension.create<Options>({
           range.setStart(textNode, 0)
           range.setEnd(textNode, 1)
           const lineRect = range.getBoundingClientRect()
+          if (!lineRect.height) return null
           return {
             getBoundingClientRect: () => ({
               x: horizontalRect.x,
@@ -302,12 +318,16 @@ export const PageDragHandle = Extension.create<Options>({
                 const name = node.type.name
                 if (name === 'detailsSummary' || name === 'detailsContent') return 1000
                 // Exclude children nested inside detailsSummary
-                for (let d = depth - 1; d >= 0; d--) {
-                  if ($pos.node(d).type.name === 'detailsSummary') return 1000
-                }
+                if (isInside($pos, depth, 'detailsSummary')) return 1000
                 // Allow children of detailsContent (they should be independently draggable)
                 return 0
               }
+            },
+            {
+              // A quote is one block. Without this the target flips between a line and the
+              // whole quote depending on how the pointer approaches the handle.
+              id: 'quoteStructure',
+              evaluate: ({$pos, depth}) => (isInside($pos, depth, 'blockquote') ? 1000 : 0)
             }
           ]
         },

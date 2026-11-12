@@ -30,7 +30,7 @@ const MeetingOverflowMenu = ({hiddenMembers}: Props) => {
     <Popover.Root open={open} onOpenChange={onOpenChange}>
       <Popover.Trigger asChild>
         <button
-          className='flex h-8 w-8 cursor-pointer select-none items-center justify-center rounded-full bg-sky-400 font-semibold text-md text-white xl:h-12 xl:w-12 min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:text-base'
+          className='flex h-8 w-8 cursor-pointer select-none items-center justify-center rounded-full bg-sky-600 font-semibold text-[11px] text-white min-[1280px]:h-12 min-[1600px]:h-14 min-[1280px]:w-12 min-[1600px]:w-14 min-[1280px]:text-sm min-[1600px]:text-base'
           aria-label={`${count} more participants`}
           {...hoverTriggerProps}
         >

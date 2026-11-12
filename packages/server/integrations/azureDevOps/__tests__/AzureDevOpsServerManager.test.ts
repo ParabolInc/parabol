@@ -1,6 +1,6 @@
 jest.mock('../../helpers/authorizeOAuth2', () => ({authorizeOAuth2: jest.fn()}))
 
-import azureDevOpsOAuthScope from 'parabol-client/shared/integrations/azureDevOpsOAuthScope'
+import azureDevOpsOAuthScope from 'parabol-client/integrations/azureDevOps/shared/azureDevOpsOAuthScope'
 import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import {authorizeOAuth2} from '../../helpers/authorizeOAuth2'
@@ -466,6 +466,15 @@ describe('AzureDevOpsServerManager responses', () => {
     fetchMock.mockResolvedValue(htmlResponse(502))
     const res = await manager.listFields(INSTANCE_ID, WEB_PROJECT_ID)
     expect(res).toHaveProperty('message', 'Azure DevOps returned an unexpected response (502)')
+    expect(res).toHaveProperty('response', {
+      integration: 'azureDevOps',
+      method: 'GET',
+      endpoint: expect.stringContaining('/_apis/'),
+      path: expect.stringContaining('/_apis/'),
+      status: 502,
+      contentType: 'text/html',
+      body: '<html>Sign in</html>'
+    })
   })
 
   it('turns the message of a failed JSON response into the Error', async () => {

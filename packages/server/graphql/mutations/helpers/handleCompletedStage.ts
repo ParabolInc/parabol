@@ -58,7 +58,7 @@ const handleCompletedRetrospectiveStage = async (
       // navigation must not wait on them (or fail with them)
       generateDefaultSuggestedGroups(meeting.id, meeting.teamId, meeting.facilitatorUserId!)
     } else if (stage.phaseType === GROUP) {
-      const {facilitatorUserId, phases, teamId} = meeting
+      const {phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await pg
         .updateTable('NewMeeting')
@@ -67,7 +67,7 @@ const handleCompletedRetrospectiveStage = async (
         .execute()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId!)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader)
     }
 
     return {[stage.phaseType]: data}

@@ -1,30 +1,39 @@
 import {useState} from 'react'
-import CardButton from '../../../../components/CardButton'
-import IconLabel from '../../../../components/IconLabel'
 import TeamHealthDemoIntegrationDialog, {
   TASK_INTEGRATION_BENEFITS
 } from '../../../../components/TeamHealthDemo/TeamHealthDemoIntegrationDialog'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
+import {getConnectLabel, SUGGESTED_SEND_SERVICES} from '../../../../utils/getSendServices'
+import TaskSendButton from './TaskSendButton'
 
-const TaskFooterIntegrateDemoToggle = () => {
+interface Props {
+  isCardActive: boolean
+}
+
+const TaskFooterIntegrateDemoToggle = ({isCardActive}: Props) => {
   const [isOpen, setIsOpen] = useState(false)
+  const label = getConnectLabel(SUGGESTED_SEND_SERVICES)
   return (
     <>
       <Tooltip>
         <TooltipTrigger asChild>
-          <CardButton onClick={() => setIsOpen(true)}>
-            <IconLabel icon='widgets' />
-          </CardButton>
+          <TaskSendButton
+            aria-label={label}
+            isCardActive={isCardActive}
+            services={[]}
+            suggestedServices={SUGGESTED_SEND_SERVICES}
+            onClick={() => setIsOpen(true)}
+          />
         </TooltipTrigger>
-        <TooltipContent side='bottom'>Push to Integration</TooltipContent>
+        <TooltipContent side='bottom'>{label}</TooltipContent>
       </Tooltip>
       <TeamHealthDemoIntegrationDialog
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title='Push tasks to your tools on a real team'
-        intro='This is a sample meeting, so there is no tracker to push to. On your own team, connecting one gets you:'
+        title='Send tasks to your tools on a real team'
+        intro='This is a sample meeting, so there is no tracker to send to. On your own team, connecting one gets you:'
         benefits={TASK_INTEGRATION_BENEFITS}
       />
     </>

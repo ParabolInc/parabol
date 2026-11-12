@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {VoteHelpMenu_meeting$key} from '~/__generated__/VoteHelpMenu_meeting.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {VOTE} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -17,7 +16,6 @@ interface Props {
 
 const VoteHelpMenu = (props: Props) => {
   const {meetingRef, onClose} = props
-  useClientSideTrack('Help Menu Open', {phase: 'vote'})
   const votes = useFragment(
     graphql`
       fragment VoteHelpMenu_meeting on RetrospectiveMeeting {

@@ -1,12 +1,12 @@
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import {meetingsStarted} from '../../../metricsHandler'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {
   AnyMeeting,
   RetrospectiveMeeting,
   TeamHealthMeeting
 } from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import publish, {type SubOptions} from '../../../utils/publish'
@@ -42,10 +42,7 @@ const startRecurringMeeting = async (
   const facilitatorId = options.facilitatorId ?? meetingSeries.facilitatorId
 
   // AUTH
-  const [unpaidError, facilitator] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(facilitatorId)
-  ])
+  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
   const [lastMeeting, meetingSettings] = await Promise.all([
@@ -172,7 +169,7 @@ const startRecurringMeeting = async (
   }
 
   IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
-  analytics.meetingStarted(facilitator, meeting)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   return {meeting}
 }
 

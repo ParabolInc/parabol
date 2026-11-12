@@ -1,4 +1,4 @@
-import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
+import JiraServerIssueId from '~/integrations/jiraServer/shared/JiraServerIssueId'
 import type {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
 import {
   VOTE_FIELD_ALLOWED_TYPES,
@@ -22,8 +22,6 @@ const JiraServerIssue: JiraServerIssueResolvers = {
     const {origin} = new URL(self)
     return `${origin}/browse/${issueKey}`
   },
-
-  service: () => 'jiraServer' as const,
 
   title: ({summary}) => summary,
 
