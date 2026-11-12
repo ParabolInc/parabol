@@ -7,6 +7,7 @@ import {CipherId} from '../../CipherId'
 import {toEpochSeconds} from '../../epochTime'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
+import {Logger} from '../../Logger'
 import {authenticateYjsConnection} from '../authenticateYjsConnection'
 
 const pg = getKysely()
@@ -97,6 +98,25 @@ test('opens the canonical page document with the role the user has', async () =>
   const documentName = CipherId.toClient(pageId, 'page')
   expect(await authenticate(documentName, ownerId)).toMatchObject({readOnly: false})
   expect(await authenticate(documentName, viewerId)).toMatchObject({readOnly: true})
+})
+
+test('warns instead of logging an error for a page name the client cannot produce', async () => {
+  const errorSpy = jest.spyOn(Logger, 'error').mockImplementation(() => {})
+  const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {})
+  try {
+    const outOfRangeName = `page:${CipherId.encrypt(2 ** 31)}`
+    const aliasName = `page:0${CipherId.encrypt(pageId)}`
+    for (const documentName of [outOfRangeName, aliasName]) {
+      await expect(authenticate(documentName, ownerId)).rejects.toMatchObject({
+        reason: 'InvalidDocument'
+      })
+    }
+    expect(errorSpy).not.toHaveBeenCalled()
+    expect(warnSpy).toHaveBeenCalledTimes(2)
+  } finally {
+    errorSpy.mockRestore()
+    warnSpy.mockRestore()
+  }
 })
 
 test('rejects other names that resolve to the same page', async () => {

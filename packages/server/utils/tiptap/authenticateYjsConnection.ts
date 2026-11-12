@@ -3,7 +3,6 @@ import ms from 'ms'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
-import logError from '../logError'
 import {redisStoreOrNetwork} from '../redisStoreOrNetwork'
 import {getPageConnectionAccess} from './getPageConnectionAccess'
 import {isYjsSessionLive} from './isYjsSessionLive'
@@ -83,7 +82,7 @@ export const authenticateYjsConnection = async ({
       `Invalid document request from client: ${documentName}`,
       'InvalidDocument'
     )
-    logError(error, {userId, tags: {dbId, documentName}})
+    Logger.warn(error, {userId, tags: {dbId, documentName}})
     throw error
   }
   const access = await getPageConnectionAccess(dbId, userId)
