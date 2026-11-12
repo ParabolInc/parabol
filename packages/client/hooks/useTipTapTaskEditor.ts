@@ -2,7 +2,7 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {Placeholder} from '@tiptap/extensions'
-import {Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
+import {type Editor, Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useMemo} from 'react'
 import {useUploadUserAsset} from '~/mutations/useUploadUserAsset'
@@ -58,10 +58,23 @@ export const useTipTapTaskEditor = (
     // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
     onBlur?: () => void
     onModEnter?: () => void
+    onEnter?: (editor: Editor) => boolean
+    onShiftEnter?: (editor: Editor) => boolean
+    onEscape?: () => void
     onUploadSettled?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, onBlur, onModEnter, onUploadSettled} = options
+  const {
+    atmosphere,
+    teamId,
+    readOnly,
+    onBlur,
+    onModEnter,
+    onEnter,
+    onShiftEnter,
+    onEscape,
+    onUploadSettled
+  } = options
   const contentJSON = useMemo(() => JSON.parse(content) as JSONContent, [content])
   const [commit] = useUploadUserAsset()
 
@@ -112,6 +125,13 @@ export const useTipTapTaskEditor = (
                   return true
                 }
                 return false
+              },
+              Enter: () => onEnter?.(this.editor) ?? false,
+              'Shift-Enter': () => onShiftEnter?.(this.editor) ?? false,
+              Escape: () => {
+                if (!onEscape) return false
+                onEscape()
+                return true
               }
             }
           }

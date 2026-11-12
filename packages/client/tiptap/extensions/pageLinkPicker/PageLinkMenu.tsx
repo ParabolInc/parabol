@@ -66,9 +66,10 @@ export const PageLinkMenu = forwardRef(
               ref={item === activeItem ? activeRef : undefined}
               data-highlighted={item === activeItem ? '' : undefined}
               className={
-                'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
+                'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
               }
               onClick={() => selectItem(item.pageId)}
+              onMouseMove={() => setSelectedIndex(items.indexOf(item))}
             >
               <span>{item.title}</span>
             </div>

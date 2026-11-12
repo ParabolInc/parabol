@@ -63,10 +63,11 @@ export default forwardRef(
           <div
             data-highlighted={idx === selectedIndex ? '' : undefined}
             className={
-              'mx-1 flex cursor-pointer items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
+              'mx-1 flex cursor-pointer items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
             }
             key={item.userId}
             onClick={() => selectItem(idx)}
+            onMouseMove={() => setSelectedIndex(idx)}
           >
             <Avatar picture={item.picture} className='h-6 w-6' />
             <TypeAheadLabel label={item.preferredName} query={query} className='pl-3' />
