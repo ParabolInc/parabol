@@ -156,7 +156,7 @@ const User: ReqResolvers<'User'> = {
   ) => {
     const viewerId = getUserId(authToken)
     let validTeamIds = teamIds
-    if (authToken.rol !== 'su') {
+    if (authToken?.rol !== 'su') {
       const teamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
       const allTeamIds = teamMembers.map(({teamId}) => teamId)
       validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
@@ -250,7 +250,7 @@ const User: ReqResolvers<'User'> = {
 
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
-    const accessibleTeamIds = authToken.tms
+    const accessibleTeamIds = authToken?.tms ?? []
     let validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
@@ -593,7 +593,7 @@ const User: ReqResolvers<'User'> = {
     const activeTeamIds =
       viewerId === userId || isSuperUser(authToken)
         ? allTms
-        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
+        : allTms.filter((teamId: string) => isTeamMember(authToken, teamId))
     let teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
@@ -621,15 +621,15 @@ const User: ReqResolvers<'User'> = {
     const tms = await dataLoader.get('teamIdsByUserId').load(userId)
     return viewerId === userId && !resourceGrants
       ? tms
-      : tms.filter((teamId: string) => authToken.tms.includes(teamId))
+      : tms.filter((teamId: string) => isTeamMember(authToken, teamId))
   },
 
   activity: async (_source, {activityId}, {dataLoader, authToken, resourceGrants}) => {
     const viewerId = getUserId(authToken)
 
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
-    if (authToken.rol !== 'su') {
-      if (activity?.scope === 'TEAM' && !authToken.tms.includes(activity.teamId)) {
+    if (authToken?.rol !== 'su') {
+      if (activity?.scope === 'TEAM' && !isTeamMember(authToken, activity.teamId)) {
         return null
       }
       if (activity?.scope === 'ORGANIZATION') {
@@ -712,7 +712,7 @@ const User: ReqResolvers<'User'> = {
       templates.map(async (template) => {
         const {scope, teamId, orgId} = template
         if (scope === 'PUBLIC') return true
-        if (scope === 'TEAM') return authToken.tms.includes(teamId)
+        if (scope === 'TEAM') return isTeamMember(authToken, teamId)
         if (scope === 'ORGANIZATION') {
           const organizationUsers = await dataLoader
             .get('organizationUsersByUserId')
@@ -740,7 +740,7 @@ const User: ReqResolvers<'User'> = {
     const teamIds =
       (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
-        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
+        : allTms.filter((teamId: string) => isTeamMember(authToken, teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = await filterGrantedOrgIds(
@@ -811,7 +811,7 @@ const User: ReqResolvers<'User'> = {
     const teamIds =
       (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
-        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
+        : allTms.filter((teamId: string) => isTeamMember(authToken, teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = await filterGrantedOrgIds(

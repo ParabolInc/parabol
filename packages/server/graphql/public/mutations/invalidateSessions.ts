@@ -11,7 +11,7 @@ const invalidateSessions: MutationResolvers['invalidateSessions'] = async (
   const {authToken, socketId} = context
   const viewerId = getUserId(authToken)
 
-  if (!viewerId) {
+  if (!authToken || !viewerId) {
     return standardError(new Error('Not authenticated'))
   }
   const {iat} = authToken

@@ -47,7 +47,7 @@ const TeamMember: TeamMemberResolvers = {
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
       const tms = await dataLoader.get('teamIdsByUserId').load(userId)
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
+      const onTeam = authToken?.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {
           userId: viewerId

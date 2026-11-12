@@ -1,5 +1,10 @@
 import {type OrgStructureValueSource, toOrgStructureKey} from '../../../reports/orgStructure'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isTeamMember,
+  isUserBillingLeader
+} from '../../../utils/authorization'
 import type {OrgStructureValueResolvers} from '../resolverTypes'
 
 export type {OrgStructureValueSource}
@@ -23,7 +28,8 @@ const OrgStructureValue: OrgStructureValueResolvers = {
     )
     return teams.filter(
       (team) =>
-        placedTeamIds.has(team.id) && (isLeader || team.isPublic || authToken.tms.includes(team.id))
+        placedTeamIds.has(team.id) &&
+        (isLeader || team.isPublic || isTeamMember(authToken, team.id))
     )
   }
 }

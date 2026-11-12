@@ -7,6 +7,7 @@ import runReport from '../../../reports/runReport'
 import {
   getUserId,
   isSuperUser,
+  isTeamMember,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
@@ -119,7 +120,7 @@ const Organization: OrganizationResolvers = {
       return sortedTeams
     } else {
       // Regular users can see teams they're on plus public teams
-      return sortedTeams.filter((team) => team.isPublic || authToken.tms.includes(team.id))
+      return sortedTeams.filter((team) => team.isPublic || isTeamMember(authToken, team.id))
     }
   },
 

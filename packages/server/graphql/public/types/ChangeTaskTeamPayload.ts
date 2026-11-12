@@ -1,4 +1,4 @@
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import type {ChangeTaskTeamPayloadResolvers} from '../resolverTypes'
 
 export type ChangeTaskTeamPayloadSource =
@@ -15,7 +15,7 @@ const ChangeTaskTeamPayload: ChangeTaskTeamPayloadResolvers = {
     if (!task) return null
     const {userId, tags, teamId} = task
     const isViewer = userId === getUserId(authToken)
-    const isViewerOnTeam = authToken.tms.includes(teamId)
+    const isViewerOnTeam = isTeamMember(authToken, teamId)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? task : null
   },
   removedTaskId: (source) => ('error' in source ? null : source.taskId)

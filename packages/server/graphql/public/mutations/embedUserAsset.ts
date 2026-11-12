@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {MutationResolvers} from '../resolverTypes'
 import {hostUserAsset} from './helpers/hostUserAsset'
 import {validateScope} from './uploadUserAsset'
@@ -8,6 +9,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   context
 ) => {
   const {authToken, dataLoader, resourceGrants} = context
+  if (!authToken) throw new GraphQLError('Not signed in', {extensions: {code: 'UNAUTHENTICATED'}})
   // VALIDATION
   let parsedUrl: URL
   try {

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../../database/types/AuthToken'
@@ -16,6 +17,7 @@ import {MutationResolvers} from '../resolverTypes'
 const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   const {invitees} = args
   const {authToken, dataLoader, socketId: mutatorId} = context
+  if (!authToken) throw new GraphQLError('Not signed in', {extensions: {code: 'UNAUTHENTICATED'}})
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 

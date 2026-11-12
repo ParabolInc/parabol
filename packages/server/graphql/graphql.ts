@@ -9,7 +9,7 @@ import type {ResourceGrants} from './public/ResourceGrants'
 export type DataLoaderWorker = CacheWorker<RootDataLoader>
 
 export interface GQLContext {
-  authToken: AuthToken
+  authToken: AuthToken | null
   rateLimiter: InMemoryRateLimiter
   ip: string
   socketId: string
@@ -21,7 +21,7 @@ export interface GQLContext {
 export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>
 export interface InternalContext {
   dataLoader: DataLoaderWorker
-  authToken: AuthToken
+  authToken: AuthToken | null
   ip: string
   // not present if called ad-hoc
   socketId?: string

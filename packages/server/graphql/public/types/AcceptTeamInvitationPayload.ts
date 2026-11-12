@@ -16,7 +16,7 @@ export type AcceptTeamInvitationPayloadSource = {
 const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
   team: ({teamId}, _args, {authToken, dataLoader}: GQLContext) => {
     return teamId
-      ? dataLoader.get('teamsWithUserSort').loadNonNull({teamId, userId: authToken.sub})
+      ? dataLoader.get('teamsWithUserSort').loadNonNull({teamId, userId: getUserId(authToken)})
       : null
   },
   teamMember: async ({teamMemberId}, _args, {dataLoader}: GQLContext) => {

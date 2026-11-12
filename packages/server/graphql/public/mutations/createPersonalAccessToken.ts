@@ -13,6 +13,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   {authToken}
 ) => {
   const {name, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
+  if (!authToken) throw new GraphQLError('Not signed in', {extensions: {code: 'UNAUTHENTICATED'}})
   const {sub: userId} = authToken
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick at least one scope', {extensions: {code: 'BAD_USER_INPUT'}})
