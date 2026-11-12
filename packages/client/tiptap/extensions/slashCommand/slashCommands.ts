@@ -137,6 +137,7 @@ export const slashCommands = [
           ...CALLOUT_TONES.map((tone) => CALLOUT_TONE_LABELS[tone].toLowerCase())
         ],
         icon: NotesIcon,
+        shouldHide: (editor: Editor) => !editor.schema.nodes.callout,
         action: (editor: Editor) => editor.chain().focus().setCallout().run(),
         forQuery: calloutForQuery
       },

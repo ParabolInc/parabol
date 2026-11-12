@@ -3,6 +3,7 @@ import {Editor} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import {CalloutBase} from '../../../../shared/tiptap/extensions/CalloutBase'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
+import {slashCommands} from '../../slashCommand/slashCommands'
 import {Callout} from '../Callout'
 import {calloutForQuery} from '../calloutSlashCommand'
 import {CALLOUT_TONE_STYLES} from '../calloutToneStyles'
@@ -58,4 +59,19 @@ test('a generic query keeps the plain Callout row', () => {
 
 test('a padded, upper-case query still matches', () => {
   expect(calloutForQuery(' TIP ')?.title).toBe('Tip callout')
+})
+
+test('the Callout row is hidden in an editor without callouts', () => {
+  const calloutCommand = slashCommands
+    .flatMap(
+      (group): readonly {title: string; shouldHide?: (editor: Editor) => boolean}[] =>
+        group.commands
+    )
+    .find((command) => command.title === 'Callout')
+  const editorWithoutCallout = new Editor({
+    element: document.createElement('div'),
+    extensions: serverTipTapExtensions.filter((extension) => extension !== CalloutBase)
+  })
+  expect(calloutCommand?.shouldHide?.(editorWithoutCallout)).toBe(true)
+  expect(calloutCommand?.shouldHide?.(mount())).toBe(false)
 })
