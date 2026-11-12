@@ -14,15 +14,11 @@ env:
   PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN: "false"
 # The jobs run in parallel, and each one builds only what its own checks need
 jobs:
-  # The suites in packages/server/__tests__ call the built server. Every other server suite runs in the unit job without one
+  # The suites in packages/server/__tests__ call the built server. Every other server suite runs in the unit job without one.
+  # The full build makes this the slowest job, so it is the only one on a paid runner
   integration:
-    name: integration (${{ matrix.shard }}/2)
     runs-on: ubuntu-8cores
     timeout-minutes: 12
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,8 +28,9 @@ jobs:
         with:
           services: true
 
-      # webpack-cache.yml builds a fresh cache on every push to master
+      # master builds a fresh webpack cache for branches to restore, so stale modules never pile up in it
       - name: Restore webpack cache
+        if: github.ref_name != 'master'
         uses: actions/cache/restore@v4
         with:
           path: .webpackCache
@@ -49,6 +46,13 @@ jobs:
         env:
           WEBPACK_PERSISTENT_CACHE: true
 
+      - name: Save webpack cache
+        if: github.ref_name == 'master'
+        uses: actions/cache/save@v4
+        with:
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ steps.setup.outputs.node-version }}-${{ github.sha }}
+
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
@@ -61,7 +65,7 @@ jobs:
           timeout 60 bash -c 'until curl --silent --output /dev/null http://localhost:3000/graphql; do sleep 0.1; done'
 
       - name: Run server integration tests
-        run: pnpm test:server --shard=${{ matrix.shard }}/2 packages/server/__tests__/
+        run: pnpm test:server packages/server/__tests__/
       # - name: Set Playwright Version
       #   run: |
       #     PLAYWRIGHT_VERSION=$(pnpm --filter integration-tests list @playwright/test | grep @playwright | sed -n 's/^[^ ]* //p' | tr -d '\n')
@@ -87,7 +91,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.shard }}
+          name: test-results
           path: packages/integration-tests/test-results/
           retention-days: 7
 
@@ -96,7 +100,7 @@ jobs:
         run: cat "$RUNNER_TEMP/server.log" 2> /dev/null || true
 
   unit:
-    runs-on: ubuntu-8cores
+    runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - name: Checkout
@@ -125,7 +129,7 @@ jobs:
           pnpm kysely migrate:down $LAST_COMMON_MIGRATION
 
   typecheck:
-    runs-on: ubuntu-8cores
+    runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - name: Checkout

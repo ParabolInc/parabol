@@ -1,5 +1,5 @@
 name: Setup
-description: Restores Node, pnpm and node_modules from a single cache and writes the pipeline .env
+description: Restores Node and node_modules from a single cache and writes the pipeline .env
 inputs:
   services:
     description: Start Postgres and Valkey in the background. Nothing waits for them, see .github/scripts/migrate.sh
@@ -25,24 +25,22 @@ runs:
         docker run --detach --name valkey --publish 6379:6379 \
           valkey/valkey:9.0-alpine > "$RUNNER_TEMP/valkey.log" 2>&1 &
 
-    - name: Read the Node and pnpm versions
+    - name: Read the Node version
       id: versions
       shell: bash
       run: |
         echo "node=$(jq -r '.engines.node | ltrimstr("^")' package.json)" >> "$GITHUB_OUTPUT"
         echo "nodeMajor=$(jq -r '.engines.node | ltrimstr("^") | split(".")[0]' package.json)" >> "$GITHUB_OUTPUT"
-        echo "pnpm=$(jq -r '.packageManager | split("+")[0] | ltrimstr("pnpm@")' package.json)" >> "$GITHUB_OUTPUT"
 
-    # Node and pnpm are not on the runner image, so downloading them costs seconds that restoring them here does not
+    # This Node is not on the runner image, so downloading it costs seconds that restoring it here does not
     - name: Get cached dependencies
       id: cache
       uses: actions/cache@v4
       with:
         path: |
           **/node_modules
-          ~/setup-pnpm
           ${{ runner.tool_cache }}/node/${{ steps.versions.outputs.nodeMajor }}.*
-        key: dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.versions.outputs.node }}-pnpm-${{ steps.versions.outputs.pnpm }}-${{ hashFiles('pnpm-lock.yaml') }}
+        key: dependencies-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.versions.outputs.node }}-${{ hashFiles('pnpm-lock.yaml') }}
 
     # finds the restored Node in the tool cache, and downloads it when the cache missed
     - name: Setup Node
@@ -50,23 +48,7 @@ runs:
       with:
         node-version-file: package.json
 
-    - name: Use the cached pnpm
-      id: pnpm
-      shell: bash
-      env:
-        PNPM_VERSION: ${{ steps.versions.outputs.pnpm }}
-      # the same PNPM_HOME & PATH that pnpm/action-setup exports, where bin holds the version package.json pins
-      run: |
-        PNPM_HOME="$HOME/setup-pnpm/node_modules/.bin"
-        if [ "$(PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH" pnpm --version 2> /dev/null)" = "$PNPM_VERSION" ]; then
-          echo "PNPM_HOME=$PNPM_HOME" >> "$GITHUB_ENV"
-          echo "$PNPM_HOME" >> "$GITHUB_PATH"
-          echo "$PNPM_HOME/bin" >> "$GITHUB_PATH"
-          echo "restored=true" >> "$GITHUB_OUTPUT"
-        fi
-
     - name: Install pnpm
-      if: steps.pnpm.outputs.restored != 'true'
       uses: pnpm/action-setup@v6
 
     - name: Install node_modules
