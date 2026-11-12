@@ -1,0 +1,16 @@
+"""
+Returned by acceptSuggestedGroups and published on the meeting subscription. The board was
+rearranged, so select `meeting.reflectionGroups`; `meeting.resetReflectionGroups` is non-null while
+the accept can be undone.
+"""
+type AcceptSuggestedGroupsSuccess {
+  """
+  The retrospective whose board was rearranged
+  """
+  meeting: RetrospectiveMeeting!
+
+  """
+  How many suggested groups were formed
+  """
+  acceptedCount: Int!
+}

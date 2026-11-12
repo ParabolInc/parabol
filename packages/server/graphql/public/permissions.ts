@@ -238,6 +238,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     // Not facilitator-only: any team member can already dragReflection, ungroupReflection, and
     // resetReflectionGroups, so restricting this while leaving drag open would protect nothing.
     // The rate limit is what guards the LLM cost of regenerating with a custom instruction.
+    acceptSuggestedGroups: and(
+      isMeetingFacilitator<'Mutation.acceptSuggestedGroups'>('args.meetingId'),
+      rateLimit({perMinute: 10, perHour: 60})
+    ),
     generateSuggestedGroups: and(
       isTeamMemberOfMeeting<'Mutation.generateSuggestedGroups'>('args.meetingId'),
       rateLimit({perMinute: 10, perHour: 60})
@@ -399,7 +403,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     setPokerSpectate: isMeetingMember<'Mutation.setPokerSpectate'>('args.meetingId'),
     setSlackNotification: isTeamMember<'Mutation.setSlackNotification'>('args.teamId'),
     setStageTimer: isMeetingFacilitator<'Mutation.setStageTimer'>('args.meetingId'),
-    setTaskEstimate: isTeamMember<'Mutation.setTaskEstimate'>('args.taskEstimate.taskId', 'tasks'),
+    setTaskEstimate: and(
+      isTeamMember<'Mutation.setTaskEstimate'>('args.taskEstimate.taskId', 'tasks'),
+      isTeamMemberOfMeeting<'Mutation.setTaskEstimate'>('args.taskEstimate.meetingId')
+    ),
     setTaskHighlight: and(
       isTeamMember<'Mutation.setTaskHighlight'>('args.meetingId', 'newMeetings'),
       isUser<'Mutation.setTaskHighlight'>('args.taskId', 'tasks')
@@ -448,7 +455,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
-    updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateDragLocation:
+      isTeamMemberOfMeeting<'Mutation.updateDragLocation'>('args.input.meetingId'),
     updateFacilitatorRotation:
       isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateIntegrationRepoAccess:

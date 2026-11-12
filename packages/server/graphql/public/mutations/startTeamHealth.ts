@@ -21,6 +21,7 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeCreateTeamHealth from '../../mutations/helpers/safeCreateTeamHealth'
 import type {CreateGcalEventInput, MutationResolvers} from '../resolverTypes'
+import assertTemplateAccess from './helpers/assertTemplateAccess'
 import {createMeetingMember} from './joinMeeting'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -194,6 +195,16 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
 
   const teams = await dataLoader.get('teams').loadMany(uniqueTeamIds)
   const validTeams = teams.filter(isValid)
+  const template = await dataLoader.get('meetingTemplates').load(templateId)
+  if (!template || template.type !== meetingType) {
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  await assertTemplateAccess(
+    template,
+    validTeams.map(({orgId}) => orgId),
+    authToken,
+    dataLoader
+  )
   if (rrule && new Set(validTeams.map(({orgId}) => orgId)).size > 1) {
     // a series group is owned by one org: succession, the paid-tier gate, and tenancy are all
     // org-scoped. A one-off across orgs creates no series, so it stays allowed

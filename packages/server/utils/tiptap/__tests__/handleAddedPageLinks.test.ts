@@ -16,8 +16,16 @@ jest.mock('../updateBacklinks', () => ({
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
+const mockCreateNewPage = jest.fn(async (_options: object) => ({id: NEW_PAGE_ID}))
+let mockFlagEnabled = false
 jest.mock('../createNewPage', () => ({
-  createNewPage: async () => ({id: NEW_PAGE_ID})
+  createNewPage: (options: object) => mockCreateNewPage(options)
+}))
+jest.mock('../isSyncedBlocksEnabled', () => ({
+  isSyncedBlocksEnabled: async () => mockFlagEnabled
+}))
+jest.mock('../../../dataloader/getNewDataLoader', () => ({
+  getNewDataLoader: () => ({dispose: () => {}})
 }))
 jest.mock('../movePageToNewParent', () => ({
   movePageToNewParent: async (userId: string, pageId: number) => {
@@ -49,8 +57,8 @@ const makePage = () => {
   return {doc, frag}
 }
 
-const makeLink = (pageCode: number, canonical: boolean) => {
-  const link = createPageLinkElement(pageCode, 'Linked page', false)
+const makeLink = (pageCode: number, canonical: boolean, isSyncedBlock = false) => {
+  const link = createPageLinkElement(pageCode, 'Linked page', false, isSyncedBlock)
   link.setAttribute('canonical', canonical)
   return link
 }
@@ -67,6 +75,8 @@ beforeEach(() => {
   mockBacklinks.length = 0
   mockMovedPageIds.length = 0
   mockOwnerByPageId.clear()
+  mockCreateNewPage.mockClear()
+  mockFlagEnabled = false
 })
 
 test('records a backlink when a user links a page', async () => {
@@ -98,4 +108,32 @@ test('records a backlink only to the page minted for a new page link', async () 
   await flush()
   expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, NEW_PAGE_ID]])
   expect(link.getAttribute('pageCode')).toBe(NEW_PAGE_ID)
+})
+
+const insertSentinelLink = async (isSyncedBlock: boolean) => {
+  const link = makeLink(NEW_PAGE_SENTINEL_CODE, true, isSyncedBlock)
+  link.setAttribute('title', '')
+  await insertLink(link, asUser(EDITOR_ID))
+  return link
+}
+
+test('creates a synced block page with an empty paragraph when the flag is on', async () => {
+  mockFlagEnabled = true
+  await insertSentinelLink(true)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      isSyncedBlock: true,
+      content: {
+        type: 'doc',
+        content: [{type: 'heading', attrs: {level: 1}, content: []}, {type: 'paragraph'}]
+      }
+    })
+  )
+})
+
+test('creates an ordinary child page and drops synced when the flag is off', async () => {
+  mockFlagEnabled = false
+  const node = await insertSentinelLink(true)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: false}))
+  expect(node.getAttribute('synced')).toBeUndefined()
 })

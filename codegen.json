@@ -276,6 +276,7 @@
           "RenamePokerTemplateDimensionPayload": "./types/RenamePokerTemplateDimensionPayload#RenamePokerTemplateDimensionPayloadSource",
           "RenameTemplatePromptSuccess": "./types/RenameTemplatePromptSuccess#RenameTemplatePromptSuccessSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
+          "AcceptSuggestedGroupsSuccess": "./types/AcceptSuggestedGroupsSuccess#AcceptSuggestedGroupsSuccessSource",
           "UpdatePersonalAccessTokenSuccess": "./types/UpdatePersonalAccessTokenSuccess#UpdatePersonalAccessTokenSuccessSource",
           "RepoContainer": "./types/RepoContainer#RepoContainerSource",
           "RepoIntegration": "../../integrations/platform/RemoteRepoIntegration#RemoteRepoIntegration",

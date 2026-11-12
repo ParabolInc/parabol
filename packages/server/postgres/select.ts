@@ -410,6 +410,7 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'deletedAt',
     'deletedBy',
     'isDatabase',
+    'isSyncedBlock',
     'isMeetingTOC',
     'summaryMeetingId'
   ])

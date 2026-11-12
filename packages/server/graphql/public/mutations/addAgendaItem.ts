@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
@@ -17,6 +18,20 @@ const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
   // VALIDATION
   if (newAgendaItem.content.length > 64) {
     return {error: {message: 'Agenda item must be shorter'}}
+  }
+  const [teamMember, meeting] = await Promise.all([
+    dataLoader.get('teamMembers').load(newAgendaItem.teamMemberId),
+    newAgendaItem.meetingId ? dataLoader.get('newMeetings').load(newAgendaItem.meetingId) : null
+  ])
+  if (teamMember?.teamId !== teamId) {
+    throw new GraphQLError('Team member is not on the team', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (newAgendaItem.meetingId && meeting?.teamId !== teamId) {
+    throw new GraphQLError('Meeting does not belong to the team', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
