@@ -188,5 +188,28 @@ describe('convertTipTapToConfluenceStorage', () => {
     it('drops the emoji of a non-plain callout', () => {
       expect(exportOne(callout('info', [p('x')], {emoji: '🚀'}))).not.toContain('🚀')
     })
+    it('flattens a callout inside a blockquote into plain blocks', () => {
+      const quote: JSONContent = {
+        type: 'blockquote',
+        content: [callout('info', [title('Heads up'), p('inner text')])]
+      }
+      const xhtml = exportOne(quote)
+      expect(xhtml).toBe(
+        '<blockquote><p><strong>Heads up</strong></p><p>inner text</p></blockquote>'
+      )
+    })
+
+    it('flattens a callout inside a blockquote inside a callout, keeping the outer panel', () => {
+      const xhtml = exportOne(
+        callout('tip', [
+          {type: 'blockquote', content: [callout('important', [p('deep text')])]},
+          p('after')
+        ])
+      )
+      expect(xhtml).toBe(
+        '<ac:structured-macro ac:name="tip"><ac:rich-text-body><blockquote><p>deep text</p></blockquote><p>after</p></ac:rich-text-body></ac:structured-macro>'
+      )
+      expect(xhtml).not.toContain('ac:adf-extension')
+    })
   })
 })

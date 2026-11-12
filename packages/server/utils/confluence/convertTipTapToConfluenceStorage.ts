@@ -12,6 +12,7 @@ type EmitState = {
   ctx: StorageConversionCtx
   assets: ExportAsset[]
   census: Census
+  blockquoteDepth: number
 }
 
 const TREATMENTS = {
@@ -22,6 +23,7 @@ const TREATMENTS = {
   taskBlock: 'exported as static content — not a Confluence task',
   pageLinkBlock: 'linked to the Parabol page',
   fileUpload: 'in-progress upload skipped',
+  calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',
   database: 'exported as a static table snapshot',
   unknown: 'exported as plain text'
 } as const
@@ -251,13 +253,18 @@ const emitCallout = (node: JSONContent, state: EmitState): string => {
   const bodyNodes = (node.content ?? []).filter((child) => child.type !== 'calloutTitle')
   const titleHtml = titleNode ? emitInlineContent(titleNode.content, state) : ''
   const body = `${titleHtml ? `<p><strong>${titleHtml}</strong></p>` : ''}${emitBlocks(bodyNodes, state)}`
+  if (state.blockquoteDepth > 0) {
+    addCensus(state, 'calloutInBlockquote', TREATMENTS.calloutInBlockquote)
+    return body
+  }
   if (tone === 'important') {
     return `<ac:adf-extension><ac:adf-node type="panel"><ac:adf-attribute key="panel-type">note</ac:adf-attribute><ac:adf-content>${body}</ac:adf-content></ac:adf-node><ac:adf-fallback><div class="panel conf-macro output-block" style="background-color: rgb(234,230,255);border-color: rgb(153,141,217);border-width: 1.0px;"><div class="panelContent" style="background-color: rgb(234,230,255);">${body}</div></div></ac:adf-fallback></ac:adf-extension>`
   }
   if (tone === 'plain') {
     const native = typeof node.attrs?.emoji === 'string' ? node.attrs.emoji : ''
+    const shortcode = native ? getEmojiShortcode(native) : undefined
     const icon = native
-      ? `<ac:parameter ac:name="panelIcon">${escapeHtml(getEmojiShortcode(native) ? `:${getEmojiShortcode(native)}:` : native)}</ac:parameter><ac:parameter ac:name="panelIconId">${getCodePointsHex(native)}</ac:parameter><ac:parameter ac:name="panelIconText">${escapeHtml(native)}</ac:parameter>`
+      ? `<ac:parameter ac:name="panelIcon">${escapeHtml(shortcode ? `:${shortcode}:` : native)}</ac:parameter><ac:parameter ac:name="panelIconId">${getCodePointsHex(native)}</ac:parameter><ac:parameter ac:name="panelIconText">${escapeHtml(native)}</ac:parameter>`
       : ''
     return `<ac:structured-macro ac:name="panel">${icon}<ac:parameter ac:name="bgColor">${PLAIN_CALLOUT_BACKGROUND}</ac:parameter><ac:rich-text-body>${body}</ac:rich-text-body></ac:structured-macro>`
   }
@@ -283,8 +290,12 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<li>${emitBlocks(node.content, state)}</li>`
     case 'taskList':
       return `<ac:task-list>${(node.content ?? []).map((item) => emitTaskItem(item, state)).join('')}</ac:task-list>`
-    case 'blockquote':
-      return `<blockquote>${emitBlocks(node.content, state)}</blockquote>`
+    case 'blockquote': {
+      state.blockquoteDepth += 1
+      const quoted = emitBlocks(node.content, state)
+      state.blockquoteDepth -= 1
+      return `<blockquote>${quoted}</blockquote>`
+    }
     case 'callout':
       return emitCallout(node, state)
     case 'codeBlock': {
@@ -363,7 +374,7 @@ export const convertTipTapToConfluenceStorage = (
   doc: JSONContent,
   ctx: StorageConversionCtx
 ): StorageConversionResult => {
-  const state: EmitState = {ctx, assets: [], census: new Map()}
+  const state: EmitState = {ctx, assets: [], census: new Map(), blockquoteDepth: 0}
   const content = doc.content ?? []
   const titleNode = content[0]
   const title = titleNode ? getNodeText(titleNode).trim() : ''
