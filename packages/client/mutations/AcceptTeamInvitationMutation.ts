@@ -53,8 +53,16 @@ graphql`
       }
       organization {
         id
+        isBillingLeader
         name
         isPaid
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
+        picture
+        tier
+        billingTier
       }
       ...PublicTeamsFrag_team
     }
