@@ -1,12 +1,12 @@
 import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {BeginConnect} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import type {ConnectProviderRef} from '../integrations/platform/ClientIntegrationDefinition'
 import {
   getClientIntegration,
   type RegisteredClientIntegration
 } from '../integrations/platform/registry'
+import type {BeginConnect} from '../integrations/platform/useConnectInMenu'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import MenuItemAvatar from './MenuItemAvatar'
 

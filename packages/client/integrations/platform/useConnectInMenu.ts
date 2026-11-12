@@ -1,6 +1,6 @@
 import {useRef, useState} from 'react'
-import type {RegisteredClientIntegration} from '../integrations/platform/registry'
-import {getOnCompletedError, type MenuMutationProps} from './useMutationProps'
+import {getOnCompletedError, type MenuMutationProps} from '../../hooks/useMutationProps'
+import type {RegisteredClientIntegration} from './registry'
 
 type ConnectingService = {service: RegisteredClientIntegration; title: string}
 

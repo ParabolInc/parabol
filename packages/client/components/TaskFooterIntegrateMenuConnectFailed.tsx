@@ -1,6 +1,6 @@
-import type {ConnectInMenuState} from '../hooks/useConnectInMenu'
 import {getConnectErrorMessage} from '../integrations/platform/getConnectErrorMessage'
 import {getClientIntegration} from '../integrations/platform/registry'
+import type {ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 
 interface Props {

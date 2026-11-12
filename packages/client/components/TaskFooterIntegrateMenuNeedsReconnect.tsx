@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuNeedsReconnect_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuNeedsReconnect_teamMember.graphql'
-import type {BeginConnect} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
 import {
   isTaskClientIntegration,
   listClientIntegrationServices
 } from '../integrations/platform/registry'
+import type {BeginConnect} from '../integrations/platform/useConnectInMenu'
 import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 

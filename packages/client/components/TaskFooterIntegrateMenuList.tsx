@@ -7,12 +7,12 @@ import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import type {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
 import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskFooterIntegrateMenuListRetryQuery.graphql'
-import type {BeginConnect, ConnectInMenuState} from '../hooks/useConnectInMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {
   isTaskClientIntegration,
   listClientIntegrationServices
 } from '../integrations/platform/registry'
+import type {BeginConnect, ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import MenuSkeletonRows from '../ui/Menu/MenuSkeletonRows'
