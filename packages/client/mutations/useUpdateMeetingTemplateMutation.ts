@@ -43,13 +43,13 @@ const mutation = graphql`
     $meetingId: ID!
     $templateId: ID!
     $applyToSeries: Boolean
-    $clearResponses: Boolean
+    $clearTeamPromptResponses: Boolean
   ) {
     updateMeetingTemplate(
       meetingId: $meetingId
       templateId: $templateId
       applyToSeries: $applyToSeries
-      clearResponses: $clearResponses
+      clearTeamPromptResponses: $clearTeamPromptResponses
     ) {
       ...useUpdateMeetingTemplateMutation_meeting @relay(mask: false)
     }

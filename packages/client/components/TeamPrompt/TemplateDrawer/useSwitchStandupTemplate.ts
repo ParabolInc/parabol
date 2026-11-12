@@ -10,7 +10,7 @@ interface PickedTemplate {
 }
 
 export type SwitchProblem =
-  | {kind: 'failed'; template: PickedTemplate; clearResponses: boolean}
+  | {kind: 'failed'; template: PickedTemplate; clearTeamPromptResponses: boolean}
   | {kind: 'unavailable'; templateName: string}
 
 interface Options {
@@ -30,7 +30,7 @@ const useSwitchStandupTemplate = (options: Options) => {
 
   const handleError = (
     template: PickedTemplate,
-    clearResponses: boolean,
+    clearTeamPromptResponses: boolean,
     error: ServerError | undefined
   ) => {
     const code = error?.extensions?.code
@@ -48,33 +48,33 @@ const useSwitchStandupTemplate = (options: Options) => {
       })
       onSwitched()
     } else {
-      setProblem({kind: 'failed', template, clearResponses})
+      setProblem({kind: 'failed', template, clearTeamPromptResponses})
     }
   }
 
-  const submit = (template: PickedTemplate, clearResponses: boolean) => {
+  const submit = (template: PickedTemplate, clearTeamPromptResponses: boolean) => {
     setPendingTemplateId(template.id)
     setProblem(null)
     setConfirmation(null)
     updateMeetingTemplate({
-      variables: {meetingId, templateId: template.id, applyToSeries, clearResponses},
+      variables: {meetingId, templateId: template.id, applyToSeries, clearTeamPromptResponses},
       onCompleted: (_res, errors) => {
         setPendingTemplateId(null)
         if (errors?.[0]) {
-          handleError(template, clearResponses, errors[0])
+          handleError(template, clearTeamPromptResponses, errors[0])
           return
         }
         onSwitched()
       },
       onError: (error) => {
         setPendingTemplateId(null)
-        handleError(template, clearResponses, getServerError(error))
+        handleError(template, clearTeamPromptResponses, getServerError(error))
       }
     })
   }
 
   const retry = () => {
-    if (problem?.kind === 'failed') submit(problem.template, problem.clearResponses)
+    if (problem?.kind === 'failed') submit(problem.template, problem.clearTeamPromptResponses)
   }
 
   return {

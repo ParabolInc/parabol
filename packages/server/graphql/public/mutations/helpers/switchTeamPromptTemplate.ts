@@ -18,13 +18,20 @@ interface Options {
   templateId: string
   templateName: string
   seriesIdToUpdate: number | null
-  clearResponses: boolean
+  clearTeamPromptResponses: boolean
   dataLoader: DataLoaderWorker
   operationId: string
 }
 
 const switchTeamPromptTemplate = async (options: Options) => {
-  const {meeting, templateId, templateName, seriesIdToUpdate, clearResponses, dataLoader} = options
+  const {
+    meeting,
+    templateId,
+    templateName,
+    seriesIdToUpdate,
+    clearTeamPromptResponses,
+    dataLoader
+  } = options
   const {id: meetingId, phases} = meeting
   const [responses, oldTemplate] = await Promise.all([
     selectTeamPromptResponses().where('meetingId', '=', meetingId).execute(),
@@ -34,7 +41,7 @@ const switchTeamPromptTemplate = async (options: Options) => {
     responses.filter(({plaintextContent}) => plaintextContent.trim()).map(({userId}) => userId)
   )
   const answeredCount = answeredUserIds.size
-  if (answeredCount > 0 && !clearResponses) {
+  if (answeredCount > 0 && !clearTeamPromptResponses) {
     throw new GraphQLError(
       answeredCount === 1
         ? '1 person has started answering'

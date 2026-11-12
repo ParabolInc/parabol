@@ -11,7 +11,7 @@ import switchTeamPromptTemplate from './helpers/switchTeamPromptTemplate'
 
 const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async (
   _source,
-  {meetingId, templateId, applyToSeries, clearResponses},
+  {meetingId, templateId, applyToSeries, clearTeamPromptResponses},
   {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -49,7 +49,7 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
       templateId,
       templateName: template.name,
       seriesIdToUpdate,
-      clearResponses: !!clearResponses,
+      clearTeamPromptResponses: !!clearTeamPromptResponses,
       dataLoader,
       operationId
     })

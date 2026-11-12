@@ -819,13 +819,13 @@ const UPDATE_MEETING_TEMPLATE = `
     $meetingId: ID!
     $templateId: ID!
     $applyToSeries: Boolean
-    $clearResponses: Boolean
+    $clearTeamPromptResponses: Boolean
   ) {
     updateMeetingTemplate(
       meetingId: $meetingId
       templateId: $templateId
       applyToSeries: $applyToSeries
-      clearResponses: $clearResponses
+      clearTeamPromptResponses: $clearTeamPromptResponses
     ) {
       meeting {
         id
@@ -858,7 +858,7 @@ const switchTemplate = (
     meetingId: string
     templateId: string
     applyToSeries?: boolean
-    clearResponses?: boolean
+    clearTeamPromptResponses?: boolean
   }
 ) => sendPublic({query: UPDATE_MEETING_TEMPLATE, variables, ...auth})
 
@@ -927,7 +927,7 @@ test('switching refuses while anyone has an answer, then clears drafts on confir
 
   const cleared = await switchTemplate(
     {cookie: owner.cookie},
-    {meetingId: meeting.id, templateId: template.id, clearResponses: true}
+    {meetingId: meeting.id, templateId: template.id, clearTeamPromptResponses: true}
   )
   expect(cleared.errors).toBeUndefined()
   const pg = getKysely()

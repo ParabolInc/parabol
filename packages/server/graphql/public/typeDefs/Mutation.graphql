@@ -2264,7 +2264,7 @@ type Mutation {
     Standup only. Clear every answer, private drafts included. Without it, the mutation refuses
     with a CONFLICT error carrying answeredCount when anyone has started answering
     """
-    clearResponses: Boolean
+    clearTeamPromptResponses: Boolean
   ): UpdateMeetingTemplateSuccess! @scope(name: MEETINGS_WRITE)
 
   """
