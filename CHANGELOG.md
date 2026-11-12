@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.29.1](https://github.com/ParabolInc/parabol/compare/v15.29.0...v15.29.1) (2026-11-12)
+
+
+### Fixed
+
+* **client:** add a joined org to the organizations list with the fields the list reads ([#14101](https://github.com/ParabolInc/parabol/issues/14101)) ([b6c97dd](https://github.com/ParabolInc/parabol/commit/b6c97dde9604ff45708da2f3ef9732392ffc29f9))
+* **client:** fit the phone drawer to the visible screen ([#14130](https://github.com/ParabolInc/parabol/issues/14130)) ([cdf5484](https://github.com/ParabolInc/parabol/commit/cdf5484de3fa788698cdafcddfbee5439b4567a0))
+
+
+### Changed
+
+* **ci:** run the tests in parallel jobs ([#14122](https://github.com/ParabolInc/parabol/issues/14122)) ([375d22d](https://github.com/ParabolInc/parabol/commit/375d22dbe2ffc097c891acceecbd56f429a12018))
+* **ci:** stop notifying Slack when tests fail on master ([#14134](https://github.com/ParabolInc/parabol/issues/14134)) ([ca25ea6](https://github.com/ParabolInc/parabol/commit/ca25ea6220c477d95d409e6a191b6f383e3904d1))
+
 ## [15.29.0](https://github.com/ParabolInc/parabol/compare/v15.28.0...v15.29.0) (2026-11-12)
 
 
