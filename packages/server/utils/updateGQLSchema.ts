@@ -12,9 +12,9 @@ import {
   printSchemaWithDirectives
 } from '@graphql-tools/utils'
 import {buildASTSchema, introspectionFromSchema, printSchema} from 'graphql'
+import {nestGraphQLEndpoints} from 'nest-graphql-endpoint'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
-import {nestGraphQLEndpoints} from '../graphql/nestedSchema/nestGraphQLEndpoint'
 import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
 import {typeDefs} from '../graphql/public/importedTypeDefs'
 import {nestGitLab} from '../graphql/public/nestGitLab'
@@ -49,9 +49,9 @@ const updateGQLSchema = async () => {
   })
 
   const publicSchema = nestGraphQLEndpoints(rawPublicTypeDefs, [
-    nestGitHub().endpoint,
-    nestGitLab().endpoint,
-    nestLinear().endpoint
+    nestGitHub(),
+    nestGitLab(),
+    nestLinear()
   ])
   const privateSchema = mergeSchemas({
     schemas: [publicSchema],

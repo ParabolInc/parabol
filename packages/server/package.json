@@ -100,7 +100,7 @@
     "lib0": "^0.2.114",
     "mailgun.js": "^9.3.0",
     "mime-types": "^2.1.16",
-    "nest-graphql-endpoint": "^0.8.3",
+    "nest-graphql-endpoint": "^1.0.0",
     "node-env-flag": "0.1.0",
     "node-html-parser": "^7.0.1",
     "nodemailer": "^10.3.1",

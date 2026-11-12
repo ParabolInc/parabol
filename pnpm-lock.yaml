@@ -1165,8 +1165,8 @@ importers:
         specifier: ^2.1.16
         version: 2.1.35
       nest-graphql-endpoint:
-        specifier: ^0.8.3
-        version: 0.8.3(graphql@16.13.1)
+        specifier: ^1.0.0
+        version: 1.0.0(graphql@16.13.1)
       node-env-flag:
         specifier: 0.1.0
         version: 0.1.0
@@ -2498,21 +2498,9 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/batch-execute@9.0.19':
-    resolution: {integrity: sha512-VGamgY4PLzSx48IHPoblRw0oTaBa7S26RpZXt0Y4NN90ytoE0LutlpB2484RbkfcTjv9wa64QD474+YP1kEgGA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/code-file-loader@8.1.32':
     resolution: {integrity: sha512-gR5mNQjn0BugDL8a4A+ovS2KEvU52RNOGnbwiq9oWAEHiSv7iqJu77bpWARTzlE1ZFPK5MSQe9218+1t5PbXmQ==}
     engines: {node: '>=16.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/delegate@10.2.23':
-    resolution: {integrity: sha512-xrPtl7f1LxS+B6o+W7ueuQh67CwRkfl+UKJncaslnqYdkxKmNBB4wnzVcW8ZsRdwbsla/v43PtwAvSlzxCzq2w==}
-    engines: {node: '>=18.0.0'}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -2666,12 +2654,6 @@ packages:
   '@graphql-tools/utils@12.0.3':
     resolution: {integrity: sha512-M+04bHvI1SKoug7W2EkwfKjig2mdtgIIlFY8p2jLHmxPNVs5bC/3R+58JrD+7ZXWgPILWTwuqJ9AqTjPlahroA==}
     engines: {node: '>=16.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/wrap@10.1.4':
-    resolution: {integrity: sha512-7pyNKqXProRjlSdqOtrbnFRMQAVamCmEREilOXtZujxY6kYit3tvWWSjUrcIOheltTffoRh7EQSjpy2JDCzasg==}
-    engines: {node: '>=18.0.0'}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -3458,9 +3440,6 @@ packages:
 
   '@octokit/graphql-schema@10.74.2':
     resolution: {integrity: sha512-PG6zZvFyOi4aRsfWwBji8GjJRHF6U9gUjqonVa0N6kpGae6Uhc75GDXOLX0x+/b+Kws82pug3+17tmgZ/o7HfQ==}
-
-  '@octokit/graphql-schema@14.58.0':
-    resolution: {integrity: sha512-89QSUV1Dgxzq90wqkv0Nmw7jHfFCAQ4K/fjp5ezvDEHqFFzMCn25TBQlm38WB8ams+hGxInRDbITCP0n7GTGlg==}
 
   '@opentelemetry/api@1.10.0':
     resolution: {integrity: sha512-lMkyes8iHrG+mk6WH7X70MdCLI2RS0FwNBY1PyQ8UemaijE2m5mv5A0Niy3HtbYTFrgkUEQjFMXmSAk2hQDuPQ==}
@@ -6562,10 +6541,6 @@ packages:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
 
-  dset@3.1.4:
-    resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}
-    engines: {node: '>=4'}
-
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
@@ -8442,10 +8417,11 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nest-graphql-endpoint@0.8.3:
-    resolution: {integrity: sha512-CI3eYLBtmywFQp2x93Pvh4advy8eUqQ/fDTA3kxzVWEdu8bPSvfyWxUZ7PqGD3jHVNNQHpKzRRpF+Fti8wVVgQ==}
+  nest-graphql-endpoint@1.0.0:
+    resolution: {integrity: sha512-Qf7FxZBn2NpkMqRHsn6rM9NyngFXIDUpfyjPTfNnEyiTMbVAgUuWnIwv9ggEZaYeERdW2dlUhUVa8AaEKU1Mog==}
+    engines: {node: '>=22.18.0'}
     peerDependencies:
-      graphql: ^16
+      graphql: ^16.0.0
 
   netmask@2.1.1:
     resolution: {integrity: sha512-eonl3sLUha+S1GzTPxychyhnUzKyeQkZ7jLjKrBagJgPla13F+uQ71HgpFefyHgqrjEbCPkDArxYsjY8/+gLKA==}
@@ -12241,14 +12217,6 @@ snapshots:
       tslib: 2.8.1
       value-or-promise: 1.0.11
 
-  '@graphql-tools/batch-execute@9.0.19(graphql@16.13.1)':
-    dependencies:
-      '@graphql-tools/utils': 12.0.3(graphql@16.13.1)
-      '@whatwg-node/promise-helpers': 1.3.2
-      dataloader: 2.2.3
-      graphql: 16.13.1
-      tslib: 2.8.1
-
   '@graphql-tools/code-file-loader@8.1.32(graphql@16.13.1)(supports-color@8.1.1)':
     dependencies:
       '@graphql-tools/graphql-tag-pluck': 8.3.31(graphql@16.13.1)(supports-color@8.1.1)
@@ -12259,19 +12227,6 @@ snapshots:
       unixify: 1.0.0
     transitivePeerDependencies:
       - supports-color
-
-  '@graphql-tools/delegate@10.2.23(graphql@16.13.1)':
-    dependencies:
-      '@graphql-tools/batch-execute': 9.0.19(graphql@16.13.1)
-      '@graphql-tools/executor': 1.5.3(graphql@16.13.1)
-      '@graphql-tools/schema': 10.1.3(graphql@16.13.1)
-      '@graphql-tools/utils': 12.0.3(graphql@16.13.1)
-      '@repeaterjs/repeater': 3.0.6
-      '@whatwg-node/promise-helpers': 1.3.2
-      dataloader: 2.2.3
-      dset: 3.1.4
-      graphql: 16.13.1
-      tslib: 2.8.1
 
   '@graphql-tools/delegate@12.0.16(graphql@16.13.1)':
     dependencies:
@@ -12520,15 +12475,6 @@ snapshots:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.13.1)
       '@whatwg-node/promise-helpers': 2.0.0
       cross-inspect: 1.0.1
-      graphql: 16.13.1
-      tslib: 2.8.1
-
-  '@graphql-tools/wrap@10.1.4(graphql@16.13.1)':
-    dependencies:
-      '@graphql-tools/delegate': 10.2.23(graphql@16.13.1)
-      '@graphql-tools/schema': 10.1.3(graphql@16.13.1)
-      '@graphql-tools/utils': 12.0.3(graphql@16.13.1)
-      '@whatwg-node/promise-helpers': 1.3.2
       graphql: 16.13.1
       tslib: 2.8.1
 
@@ -13403,11 +13349,6 @@ snapshots:
       fastq: 1.20.1
 
   '@octokit/graphql-schema@10.74.2':
-    dependencies:
-      graphql: 16.13.1
-      graphql-tag: 2.12.6(graphql@16.13.1)
-
-  '@octokit/graphql-schema@14.58.0':
     dependencies:
       graphql: 16.13.1
       graphql-tag: 2.12.6(graphql@16.13.1)
@@ -16481,8 +16422,6 @@ snapshots:
 
   dotenv@8.6.0: {}
 
-  dset@3.1.4: {}
-
   dunder-proto@1.0.1:
     dependencies:
       call-bind-apply-helpers: 1.0.2
@@ -18588,15 +18527,12 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nest-graphql-endpoint@0.8.3(graphql@16.13.1):
+  nest-graphql-endpoint@1.0.0(graphql@16.13.1):
     dependencies:
       '@graphql-tools/schema': 10.1.3(graphql@16.13.1)
-      '@graphql-tools/wrap': 10.1.4(graphql@16.13.1)
-      '@octokit/graphql-schema': 14.58.0
+      '@graphql-tools/utils': 12.0.3(graphql@16.13.1)
       dataloader: 2.2.3
       graphql: 16.13.1
-      tslib: 2.8.1
-      typescript: 7.0.2
 
   netmask@2.1.1: {}
 
