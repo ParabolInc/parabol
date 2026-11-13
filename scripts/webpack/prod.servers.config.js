@@ -80,7 +80,9 @@ module.exports = (config) => {
         'parabol-client': CLIENT_ROOT,
         'parabol-server': SERVER_ROOT,
         // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
-        'react/jsx-runtime': require.resolve('react/jsx-runtime')
+        'react/jsx-runtime': require.resolve('react/jsx-runtime'),
+        // oy-vey asks for the browser build by name, everything else renders with the node build
+        'react-dom/server.browser$': 'react-dom/server'
       },
       extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
     },
@@ -128,6 +130,16 @@ module.exports = (config) => {
         contextRegExp: /url-regex-safe/
       }),
       new webpack.IgnorePlugin({
+        // gaxios fetches with node-fetch, whose fetch-blob only falls back to this when node has no web streams
+        resourceRegExp: /^web-streams-polyfill\//,
+        contextRegExp: /fetch-blob/
+      }),
+      // Server modules compile to CommonJS & the client modules they share are ESM, so each would bundle its own build of these
+      // Resolving every request as an import leaves 1 TipTap & 1 ProseMirror, so instanceof holds between them
+      new webpack.NormalModuleReplacementPlugin(/^(@tiptap\/|prosemirror-)/, (resolveData) => {
+        resolveData.dependencyType = 'esm'
+      }),
+      new webpack.IgnorePlugin({
         // sharp statically requires a prebuilt binary for every platform, we only ship ours
         resourceRegExp: new RegExp(`^@img/sharp-(?!${runtimePlatform}/)[^/]+/sharp\\.node$`)
       }),
@@ -154,6 +166,11 @@ module.exports = (config) => {
       },
       rules: [
         ...transformRules(PROJECT_ROOT, {isProd: true}),
+        {
+          // cheerio only needs undici for fromURL, metascraper just calls load
+          test: /cheerio\/dist\/commonjs\/index\.js$/,
+          resolve: {alias: {undici$: false}}
+        },
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
           type: 'asset/resource',
