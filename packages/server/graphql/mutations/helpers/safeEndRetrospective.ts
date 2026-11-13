@@ -23,6 +23,7 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
+import updateTeamGroupingBriefing from './updateTeamGroupingBriefing'
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
@@ -154,6 +155,7 @@ const safeEndRetrospective = async ({
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await these, but put them after both "publish" calls so the dataloader has the same data
   summarizeRetroMeeting(meeting, context).catch(Logger.log)
+  updateTeamGroupingBriefing(teamId).catch(Logger.log)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   meetingsEnded.inc({meeting_type: meeting.meetingType})

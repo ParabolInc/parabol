@@ -523,6 +523,10 @@ export const selectUserDetails = () => {
   return getKysely().selectFrom('UserDetail').selectAll()
 }
 
+export const selectTeamDetails = () => {
+  return getKysely().selectFrom('TeamDetail').selectAll()
+}
+
 export const selectPersonalAccessToken = () => {
   return getKysely()
     .selectFrom('PersonalAccessToken')

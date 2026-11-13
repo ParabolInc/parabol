@@ -28,12 +28,10 @@ export type GroupReflectionsResult = {
   repairedCount: number
 }
 
-export type GroupingReasoningEffort = 'low' | 'medium'
-
 export type GroupReflectionsOptions = {
   /** Replaces the built-in grouping strategy. The invariant rules & JSON shape still apply */
   userPrompt?: string | null
-  /** Ignored by providers without a reasoning knob */
-  reasoningEffort?: GroupingReasoningEffort
+  /** What the team's past retros say about its people, systems and jargon */
+  teamBriefing?: string | null
   signal?: AbortSignal
 }

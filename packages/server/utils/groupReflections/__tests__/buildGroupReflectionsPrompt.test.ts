@@ -40,6 +40,23 @@ test('keeps the meeting name and the rules when a custom prompt replaces the str
   expect(prompt).toContain('Each reflection must belong to exactly one group')
 })
 
+test('puts the team briefing after the strategy and before the reflections and rules', () => {
+  const prompt = buildGroupReflectionsPrompt(
+    crossColumn,
+    null,
+    '  FMS is the fleet management system.\n'
+  )
+  const briefing = prompt.indexOf(
+    '<team_background>\nFMS is the fleet management system.\n</team_background>'
+  )
+  expect(briefing).toBeGreaterThan(prompt.indexOf('How teams group'))
+  expect(briefing).toBeLessThan(prompt.indexOf('Meeting: Sprint 12 Retro'))
+  expect(buildGroupReflectionsPrompt(crossColumn, 'Group by root cause', 'FMS')).toContain(
+    '<team_background>\nFMS\n</team_background>'
+  )
+  expect(buildGroupReflectionsPrompt(crossColumn, null, '  ')).not.toContain('team_background')
+})
+
 test('names the question once for a single-column batch', () => {
   const prompt = buildGroupReflectionsPrompt({
     prompt: 'What went well?',

@@ -68,7 +68,6 @@ const refreshSuggestedGroups = async (meetingId: string) => {
           mode: 'similarity',
           userPrompt: null,
           model: null,
-          reasoningEffort: null,
           tokenCost: 0,
           repairedReflectionCount: 0,
           sameColumnOnly,

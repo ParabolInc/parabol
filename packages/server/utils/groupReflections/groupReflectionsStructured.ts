@@ -28,9 +28,9 @@ const groupReflectionsStructured = async (
 ): Promise<GroupReflectionsResult | null> => {
   const {reflections} = input
   if (reflections.length === 0) return null
-  const {userPrompt, signal} = options
+  const {userPrompt, teamBriefing, signal} = options
   const {label, client, model, params} = provider
-  const prompt = buildGroupReflectionsPrompt(input, userPrompt)
+  const prompt = buildGroupReflectionsPrompt(input, userPrompt, teamBriefing)
 
   try {
     const response = await client.chat.completions.create(
