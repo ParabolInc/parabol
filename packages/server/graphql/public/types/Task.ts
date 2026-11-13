@@ -84,6 +84,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const labelNodes = labelsData.repository?.issue?.labels?.nodes
       if (!labelNodes) return estimates
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
+      if (ghIssueLabels.length === 0) return estimates
       await Promise.all(
         estimates.map(async (estimate) => {
           const {name: dimensionName} = estimate
@@ -93,6 +94,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           const taskIds = await dataLoader
             .get('taskIdsByTeamAndGitHubRepo')
             .load({teamId, nameWithOwner})
+          if (taskIds.length === 0) return
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)
             .where('name', '=', dimensionName)
