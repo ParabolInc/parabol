@@ -109,6 +109,23 @@ describe('convertADFToTipTap', () => {
     })
   })
 
+  test.each([
+    ['sub', 'subscript'],
+    ['sup', 'superscript']
+  ])('imports a %s subsup mark as a %s mark', (scriptType, markType) => {
+    const adf = doc([
+      {
+        type: 'paragraph',
+        content: [{type: 'text', text: '2', marks: [{type: 'subsup', attrs: {type: scriptType}}]}]
+      }
+    ])
+    const tipTapDoc = convertADFToTipTap(adf, 'Title')
+    expect(tipTapDoc.content[1]).toEqual({
+      type: 'paragraph',
+      content: [{type: 'text', text: '2', marks: [{type: markType}]}]
+    })
+  })
+
   test('imports a panel as a blockquote that keeps its text', () => {
     expect(convertADFToTipTap(doc([panel('info', [paragraph('x')])]), 'T').content[1]).toEqual({
       type: 'blockquote',
