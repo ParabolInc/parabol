@@ -6,6 +6,7 @@ import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/
 import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {findSyncedOriginalBesideCaret, isSyncedOriginal} from './findSyncedOriginalBesideCaret'
 import {isValidPageCode} from './isValidPageCode'
 import {keepFocusInHost} from './keepFocusInHost'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
@@ -201,6 +202,10 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
               return true
             }
           },
+          handleTextInput(view) {
+            const {selection} = view.state
+            return isNodeSelection(selection) && isSyncedOriginal(selection.node)
+          },
           handleKeyDown(view, event) {
             // return false // false means you can backspace to delete pagelinks
             const isBackspace = event.key === 'Backspace'
@@ -208,6 +213,14 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
             if (!isBackspace && !isDelete) return false
             const {state, dispatch} = view
             const {selection, tr} = state
+            if (isNodeSelection(selection) && isSyncedOriginal(selection.node)) return false
+            const originalPos = findSyncedOriginalBesideCaret(selection, isDelete)
+            if (originalPos !== null) {
+              dispatch(
+                tr.setSelection(NodeSelection.create(state.doc, originalPos)).scrollIntoView()
+              )
+              return true
+            }
             const {$from, empty} = selection
             // if the pageLinkBlock is currently selected, then that's our node
             // if backspace is hit, look at the nodeBefore
