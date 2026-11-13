@@ -21,7 +21,8 @@ export const SyncedBlockEditor = (props: Props) => {
       hostView: hostEditor.view,
       getPos,
       getSize,
-      preferredName: hostEditor.storage.pageLinkBlock.preferredName
+      preferredName: hostEditor.storage.pageLinkBlock.preferredName,
+      highestTier: hostEditor.storage.pageLinkBlock.highestTier
     }
   })
   useEditablePage(provider, editor!)

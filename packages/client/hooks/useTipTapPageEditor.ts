@@ -17,7 +17,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
-import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
+import type {
+  TierEnum,
+  useTipTapPageEditor_viewer$key
+} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
@@ -50,6 +53,7 @@ import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
+import {getPageFileType} from '../tiptap/getPageFileType'
 import {pagePlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -81,13 +85,6 @@ const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   File: true
 }
 
-const getFileType = (file: File) => {
-  if (file.type.startsWith('image/')) return 'image'
-  if (file.type.includes('text/csv')) return 'csv'
-  if (file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
-    return 'xlsx'
-  return 'file'
-}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
   provider: HocuspocusProvider,
@@ -95,7 +92,10 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
-    nested?: SyncedBlockEdgesOptions & {preferredName?: string}
+    nested?: SyncedBlockEdgesOptions & {
+      preferredName?: string
+      highestTier?: TierEnum
+    }
   }
 ) => {
   const {pageId, viewerRef, nested} = options
@@ -165,7 +165,7 @@ export const useTipTapPageEditor = (
           assetScope: 'Page',
           atmosphere,
           commit,
-          highestTier: user?.highestTier
+          highestTier: nested ? nested.highestTier : user?.highestTier
         }),
         EmbedBlock,
         ImageBlock.configure({
@@ -267,7 +267,9 @@ export const useTipTapPageEditor = (
         PageLinkBlock.configure({
           yDoc: provider.document,
           getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode),
-          preferredName
+          preferredName,
+          highestTier: nested ? nested.highestTier : user?.highestTier,
+          pageId
         }),
         TableOfContents,
         TaskBlock,
@@ -279,7 +281,7 @@ export const useTipTapPageEditor = (
             ;(async () => {
               for (let i = 0; i < files.length; i++) {
                 const file = files[i]!
-                const targetType = getFileType(file)
+                const targetType = getPageFileType(file, !!nested)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   if (file.size > MAX_FILE_SIZE_FREE) {
                     atmosphere.eventEmitter.emit('addSnackbar', {
@@ -313,7 +315,7 @@ export const useTipTapPageEditor = (
               // These typically correspond to data: URI images that parseHTML excludes.
               ;(async () => {
                 for (const file of files) {
-                  if (getFileType(file) !== 'image') continue
+                  if (getPageFileType(file, !!nested) !== 'image') continue
                   await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
                 }
               })()
@@ -322,7 +324,7 @@ export const useTipTapPageEditor = (
             ;(async () => {
               for (let i = 0; i < files.length; i++) {
                 const file = files[i]!
-                const targetType = getFileType(file)
+                const targetType = getPageFileType(file, !!nested)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   if (file.size > MAX_FILE_SIZE_FREE) {
                     atmosphere.eventEmitter.emit('addSnackbar', {

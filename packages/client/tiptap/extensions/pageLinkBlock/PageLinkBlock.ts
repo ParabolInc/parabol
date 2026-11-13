@@ -3,6 +3,7 @@ import {Fragment, type Node, Slice} from '@tiptap/pm/model'
 import {Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
+import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkNodeView} from './PageLinkNodeView'
@@ -22,11 +23,15 @@ declare module '@tiptap/core' {
 interface PageLinkBlockStorage {
   yDoc: Y.Doc
   preferredName?: string
+  highestTier?: TierEnum
+  pageId?: string
 }
 interface PageLinkBlockOptions {
   yDoc: Y.Doc
   getViewerAccess: GetPageViewerAccess
   preferredName?: string
+  highestTier?: TierEnum
+  pageId?: string
 }
 
 export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
@@ -39,7 +44,9 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
     const {options} = this
     return {
       yDoc: options.yDoc,
-      preferredName: options.preferredName
+      preferredName: options.preferredName,
+      highestTier: options.highestTier,
+      pageId: options.pageId
     }
   },
   addCommands() {
