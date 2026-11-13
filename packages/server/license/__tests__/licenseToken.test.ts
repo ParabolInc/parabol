@@ -33,8 +33,8 @@ describe('parseLicense', () => {
     expect(parseLicense(license, publicKeys, HOST)).toEqual({ok: true, claims})
   })
 
-  test('accepts a license signed with a post-quantum ML-DSA-87 key', () => {
-    const pq = makeSigningKeys('ml-dsa-87')
+  test('accepts a license signed with a post-quantum ML-DSA-44 key', () => {
+    const pq = makeSigningKeys('ml-dsa-44')
     const license = signLicense(claims, pq.privatePem)
     expect(parseLicense(license, {test: pq.publicPem}, HOST)).toEqual({ok: true, claims})
   })

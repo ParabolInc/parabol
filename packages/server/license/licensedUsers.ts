@@ -5,8 +5,11 @@ import type {UsageReportOrganization} from './licenseToken'
 /*
 The users a license covers: a license is for the whole instance, so it's the members of every organization on it. A
 member counts the way billing counts them: not removed from the organization, and not inactive. Someone in several
-organizations counts once.
+organizations counts once. Parabol's own system organization and users, which every instance has, don't count.
 */
+
+const SYSTEM_ORG_ID = 'aGhostOrg'
+const SYSTEM_USER_IDS = ['aGhostUser', 'parabolAIUser']
 
 const activeMembers = () =>
   getKysely()
@@ -15,6 +18,8 @@ const activeMembers = () =>
     .innerJoin('Organization as o', 'o.id', 'ou.orgId')
     .where('ou.removedAt', 'is', null)
     .where('u.inactive', '=', false)
+    .where('ou.orgId', '!=', SYSTEM_ORG_ID)
+    .where('ou.userId', 'not in', SYSTEM_USER_IDS)
 
 export const countActiveUsers = async () => {
   const row = await activeMembers()
@@ -42,6 +47,7 @@ export const readMonthlyPeaks = async (since: Date): Promise<Record<string, numb
       select a."userId", a."eventType", a."eventDate",
         lead(a."eventDate") over (partition by a."orgId", a."userId" order by a."eventDate", a.id) as "nextEventDate"
       from "OrganizationUserAudit" a
+      where a."orgId" != ${SYSTEM_ORG_ID} and a."userId" != all(${SYSTEM_USER_IDS})
     ),
     days as (
       select d as day, least((d + interval '1 day') at time zone 'UTC', now()) as at
