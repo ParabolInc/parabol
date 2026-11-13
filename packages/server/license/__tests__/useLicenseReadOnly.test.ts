@@ -1,11 +1,13 @@
 import {parse} from 'graphql'
-import {getInstanceLicense, isLicenseReadOnly} from '../instanceLicense'
+import {canTurnReadOnly, getInstanceLicense, isLicenseReadOnly} from '../instanceLicense'
 import {useLicenseReadOnly} from '../useLicenseReadOnly'
 
 jest.mock('../instanceLicense', () => ({
+  canTurnReadOnly: jest.fn(),
   getInstanceLicense: jest.fn(),
   isLicenseReadOnly: jest.fn()
 }))
+const mockCanTurn = canTurnReadOnly as jest.Mock
 const mockReadOnly = isLicenseReadOnly as jest.Mock
 const mockLicense = getInstanceLicense as jest.Mock
 
@@ -19,6 +21,7 @@ const run = (query: string) => {
 }
 
 beforeEach(() => {
+  mockCanTurn.mockReturnValue(true)
   mockReadOnly.mockReturnValue(true)
   mockLicense.mockReturnValue({ok: true, claims: {expiresAt: '2027-01-01T00:00:00.000Z'}})
 })
@@ -46,6 +49,11 @@ describe('useLicenseReadOnly', () => {
     expect(
       run('mutation { refreshSession addAgendaItem(newAgendaItem: {}) { __typename } }')
     ).toHaveBeenCalled()
+  })
+
+  test('adds no hook for a license that can never turn the instance read-only', () => {
+    mockCanTurn.mockReturnValue(false)
+    expect(useLicenseReadOnly().onExecute).toBeUndefined()
   })
 
   test('does nothing while the license allows changes', () => {

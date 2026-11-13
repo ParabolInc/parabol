@@ -23,13 +23,33 @@ export const getUsageReportLevel = () => {
   return parsed.ok && usage.ok ? usageReportLevelOf(parsed.claims) : ''
 }
 
-/** Whether the license has expired and asks for read-only once it does */
-export const isLicenseReadOnly = (now = new Date()) => {
+// When a license that asks for read-only at expiry turns this instance read-only, worked out once. A cached flag says
+// whether it has, and a timer flips it then, so a request reads a boolean and no more
+const readOnlyAt = (() => {
   const {parsed} = instanceLicense
-  if (!parsed.ok) return false
-  const {onExpiry, expiresAt} = parsed.claims
-  return onExpiry === 'read-only' && !!expiresAt && Date.parse(expiresAt) <= now.getTime()
+  if (!parsed.ok || parsed.claims.onExpiry !== 'read-only' || !parsed.claims.expiresAt) return null
+  const at = Date.parse(parsed.claims.expiresAt)
+  return Number.isNaN(at) ? null : at
+})()
+let readOnly = false
+// setTimeout waits at most about 24.8 days, so a later expiry takes a few timers
+const MAX_TIMEOUT_MS = 2 ** 31 - 1
+const watchExpiry = () => {
+  if (readOnlyAt === null) return
+  const wait = readOnlyAt - Date.now()
+  if (wait <= 0) {
+    readOnly = true
+    return
+  }
+  setTimeout(watchExpiry, Math.min(wait, MAX_TIMEOUT_MS)).unref()
 }
+watchExpiry()
+
+/** Whether the license can ever turn this instance read-only */
+export const canTurnReadOnly = () => readOnlyAt !== null
+
+/** Whether the license has turned this instance read-only, as of its expiry */
+export const isLicenseReadOnly = () => readOnly
 
 const day = (iso: string) => iso.slice(0, 10)
 
@@ -67,8 +87,9 @@ export const requireInstanceLicense = (now = new Date(), freeze = freezeForever)
   const {id, customer, expiresAt, seats, type} = parsed.claims
   const covers = seats === undefined ? 'any number of active users' : `${seats} active users`
   if (expiresAt && Date.parse(expiresAt) <= now.getTime()) {
-    const readOnly = isLicenseReadOnly(now) ? ', so Parabol is read-only' : ''
-    Logger.warn(`License ${id} for ${customer} expired on ${day(expiresAt)}${readOnly}`)
+    const readOnlyNote =
+      readOnlyAt !== null && readOnlyAt <= now.getTime() ? ', so Parabol is read-only' : ''
+    Logger.warn(`License ${id} for ${customer} expired on ${day(expiresAt)}${readOnlyNote}`)
   } else {
     const until = expiresAt ? `, until ${day(expiresAt)}` : ''
     Logger.log(`License ${id} for ${customer}: ${covers}${until}`)

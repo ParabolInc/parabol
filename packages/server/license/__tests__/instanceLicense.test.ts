@@ -131,19 +131,47 @@ describe('requireInstanceLicense', () => {
 
 describe('isLicenseReadOnly', () => {
   const expired = {...claims, expiresAt: '2026-11-15T00:00:00.000Z'}
-  test('is read-only once a license that asks for it has expired', () => {
+  afterEach(() => jest.useRealTimers())
+
+  test('turns read-only at expiry, for a license that asks for it, without a restart', () => {
+    jest.useFakeTimers({now: new Date('2026-11-14T23:59:59.000Z')})
     const key = signLicense({...expired, onExpiry: 'read-only'}, privatePem)
     const instance = load({PRIVATE_LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true)
-    expect(instance.isLicenseReadOnly(new Date('2026-11-14T23:59:59.000Z'))).toBe(false)
-    expect(instance.isLicenseReadOnly(new Date('2026-11-15T00:00:00.000Z'))).toBe(true)
+    expect(instance.canTurnReadOnly()).toBe(true)
+    expect(instance.isLicenseReadOnly()).toBe(false)
+    jest.advanceTimersByTime(999)
+    expect(instance.isLicenseReadOnly()).toBe(false)
+    jest.advanceTimersByTime(1)
+    expect(instance.isLicenseReadOnly()).toBe(true)
   })
 
-  test('an expired license that doesn’t ask for it, or no license, stays writable', () => {
-    const key = signLicense(expired, privatePem)
+  test('waits out an expiry further off than one timer can', () => {
+    jest.useFakeTimers({now: new Date('2026-09-01T00:00:00.000Z')})
+    const key = signLicense({...expired, onExpiry: 'read-only'}, privatePem)
+    const instance = load({PRIVATE_LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true)
+    jest.advanceTimersByTime(Date.parse(expired.expiresAt) - Date.now() - 1)
+    expect(instance.isLicenseReadOnly()).toBe(false)
+    jest.advanceTimersByTime(1)
+    expect(instance.isLicenseReadOnly()).toBe(true)
+  })
+
+  test('starts read-only when the license has already expired', () => {
+    jest.useFakeTimers({now: new Date('2026-12-01T00:00:00.000Z')})
+    const key = signLicense({...expired, onExpiry: 'read-only'}, privatePem)
     expect(
-      load({PRIVATE_LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true).isLicenseReadOnly(now)
-    ).toBe(false)
-    expect(load({}, false).isLicenseReadOnly(now)).toBe(false)
+      load({PRIVATE_LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true).isLicenseReadOnly()
+    ).toBe(true)
+  })
+
+  test('an expired license that doesn’t ask for it, or no license, can never turn read-only', () => {
+    jest.useFakeTimers({now: new Date('2026-12-01T00:00:00.000Z')})
+    const instance = load(
+      {PRIVATE_LICENSE_KEY: signLicense(expired, privatePem), HOST: 'parabol.acme.mil'},
+      true
+    )
+    expect(instance.canTurnReadOnly()).toBe(false)
+    expect(instance.isLicenseReadOnly()).toBe(false)
+    expect(load({}, false).canTurnReadOnly()).toBe(false)
   })
 })
 
