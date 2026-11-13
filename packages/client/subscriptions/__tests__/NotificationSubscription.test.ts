@@ -1,4 +1,5 @@
 import {
+  commitLocalUpdate,
   createOperationDescriptor,
   Environment,
   Network,
@@ -102,5 +103,21 @@ describe('NotificationSubscription', () => {
     const {organizations} = (snapshot.data as {viewer: {organizations: {id: string}[]}}).viewer
     expect(organizations.map(({id}) => id)).toEqual([ownOrg.id, joinedOrg.id])
     expect(snapshot.isMissingData).toBe(false)
+  })
+
+  it('skips a payload the server could not resolve, so later store updates still apply', () => {
+    const atmosphere = createTestAtmosphere({
+      notificationSubscription: {
+        fieldName: 'MeetingStageTimeLimitPayload',
+        MeetingStageTimeLimitPayload: null
+      }
+    })
+    NotificationSubscription(atmosphere, {}, {navigate: jest.fn()})
+
+    expect(() =>
+      commitLocalUpdate(atmosphere, (store) => {
+        store.getRoot().setValue(true, 'isUpdated')
+      })
+    ).not.toThrow()
   })
 })
