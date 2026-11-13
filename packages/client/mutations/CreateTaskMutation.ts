@@ -178,6 +178,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
   const {viewerId} = atmosphere
   const {newTask} = variables
   const isEditing = !newTask.content
+  const taskId = clientTempId(newTask.teamId)
   return commitMutation<TCreateTaskMutation>(atmosphere, {
     mutation,
     variables,
@@ -190,7 +191,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     optimisticUpdater: (store) => {
       const {teamId, userId, integration, ...rest} = newTask
       const now = new Date().toJSON()
-      const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const plaintextContent =
         newTask.plaintextContent ||

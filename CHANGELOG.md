@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.31.1](https://github.com/ParabolInc/parabol/compare/v15.31.0...v15.31.1) (2026-11-13)
+
+
+### Fixed
+
+* **client:** keep the discussion thread from blanking when a comment is added ([#14157](https://github.com/ParabolInc/parabol/issues/14157)) ([a4f46ed](https://github.com/ParabolInc/parabol/commit/a4f46ed41587a95acaeba14e9427628b5ab87bff))
+* **client:** report only errors thrown by the app's own scripts ([#14154](https://github.com/ParabolInc/parabol/issues/14154)) ([d10dd02](https://github.com/ParabolInc/parabol/commit/d10dd024220ad6634d19efb6f6b77ce47f29c86b))
+* **server:** retry transient GCS errors instead of failing the upload ([#14149](https://github.com/ParabolInc/parabol/issues/14149)) ([d849d70](https://github.com/ParabolInc/parabol/commit/d849d703721c1f438cf372ce6cb347a7b5e1a7d5))
+
 ## [15.31.0](https://github.com/ParabolInc/parabol/compare/v15.30.1...v15.31.0) (2026-11-13)
 
 
