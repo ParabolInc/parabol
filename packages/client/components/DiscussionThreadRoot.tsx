@@ -14,6 +14,7 @@ interface Props {
   header?: ReactNode
   emptyState?: ReactNode
   autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionThreadRoot = (props: Props) => {
@@ -24,7 +25,8 @@ const DiscussionThreadRoot = (props: Props) => {
     width,
     header,
     emptyState,
-    autoFocus
+    autoFocus,
+    showLastTopicLine
   } = props
   const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
@@ -38,6 +40,7 @@ const DiscussionThreadRoot = (props: Props) => {
           header={header}
           emptyState={emptyState}
           autoFocus={autoFocus}
+          showLastTopicLine={showLastTopicLine}
         />
       )}
     </Suspense>

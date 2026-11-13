@@ -7,6 +7,7 @@ import {MeetingControlBarEnum} from '~/types/constEnums'
 import type {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
 import {cn} from '../ui/cn'
 import getDiscussionThreadCounts from '../utils/getDiscussionThreadCounts'
+import DiscussionLastTopicLine from './DiscussionLastTopicLine'
 import DiscussionThreadFilter, {type DiscussionThreadFilterValue} from './DiscussionThreadFilter'
 import DiscussionThreadInput, {type TaskDraft} from './DiscussionThreadInput'
 import DiscussionThreadList, {type DiscussionThreadables} from './DiscussionThreadList'
@@ -20,11 +21,20 @@ interface Props {
   header?: ReactNode
   emptyState?: ReactNode
   autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState, autoFocus} =
-    props
+  const {
+    meetingContentRef,
+    allowedThreadables,
+    width,
+    queryRef,
+    header,
+    emptyState,
+    autoFocus,
+    showLastTopicLine
+  } = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const ref = useRef<HTMLDivElement>(null)
@@ -116,6 +126,8 @@ const DiscussionThread = (props: Props) => {
     changeFilter('all')
     setTaskDraft({discussionId: discussion.id, isOpen: true})
   }
+  const isLastTopicWithoutTasks = !!showLastTopicLine && counts.tasks === 0
+  const isTaskTabOpen = taskDraft?.discussionId === discussion.id && taskDraft.isOpen
 
   return (
     <div
@@ -132,7 +144,9 @@ const DiscussionThread = (props: Props) => {
         <DiscussionThreadFilter
           allCount={counts.all}
           taskCount={counts.tasks}
-          peopleCommentCount={counts.isTaskNudge ? counts.peopleComments : null}
+          peopleCommentCount={
+            counts.isTaskNudge && !isLastTopicWithoutTasks ? counts.peopleComments : null
+          }
           value={filter}
           onChange={changeFilter}
         />
@@ -151,6 +165,9 @@ const DiscussionThread = (props: Props) => {
         emptyState={emptyState}
       />
       <div className={cn(filter === 'tasks' && 'hidden')}>
+        {isLastTopicWithoutTasks && !isTaskTabOpen && (
+          <DiscussionLastTopicLine onAddTask={addTask} />
+        )}
         <DiscussionThreadInput
           allowedThreadables={allowedThreadables}
           isDisabled={!!replyingTo?.id}
