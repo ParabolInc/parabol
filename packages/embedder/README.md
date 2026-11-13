@@ -137,6 +137,11 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
    ON CONFLICT DO NOTHING;
    ```
 
+   An idle embedder doesn't notice rows added this way: its workers wait for a message on
+   Valkey, and only the app sends one. On a quiet instance, wake them with
+   `PUBLISH embeddingsJobAdded ''` or by restarting the embedder, then check a minute later
+   that the queue is going down. A busy worker picks the jobs up once it's free.
+
 4. When the fill is done, repeat step 3 with the current time, so it only picks up what
    failed, and check `EmbeddingsFailures`. Then remove the old model, `[new]`. After a
    soak, delete the old model's jobs and drop its tables.
