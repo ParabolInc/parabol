@@ -60,7 +60,7 @@ const SignedUsageReportButton = ({orgId}: Props) => {
         </button>
       </TooltipTrigger>
       <TooltipContent side='bottom'>
-        Download this instance’s active users, signed so Parabol can tell they weren’t changed
+        Download this instance’s usage summary to share with Parabol
       </TooltipContent>
     </Tooltip>
   )

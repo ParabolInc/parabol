@@ -3,15 +3,15 @@ import {countActiveUsers, countActiveUsersByOrg, readMonthlyPeaks} from './licen
 import {signUsageReport, type UsageReportClaims} from './licenseToken'
 
 // how far back monthly peaks go, at most
-const MAX_MONTHS = 24
+const MAX_MONTHS = 12
 
 const ABOUT =
-  'A usage report from a Parabol instance, to send to Parabol. `report` is there to read. `signed` is what ' +
-  'Parabol checks: the same report, signed with the instance’s private usage key, whose public half its license names.'
+  'A usage summary from a Parabol instance, to share with Parabol. `report` is there to read; `signed` is the same ' +
+  'summary, signed with the instance’s private usage key.'
 
 /**
  * The instance's usage report, signed with its private usage key, as a JSON file: active users now, in each organization, and
- * each month's peak since the license was issued
+ * each month's peak since the license was issued, for up to the last 12 months
  */
 export const makeUsageReport = async (now = new Date()) => {
   const usage = getPrivateUsageKey()
