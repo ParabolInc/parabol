@@ -7,36 +7,38 @@ export const isNetworkError = ({name}: Error) => {
   return name === 'ChunkLoadError' || name === 'AbortError'
 }
 
-// Safari hides the URL of every extension script behind webkit-masked-url
-const EXTENSION_URL_SCHEMES = [
-  'chrome-extension://',
-  'moz-extension://',
-  'safari-web-extension://',
-  'webkit-masked-url://'
-]
+// Chrome: "    at fn (script:line:column)" or "    at script:line:column". Firefox and Safari: "fn@script:line:column".
+// A browser builtin such as JSON.parse has no line, so its frame never counts as the one that threw
+const POSITIONED_FRAME = /^\s*at (?:.+ \()?(.+?):\d+:\d+\)?$|@(.+?):\d+:\d+$/
 
-export const isFromExtension = (source: string | undefined) => {
-  return EXTENSION_URL_SCHEMES.some((scheme) => source?.includes(scheme))
+// the scripts of a stack's frames, the one that threw first
+export const getStackScripts = (stack: string | undefined) =>
+  (stack ?? '').split('\n').flatMap((line) => {
+    const [, v8Script, geckoScript] = line.match(POSITIONED_FRAME) ?? []
+    const script = v8Script ?? geckoScript
+    return script ? [script] : []
+  })
+
+// A production build serves every script from one directory, wherever a CDN or a redirect to one puts it,
+// so the directory of this script is the app's. A script that replaced the page's Error adds an <anonymous> frame above it
+const ownScript = getStackScripts(new Error().stack).find((script) => script !== '<anonymous>')
+const appScriptDirectory = ownScript?.replace(/[?#].*$/, '').replace(/[^/]*$/, '')
+
+// with no directory to compare against, as in development, every script counts as the app's
+export const isAppScript = (script: string | undefined) => {
+  if (!script) return false
+  return !__PRODUCTION__ || !appScriptDirectory || script.startsWith(appScriptDirectory)
 }
 
-// A script injected inline has no URL, so its frames read <anonymous> with a line, where a browser builtin's have none
-const isThrownByInjectedScript = (stack: string | undefined) => {
-  const throwingFrame = stack?.split('\n').find((line) => line.trim().startsWith('at '))
-  return !!throwingFrame && /\(<anonymous>:\d+:\d+\)$/.test(throwingFrame)
+// an extension, a script injected inline, or another host's script
+const isThrownOutsideApp = (stack: string | undefined) => {
+  const [throwingScript] = getStackScripts(stack)
+  return !!throwingScript && !isAppScript(throwingScript)
 }
 
-// A program that embeds Chromium with CefSharp, as link scanners do, rejects with this when its injected script calls an object it unbound
-const isCefSharpBindingError = (message: string) => {
-  return message.startsWith('Object Not Found Matching Id:')
-}
-
-export const isExtensionError = ({name, message, stack}: Error) => {
-  return (
-    name === 'NotFoundError' ||
-    isFromExtension(stack) ||
-    isThrownByInjectedScript(stack) ||
-    isCefSharpBindingError(message)
-  )
+// Google Translate and extensions like it move the nodes React renders, so React's own removeChild throws NotFoundError
+export const isExtensionError = ({name, stack}: Error) => {
+  return name === 'NotFoundError' || isThrownOutsideApp(stack)
 }
 
 export const isIgnoredError = (error: Error) => {
