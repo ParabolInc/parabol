@@ -33,7 +33,7 @@ class OpenAIServerManager {
       return
     }
     // the client is a lot of code, so the first AI request evaluates it instead of every server's startup
-    const {OpenAI: OpenAIClient} = require('openai') as typeof import('openai')
+    const {default: OpenAIClient} = require('openai') as typeof import('openai')
     this.openAIApi = new OpenAIClient({
       apiKey: process.env.OPEN_AI_API_KEY,
       organization: process.env.OPEN_AI_ORG_ID
