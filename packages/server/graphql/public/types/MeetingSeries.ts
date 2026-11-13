@@ -6,6 +6,7 @@ import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import canReadMeetingSeries from '../../mutations/helpers/canReadMeetingSeries'
+import getSeriesDisableAnonymity from '../../mutations/helpers/getSeriesDisableAnonymity'
 import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
@@ -44,6 +45,10 @@ const MeetingSeries: MeetingSeriesResolvers = {
       .limit(1)
       .executeTakeFirst()
     return meeting ?? null
+  },
+  disableAnonymity: (meetingSeries, _args, {dataLoader}) => {
+    if (meetingSeries.meetingType !== 'retrospective') return null
+    return getSeriesDisableAnonymity(meetingSeries, dataLoader)
   },
   nextMeetingDate: ({id, recurrenceRule, cancelledAt}) => {
     if (cancelledAt) return null

@@ -48,6 +48,13 @@ type MeetingSeries {
   templateId: ID
 
   """
+  Whether the next retrospective in the series hides who wrote each reflection. Taken from the
+  series once it is set there, else from the previous meeting, else from the team's settings.
+  Null when the series is not a retrospective.
+  """
+  disableAnonymity: Boolean
+
+  """
   The name of the meeting series used to generate the names of the recurring meetings
   """
   title: String!
