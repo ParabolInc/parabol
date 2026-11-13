@@ -1,6 +1,6 @@
 import {verify} from 'jsonwebtoken'
 import type AuthToken from '../database/types/AuthToken'
-import logError from './logError'
+import {Logger} from './Logger'
 
 const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')
 
@@ -21,7 +21,7 @@ const getVerifiedAuthToken = (
   } catch (e) {
     if (logErrors) {
       const error = e instanceof Error ? e : new Error('Verify auth token failed')
-      logError(error, {tags: {jwt}})
+      Logger.warn(error, {tags: {jwt}})
     }
     return null
   }

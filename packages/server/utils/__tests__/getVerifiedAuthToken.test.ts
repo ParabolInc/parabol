@@ -2,6 +2,7 @@ import {sign} from 'jsonwebtoken'
 import AuthToken from '../../database/types/AuthToken'
 import encodeAuthToken, {encodeUnsignedAuthToken} from '../encodeAuthToken'
 import getVerifiedAuthToken from '../getVerifiedAuthToken'
+import {Logger} from '../Logger'
 
 /**
  * Security regression tests for the JWT "alg=none" attack.
@@ -87,4 +88,18 @@ test('accepts a legitimately signed token for the same userId', () => {
 
   const result = getVerifiedAuthToken(validJwt, false)
   expect(result?.sub).toBe(VICTIM_USER_ID)
+})
+
+test.each([
+  ['malformed', 'aaa.bbb.ccc'],
+  ['unsigned', craftRawAlgNoneToken(VICTIM_USER_ID)],
+  ['signed with another secret', sign({sub: VICTIM_USER_ID, aud: 'action'}, 'another secret')]
+])('a client token that is %s is logged as a warning, not an error', (_kind, jwt) => {
+  const warn = jest.spyOn(Logger, 'warn').mockImplementation(() => {})
+  const error = jest.spyOn(Logger, 'error').mockImplementation(() => {})
+  expect(getVerifiedAuthToken(jwt)).toBeNull()
+  expect(warn).toHaveBeenCalledTimes(1)
+  expect(error).not.toHaveBeenCalled()
+  warn.mockRestore()
+  error.mockRestore()
 })
