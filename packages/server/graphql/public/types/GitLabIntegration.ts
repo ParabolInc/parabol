@@ -1,4 +1,6 @@
-import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import GitLabServerManager, {
+  GitLabRateLimitError
+} from '../../../integrations/gitlab/GitLabServerManager'
 import type {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
 import logError from '../../../utils/logError'
 import type {GitLabIntegrationResolvers} from '../resolverTypes'
@@ -20,6 +22,20 @@ type CursorDetails = {
   fullPath: string
   cursor: string
 }
+
+// GitLab lets a user search issues 30 times a minute by default and counts every project searched,
+// so a search asks each group once and only projects outside a group one by one
+const toSearchSources = (projects: {fullPath: string; group?: {fullPath: string} | null}[]) => {
+  const groupPaths = [...new Set(projects.flatMap(({group}) => (group ? [group.fullPath] : [])))]
+  const isSubgroup = (path: string) => groupPaths.some((other) => path.startsWith(`${other}/`))
+  const groups = groupPaths.filter((path) => !isSubgroup(path))
+  const personalProjects = projects.filter(({group}) => !group)
+  return [
+    ...groups.map((fullPath) => ({fullPath, isGroup: true})),
+    ...personalProjects.map(({fullPath}) => ({fullPath, isGroup: false}))
+  ]
+}
+
 const GitLabIntegration: GitLabIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
     return dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
@@ -42,7 +58,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
   },
 
   projectsIssues: async ({teamId, userId}, args, context, info) => {
-    const {projectsIds} = args
+    const {projectsIds, searchQuery} = args
     const after = args?.after ?? ''
     const {dataLoader} = context
     const emptyConnection = {
@@ -65,12 +81,13 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       logError(new Error('Unable to get GitLab projects in projectsIssues query'), {userId})
       return emptyConnection
     }
-    const projectsFullPaths = new Set<string>()
-    projectsData.projects?.edges?.forEach((edge) => {
-      if (edge?.node?.fullPath) {
-        projectsFullPaths.add(edge?.node?.fullPath)
-      }
-    })
+    const projects = (projectsData.projects?.edges ?? []).flatMap((edge) =>
+      edge?.node ? [edge.node] : []
+    )
+    const sources =
+      searchQuery && !projectsIds?.length
+        ? toSearchSources(projects)
+        : projects.map(({fullPath}) => ({fullPath, isGroup: false}))
     let parsedAfter: CursorDetails[] | null
     try {
       parsedAfter = after.length ? JSON.parse(after) : null
@@ -90,31 +107,37 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       return emptyConnection
     }
 
-    const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
-      const after = parsedAfter?.find((cursor) => cursor.fullPath === fullPath)?.cursor ?? ''
-      return manager.getProjectIssues({
+    const pagedSources = parsedAfter
+      ? sources.filter(({fullPath}) => parsedAfter.some((cursor) => cursor.fullPath === fullPath))
+      : sources
+    const projectsIssuesPromises = pagedSources.map(async ({fullPath, isGroup}) => {
+      const issuesArgs = {
         ...args,
         fullPath,
-        after,
+        after: parsedAfter?.find((cursor) => cursor.fullPath === fullPath)?.cursor ?? '',
         sort: args.sort as IssueSort,
         state: args.state as IssuableState
-      })
+      }
+      if (isGroup) {
+        const [groupIssuesData, err] = await manager.getGroupIssues(issuesArgs)
+        return [groupIssuesData?.group, err] as const
+      }
+      const [projectIssuesData, err] = await manager.getProjectIssues(issuesArgs)
+      return [projectIssuesData?.project, err] as const
     })
     const projectsIssues = [] as ProjectIssueEdge[]
     const errors = [] as Error[]
     let hasNextPage = false
     const endCursor = [] as CursorDetails[]
     const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
-    for (const res of projectsIssuesResponses) {
-      const [projectIssuesData, err] = res
+    for (const [issuesParent, err] of projectsIssuesResponses) {
       if (err) {
         errors.push(err)
-        logError(err, {userId})
+        if (!(err instanceof GitLabRateLimitError)) logError(err, {userId})
         continue
       }
-      const {project} = projectIssuesData
-      if (!project?.issues) continue
-      const {fullPath, issues} = project
+      if (!issuesParent?.issues) continue
+      const {fullPath, issues} = issuesParent
       const {edges, pageInfo} = issues
       if (pageInfo.hasNextPage) {
         hasNextPage = true
@@ -135,7 +158,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     const firstEdge = projectsIssues[0]
     const stringifiedEndCursor = JSON.stringify(endCursor)
     return {
-      error: errors[0],
+      error: errors[0] && {message: errors[0].message},
       edges: projectsIssues as any,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,

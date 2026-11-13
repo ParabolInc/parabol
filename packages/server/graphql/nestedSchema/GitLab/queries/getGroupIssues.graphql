@@ -1,0 +1,38 @@
+query getGroupIssues(
+  $fullPath: ID!
+  $first: Int!
+  $after: String
+  $searchQuery: String
+  $sort: IssueSort
+  $state: IssuableState
+) {
+  group(fullPath: $fullPath) {
+    fullPath
+    issues(
+      first: $first
+      after: $after
+      search: $searchQuery
+      sort: $sort
+      state: $state
+      includeSubgroups: true
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        cursor
+        node {
+          __typename
+          id
+          iid
+          descriptionHtml
+          webPath
+          updatedAt
+          title
+          webUrl
+        }
+      }
+    }
+  }
+}

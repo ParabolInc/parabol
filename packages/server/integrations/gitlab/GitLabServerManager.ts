@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import type {BaseGraphQLError} from 'nest-graphql-endpoint'
 import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
@@ -7,6 +8,7 @@ import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/cre
 import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
+import getGroupIssues from '../../graphql/nestedSchema/GitLab/queries/getGroupIssues.graphql'
 import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import getLabels from '../../graphql/nestedSchema/GitLab/queries/getLabels.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
@@ -19,6 +21,8 @@ import type {
   CreateLabelMutation,
   CreateLabelMutationVariables,
   CreateNoteMutation,
+  GetGroupIssuesQuery,
+  GetGroupIssuesQueryVariables,
   GetIssueQuery,
   GetLabelsQuery,
   GetProfileQuery,
@@ -35,6 +39,25 @@ import type {
 } from '../platform/TaskIntegrationManager'
 import toNestedRequestError from '../platform/toNestedRequestError'
 import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
+
+export class GitLabRateLimitError extends Error {}
+
+interface GitLabGraphQLError {
+  message: string
+  extensions?: {error_type?: string}
+}
+
+// GitLab answers a request over the user's quota with this error, and only newer versions add the error_type
+const isRateLimited = ({message, extensions}: GitLabGraphQLError) =>
+  extensions?.error_type === 'rate_limited' || message.includes('too many times')
+
+const toGitLabError = (errors: readonly BaseGraphQLError[] | null | undefined) => {
+  const [error] = errors ?? []
+  if (error && isRateLimited(error)) {
+    return new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
+  }
+  return toNestedRequestError(errors)
+}
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -69,7 +92,7 @@ class GitLabServerManager implements TaskIntegrationManager {
         batchRef
       })
       const {data, errors} = result
-      const error = toNestedRequestError(errors)
+      const error = toGitLabError(errors)
       return [data, error] as [TData, typeof error]
     }
   }
@@ -168,6 +191,15 @@ class GitLabServerManager implements TaskIntegrationManager {
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(
       getProjectIssues,
       projectIssuesArgs
+    )
+    return [issuesData, issuesError] as const
+  }
+
+  async getGroupIssues(groupIssuesArgs: GetGroupIssuesQueryVariables) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [issuesData, issuesError] = await gitlabRequest<GetGroupIssuesQuery>(
+      getGroupIssues,
+      groupIssuesArgs
     )
     return [issuesData, issuesError] as const
   }
