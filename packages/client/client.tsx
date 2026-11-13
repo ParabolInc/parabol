@@ -12,8 +12,9 @@ createRoot(container).render(<Root />)
 // so in development the worker is only registered when the dev server runs over http
 const canRegisterServiceWorker = __PRODUCTION__ || window.location.protocol === 'http:'
 // The browser refuses a worker to a document it is discarding, such as a sign-in popup its opener just closed,
-// and to a site whose data the user blocks. The page works without one
-const REFUSED_REGISTRATION_ERRORS = ['InvalidStateError', 'NotSupportedError']
+// to a site whose data the user blocks, and to a copy of the page another origin serves, such as a translation proxy.
+// The page works without one
+const REFUSED_REGISTRATION_ERRORS = ['InvalidStateError', 'NotSupportedError', 'SecurityError']
 if (canRegisterServiceWorker && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     // logging from a closure keeps a frame of the app's own beneath console.error, which tells it from an extension's log

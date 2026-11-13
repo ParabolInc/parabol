@@ -61,6 +61,18 @@ test('a registration the browser refuses to a site whose data the user blocks is
   expect(loggedToConsole).not.toHaveBeenCalled()
 })
 
+test('a registration the browser refuses to a copy of the page another origin serves is not logged', async () => {
+  register.mockRejectedValue(
+    new DOMException(
+      "Failed to register a ServiceWorker: The origin of the provided scriptURL ('https://app.example.com') does not match the current origin ('https://app-example-com.proxy.example').",
+      'SecurityError'
+    )
+  )
+  await loadPage()
+  expect(register).toHaveBeenCalledWith('/sw.js', {scope: '/'})
+  expect(loggedToConsole).not.toHaveBeenCalled()
+})
+
 test('a registration that fails to load the script is still logged', async () => {
   const failure = new TypeError(
     "Failed to register a ServiceWorker for scope ('https://action.parabol.co/') with script ('https://action.parabol.co/sw.js'): A bad HTTP response code (404) was received when fetching the script."
