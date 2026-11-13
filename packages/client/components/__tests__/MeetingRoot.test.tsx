@@ -166,6 +166,7 @@ const waitForPhase = async () => {
 
 beforeAll(() => {
   Object.assign(globalThis, {
+    __APP_VERSION__: '1.0.0',
     window: happyWindow,
     document: happyWindow.document,
     location: happyWindow.location
