@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddCommentMutation_meeting$data} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
+import clientTempId from '~/utils/relay/clientTempId'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import type {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
@@ -68,6 +69,7 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
   variables,
   {onError, onCompleted}
 ) => {
+  const optimisticCommentId = clientTempId()
   return commitMutation<TAddCommentMutation>(atmosphere, {
     mutation,
     variables,
@@ -82,6 +84,7 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
       const now = new Date().toJSON()
       const optimisticComment = createProxyRecord(store, 'Comment', {
         ...comment,
+        id: optimisticCommentId,
         createdAt: now,
         updatedAt: now,
         createdBy: isAnonymous ? null : viewerId,
