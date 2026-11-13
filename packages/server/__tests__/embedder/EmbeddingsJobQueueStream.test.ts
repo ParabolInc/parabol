@@ -73,6 +73,25 @@ it('waits for a publish when nothing is queued', async () => {
   expect(value).toBe(job)
 })
 
+it('finds a job added straight to the table, with nothing published', async () => {
+  jest.useFakeTimers()
+  try {
+    nextRunAfter = null
+    jest.mocked(claimEmbeddingsJob).mockResolvedValue(undefined)
+    const pending = startStream()
+    await jest.advanceTimersByTimeAsync(1_000)
+    expect(runStep).not.toHaveBeenCalled()
+    jest
+      .mocked(claimEmbeddingsJob)
+      .mockResolvedValue(job as Awaited<ReturnType<typeof claimEmbeddingsJob>>)
+    await jest.advanceTimersByTimeAsync(60_000)
+    const {value} = await pending
+    expect(value).toBe(job)
+  } finally {
+    jest.useRealTimers()
+  }
+})
+
 it('claims only live work when told to', async () => {
   nextRunAfter = null
   jest

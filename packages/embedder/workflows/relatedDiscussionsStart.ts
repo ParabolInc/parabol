@@ -4,6 +4,7 @@ import getKysely from '../../server/postgres/getKysely'
 import getPhase from '../../server/utils/getPhase'
 import {activeEmbeddingModelId} from '../activeEmbeddingModel'
 import type {JobQueueStepRun, ParentJob} from '../custom'
+import {getInactiveModelJobs} from '../getInactiveModelJobs'
 import type {embedMetadata} from './embedMetadata'
 
 export const relatedDiscussionsStart: JobQueueStepRun<
@@ -45,6 +46,17 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     )
     .returning('id')
     .execute()
+
+  const inactiveModelJobs = (
+    await Promise.all(
+      inserts.map(({id}) =>
+        getInactiveModelJobs({jobType: 'embed:start', embeddingsMetadataId: id}, null, dataLoader)
+      )
+    )
+  ).flat()
+  if (inactiveModelJobs.length > 0) {
+    await pg.insertInto('EmbeddingsJobQueueV2').values(inactiveModelJobs).execute()
+  }
 
   return inserts.map(({id}) => ({
     embeddingsMetadataId: id,
