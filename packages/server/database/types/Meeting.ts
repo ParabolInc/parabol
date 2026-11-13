@@ -44,7 +44,6 @@ export default abstract class Meeting {
   summary?: string | null
   sentimentScore?: number | null
   usedReactjis?: Record<string, number> | null
-  slackTs?: string | number | null
   engagement?: number | null
 
   constructor(input: Input) {

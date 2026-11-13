@@ -14,6 +14,7 @@ import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import type {AnyNotification} from '../../../../postgres/types/Notification'
 import {toEpochSeconds} from '../../../../utils/epochTime'
+import getRedis from '../../../../utils/getRedis'
 import logError from '../../../../utils/logError'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
@@ -36,6 +37,11 @@ type NotificationChannel = {
   auth: SlackAuth
   channelId: string | null
 }
+
+// Where each notification channel's start message landed, so a rename can edit it. Kept a day, after which a rename leaves it as is
+const START_MESSAGE_TTL_SECONDS = 60 * 60 * 24
+const getStartMessagesKey = (meetingId: string) => `slackMeetingStartMessages:${meetingId}`
+type StartMessage = {channel: string; ts: string}
 
 const isRevokedTokenError = (error: string) =>
   error === 'account_inactive' || error === 'token_revoked'
@@ -60,6 +66,10 @@ const handleError = async (
       }
     } else if (isRevokedTokenError(error)) {
       await removeSlackAuths(auth.userId, auth.teamId, true)
+      return {
+        error: new Error(error)
+      }
+    } else if (error === 'message_not_found') {
       return {
         error: new Error(error)
       }
@@ -425,27 +435,23 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
-    if ('ts' in res) {
-      await getKysely()
-        .updateTable('NewMeeting')
-        .set({slackTs: Number(res.ts)})
-        .where('id', '=', meeting.id)
-        .execute()
-    }
+    const startMessage: StartMessage = {channel: res.channel, ts: res.ts}
+    const key = getStartMessagesKey(meeting.id)
+    await getRedis()
+      .multi()
+      .hset(key, notificationChannel.channelId!, JSON.stringify(startMessage))
+      .expire(key, START_MESSAGE_TTL_SECONDS)
+      .exec()
     return 'success'
   },
 
   async updateMeeting(meeting, team) {
     const {channelId, auth} = notificationChannel
     const {botAccessToken} = auth
-    const {slackTs} = meeting
-    if (!slackTs || !botAccessToken || !channelId) {
-      return handleError(
-        {ok: false, error: 'missing slackTs, botAccessToken, or channelId'},
-        team.id,
-        notificationChannel
-      )
-    }
+    if (!botAccessToken || !channelId) return 'success'
+    const storedMessage = await getRedis().hget(getStartMessagesKey(meeting.id), channelId)
+    if (!storedMessage) return 'success'
+    const startMessage: StartMessage = JSON.parse(storedMessage)
 
     const searchParams = {
       utm_source: 'slack meeting start',
@@ -461,17 +467,10 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     )
 
     const manager = new SlackServerManager(botAccessToken)
-    const res = await manager.updateMessage(channelId, blocks, String(slackTs))
+    const res = await manager.updateMessage(startMessage.channel, blocks, startMessage.ts)
 
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
-    }
-    if ('ts' in res) {
-      await getKysely()
-        .updateTable('NewMeeting')
-        .set({slackTs: Number(res.ts)})
-        .where('id', '=', meeting.id)
-        .execute()
     }
     return 'success'
   },
