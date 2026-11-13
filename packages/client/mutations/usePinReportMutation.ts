@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {usePinReportMutation as TPinReportMutation} from '../__generated__/usePinReportMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation usePinReportMutation(
@@ -34,7 +36,9 @@ const mutation = graphql`
 
 const usePinReportMutation = () => {
   const [commit, submitting] = useMutation<TPinReportMutation>(mutation)
-  const execute = (config: UseMutationConfig<TPinReportMutation>) => commit(config)
+  const atmosphere = useAtmosphere()
+  const execute = (config: UseMutationConfig<TPinReportMutation>) =>
+    commit({onError: snackOnError(atmosphere), ...config})
   return [execute, submitting] as const
 }
 

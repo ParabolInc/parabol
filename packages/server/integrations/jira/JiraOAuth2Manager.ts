@@ -1,6 +1,4 @@
 import type {JiraAuthMeta} from '../../postgres/types'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {makeOAuth2Redirect} from '../../utils/makeOAuth2Redirect'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
@@ -8,6 +6,8 @@ import OAuth2Manager, {
   type OAuth2RefreshAuthorizationParams,
   type OAuth2TokenResponse
 } from '../OAuth2Manager'
+import AtlassianServerManager from './AtlassianServerManager'
+import {hasJiraScopes} from './hasJiraScopes'
 
 const accountIdFromJwt = (accessToken: string): string | Error => {
   try {

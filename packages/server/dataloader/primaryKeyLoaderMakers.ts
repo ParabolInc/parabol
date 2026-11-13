@@ -25,6 +25,7 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamDetails,
   selectTeamHealthCategories,
   selectTeamHealthCategorySummaries,
   selectTeamHealthQuestionPacks,
@@ -233,6 +234,10 @@ export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => 
 
 export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectUserDetails().where('id', 'in', ids).execute()
+})
+
+export const teamDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamDetails().where('id', 'in', ids).execute()
 })
 
 export const personalAccessTokens = primaryKeyLoaderMaker((ids: readonly string[]) => {

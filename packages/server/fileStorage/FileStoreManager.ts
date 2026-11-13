@@ -17,6 +17,7 @@ export type PutFileOptions = {contentDisposition?: string; cacheControl?: string
 
 export default abstract class FileStoreManager {
   abstract baseUrl: string
+  // true only when the store confirms the file is there, so a file it can't vouch for gets written again
   abstract checkExists(fileName: string, assetDir?: FileAssetDir): Promise<boolean>
   abstract prependPath(partialPath: string, assetDir?: FileAssetDir): string
   abstract getPublicFileLocation(fullPath: string): string
@@ -37,7 +38,26 @@ export default abstract class FileStoreManager {
   abstract copyFile(oldKey: PartialPath, newKey: PartialPath): Promise<string>
   abstract moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void>
   abstract presignUrl(partialPath: PartialPath, expiresIn?: number): Promise<string>
-  async putUserFile(file: ArrayBufferLike | Buffer<ArrayBufferLike>, partialPath: PartialPath) {
+
+  private userFileWritesByPath = new Map<PartialPath, Promise<string>>()
+
+  putUserFile(file: ArrayBufferLike | Buffer<ArrayBufferLike>, partialPath: PartialPath) {
+    const existingWrite = this.userFileWritesByPath.get(partialPath)
+    if (existingWrite) return existingWrite
+    const write = this.writeUserFile(file, partialPath)
+    this.userFileWritesByPath.set(partialPath, write)
+    write.then(
+      // GCS allows one write per object per second, so a write right after this one would get a 429
+      () => setTimeout(() => this.userFileWritesByPath.delete(partialPath), 1000).unref(),
+      () => this.userFileWritesByPath.delete(partialPath)
+    )
+    return write
+  }
+
+  private async writeUserFile(
+    file: ArrayBufferLike | Buffer<ArrayBufferLike>,
+    partialPath: PartialPath
+  ) {
     const fullPath = this.prependPath(partialPath)
     await this.putFile(file, fullPath, {contentDisposition: 'attachment'})
     return makeAppURL(appOrigin, `/assets/${partialPath}`)

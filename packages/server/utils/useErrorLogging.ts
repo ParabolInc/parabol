@@ -1,7 +1,6 @@
 import {
   handleStreamOrSingleExecutionResult,
   isAsyncIterable,
-  isOriginalGraphQLError,
   type TypedExecutionArgs
 } from '@envelop/core'
 import {
@@ -20,8 +19,15 @@ import getOperationSpan from '../tracing/getOperationSpan'
 import getSpanLogContext from '../tracing/getSpanLogContext'
 import type {ServerContext} from '../yoga'
 import getTraceLogContext from './getTraceLogContext'
+import isExpectedError from './isExpectedError'
 import {type GraphQLLogContext, Logger, markErrorAsLogged} from './Logger'
-import {createLogContext, enterLogContext, type RequestLogContext} from './requestLogContext'
+import {rememberTraceId} from './maskErrorWithTraceId'
+import {
+  createLogContext,
+  enterLogContext,
+  getLogContext,
+  type RequestLogContext
+} from './requestLogContext'
 
 type LoggableContext = Partial<
   Pick<ServerContext, 'authToken' | 'ip' | 'traceparent' | 'sessionId' | 'socketId'>
@@ -88,11 +94,13 @@ const logResultErrors = (
   errors?.forEach((error) => {
     const graphql = getGraphQLLogContext(executedDocument, error)
     const loggableError = error.originalError ?? error
-    if (isOriginalGraphQLError(error)) {
+    if (isExpectedError(error)) {
       Logger.warn(loggableError, {graphql})
     } else {
       hasUnexpectedError = true
       Logger.error(loggableError, {graphql})
+      const traceId = getLogContext()?.traceId
+      if (traceId) rememberTraceId(error, traceId)
     }
     // yoga's maskedErrors passes the GraphQLError wrapper to Logger.error next; suppress that duplicate
     markErrorAsLogged(error)

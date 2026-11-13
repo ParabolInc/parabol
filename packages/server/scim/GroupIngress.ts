@@ -5,7 +5,7 @@ import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import createTeamAndLeader from '../graphql/mutations/helpers/createTeamAndLeader'
-import removeTeamMember from '../graphql/mutations/helpers/removeTeamMember'
+import removeTeamMembers from '../graphql/mutations/helpers/removeTeamMembers'
 import promptTemplateRules from '../graphql/public/mutations/helpers/promptTemplateRules'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
@@ -102,15 +102,6 @@ const applyMembers = async (
   }
 
   await Promise.all(
-    toRemove.map(async (member) => {
-      const res = await removeTeamMember(member.id, {}, dataLoader)
-      if (!res.user) {
-        Logger.error(`Failed to remove team member ${member.id} from team ${group.id}`)
-      }
-    })
-  )
-
-  await Promise.all(
     toAdd.map(async (member) => {
       try {
         await acceptTeamInvitation(team, member.value, dataLoader)
@@ -119,6 +110,16 @@ const applyMembers = async (
       }
     })
   )
+
+  // Add before removing, so replacing every member hands the lead to a new member instead of archiving the team
+  if (toRemove.length > 0) {
+    const userIdsToRemove = toRemove.map(({userId}) => userId)
+    const {removedUserIds} = await removeTeamMembers(group.id, userIdsToRemove, {}, dataLoader)
+    const notRemovedUserIds = userIdsToRemove.filter((userId) => !removedUserIds.includes(userId))
+    if (notRemovedUserIds.length > 0) {
+      Logger.error(`Failed to remove users ${notRemovedUserIds.join(', ')} from team ${group.id}`)
+    }
+  }
 
   dataLoader.get('teamMembersByTeamId').clear(group.id)
   return group

@@ -2,7 +2,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {DataLoaderWorker} from '../../graphql'
 
 /**
- * Hands a departing member's series to the org, so the owner rung is never empty.
+ * Hands departing members' series to the org, so the owner rung is never empty.
  *
  * An owner who is out of the org fails the tenancy check in canAdminMeetingSeries, and a
  * hard-deleted one is nulled outright by the ownerUserId foreign key, which would make the series
@@ -12,7 +12,7 @@ import type {DataLoaderWorker} from '../../graphql'
  * Call once billing leader succession has run, so a freshly promoted leader is a candidate.
  */
 const reassignMeetingSeriesOwner = async (
-  ownerUserId: string,
+  ownerUserIds: string[],
   orgId: string,
   orgTeamIds: string[],
   dataLoader: DataLoaderWorker
@@ -27,7 +27,7 @@ const reassignMeetingSeriesOwner = async (
   await getKysely()
     .updateTable('MeetingSeries')
     .set({ownerUserId: successor.userId})
-    .where('ownerUserId', '=', ownerUserId)
+    .where('ownerUserId', 'in', ownerUserIds)
     .where('teamId', 'in', orgTeamIds)
     .execute()
 }

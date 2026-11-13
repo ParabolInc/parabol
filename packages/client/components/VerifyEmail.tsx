@@ -17,7 +17,7 @@ const VerifyEmail = () => {
   const navigate = useNavigate()
   const {verificationToken, invitationToken} = useParams()
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, error, submitMutation} = useMutationProps()
+  const {onCompleted, onError, error, submitMutation} = useMutationProps({errorDisplay: 'inline'})
   const calledRef = useRef(false)
   useCanonical('verify-email')
   useEffect(() => {

@@ -6,8 +6,9 @@ jest.mock('../../../graphql/public/rootSchema', () => ({
   default: {}
 }))
 
+import type {GitHubRepo} from '../../github/fetchGitHubRepos'
+import type {GitLabProject} from '../../gitlab/fetchGitLabProjects'
 import mergeRepoIntegrations from '../mergeRepoIntegrations'
-import type {GitHubRepo, GitLabProject} from '../RemoteRepoIntegration'
 
 const github = (nameWithOwner: string): GitHubRepo => ({
   hasIssuesEnabled: true,

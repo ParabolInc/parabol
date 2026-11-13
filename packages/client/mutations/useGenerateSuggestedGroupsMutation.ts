@@ -4,6 +4,7 @@ import type {useGenerateSuggestedGroupsMutation as TGenerateSuggestedGroupsMutat
 import type {useGenerateSuggestedGroupsMutation_meeting$data} from '../__generated__/useGenerateSuggestedGroupsMutation_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useGenerateSuggestedGroupsMutation_meeting on SuggestedGroupsSuccess {
@@ -86,8 +87,6 @@ const useGenerateSuggestedGroupsMutation = () => {
         if (!payload) return
         suggestedGroupsMeetingUpdater(payload, {atmosphere, store})
       },
-      // The server throws for every failure mode (no embeddings yet, LLM unreachable, no AI
-      // entitlement), and Atmosphere delivers a thrown GraphQLError here rather than to onError
       onCompleted: (res, errors) => {
         const error = errors?.[0]
         if (error) {
@@ -96,10 +95,7 @@ const useGenerateSuggestedGroupsMutation = () => {
         }
         onCompleted?.(res, errors)
       },
-      onError: (err) => {
-        showError(err.message)
-        onError?.(err)
-      }
+      onError: onError ?? ((err) => showError(getMutationError(err).message))
     })
   }
   return [execute, submitting] as const

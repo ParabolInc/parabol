@@ -20,13 +20,13 @@ const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
   const template = await dataLoader.get('meetingTemplates').load(templateId)
 
   if (!template || !template.isActive || !isPromptTemplateType(template.type)) {
-    throw new GraphQLError('Template not found')
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = template
   const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
 
   if (activePrompts.length >= promptTemplateRules[template.type].maxPrompts) {
-    throw new GraphQLError('Too many prompts')
+    throw new GraphQLError('Too many prompts', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const lastPrompt = activePrompts.at(-1)

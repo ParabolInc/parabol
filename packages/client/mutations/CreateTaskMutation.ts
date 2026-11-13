@@ -18,12 +18,14 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAzureCreateIssue from './handlers/handleAzureCreateIssue'
+import handleClickUpCreateTask from './handlers/handleClickUpCreateTask'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleLinearCreateIssue from './handlers/handleLinearCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
@@ -85,6 +87,17 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
       }
     }
   }
@@ -137,6 +150,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
   handleGitLabCreateIssue(task, store)
   handleAzureCreateIssue(task, store)
   handleLinearCreateIssue(task, store)
+  handleClickUpCreateTask(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -164,6 +178,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
   const {viewerId} = atmosphere
   const {newTask} = variables
   const isEditing = !newTask.content
+  const taskId = clientTempId(newTask.teamId)
   return commitMutation<TCreateTaskMutation>(atmosphere, {
     mutation,
     variables,
@@ -176,7 +191,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     optimisticUpdater: (store) => {
       const {teamId, userId, integration, ...rest} = newTask
       const now = new Date().toJSON()
-      const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const plaintextContent =
         newTask.plaintextContent ||
@@ -208,8 +222,9 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleGitLabCreateIssue(task as any, store)
       handleAzureCreateIssue(task as any, store)
       handleLinearCreateIssue(task as any, store)
+      handleClickUpCreateTask(task, store)
     },
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted
   })
 }

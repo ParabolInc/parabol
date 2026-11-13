@@ -55,7 +55,7 @@ const refreshSuggestedGroups = async (meetingId: string) => {
       dataLoader.get('retroSuggestedGroupingByMeetingId').clear(meetingId)
       const current = await dataLoader.get('retroSuggestedGroupingByMeetingId').load(meetingId)
       if (current?.mode !== 'similarity') return
-      const {sameColumnOnly, createdByUserId} = current
+      const {sameColumnOnly, createdByUserId, requestedMode} = current
       // Called directly rather than through computeSuggestedGroups, whose cache is keyed on the set
       // of reflection ids: an edit leaves those ids untouched, so the cache would report a hit and
       // hand back the very suggestions this refresh exists to replace.
@@ -64,8 +64,12 @@ const refreshSuggestedGroups = async (meetingId: string) => {
       await upsertSuggestedGrouping(
         {
           meetingId,
+          requestedMode: requestedMode ?? 'similarity',
           mode: 'similarity',
           userPrompt: null,
+          model: null,
+          tokenCost: 0,
+          repairedReflectionCount: 0,
           sameColumnOnly,
           // Whoever chose these settings still owns them; a refresh is not an authorship event
           createdByUserId,

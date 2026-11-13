@@ -42,8 +42,8 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
   const [ssoError, setSsoError] = useState<string | undefined>()
   const [ssoSubmitting, setSsoSubmitting] = useState(false)
 
-  const googleMutationProps = useMutationProps()
-  const microsoftMutationProps = useMutationProps()
+  const googleMutationProps = useMutationProps({errorDisplay: 'inline'})
+  const microsoftMutationProps = useMutationProps({errorDisplay: 'inline'})
 
   const hasLocal = identities?.some((i) => i?.type === AuthIdentityTypeEnum.LOCAL)
   const hasGoogle = identities?.some((i) => i?.type === AuthIdentityTypeEnum.GOOGLE)

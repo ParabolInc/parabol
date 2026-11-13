@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {OptionalHandlers, StandardMutation} from '~/types/relayMutations'
 import type {SetNotificationStatusMutation as TSetNotificationStatusMutation} from '../__generated__/SetNotificationStatusMutation.graphql'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment SetNotificationStatusMutation_notification on SetNotificationStatusPayload {
@@ -37,7 +38,7 @@ const SetNotificationStatusMutation: StandardMutation<
       notification.setValue(status, 'status')
     },
     onCompleted,
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

@@ -6,6 +6,8 @@ import {MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PersonalAccessTokens_viewer$key} from '../../../__generated__/PersonalAccessTokens_viewer.graphql'
 import type {PersonalAccessTokensRevokeMutation} from '../../../__generated__/PersonalAccessTokensRevokeMutation.graphql'
 import Panel from '../../../components/Panel/Panel'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {snackOnError} from '../../../mutations/handlers/snackOnError'
 import {Button} from '../../../ui/Button/Button'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -49,6 +51,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editingToken, setEditingToken] = useState<TokenForEdit | null>(null)
 
+  const atmosphere = useAtmosphere()
   const [commitRevoke] = useMutation<PersonalAccessTokensRevokeMutation>(graphql`
     mutation PersonalAccessTokensRevokeMutation(
     $tokenId: ID!
@@ -88,7 +91,8 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
 
   const handleRevoke = (tokenId: string) => {
     commitRevoke({
-      variables: {tokenId, revoke: true}
+      variables: {tokenId, revoke: true},
+      onError: snackOnError(atmosphere)
     })
   }
 

@@ -27,22 +27,32 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
 
   // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) throw new GraphQLError('Meeting not found')
-  if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  if (meeting.endedAt)
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (meeting.meetingType !== 'retrospective') {
-    throw new GraphQLError('Suggested groups are only available in retrospective meetings')
+    throw new GraphQLError('Suggested groups are only available in retrospective meetings', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const groupPhase = getPhase(meeting.phases, 'group')
   if (groupPhase?.stages[0]?.isComplete) {
-    throw new GraphQLError('The group phase is over, so reflections can no longer be regrouped')
+    throw new GraphQLError('The group phase is over, so reflections can no longer be regrouped', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   const userPrompt = args.userPrompt?.trim() || null
   if (userPrompt && userPrompt.length > MAX_USER_PROMPT_LENGTH) {
-    throw new GraphQLError(`Custom instructions must be under ${MAX_USER_PROMPT_LENGTH} characters`)
+    throw new GraphQLError(
+      `Custom instructions must be under ${MAX_USER_PROMPT_LENGTH} characters`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (mode !== 'ai' && userPrompt) {
-    throw new GraphQLError('Custom instructions are only supported when mode is ai')
+    throw new GraphQLError('Custom instructions are only supported when mode is ai', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const {teamId} = meeting
@@ -51,7 +61,9 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
   if (mode === 'ai') {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     if (!(await canAccessAI(team, dataLoader))) {
-      throw new GraphQLError('AI grouping is not available for this organization')
+      throw new GraphQLError('AI grouping is not available for this organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
@@ -64,21 +76,30 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
   const lockKey = `lock:suggestedGrouping:${meetingId}`
   const hasLock = await redis.set(lockKey, viewerId, 'PX', LOCK_TTL_MS, 'NX')
   if (!hasLock) {
-    throw new GraphQLError('Someone else is already suggesting groups for this meeting')
+    throw new GraphQLError('Someone else is already suggesting groups for this meeting', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   try {
     const config = {mode, userPrompt, sameColumnOnly}
     // Throws a GraphQLError the client shows in a snackbar. Nothing is stored for a failed run, so
     // the previous suggestions stay on the board rather than being replaced by an empty set.
-    const {groups, inputHash, cacheHit} = await computeSuggestedGroups(
-      meetingId,
-      config,
-      dataLoader
-    )
+    const {groups, inputHash, cacheHit, model, tokenCost, repairedReflectionCount} =
+      await computeSuggestedGroups(meetingId, config, dataLoader)
 
     await upsertSuggestedGrouping(
-      {...config, meetingId, createdByUserId: viewerId, inputHash, groups},
+      {
+        ...config,
+        requestedMode: mode,
+        meetingId,
+        createdByUserId: viewerId,
+        inputHash,
+        groups,
+        model,
+        tokenCost,
+        repairedReflectionCount
+      },
       dataLoader
     )
 

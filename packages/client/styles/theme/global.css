@@ -207,6 +207,24 @@
   --color-fg-error: #fd6157;
   --color-search-bg: rgba(255, 255, 255, 0.125);
   --color-search-placeholder: #c3c0d8;
+  --color-callout-plain-fill: rgba(68, 66, 88, 0.06);
+  --color-callout-plain-edge: rgba(68, 66, 88, 0.16);
+  --color-callout-plain-icon: #57556c;
+  --color-callout-info-fill: rgba(50, 154, 229, 0.1);
+  --color-callout-info-edge: rgba(50, 154, 229, 0.32);
+  --color-callout-info-icon: #14649e;
+  --color-callout-tip-fill: rgba(45, 159, 95, 0.1);
+  --color-callout-tip-edge: rgba(45, 159, 95, 0.32);
+  --color-callout-tip-icon: #1d8647;
+  --color-callout-important-fill: rgba(115, 64, 181, 0.08);
+  --color-callout-important-edge: rgba(115, 64, 181, 0.28);
+  --color-callout-important-icon: #7340b5;
+  --color-callout-warning-fill: rgba(222, 142, 2, 0.12);
+  --color-callout-warning-edge: rgba(222, 142, 2, 0.38);
+  --color-callout-warning-icon: #a36200;
+  --color-callout-danger-fill: rgba(253, 97, 87, 0.1);
+  --color-callout-danger-edge: rgba(253, 97, 87, 0.38);
+  --color-callout-danger-icon: #d5211a;
 
   --shadow-card: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
@@ -380,10 +398,35 @@
       background-position: -200% 0;
     }
   }
+
+  --animate-launch-flow: gradient-sweep 4s linear infinite;
+  --animate-launch-draw: launch-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @keyframes launch-draw {
+    from {
+      clip-path: inset(-16px calc(100% + 16px) -16px -16px);
+    }
+    to {
+      clip-path: inset(-16px);
+    }
+  }
+
+  --animate-launch-rise: launch-rise 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+  @keyframes launch-rise {
+    from {
+      transform: scaleX(0.2);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
 }
 
 :root {
   --global-banner-height: 24px;
+  --launch-spectrum: hsl(350 95% 64%), hsl(28 100% 60%), hsl(48 100% 57%), hsl(150 72% 50%),
+    hsl(190 95% 54%), hsl(225 100% 66%), hsl(270 95% 68%), hsl(320 95% 66%), hsl(350 95% 64%);
   color-scheme: light;
 }
 
@@ -433,6 +476,24 @@
   --color-search-bg: rgba(255, 255, 255, 0.1);
   --color-search-placeholder: #b7b4e9;
   --color-starter: #3a2857;
+  --color-callout-plain-fill: rgba(183, 180, 233, 0.07);
+  --color-callout-plain-edge: rgba(183, 180, 233, 0.2);
+  --color-callout-plain-icon: #cac7f2;
+  --color-callout-info-fill: rgba(97, 177, 235, 0.13);
+  --color-callout-info-edge: rgba(97, 177, 235, 0.36);
+  --color-callout-info-icon: #8ec7f1;
+  --color-callout-tip-fill: rgba(102, 188, 140, 0.13);
+  --color-callout-tip-edge: rgba(102, 188, 140, 0.36);
+  --color-callout-tip-icon: #91e8b7;
+  --color-callout-important-fill: rgba(168, 107, 214, 0.16);
+  --color-callout-important-edge: rgba(168, 107, 214, 0.42);
+  --color-callout-important-icon: #a86bd6;
+  --color-callout-warning-fill: rgba(251, 179, 55, 0.12);
+  --color-callout-warning-edge: rgba(251, 179, 55, 0.36);
+  --color-callout-warning-icon: #ffcc63;
+  --color-callout-danger-fill: rgba(253, 127, 119, 0.13);
+  --color-callout-danger-edge: rgba(253, 127, 119, 0.4);
+  --color-callout-danger-icon: #fea09a;
   --default-ring-color: var(--color-accent);
   --shadow-card: inset 0 0 0 1px var(--color-hairline), inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 6px 16px -6px rgba(0, 0, 0, 0.6);
@@ -738,6 +799,21 @@
 @utility z-tooltip {
   z-index: 24; /* portal needs to float above other components, especially sidebars */
 }
+@utility bg-launch-spectrum {
+  background-image: linear-gradient(to right in oklch, var(--launch-spectrum));
+  background-size: 200% 100%;
+  @media (prefers-reduced-motion: reduce) {
+    background-size: 100% 100%;
+  }
+}
+@utility mask-launch-ring {
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+@utility mask-launch-taper {
+  mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
+}
 
 
 /** Customize daypicker styles */
@@ -977,6 +1053,44 @@
     font-style: normal;
     background-color: var(--color-surface-raised);
     border-radius: 0 4px 4px 0;
+  }
+
+  [data-type='callout'] {
+    margin: 1rem 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+
+    > [data-node-view-content] > div > * {
+      margin: 0;
+    }
+    > [data-node-view-content] > div > * + * {
+      margin-top: 6px;
+    }
+    > [data-node-view-content] > div > h1 {
+      font-size: 1.875rem;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+    }
+
+    > [data-callout-icon] {
+      margin-top: calc(var(--callout-first-line-middle, 13px) - 13px);
+    }
+    &:has(> [data-node-view-content] > div > h1:first-child) {
+      --callout-first-line-middle: calc(1.875rem * 1.25 / 2);
+    }
+    &:has(> [data-node-view-content] > div > h2:first-child) {
+      --callout-first-line-middle: calc(1.5rem * 1.3 / 2);
+    }
+    &:has(> [data-node-view-content] > div > h3:first-child) {
+      --callout-first-line-middle: calc(1.25rem * 1.35 / 2);
+    }
+    &:has(> [data-node-view-content] > div > pre:first-child) {
+      --callout-first-line-middle: calc(1px + 1rem + 0.875rem * 1.5 / 2);
+    }
+  }
+
+  [data-type='calloutTitle'] {
+    font-weight: 600;
   }
 
   pre {
@@ -1237,6 +1351,7 @@
 /* For other editors, only show placeholder when the whole thing is empty */
 .page-editor .tiptap > h1.is-empty::before,
 .page-editor .tiptap > .is-empty.has-focus::before,
+.page-editor .tiptap [data-type='callout'] > [data-node-view-content] > div > .is-empty.has-focus::before,
 .tiptap > .is-editor-empty::before,
 .details summary.is-empty::before,
 .details div[data-type="detailsContent"].is-empty::before {
@@ -1245,6 +1360,10 @@
   color: var(--color-fg-muted);
   pointer-events: none;
   height: 0;
+}
+
+.page-editor .tiptap [data-type='callout'] > [data-node-view-content] > div > .is-empty.has-focus[data-callout-placeholder]::before {
+  content: attr(data-callout-placeholder);
 }
 
 .ProseMirror-focused:focus {

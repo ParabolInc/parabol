@@ -4,6 +4,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useShareTeamPromptResponsesMutation from '../../../mutations/useShareTeamPromptResponsesMutation'
 import useUpsertTeamPromptResponseMutation from '../../../mutations/useUpsertTeamPromptResponseMutation'
 import replaceFileUploadPlaceholders from '../../../shared/tiptap/replaceFileUploadPlaceholders'
+import GraphQLServerError from '../../../utils/relay/GraphQLServerError'
 import {clearDraftAnswers, writeDraftAnswer} from './teamPromptDraftStorage'
 
 const AUTOSAVE_DEBOUNCE_MS = 800
@@ -60,8 +61,8 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
             promptId,
             content: JSON.stringify(replaceFileUploadPlaceholders(doc))
           },
-          onError: () => {
-            reportError(TRANSPORT_ERROR)
+          onError: (error) => {
+            reportError(error instanceof GraphQLServerError ? error.message : TRANSPORT_ERROR)
             settle(false)
           },
           onCompleted: (_res, errors) => {
@@ -140,9 +141,9 @@ const useTeamPromptAnswersAutosave = (options: Options) => {
       }
       shareResponses({
         variables: {meetingId},
-        onError: () => {
+        onError: (error) => {
           setIsSharing(false)
-          reportError(TRANSPORT_ERROR)
+          reportError(error instanceof GraphQLServerError ? error.message : TRANSPORT_ERROR)
         },
         onCompleted: (_res, errors) => {
           setIsSharing(false)

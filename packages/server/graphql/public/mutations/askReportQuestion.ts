@@ -25,19 +25,28 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
 
   // VALIDATION
   if (trimmedQuestion.length < 3 || trimmedQuestion.length > MAX_QUESTION_LENGTH) {
-    throw new GraphQLError(`A question is 3 to ${MAX_QUESTION_LENGTH} characters`)
+    throw new GraphQLError(`A question is 3 to ${MAX_QUESTION_LENGTH} characters`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
-  if (!isTimeZone(timeZone)) throw new GraphQLError(`${timeZone} isn't a time zone`)
+  if (!isTimeZone(timeZone))
+    throw new GraphQLError(`${timeZone} isn't a time zone`, {extensions: {code: 'BAD_USER_INPUT'}})
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   if (!organization.useAI) {
     throw new GraphQLError(
-      `AI is turned off for ${organization.name}. It can be turned on in Organization Settings`
+      `AI is turned off for ${organization.name}. It can be turned on in Organization Settings`,
+      {extensions: {code: 'FORBIDDEN'}}
     )
   }
   const {openAIApi} = new OpenAIServerManager()
-  if (!openAIApi) throw new GraphQLError('AI isn’t set up on this Parabol server')
+  if (!openAIApi)
+    throw new GraphQLError('AI isn’t set up on this Parabol server', {
+      extensions: {code: 'NOT_IMPLEMENTED'}
+    })
   if (!viewerIsSuperUser && (await hasUsedMonthlyAIQuota(viewerId))) {
-    throw new GraphQLError('You have used this month’s AI requests')
+    throw new GraphQLError('You have used this month’s AI requests', {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
 
   // RESOLUTION
@@ -54,7 +63,9 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
     complete: completeReportAskWithOpenAI(openAIApi)
   }).catch((error) => {
     logError(error instanceof Error ? error : new Error('AI failed to answer a report question'))
-    throw new GraphQLError('AI couldn’t answer just now. Try again in a moment')
+    throw new GraphQLError('AI couldn’t answer just now. Try again in a moment', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   })
   await getKysely()
     .insertInto('AIRequest')

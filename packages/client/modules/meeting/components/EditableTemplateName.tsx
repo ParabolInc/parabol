@@ -15,7 +15,9 @@ interface Props {
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, isOwner, className} = props
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const autoFocus = name.startsWith('*New Template') || name.endsWith(' Copy')
 
   const handleSubmit = (rawName: string) => {

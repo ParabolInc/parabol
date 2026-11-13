@@ -22,7 +22,7 @@ const useConnectIntegrationService = (
     serviceRef
   )
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {error, onError, submitting} = mutationProps
 
   const connect = () => {

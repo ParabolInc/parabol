@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import type {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
+import {AI_MODEL} from '../../../utils/aiModel'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
@@ -15,6 +16,8 @@ type Result = {
   groups: AutogroupReflectionGroupType[]
   promptCount: number
   tokenCost: number
+  repairedCount: number
+  model: string
 }
 
 /**
@@ -41,13 +44,19 @@ const computeAISuggestedGroups = async (
   // so there is no way to drop them afterwards.
   const groupable = reflections.filter(({plaintextContent}) => !!plaintextContent.trim())
   if (groupable.length === 0) {
-    throw new GraphQLError('There are no reflections to group')
+    throw new GraphQLError('There are no reflections to group', {extensions: {code: 'CONFLICT'}})
   }
 
   const promptIds = [...new Set(groupable.map((r) => r.promptId))]
-  const prompts = await Promise.all(
-    promptIds.map((id) => dataLoader.get('templatePrompts').loadNonNull(id))
-  )
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(groupable[0]!.meetingId)
+  const [prompts, teamBriefing] = await Promise.all([
+    Promise.all(promptIds.map((id) => dataLoader.get('templatePrompts').loadNonNull(id))),
+    dataLoader
+      .get('teamDetails')
+      .load(meeting.teamId)
+      .then((teamDetail) => teamDetail?.groupingBriefing ?? null)
+  ])
+  const meetingName = meeting.name
   const promptMap = new Map(prompts.map((p) => [p.id, p.question]))
 
   /**
@@ -58,10 +67,12 @@ const computeAISuggestedGroups = async (
   const toInput = (promptId: string | null, batch: RetroReflection[]) =>
     promptId
       ? {
+          meetingName,
           prompt: promptMap.get(promptId) ?? '',
           reflections: batch.map(({id, plaintextContent}) => ({id, text: plaintextContent}))
         }
       : {
+          meetingName,
           reflections: batch.map((r) => ({
             id: r.id,
             text: r.plaintextContent,
@@ -89,10 +100,11 @@ const computeAISuggestedGroups = async (
       // this whenever a column holds a single card; the cross-column batch only when the whole
       // board does.
       if (batch.length === 1) {
-        return {groups: [{title: '', reflectionIds: [first.id]}], tokenCost: 0}
+        return {groups: [{title: '', reflectionIds: [first.id]}], tokenCost: 0, repairedCount: 0}
       }
       return manager.groupReflectionsStructured(toInput(promptId, batch), {
         userPrompt,
+        teamBriefing,
         signal: AbortSignal.timeout(LLM_TIMEOUT_MS)
       })
     })
@@ -100,6 +112,7 @@ const computeAISuggestedGroups = async (
 
   const groups: AutogroupReflectionGroupType[] = []
   let tokenCost = 0
+  let repairedCount = 0
   let failedBatches = 0
   results.forEach((result, idx) => {
     const batch = batches[idx]!
@@ -115,6 +128,7 @@ const computeAISuggestedGroups = async (
       return
     }
     tokenCost += result.tokenCost
+    repairedCount += result.repairedCount
     groups.push(
       ...result.groups.map(({title, reflectionIds}) => ({groupTitle: title, reflectionIds}))
     )
@@ -122,13 +136,16 @@ const computeAISuggestedGroups = async (
 
   if (failedBatches === batches.length) {
     throw new GraphQLError(
-      "AI wasn't able to group these reflections. Try again, or use Similar Wording."
+      "AI wasn't able to group these reflections. Try again, or use Similar Wording.",
+      {extensions: {code: 'SERVICE_UNAVAILABLE'}}
     )
   }
   return {
     groups: dedupeTitles(groups),
     promptCount: promptIds.length,
-    tokenCost
+    tokenCost,
+    repairedCount,
+    model: AI_MODEL
   }
 }
 

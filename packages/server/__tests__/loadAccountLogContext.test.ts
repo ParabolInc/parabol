@@ -53,9 +53,9 @@ describe('loadAccountLogContext', () => {
       .values([
         {featureName: 'ConfluenceExport', orgId: 'orgEnterprise'},
         {featureName: 'ConfluenceExport', orgId: 'orgLeft'},
-        {featureName: 'Reports', userId: 'user1'},
+        {featureName: 'ConfluenceExport', userId: 'user1'},
         {featureName: 'Databases', teamId: 'team1'},
-        {featureName: 'Reports', userId: 'user2'},
+        {featureName: 'ConfluenceExport', userId: 'user2'},
         {featureName: 'noLongerAFlag', userId: 'user1'}
       ])
       .execute()
@@ -70,7 +70,7 @@ describe('loadAccountLogContext', () => {
     const account = await loadAccountLogContext({userId: 'user1'})
     expect(account).toEqual({
       tier: 'enterprise',
-      featureFlags: expect.arrayContaining(['Reports', 'Databases']),
+      featureFlags: expect.arrayContaining(['ConfluenceExport', 'Databases']),
       orgs: [
         {id: 'orgEnterprise', tier: 'enterprise', featureFlags: ['ConfluenceExport']},
         {id: 'orgTrial', tier: 'team', featureFlags: []}

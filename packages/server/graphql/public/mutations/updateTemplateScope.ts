@@ -67,7 +67,9 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
       .limit(1)
       .executeTakeFirst()
     if (otherTeamSeries) {
-      throw new GraphQLError("Another team's recurring meeting uses this template")
+      throw new GraphQLError("Another team's recurring meeting uses this template", {
+        extensions: {code: 'CONFLICT'}
+      })
     }
   }
 

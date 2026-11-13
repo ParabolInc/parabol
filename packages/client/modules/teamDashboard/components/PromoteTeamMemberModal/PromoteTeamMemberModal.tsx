@@ -7,6 +7,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import {upperFirst} from '../../../../utils/upperFirst'
@@ -66,19 +67,17 @@ const PromoteTeamMemberModal = (props: Props) => {
       <DialogContent>
         <DialogTitle>Are you sure?</DialogTitle>
         <p>{copy}</p>
-        <Button
-          variant='primary'
-          size='md'
-          className='mx-auto mt-6 mb-0'
-          onClick={handleClick}
-          disabled={submitting}
-        >
-          <IconLabel
-            icon='arrow_forward'
-            iconAfter
-            label={<div className='break-word whitespace-normal'>Yes, promote {preferredName}</div>}
-          />
-        </Button>
+        <DialogActions>
+          <Button variant='primary' size='md' onClick={handleClick} disabled={submitting}>
+            <IconLabel
+              icon='arrow_forward'
+              iconAfter
+              label={
+                <div className='break-word whitespace-normal'>Yes, promote {preferredName}</div>
+              }
+            />
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

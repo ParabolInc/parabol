@@ -12,7 +12,9 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import {GQLID} from '../utils/GQLID'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EndTeamPromptMutation_team on EndTeamPromptSuccess {
@@ -25,9 +27,6 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
       agendaItems {
         id
       }
@@ -83,6 +82,7 @@ export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team$
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  safeRemoveNodeFromArray(meeting?.getDataID(), payload.getLinkedRecord('team'), 'activeMeetings')
 }
 
 const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMaybeLocalHandler> = (
@@ -110,7 +110,7 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMa
         navigate
       })
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

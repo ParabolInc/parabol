@@ -22,14 +22,16 @@ const shareTeamPromptResponses: MutationResolvers['shareTeamPromptResponses'] = 
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('teamPromptResponsesByMeetingIdAndUserId').load({meetingId, userId: viewerId})
   ])
-  if (!meeting || meeting.meetingType !== 'teamPrompt') throw new GraphQLError('Meeting not found')
-  if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
+  if (!meeting || meeting.meetingType !== 'teamPrompt')
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  if (meeting.endedAt)
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   const drafts = viewerResponses.filter(
     ({sharedAt, content}) => !sharedAt && !isEmptyTipTapDoc(content)
   )
   const hasSharedAnswer = viewerResponses.some(({sharedAt}) => !!sharedAt)
   if (drafts.length === 0 && !hasSharedAnswer) {
-    throw new GraphQLError('Answer at least one prompt to share')
+    throw new GraphQLError('Answer at least one prompt to share', {extensions: {code: 'CONFLICT'}})
   }
   if (drafts.length > 0) {
     const updatedRows = await getKysely()

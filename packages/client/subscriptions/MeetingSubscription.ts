@@ -17,12 +17,14 @@ import {
   endDraggingReflectionMeetingOnNext,
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
+import {joinMeetingMeetingUpdater} from '../mutations/JoinMeetingMutation'
 import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {acceptSuggestedGroupsMeetingOnNext} from '../mutations/useAcceptSuggestedGroupsMutation'
 import {suggestedGroupsMeetingUpdater} from '../mutations/useGenerateSuggestedGroupsMutation'
 import {updateFacilitatorRotationMeetingOnNext} from '../mutations/useUpdateFacilitatorRotationMutation'
 import {createSubscription} from './createSubscription'
@@ -39,6 +41,9 @@ const subscription = graphql`
       }
       ResetReflectionGroupsSuccess {
         ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      }
+      AcceptSuggestedGroupsSuccess {
+        ...useAcceptSuggestedGroupsMutation_meeting @relay(mask: false)
       }
       UngroupReflectionSuccess {
         ...UngroupReflectionMutation_meeting @relay(mask: false)
@@ -176,7 +181,7 @@ const subscription = graphql`
         ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       }
       UpdateMeetingTemplateSuccess {
-        ...UpdateMeetingTemplateMutation_meeting @relay(mask: false)
+        ...useUpdateMeetingTemplateMutation_meeting @relay(mask: false)
       }
       VoteForReflectionGroupPayload {
         ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
@@ -192,6 +197,7 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AcceptSuggestedGroupsSuccess: acceptSuggestedGroupsMeetingOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
   UpdateFacilitatorRotationSuccess: updateFacilitatorRotationMeetingOnNext
 } as const
@@ -204,6 +210,7 @@ const updateHandlers = {
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
+  JoinMeetingSuccess: joinMeetingMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,

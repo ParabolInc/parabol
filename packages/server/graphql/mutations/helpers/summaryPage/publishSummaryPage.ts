@@ -13,10 +13,13 @@ import {ensureMeetingTOCPage} from './ensureMeetingTOCPage'
 import {getTitleBlock} from './getTitleBlock'
 import {streamSummaryBlocksToPage} from './streamSummaryBlocksToPage'
 
+// The page is created right away, but its blocks only stream once contentReady settles, so callers can
+// create the page while the writes that the blocks read (e.g. archiving tasks) are still running
 export const publishSummaryPage = async (
   meetingId: string,
   contextWithoutDataLoader: Omit<InternalContext, 'dataLoader'>,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
+  contentReady?: Promise<unknown>
 ) => {
   const {authToken, socketId: mutatorId} = contextWithoutDataLoader
   const dataLoader = getNewDataLoader('publishSummaryPage')
@@ -50,11 +53,14 @@ export const publishSummaryPage = async (
       }
     })
     const documentName = CipherId.toClient(meetingTOCpageId, 'page')
-    await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
-      title,
-      pageCode: CipherId.encrypt(meetingSummaryPage.id),
-      isDatabase: false
-    })
+    redisHocusPocus
+      .handleEvent('addCanonicalPageLink', documentName, {
+        title,
+        pageCode: CipherId.encrypt(meetingSummaryPage.id),
+        isDatabase: false,
+        isSyncedBlock: false
+      })
+      .catch(Logger.error)
     const {id: pageId} = meetingSummaryPage
     await pg
       .updateTable('NewMeeting')
@@ -62,11 +68,12 @@ export const publishSummaryPage = async (
       .where('id', '=', meetingId)
       .execute()
     meeting.summaryPageId = pageId
-    await scheduleMeetTranscriptJob(meetingId, teamId).catch(Logger.log)
+    scheduleMeetTranscriptJob(meetingId, teamId).catch(Logger.log)
     attachHeldZoomEvents(teamId).catch(Logger.log)
     // don't wait for the stream to finish
     streamStarted = true
-    streamSummaryBlocksToPage(pageId, meetingId, context, info)
+    Promise.allSettled([contentReady])
+      .then(() => streamSummaryBlocksToPage(pageId, meetingId, context, info))
       .catch(Logger.log)
       .finally(() => dataLoader.dispose())
     return meetingSummaryPage

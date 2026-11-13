@@ -5,6 +5,7 @@ import useUnpinReportMutation from '../../mutations/useUnpinReportMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   orgId: string
@@ -18,15 +19,14 @@ const ReportCardMenu = ({orgId, pinId, title, index, pinCount}: Props) => {
   const atmosphere = useAtmosphere()
   const [move] = useMovePinnedReportMutation()
   const [unpin] = useUnpinReportMutation()
+  const showError = (message: string) => {
+    atmosphere.eventEmitter.emit('addSnackbar', {key: 'pinnedReportError', message, autoDismiss: 5})
+  }
   const callbacks = {
     onCompleted: (_response: unknown, errors?: readonly {message: string}[] | null) => {
-      if (!errors?.[0]) return
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'pinnedReportError',
-        message: errors[0].message,
-        autoDismiss: 5
-      })
-    }
+      if (errors?.[0]) showError(errors[0].message)
+    },
+    onError: (error: Error) => showError(getMutationError(error).message)
   }
   return (
     <Menu

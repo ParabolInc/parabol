@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import AtlassianIntegrationId from '../../../../client/integrations/jira/shared/AtlassianIntegrationId'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import {processJiraImages} from '../../../utils/atlassian/jiraImages'
+import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
+import {processJiraImages} from '../../../integrations/jira/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {Logger} from '../../../utils/Logger'
@@ -167,7 +167,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         : spaces
     } catch (e) {
       if (e instanceof ConfluenceApiError && e.errorClass === 'forbidden') {
-        throw new GraphQLError('No permission to list Confluence spaces on this site')
+        throw new GraphQLError('No permission to list Confluence spaces on this site', {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
       return []
     }

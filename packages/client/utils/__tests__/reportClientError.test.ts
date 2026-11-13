@@ -3,7 +3,7 @@ const sendBeacon = jest.fn((_url: string, _body: Blob) => true)
 // the reporter reads the release and browser globals when it loads, so each test needs a fresh copy
 const loadReporter = () => {
   jest.resetModules()
-  Object.assign(globalThis, {__APP_VERSION__: '15.11.0'})
+  Object.assign(globalThis, {__APP_VERSION__: '15.11.0', __PRODUCTION__: true})
   Object.defineProperty(globalThis, 'window', {
     value: {location: {pathname: '/reset-password/secret-token'}},
     configurable: true
@@ -93,11 +93,15 @@ test('when the browser refuses the beacon, the batch goes by fetch', async () =>
   fetchSpy.mockRestore()
 })
 
-test('a masked GraphQL error becomes a warning carrying its operation’s trace id', async () => {
+test('a GraphQL error coded INTERNAL_SERVER_ERROR becomes a warning carrying its operation’s trace id', async () => {
   const {reportUnexpectedGraphQLErrors, flushClientErrors} = await loadReporter()
-  reportUnexpectedGraphQLErrors([{message: 'Not authorized'}], 'TeamQuery', 'trace-a')
   reportUnexpectedGraphQLErrors(
-    [{message: 'Unexpected error.'}],
+    [{message: 'Not authorized', extensions: {code: 'FORBIDDEN'}}],
+    'TeamQuery',
+    'trace-a'
+  )
+  reportUnexpectedGraphQLErrors(
+    [{message: 'Unexpected error.', extensions: {code: 'INTERNAL_SERVER_ERROR'}}],
     'TeamQuery',
     '4bf92f3577b34da6a3ce929d0e0e4736'
   )
@@ -112,4 +116,63 @@ test('a masked GraphQL error becomes a warning carrying its operation’s trace 
     })
   ])
   expect(reports[0]).not.toHaveProperty('stack')
+})
+
+const makeErrorWithStack = (message: string, frames: string[]) => {
+  const error = new Error(message)
+  error.stack = [`Error: ${message}`, ...frames.map((frame) => `    at ${frame}`)].join('\n')
+  return error
+}
+
+// the reporter takes the directory of its own script for the app's, as a production build serves every script from one
+const APP_FRAME = `${__dirname}/app_0a1b2c.js:4:1200`
+
+test('an error a script injected inline throws from an API it wraps is not reported', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(
+    makeErrorWithStack('Blocked', [
+      'ServiceWorkerContainer.<anonymous> (<anonymous>:120:34)',
+      'ServiceWorkerContainer.register (<anonymous>:45:67)',
+      APP_FRAME
+    ])
+  )
+  flushClientErrors()
+  expect(sendBeacon).not.toHaveBeenCalled()
+})
+
+test('an error a script from another host throws is not reported, even when the app called it', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(
+    makeErrorWithStack('Widget failed to load', [
+      'loadWidget (https://widget.example.com/embed.js:1:500)',
+      APP_FRAME
+    ])
+  )
+  flushClientErrors()
+  expect(sendBeacon).not.toHaveBeenCalled()
+})
+
+test('an error thrown by a browser builtin the app calls is still reported', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(
+    makeErrorWithStack('Unexpected end of JSON input', ['JSON.parse (<anonymous>)', APP_FRAME])
+  )
+  flushClientErrors()
+  expect(await readSentReports()).toEqual([
+    expect.objectContaining({message: 'Unexpected end of JSON input'})
+  ])
+})
+
+test('an error the app throws through a function a script injected inline wraps is still reported', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(
+    makeErrorWithStack('Cannot read properties of undefined', [
+      `onMessage (${APP_FRAME})`,
+      'WebSocket.<anonymous> (<anonymous>:88:12)'
+    ])
+  )
+  flushClientErrors()
+  expect(await readSentReports()).toEqual([
+    expect.objectContaining({message: 'Cannot read properties of undefined'})
+  ])
 })

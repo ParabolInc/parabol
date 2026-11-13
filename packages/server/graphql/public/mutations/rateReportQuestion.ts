@@ -25,7 +25,9 @@ const rateReportQuestion: MutationResolvers['rateReportQuestion'] = async (
         .executeTakeFirst()
     : undefined
   if (!reportQuestion?.question || !reportQuestion.spec) {
-    throw new GraphQLError('That isn’t a report AI made for one of your questions')
+    throw new GraphQLError('That isn’t a report AI made for one of your questions', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   const {id, question, title, aiSpec, spec} = reportQuestion
   await pg

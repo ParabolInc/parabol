@@ -1,3 +1,4 @@
+import {clickupIntegrationMeta} from '../../integrations/clickup/shared/clickupIntegrationMeta'
 import {Providers} from '../../types/constEnums'
 
 export const REPORT_TIME_DIMENSIONS = ['TIME', 'DAY', 'WEEK', 'MONTH'] as const
@@ -381,7 +382,8 @@ export const REPORT_INTEGRATION_LABELS: Record<string, string> = {
   gcal: Providers.GCAL_NAME,
   gmeet: 'Google Meet',
   gdrive: 'Google Drive',
-  zoom: 'Zoom'
+  zoom: 'Zoom',
+  clickup: clickupIntegrationMeta.title
 }
 
 export const REPORT_VALUE_LABELS: Partial<Record<ReportCategoryDimension, Record<string, string>>> =

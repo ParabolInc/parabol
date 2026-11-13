@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 
 interface RateLimitOptions {
   perMinute: number
@@ -10,7 +10,7 @@ interface RateLimitOptions {
 
 const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
   rule(`rateLimit-${perMinute}-${perHour}`, {cache: 'contextual'})(
-    (_source, _args, context: GQLContext, info) => {
+    (_source, _args, context: RuleContext, info) => {
       const {authToken, rateLimiter, ip} = context
       const {fieldName} = info
       const userId = getUserId(authToken) || ip

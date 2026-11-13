@@ -707,7 +707,7 @@ Nothing clears 0.02, so the base stays. The floor stays 0.40: 0.39 ties with twi
 
    ```sh
    EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.01 EVAL_FLOORS=0.4 EVAL_LABEL=gate-qwen3 AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8","url":"http://localhost:3040/","maxTokens":2048}]' pnpm eval:pagesSearch > "$TMPDIR/gate-qwen3.log" 2>&1; echo "exit $?"
-   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.4 EVAL_LABEL=gate-harrier AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:microsoft/harrier-oss-v1-270m","url":"http://localhost:3041/","maxTokens":1024}]' pnpm eval:pagesSearch > "$TMPDIR/gate-harrier.log" 2>&1; echo "exit $?"
+   EVAL_SET=heavy-final EVAL_MODES=sweep EVAL_ALPHAS=0.005 EVAL_FLOORS=0.4 EVAL_LABEL=gate-harrier AI_EMBEDDING_MODELS='[{"model":"text-embeddings-inference:Parabol/harrier-oss-v1-270m-ONNX-INT8","url":"http://localhost:3041/","maxTokens":1024}]' pnpm eval:pagesSearch > "$TMPDIR/gate-harrier.log" 2>&1; echo "exit $?"
    ```
 
    A nonzero exit means running that arm again, still without opening its log.

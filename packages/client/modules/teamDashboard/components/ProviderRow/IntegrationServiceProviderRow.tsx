@@ -4,10 +4,7 @@ import {useFragment} from 'react-relay'
 import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
 import ProviderLogo from '../../../../components/ProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps, {
-  getOnCompletedError,
-  type MenuMutationProps
-} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {getConnectErrorMessage} from '../../../../integrations/platform/getConnectErrorMessage'
 import {
   getProviderRowEntries,
@@ -15,6 +12,7 @@ import {
   type ProviderRowEntryModel
 } from '../../../../integrations/platform/integrationServiceProviders'
 import {getClientIntegration} from '../../../../integrations/platform/registry'
+import getMutationError from '../../../../utils/relay/getMutationError'
 import ConnectButton from './ConnectButton'
 import ContactUsButton from './ContactUsButton'
 import IntegrationServiceConfigMenu from './IntegrationServiceConfigMenu'
@@ -48,13 +46,13 @@ const IntegrationServiceProviderRow = (props: Props) => {
     serviceRef
   )
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {submitting, error} = mutationProps
   const connectMutationProps: MenuMutationProps = {
     ...mutationProps,
     onCompleted: (res, errors) => {
       mutationProps.onCompleted(res, errors)
-      if (!getOnCompletedError(res, errors)) onConnected()
+      if (!getMutationError(res, errors)) onConnected()
     }
   }
   const {

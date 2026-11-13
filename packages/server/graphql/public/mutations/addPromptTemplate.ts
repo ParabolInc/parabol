@@ -15,7 +15,7 @@ import promptTemplateRules from './helpers/promptTemplateRules'
 const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
   _source,
   {teamId, parentTemplateId, type},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -29,7 +29,9 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
   ])
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
   if (getFeatureTier(org) === 'starter' && freeTemplatesRemaining === 0) {
-    throw new GraphQLError('You have reached the limit of free custom templates.')
+    throw new GraphQLError('You have reached the limit of free custom templates.', {
+      extensions: {code: 'UPGRADE_REQUIRED'}
+    })
   }
 
   const parentTemplate = parentTemplateId
@@ -37,16 +39,20 @@ const addPromptTemplate: MutationResolvers['addPromptTemplate'] = async (
     : null
   if (parentTemplateId) {
     if (!parentTemplate || !parentTemplate.isActive || parentTemplate.type !== type) {
-      throw new GraphQLError('Parent template not found')
+      throw new GraphQLError('Parent template not found', {extensions: {code: 'NOT_FOUND'}})
     }
     if (parentTemplate.scope === 'TEAM' && !isTeamMember(authToken, parentTemplate.teamId)) {
-      throw new GraphQLError('Template is scoped to team')
+      throw new GraphQLError('Template is scoped to team', {extensions: {code: 'FORBIDDEN'}})
     }
     if (parentTemplate.scope === 'ORGANIZATION') {
       const parentTemplateTeam = await dataLoader.get('teams').loadNonNull(parentTemplate.teamId)
-      const isInOrg = await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader)
+      const isInOrg =
+        (await isUserInOrg(viewerId, parentTemplateTeam.orgId, dataLoader)) &&
+        (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
       if (!isInOrg) {
-        throw new GraphQLError('Template is scoped to organization')
+        throw new GraphQLError('Template is scoped to organization', {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
     }
   }

@@ -6,6 +6,7 @@ import type {PokerAnnounceDeckHoverMutation_meeting$data} from '../__generated__
 import type {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {snackOnError} from './handlers/snackOnError'
 
 // asking for the correct hoveringUsers array would be fine, except we know a user can existing in exactly 1 hoveringUsers array at a time
 // which means we have to iterate over each stage & remove it from all others (because mouseEnter/mouseLeave are not always reliable)
@@ -95,6 +96,7 @@ const PokerAnnounceDeckHoverMutation: SimpleMutation<TPokerAnnounceDeckHoverMuta
   return commitMutation<TPokerAnnounceDeckHoverMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     optimisticUpdater: (store) => {
       const {stageId, meetingId, isHover} = variables
       const payload = createProxyRecord(store, 'PokerAnnounceDeckHoverSuccess', {

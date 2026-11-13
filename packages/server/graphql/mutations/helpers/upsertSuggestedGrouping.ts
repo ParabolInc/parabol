@@ -5,10 +5,13 @@ import type {
   SuggestedGroupsModeType
 } from '../../../postgres/types'
 import type {DataLoaderWorker} from '../../graphql'
+import type {SuggestedGroupsRunTelemetry} from './computeSuggestedGroups'
 
-type SuggestedGroupsInsert = {
+type SuggestedGroupsInsert = SuggestedGroupsRunTelemetry & {
   meetingId: string
   createdByUserId: string
+  /** Differs from mode when an AI run failed and similar wording stood in */
+  requestedMode: SuggestedGroupsModeType
   mode: SuggestedGroupsModeType
   userPrompt: string | null
   sameColumnOnly: boolean
@@ -33,17 +36,30 @@ const upsertSuggestedGrouping = async (
       oc.column('meetingId').doUpdateSet((eb) => ({
         createdAt: eb.ref('excluded.createdAt'),
         createdByUserId: eb.ref('excluded.createdByUserId'),
+        requestedMode: eb.ref('excluded.requestedMode'),
         mode: eb.ref('excluded.mode'),
         userPrompt: eb.ref('excluded.userPrompt'),
         sameColumnOnly: eb.ref('excluded.sameColumnOnly'),
         inputHash: eb.ref('excluded.inputHash'),
-        groups: eb.ref('excluded.groups')
+        groups: eb.ref('excluded.groups'),
+        model: eb.ref('excluded.model'),
+        tokenCost: eb.ref('excluded.tokenCost'),
+        repairedReflectionCount: eb.ref('excluded.repairedReflectionCount'),
+        groupPhaseCompletedAt: null,
+        finalReflectionCount: null,
+        movedReflectionCount: null
       }))
     )
     .returning('createdAt')
     .executeTakeFirstOrThrow()
 
-  const suggestedGrouping: RetroSuggestedGrouping = {...row, createdAt: stored.createdAt}
+  const suggestedGrouping: RetroSuggestedGrouping = {
+    ...row,
+    createdAt: stored.createdAt,
+    groupPhaseCompletedAt: null,
+    finalReflectionCount: null,
+    movedReflectionCount: null
+  }
   dataLoader
     .get('retroSuggestedGroupingByMeetingId')
     .clear(row.meetingId)

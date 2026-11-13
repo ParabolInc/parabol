@@ -56,7 +56,8 @@ const runReport = async ({
   isSuperUser,
   dataLoader
 }: Options) => {
-  if (!isTimeZone(timeZone)) throw new GraphQLError(`${timeZone} isn't a time zone`)
+  if (!isTimeZone(timeZone))
+    throw new GraphQLError(`${timeZone} isn't a time zone`, {extensions: {code: 'BAD_USER_INPUT'}})
 
   const now = new Date()
   const [organization, scope, orgStructure] = await Promise.all([
@@ -69,7 +70,8 @@ const runReport = async ({
     now,
     orgCreatedAt: organization.createdAt
   })
-  if (typeof range === 'string') throw new GraphQLError(range)
+  if (typeof range === 'string')
+    throw new GraphQLError(range, {extensions: {code: 'BAD_USER_INPUT'}})
 
   const structure = resolveReportStructure(spec, orgStructure)
   const {breakdown} = structure
@@ -81,7 +83,8 @@ const runReport = async ({
     : null
   const toSteps = (localRange: ReportLocalRange, length: ReportStepLength | null) => {
     const steps = buildReportSteps(localRange, length, timeZone)
-    if (typeof steps === 'string') throw new GraphQLError(steps)
+    if (typeof steps === 'string')
+      throw new GraphQLError(steps, {extensions: {code: 'BAD_USER_INPUT'}})
     return steps
   }
 
@@ -200,7 +203,8 @@ const runReport = async ({
           teams.map(({id}) => id)
         )
     })
-    if (typeof measuredRows === 'string') throw new GraphQLError(measuredRows)
+    if (typeof measuredRows === 'string')
+      throw new GraphQLError(measuredRows, {extensions: {code: 'BAD_USER_INPUT'}})
     return {rows: measuredRows, current}
   }
   // A heatmap's last column is each row's own total, which the measure works out, since a share, median or

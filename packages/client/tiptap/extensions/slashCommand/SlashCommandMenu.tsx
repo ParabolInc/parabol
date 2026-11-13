@@ -73,11 +73,12 @@ export const SlashCommandMenu = forwardRef(
                   ref={command === activeItem ? activeRef : undefined}
                   data-highlighted={command === activeItem ? '' : undefined}
                   className={
-                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
+                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
                   }
                   onClick={() => selectItem(command.title)}
+                  onMouseMove={() => setSelectedIndex(flatItems.indexOf(command))}
                 >
-                  <div className='flex size-7 items-center justify-center rounded-sm bg-surface-well group-hover:bg-hairline-strong group-data-highlighted:bg-hairline-strong'>
+                  <div className='flex size-7 items-center justify-center rounded-sm bg-surface-well group-data-highlighted:bg-hairline-strong'>
                     <command.icon className='size-5' />
                   </div>
                   <div className='flex flex-col text-sm'>

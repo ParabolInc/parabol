@@ -4,6 +4,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useEmbedUserAsset} from '../../../mutations/useEmbedUserAsset'
 import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
 import {Button} from '../../../ui/Button/Button'
+import getMutationError from '../../../utils/relay/getMutationError'
 
 interface Props {
   editor: Editor
@@ -20,17 +21,21 @@ export const FileSelectorEmbedTab = (props: Props) => {
     const url = ref.current?.value
     if (!url) return
     const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
+    const showEmbedError = (message: string) => {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'errorEmbeddingAsset',
+        message,
+        autoDismiss: 5
+      })
+    }
     commit({
       variables: {url, scope: assetScope, scopeKey},
+      onError: (error) => showEmbedError(getMutationError(error).message),
       onCompleted: (res) => {
         const {embedUserAsset} = res
         const message = embedUserAsset?.error?.message
         if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorEmbeddingAsset',
-            message,
-            autoDismiss: 5
-          })
+          showEmbedError(message)
           return
         }
         const {url, name, type, size} = embedUserAsset!

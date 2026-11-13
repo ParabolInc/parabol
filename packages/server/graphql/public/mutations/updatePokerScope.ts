@@ -35,14 +35,14 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
   try {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      throw new GraphQLError('Meeting not found')
+      throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
     }
     if (meeting.meetingType !== 'poker') {
-      throw new GraphQLError('Not a poker meeting')
+      throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
     }
     const {endedAt, teamId, phases, templateRefId} = meeting
     if (endedAt) {
-      throw new GraphQLError('Meeting already ended')
+      throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
     }
 
     // RESOLUTION
@@ -76,7 +76,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     ]
     const projectedStageCount = survivingStages.length + additiveUpdates.length * dimensions.length
     if (projectedStageCount > Threshold.MAX_POKER_STORIES * dimensions.length) {
-      throw new GraphQLError('Story limit reached')
+      throw new GraphQLError('Story limit reached', {extensions: {code: 'CONFLICT'}})
     }
     const additiveUpdatesWithTaskIds = await importTasksForPoker(
       additiveUpdates,
@@ -84,7 +84,9 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       meetingId
     )
     if (additiveUpdates.length > 0 && additiveUpdatesWithTaskIds.length === 0) {
-      throw new GraphQLError('Could not add that issue')
+      throw new GraphQLError('Could not add that issue', {
+        extensions: {code: 'SERVICE_UNAVAILABLE'}
+      })
     }
 
     subtractiveUpdates.forEach((update) => {

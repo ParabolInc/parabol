@@ -1,9 +1,9 @@
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import type {AtlassianAuth} from '../../../postgres/types'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import AtlassianServerManager from '../AtlassianServerManager'
 import createJiraTask from '../createJiraTask'
 
-jest.mock('../../../utils/AtlassianServerManager')
+jest.mock('../AtlassianServerManager')
 
 const getCreateMeta = jest.fn()
 const createIssue = jest.fn()

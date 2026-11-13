@@ -11,11 +11,11 @@ import {useState} from 'react'
 import type {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
+import {withStaleClientNote} from '../../../../utils/staleClientNote'
 
 const getCardElementOptions = () => {
   const isDark = document.documentElement.classList.contains('theme-dark')
@@ -42,7 +42,6 @@ type Props = {
 const UpdatePayment = (props: Props) => {
   const {handleClose, orgId} = props
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
   const [isLoading, setIsLoading] = useState(false)
   const stripe = useStripe()
   const elements = useElements()
@@ -91,9 +90,7 @@ const UpdatePayment = (props: Props) => {
 
     const handleCompletedUpdate = async (res: UpdateCreditCardMutation$data) => {
       const {updateCreditCard} = res
-      const {error} = updateCreditCard
-      const stripeSubscriptionClientSecret =
-        updateCreditCard.UpdateCreditCardMutation_organization?.stripeSubscriptionClientSecret
+      const {error, stripeSubscriptionClientSecret} = updateCreditCard
       if (error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           error?.message ?? 'Something went wrong. Please try again or contact support.'
@@ -109,14 +106,18 @@ const UpdatePayment = (props: Props) => {
         setErrorMsg(confirmationError.message)
         return
       }
-      onCompleted()
       handleClose()
+    }
+
+    const handleError = (error: Error) => {
+      setIsLoading(false)
+      setErrorMsg(withStaleClientNote(error.message))
     }
 
     UpdateCreditCardMutation(
       atmosphere,
       {orgId, paymentMethodId: paymentMethod.id},
-      {onError, onCompleted: handleCompletedUpdate}
+      {onError: handleError, onCompleted: handleCompletedUpdate}
     )
   }
 

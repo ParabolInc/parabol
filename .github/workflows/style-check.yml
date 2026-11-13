@@ -42,3 +42,8 @@ jobs:
 
       - name: Check Code Quality
         run: pnpm exec biome ci
+
+      - name: Check the integration scaffold still fits the files it patches
+        run: |
+          node scripts/newIntegration.mts scaffoldProbe --title 'Scaffold Probe' --api-url https://api.example.com --authorize-url https://example.com/oauth/authorize --token-url https://api.example.com/oauth/token --dry-run > /dev/null
+          node scripts/newIntegration.mts scaffoldProbe --title 'Scaffold Probe' --self-hosted --dry-run > /dev/null

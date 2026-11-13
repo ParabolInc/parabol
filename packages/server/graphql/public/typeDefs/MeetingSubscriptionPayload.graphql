@@ -31,6 +31,7 @@ type MeetingSubscriptionPayload {
   UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
   RemoveReflectionPayload: RemoveReflectionPayload
   ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
+  AcceptSuggestedGroupsSuccess: AcceptSuggestedGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
   UngroupReflectionSuccess: UngroupReflectionSuccess
   RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess

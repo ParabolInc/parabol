@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveTemplatePromptMutation from '../../../mutations/MoveTemplatePromptMutation'
 import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
+import isTempId from '../../../utils/relay/isTempId'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
@@ -65,7 +66,7 @@ const TemplatePromptList = (props: Props) => {
                       key={prompt.id}
                       draggableId={prompt.id}
                       index={idx}
-                      isDragDisabled={!isOwner}
+                      isDragDisabled={!isOwner || isTempId(prompt.id)}
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (

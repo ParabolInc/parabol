@@ -38,7 +38,8 @@ const PAGE_SEARCH_CURSOR_ERROR = 'after must be an endCursor from the same page 
 const getPageSearchCursor = (after: string | null | undefined) => {
   if (!after) return null
   const cursor = decodePageSearchCursor(after)
-  if (!cursor) throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+  if (!cursor)
+    throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
   return cursor
 }
 
@@ -70,13 +71,22 @@ export const search: NonNullable<UserResolvers['search']> = async (
   const query = inQuery.trim()
 
   // VALIDATION
-  if (alpha < 0 || alpha > 1) throw new GraphQLError('alpha must be between 0 and 1')
-  if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
-  if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
+  if (alpha < 0 || alpha > 1)
+    throw new GraphQLError('alpha must be between 0 and 1', {extensions: {code: 'BAD_USER_INPUT'}})
+  if (query.length > 5000)
+    throw new GraphQLError('query must be between 1 and 5000 chars', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  if (first < 1 || first > 100)
+    throw new GraphQLError('first must be between 1 and 100', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   if (inTeamIds) {
     const hasAccessToTeams = inTeamIds.every((teamId) => authToken.tms.includes(teamId))
     if (!hasAccessToTeams) {
-      throw new GraphQLError('Viewer is not a member of all teamIds requested')
+      throw new GraphQLError('Viewer is not a member of all teamIds requested', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
   const pageCursor = type === 'page' ? getPageSearchCursor(after) : null
@@ -117,7 +127,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     // show most recent for that user
     if (type === 'page') {
       if (pageCursor && pageCursor.ranking !== 'recent') {
-        throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+        throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
       }
       const results = await pg
         .selectFrom('PageAccess')
@@ -185,7 +195,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   }
   if (type === 'page') {
     if (pageCursor?.ranking === 'recent' || (alpha === 0 && pageCursor?.ranking === 'fused')) {
-      throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR)
+      throw new GraphQLError(PAGE_SEARCH_CURSOR_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
     }
     const getKeywordResults = () =>
       getPagesByKeyword({
@@ -201,7 +211,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
       const extras = {reason, errorMessage: error instanceof Error ? error.message : undefined}
       if (pageCursor) {
         Logger.warn('Page search could not continue fused results', {userId: viewerId, extras})
-        throw new GraphQLError('Page search could not rank this page. Retry the request.')
+        throw new GraphQLError('Page search could not rank this page. Retry the request.', {
+          extensions: {code: 'SERVICE_UNAVAILABLE'}
+        })
       }
       Logger.warn(KEYWORD_FALLBACK_LOG_MESSAGE, {userId: viewerId, extras})
       return getKeywordResults()
@@ -242,7 +254,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     data: getUserQueryJobData(query)
   })
   if (!queryVector || queryVector instanceof Error) {
-    throw new GraphQLError('Error calling search')
+    throw new GraphQLError('Error calling search', {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
   return getEmbeddingsByRRF({
     query,

@@ -232,7 +232,7 @@ export const ImportDatabaseDialog = (props: Props) => {
             </table>
           </div>
         </div>
-        <DialogActions className='mt-0 flex w-full gap-4'>
+        <DialogActions>
           <Button variant='outline' size='md' onClick={onUpload}>
             Cancel & Upload
           </Button>

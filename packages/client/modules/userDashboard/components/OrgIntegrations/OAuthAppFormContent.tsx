@@ -2,11 +2,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useMutation} from 'react-relay'
 import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} from '~/ui/icons'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {snackOnError} from '../../../../mutations/handlers/snackOnError'
 import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -19,6 +23,7 @@ export interface FormContentProps {
 }
 
 const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentProps) => {
+  const atmosphere = useAtmosphere()
   const [name, setName] = useState(initialData?.name || '')
   const [redirectUris, setRedirectUris] = useState((initialData?.redirectUris || []).join(', '))
   const [scopes, setScopes] = useState<string[]>(
@@ -140,7 +145,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(err.message)
+          setError(getMutationError(err).message)
         }
       })
     } else {
@@ -174,7 +179,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(err.message)
+          setError(getMutationError(err).message)
         }
       })
     }
@@ -201,7 +206,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         setClientSecret(response.regenerateOAuthAPIProviderSecret.clientSecret)
         setShowSecret(true)
         setRegenerateConfirmOpen(false)
-      }
+      },
+      onError: snackOnError(atmosphere)
     })
   }
 
@@ -216,27 +222,24 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
   return (
     <>
-      <DialogContent className='flex flex-col overflow-hidden p-0!'>
-        <div className='flex shrink-0 items-center justify-between px-6 pt-6 pb-4'>
-          <DialogTitle>
-            {isNew ? (name ? name : 'New Application') : 'Edit Application'}
-          </DialogTitle>
-        </div>
+      <DialogContent>
+        <DialogTitle className='mb-4'>
+          {isNew ? (name ? name : 'New Application') : 'Edit Application'}
+        </DialogTitle>
 
         {error && (
-          <div className='shrink-0 px-6 pb-4'>
+          <div className='pb-4'>
             <ErrorAlert message={error} />
           </div>
         )}
 
         <form
-          className='flex flex-1 flex-col overflow-hidden'
           onSubmit={(e) => {
             e.preventDefault()
             handleSave()
           }}
         >
-          <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
+          <div className='space-y-6'>
             <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Application Name
@@ -480,16 +483,16 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </div>
           </div>
 
-          <div className='flex shrink-0 justify-end border-hairline border-t bg-surface-well/50 p-6 pt-4'>
+          <DialogActions>
             <Button
-              variant='outline'
-              size='sm'
+              variant='primary'
+              size='md'
               type='submit'
               disabled={isSaving || (isNew && !!clientId)}
             >
               {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
             </Button>
-          </div>
+          </DialogActions>
         </form>
       </DialogContent>
     </>

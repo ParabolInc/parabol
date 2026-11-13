@@ -68,16 +68,13 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
               resolve()
               return
             }
-            const timer =
-              delay === null
-                ? undefined
-                : setTimeout(
-                    () => {
-                      this.resolveDrought = undefined
-                      resolve()
-                    },
-                    Math.max(delay, MIN_DROUGHT_WAIT_MS)
-                  )
+            const timer = setTimeout(
+              () => {
+                this.resolveDrought = undefined
+                resolve()
+              },
+              Math.max(delay, MIN_DROUGHT_WAIT_MS)
+            )
             // the next time a job comes in, the onMessage handler will resolve this
             this.resolveDrought = () => {
               clearTimeout(timer)

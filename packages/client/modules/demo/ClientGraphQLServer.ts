@@ -334,23 +334,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuQuery: (_teamId: unknown, userId: string) => {
+    TaskFooterIntegrateMenuQuery: () => {
       const user = this.db.users[0]
       return {
         viewer: {
           ...user,
-          assigneeTeamMember: this.db.teamMembers.find(
-            (teamMember) => teamMember.userId === userId
-          ),
+          team: null,
           viewerTeamMember: this.db.teamMembers[0]
         }
       }
     },
-    TaskFooterIntegrateMenuListLocalQuery: () => {
-      const user = this.db.users[0]
+    TaskSendControlQuery: () => {
       return {
         viewer: {
-          ...user
+          ...this.db.users[0],
+          team: null,
+          teamMember: this.db.teamMembers[0]
         }
       }
     },
@@ -1095,6 +1094,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {setStageTimer: data}
+    },
+    SetMeetingMusicMutation: ({
+      meetingId,
+      trackSrc,
+      isPlaying
+    }: {
+      meetingId: string
+      trackSrc: string | null
+      isPlaying: boolean
+    }) => {
+      return {
+        setMeetingMusic: {
+          __typename: 'SetMeetingMusicSuccess',
+          meetingId,
+          trackSrc,
+          isPlaying
+        }
+      }
     },
     StartDraggingReflectionMutation: (
       {reflectionId, dragId}: {reflectionId: string; dragId: string},

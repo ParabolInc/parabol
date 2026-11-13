@@ -13,7 +13,8 @@ createRoot(container).render(<Root />)
 const canRegisterServiceWorker = __PRODUCTION__ || window.location.protocol === 'http:'
 if (canRegisterServiceWorker && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(console.error)
+    // logging from a closure keeps a frame of the app's own beneath console.error, which tells it from an extension's log
+    navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch((error) => console.error(error))
   })
 }
 

@@ -34,7 +34,7 @@ const DiscussionDrawerGmeetRow = ({gmeetRef, teamId, onConnect}: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {submitting, onError, onCompleted, error} = mutationProps
 
   const cloudProvider = gmeet.cloudProvider

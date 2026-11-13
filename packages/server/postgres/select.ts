@@ -410,6 +410,7 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'deletedAt',
     'deletedBy',
     'isDatabase',
+    'isSyncedBlock',
     'isMeetingTOC',
     'summaryMeetingId'
   ])
@@ -520,6 +521,10 @@ export const selectOAuthAPICode = () => {
 
 export const selectUserDetails = () => {
   return getKysely().selectFrom('UserDetail').selectAll()
+}
+
+export const selectTeamDetails = () => {
+  return getKysely().selectFrom('TeamDetail').selectAll()
 }
 
 export const selectPersonalAccessToken = () => {

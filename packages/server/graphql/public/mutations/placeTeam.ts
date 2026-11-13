@@ -13,10 +13,15 @@ const placeTeam: MutationResolvers['placeTeam'] = async (
   const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
   const levelId = fromOrgStructureKey(levelKey, 'OrgStructureLevel')
   const level = levels.find(({id}) => id === levelId)
-  if (!level) throw new GraphQLError('That level isn’t part of this team’s organization')
+  if (!level)
+    throw new GraphQLError('That level isn’t part of this team’s organization', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   const valueId = valueKey ? fromOrgStructureKey(valueKey, 'OrgStructureValue') : null
   if (valueKey && !level.values.some(({id}) => id === valueId)) {
-    throw new GraphQLError('That value isn’t part of the level')
+    throw new GraphQLError('That value isn’t part of the level', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

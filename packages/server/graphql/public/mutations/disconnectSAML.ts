@@ -11,7 +11,8 @@ const disconnectSAML: MutationResolvers['disconnectSAML'] = async (
 ) => {
   if (isSingleTenantSSO) {
     throw new GraphQLError(
-      'SSO is the only way to sign in to this instance, so it cannot be disconnected'
+      'SSO is the only way to sign in to this instance, so it cannot be disconnected',
+      {extensions: {code: 'CONFLICT'}}
     )
   }
   const viewerId = getUserId(authToken)

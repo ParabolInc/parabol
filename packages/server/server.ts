@@ -1,13 +1,15 @@
 import './hocusPocus'
 import uws from 'uWebSockets.js'
+import sleep from '../client/utils/sleep'
 import {assetProxyHandler} from './assetProxyHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import {buildProxyHandler} from './buildProxyHandler'
 import {stopChronos} from './chronos'
 import {clientErrorsHandler} from './clientErrorsHandler'
+import {clientMetricsHandler} from './clientMetricsHandler'
 import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
-import {setIsShuttingDown} from './getIsShuttingDown'
+import {setIsRefusingSockets, setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
@@ -20,6 +22,7 @@ import PWAHandler from './PWAHandler'
 import {schemaProxyHandler} from './schemaProxyHandler'
 import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
+import socketDrainSchedule from './socketDrainSchedule'
 import {createStaticFileHandler} from './staticFileHandler'
 import {flushTracing} from './tracing/initTracing'
 import traceHttpRoute from './tracing/traceHttpRoute'
@@ -34,10 +37,6 @@ import logHocuspocusWarnings from './utils/tiptap/logHocuspocusWarnings'
 import uwsGetIP from './utils/uwsGetIP'
 import {wsHandler} from './wsHandler'
 import {yoga} from './yoga'
-
-export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
-  ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
-  : 60_000
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 
@@ -62,10 +61,12 @@ logHocuspocusWarnings()
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
-    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
+    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${socketDrainSchedule.reconnectWindow}ms.`
   )
   setIsShuttingDown()
   stopChronos()
+  await sleep(socketDrainSchedule.loadBalancerDelay)
+  setIsRefusingSockets()
   await disconnectAllSockets()
   await flushTracing()
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
@@ -90,6 +91,7 @@ const app = uws
   .post('/mattermost', traceHttpRoute('/mattermost', mattermostWebhookHandler))
   .post('/zoom', traceHttpRoute('/zoom', zoomWebhookHandler))
   .post('/client-errors', traceHttpRoute('/client-errors', clientErrorsHandler))
+  .post('/client-metrics', traceHttpRoute('/client-metrics', clientMetricsHandler))
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)

@@ -3,13 +3,14 @@ import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId
 import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {markdownToTipTap} from 'parabol-client/shared/tiptap/markdownToTipTap'
+import {replaceCalloutsWithBlockquotes} from 'parabol-client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
+import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimateStage} from '../../../postgres/types/NewMeetingPhase'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import {createAIComment} from './addAIGeneratedContentToThreads'
@@ -69,7 +70,7 @@ const buildEstimateCommentDoc = (
   markdown: string,
   contentByKey: Record<string, string>
 ): JSONContent => {
-  const body = markdownToTipTap(markdown) as JSONContent[]
+  const body = replaceCalloutsWithBlockquotes(markdownToTipTap(markdown))
   const content = body.length
     ? body
     : [{type: 'paragraph', content: [{type: 'text', text: markdown}]}]

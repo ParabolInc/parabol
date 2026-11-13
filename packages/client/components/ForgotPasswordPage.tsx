@@ -33,7 +33,9 @@ const validateEmail = (email: string) => {
 
 const ForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
-  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
     email: {

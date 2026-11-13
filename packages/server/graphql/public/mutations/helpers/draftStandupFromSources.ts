@@ -2,6 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTipTap'
+import {replaceCalloutsWithBlockquotes} from '../../../../../client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
 import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
 import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
@@ -110,7 +111,9 @@ const draftStandupFromSources = async (options: Options) => {
     userPrompt
   )
   if (!result) {
-    throw new GraphQLError('Unable to draft a response right now. Please try again.')
+    throw new GraphQLError('Unable to draft a response right now. Please try again.', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
   await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost: result.tokenCost}).execute()
 
@@ -141,7 +144,10 @@ const draftStandupFromSources = async (options: Options) => {
         service: INSPIRATION_DRAFT_SERVICE,
         title: null,
         promptId: prompt.id,
-        content: tagIssueLinks({type: 'doc', content: markdownToTipTap(markdown)}, serviceByUrl),
+        content: tagIssueLinks(
+          {type: 'doc', content: replaceCalloutsWithBlockquotes(markdownToTipTap(markdown))},
+          serviceByUrl
+        ),
         createdAt
       }
     ]

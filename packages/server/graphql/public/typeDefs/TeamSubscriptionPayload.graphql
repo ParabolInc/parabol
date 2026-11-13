@@ -5,7 +5,6 @@ type TeamSubscriptionPayload {
   fieldName: String!
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddAgendaItemPayload: AddAgendaItemPayload
-  AddSlackAuthPayload: AddSlackAuthPayload
   ArchiveTeamPayload: ArchiveTeamPayload
   BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
   DenyPushInvitationPayload: DenyPushInvitationPayload
@@ -38,6 +37,7 @@ type TeamSubscriptionPayload {
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddPromptTemplateSuccess: AddPromptTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
+  AddTeamHealthTemplateSuccess: AddTeamHealthTemplateSuccess
   AddTemplatePromptSuccess: AddTemplatePromptSuccess
   AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayload
   AddPokerTemplateScalePayload: AddPokerTemplateScalePayload
@@ -47,7 +47,6 @@ type TeamSubscriptionPayload {
   UpdateTemplatePromptDescriptionSuccess: UpdateTemplatePromptDescriptionSuccess
   PokerTemplateDimensionUpdateDescriptionPayload: PokerTemplateDimensionUpdateDescriptionPayload
   UpdateTemplatePromptGroupColorSuccess: UpdateTemplatePromptGroupColorSuccess
-  RemoveSlackAuthPayload: RemoveSlackAuthPayload
   RemovePromptTemplateSuccess: RemovePromptTemplateSuccess
   RemovePokerTemplatePayload: RemovePokerTemplatePayload
   RemoveTemplatePromptSuccess: RemoveTemplatePromptSuccess
@@ -59,13 +58,13 @@ type TeamSubscriptionPayload {
   RenamePokerTemplateScalePayload: RenamePokerTemplateScalePayload
   RemovePokerTemplateScaleValuePayload: RemovePokerTemplateScaleValuePayload
   SetMeetingSettingsPayload: SetMeetingSettingsPayload
-  SetSlackNotificationPayload: SetSlackNotificationPayload
   UpdatePokerTemplateDimensionScalePayload: UpdatePokerTemplateDimensionScalePayload
   UpdatePokerTemplateScaleValuePayload: UpdatePokerTemplateScaleValuePayload
   UpdateUserProfilePayload: UpdateUserProfilePayload
   MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValueSuccess
   SetDefaultSlackChannelSuccess: SetDefaultSlackChannelSuccess
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
+  UpdateMeetingSeriesSuccess: UpdateMeetingSeriesSuccess
   UpdateIntegrationDimensionFieldSuccess: UpdateIntegrationDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   JoinTeamSuccess: JoinTeamSuccess

@@ -211,7 +211,7 @@ const SwipeableDashSidebar = (props: Props) => {
       >
         <div
           className={cn(
-            'h-screen',
+            'h-dvh',
             x > 0 &&
               'shadow-[0px_8px_10px_-5px_rgba(0,0,0,.2),0px_16px_24px_2px_rgba(0,0,0,.14),0px_6px_30px_5px_rgba(0,0,0,.12)]',
             x <= HYSTERESIS_THRESH && 'pointer-events-none'

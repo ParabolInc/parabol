@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {Send as SendIcon} from '~/ui/icons'
+import getMutationError from '~/utils/relay/getMutationError'
 import {PageRoleEnum} from '../../__generated__/useRequestPageAccessMutation.graphql'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -58,7 +59,7 @@ export const PageSharingInput = (props: Props) => {
           }
         },
         onError(error) {
-          const firstError = (error as any).source.errors?.[0]?.message ?? error.message
+          const firstError = getMutationError(error).message
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'PageSharingInput',
             message: firstError,

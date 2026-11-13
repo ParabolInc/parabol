@@ -161,6 +161,11 @@ export const websocketConnectDuration = new Histogram({
   buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
   registers: [register]
 })
+// Managed Prometheus drops the first sample of a new series, so an outcome first seen between scrapes would lose every
+// connection before the next scrape, while the attempts counter, exported since startup, still counts them
+for (const outcome of ['connected', 'rejected', 'failed', 'abandoned']) {
+  websocketConnectDuration.zero({outcome})
+}
 
 export const websocketMessagesDropped = new Counter({
   name: 'parabol_websocket_messages_dropped_total',
@@ -219,6 +224,30 @@ export const confluenceExportDuration = new Histogram({
   registers: [register]
 })
 
+export const clientNavigationDuration = new Histogram({
+  name: 'parabol_client_navigation_duration_seconds',
+  help: 'Seconds from a page load or route change to the first frame after its last query returned, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 5, 8, 13, 20],
+  registers: [register]
+})
+
+export const clientNavigationQueriesInSequence = new Histogram({
+  name: 'parabol_client_navigation_queries_in_sequence',
+  help: 'GraphQL queries a page load or route change waited on one after another, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 5, 6],
+  registers: [register]
+})
+
+export const clientNavigationSuspendedQueries = new Histogram({
+  name: 'parabol_client_navigation_suspended_queries',
+  help: 'Queries that suspended a component during a page load or route change, reported by the client',
+  labelNames: ['route', 'kind'] as const,
+  buckets: [0, 1, 2, 3, 4, 6, 8],
+  registers: [register]
+})
+
 export const chatNotificationsSent = new Counter({
   name: 'parabol_chat_notifications_sent_total',
   help: 'Notifications delivered to Slack, Mattermost or Microsoft Teams, by service and event',
@@ -251,6 +280,44 @@ new Gauge({
       })
     } catch (error) {
       Logger.error('Could not count embedder jobs for metrics', error)
+    }
+  }
+})
+
+// Counting a fill reads most of the queue, and a fill takes days, so a count a few minutes old will do
+const FILL_COUNT_MAX_AGE_MS = 5 * 60_000
+let fillJobCounts: {model: string; workflow: string; state: string; jobs: number}[] = []
+let fillJobsCountedAt = -Infinity
+
+const countFillJobs = async () => {
+  if (Date.now() - fillJobsCountedAt < FILL_COUNT_MAX_AGE_MS) return fillJobCounts
+  const jobCounts = await getKysely()
+    .selectFrom('EmbeddingsJobQueueV2')
+    .select(({fn}) => ['modelId', 'jobType', 'state', fn.countAll<string>().as('jobs')])
+    .where('priority', '>=', FIRST_FILL_PRIORITY)
+    .groupBy(['modelId', 'jobType', 'state'])
+    .execute()
+  fillJobCounts = jobCounts.flatMap(({modelId, jobType, state, jobs}) =>
+    modelId ? [{model: modelId, workflow: jobType.split(':')[0]!, state, jobs: Number(jobs)}] : []
+  )
+  fillJobsCountedAt = Date.now()
+  return fillJobCounts
+}
+
+new Gauge({
+  name: 'parabol_embedder_fill_jobs',
+  help: 'Jobs in the embedder queue that fill a new model, by model, workflow (embed for templates, reflections and discussions, embedPage for pages) and state, counted every 5 minutes. A model appears while it has fill jobs and drops out when it has none. Every web server reports the same totals, so aggregate with max',
+  labelNames: ['model', 'workflow', 'state'] as const,
+  registers: [register],
+  async collect() {
+    try {
+      const jobCounts = await countFillJobs()
+      this.reset()
+      jobCounts.forEach(({model, workflow, state, jobs}) => {
+        this.inc({model, workflow, state}, jobs)
+      })
+    } catch (error) {
+      Logger.error("Could not count embedding models' fill jobs for metrics", error)
     }
   }
 })

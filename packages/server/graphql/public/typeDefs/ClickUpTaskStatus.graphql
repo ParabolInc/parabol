@@ -1,0 +1,19 @@
+"""
+The status of a ClickUp task. Each Space, Folder or List names its own statuses
+"""
+type ClickUpTaskStatus {
+  """
+  The status name (e.g. "in progress")
+  """
+  name: String!
+
+  """
+  The status color as a hex string (e.g. "#d3d3d3")
+  """
+  color: String!
+
+  """
+  The status group, such as "open", "custom" or "closed"
+  """
+  type: String!
+}

@@ -1,6 +1,6 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
-import type {RepoAccessMeta} from '../../integrations/platform/RepoAccess'
+import type {RepoAccessMeta} from './RepoAccessMeta'
 import {
   type selectAgendaItems,
   type selectAtlassianAuth,
@@ -91,6 +91,16 @@ export type TranscriptBlock = {
 export type AutogroupReflectionGroupType = {
   groupTitle: string
   reflectionIds: string[]
+}
+
+/** Accept all writes the optional fields so undo can restore each card exactly. */
+export type ResetReflectionGroupType = AutogroupReflectionGroupType & {
+  reflectionGroupId?: string
+  intoReflectionGroupId?: string
+  sortOrderByReflectionId?: Record<string, number>
+  intoPriorTitle?: string | null
+  intoPriorSmartTitle?: string | null
+  intoAppliedTitle?: string | null
 }
 
 export type SuggestedGroupsModeType = 'similarity' | 'ai'
@@ -216,6 +226,7 @@ export type IntegrationSearchQueryJsonByService = {
   gitlab: GitLabSearchQueryJson
   linear: LinearSearchQueryJson
   azureDevOps: AzureDevOpsSearchQueryJson
+  clickup: {queryString: string; listIds: string[]}
 }
 
 export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<

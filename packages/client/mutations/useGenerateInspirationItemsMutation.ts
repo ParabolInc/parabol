@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useGenerateInspirationItemsMutation as TGenerateInspirationItemsMutation} from '../__generated__/useGenerateInspirationItemsMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useGenerateInspirationItemsMutation($input: GenerateInspirationItemsInput!) {
@@ -29,6 +31,7 @@ const mutation = graphql`
 
 const useGenerateInspirationItemsMutation = () => {
   const [commit, submitting] = useMutation<TGenerateInspirationItemsMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TGenerateInspirationItemsMutation>) => {
     const service = config.variables.input.sources[0]?.service
     return commit({
@@ -43,6 +46,7 @@ const useGenerateInspirationItemsMutation = () => {
         meeting.setLinkedRecords(items, 'inspirationItems', {service})
       },
       // allow components to override default config
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

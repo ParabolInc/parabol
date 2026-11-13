@@ -32,8 +32,9 @@ const promoteToTeamLead: MutationResolvers['promoteToTeamLead'] = async (
   // RESOLUTION
   await pg
     .updateTable('TeamMember')
-    .set(({not}) => ({isLead: not('isLead')}))
-    .where('id', 'in', [oldLeadTeamMemberId, promoteeOnTeam.id])
+    .set((eb) => ({isLead: eb('id', '=', promoteeOnTeam.id).$castTo<boolean>()}))
+    .where('teamId', '=', teamId)
+    .where('isNotRemoved', '=', true)
     .execute()
   dataLoader.clearAll('teamMembers')
 

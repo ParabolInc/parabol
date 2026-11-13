@@ -1,6 +1,6 @@
 import JiraIssueId from '../../../../client/integrations/jira/shared/JiraIssueId'
 import JiraProjectKeyId from '../../../../client/integrations/jira/shared/JiraProjectKeyId'
-import {generateJiraExtraFields} from '../../../utils/generateJiraExtraFields'
+import {generateJiraExtraFields} from '../../../integrations/jira/generateJiraExtraFields'
 import type {JiraIssueResolvers} from '../resolverTypes'
 
 export type JiraIssueSource = {

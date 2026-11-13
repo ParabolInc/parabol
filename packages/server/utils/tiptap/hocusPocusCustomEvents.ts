@@ -29,15 +29,17 @@ export const addCanonicalPageLink = async (
     title?: string
     pageCode: number
     isDatabase: boolean
+    isSyncedBlock: boolean
     append?: boolean
   }
 ) => {
-  const {title, pageCode, isDatabase, append = false} = payload
+  const {title, pageCode, isDatabase, isSyncedBlock, append = false} = payload
   await withDoc(documentName, (doc) => {
     const pageLinkBlock = createPageLinkElement(
       pageCode,
       title || '<Untitled>',
-      isDatabase
+      isDatabase,
+      isSyncedBlock
     ) as XmlElement
     const frag = doc.getXmlFragment('default')
     const position = append ? frag.length : 1
@@ -68,6 +70,27 @@ export const removeCanonicalPageLinkFromPage = async (
       }
     }
   })
+}
+
+export const markPageLinkCanonical = async (
+  documentName: string,
+  payload: {pageCode: number}
+): Promise<boolean> => {
+  const {pageCode} = payload
+  let isMarked = false
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    for (const node of walker) {
+      ;(node as XmlElement<PageLinkBlockAttrs>).setAttribute('canonical', true)
+      isMarked = true
+      break
+    }
+  })
+  return isMarked
 }
 
 export const removeBacklinkedPageLinkBlocks = async (

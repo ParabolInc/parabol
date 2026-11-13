@@ -7,6 +7,9 @@ import useTeamInviteeDrafts, {
 import useInviteToTeamMutation from '../mutations/useInviteToTeamMutation'
 import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
+import {DialogActions} from '../ui/Dialog/DialogActions'
+import GraphQLServerError from '../utils/relay/GraphQLServerError'
+import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
 import TeamInviteeInput from './TeamInviteeInput'
 import TeamInviteeMessages from './TeamInviteeMessages'
 import TeamInviteSentList from './TeamInviteSentList'
@@ -23,6 +26,9 @@ const RATE_LIMIT_MESSAGE =
   'You’ve sent a lot of invitations in a short time. Wait a few minutes and try again, or share the invite link.'
 const NETWORK_ERROR_MESSAGE =
   'Your invitations didn’t go out because Parabol couldn’t be reached. Check your connection and try again.'
+
+const getRequestErrorMessage = ({message, code}: MutationError) =>
+  code === 'TOO_MANY_REQUESTS' ? RATE_LIMIT_MESSAGE : message
 
 const AddTeamMemberEmailInvites = (props: Props) => {
   const {meetingId, teamId, teamEmails, initialResults, onClose} = props
@@ -55,15 +61,20 @@ const AddTeamMemberEmailInvites = (props: Props) => {
     execute({
       variables: {teamId, meetingId, invitees: emails},
       onCompleted: (res, errors) => {
-        const firstError = errors?.[0]
-        if (firstError) {
-          const isRateLimited = firstError.extensions?.code === 'TOO_MANY_REQUESTS'
-          setRequestError(isRateLimited ? RATE_LIMIT_MESSAGE : firstError.message)
+        const requestError = getMutationError(res, errors)
+        if (requestError) {
+          setRequestError(getRequestErrorMessage(requestError))
           return
         }
         invitees.applyResults(res.inviteToTeam.invitees)
       },
-      onError: () => setRequestError(NETWORK_ERROR_MESSAGE)
+      onError: (error) => {
+        setRequestError(
+          error instanceof GraphQLServerError
+            ? getRequestErrorMessage(getMutationError(error))
+            : NETWORK_ERROR_MESSAGE
+        )
+      }
     })
   }
 
@@ -113,7 +124,13 @@ const AddTeamMemberEmailInvites = (props: Props) => {
           <span className='font-semibold text-fg-primary'>{requestError}</span>
         </div>
       )}
-      <div className='mt-6 flex flex-wrap items-center gap-x-4 gap-y-2'>
+      <DialogActions className='items-center'>
+        {leftoverCount > 0 && (
+          <span className='mr-auto text-fg-secondary text-sm leading-5'>
+            You can invite up to {MAX_TEAM_INVITEES} people at a time. The other {leftoverCount}{' '}
+            will stay here for the next batch.
+          </span>
+        )}
         <Button
           variant='primary'
           size='md'
@@ -123,13 +140,7 @@ const AddTeamMemberEmailInvites = (props: Props) => {
         >
           {label}
         </Button>
-        {leftoverCount > 0 && (
-          <span className='text-fg-secondary text-sm leading-5'>
-            You can invite up to {MAX_TEAM_INVITEES} people at a time. The other {leftoverCount}{' '}
-            will stay here for the next batch.
-          </span>
-        )}
-      </div>
+      </DialogActions>
     </>
   )
 }

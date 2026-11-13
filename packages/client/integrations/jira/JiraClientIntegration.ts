@@ -9,7 +9,6 @@ import type Atmosphere from '../../Atmosphere'
 import JiraSVG from '../../components/JiraSVG'
 import atlassianLogo from '../../styles/theme/images/graphics/atlassian-gradient.svg'
 import {ExternalLinks} from '../../types/constEnums'
-import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {describeAtlassianDisconnect} from '../../utils/atlassianScopes'
 import lazyPreload from '../../utils/lazyPreload'
 import {
@@ -23,6 +22,7 @@ import {
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
+import AtlassianClientManager from './AtlassianClientManager'
 import jiraSearchMeta from './jiraSearchMeta'
 import JiraProjectId from './shared/JiraProjectId'
 import {jiraIntegrationMeta} from './shared/jiraIntegrationMeta'
@@ -86,6 +86,7 @@ const workDrawer: WorkDrawerCapability = {
 export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
+  readonly searchKeywords = ['atlassian']
   readonly description = jiraIntegrationMeta.description
   readonly Icon = JiraSVG
   readonly logo: ProviderLogoAsset = {src: atlassianLogo}

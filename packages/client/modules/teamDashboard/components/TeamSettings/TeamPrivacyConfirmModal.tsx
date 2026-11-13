@@ -17,7 +17,7 @@ const TeamPrivacyConfirmModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent className='w-[400px] p-4'>
+      <DialogContent className='w-[400px]'>
         <DialogTitle>Make team public?</DialogTitle>
         <div className='my-4 text-fg-primary'>
           <p>
@@ -36,10 +36,10 @@ const TeamPrivacyConfirmModal = (props: Props) => {
           <p className='mt-2'>Are you sure you want to continue?</p>
         </div>
         <DialogActions>
-          <Button variant='outline' size='sm' onClick={onClose}>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='primary' size='sm' className='ml-4 text-sm' onClick={onConfirm}>
+          <Button variant='primary' size='md' onClick={onConfirm}>
             Make Team Public
           </Button>
         </DialogActions>

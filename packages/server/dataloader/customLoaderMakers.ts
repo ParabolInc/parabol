@@ -1,5 +1,7 @@
 import DataLoader from 'dataloader'
+import stringify from 'fast-json-stable-stringify'
 import {type SqlBool, sql} from 'kysely'
+import type {AnyTaskIntegration} from 'parabol-client/shared/types/TaskIntegration'
 import {Threshold} from 'parabol-client/types/constEnums'
 import {canShowTeamHealthScore} from '../../client/shared/utils/teamHealthAnonymity'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
@@ -569,31 +571,33 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
   )
 }
 
-export const taskIdsByTeamAndGitHubRepo = (
+/** The team's tasks whose stored integration has every given part, e.g. a service and the repo its issues live in */
+export const taskIdsByTeamAndIntegration = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
 ) => {
   dependsOn('tasks')
-  return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
+  return new DataLoader<
+    {teamId: string; integration: Partial<AnyTaskIntegration>},
+    string[],
+    string
+  >(
     async (keys) => {
-      const res = await Promise.all(
-        keys.map(async (key) => {
-          const {teamId, nameWithOwner} = key
-          const res = await getKysely()
+      return Promise.all(
+        keys.map(async ({teamId, integration}) => {
+          const tasks = await getKysely()
             .selectFrom('Task')
             .select('id')
             .where('teamId', '=', teamId)
-            .where('integration', 'is not', null)
-            .where(sql<boolean>`"integration"->>'nameWithOwner' = ${nameWithOwner}`)
+            .where(sql<boolean>`"integration" @> ${JSON.stringify(integration)}::jsonb`)
             .execute()
-          return res.map(({id}) => id)
+          return tasks.map(({id}) => id)
         })
       )
-      return res
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+      cacheKeyFn: ({teamId, integration}) => `${teamId}:${stringify(integration)}`
     }
   )
 }
@@ -1153,9 +1157,9 @@ export interface PriorTeamHealthCycle {
   questionByCategoryId: Map<number, string>
 }
 
-// A stand-up's prompts are frozen at meeting creation: it sees prompts active when the meeting
-// was created, plus any removed afterward, so prompts don't retroactively vanish from a meeting
-// already in progress.
+// A meeting's prompts are frozen at the moment its template was chosen (meeting creation, or a
+// later switch): it sees prompts active then, plus any removed afterward, so prompts don't
+// retroactively vanish from a meeting already in progress.
 export const templatePromptsByMeetingId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
@@ -1163,13 +1167,14 @@ export const templatePromptsByMeetingId = (
   dependsOn('templatePrompts')
   return new DataLoader<string, TemplatePrompt[], string>(
     async (meetingIds) => {
+      const frozenAt = sql<Date>`coalesce(m."templateChosenAt", m."createdAt")`
       const rows = await getKysely()
         .selectFrom('NewMeeting as m')
         .innerJoin('TemplatePrompt as p', 'p.templateId', 'm.templateId')
         .where('m.id', 'in', meetingIds)
-        .whereRef('p.createdAt', '<', 'm.createdAt')
+        .where('p.createdAt', '<', frozenAt)
         .where(({eb, or, ref}) =>
-          or([eb('p.removedAt', 'is', null), eb('m.createdAt', '<', ref('p.removedAt'))])
+          or([eb('p.removedAt', 'is', null), eb(frozenAt, '<', ref('p.removedAt'))])
         )
         .selectAll('p')
         .select('m.id as meetingId')

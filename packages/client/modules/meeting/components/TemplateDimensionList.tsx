@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
 import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_DIMENSION} from '../../../utils/constants'
+import isTempId from '../../../utils/relay/isTempId'
 import TemplateDimensionItem from './TemplateDimensionItem'
 
 interface Props {
@@ -64,7 +65,7 @@ const TemplateDimensionList = (props: Props) => {
                       key={dimension.id}
                       draggableId={dimension.id}
                       index={idx}
-                      isDragDisabled={!isOwner || readOnly}
+                      isDragDisabled={!isOwner || readOnly || isTempId(dimension.id)}
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (

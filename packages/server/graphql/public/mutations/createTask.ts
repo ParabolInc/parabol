@@ -18,17 +18,25 @@ import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
 import createIntegrationIssue from '../../mutations/helpers/createIntegrationIssue'
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {MutationResolvers} from '../resolverTypes'
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
   viewerId: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | undefined
 ) => {
   if (!meetingId) return undefined
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!meetingMember) return 'Viewer is not in meeting'
+  if (resourceGrants) {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (!meeting || !(await resourceGrants.hasTeam(meeting.teamId))) {
+      return 'Access token does not grant access to this meeting'
+    }
+  }
   return undefined
 }
 
@@ -135,7 +143,7 @@ const createTask: MutationResolvers['createTask'] = async (
   context,
   info
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {authToken, dataLoader, socketId: mutatorId, resourceGrants} = context
   const pg = getKysely()
   const operationId = dataLoader.share()
   const viewerId = getUserId(authToken)
@@ -152,7 +160,7 @@ const createTask: MutationResolvers['createTask'] = async (
   } = newTask
   const errors = await Promise.all([
     validateTaskDiscussionId(discussionId, teamId, meetingId, dataLoader),
-    validateTaskMeetingId(meetingId, viewerId, dataLoader),
+    validateTaskMeetingId(meetingId, viewerId, dataLoader, resourceGrants),
     validateTaskUserIsTeamMember(userId, teamId, dataLoader)
   ])
   const firstError = errors.find(Boolean)

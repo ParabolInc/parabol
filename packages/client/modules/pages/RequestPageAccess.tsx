@@ -10,6 +10,7 @@ import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   pageId: string
@@ -29,6 +30,30 @@ export const RequestPageAccess = (props: Props) => {
     navigate('/meetings')
   }
 
+  const showRequestError = (code: unknown) => {
+    if (code === 'NOT_FOUND') {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message: 'Page not found',
+        autoDismiss: 10,
+        key: 'pageNotFound'
+      })
+      return
+    }
+    if (code === 'TOO_MANY_REQUESTS') {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message: 'You have already requested access recently',
+        autoDismiss: 10,
+        key: 'tooManyRequests'
+      })
+      return
+    }
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message: 'Error requesting page access',
+      autoDismiss: 10,
+      key: 'errorRequestingPageAccess'
+    })
+  }
+
   const submit = () => {
     if (submitting) return
     execute({
@@ -37,31 +62,11 @@ export const RequestPageAccess = (props: Props) => {
         reason,
         role: 'viewer'
       },
+      onError: (error) => showRequestError(getMutationError(error).code),
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]
         if (firstError) {
-          const code = firstError.extensions?.code
-          if (code === 'NOT_FOUND') {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              message: 'Page not found',
-              autoDismiss: 10,
-              key: 'pageNotFound'
-            })
-            return
-          }
-          if (code === 'TOO_MANY_REQUESTS') {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              message: 'You have already requested access recently',
-              autoDismiss: 10,
-              key: 'tooManyRequests'
-            })
-            return
-          }
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: 'Error requesting page access',
-            autoDismiss: 10,
-            key: 'errorRequestingPageAccess'
-          })
+          showRequestError(firstError.extensions?.code)
           return
         }
         atmosphere.eventEmitter.emit('addSnackbar', {
@@ -100,10 +105,10 @@ export const RequestPageAccess = (props: Props) => {
             />
           </DialogDescription>
           <DialogActions className='mt-0 flex w-full justify-between gap-4'>
-            <Button variant='outline' className='p-3 px-6' onClick={cancel}>
+            <Button variant='outline' size='md' onClick={cancel}>
               Cancel
             </Button>
-            <Button variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
+            <Button variant='primary' size='md' className='grow' onClick={submit}>
               Request Access
             </Button>
           </DialogActions>

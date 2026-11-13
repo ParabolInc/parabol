@@ -49,11 +49,8 @@ const useSetTeamHealthResponseMutation = () => {
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TSetTeamHealthResponseMutation>) => {
     return commit({
-      ...config,
-      onError: (error) => {
-        snackOnError(atmosphere, 'setTeamHealthResponseError')(error)
-        config.onError?.(error)
-      }
+      onError: snackOnError(atmosphere, 'setTeamHealthResponseError'),
+      ...config
     })
   }
   return [execute, submitting] as const

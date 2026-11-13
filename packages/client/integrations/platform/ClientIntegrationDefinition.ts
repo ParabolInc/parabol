@@ -59,6 +59,8 @@ export interface ScopingCapability extends SearchMetaCodec {
   currentFilters?(state: ScopingSearchState, context: ScopingSearchContext): ReactNode
   /** What the search history shows for a saved filter; absent when the value is already readable */
   filterChipLabel?(filter: IntegrationSearchFilter): string
+  /** What the search history shows for all of a saved query's filters, e.g. a count when no value is readable without a lookup; defaults to joining each filterChipLabel */
+  savedFiltersLabel?(filters: readonly IntegrationSearchFilter[]): string
   /** What the search history shows for a saved query; defaults to quoting a plain search */
   savedQueryLabel?(savedQuery: ScopingSavedQuery): string
   /** How the service's server integration normalizes a queryString before storing it, so the host can spot an already saved search */
@@ -122,6 +124,7 @@ export interface ProviderLogoAsset {
 export abstract class ClientIntegrationDefinition {
   abstract readonly service: IntegrationMeta['service']
   abstract readonly title: string
+  readonly searchKeywords?: readonly string[]
   abstract readonly description: string
   abstract readonly Icon: ComponentType<{className?: string}>
   readonly iconClassName?: string

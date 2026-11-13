@@ -1,5 +1,6 @@
 import {Button} from '~/ui/Button/Button'
 import {Dialog} from '~/ui/Dialog/Dialog'
+import {DialogActions} from '~/ui/Dialog/DialogActions'
 import {DialogContent} from '~/ui/Dialog/DialogContent'
 import {DialogTitle} from '~/ui/Dialog/DialogTitle'
 
@@ -20,17 +21,17 @@ const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
         <DialogTitle>
           {serviceName} integration for {teamName}
         </DialogTitle>
-        <p className='m-0 pb-4 text-sm leading-5'>
+        <p className='m-0 text-sm leading-5'>
           You don't have {serviceName} configured for {teamName}. Do you want to add it now?
         </p>
-        <div className='mt-6 flex justify-end gap-4'>
+        <DialogActions>
           <Button variant='outline' onClick={onClose} size='md'>
             Cancel
           </Button>
           <Button variant='primary' onClick={onConfirm} size='md'>
             Add it now
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

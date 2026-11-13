@@ -10,25 +10,35 @@ const addOrgCoupon: MutationResolvers['addOrgCoupon'] = async (
 ) => {
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
-    throw new GraphQLError('Organization not found')
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (organization.tier !== 'starter') {
-    throw new GraphQLError('Coupon can only be added to starter-tier organizations')
+    throw new GraphQLError('Coupon can only be added to starter-tier organizations', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   const manager = getStripeManager()
   const coupon = await manager.retrieveCoupon(couponId)
   if (coupon instanceof Error) {
-    throw new GraphQLError(`Stripe coupon not found: ${coupon.message}`)
+    throw new GraphQLError(`Stripe coupon not found: ${coupon.message}`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   if (!coupon.valid) {
-    throw new GraphQLError(`Stripe coupon "${couponId}" is no longer valid`)
+    throw new GraphQLError(`Stripe coupon "${couponId}" is no longer valid`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (!coupon.percent_off) {
-    throw new GraphQLError(`Stripe coupon "${couponId}" must have a percent_off amount`)
+    throw new GraphQLError(`Stripe coupon "${couponId}" must have a percent_off amount`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (!coupon.duration_in_months) {
-    throw new GraphQLError(`Stripe coupon "${couponId}" must have a defined duration in months`)
+    throw new GraphQLError(`Stripe coupon "${couponId}" must have a defined duration in months`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const pg = getKysely()

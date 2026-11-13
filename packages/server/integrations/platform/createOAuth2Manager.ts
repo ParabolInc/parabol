@@ -1,4 +1,5 @@
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
+import ClickUpOAuth2Manager from '../clickup/ClickUpOAuth2Manager'
 import GcalOAuth2Manager from '../gcal/GcalOAuth2Manager'
 import GitHubOAuth2Manager from '../github/GitHubOAuth2Manager'
 import GitLabOAuth2Manager from '../gitlab/GitLabOAuth2Manager'
@@ -16,6 +17,7 @@ type OAuth2ManagerConstructor = new (
 
 const OAUTH2_MANAGERS: Partial<Record<TIntegrationProvider['service'], OAuth2ManagerConstructor>> =
   {
+    clickup: ClickUpOAuth2Manager,
     gcal: GcalOAuth2Manager,
     github: GitHubOAuth2Manager,
     gitlab: GitLabOAuth2Manager,

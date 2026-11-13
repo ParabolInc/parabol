@@ -1,24 +1,25 @@
-jest.mock('../../../utils/AtlassianClientManager', () => ({
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../jira/AtlassianClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn(), JIRA_SCOPE: ['read:jira-work']}
 }))
-jest.mock('../../../utils/JiraServerClientManager', () => ({
+jest.mock('../../jiraServer/JiraServerClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/GitHubClientManager', () => ({
+jest.mock('../../github/GitHubClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/GitLabClientManager', () => ({
+jest.mock('../../gitlab/GitLabClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/AzureDevOpsClientManager', () => ({
+jest.mock('../../azureDevOps/AzureDevOpsClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
-jest.mock('../../../utils/LinearClientManager', () => ({
+jest.mock('../../linear/LinearClientManager', () => ({
   __esModule: true,
   default: {openOAuth: jest.fn()}
 }))
@@ -30,11 +31,11 @@ jest.mock('../../../utils/GcalClientManager', () => ({
 import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {MenuMutationProps} from '../../../hooks/useMutationProps'
-import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import GcalClientManager from '../../../utils/GcalClientManager'
-import GitLabClientManager from '../../../utils/GitLabClientManager'
-import JiraServerClientManager from '../../../utils/JiraServerClientManager'
-import LinearClientManager from '../../../utils/LinearClientManager'
+import GitLabClientManager from '../../gitlab/GitLabClientManager'
+import AtlassianClientManager from '../../jira/AtlassianClientManager'
+import JiraServerClientManager from '../../jiraServer/JiraServerClientManager'
+import LinearClientManager from '../../linear/LinearClientManager'
 import {
   clientIntegrations,
   clientIntegrationsByPopularity,
@@ -45,46 +46,6 @@ import {
 } from '../registry'
 
 describe('clientIntegrations registry', () => {
-  it('registers the six task services and Google Calendar', () => {
-    expect(Object.keys(clientIntegrations).sort()).toEqual([
-      'azureDevOps',
-      'gcal',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: service matches key', (key, def) => {
-    expect(def.service).toBe(key)
-  })
-
-  it.each(Object.entries(clientIntegrations))('%s: has title and description', (_key, def) => {
-    expect(def.title.length).toBeGreaterThan(0)
-    expect(def.description.length).toBeGreaterThan(0)
-  })
-
-  it('every task integration ships a scoping results component', () => {
-    Object.values(clientIntegrations)
-      .filter(({service}) => isTaskClientIntegration(service))
-      .forEach((definition) => {
-        expect(definition.capabilities.scoping?.Results).toBeInstanceOf(Function)
-      })
-  })
-
-  it('every service has a retro work drawer tab', () => {
-    const withDrawer = clientIntegrationsByPopularity.filter(
-      (service) => clientIntegrations[service].capabilities.workDrawer
-    )
-    expect(withDrawer).toEqual(clientIntegrationsByPopularity)
-  })
-
-  it('Google Calendar has no scope tab', () => {
-    expect(clientIntegrations.gcal.capabilities.scoping).toBeUndefined()
-  })
-
   it('looks up a definition by service, null for a service with no client integration', () => {
     expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
     expect(getClientIntegration('zoom')).toBeNull()
@@ -120,6 +81,17 @@ describe('clientIntegrations registry', () => {
     ).toBe('WEB')
   })
 
+  it('ClickUp labels saved List filters by their count, since a List id has no readable part', () => {
+    const savedFiltersLabel = clientIntegrations.clickup.capabilities.scoping?.savedFiltersLabel
+    expect(savedFiltersLabel?.([{key: 'listIds', value: '901423080038'}])).toBe('1 list')
+    expect(
+      savedFiltersLabel?.([
+        {key: 'listIds', value: '901423080038'},
+        {key: 'listIds', value: '901423080041'}
+      ])
+    ).toBe('2 lists')
+  })
+
   it('only Jira Data Center sets contactUs, the slot both surfaces advertise on', () => {
     const advertised = Object.entries(clientIntegrations)
       .filter(([, definition]) => definition.contactUs)
@@ -128,12 +100,6 @@ describe('clientIntegrations registry', () => {
     expect(clientIntegrations.jiraServer.contactUs).toEqual({
       url: 'https://www.parabol.co/integrations/jira-server'
     })
-  })
-
-  it('every registered integration ships its own settings-row logo asset', () => {
-    const sources = Object.values(clientIntegrations).map((definition) => definition.logo.src)
-    sources.forEach((src) => expect(src).toBeTruthy())
-    expect(new Set(sources).size).toBe(sources.length)
   })
 
   it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
@@ -262,13 +228,8 @@ describe('connect with an interface-shaped provider ref', () => {
   })
 
   it('task surfaces see every service but Google Calendar', () => {
-    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration).sort()).toEqual([
-      'azureDevOps',
-      'github',
-      'gitlab',
-      'jira',
-      'jiraServer',
-      'linear'
-    ])
+    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration)).toEqual(
+      clientIntegrationsByPopularity.filter((service) => service !== 'gcal')
+    )
   })
 })

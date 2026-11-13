@@ -1,10 +1,10 @@
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
+import AtlassianClientManager from '../../integrations/jira/AtlassianClientManager'
 import type {ConnectProvider} from '../../integrations/platform/ClientIntegrationDefinition'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import {ERROR_POPUP_CLOSED} from '../../utils/oauthPopupError'
 
 interface Props {
@@ -17,7 +17,9 @@ interface Props {
 export const ConfluenceEnableState = (props: Props) => {
   const {teamId, provider, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {
     submitting,
     submitMutation,
@@ -50,7 +52,7 @@ export const ConfluenceEnableState = (props: Props) => {
         }
       </p>
       <Button
-        variant='dialogPrimary'
+        variant='primary'
         size='md'
         onClick={enable}
         disabled={submitting || !teamId || !provider}

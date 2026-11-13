@@ -11,13 +11,15 @@ import GitLabSVG from '../../../../../components/GitLabSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
 import TaskServiceIcon from '../../../../../components/TaskServiceIcon'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
-import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
+import useMutationProps from '../../../../../hooks/useMutationProps'
+import {clickupIntegrationMeta} from '../../../../../integrations/clickup/shared/clickupIntegrationMeta'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {Providers} from '../../../../../types/constEnums'
 import {cn} from '../../../../../ui/cn'
 import {Menu} from '../../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../../utils/lazyPreload'
+import getMutationError from '../../../../../utils/relay/getMutationError'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -33,7 +35,8 @@ const integrationToServiceName: Record<TaskServiceEnum, string> = {
   jiraServer: Providers.JIRA_SERVER_NAME,
   azureDevOps: Providers.AZUREDEVOPS_NAME,
   gitlab: Providers.GITLAB_NAME,
-  linear: Providers.LINEAR_NAME
+  linear: Providers.LINEAR_NAME,
+  clickup: clickupIntegrationMeta.title
 }
 
 interface Props {
@@ -114,7 +117,7 @@ const ExportAllTasks = (props: Props) => {
           CreateTaskIntegrationMutation(atmosphere, variables, {
             onError: reject,
             onCompleted: (res, errors) => {
-              const error = getOnCompletedError(res, errors)
+              const error = getMutationError(res, errors)
               if (error) {
                 reject(error)
               } else {
@@ -128,11 +131,6 @@ const ExportAllTasks = (props: Props) => {
 
     const errors = results.filter((res) => res.status === 'rejected') as PromiseRejectedResult[]
     if (errors.length > 0) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'bulkExportError',
-        message: 'Could not sync all tasks. Please try again',
-        autoDismiss: 10
-      })
       onError(errors[0]!.reason)
     } else {
       integrationLabel && setPushedIntegrationLabel(integrationLabel)

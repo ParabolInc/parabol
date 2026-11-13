@@ -1,10 +1,9 @@
-import {fetch} from '@whatwg-node/fetch'
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
-import {Logger} from '../utils/Logger'
+import fetchRetryingTransientErrors from '../utils/fetchRetryingTransientErrors'
 import FileStoreManager, {
   type FileAssetDir,
   type PartialPath,
@@ -99,12 +98,13 @@ export default class GCSManager extends FileStoreManager {
           expiresIn: GCSManager.GOOGLE_EXPIRY
         }
       )
-      const accessTokenRes = await fetch(authUrl, {
+      const accessTokenRes = await fetchRetryingTransientErrors(authUrl, {
         method: 'POST',
         body: JSON.stringify({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
           assertion: jwt
-        })
+        }),
+        logLabel: 'GCS token fetch'
       })
       const accessTokenJson = await accessTokenRes.json()
       return accessTokenJson.access_token
@@ -154,29 +154,20 @@ export default class GCSManager extends FileStoreManager {
       uploadContentType = contentType
     }
 
-    try {
-      const r = await fetch(url, {
-        method: 'POST',
-        body,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/json',
-          'Content-Type': uploadContentType,
-          'User-Agent': 'parabol'
-        }
-      })
-      if (!r.ok) {
-        throw new Error(`GCS Upload Error: ${r.status}`)
-      }
-    } catch (e) {
-      // https://github.com/nodejs/undici/issues/583#issuecomment-1577475664
-      // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
-      if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
-        Logger.log('   Retrying GCS Post:', fullPath)
-        await this.putFile(file, fullPath, options)
-      } else {
-        throw e
-      }
+    const res = await fetchRetryingTransientErrors(url, {
+      method: 'POST',
+      body,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'Content-Type': uploadContentType,
+        'User-Agent': 'parabol'
+      },
+      logLabel: `GCS upload of ${fullPath}`
+    })
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`GCS Upload Error: ${res.status} ${text}. ${fullPath}`)
     }
   }
 
@@ -191,13 +182,14 @@ export default class GCSManager extends FileStoreManager {
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
     const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
     const copyURL = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/rewriteTo/b/${this.bucket}/o/${newFullPath}`
-    const moveRes = await fetch(copyURL, {
+    const moveRes = await fetchRetryingTransientErrors(copyURL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
         'User-Agent': 'parabol'
-      }
+      },
+      logLabel: `GCS copy of ${oldPartialPath} to ${newPartialPath}`
     })
     if (!moveRes.ok) {
       const text = await moveRes.text()
@@ -210,13 +202,14 @@ export default class GCSManager extends FileStoreManager {
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
     const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
     const moveURL = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/moveTo/o/${newFullPath}`
-    const moveRes = await fetch(moveURL, {
+    const moveRes = await fetchRetryingTransientErrors(moveURL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
         'User-Agent': 'parabol'
-      }
+      },
+      logLabel: `GCS move of ${oldPartialPath} to ${newPartialPath}`
     })
     if (!moveRes.ok) {
       const text = await moveRes.text()
@@ -231,9 +224,17 @@ export default class GCSManager extends FileStoreManager {
   }
   async checkExists(partialPath: string, assetDir?: FileAssetDir) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
-    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}`
-    const res = await fetch(url)
-    return res.status !== 404
+    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}?fields=name`
+    const accessToken = await this.getAccessToken()
+    const res = await fetchRetryingTransientErrors(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      },
+      logLabel: `GCS existence check of ${partialPath}`
+    })
+    return res.ok
   }
   async presignUrl(partialPath: PartialPath, _expiresIn = 604800): Promise<string> {
     // for PPMIs where a public bucket is not allowed, we special case build files

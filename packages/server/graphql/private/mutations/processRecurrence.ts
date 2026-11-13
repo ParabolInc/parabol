@@ -1,14 +1,15 @@
 import dayjs from 'dayjs'
 import {sql} from 'kysely'
 import ms from 'ms'
-import {DateTime, RRuleSet} from 'rrule-rust'
+import {RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
+import {fromDateTime} from '../../../../client/shared/rruleUtil'
 import AuthToken from '../../../database/types/AuthToken'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import traceAsync from '../../../tracing/traceAsync'
+import {toUTCDateTime} from '../../../utils/getNextRRuleDate'
 import standardError from '../../../utils/standardError'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
 import remindTeamHealthResponders from '../../mutations/helpers/remindTeamHealthResponders'
@@ -170,8 +171,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
               )
             : meetingSeries.createdAt
           const newMeetingsStartTimes = rrule.between(
-            DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
-            DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
+            toUTCDateTime(dayjs(fromDate)),
+            toUTCDateTime(dayjs())
           )
           // The last meeting stood in for every occurrence before the one it was scheduled to end
           // on, so those occurrences must not spawn a second meeting. This only matters when a

@@ -12,7 +12,7 @@ import {applySeriesRecurrence} from './updateRecurrenceSettings'
 const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   _source,
   {meetingSeriesId, name, rrule: rruleString},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
@@ -27,7 +27,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   if (!meetingSeries) {
     return standardError(new Error('Meeting series not found'), {userId: viewerId})
   }
-  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader))) {
+  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
     return standardError(new Error('Only the owner of this meeting series can change it'), {
       userId: viewerId
     })

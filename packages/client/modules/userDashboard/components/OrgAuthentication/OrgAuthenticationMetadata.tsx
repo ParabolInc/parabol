@@ -4,6 +4,7 @@ import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {UploadFile as UploadFileIcon} from '~/ui/icons'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -85,7 +86,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
         }
         testSignIn(res.requestSAMLMetadataChange.signOnURL)
       },
-      onError: (err) => failRequest(err.message)
+      onError: (err) => failRequest(getMutationError(err).message)
     })
   }
 

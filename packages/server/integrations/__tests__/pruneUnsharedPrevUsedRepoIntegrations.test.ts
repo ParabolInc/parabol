@@ -2,7 +2,7 @@ import getPrevUsedRepoIntegrations from '../../graphql/queries/helpers/getPrevUs
 import getRedis from '../../utils/getRedis'
 import logError from '../../utils/logError'
 import type {AzureDevOpsProject} from '../azureDevOps/fetchAvailableAzureDevOpsProjects'
-import type {GitHubRepo} from '../platform/RemoteRepoIntegration'
+import type {GitHubRepo} from '../github/fetchGitHubRepos'
 import RepoAccess from '../platform/RepoAccess'
 import pruneUnsharedPrevUsedRepoIntegrations from '../pruneUnsharedPrevUsedRepoIntegrations'
 

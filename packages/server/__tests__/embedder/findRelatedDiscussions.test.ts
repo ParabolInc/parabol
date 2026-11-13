@@ -23,7 +23,7 @@ jest.mock('../../../embedder/workflows/helpers/publishSimilarRetroTopics', () =>
   publishSimilarRetroTopics: jest.fn(async () => undefined)
 }))
 
-const HARRIER: ModelId = 'microsoft/harrier-oss-v1-270m'
+const HARRIER: ModelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const QWEN3: ModelId = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
 const PROMPT =
   'Instruct: Given a topic from a team retrospective, retrieve past topics about the same issue\nQuery: '

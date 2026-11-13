@@ -16,25 +16,34 @@ import {privatizePage} from './helpers/privatizePage'
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, sourceSection, targetSection},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const [dbPageId, pageCode] = CipherId.fromClient(pageId)
   if (sourceSection === 'private' && targetSection === 'shared') {
-    throw new GraphQLError('Private pages cannot be moved direclty to shared')
+    throw new GraphQLError('Private pages cannot be moved direclty to shared', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (targetSection === 'team' && !teamId) {
-    throw new GraphQLError('teamId must be non-null if targetSection is team')
+    throw new GraphQLError('teamId must be non-null if targetSection is team', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (targetSection === 'team') {
     const teamMember = await dataLoader.get('teamMembers').load(toTeamMemberId(teamId!, viewerId))
-    if (!teamMember?.isNotRemoved) throw new GraphQLError('You can only move pages into your teams')
+    const isTeamGranted = !resourceGrants || (await resourceGrants.hasTeam(teamId!))
+    if (!teamMember?.isNotRemoved || !isTeamGranted) {
+      throw new GraphQLError('You can only move pages into your teams', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
   }
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
-  if (!page) throw new GraphQLError('Invalid pageId')
+  if (!page) throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
 
   const isReorder =
     sourceSection === targetSection && ((!teamId && !page.teamId) || teamId === page.teamId)
@@ -44,15 +53,21 @@ const updatePage: MutationResolvers['updatePage'] = async (
   dataLoader.get('pageAccessByPageIdUserId').clearAll()
   if (!isReorder) {
     if (page.isMeetingTOC) {
-      throw new GraphQLError('Meeting Summaries pages cannot be moved')
+      throw new GraphQLError('Meeting Summaries pages cannot be moved', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     // changing parents will change permissions.
     if (userRole !== 'owner') {
-      throw new GraphQLError('You must be an owner to move the page to a different parent')
+      throw new GraphQLError('You must be an owner to move the page to a different parent', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   } else if (targetSection !== 'shared' && userRole !== 'owner' && userRole !== 'editor') {
     // outside the shared section the sort order is the same for everyone
-    throw new GraphQLError('You must be an editor to reorder this page')
+    throw new GraphQLError('You must be an editor to reorder this page', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   // sortOrder is only used for pages without a parentPageId, or shared pages
@@ -99,20 +114,24 @@ const updatePage: MutationResolvers['updatePage'] = async (
       if (sourceSection !== 'private') {
         await privatizePage(viewerId, dbPageId, nextSortOrder)
       } else {
-        throw new GraphQLError('Page is already private')
+        throw new GraphQLError('Page is already private', {extensions: {code: 'CONFLICT'}})
       }
     } else if (targetSection === 'shared') {
       if (!page.isPrivate) {
         // private pages cannot be moved to shared
         await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
       } else {
-        throw new GraphQLError('Private page cannot be moved to shared')
+        throw new GraphQLError('Private page cannot be moved to shared', {
+          extensions: {code: 'BAD_USER_INPUT'}
+        })
       }
     } else if (targetSection === 'team') {
       // moving to a team
       await movePageToNewTeam(viewerId, dbPageId, teamId!, nextSortOrder)
     } else {
-      throw new GraphQLError('Target must be private, shared, or team.')
+      throw new GraphQLError('Target must be private, shared, or team.', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
   }
 

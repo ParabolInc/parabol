@@ -1,12 +1,12 @@
 import GitHubRepoId from '../../../../client/integrations/github/shared/GitHubRepoId'
 import refreshAzureDevOpsEstimates from '../../../integrations/azureDevOps/refreshAzureDevOpsEstimates'
+import getGitHubRequest from '../../../integrations/github/getGitHubRequest'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {previousPushLabelName} from '../../../integrations/platform/previousPushLabel'
 import getKysely from '../../../postgres/getKysely'
 import {selectTaskEstimate} from '../../../postgres/select'
 import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
-import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
@@ -48,11 +48,10 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
         viewerId
       })
     } else if (integration?.service === 'azureDevOps') {
-      const {accessUserId, instanceId, issueKey} = integration
-      const workItem = await dataLoader
-        .get('azureDevOpsWorkItem')
-        .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
-      if (workItem) await refreshAzureDevOpsEstimates(dataLoader, taskId, workItem)
+      const issue = await dataLoader.get('integrationIssue').load({teamId, integration})
+      if (issue?.service === 'azureDevOps') {
+        await refreshAzureDevOpsEstimates(dataLoader, taskId, issue)
+      }
     } else if (integration?.service === 'github') {
       const {accessUserId, nameWithOwner, issueNumber} = integration
       const [githubAuth, estimates] = await Promise.all([
@@ -84,6 +83,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const labelNodes = labelsData.repository?.issue?.labels?.nodes
       if (!labelNodes) return estimates
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
+      if (ghIssueLabels.length === 0) return estimates
       await Promise.all(
         estimates.map(async (estimate) => {
           const {name: dimensionName} = estimate
@@ -91,8 +91,9 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           if (previousLabelName && ghIssueLabels.includes(previousLabelName)) return
           // VERY EXPENSIVE. We do this only if we're darn sure we need to
           const taskIds = await dataLoader
-            .get('taskIdsByTeamAndGitHubRepo')
-            .load({teamId, nameWithOwner})
+            .get('taskIdsByTeamAndIntegration')
+            .load({teamId, integration: {service: 'github', nameWithOwner}})
+          if (taskIds.length === 0) return
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)
             .where('name', '=', dimensionName)

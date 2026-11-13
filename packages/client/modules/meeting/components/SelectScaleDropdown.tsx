@@ -67,7 +67,7 @@ const SelectScaleDropdown = (props: Props) => {
           UpdatePokerTemplateDimensionScaleMutation(
             atmosphere,
             {dimensionId, scaleId: newScaleId},
-            {onError, onCompleted: () => {}}
+            {onError, onCompleted}
           )
           requestAnimationFrame(() => {
             menuRef.current

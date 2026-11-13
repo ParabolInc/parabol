@@ -5,12 +5,14 @@ import {RRule} from 'rrule'
 import type {MeetingSeriesEditForm_series$key} from '../__generated__/MeetingSeriesEditForm_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
-import useMutationProps, {getOnCompletedError} from '../hooks/useMutationProps'
+import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
 import UpdateRecurrenceSettingsMutation from '../mutations/UpdateRecurrenceSettingsMutation'
 import type {CompletedHandler} from '../types/relayMutations'
-import {cn} from '../ui/cn'
+import {Button} from '../ui/Button/Button'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {useDialogState} from '../ui/Dialog/useDialogState'
+import getMutationError from '../utils/relay/getMutationError'
 import Legitity from '../validation/Legitity'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
@@ -47,7 +49,9 @@ export const MeetingSeriesEditForm = (props: Props) => {
   const initialRrule =
     isActive && meetingSeries.recurrenceRule ? RRule.fromString(meetingSeries.recurrenceRule) : null
   const [rrule, setRrule] = useState<RRule | null>(initialRrule)
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {fields, onChange} = useForm({
     title: {getDefault: () => meetingSeries?.title || defaultTitle || ''}
   })
@@ -85,7 +89,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
     (key: string, message: string, afterSuccess?: () => void): CompletedHandler =>
     (res, errors) => {
       onCompleted(res, errors)
-      if (getOnCompletedError(res, errors)) return
+      if (getMutationError(res, errors)) return
       atmosphere.eventEmitter.emit('addSnackbar', {
         key,
         message,
@@ -139,29 +143,22 @@ export const MeetingSeriesEditForm = (props: Props) => {
       />
       {titleErr && <div className='mt-1 text-fg-error text-sm'>{titleErr}</div>}
       <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
-      <div
-        className={cn(
-          'mt-6 flex items-center border-hairline border-t pt-4',
-          isActive ? 'justify-between' : 'justify-end'
-        )}
-      >
+      <DialogActions>
         {isActive && (
-          <button
-            className='h-9 cursor-pointer rounded-md border border-hairline border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-surface-hover disabled:cursor-not-allowed'
+          <Button
+            variant='outline'
+            size='md'
+            className='mr-auto'
             onClick={cancelDialog.open}
             disabled={submitting}
           >
             Cancel series
-          </button>
+          </Button>
         )}
-        <button
-          className='h-9 cursor-pointer rounded-md bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
-          onClick={onUpdate}
-          disabled={!canUpdate}
-        >
+        <Button variant='primary' size='md' onClick={onUpdate} disabled={!canUpdate}>
           {isActive ? 'Update' : 'Start recurrence'}
-        </button>
-      </div>
+        </Button>
+      </DialogActions>
       {error && <div className='mt-3 text-fg-error'>{error.message}</div>}
       <CancelSeriesConfirmationModal
         isOpen={cancelDialog.isOpen}

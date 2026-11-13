@@ -11,8 +11,9 @@ import upsertSuggestedGrouping from './upsertSuggestedGrouping'
 // Matches generateSuggestedGroups, since this can now hold the lock for a whole LLM run
 const LOCK_TTL_MS = 60_000
 
-const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: false}
-const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: false}
+// One column at a time: models mostly erred by merging cards across columns that teams kept apart
+const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: true}
+const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: true}
 
 /**
  * AI grouping when the team is entitled to it, similar wording otherwise. Similar wording is also
@@ -25,16 +26,19 @@ const computeDefaultSuggestedGroups = async (
   dataLoader: DataLoaderWorker
 ) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  if (await canAccessAI(team, dataLoader)) {
+  const requestedMode = (await canAccessAI(team, dataLoader))
+    ? AI_CONFIG.mode
+    : SIMILARITY_CONFIG.mode
+  if (requestedMode === 'ai') {
     try {
       const computed = await computeSuggestedGroups(meetingId, AI_CONFIG, dataLoader)
-      return {...computed, config: AI_CONFIG}
+      return {...computed, config: AI_CONFIG, requestedMode}
     } catch (e) {
       Logger.warn(`AI could not suggest groups for meeting ${meetingId}, using similar wording`, e)
     }
   }
   const computed = await computeSuggestedGroups(meetingId, SIMILARITY_CONFIG, dataLoader)
-  return {...computed, config: SIMILARITY_CONFIG}
+  return {...computed, config: SIMILARITY_CONFIG, requestedMode}
 }
 
 /**
@@ -65,15 +69,22 @@ const generateDefaultSuggestedGroups = async (
     if (!hasLock) return
 
     try {
-      const {config, groups, inputHash} = await computeDefaultSuggestedGroups(
-        meetingId,
-        teamId,
-        dataLoader
-      )
+      const {config, requestedMode, groups, inputHash, model, tokenCost, repairedReflectionCount} =
+        await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
       // Stored even when empty: "we looked and nothing was similar enough" is an answer, and it
       // keeps the panel from offering to regenerate the identical result
       await upsertSuggestedGrouping(
-        {...config, meetingId, createdByUserId: facilitatorUserId, inputHash, groups},
+        {
+          ...config,
+          requestedMode,
+          meetingId,
+          createdByUserId: facilitatorUserId,
+          inputHash,
+          groups,
+          model,
+          tokenCost,
+          repairedReflectionCount
+        },
         dataLoader
       )
 

@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAskReportQuestionMutation as TAskReportQuestionMutation} from '../__generated__/useAskReportQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import handleRecentReportQuestion from './handlers/handleRecentReportQuestion'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useAskReportQuestionMutation($orgId: ID!, $question: String!, $timeZone: String!) {
@@ -20,6 +22,7 @@ const mutation = graphql`
 
 const useAskReportQuestionMutation = () => {
   const [commit, submitting] = useMutation<TAskReportQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TAskReportQuestionMutation>) => {
     const {orgId} = config.variables
     return commit({
@@ -29,6 +32,7 @@ const useAskReportQuestionMutation = () => {
           ?.getLinkedRecord('reportQuestion')
         if (reportQuestion) handleRecentReportQuestion(store, orgId, reportQuestion)
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

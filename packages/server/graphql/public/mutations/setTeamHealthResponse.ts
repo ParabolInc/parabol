@@ -29,27 +29,29 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
   ])
   const {endedAt, phases, teamId, meetingType} = meeting
   if (meetingType !== 'teamHealth') {
-    throw new GraphQLError('Not a team health meeting')
+    throw new GraphQLError('Not a team health meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (endedAt) {
-    throw new GraphQLError('Meeting has ended')
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
   if (score !== null && score !== undefined && (score < 1 || score > 5)) {
-    throw new GraphQLError('Score must be between 1 and 5')
+    throw new GraphQLError('Score must be between 1 and 5', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const responsePhase = getPhase(phases, 'TEAM_HEALTH_RESPONSE')
   const stage = responsePhase.stages.find((stage) => stage.id === stageId)
   if (!stage) {
-    throw new GraphQLError('Invalid stageId provided')
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   // spectators (the owner, by default) are excluded from the response set until they opt in
   if (!meetingMember) {
-    throw new GraphQLError('Join the meeting before answering')
+    throw new GraphQLError('Join the meeting before answering', {extensions: {code: 'CONFLICT'}})
   }
   if (meetingMember.isSpectating) {
-    throw new GraphQLError('Opt in with Start your response before answering')
+    throw new GraphQLError('Opt in with Start your response before answering', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   const {questionId} = stage
   const nextComment = comment || null

@@ -45,13 +45,13 @@ export const FEATURE_FLAGS = {
     updatedAt: new Date('2026-07-27T00:00:00+00:00'),
     isPublic: false
   },
-  Reports: {
-    featureName: 'Reports',
+  SyncedBlocks: {
+    featureName: 'SyncedBlocks',
     scope: 'Organization',
-    description: 'Org-wide reports on people, meetings and tasks',
-    expiresAt: new Date('2027-10-20T00:00:00+00:00'),
-    createdAt: new Date('2026-10-20T00:00:00+00:00'),
-    updatedAt: new Date('2026-10-20T00:00:00+00:00'),
+    description: 'Synced blocks in pages',
+    expiresAt: new Date('2027-11-10T00:00:00+00:00'),
+    createdAt: new Date('2026-11-10T00:00:00+00:00'),
+    updatedAt: new Date('2026-11-10T00:00:00+00:00'),
     isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>

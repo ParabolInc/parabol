@@ -10,7 +10,7 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import plural from '../utils/plural'
-import getGraphQLError from '../utils/relay/getGraphQLError'
+import getMutationError from '../utils/relay/getMutationError'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -95,7 +95,7 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedNavigateLocalH
     // optimistic updater is too brittle because if we are missing a single field it could break
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      const error = getGraphQLError(res, errors)
+      const error = getMutationError(res, errors)
       const {addTeam} = res
       if (!error) {
         if (showTeamCreatedToast) {

@@ -53,6 +53,24 @@ test('an issue that is gone or hidden from the user is not logged as an error', 
   expect(mockLogError).not.toHaveBeenCalled()
 })
 
+test('an issue Jira refuses with its 403 page is not logged as an error', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    new Response('<html>\n<head>\n    <title> (null)</title>\n</head>\n</html>', {
+      status: 403,
+      headers: {'content-type': 'text/html;charset=utf-8'}
+    })
+  )
+  const issue = await makeLoader().load({
+    teamId,
+    userId,
+    cloudId,
+    issueKey: `DENIED-${Date.now()}`,
+    viewerId: userId
+  })
+  expect(issue).toBeNull()
+  expect(mockLogError).not.toHaveBeenCalled()
+})
+
 test('other Jira failures are still logged', async () => {
   mockFetchWithRetry.mockResolvedValue(jsonResponse(500, {message: 'Internal server error'}))
   const issue = await makeLoader().load({

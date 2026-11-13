@@ -14,18 +14,23 @@ import type {UserResolvers} from '../resolverTypes'
 export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   _source,
   {meetingIds, prompt},
-  {authToken, dataLoader}
+  {authToken, dataLoader, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   if (meetingIds.length > 500) {
-    throw new GraphQLError('Too many meetings to summarize. Max 500')
+    throw new GraphQLError('Too many meetings to summarize. Max 500', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
-  if (meetingIds.length === 0) throw new GraphQLError('No meetings selected')
-  if (!prompt || prompt.length < 10) throw new GraphQLError('Prompt too short')
+  if (meetingIds.length === 0)
+    throw new GraphQLError('No meetings selected', {extensions: {code: 'BAD_USER_INPUT'}})
+  if (!prompt || prompt.length < 10)
+    throw new GraphQLError('Prompt too short', {extensions: {code: 'BAD_USER_INPUT'}})
   const pg = getKysely()
   if (!isSuperUser(authToken) && (await hasUsedMonthlyAIQuota(viewerId))) {
     throw new GraphQLError(
-      'You have exceeded your AI request quota. Please contact sales to increase'
+      'You have exceeded your AI request quota. Please contact sales to increase',
+      {extensions: {code: 'TOO_MANY_REQUESTS'}}
     )
   }
   const meetings = (await dataLoader.get('newMeetings').loadMany(meetingIds)).filter(isValid)
@@ -35,7 +40,17 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
     .filter(isValid)
     .filter((tm) => tm.isNotRemoved)
   if (teamMembers.length < teamIds.length) {
-    throw new GraphQLError('You must be a member of the team for each requested meetingId')
+    throw new GraphQLError('You must be a member of the team for each requested meetingId', {
+      extensions: {code: 'FORBIDDEN'}
+    })
+  }
+  if (resourceGrants) {
+    const isTeamGranted = await Promise.all(teamIds.map((id) => resourceGrants.hasTeam(id)))
+    if (isTeamGranted.includes(false)) {
+      throw new GraphQLError('Access token does not grant access to every requested meetingId', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
   }
   const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
   const orgIds = [...new Set(teams.map((t) => t.orgId))]
@@ -44,7 +59,8 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   if (aiDisabledOrg) {
     const {name: orgName} = aiDisabledOrg
     throw new GraphQLError(
-      `AI is disabled for organization: ${orgName}. It must be enabled in Org Settings`
+      `AI is disabled for organization: ${orgName}. It must be enabled in Org Settings`,
+      {extensions: {code: 'FORBIDDEN'}}
     )
   }
   const dataByTeam = await Promise.all(
@@ -105,7 +121,9 @@ If not, respond with "Invalid prompt"`
     })
     const promptTitle = promptValidation?.choices[0]?.message.content
     if (!promptTitle || promptTitle.includes('Invalid prompt')) {
-      throw new GraphQLError('The prompt does not generate insights about meeting data')
+      throw new GraphQLError('The prompt does not generate insights about meeting data', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     await pg
       .insertInto('AIPrompt')
@@ -140,7 +158,9 @@ If not, respond with "Invalid prompt"`
       ]
     })
     if (!rawInsightResponseStream) {
-      throw new GraphQLError('Could not get response from AI')
+      throw new GraphQLError('Could not get response from AI', {
+        extensions: {code: 'SERVICE_UNAVAILABLE'}
+      })
     }
 
     const streamIt = async function* () {
@@ -154,12 +174,16 @@ If not, respond with "Invalid prompt"`
             await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
           }
         }
-      } catch (error) {
-        throw new GraphQLError('AI model failed to generate insights', {extensions: {error}})
+      } catch {
+        throw new GraphQLError('AI model failed to generate insights', {
+          extensions: {code: 'SERVICE_UNAVAILABLE'}
+        })
       }
     }
     return streamIt() as any
-  } catch (error) {
-    throw new GraphQLError('AI model failed to generate insights', {extensions: {error}})
+  } catch {
+    throw new GraphQLError('AI model failed to generate insights', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
 }

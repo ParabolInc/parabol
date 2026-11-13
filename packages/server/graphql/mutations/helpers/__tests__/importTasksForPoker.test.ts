@@ -38,10 +38,21 @@ const {inserted} = jest.requireMock('../../../../postgres/getKysely') as {
   inserted: Record<string, unknown>[][]
 }
 
+const parabolTasks = [
+  {id: 'task1', teamId: 't1'},
+  {id: 'otherTeamTask', teamId: 't2'}
+]
+
 const ctx = {
   teamId: 't1',
   userId: 'u1',
-  dataLoader: {get: () => ({load: jest.fn().mockResolvedValue(null)})}
+  dataLoader: {
+    get: () => ({
+      load: jest.fn().mockResolvedValue(null),
+      loadMany: async (taskIds: string[]) =>
+        taskIds.map((taskId) => parabolTasks.find(({id}) => id === taskId))
+    })
+  }
 } as unknown as IntegrationCtx
 
 beforeEach(() => {
@@ -58,6 +69,20 @@ test('a PARABOL add keeps its task id and inserts nothing', async () => {
   expect(res).toEqual([
     {service: 'PARABOL', serviceTaskId: 'task1', action: 'ADD', taskId: 'task1'}
   ])
+  expect(inserted).toHaveLength(0)
+})
+
+test('a PARABOL add for another team’s task or a missing task is dropped', async () => {
+  const res = await importTasksForPoker(
+    [
+      {service: 'PARABOL', serviceTaskId: 'otherTeamTask', action: 'ADD'},
+      {service: 'PARABOL', serviceTaskId: 'missingTask', action: 'ADD'},
+      {service: 'PARABOL', serviceTaskId: 'task1', action: 'ADD'}
+    ],
+    ctx,
+    'm1'
+  )
+  expect(res.map(({taskId}) => taskId)).toEqual(['task1'])
   expect(inserted).toHaveLength(0)
 })
 

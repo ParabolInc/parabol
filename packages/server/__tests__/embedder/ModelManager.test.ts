@@ -2,7 +2,7 @@ import {ModelManager} from '../../../embedder/ai_models/ModelManager'
 import {Logger} from '../../utils/Logger'
 
 const ACTIVE = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
-const FILLING = 'microsoft/harrier-oss-v1-270m'
+const FILLING = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const savedModels = process.env.AI_EMBEDDING_MODELS
 
 const makeManager = () => {
@@ -54,4 +54,17 @@ it('logs a fill that fails and keeps going', async () => {
   await manager.maybeCreateTables()
   await new Promise((resolve) => setImmediate(resolve))
   expect(logError).toHaveBeenCalled()
+})
+
+it('takes a model under the id it went by before, and keys it by its id now', () => {
+  process.env.AI_EMBEDDING_MODELS = JSON.stringify([
+    {
+      model: 'text-embeddings-inference:microsoft/harrier-oss-v1-270m',
+      url: 'http://localhost:1/',
+      maxTokens: 512
+    }
+  ])
+  const manager = new ModelManager()
+  expect([...manager.embeddingModels.keys()]).toEqual([FILLING])
+  expect(manager.getEmbedder().modelId).toBe(FILLING)
 })

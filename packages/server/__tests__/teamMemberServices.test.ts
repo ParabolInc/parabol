@@ -1,3 +1,12 @@
+jest.mock('../graphql/public/rootSchema', () => ({
+  __esModule: true,
+  githubRequest: jest.fn(),
+  gitlabRequest: jest.fn(),
+  linearRequest: jest.fn(),
+  default: {}
+}))
+
+import {serverIntegrations} from '../integrations/platform/registry'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
@@ -121,5 +130,8 @@ test('the member themselves can read their own services', async () => {
     cookie: owner.cookie
   })
   expect(res.errors).toBeUndefined()
-  expect(res.data.viewer.teamMember.services).toHaveLength(7)
+  const services = res.data.viewer.teamMember.services.map(
+    ({service}: {service: string}) => service
+  )
+  expect(services.sort()).toEqual(Object.keys(serverIntegrations).sort())
 })

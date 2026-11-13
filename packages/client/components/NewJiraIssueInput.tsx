@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
 import {ExpandMore} from '~/ui/icons'
+import {withStaleClientNote} from '~/utils/staleClientNote'
 import type {NewJiraIssueInputQuery} from '../__generated__/NewJiraIssueInputQuery.graphql'
 import useForm from '../hooks/useForm'
 import type {NewRecordInputProps} from '../integrations/platform/ScopingSearchState'
@@ -52,7 +52,6 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: userId, teamMember} = data.viewer
   const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
-  const {onError} = useMutationProps()
   const [updatePokerScope] = useUpdatePokerScopeMutation()
   const [createTaskError, setCreateTaskError] = useState<string>()
   useEffect(() => {
@@ -124,7 +123,10 @@ const NewJiraIssueInput = (props: Props) => {
       }
       updatePokerScope({variables: pokerScopeVariables, contents: [newIssueTitle]})
     }
-    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
+    const handleError = (error: Error) => {
+      setCreateTaskError(`${selectedProjectKey}: ${withStaleClientNote(error.message)}`)
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError: handleError, onCompleted: handleCompleted})
   }
 
   const handleSelectProjectKey = (projectKey: string) => {

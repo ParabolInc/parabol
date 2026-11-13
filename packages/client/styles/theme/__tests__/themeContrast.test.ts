@@ -203,6 +203,45 @@ describe('dark theme contrast', () => {
   })
 })
 
+const toHex = (channels: number[]) =>
+  `#${channels.map((value) => Math.round(value).toString(16).padStart(2, '0')).join('')}`
+
+const hexChannels = (hex: string) => {
+  const digits = hex.trim().replace('#', '')
+  return [0, 2, 4].map((offset) => Number.parseInt(digits.slice(offset, offset + 2), 16))
+}
+
+const compositeOn = (rgba: string, baseHex: string) => {
+  const match = rgba.match(/^rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)$/)
+  if (!match) throw new Error(`not an rgba colour: ${rgba}`)
+  const [red, green, blue, alpha] = match.slice(1).map(Number) as [number, number, number, number]
+  const base = hexChannels(baseHex)
+  return toHex([red, green, blue].map((value, index) => alpha * value + (1 - alpha) * base[index]!))
+}
+
+const CALLOUT_TONES = ['plain', 'info', 'tip', 'important', 'warning', 'danger']
+
+describe.each([
+  ['light', [themeLayer]],
+  ['dark', [darkLayer, themeLayer]]
+])('%s callout contrast on the page surface', (_theme, layers) => {
+  const fillOnPage = (tone: string) =>
+    compositeOn(
+      resolve(`--color-callout-${tone}-fill`, layers),
+      resolve('--color-surface-document', layers)
+    )
+
+  it.each(CALLOUT_TONES)('the %s icon clears the UI floor on its fill', (tone) => {
+    const icon = resolve(`--color-callout-${tone}-icon`, layers)
+    expect(contrast(icon, fillOnPage(tone))).toBeGreaterThanOrEqual(UI_FLOOR)
+  })
+
+  it.each(CALLOUT_TONES)('fg-primary clears AA on the %s fill', (tone) => {
+    const text = resolve('--color-fg-primary', layers)
+    expect(contrast(text, fillOnPage(tone))).toBeGreaterThanOrEqual(AA_TEXT)
+  })
+})
+
 describe('light-island parity', () => {
   const shared = Object.keys(islandLayer).filter((token) => token in themeLayer)
   const themedByDark = Object.keys(darkLayer).filter((token) =>

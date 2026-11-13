@@ -22,25 +22,27 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
   context,
   info
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {authToken, dataLoader, socketId: mutatorId, resourceGrants} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
   const numericId = MeetingSeriesId.split(meetingSeriesId)
   if (!Number.isFinite(numericId)) {
-    throw new GraphQLError('Invalid meeting series id')
+    throw new GraphQLError('Invalid meeting series id', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
   if (!meetingSeries) {
-    throw new GraphQLError('Meeting series not found')
+    throw new GraphQLError('Meeting series not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {cancelledAt, recurrenceRule} = meetingSeries
-  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader))) {
-    throw new GraphQLError('Only the owner of this meeting series can start it early')
+  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
+    throw new GraphQLError('Only the owner of this meeting series can start it early', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
   if (cancelledAt) {
-    throw new GraphQLError('Meeting series was cancelled')
+    throw new GraphQLError('Meeting series was cancelled', {extensions: {code: 'CONFLICT'}})
   }
 
   // a group covering several teams opens one meeting per team, on its own sibling series
@@ -118,7 +120,9 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
     )
   ).filter(isValid)
   if (startedMeetings.length === 0) {
-    throw new GraphQLError('Unable to start a meeting for any team in this series group')
+    throw new GraphQLError('Unable to start a meeting for any team in this series group', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   if (!occurrenceAfterNext) {

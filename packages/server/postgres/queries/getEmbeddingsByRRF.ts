@@ -33,7 +33,9 @@ export const getEmbeddingsByRRF = async (params: Params) => {
   const pg = getKysely()
   const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
   if (!tableName) {
-    throw new GraphQLError('No embeddings pages table found')
+    throw new GraphQLError('No embeddings pages table found', {
+      extensions: {code: 'NOT_IMPLEMENTED'}
+    })
   }
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'

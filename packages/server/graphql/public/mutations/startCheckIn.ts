@@ -11,6 +11,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
+import insertNewMeeting from '../../mutations/helpers/insertNewMeeting'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
@@ -29,13 +30,16 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+  const meetingType: MeetingTypeEnum = 'action'
+  const [unpaidError, meetingCount, {facilitatorUserId, rotation}, teamMember] = await Promise.all([
+    isStartMeetingLocked(teamId, dataLoader),
+    dataLoader.get('meetingCount').load({teamId, meetingType}),
+    getNextFacilitatorUserId(teamId, viewerId, dataLoader),
+    dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
+  ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
-  const meetingType: MeetingTypeEnum = 'action'
-
   // RESOLUTION
-  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
   const [phases, inserts] = await createNewMeetingPhases<CheckInPhase>(
@@ -47,7 +51,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     dataLoader
   )
 
-  const {facilitatorUserId, rotation} = await getNextFacilitatorUserId(teamId, viewerId, dataLoader)
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
@@ -57,23 +60,13 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     facilitatorUserId
   }) as CheckInMeeting
   try {
-    await pg.transaction().execute(async (pg) => {
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(phases)})
-        .execute()
-      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
-    })
+    await insertNewMeeting(meeting, inserts)
   } catch {
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')
-  if (rotation) await setFacilitatorRotation(teamId, rotation, dataLoader)
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-  const teamMember = await dataLoader
-    .get('teamMembers')
-    .loadNonNull(toTeamMemberId(teamId, viewerId))
   const meetingMember = createMeetingMember(meeting, teamMember)
   await Promise.all([
     pg
@@ -84,7 +77,8 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .values(meetingMember)
       .execute(),
     agendaItemIds.length &&
-      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
+      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute(),
+    rotation && setFacilitatorRotation(teamId, rotation, dataLoader)
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   meetingsStarted.inc({meeting_type: meeting.meetingType})

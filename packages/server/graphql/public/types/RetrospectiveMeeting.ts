@@ -26,6 +26,22 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       .executeTakeFirst()
     return (meeting as RetrospectiveMeetingSource) || null
   },
+  prevCompletedMeeting: async ({teamId, createdAt}) => {
+    // finds the id first, so only that meeting's phases are read out of the team's history
+    const meeting = await selectNewMeetings()
+      .where('id', '=', (eb) =>
+        eb
+          .selectFrom('NewMeeting')
+          .select('id')
+          .where('teamId', '=', teamId)
+          .where('meetingType', '=', 'retrospective')
+          .where('endedAt', '<', createdAt)
+          .orderBy('endedAt', 'desc')
+          .limit(1)
+      )
+      .executeTakeFirst()
+    return (meeting as RetrospectiveMeetingSource | undefined) ?? null
+  },
   commentCount: ({commentCount}) => commentCount || 0,
   disableAnonymity: ({disableAnonymity}) => disableAnonymity ?? false,
   meetingMembers: async ({id: meetingId}, _args, {dataLoader}) => {

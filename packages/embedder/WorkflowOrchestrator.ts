@@ -5,7 +5,7 @@ import getKysely from '../server/postgres/getKysely'
 import type {EmbeddingsJobQueueV2} from '../server/postgres/types'
 import type {AbstractEmbeddingsModel} from './ai_models/AbstractEmbeddingsModel'
 import getModelManager from './ai_models/ModelManager'
-import type {ModelId} from './ai_models/modelIdDefinitions'
+import {type ModelId, resolveModelId} from './ai_models/modelIdDefinitions'
 import type {JobType, StepResult, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
 import {finishEmbeddingsJob} from './finishEmbeddingsJob'
@@ -161,10 +161,11 @@ export class WorkflowOrchestrator {
       priority,
       retryCount,
       embeddingsMetadataId,
-      modelId,
+      modelId: storedModelId,
       pageId,
       stateMessage
     } = job
+    const modelId = storedModelId && resolveModelId(storedModelId)
     const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)

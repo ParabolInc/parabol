@@ -36,11 +36,8 @@ const pushEstimateToJiraServer = async ({
 
   const manager = new JiraServerRestManager(auth, provider)
 
-  const {providerId} = integration
-  const jiraServerIssue = await dataLoader
-    .get('jiraServerIssue')
-    .load({providerId, teamId, userId: accessUserId, issueId})
-  if (!jiraServerIssue) {
+  const jiraServerIssue = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (jiraServerIssue?.service !== 'jiraServer') {
     return new Error('Issue not found')
   }
   const dimensionFieldLookup = await loadDimensionField(

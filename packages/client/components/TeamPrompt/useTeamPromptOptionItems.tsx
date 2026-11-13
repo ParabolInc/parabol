@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {useTeamPromptOptionItems_meeting$key} from '~/__generated__/useTeamPromptOptionItems_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import {Edit, Flag, Link as MuiLink, Replay} from '~/ui/icons'
+import {Edit, Flag, Link as MuiLink, Replay, SwapHoriz} from '~/ui/icons'
 import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
 import makeAppURL from '../../utils/makeAppURL'
@@ -22,6 +22,7 @@ export interface TeamPromptOptionItem {
   isNewTab?: boolean
   isDisabled?: boolean
   isDestructive?: boolean
+  keepsMenuOpen?: boolean
 }
 
 interface Options {
@@ -69,7 +70,7 @@ const useTeamPromptOptionItems = (
   const {id: meetingId, meetingSeries, endedAt, team, template, responses} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
 
   const isEnded = !!endedAt
@@ -109,6 +110,18 @@ const useTeamPromptOptionItems = (
     to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
     isNewTab: true
   })
+  if (!isEnded) {
+    items.push({
+      key: 'changeTemplate',
+      label: 'Change template',
+      icon: <SwapHoriz className='text-fg-secondary' />,
+      onClick: () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          store.get(meetingId)?.setValue('template', 'rightDrawerOpen')
+        })
+      }
+    })
+  }
   if (template?.isActive && template.viewerLowestScope === 'TEAM') {
     items.push({
       key: 'template',
@@ -117,18 +130,22 @@ const useTeamPromptOptionItems = (
       to: `/activity-library/details/${template.id}`
     })
   }
+  const endsWithoutConfirming = !hasRecurrenceEnabled && !hasUnsharedDraft
   items.push({
     key: 'end',
-    label: 'End this meeting',
+    label: submitting ? 'Ending this meeting…' : 'End this meeting',
     icon: <Flag className='text-fg-secondary' />,
-    isDisabled: isEnded,
+    isDisabled: isEnded || submitting,
     isDestructive: true,
+    keepsMenuOpen: endsWithoutConfirming,
     onClick: () => {
-      if (hasRecurrenceEnabled || hasUnsharedDraft) {
+      if (!endsWithoutConfirming) {
         openEndRecurringMeetingModal()
-      } else {
-        EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
+        return
       }
+      if (submitting) return
+      submitMutation()
+      EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
     }
   })
   return items

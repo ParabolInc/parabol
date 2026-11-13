@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useAcceptRequestToJoinDomainMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
@@ -26,7 +27,6 @@ const mutation = graphql`
 `
 type Handlers = {
   onSuccess?: () => void
-  onError?: () => void
 }
 const useAcceptRequestToJoinDomainMutation = () => {
   const [commit, submitting] = useMutation<TAcceptRequestToJoinDomainMutation>(mutation)
@@ -52,9 +52,9 @@ const useAcceptRequestToJoinDomainMutation = () => {
             autoDismiss: 5,
             key: 'acceptRequestToJoinDomainError'
           })
-          handlers?.onError && handlers.onError()
         }
       },
+      onError: snackOnError(atmosphere, 'acceptRequestToJoinDomainError'),
       // allow components to override default handlers
       ...config
     })

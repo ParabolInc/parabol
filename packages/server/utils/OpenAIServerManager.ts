@@ -619,6 +619,23 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
     }
   }
 
+  async generateGroupingBriefing(prompt: string) {
+    if (!this.openAIApi) return null
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{role: 'user', content: prompt}],
+        // Nobody waits on this, and high effort wrote measurably more useful briefings than medium
+        reasoning_effort: 'high'
+      })
+      return response.choices[0]?.message.content?.trim() || null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('Error in generateGroupingBriefing')
+      logError(error)
+      return null
+    }
+  }
+
   async generateGroupTitle(reflections: {plaintextContent: string}[]) {
     if (!this.openAIApi) return null
     const prompt = `Generate a short (2-4 words) theme or title that captures the essence of these related retrospective comments. The title should be clear and actionable.

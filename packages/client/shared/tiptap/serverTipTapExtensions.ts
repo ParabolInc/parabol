@@ -7,11 +7,13 @@ import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
 import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/TipTapEditor/LoomExtension'
-import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {PageUserMention} from '../../tiptap/extensions/pageUserMention/PageUserMention'
 import {MentionTaskTag} from '../../utils/MentionTaskTag'
+import {CalloutBase} from './extensions/CalloutBase'
+import {CalloutTitleBase} from './extensions/CalloutTitleBase'
+import {DatabaseBase} from './extensions/DatabaseBase'
 import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
@@ -66,7 +68,9 @@ export const serverTipTapExtensions: Extensions = [
   UniqueID,
   PageLinkBlockBase,
   TableOfContentsBase,
-  Database,
+  CalloutBase,
+  CalloutTitleBase,
+  DatabaseBase,
   TaskBlockBase,
   ThinkingBlockBase,
   ResponseBlockBase,

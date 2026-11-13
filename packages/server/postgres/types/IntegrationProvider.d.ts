@@ -90,6 +90,10 @@ export interface IntegrationProviderGitHubOAuth2 extends IntegrationProviderOAut
   service: 'github'
 }
 
+export interface IntegrationProviderClickUpOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'clickup'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
@@ -103,3 +107,4 @@ export type TIntegrationProvider =
   | IntegrationProviderZoomOAuth2
   | IntegrationProviderJiraOAuth2
   | IntegrationProviderGitHubOAuth2
+  | IntegrationProviderClickUpOAuth2

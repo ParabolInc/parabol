@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskJiraFieldsContent} from '~/components/TaskJiraFieldsContent'
 import {cn} from '~/ui/cn'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -52,11 +53,14 @@ const TaskFooter = (props: Props) => {
     `,
     taskRef
   )
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const handleError = (err: Error) => {
     onError(err)
-    if (err.message) {
-      setLocalTaskError(atmosphere, taskId, err.message)
+    const message = getMutationError(err).message
+    if (message) {
+      setLocalTaskError(atmosphere, taskId, message)
     }
   }
   const handleCompleted: CompletedHandler = (res, errors) => {
@@ -74,7 +78,8 @@ const TaskFooter = (props: Props) => {
   }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {id: taskId, error, taskService, tags, userId} = task
+  const {id: taskId, error, taskService, tags, userId, team} = task
+  const {id: teamId} = team
   const isArchived = isTaskArchived(tags)
   const canAssignUser = !taskService && !isArchived
   const canAssignTeam = !isArchived
@@ -85,6 +90,7 @@ const TaskFooter = (props: Props) => {
           {showTeam ? (
             <TaskFooterTeamAssignee
               canAssign={canAssignTeam}
+              isCardActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}
             />
@@ -92,21 +98,22 @@ const TaskFooter = (props: Props) => {
             <TaskFooterUserAssignee
               area={area}
               canAssign={canAssignUser}
+              isCardActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}
             />
           )}
         </div>
-        <div className={cn('flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
-          {taskService || isArchived || !userId ? (
-            <div className='inline-block h-6 w-6 align-middle' />
-          ) : (
-            <TaskFooterIntegrateToggle
-              mutationProps={mutationProps}
-              task={task}
-              useTaskChild={useTaskChild}
-            />
-          )}
+        {!taskService && !isArchived && userId && (
+          <TaskFooterIntegrateToggle
+            isCardActive={cardIsActive}
+            mutationProps={mutationProps}
+            task={task}
+            teamId={teamId}
+            useTaskChild={useTaskChild}
+          />
+        )}
+        <div className={cn('ml-1 flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
           {isArchived ? (
             <CardButton onClick={() => toggleTag('archived')}>
               <IconLabel icon='reply' />

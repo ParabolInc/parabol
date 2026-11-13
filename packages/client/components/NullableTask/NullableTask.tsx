@@ -100,7 +100,8 @@ const NullableTask = (props: Props) => {
     atmosphere,
     teamId,
     readOnly,
-    onModEnter: onModEnter
+    onModEnter: onModEnter,
+    onUploadSettled: handleCardUpdate
   })
 
   const showTask = editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)

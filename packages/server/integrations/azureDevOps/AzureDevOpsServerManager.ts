@@ -9,7 +9,6 @@ import appOrigin from '../../appOrigin'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../../postgres/types/IntegrationProvider'
 import {escapeHtml} from '../../utils/escapeHtml'
-import makeCreateAzureTaskComment from '../../utils/makeCreateAzureTaskComment'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import {generateHTML} from '../../utils/tiptap/generateHTML'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
@@ -25,6 +24,7 @@ import type {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 import resolveAzureDevOpsWorkItemProject from './resolveAzureDevOpsWorkItemProject'
 
 export interface AzureDevOpsProfile {
@@ -262,10 +262,11 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     return (res.json.workItems ?? []).map(({id}) => id)
   }
 
-  /** Only the work items in projects this connection shares; ids outside them are dropped, never reported */
-  async getWorkItems(instanceId: string, ids: number[]) {
+  /** Only the issues in projects this connection shares; the rest are dropped, never reported. A key that is not a work item id is skipped */
+  async getIssues(instanceId: string, issueKeys: readonly (string | number)[]) {
     const url = this.projectUrl(instanceId, null, `wit/workitemsbatch?api-version=${API_VERSION}`)
     if (url instanceof Error) return url
+    const ids = [...new Set(issueKeys.map(Number))].filter((id) => Number.isInteger(id) && id > 0)
     const workItems: AzureDevOpsRawWorkItem[] = []
     for (let i = 0; i < ids.length; i += MAX_BATCH_SIZE) {
       const res = await this.request<ListResponse<AzureDevOpsRawWorkItem | null>>(url, {

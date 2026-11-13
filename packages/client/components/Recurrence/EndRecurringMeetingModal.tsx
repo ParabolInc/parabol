@@ -17,11 +17,13 @@ import type {
   NavigateMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
-import {cn} from '../../ui/cn'
+import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
+import getMutationError from '../../utils/relay/getMutationError'
 
 export const EndMeetingMutationLookup = {
   teamPrompt: EndTeamPromptMutation,
@@ -65,9 +67,6 @@ interface Props {
   closeModal: () => void
 }
 
-const ACTION_BUTTON_CLASSES =
-  'font-sans text-base font-medium cursor-pointer text-center rounded-md px-4 py-2'
-
 export const EndRecurringMeetingModal = (props: Props) => {
   const {
     isOpen,
@@ -89,13 +88,17 @@ export const EndRecurringMeetingModal = (props: Props) => {
   )
   const {meetingType, id: meetingId} = meeting
 
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const [endTeamHealth] = useEndTeamHealthMutation()
   const [isMeetingOnly, setIsMeetingOnly] = useState(true)
 
-  const handleCompleted: CompletedHandler = () => {
+  const handleCompleted: CompletedHandler = (res, errors) => {
+    if (getMutationError(res, errors)) {
+      onCompleted(res, errors)
+      return
+    }
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
@@ -109,6 +112,8 @@ export const EndRecurringMeetingModal = (props: Props) => {
   }
 
   const onConfirm = () => {
+    if (submitting) return
+    submitMutation()
     if (meetingType === 'teamHealth') {
       endTeamHealth({variables: {meetingId}, onCompleted: handleCompleted, onError})
       return
@@ -150,23 +155,14 @@ export const EndRecurringMeetingModal = (props: Props) => {
             You have an unshared draft. Drafts are not included in the summary.
           </p>
         )}
-        <div className='flex justify-end gap-2.5'>
-          <button
-            className={cn(
-              'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-hover',
-              ACTION_BUTTON_CLASSES
-            )}
-            onClick={closeModal}
-          >
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
             Cancel
-          </button>
-          <button
-            className={cn('bg-sky-500 text-white hover:bg-sky-600', ACTION_BUTTON_CLASSES)}
-            onClick={onConfirm}
-          >
+          </Button>
+          <Button variant='primary' size='md' onClick={onConfirm} disabled={submitting}>
             Confirm
-          </button>
-        </div>
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

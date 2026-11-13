@@ -1,19 +1,12 @@
 import DataLoader from 'dataloader'
-import fetchJiraServerProjects from '../integrations/jiraServer/fetchJiraServerProjects'
+import fetchJiraServerProjects, {
+  type JiraServerProject
+} from '../integrations/jiraServer/fetchJiraServerProjects'
 import JiraServerRestManager, {
-  type JiraServerFieldType,
-  type JiraServerRestProject
+  type JiraServerFieldType
 } from '../integrations/jiraServer/JiraServerRestManager'
 import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
-import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
-
-export interface JiraServerIssueKey {
-  teamId: string
-  userId: string
-  issueId: string
-  providerId: number
-}
 
 export interface JiraServerIssueTypeKey {
   teamId: string
@@ -23,76 +16,9 @@ export interface JiraServerIssueTypeKey {
   projectId: string
 }
 
-export interface JiraServerIssue {
-  id: string
-  providerId: number
-  self: string
-  issueKey: string
-  descriptionHTML: string
-  summary: string
-  description: string | null
-  projectId: string
-  projectKey: string
-  issueType: string
-  service: 'jiraServer'
-}
-
 type TeamUserKey = {
   teamId: string
   userId: string
-}
-
-export type JiraServerProject = JiraServerRestProject & {
-  service: 'jiraServer'
-  providerId: number
-  userId: string
-  teamId: string
-}
-
-export const jiraServerIssue = (parent: RootDataLoader) => {
-  return new DataLoader<JiraServerIssueKey, JiraServerIssue | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId, issueId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-            .load({service: 'jiraServer', teamId, userId})
-
-          if (!auth) {
-            return null
-          }
-
-          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
-
-          const issue = await manager.getIssue(issueId)
-
-          if (issue instanceof Error) {
-            logError(issue, {userId, tags: {issueId, teamId}})
-            return null
-          }
-          const {project, issuetype, summary, description} = issue.fields
-          return {
-            ...issue,
-            providerId: provider.id,
-            issueKey: issue.key,
-            descriptionHTML: issue.renderedFields.description,
-            projectId: project.id,
-            projectKey: project.key,
-            issueType: issuetype.id,
-            summary,
-            description,
-            service: 'jiraServer' as const
-          }
-        })
-      )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({issueId, providerId}) => `${issueId}:${providerId}`
-    }
-  )
 }
 
 export const allJiraServerProjects = (parent: RootDataLoader) => {

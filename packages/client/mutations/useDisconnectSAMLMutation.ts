@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useDisconnectSAMLMutation as TDisconnectSAMLMutation} from '../__generated__/useDisconnectSAMLMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useDisconnectSAMLMutation($samlId: ID!) {
@@ -19,8 +21,9 @@ const mutation = graphql`
 
 const useDisconnectSAMLMutation = () => {
   const [commit, submitting] = useMutation<TDisconnectSAMLMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TDisconnectSAMLMutation>) => {
-    return commit({...config})
+    return commit({onError: snackOnError(atmosphere), ...config})
   }
   return [execute, submitting] as const
 }

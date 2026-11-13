@@ -3,6 +3,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import BatchArchiveTasksMutation from '../../../../mutations/BatchArchiveTasksMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 
@@ -28,27 +29,17 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
         <DialogTitle>{'Archive all'}</DialogTitle>
-        <div className='pb-4 text-base text-fg-primary'>
+        <div className='text-base text-fg-primary'>
           This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
         </div>
-        <div className='flex w-full justify-end gap-2'>
-          <Button
-            variant='flat'
-            size='sm'
-            onClick={closeModal}
-            className='bg-slate-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
-          >
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
             {'Cancel'}
           </Button>
-          <Button
-            variant='flat'
-            size='sm'
-            onClick={onSubmit}
-            className='bg-sky-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
-          >
+          <Button variant='primary' size='md' onClick={onSubmit}>
             {'Confirm'}
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

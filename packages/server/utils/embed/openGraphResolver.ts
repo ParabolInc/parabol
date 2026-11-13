@@ -1,9 +1,4 @@
-import createMetascraper from 'metascraper'
-import metascraperDescription from 'metascraper-description'
-import metascraperImage from 'metascraper-image'
-import metascraperLogo from 'metascraper-logo'
-import metascraperPublisher from 'metascraper-publisher'
-import metascraperTitle from 'metascraper-title'
+import type createMetascraper from 'metascraper'
 import type {EmbedMetadata} from '../../../client/shared/embed/embedTypes'
 import {fetchUntrusted} from '../fetchUntrusted'
 import {Logger} from '../Logger'
@@ -20,14 +15,36 @@ const ignoreLogoAltText: createMetascraper.Rules = {
   }
 }
 
-const scraper = createMetascraper([
-  metascraperTitle(),
-  metascraperDescription(),
-  metascraperImage(),
-  metascraperLogo(),
-  ignoreLogoAltText,
-  metascraperPublisher()
-])
+let scraper: Promise<ReturnType<typeof createMetascraper>> | undefined
+// metascraper & its rules are a lot of code, so the first page to scrape loads them instead of every server's startup
+const getScraper = () => {
+  scraper ??= Promise.all([
+    import(/* webpackMode: "eager" */ 'metascraper'),
+    import(/* webpackMode: "eager" */ 'metascraper-title'),
+    import(/* webpackMode: "eager" */ 'metascraper-description'),
+    import(/* webpackMode: "eager" */ 'metascraper-image'),
+    import(/* webpackMode: "eager" */ 'metascraper-logo'),
+    import(/* webpackMode: "eager" */ 'metascraper-publisher')
+  ]).then(
+    ([
+      {default: createMetascraper},
+      {default: metascraperTitle},
+      {default: metascraperDescription},
+      {default: metascraperImage},
+      {default: metascraperLogo},
+      {default: metascraperPublisher}
+    ]) =>
+      createMetascraper([
+        metascraperTitle(),
+        metascraperDescription(),
+        metascraperImage(),
+        metascraperLogo(),
+        ignoreLogoAltText,
+        metascraperPublisher()
+      ])
+  )
+  return scraper
+}
 
 /** Never produces an embedSrc. A page we had to scrape is a page that would not frame. */
 export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetadata> | null> => {
@@ -39,7 +56,8 @@ export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetada
   if (!result) return null
   if (!result.contentType.startsWith('text/html')) return null
   try {
-    const metadata = await scraper({url, html: result.buffer.toString('utf8')})
+    const scrape = await getScraper()
+    const metadata = await scrape({url, html: result.buffer.toString('utf8')})
     return {
       embedSrc: null,
       title: metadata.title ?? null,

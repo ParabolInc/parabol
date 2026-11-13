@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useExportPagesToConfluenceMutation as TExportPagesToConfluenceMutation} from '../__generated__/useExportPagesToConfluenceMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useExportPagesToConfluenceMutation_notification on ExportPagesToConfluenceSuccess {
@@ -64,7 +65,7 @@ const useExportPagesToConfluenceMutation = () => {
     return commit({
       onError: (error) => {
         atmosphere.eventEmitter.emit('addSnackbar', {
-          message: error.message,
+          message: getMutationError(error).message,
           autoDismiss: 8,
           key: 'exportPagesToConfluenceError'
         })

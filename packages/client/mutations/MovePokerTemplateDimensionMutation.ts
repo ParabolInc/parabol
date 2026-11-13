@@ -4,6 +4,7 @@ import type {MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMu
 import type {MovePokerTemplateDimensionMutation_team$data} from '../__generated__/MovePokerTemplateDimensionMutation_team.graphql'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment MovePokerTemplateDimensionMutation_team on MovePokerTemplateDimensionPayload {
@@ -40,6 +41,7 @@ const MovePokerTemplateDimensionMutation: StandardMutation<
   return commitMutation<TMovePokerTemplateDimensionMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('movePokerTemplateDimension')
       if (!payload) return

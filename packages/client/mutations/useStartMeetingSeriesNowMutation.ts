@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useStartMeetingSeriesNowMutation as TStartMeetingSeriesNowMutation} from '../__generated__/useStartMeetingSeriesNowMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import getMutationError from '../utils/relay/getMutationError'
 
 const mutation = graphql`
   mutation useStartMeetingSeriesNowMutation($meetingSeriesId: ID!) {
@@ -28,9 +29,8 @@ const useStartMeetingSeriesNowMutation = () => {
       })
     }
     return commit({
+      onError: (error) => showError(getMutationError(error).message),
       ...config,
-      // The server throws for every failure mode, and Atmosphere delivers a thrown GraphQLError
-      // here rather than to onError
       onCompleted: (res, errors) => {
         const error = errors?.[0]
         if (error) {
@@ -38,10 +38,6 @@ const useStartMeetingSeriesNowMutation = () => {
           return
         }
         config.onCompleted?.(res, errors)
-      },
-      onError: (error) => {
-        showError(error.message)
-        config.onError?.(error)
       }
     })
   }

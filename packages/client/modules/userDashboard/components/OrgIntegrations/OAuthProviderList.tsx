@@ -2,12 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
 import {Add as AddIcon, MoreVert as MoreVertIcon, Web as WebIcon} from '~/ui/icons'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useSubscription from '../../../../hooks/useSubscription'
-import organizationSubscription from '../../../../subscriptions/OrganizationSubscription'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
@@ -34,7 +34,6 @@ const OAuthProviderList = ({organizationRef}: Props) => {
     organizationRef
   )
 
-  useSubscription('OAuthProviderList', organizationSubscription)
   const atmosphere = useAtmosphere()
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -94,7 +93,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           setDeleteDialogOpen(false)
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'deleteOAuthAPIProviderError',
-            message: error.message || 'Something went wrong',
+            message: getMutationError(error).message || 'Something went wrong',
             autoDismiss: 0,
             action: {
               label: 'Dismiss',
@@ -190,19 +189,19 @@ const OAuthProviderList = ({organizationRef}: Props) => {
       <Dialog isOpen={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogContent className='max-w-md'>
           <h3 className='mb-4 font-semibold text-fg-primary text-lg'>Delete Application?</h3>
-          <p className='mb-6 text-fg-secondary'>
+          <p className='text-fg-secondary'>
             Are you sure you want to delete{' '}
             <span className='font-semibold'>{providerToDelete?.name}</span>? This action cannot be
             undone.
           </p>
-          <div className='flex justify-end gap-3'>
+          <DialogActions>
             <Button variant='outline' size='md' onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant='destructive' size='md' onClick={handleConfirmDelete}>
+            <Button variant='primary' size='md' onClick={handleConfirmDelete}>
               Delete
             </Button>
-          </div>
+          </DialogActions>
         </DialogContent>
       </Dialog>
     </div>

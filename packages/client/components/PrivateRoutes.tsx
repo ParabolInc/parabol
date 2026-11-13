@@ -1,5 +1,6 @@
 import {lazy} from 'react'
 import {type Location, Navigate, Route, Routes, useLocation} from 'react-router'
+import useAppSubscriptions from '../hooks/useAppSubscriptions'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 
@@ -39,6 +40,10 @@ const ActivityLibraryRoutes = lazy(
     )
 )
 
+const OAuthAuthorizeRoot = lazy(
+  () => import(/* webpackChunkName: 'OAuthAuthorizeRoot' */ './OAuthAuthorizeRoot')
+)
+
 const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
@@ -64,11 +69,14 @@ const DashboardOrNotFound = () => {
 }
 
 const PrivateRoutes = () => {
-  useAuthRoute()
+  const isSignedIn = useAuthRoute()
+  useAppSubscriptions()
   useNoIndex()
   const location = useLocation()
   const state = location.state as {backgroundLocation?: Location} | null
   const backgroundLocation = state?.backgroundLocation
+  // children's effects run before this redirect, so they'd send requests without a usable token
+  if (!isSignedIn) return null
   return (
     <>
       <Routes location={backgroundLocation || location}>
@@ -84,6 +92,7 @@ const PrivateRoutes = () => {
         <Route path='/graphql' element={<Graphql />} />
         <Route path='/admin/impersonate' element={<Impersonate />} />
         <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
+        <Route path='/authorize-app' element={<OAuthAuthorizeRoot />} />
         <Route path='/signout' element={<Signout />} />
         <Route
           path='/organization-join-request/:requestId'

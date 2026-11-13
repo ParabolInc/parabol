@@ -71,7 +71,7 @@ const rawWorkItem = (id: number, projectId: string): AzureDevOpsRawWorkItem => (
   fields: {'System.Title': `Work item ${id}`}
 })
 
-describe('AzureDevOpsServerManager.getWorkItems', () => {
+describe('AzureDevOpsServerManager.getIssues', () => {
   it('drops the work items that live outside the shared projects', async () => {
     const {manager, fetchMock} = buildManager(sharesWeb)
     fetchMock.mockResolvedValue(
@@ -80,7 +80,7 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
       })
     )
 
-    await expect(manager.getWorkItems(INSTANCE_ID, [1, 2, 3])).resolves.toEqual([
+    await expect(manager.getIssues(INSTANCE_ID, [1, 2, 3])).resolves.toEqual([
       {...rawWorkItem(1, WEB_PROJECT_ID), project: {projectId: WEB_PROJECT_ID, projectName: ''}}
     ])
     const {url, method, headers, body} = readRequest(fetchMock)
@@ -93,7 +93,14 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
   it('reaches no work item when built without an access grant', async () => {
     const {manager, fetchMock} = buildManager()
     fetchMock.mockResolvedValue(jsonResponse({value: [rawWorkItem(1, WEB_PROJECT_ID)]}))
-    await expect(manager.getWorkItems(INSTANCE_ID, [1])).resolves.toEqual([])
+    await expect(manager.getIssues(INSTANCE_ID, [1])).resolves.toEqual([])
+  })
+
+  it('asks for each issue key once and skips any that is not a work item id', async () => {
+    const {manager, fetchMock} = buildManager(sharesEverything)
+    fetchMock.mockResolvedValue(jsonResponse({value: []}))
+    await manager.getIssues(INSTANCE_ID, ['7', 7, '8', 'ABC-1', '', '-1', '1.5'])
+    expect(readRequest(fetchMock).body.ids).toEqual([7, 8])
   })
 
   it('asks for at most 200 ids per request', async () => {
@@ -104,7 +111,7 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
     })
     const ids = Array.from({length: 450}, (_, index) => index + 1)
 
-    const workItems = await manager.getWorkItems(INSTANCE_ID, ids)
+    const workItems = await manager.getIssues(INSTANCE_ID, ids)
 
     const requestedIds = fetchMock.mock.calls.map((_call, callIndex) => {
       return readRequest(fetchMock, callIndex).body.ids as number[]
@@ -120,7 +127,7 @@ describe('AzureDevOpsServerManager.getWorkItems', () => {
       .mockResolvedValueOnce(jsonResponse({value: [rawWorkItem(1, WEB_PROJECT_ID)]}))
       .mockResolvedValueOnce(jsonResponse({message: 'VS403474'}, {status: 400}))
     const ids = Array.from({length: 201}, (_, index) => index + 1)
-    const res = await manager.getWorkItems(INSTANCE_ID, ids)
+    const res = await manager.getIssues(INSTANCE_ID, ids)
     expect(res).toHaveProperty('message', 'VS403474')
   })
 })
@@ -373,7 +380,7 @@ describe('AzureDevOpsServerManager requests', () => {
     const results = await Promise.all([
       manager.listProjects(instanceId),
       manager.queryWorkItemIds(instanceId, null, 'SELECT [System.Id] FROM WorkItems', 10),
-      manager.getWorkItems(instanceId, [1]),
+      manager.getIssues(instanceId, [1]),
       manager.addComment(instanceId, WEB_PROJECT_ID, '42', 'Hello'),
       manager.setField(instanceId, WEB_PROJECT_ID, '42', 'Custom.Size', 'L'),
       manager.createWorkItem({
