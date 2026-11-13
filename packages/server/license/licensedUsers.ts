@@ -1,4 +1,5 @@
 import {sql} from 'kysely'
+import {REPORT_MEETING_TYPES} from '../../client/shared/reports/reportCatalog'
 import getKysely from '../postgres/getKysely'
 import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
 import type {UsageReportFacilitator, UsageReportOrganization} from './licenseToken'
@@ -119,7 +120,7 @@ export const readTopFacilitators = async (
       total: 0
     }
     const count = Number(row.count)
-    facilitator.meetings[row.meetingType] = count
+    facilitator.meetings[REPORT_MEETING_TYPES[row.meetingType] ?? row.meetingType] = count
     facilitator.total += count
     byUser.set(row.id, facilitator)
   }

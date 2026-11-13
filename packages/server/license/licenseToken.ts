@@ -234,7 +234,7 @@ export interface UsageReportFacilitator {
   email: string
   /** Still an active member of an organization on the instance */
   active: boolean
-  /** Meetings they facilitated that 2 or more people joined, by meeting type */
+  /** Meetings they facilitated that 2 or more people joined, by meeting type as Reports names it, such as Check-in */
   meetings: Record<string, number>
   total: number
 }
