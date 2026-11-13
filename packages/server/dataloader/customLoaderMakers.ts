@@ -1160,8 +1160,6 @@ export interface PriorTeamHealthCycle {
 // A meeting's prompts are frozen at the moment its template was chosen (meeting creation, or a
 // later switch): it sees prompts active then, plus any removed afterward, so prompts don't
 // retroactively vanish from a meeting already in progress.
-// If its template had none then (an old meeting whose prompts were recreated since, or a template
-// removed before the meeting started), the meeting sees the prompts its template had last.
 export const templatePromptsByMeetingId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
@@ -1174,28 +1172,17 @@ export const templatePromptsByMeetingId = (
         .selectFrom('NewMeeting as m')
         .innerJoin('TemplatePrompt as p', 'p.templateId', 'm.templateId')
         .where('m.id', 'in', meetingIds)
+        .where('p.createdAt', '<', frozenAt)
+        .where(({eb, or, ref}) =>
+          or([eb('p.removedAt', 'is', null), eb(frozenAt, '<', ref('p.removedAt'))])
+        )
         .selectAll('p')
-        .select(({eb, and, or, ref}) => [
-          'm.id as meetingId',
-          and([
-            eb('p.createdAt', '<', frozenAt),
-            or([eb('p.removedAt', 'is', null), eb(frozenAt, '<', ref('p.removedAt'))])
-          ]).as('isFrozen')
-        ])
+        .select('m.id as meetingId')
         .orderBy('p.sortOrder')
         .execute()
-      const removalTime = ({removedAt}: {removedAt: Date | null}) =>
-        removedAt?.getTime() ?? Number.POSITIVE_INFINITY
-      return meetingIds.map((meetingId) => {
-        const templatePrompts = rows.filter((row) => row.meetingId === meetingId)
-        const frozenPrompts = templatePrompts.filter(({isFrozen}) => isFrozen)
-        const lastRemovalTime = Math.max(...templatePrompts.map(removalTime))
-        const prompts =
-          frozenPrompts.length > 0
-            ? frozenPrompts
-            : templatePrompts.filter((prompt) => removalTime(prompt) === lastRemovalTime)
-        return prompts.map(({meetingId: _, isFrozen: __, ...prompt}) => prompt)
-      })
+      return meetingIds.map((meetingId) =>
+        rows.filter((row) => row.meetingId === meetingId).map(({meetingId: _, ...prompt}) => prompt)
+      )
     },
     {...parent.dataLoaderOptions}
   )
