@@ -51,7 +51,7 @@ export const hostUserAsset = async (
     parsedUrl.origin === appOrigin && parsedUrl.pathname.startsWith('/assets/')
   if (isParabolHostedAsset) {
     // if we host it, just make a copy of it in the new directory
-    const manager = getFileStoreManager()
+    const manager = await getFileStoreManager()
     const sourcePartialPath = parsedUrl.pathname.slice('/assets/'.length) as PartialPath
     const [sourceScope, sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
       AssetScopeEnum,
@@ -124,7 +124,7 @@ export const hostUserAsset = async (
     }
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const [hostedUrl] = await Promise.all([
     manager.putUserFile(fileBuffer, `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`),
     incrementUserBytesUploaded(viewerId, fileBuffer.byteLength)

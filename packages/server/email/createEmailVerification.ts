@@ -25,7 +25,8 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
     invitationToken,
     redirectTo
   })
-  const success = await getMailManager().sendEmail({
+  const mailManager = await getMailManager()
+  const success = await mailManager.sendEmail({
     to: email,
     subject,
     body,

@@ -21,7 +21,7 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
 
   // RESOLUTION
   const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const publicLocation = await manager.putOrgAvatar(normalBuffer, orgId, normalExt)
   await getKysely()
     .updateTable('Organization')

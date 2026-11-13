@@ -3,7 +3,6 @@ import crypto from 'crypto'
 import {GraphQLError} from 'graphql'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
-import {passwordStrength} from '../../../../client/shared/passwordStrength'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
@@ -13,6 +12,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {blacklistJWT} from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
+import loadPasswordStrength from '../../../utils/loadPasswordStrength'
 import type {MutationResolvers} from '../resolverTypes'
 import userErrorResult from './helpers/userErrorResult'
 
@@ -51,6 +51,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
       extensions: {code: 'NOT_FOUND'}
     })
   }
+  const passwordStrength = await loadPasswordStrength()
   const weakError = passwordStrength(newPassword, email)
   if (weakError) {
     return userErrorResult('PASSWORD_TOO_WEAK', weakError, {field: 'newPassword'})

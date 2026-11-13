@@ -59,7 +59,8 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
         appOrigin,
         environment
       })
-      return getMailManager().sendEmail({
+      const mailManager = await getMailManager()
+      return mailManager.sendEmail({
         to: email,
         subject,
         body,
