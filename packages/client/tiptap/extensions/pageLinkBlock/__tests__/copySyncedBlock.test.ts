@@ -1,5 +1,7 @@
+import '../../__tests__/installHappyDom'
 import {Editor, type JSONContent} from '@tiptap/core'
-import {NodeSelection} from '@tiptap/pm/state'
+import type {Slice} from '@tiptap/pm/model'
+import {NodeSelection, TextSelection} from '@tiptap/pm/state'
 import StarterKit from '@tiptap/starter-kit'
 import {EventEmitter} from 'events'
 import * as Y from 'yjs'
@@ -33,10 +35,10 @@ const pasteAtEnd = (editor: Editor, html: string) => {
 const selectNode = (editor: Editor, pos: number) =>
   editor.view.dispatch(editor.state.tr.setSelection(NodeSelection.create(editor.state.doc, pos)))
 
-const fireCopy = (editor: Editor) => {
+const fireClipboardEvent = (editor: Editor, type: 'copy' | 'cut' = 'copy') => {
   const data = new Map<string, string>()
   const event = {
-    type: 'copy',
+    type,
     clipboardData: {
       clearData: () => data.clear(),
       setData: (type: string, value: string) => data.set(type, value)
@@ -44,7 +46,7 @@ const fireCopy = (editor: Editor) => {
     preventDefault: jest.fn()
   }
   const handled = !!editor.view.someProp('handleDOMEvents', (handlers) =>
-    handlers.copy?.(editor.view, event as unknown as ClipboardEvent)
+    handlers[type]?.(editor.view, event as unknown as ClipboardEvent)
   )
   return {handled, data}
 }
@@ -86,16 +88,81 @@ describe('copy and sync', () => {
     ])
   })
 
-  test('pasting the original onto another page makes a copy', () => {
+  test('cut and paste of an original keeps it canonical', () => {
     const {host, linkPos} = mountSyncedPage()
     selectNode(host, linkPos)
+    expect(fireClipboardEvent(host, 'cut').handled).toBe(false)
     const {dom} = host.view.serializeForClipboard(host.state.selection.content())
-    expect(dom.innerHTML).toContain('data-canonical')
+    host.commands.deleteSelection()
     const otherPage = mountPage([{type: 'paragraph'}])
     pasteAtEnd(otherPage, dom.innerHTML)
     expect(linkAttrs(otherPage)).toEqual([
+      expect.objectContaining({pageCode: 7, canonical: true, synced: true})
+    ])
+  })
+
+  test('drag-moving an original keeps it canonical', () => {
+    const host = mountPage([
+      {type: 'paragraph', content: [{type: 'text', text: 'first'}]},
+      syncedLink,
+      {type: 'paragraph', content: [{type: 'text', text: 'last'}]}
+    ])
+    const [linkPos] = findLinkPositions(host)
+    selectNode(host, linkPos!)
+    const {view} = host
+    let slice: Slice = view.state.selection.content()
+    view.dragging = {slice, move: true}
+    view.someProp('transformPasted', (transform) => {
+      slice = transform(slice, view, false)
+    })
+    const tr = view.state.tr.deleteSelection()
+    const dropPos = tr.doc.content.size
+    tr.replaceRangeWith(dropPos, dropPos, slice.content.firstChild!)
+    view.dispatch(tr)
+    view.dragging = null
+    expect(host.state.doc.child(2).type.name).toBe('pageLinkBlock')
+    expect(linkAttrs(host)).toEqual([
+      expect.objectContaining({pageCode: 7, canonical: true, synced: true})
+    ])
+  })
+
+  test('copying a text range that includes an original puts a copy on the clipboard', () => {
+    const host = mountPage([
+      {type: 'paragraph', content: [{type: 'text', text: 'before'}]},
+      syncedLink,
+      {type: 'paragraph', content: [{type: 'text', text: 'after'}]}
+    ])
+    host.view.dispatch(
+      host.state.tr.setSelection(
+        TextSelection.create(host.state.doc, 2, host.state.doc.content.size - 2)
+      )
+    )
+    const {handled, data} = fireClipboardEvent(host)
+    expect(handled).toBe(true)
+    const html = data.get('text/html')!
+    expect(html).toContain('data-synced')
+    expect(html).not.toContain('data-canonical')
+    expect(html).toContain('efore')
+    expect(data.get('text/plain')).toContain('efore')
+    pasteAtEnd(host, html)
+    expect(linkAttrs(host)).toEqual([
+      expect.objectContaining({pageCode: 7, canonical: true, synced: true}),
       expect.objectContaining({pageCode: 7, canonical: false, synced: true})
     ])
+  })
+
+  test('copying a text range with no synced block is left to the default', () => {
+    const page = mountPage([
+      {type: 'paragraph', content: [{type: 'text', text: 'before'}]},
+      {...plainLink, attrs: {...plainLink.attrs, canonical: true}},
+      {type: 'paragraph', content: [{type: 'text', text: 'after'}]}
+    ])
+    page.view.dispatch(
+      page.state.tr.setSelection(
+        TextSelection.create(page.state.doc, 2, page.state.doc.content.size - 2)
+      )
+    )
+    expect(fireClipboardEvent(page).handled).toBe(false)
   })
 
   test('pasting an ordinary sub-page link onto another page keeps it canonical', () => {
@@ -115,7 +182,7 @@ describe('copy and sync', () => {
   test('plain copy of a node-selected synced block puts the synced HTML on the clipboard', () => {
     const {host, linkPos, nested} = mountSyncedPage()
     selectNode(host, linkPos)
-    const {handled, data} = fireCopy(host)
+    const {handled, data} = fireClipboardEvent(host)
     expect(handled).toBe(true)
     expect(data.get('text/html')).toBe(serializeSyncedBlock({pageCode: 7, title: ''}, nested).html)
     expect(data.get('text/plain')).toBe('Sev 1\nSev 2')
@@ -124,7 +191,7 @@ describe('copy and sync', () => {
   test('plain copy of an ordinary page link is unchanged', () => {
     const page = mountPage([{type: 'paragraph'}, plainLink, {type: 'paragraph'}])
     selectNode(page, findLinkPositions(page)[0]!)
-    expect(fireCopy(page).handled).toBe(false)
+    expect(fireClipboardEvent(page).handled).toBe(false)
   })
 
   const mountAtmosphere = () => {

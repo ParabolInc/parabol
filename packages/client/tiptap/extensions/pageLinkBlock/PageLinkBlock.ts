@@ -1,6 +1,7 @@
 import {GapCursor} from '@tiptap/pm/gapcursor'
 import {Fragment, type Node, Slice} from '@tiptap/pm/model'
 import {NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
+import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
@@ -33,6 +34,34 @@ interface PageLinkBlockOptions {
   preferredName?: string
   highestTier?: TierEnum
   pageId?: string
+}
+
+const isSyncedLink = (node: Node) => node.type.name === 'pageLinkBlock' && !!node.attrs.synced
+
+const syncedLinksAsCopies = (fragment: Fragment): Fragment => {
+  const children: Node[] = []
+  fragment.forEach((child) => {
+    children.push(
+      isSyncedLink(child)
+        ? child.type.create({...child.attrs, canonical: false}, child.content, child.marks)
+        : child.content.size
+          ? child.copy(syncedLinksAsCopies(child.content))
+          : child
+    )
+  })
+  return Fragment.fromArray(children)
+}
+
+const serializeSyncedLinksAsCopies = (view: EditorView, slice: Slice) => {
+  let hasSyncedLink = false
+  slice.content.descendants((node) => {
+    hasSyncedLink ||= isSyncedLink(node)
+    return !hasSyncedLink
+  })
+  if (!hasSyncedLink) return null
+  const copies = new Slice(syncedLinksAsCopies(slice.content), slice.openStart, slice.openEnd)
+  const {dom, text} = view.serializeForClipboard(copies)
+  return {html: dom.innerHTML, text}
 }
 
 export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
@@ -120,8 +149,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
                     child.type.create(
                       {
                         ...child.attrs,
-                        canonical:
-                          alreadyExists || child.attrs.synced ? false : child.attrs.canonical,
+                        canonical: alreadyExists ? false : child.attrs.canonical,
                         // copying will turn numbers to text, but not boolean
                         pageCode: Number(child.attrs.pageCode)
                       },
@@ -145,17 +173,22 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
           handleDOMEvents: {
             copy(view, event) {
               const {selection} = view.state
-              if (!(selection instanceof NodeSelection) || !event.clipboardData) return false
-              const {node, from} = selection
-              if (node.type.name !== 'pageLinkBlock' || !node.attrs.synced) return false
-              const {html, text} = serializeSyncedBlock(
-                {pageCode: Number(node.attrs.pageCode), title: node.attrs.title},
-                getNestedEditor(view, from)
-              )
+              if (!event.clipboardData) return false
+              const clipboard =
+                selection instanceof NodeSelection && isSyncedLink(selection.node)
+                  ? serializeSyncedBlock(
+                      {
+                        pageCode: Number(selection.node.attrs.pageCode),
+                        title: selection.node.attrs.title
+                      },
+                      getNestedEditor(view, selection.from)
+                    )
+                  : serializeSyncedLinksAsCopies(view, selection.content())
+              if (!clipboard) return false
               event.preventDefault()
               event.clipboardData.clearData()
-              event.clipboardData.setData('text/html', html)
-              event.clipboardData.setData('text/plain', text)
+              event.clipboardData.setData('text/html', clipboard.html)
+              event.clipboardData.setData('text/plain', clipboard.text)
               return true
             }
           },
