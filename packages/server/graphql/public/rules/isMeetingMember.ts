@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -13,7 +13,7 @@ export const isMeetingMember = <T>(
   rule(`isMeetingMember`, {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
-    const viewerId = getUserId(authToken)
+    const viewerId = getRuleViewerId(authToken)
     let meetingId: string = argVar
     if (dataLoaderName) {
       const subject = await dataLoader.get(dataLoaderName as any).load(argVar)

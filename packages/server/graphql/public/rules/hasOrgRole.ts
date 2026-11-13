@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Orguserroleenum} from '../../../postgres/types/pg'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -17,7 +17,7 @@ export const hasOrgRole = <T>(
       const orgId = dataLoaderName ? (await dataLoader.get(dataLoaderName).load(id))?.orgId : id
       if (!orgId)
         return new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
-      const viewerId = getUserId(authToken)
+      const viewerId = getRuleViewerId(authToken)
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
