@@ -95,10 +95,9 @@ const pushEstimateToClickUp = async ({
     return {service: 'clickup', target: 'field', targetId: CLICKUP_SPRINT_POINTS_FIELD}
   }
 
-  const clickUpTask = await dataLoader
-    .get('clickUpTask')
-    .load({teamId, userId: accessUserId, taskId})
-  const field = clickUpTask?.customFields.find(({id}) => id === fieldId)
+  const clickUpTask = await dataLoader.get('integrationIssue').load({teamId, integration})
+  const customFields = clickUpTask?.service === 'clickup' ? clickUpTask.customFields : []
+  const field = customFields.find(({id}) => id === fieldId)
   const fieldType = field && toClickUpEstimateFieldType(field.type)
   if (!field || !fieldType) {
     return new Error(

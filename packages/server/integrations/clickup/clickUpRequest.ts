@@ -32,6 +32,12 @@ export class ClickUpRateLimitError extends Error {}
 
 export class ClickUpUnsharedWorkspaceError extends Error {}
 
+/** A missing task, a rate limit or an unshared workspace is ClickUp working as intended, so it is not worth a log line */
+export const isExpectedClickUpFailure = (error: Error) =>
+  error instanceof ClickUpNotFoundError ||
+  error instanceof ClickUpRateLimitError ||
+  error instanceof ClickUpUnsharedWorkspaceError
+
 type ClickUpQuery = Record<string, string | number | boolean | Array<string | number> | undefined>
 
 interface ClickUpRequestInit {

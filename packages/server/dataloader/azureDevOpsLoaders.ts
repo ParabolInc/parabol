@@ -3,9 +3,6 @@ import {decode} from 'jsonwebtoken'
 import AzureDevOpsServerManager from '../integrations/azureDevOps/AzureDevOpsServerManager'
 import {listAzureDevOpsEstimateFields} from '../integrations/azureDevOps/azureDevOpsEstimateFields'
 import getAzureDevOpsManager from '../integrations/azureDevOps/getAzureDevOpsManager'
-import mapAzureDevOpsWorkItem, {
-  type AzureDevOpsWorkItem
-} from '../integrations/azureDevOps/mapAzureDevOpsWorkItem'
 import type {ServiceField} from '../integrations/platform/ServerIntegrationDefinition'
 import syncTeamMemberIntegrationAuthTokens from '../postgres/queries/syncTeamMemberIntegrationAuthTokens'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
@@ -18,14 +15,6 @@ import settleOrLogRejection from './settleOrLogRejection'
 type TeamUserKey = {
   teamId: string
   userId: string
-}
-
-export interface AzureDevOpsWorkItemKey {
-  teamId: string
-  /** Whose connection reads the work item */
-  userId: string
-  instanceId: string
-  workItemId: string
 }
 
 export interface AzureDevOpsEstimateFieldsKey {
@@ -81,50 +70,6 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader, dependsOn: Register
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
-  )
-}
-
-const toWorkItemCacheKey = ({teamId, userId, instanceId, workItemId}: AzureDevOpsWorkItemKey) =>
-  `${teamId}:${userId}:${instanceId.toLowerCase()}:${workItemId}`
-
-/** Null when the work item is gone, the connection is dead, or its project is not shared with the team */
-export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
-  return new DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string>(
-    async (keys) => {
-      const keysByConnection = new Map<string, AzureDevOpsWorkItemKey[]>()
-      keys.forEach((key) => {
-        const connection = `${key.teamId}:${key.userId}:${key.instanceId.toLowerCase()}`
-        keysByConnection.set(connection, [...(keysByConnection.get(connection) ?? []), key])
-      })
-      const workItems = new Map<string, AzureDevOpsWorkItem>()
-      await Promise.all(
-        [...keysByConnection.values()].map(async (connectionKeys) => {
-          const {teamId, userId, instanceId} = connectionKeys[0]!
-          const manager = await getAzureDevOpsManager({dataLoader: parent, teamId, userId})
-          if (!manager) return
-          const ids = connectionKeys
-            .map(({workItemId}) => Number(workItemId))
-            .filter((id) => Number.isInteger(id) && id > 0)
-          const rawWorkItems = await manager.getWorkItems(instanceId, [...new Set(ids)])
-          if (rawWorkItems instanceof Error) {
-            logError(rawWorkItems, {userId, tags: {teamId, instanceId}})
-            return
-          }
-          rawWorkItems.forEach((rawWorkItem) => {
-            const workItem = mapAzureDevOpsWorkItem(rawWorkItem, {instanceId, teamId, userId})
-            workItems.set(
-              toWorkItemCacheKey({teamId, userId, instanceId, workItemId: workItem.id}),
-              workItem
-            )
-          })
-        })
-      )
-      return keys.map((key) => workItems.get(toWorkItemCacheKey(key)) ?? null)
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: toWorkItemCacheKey
     }
   )
 }
