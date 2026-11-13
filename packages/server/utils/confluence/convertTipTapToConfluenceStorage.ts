@@ -1,8 +1,8 @@
-import data from '@emoji-mart/data'
 import type {JSONContent} from '@tiptap/core'
 import {toSafeHref} from 'parabol-client/shared/embed/normalizeEmbedUrl'
 import {toCalloutTone} from 'parabol-client/shared/tiptap/calloutTones'
 import {escapeHtml} from '../escapeHtml'
+import loadEmojiData from '../loadEmojiData'
 import {escapeCdata} from './escapeXhtml'
 import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
 
@@ -237,7 +237,7 @@ let shortcodeByNative: Map<string, string> | undefined
 const getEmojiShortcode = (native: string) => {
   if (!shortcodeByNative) {
     shortcodeByNative = new Map()
-    for (const [id, emoji] of Object.entries((data as data.EmojiMartData).emojis)) {
+    for (const [id, emoji] of Object.entries(loadEmojiData().emojis)) {
       for (const skin of emoji.skins) {
         if (!shortcodeByNative.has(skin.native)) shortcodeByNative.set(skin.native, id)
       }

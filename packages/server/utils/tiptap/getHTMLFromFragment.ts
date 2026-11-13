@@ -1,6 +1,6 @@
 import type {Node, Schema} from '@tiptap/pm/model'
 import {DOMSerializer} from '@tiptap/pm/model'
-import {Window} from 'happy-dom'
+import loadHappyDom from '../loadHappyDom'
 
 /**
  * Returns the HTML string representation of a given document node.
@@ -31,6 +31,7 @@ export function getHTMLFromFragment(
     return wrap.innerHTML
   }
 
+  const {Window} = loadHappyDom()
   const localWindow = new Window()
 
   try {

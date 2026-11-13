@@ -1,5 +1,5 @@
 import ms from 'ms'
-import OpenAI from 'openai'
+import type OpenAI from 'openai'
 import type {ModifyType} from '../graphql/public/resolverTypes'
 import type {RetroReflection} from '../postgres/types'
 import {AI_MODEL} from './aiModel'
@@ -26,13 +26,15 @@ export interface TeamHealthCategorySummaryInput {
 const UNCORROBORATED_SENTIMENT_LIMIT = 0.75
 
 class OpenAIServerManager {
-  openAIApi
+  openAIApi: OpenAI | null
   constructor() {
     if (!process.env.OPEN_AI_API_KEY) {
       this.openAIApi = null
       return
     }
-    this.openAIApi = new OpenAI({
+    // the client is a lot of code, so the first AI request evaluates it instead of every server's startup
+    const {OpenAI: OpenAIClient} = require('openai') as typeof import('openai')
+    this.openAIApi = new OpenAIClient({
       apiKey: process.env.OPEN_AI_API_KEY,
       organization: process.env.OPEN_AI_ORG_ID
     })

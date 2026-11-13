@@ -5,8 +5,8 @@ import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
+import loadEmojiData from '../../../utils/loadEmojiData'
 import publish from '../../../utils/publish'
 import type {GQLContext} from '../../graphql'
 import type {MutationResolvers, ReactableEnum} from '../resolverTypes'
@@ -58,7 +58,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   // VALIDATION
-  if (!emojiIds.includes(reactji)) {
+  if (!Object.hasOwn(loadEmojiData().emojis, reactji)) {
     return {error: {message: `invalid emoji`}}
   }
 

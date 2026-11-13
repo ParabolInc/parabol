@@ -1,7 +1,7 @@
 import type {Extensions} from '@tiptap/core'
 import {getSchema} from '@tiptap/core'
 import {type ParseOptions, DOMParser as PMDOMParser} from '@tiptap/pm/model'
-import {Window} from 'happy-dom'
+import loadHappyDom from '../loadHappyDom'
 
 /**
  * Generates a JSON object from the given HTML string and converts it into a Prosemirror node with content.
@@ -27,6 +27,7 @@ export function generateJSON(
     )
   }
 
+  const {Window} = loadHappyDom()
   const localWindow = new Window()
   const localDOMParser = new localWindow.DOMParser()
   const htmlString = `<!DOCTYPE html><html><body>${html}</body></html>`

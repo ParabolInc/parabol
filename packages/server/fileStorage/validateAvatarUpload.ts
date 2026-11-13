@@ -1,6 +1,6 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import {Window} from 'happy-dom'
 import mime from 'mime-types'
+import loadHappyDom from '../utils/loadHappyDom'
 
 const validateAvatarUpload = async (
   contentType: string,
@@ -14,6 +14,7 @@ const validateAvatarUpload = async (
     throw new Error(`unable to determine extension for ${contentType}`)
   }
   if (ext === 'svg') {
+    const {Window} = loadHappyDom()
     const localWindow = new Window()
     try {
       const safeBuffer = await sanitizeSVG(buffer, localWindow as any)
