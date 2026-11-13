@@ -55,11 +55,13 @@ const DiscussionThread = (props: Props) => {
                   discussionId
                   ... on Comment {
                     isActive
+                    authorId: createdBy
                   }
                   replies {
                     __typename
                     ... on Comment {
                       isActive
+                      authorId: createdBy
                     }
                   }
                   ...DiscussionThreadList_threadables
@@ -130,6 +132,7 @@ const DiscussionThread = (props: Props) => {
         <DiscussionThreadFilter
           allCount={counts.all}
           taskCount={counts.tasks}
+          peopleCommentCount={counts.isTaskNudge ? counts.peopleComments : null}
           value={filter}
           onChange={changeFilter}
         />
