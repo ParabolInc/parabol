@@ -1,4 +1,4 @@
-import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
+import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 
 export interface ImageBlockStorage {
