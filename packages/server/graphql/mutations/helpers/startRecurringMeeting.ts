@@ -13,6 +13,7 @@ import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import getActiveStandupTemplateId from './getActiveStandupTemplateId'
+import getSeriesDisableAnonymity from './getSeriesDisableAnonymity'
 import isStartMeetingLocked from './isStartMeetingLocked'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import safeCreateRetrospective from './safeCreateRetrospective'
@@ -76,7 +77,7 @@ const startRecurringMeeting = async (
       return meeting
     } else if (meetingSeries.meetingType === 'retrospective') {
       // Field-by-field fallback: prior meeting > MeetingSettings (nullable, may be missing) > defaults.
-      // The template checks the series first: a mid-meeting switch changes the series only when asked
+      // Template & anonymity check the series first: each changes for the series only when asked
       const retroLastMeeting = lastMeeting as RetrospectiveMeeting | null
       const seriesTemplate = meetingSeries.templateId
         ? await dataLoader.get('meetingTemplates').load(meetingSeries.templateId)
@@ -98,8 +99,7 @@ const startRecurringMeeting = async (
         retroLastMeeting?.maxVotesPerGroup ??
         meetingSettings?.maxVotesPerGroup ??
         MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
-      const disableAnonymity =
-        retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
+      const disableAnonymity = await getSeriesDisableAnonymity(meetingSeries, dataLoader)
       if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
         logError(new Error('startRecurringMeeting: seeding retrospective with defaults'), {
           tags: {meetingSeriesId, teamId}

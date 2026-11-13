@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type ChangeEvent, useState} from 'react'
+import {type ChangeEvent, useId, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
 import type {MeetingSeriesEditForm_series$key} from '../__generated__/MeetingSeriesEditForm_series.graphql'
@@ -10,6 +10,7 @@ import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutatio
 import UpdateRecurrenceSettingsMutation from '../mutations/UpdateRecurrenceSettingsMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {Button} from '../ui/Button/Button'
+import {Checkbox} from '../ui/Checkbox/Checkbox'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {useDialogState} from '../ui/Dialog/useDialogState'
 import getMutationError from '../utils/relay/getMutationError'
@@ -38,6 +39,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
         title
         recurrenceRule
         cancelledAt
+        disableAnonymity
       }
     `,
     seriesRef
@@ -49,6 +51,9 @@ export const MeetingSeriesEditForm = (props: Props) => {
   const initialRrule =
     isActive && meetingSeries.recurrenceRule ? RRule.fromString(meetingSeries.recurrenceRule) : null
   const [rrule, setRrule] = useState<RRule | null>(initialRrule)
+  const initialDisableAnonymity = meetingSeries?.disableAnonymity ?? null
+  const [disableAnonymity, setDisableAnonymity] = useState(initialDisableAnonymity)
+  const anonymityId = useId()
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
     errorDisplay: 'inline'
   })
@@ -65,14 +70,15 @@ export const MeetingSeriesEditForm = (props: Props) => {
 
   // inside a live meeting the mutation is keyed by the meeting, so it can start a series that doesn't exist yet
   const commitRecurrence = (
-    variables: {name?: string; rrule: string | null | undefined},
+    variables: {name?: string; rrule: string | null | undefined; disableAnonymity?: boolean | null},
     handler: CompletedHandler
   ) => {
     submitMutation()
     if (meetingId) {
+      const {name, rrule} = variables
       UpdateRecurrenceSettingsMutation(
         atmosphere,
-        {meetingId, ...variables},
+        {meetingId, name, rrule},
         {onError, onCompleted: handler}
       )
       return
@@ -109,7 +115,11 @@ export const MeetingSeriesEditForm = (props: Props) => {
       return
     }
     commitRecurrence(
-      {name: title, rrule: rrule?.toString()},
+      {
+        name: title,
+        rrule: rrule?.toString(),
+        disableAnonymity: anonymityChanged ? disableAnonymity : undefined
+      },
       onSuccess('meetingSeriesUpdated', isActive ? '🎉 Series updated.' : '🎉 Recurrence started.')
     )
   }
@@ -126,8 +136,10 @@ export const MeetingSeriesEditForm = (props: Props) => {
   const titleErr = fields.title.error
   const titleChanged = title !== (meetingSeries?.title ?? '')
   const rruleChanged = rrule?.toString() !== initialRrule?.toString()
+  const anonymityChanged = disableAnonymity !== initialDisableAnonymity
   // without a live meeting there is nothing to hang a brand new series on
-  const hasChanges = isActive ? titleChanged || rruleChanged : !!meetingId
+  const hasChanges = isActive ? titleChanged || rruleChanged || anonymityChanged : !!meetingId
+  const canSetAnonymity = isActive && !meetingId && disableAnonymity !== null
   const canUpdate = !!rrule && hasChanges && !submitting
 
   return (
@@ -143,6 +155,22 @@ export const MeetingSeriesEditForm = (props: Props) => {
       />
       {titleErr && <div className='mt-1 text-fg-error text-sm'>{titleErr}</div>}
       <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
+      {canSetAnonymity && (
+        <div className='flex items-start gap-2.5 px-4 pb-4'>
+          <Checkbox
+            id={anonymityId}
+            className='mt-0.5 shrink-0'
+            checked={!disableAnonymity}
+            onCheckedChange={(checked) => setDisableAnonymity(checked !== true)}
+          />
+          <label htmlFor={anonymityId} className='flex cursor-pointer flex-col'>
+            <span className='font-semibold text-fg-primary text-sm'>Anonymous reflections</span>
+            <span className='text-fg-secondary text-xs'>
+              Applies from the next meeting in this series.
+            </span>
+          </label>
+        </div>
+      )}
       <DialogActions>
         {isActive && (
           <Button

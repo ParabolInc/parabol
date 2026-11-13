@@ -2306,6 +2306,7 @@ type Mutation {
   rather than from inside a meeting.
   - Pass a non-null rrule to update the recurrence (also restarts a cancelled series)
   - Pass null rrule to cancel the series
+  - Pass disableAnonymity to change the anonymity of the next retrospectives in the series
   """
   updateMeetingSeries(
     """
@@ -2322,6 +2323,11 @@ type Mutation {
     The recurrence rule for the meeting series in RRULE format; null cancels the series
     """
     rrule: RRule
+
+    """
+    Hide who wrote each reflection in the upcoming meetings of a retrospective series
+    """
+    disableAnonymity: Boolean
   ): UpdateMeetingSeriesPayload! @scope(name: MEETINGS_WRITE)
 
   """

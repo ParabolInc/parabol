@@ -11,6 +11,7 @@ graphql`
       recurrenceRule
       cancelledAt
       nextMeetingDate
+      disableAnonymity
     }
   }
 `
@@ -20,8 +21,14 @@ const mutation = graphql`
     $meetingSeriesId: ID!
     $name: String
     $rrule: RRule
+    $disableAnonymity: Boolean
   ) {
-    updateMeetingSeries(meetingSeriesId: $meetingSeriesId, name: $name, rrule: $rrule) {
+    updateMeetingSeries(
+      meetingSeriesId: $meetingSeriesId
+      name: $name
+      rrule: $rrule
+      disableAnonymity: $disableAnonymity
+    ) {
       ... on ErrorPayload {
         error {
           message
