@@ -107,8 +107,13 @@ const scimHandler = (handler: Handler) =>
       const response = new SCIMMY.Messages.Error(err as any)
       // written first, so the error record carries the status the IdP gets
       res.writeStatus(`${response.status}`).writeHeader('Content-Type', 'application/scim+json')
-      if (response.status >= 400) {
+      // a 401, 403, 404 or 409 answers who is asking or what exists.
+      // A 400 is a request an IdP built that Parabol couldn't take, so it stays an error
+      const status = Number(response.status)
+      if (status >= 500 || status === 400) {
         Logger.error(err)
+      } else if (status >= 400) {
+        Logger.warn(err)
       }
       res.end(JSON.stringify(response))
     } finally {
