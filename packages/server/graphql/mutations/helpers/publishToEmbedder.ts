@@ -2,6 +2,7 @@ import {sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import type {JobType} from '../../../../embedder/custom'
 import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
+import {getInactiveModelJobs} from '../../../../embedder/getInactiveModelJobs'
 import getKysely from '../../../postgres/getKysely'
 import {embeddingResponder} from '../../../utils/embeddingResponder'
 import getRedis from '../../../utils/getRedis'
@@ -95,19 +96,26 @@ export async function publishToEmbedder(
   const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
   const pageId = (payload as MessageToEmbedderEmbedPage).pageId
   const embeddingsMetadataId = (payload as MessageToEmbedderEmbed).embeddingsMetadataId
+  const job = {jobType, pageId, embeddingsMetadataId}
+  const runAfter = pageId
+    ? sql<Date>`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
+    : undefined
+  const inactiveModelJobs =
+    jobType === 'embed:start' || jobType === 'embedPage:start'
+      ? await getInactiveModelJobs(job, userId, dataLoader)
+      : []
   await getKysely()
     .insertInto('EmbeddingsJobQueueV2')
-    .values({
-      jobType,
-      priority,
-      modelId: activeEmbeddingModelId,
-      pageId,
-      embeddingsMetadataId,
-      jobData: JSON.stringify(data || {}),
-      runAfter: pageId
-        ? sql`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
-        : undefined
-    })
+    .values([
+      {
+        ...job,
+        priority,
+        modelId: activeEmbeddingModelId,
+        jobData: JSON.stringify(data || {}),
+        runAfter
+      },
+      ...inactiveModelJobs.map((inactiveModelJob) => ({...inactiveModelJob, runAfter}))
+    ])
     .$if(!!pageId, (qb) =>
       qb.onConflict((oc) =>
         oc

@@ -63,6 +63,82 @@ const insertPage = async (
   return id
 }
 
+const insertRetroCard = async (
+  trx: Transaction<DB>,
+  {days, ended}: {days: number; ended: boolean}
+) => {
+  const id = generateUID()
+  const orgId = `fillOrderOrg${id}`
+  const retroTeamId = `fillOrderRetroTeam${id}`
+  await trx.insertInto('Organization').values({id: orgId, name: orgId}).execute()
+  await trx.insertInto('Team').values({id: retroTeamId, name: retroTeamId, orgId}).execute()
+  await trx
+    .insertInto('MeetingTemplate')
+    .values({
+      id: `template${id}`,
+      name: 'Fill order retro',
+      orgId,
+      teamId: retroTeamId,
+      type: 'retrospective',
+      illustrationUrl: '',
+      mainCategory: 'retrospective'
+    })
+    .execute()
+  await trx
+    .insertInto('TemplatePrompt')
+    .values({
+      id: `prompt${id}`,
+      templateId: `template${id}`,
+      teamId: retroTeamId,
+      question: 'What went well?',
+      description: '',
+      groupColor: '#000000',
+      sortOrder: 'a0'
+    })
+    .execute()
+  await trx
+    .insertInto('NewMeeting')
+    .values({
+      id: `meeting${id}`,
+      teamId: retroTeamId,
+      meetingType: 'retrospective',
+      facilitatorStageId: 'stage',
+      name: 'Fill order retro',
+      meetingCount: 1,
+      meetingNumber: 1,
+      phases: JSON.stringify([]),
+      endedAt: ended ? new Date() : null
+    })
+    .execute()
+  await trx
+    .insertInto('RetroReflectionGroup')
+    .values({id: `group${id}`, meetingId: `meeting${id}`, promptId: `prompt${id}`})
+    .execute()
+  await trx
+    .insertInto('RetroReflection')
+    .values({
+      id: `reflection${id}`,
+      meetingId: `meeting${id}`,
+      promptId: `prompt${id}`,
+      reflectionGroupId: `group${id}`,
+      content: '{}',
+      plaintextContent: 'A card'
+    })
+    .execute()
+  const {id: metadataId} = await trx
+    .insertInto('EmbeddingsMetadata')
+    .values({
+      objectType: 'retroReflection',
+      refId: `reflection${id}`,
+      teamId: retroTeamId,
+      refUpdatedAt: daysAgo(days),
+      language: 'en'
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return metadataId
+}
+
 const fillJobs = async (trx: Transaction<DB>) => {
   // The fill reads every row, so a parallel suite deleting one mid-statement would break its foreign key
   await sql`LOCK TABLE "EmbeddingsMetadata" IN SHARE MODE`.execute(trx)
@@ -158,6 +234,16 @@ it('puts the last two weeks of reflections with the public templates', async () 
       jobs.find(({embeddingsMetadataId}) => embeddingsMetadataId === id)!.priority
     expect(priorityOf(liveReflection)).toBe(priorityOf(publicTemplate))
     expect(priorityOf(liveReflection)).toBeLessThan(priorityOf(teamTemplate))
+  })
+})
+
+it('queues every card in a retro that has not ended, however old, since Similar Wording reads them', async () => {
+  await withRollback(async (trx) => {
+    const openRetroCard = await insertRetroCard(trx, {days: 60, ended: false})
+    const endedRetroCard = await insertRetroCard(trx, {days: 60, ended: true})
+    const metadataIds = (await fillJobs(trx)).map(({embeddingsMetadataId}) => embeddingsMetadataId)
+    expect(metadataIds).toContain(openRetroCard)
+    expect(metadataIds).not.toContain(endedRetroCard)
   })
 })
 
