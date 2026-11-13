@@ -27,6 +27,7 @@ import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
 import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
 import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
@@ -105,6 +106,7 @@ export const useTipTapPageEditor = (
           document: false,
           undoRedo: false,
           link: false,
+          dropcursor: {color: 'var(--color-accent)', width: 3},
           trailingNode: nested ? false : {node: 'paragraph'}
         }),
         SafeTextStyleKit,
@@ -234,6 +236,7 @@ export const useTipTapPageEditor = (
             color: `#${themeBackgroundColors[colorIdx]}`
           }
         }),
+        BlockMoveHistory.configure({atmosphere}),
         InsightsBlock,
         AutoJoiner,
         Markdown,

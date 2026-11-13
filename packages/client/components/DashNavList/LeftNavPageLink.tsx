@@ -1,12 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {useFragment} from 'react-relay'
+import {useClientQuery, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import {Storage as StorageIcon} from '~/ui/icons'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../__generated__/PageDropTargetQuery.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
+import {getBlockDropRefusal} from '../../tiptap/blockMove/getBlockDropRefusal'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
 import {GQLID} from '../../utils/GQLID'
@@ -48,6 +52,9 @@ export const LeftNavPageLink = (props: Props) => {
     parentPageViewerAccess
   } = props
   const depth = pageAncestors.length
+  const {viewer} = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
+  const {draggingBlocksSourcePageId, draggingBlocksChildPageIds, draggingBlocksRefusal} =
+    viewer ?? {}
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
@@ -132,7 +139,8 @@ export const LeftNavPageLink = (props: Props) => {
     !isSelf &&
     !isDraggingLastChild &&
     hasDragDropInAccess &&
-    !isMeetingTOC
+    !isMeetingTOC &&
+    !isDatabase
   const hasDragDropInOrBelow = showChildren ? hasDragDropInAccess : hasDragDropBelowAccess
 
   const canDropBelow =
@@ -143,6 +151,24 @@ export const LeftNavPageLink = (props: Props) => {
     !isNextPeer &&
     !isPrivateToTopLevelShared &&
     hasDragDropInOrBelow
+  const isBlockDrag = !!draggingBlocksSourcePageId
+  const blockRefusal = draggingBlocksSourcePageId
+    ? getBlockDropRefusal(
+        {
+          pageId: id,
+          viewerRole: viewerAccess,
+          isDatabase,
+          isMeetingTOC,
+          ancestorPageIds: pageAncestors
+        },
+        {
+          sourcePageId: draggingBlocksSourcePageId,
+          childPageIds: draggingBlocksChildPageIds ?? [],
+          refusal: draggingBlocksRefusal ?? null
+        }
+      )
+    : null
+  const isAnyDrag = !!draggingPageId || isBlockDrag
   const isActive = (currentPageAncestorDepth && !showChildren) || currentPageAncestorDepth === 0
   return (
     <div className='relative rounded-md' ref={ref}>
@@ -150,11 +176,13 @@ export const LeftNavPageLink = (props: Props) => {
         onPointerDown={onPointerDown}
         data-highlighted={isActive ? '' : undefined}
         style={{paddingLeft: depth * 8}}
-        data-drop-in={canDropIn ? id : undefined}
+        data-drop-in={canDropIn || (isBlockDrag && !blockRefusal) ? id : undefined}
+        data-drop-refused={isBlockDrag && blockRefusal ? blockRefusal : undefined}
+        data-drop-title={title || '<Untitled>'}
         className={cn(
           'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md border-l-[3px] border-l-transparent py-1 pr-1 pl-1 text-fg-nav text-sm leading-8 outline-hidden before:absolute before:inset-y-1 before:left-px before:w-[3px] before:rounded-full before:bg-transparent',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
-          !draggingPageId &&
+          !isAnyDrag &&
             'hover:bg-surface-nav-hover focus:bg-surface-nav-hover data-highlighted:bg-surface-nav-active data-highlighted:text-fg-primary data-highlighted:before:bg-(--color-accent-active)',
           draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
         )}
@@ -187,7 +215,7 @@ export const LeftNavPageLink = (props: Props) => {
             <ExpandPageChildrenButton
               showChildren={showChildren}
               expandChildPages={expandChildPages}
-              draggingPageId={isSelf ? null : draggingPageId}
+              isDragging={!isSelf && (!!draggingPageId || isBlockDrag)}
               emoji={emoji}
             />
           )}
