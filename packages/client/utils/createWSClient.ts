@@ -175,6 +175,14 @@ export function createWSClient(atmosphere: Atmosphere): Client {
       if (!atmosphere.authObj) return false
       return true
     },
+    // graphql-ws hands this what ended the socket for good, which it would log with console.error.
+    // A signed-out session ends it on purpose, and the closed handler already reported the failure close codes
+    onNonLazyError: (errorOrCloseEvent) => {
+      if (!atmosphere.authObj) return
+      const {code, reason} = errorOrCloseEvent as CloseEvent
+      if (FAILURE_CLOSE_CODES.has(code)) return
+      reportClientWarning('WebSocketCloseError', `closed ${code} ${reason}`.trim())
+    },
     retryWait: async (retries) => {
       const isServerRestart = lastCloseCode === SERVICE_RESTART_CLOSE_CODE && retries === 0
       if (!backgroundPause.isPaused() && !isServerRestart) await waitToRetry(retries)
