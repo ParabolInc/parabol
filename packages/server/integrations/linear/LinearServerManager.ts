@@ -33,6 +33,7 @@ import type {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import toNestedRequestError from '../platform/toNestedRequestError'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
 class LinearServerManager implements TaskIntegrationManager {
@@ -60,7 +61,7 @@ class LinearServerManager implements TaskIntegrationManager {
         batchRef
       })
       const {data, errors} = result
-      const error = errors ? new Error(errors[0]?.message) : null
+      const error = toNestedRequestError(errors)
       return [data, error] as [TData, typeof error]
     }
   }

@@ -22,6 +22,7 @@ import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {PopoverMentionBase} from './extensions/PopoverMentionBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
 import {SafeTextStyleKit} from './extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from './extensions/SubscriptSuperscriptKit'
 import {TableOfContentsBase} from './extensions/TableOfContentsBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
@@ -51,6 +52,7 @@ export const serverTipTapExtensions: Extensions = [
   TableCell,
   SafeTextStyleKit,
   Highlight,
+  SubscriptSuperscriptKit,
   TaskList,
   TaskItem.configure({
     nested: true

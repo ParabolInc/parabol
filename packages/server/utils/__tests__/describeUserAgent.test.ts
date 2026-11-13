@@ -1,4 +1,4 @@
-import describeUserAgent from '../describeUserAgent'
+import describeUserAgent, {isCrawler} from '../describeUserAgent'
 
 test.each([
   [
@@ -24,4 +24,23 @@ test.each([
   ['curl/8.7.1', {}]
 ])('%s', (userAgent, expected) => {
   expect(describeUserAgent(userAgent)).toEqual(expected)
+})
+
+test.each([
+  'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/136.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15 (Applebot/0.1; +http://www.apple.com/go/applebot)',
+  'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ShapBot/0.1.0',
+  'IdeateLive-GTM-Research/0.1 (market research crawler; low volume; respects robots.txt)',
+  'Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)'
+])('a crawler names itself: %s', (userAgent) => {
+  expect(isCrawler(userAgent)).toBe(true)
+})
+
+test.each([
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Linux; Android 12; CUBOT KINGKONG 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36',
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1 Brave'
+])('a browser is not a crawler: %s', (userAgent) => {
+  expect(isCrawler(userAgent)).toBe(false)
 })

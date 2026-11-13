@@ -104,10 +104,54 @@ test("a render error's component stack is mapped to source like its stack", asyn
   )
 })
 
+test('the causes React hides behind its own error are logged mapped to source, under the same fingerprint', async () => {
+  await logClientError(report, {userId: 'user1', ip: '203.0.113.7'}, BUILD_DIR)
+  const withoutCause = JSON.parse(errorSpy.mock.calls[0][0])
+  await logClientError(
+    {
+      ...report,
+      causes: [{name: 'RangeError', message: 'the real error', stack: report.stack}]
+    },
+    {userId: 'user1', ip: '203.0.113.7'},
+    BUILD_DIR
+  )
+  const record = JSON.parse(errorSpy.mock.calls[1][0])
+  expect(record.error.fingerprint).toBe(withoutCause.error.fingerprint)
+  expect(record.error.cause).toEqual([
+    {
+      kind: 'RangeError',
+      message: 'the real error',
+      stack:
+        'RangeError: the real error\n    at toUpperCase (packages/client/components/TeamList.tsx:2:20)'
+    }
+  ])
+})
+
 test('a browser warning stays out of Error Reporting', async () => {
   await logClientError({...report, level: 'warn'}, {ip: '203.0.113.7'}, BUILD_DIR)
   expect(warnSpy).toHaveBeenCalledTimes(1)
   const record = JSON.parse(warnSpy.mock.calls[0][0])
   expect(record).toMatchObject({severity: 'WARNING', service: 'parabol-client'})
   expect(record).not.toHaveProperty('stack_trace')
+})
+
+test("a crawler's browser error is only a warning", async () => {
+  await logClientError(
+    {
+      ...report,
+      name: 'Error',
+      message: 'HTTP 403: Forbidden',
+      stack: `Error: HTTP 403: Forbidden\n    at ${BUNDLE_URL}:1:29`,
+      userAgent:
+        'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/136.0.0.0 Safari/537.36'
+    },
+    {ip: '40.77.167.247'},
+    BUILD_DIR
+  )
+  expect(errorSpy).not.toHaveBeenCalled()
+  expect(warnSpy).toHaveBeenCalledTimes(1)
+  expect(JSON.parse(warnSpy.mock.calls[0][0])).toMatchObject({
+    severity: 'WARNING',
+    service: 'parabol-client'
+  })
 })

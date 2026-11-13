@@ -45,12 +45,18 @@ const RetroDiscussPhase = (props: Props) => {
         rightDrawerOpen
         showSidebar
         phases {
+          phaseType
           stages {
+            id
             ...RetroDiscussPhase_stage @relay(mask: false)
           }
         }
         localStage {
+          id
           ...RetroDiscussPhase_stage @relay(mask: false)
+        }
+        tasks {
+          id
         }
       }
     `,
@@ -63,10 +69,15 @@ const RetroDiscussPhase = (props: Props) => {
     localStage,
     showSidebar,
     isCommentUnread,
-    rightDrawerOpen
+    rightDrawerOpen,
+    phases,
+    tasks
   } = meeting
   const {reflectionGroup, discussionId} = localStage
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+  const discussStages = phases.find(({phaseType}) => phaseType === 'discuss')?.stages ?? []
+  const showLastTopicLine =
+    !endedAt && discussStages.at(-1)?.id === localStage.id && tasks.length === 0
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const [toggleDrawer] = useRightDrawer(meetingId)
   const title = reflectionGroup?.title ?? ''
@@ -146,6 +157,7 @@ const RetroDiscussPhase = (props: Props) => {
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
           meetingRef={meeting}
+          showLastTopicLine={showLastTopicLine}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

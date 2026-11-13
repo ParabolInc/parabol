@@ -68,11 +68,3 @@ export const emailTableBase = {
 } as const
 
 export const emailTextColor = PALETTE.SLATE_700
-export const headCSS = `
-  @media only screen and (max-width: 620px) {
-    table[class=body] .maxWidthContainer {
-      padding: 0 !important;
-      width: 100% !important;
-    }
-  }
-`

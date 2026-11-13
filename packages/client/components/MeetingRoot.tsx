@@ -15,7 +15,9 @@ const MeetingRoot = () => {
   if (!meetingId) return null
   return (
     <Suspense fallback={''}>
-      {queryRef && <MeetingSelector meetingId={meetingId} queryRef={queryRef} />}
+      {queryRef?.variables.meetingId === meetingId && (
+        <MeetingSelector meetingId={meetingId} queryRef={queryRef} />
+      )}
     </Suspense>
   )
 }

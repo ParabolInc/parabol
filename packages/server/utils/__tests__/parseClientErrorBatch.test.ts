@@ -67,6 +67,20 @@ test('clips long text, drops malformed ids and keeps the last 30 breadcrumbs', (
   expect(parsedReport!.breadcrumbs[0]).not.toHaveProperty('traceId')
 })
 
+test('keeps up to three causes, each clipped like the error they explain', () => {
+  const causes = [
+    {name: 'TypeError', message: 'x'.repeat(2000), stack: 'TypeError: x'},
+    {message: 'no name'},
+    'not a cause',
+    {name: 'Error', message: 'fourth'}
+  ]
+  const [parsed] = parseClientErrorBatch({reports: [{...report, causes}]})!
+  expect(parsed!.causes).toEqual([
+    {name: 'TypeError', message: 'x'.repeat(1000), stack: 'TypeError: x'},
+    {name: 'Error', message: 'no name', stack: undefined}
+  ])
+})
+
 test('skips a report with no message', () => {
   expect(parseClientErrorBatch({reports: [{...report, message: ''}, report]})).toEqual([report])
 })

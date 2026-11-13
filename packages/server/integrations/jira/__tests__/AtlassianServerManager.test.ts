@@ -1,4 +1,5 @@
 import fetchWithRetry from '../../../utils/fetchWithRetry'
+import isExpectedError from '../../../utils/isExpectedError'
 import {ThirdPartyResponseError} from '../../../utils/ThirdPartyResponseError'
 import AtlassianServerManager, {JiraNoAccessResponseError} from '../AtlassianServerManager'
 
@@ -71,4 +72,40 @@ test('a JSON error that is not a 404 stays an unexpected error', async () => {
   expect(result).toBeInstanceOf(Error)
   expect(result).not.toBeInstanceOf(JiraNoAccessResponseError)
   expect((result as Error).message).toBe('Internal Server Error')
+})
+
+test('a site the Parabol app is not installed on comes back as no access', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    new Response(
+      JSON.stringify({code: 403, message: 'The app is not installed on this instance'}),
+      {
+        status: 403,
+        headers: {'content-type': 'application/json'}
+      }
+    )
+  )
+  const result = await new AtlassianServerManager('token').getIssue(CLOUD_ID, 'PROJ-1')
+  expect(result).toBeInstanceOf(JiraNoAccessResponseError)
+  expect((result as Error).message).toBe('The app is not installed on this instance')
+})
+
+test('a Jira error list on a bad request stays an unexpected error', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    new Response(JSON.stringify({errorMessages: ['Field does not exist'], errors: {}}), {
+      status: 400,
+      headers: {'content-type': 'application/json'}
+    })
+  )
+  const result = await new AtlassianServerManager('token').getIssue(CLOUD_ID, 'PROJ-1')
+  expect(result).toBeInstanceOf(Error)
+  expect(result).not.toBeInstanceOf(JiraNoAccessResponseError)
+  expect((result as Error).message).toBe('Field does not exist')
+})
+
+test('Atlassian not answering in time is an expected error', async () => {
+  mockFetchWithRetry.mockRejectedValue(new Error('Request aborted: deadline exceeded'))
+  const result = await new AtlassianServerManager('token').getCloudNameLookup()
+  expect(result).toBeInstanceOf(Error)
+  expect((result as Error).message).toBe('Request aborted: deadline exceeded')
+  expect(isExpectedError(result)).toBe(true)
 })

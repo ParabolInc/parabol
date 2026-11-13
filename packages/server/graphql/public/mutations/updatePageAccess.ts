@@ -166,9 +166,10 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   }
 
   let nextSubjectType = subjectType
-  let nextSubjectId =
-    role && subjectType === 'external' && subjectId !== '*' ? normalizeEmail(subjectId) : subjectId
-  if (role && subjectType === 'external') {
+  const isEmailShare = !!role && subjectType === 'external' && subjectId !== '*'
+  let nextSubjectId = isEmailShare ? normalizeEmail(subjectId) : subjectId
+  let newUser = false
+  if (isEmailShare) {
     const existingUser = await getUserByEmail(nextSubjectId)
     if (existingUser) {
       nextSubjectType = 'user'
@@ -188,6 +189,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
           extensions: {code: 'TOO_MANY_REQUESTS'}
         })
       }
+      newUser = true
     }
   }
   const table = tableMap[nextSubjectType]
@@ -323,13 +325,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   // notifications
   let notification: {id: string; userId: string} | undefined
   if (role) {
-    let invitationEmail: string | null = null
-    let newUser = false
-
-    if (nextSubjectType === 'external') {
-      invitationEmail = nextSubjectId
-      newUser = true
-    }
+    let invitationEmail = newUser ? nextSubjectId : null
     if (nextSubjectType === 'user') {
       const [user, newNotification] = await Promise.all([
         dataLoader.get('users').load(nextSubjectId),
@@ -371,7 +367,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         role,
         newUser
       })
-      await getMailManager().sendEmail({
+      const mailManager = await getMailManager()
+      await mailManager.sendEmail({
         to: invitationEmail,
         html,
         subject,

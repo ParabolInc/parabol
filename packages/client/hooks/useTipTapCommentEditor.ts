@@ -8,6 +8,7 @@ import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {PopoverMention} from '../tiptap/extensions/popoverMention/PopoverMention'
@@ -43,6 +44,7 @@ export const useTipTapCommentEditor = (
       extensions: [
         StarterKit.configure({link: false}),
         Highlight,
+        SubscriptSuperscriptKit,
         SafeTextStyleKit,
         LoomExtension,
         Placeholder.configure({
