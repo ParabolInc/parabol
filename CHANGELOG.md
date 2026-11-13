@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.30.0](https://github.com/ParabolInc/parabol/compare/v15.29.1...v15.30.0) (2026-11-13)
+
+
+### Added
+
+* **client:** show thrown GraphQL errors from every mutation ([#14103](https://github.com/ParabolInc/parabol/issues/14103)) ([be1d517](https://github.com/ParabolInc/parabol/commit/be1d517f59e55eb2b9eb7a4f2813b59d9d8a91ef))
+* **server:** group per column with a team briefing written after each retro ([#14136](https://github.com/ParabolInc/parabol/issues/14136)) ([fb6ee4c](https://github.com/ParabolInc/parabol/commit/fb6ee4cfa912231f2a3c79467d5f93341a8f67a4))
+
+
+### Fixed
+
+* **client:** don't report rejections from scripts a CefSharp host injects as app errors ([#14143](https://github.com/ParabolInc/parabol/issues/14143)) ([0758543](https://github.com/ParabolInc/parabol/commit/0758543a12afdb749e45710cc6c37074543ef00f))
+* **client:** only let a page link accept drops once the server has returned its page ([#14137](https://github.com/ParabolInc/parabol/issues/14137)) ([d964917](https://github.com/ParabolInc/parabol/commit/d964917c7957d4382a206010f837079a24b71bfc))
+* **client:** show the server's error from every useMutationProps caller ([#14131](https://github.com/ParabolInc/parabol/issues/14131)) ([1a6280c](https://github.com/ParabolInc/parabol/commit/1a6280c09ba741cf44e80f2965eee068e9eec124))
+* **jira:** never emit empty text nodes when converting ADF to TipTap ([#14100](https://github.com/ParabolInc/parabol/issues/14100)) ([f67ed79](https://github.com/ParabolInc/parabol/commit/f67ed79a6b1befac725d415723f32e2d6fb371a9))
+* **server:** publish the stored row for meeting stage time limit notifications ([#14105](https://github.com/ParabolInc/parabol/issues/14105)) ([88722eb](https://github.com/ParabolInc/parabol/commit/88722ebf485fe8bbd0a96f98b72191403f16fcd9))
+
+
+### Changed
+
+* **ci:** speed up the release build ([#14138](https://github.com/ParabolInc/parabol/issues/14138)) ([ef9e53d](https://github.com/ParabolInc/parabol/commit/ef9e53d9d59cc77e77f06a30880326a2e7079e0d))
+* **embedder:** name Harrier after the INT8 build TEI serves ([#14141](https://github.com/ParabolInc/parabol/issues/14141)) ([c4e77cc](https://github.com/ParabolInc/parabol/commit/c4e77cce800ce03d1dff1c6515619257ba79b8d5))
+
 ## [15.29.1](https://github.com/ParabolInc/parabol/compare/v15.29.0...v15.29.1) (2026-11-12)
 
 
