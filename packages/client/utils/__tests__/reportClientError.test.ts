@@ -118,6 +118,27 @@ test('a GraphQL error coded INTERNAL_SERVER_ERROR becomes a warning carrying its
   expect(reports[0]).not.toHaveProperty('stack')
 })
 
+test.each([
+  [
+    'from relay',
+    'RelayNetwork',
+    'No data returned for operation `ProfileQuery`, got error(s):\nNot signed in'
+  ],
+  ['from the network layer', 'GraphQLServerError', 'Not signed in']
+])(
+  'a query that fails %s because the session ended goes out as a warning',
+  async (_, name, message) => {
+    const {default: reportClientError, flushClientErrors} = await loadReporter()
+    const error = new Error(message)
+    error.name = name
+    reportClientError(error)
+    flushClientErrors()
+    expect(await readSentReports()).toEqual([
+      expect.objectContaining({level: 'warn', name, message})
+    ])
+  }
+)
+
 const makeErrorWithStack = (message: string, frames: string[]) => {
   const error = new Error(message)
   error.stack = [`Error: ${message}`, ...frames.map((frame) => `    at ${frame}`)].join('\n')
