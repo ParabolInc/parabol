@@ -34,6 +34,23 @@ export interface LicenseClaims {
   expiresAt?: string
   /** The public half of the instance's usage key pair: a raw Ed25519 key in base64url. Absent: no usage reports */
   publicUsageKey?: string
+  /** What usage reports carry (UsageReportLevel). Absent: no usage reports */
+  usageReports?: string
+  /** 'test' for a license only for testing Parabol, whose web server freezes a while after it starts. Absent: in use */
+  type?: string
+  /** 'read-only' to refuse every change once expiresAt passes. Absent: nothing happens at expiry */
+  onExpiry?: string
+}
+
+/**
+ * What usage reports carry: nothing, as there are none (''), active users ('user-count'), or also who runs the most
+ * meetings, by name and email ('user-activity'). A level this version doesn't know counts as 'user-count'.
+ */
+export type UsageReportLevel = '' | 'user-count' | 'user-activity'
+
+export const usageReportLevelOf = (claims: LicenseClaims): UsageReportLevel => {
+  if (!claims.usageReports || !claims.publicUsageKey) return ''
+  return claims.usageReports === 'user-activity' ? 'user-activity' : 'user-count'
 }
 
 export type LicenseParseResult =
@@ -95,6 +112,10 @@ export const checkClaims = (claims: any): string | undefined => {
   if (!isIsoDate(claims.issuedAt)) return 'issuedAt is not a date'
   if (claims.expiresAt !== undefined && !isIsoDate(claims.expiresAt)) {
     return 'expiresAt is not a date'
+  }
+  for (const field of ['usageReports', 'type', 'onExpiry'] as const) {
+    if (claims[field] !== undefined && typeof claims[field] !== 'string')
+      return `${field} must be text`
   }
   if (claims.publicUsageKey !== undefined) {
     try {
@@ -208,6 +229,23 @@ export interface UsageReportOrganization {
   activeUsers: number
 }
 
+export interface UsageReportFacilitator {
+  name: string
+  email: string
+  /** Still an active member of an organization on the instance */
+  active: boolean
+  /** Meetings they facilitated that 2 or more people joined, by meeting type */
+  meetings: Record<string, number>
+  total: number
+}
+
+export interface UsageReportFacilitators {
+  /** How many people each list holds: a tenth of the active users, rounded up */
+  limit: number
+  last90Days: UsageReportFacilitator[]
+  sinceLicenseIssued: UsageReportFacilitator[]
+}
+
 export interface UsageReportClaims {
   v: 1
   type: 'usage'
@@ -223,6 +261,8 @@ export interface UsageReportClaims {
   organizations: UsageReportOrganization[]
   /** For each month since the license was issued, as YYYY-MM in UTC: the most users active on any day of it */
   monthlyPeaks: Record<string, number>
+  /** Who ran the most meetings, when the license's usageReports is 'user-activity' */
+  topFacilitators?: UsageReportFacilitators
 }
 
 /** Signs a usage report with the instance's private usage key: `<payload>.<signature>` */

@@ -20,6 +20,7 @@ import {getFullSchema} from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
+import {useLicenseReadOnly} from './license/useLicenseReadOnly'
 import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {TRACING_ENABLED} from './tracing/initTracing'
@@ -237,6 +238,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
+    useLicenseReadOnly(),
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {

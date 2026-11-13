@@ -1,5 +1,11 @@
-import {getInstanceLicense, getPrivateUsageKey} from './instanceLicense'
-import {countActiveUsers, countActiveUsersByOrg, readMonthlyPeaks} from './licensedUsers'
+import ms from 'ms'
+import {getInstanceLicense, getPrivateUsageKey, getUsageReportLevel} from './instanceLicense'
+import {
+  countActiveUsers,
+  countActiveUsersByOrg,
+  readMonthlyPeaks,
+  readTopFacilitators
+} from './licensedUsers'
 import {signUsageReport, type UsageReportClaims} from './licenseToken'
 
 // how far back monthly peaks go, at most
@@ -8,6 +14,8 @@ const MAX_MONTHS = 12
 const ABOUT =
   'A usage summary from a Parabol instance, to share with Parabol. `report` is there to read; `signed` is the same ' +
   'summary, signed with the instance’s private usage key.'
+const ABOUT_FACILITATORS =
+  ' It includes the names and emails of the people who ran the most meetings, for Parabol’s customer success team.'
 
 /**
  * The instance's usage report, signed with its private usage key, as a JSON file: active users now, in each organization, and
@@ -16,9 +24,10 @@ const ABOUT =
 export const makeUsageReport = async (now = new Date()) => {
   const usage = getPrivateUsageKey()
   const license = getInstanceLicense()
-  if (!usage.ok || !license.ok) {
+  const level = getUsageReportLevel()
+  if (!usage.ok || !license.ok || !level) {
     throw new Error(
-      `This instance can't sign usage reports: ${usage.ok ? 'no license' : usage.error}`
+      `This instance can't sign usage reports: ${usage.ok ? 'its license has no usage reports' : usage.error}`
     )
   }
   const {claims} = license
@@ -30,6 +39,16 @@ export const makeUsageReport = async (now = new Date()) => {
     countActiveUsersByOrg(),
     readMonthlyPeaks(since)
   ])
+  // a tenth of the active users, so a bigger instance names more of its champions
+  const limit = Math.ceil(activeUsers / 10)
+  const topFacilitators =
+    level === 'user-activity'
+      ? {
+          limit,
+          last90Days: await readTopFacilitators(new Date(now.getTime() - ms('90d')), limit),
+          sinceLicenseIssued: await readTopFacilitators(issuedAt, limit)
+        }
+      : undefined
   const host = process.env.HOST ?? ''
   const report: UsageReportClaims = {
     v: 1,
@@ -39,10 +58,11 @@ export const makeUsageReport = async (now = new Date()) => {
     generatedAt: now.toISOString(),
     activeUsers,
     organizations,
-    monthlyPeaks
+    monthlyPeaks,
+    ...(topFacilitators && {topFacilitators})
   }
   const file = {
-    about: ABOUT,
+    about: topFacilitators ? ABOUT + ABOUT_FACILITATORS : ABOUT,
     report: {
       customer: claims.customer,
       licenseId: claims.id,
@@ -51,7 +71,8 @@ export const makeUsageReport = async (now = new Date()) => {
       activeUsers,
       seats: claims.seats ?? null,
       organizations,
-      monthlyPeaks
+      monthlyPeaks,
+      ...(topFacilitators && {topFacilitators})
     },
     signed: signUsageReport(report, usage.privateUsageKey)
   }

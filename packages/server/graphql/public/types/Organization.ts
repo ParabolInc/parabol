@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {getPrivateUsageKey} from '../../../license/instanceLicense'
+import {getUsageReportLevel} from '../../../license/instanceLicense'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
@@ -61,7 +61,7 @@ const Organization: OrganizationResolvers = {
   },
 
   canSignUsageReport: async ({id: orgId}, _args, {authToken, dataLoader}) => {
-    if (!getPrivateUsageKey().ok) return false
+    if (!getUsageReportLevel()) return false
     if (isSuperUser(authToken)) return true
     return isUserBillingLeader(getUserId(authToken), orgId, dataLoader)
   },

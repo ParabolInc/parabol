@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {getPrivateUsageKey} from '../../../license/instanceLicense'
+import {getPrivateUsageKey, getUsageReportLevel} from '../../../license/instanceLicense'
 import {makeUsageReport} from '../../../license/makeUsageReport'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -8,6 +8,11 @@ const signUsageReport: MutationResolvers['signUsageReport'] = async () => {
   const usage = getPrivateUsageKey()
   if (!usage.ok) {
     throw new GraphQLError(`This Parabol instance can’t sign usage reports: ${usage.error}`, {
+      extensions: {code: 'FORBIDDEN'}
+    })
+  }
+  if (!getUsageReportLevel()) {
+    throw new GraphQLError('This Parabol instance’s license has no usage reports', {
       extensions: {code: 'FORBIDDEN'}
     })
   }

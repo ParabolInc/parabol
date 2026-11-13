@@ -5,7 +5,8 @@ import {
   parseLicense,
   parsePrivateLicenseKey,
   signUsageReport,
-  type UsageReportClaims
+  type UsageReportClaims,
+  usageReportLevelOf
 } from '../licenseToken'
 import {makeSigningKeys, makeUsageKeys, signLicense} from './licenseFixtures'
 
@@ -86,12 +87,15 @@ describe('parseLicense', () => {
     expect(errorOf({expiresAt: 'soon'})).toBe('expiresAt is not a date')
     expect(errorOf({publicUsageKey: 'abc'})).toBe('publicUsageKey is not an Ed25519 public key')
     expect(errorOf({v: 2})).toBe('unsupported version 2')
+    expect(errorOf({usageReports: true})).toBe('usageReports must be text')
+    expect(errorOf({type: 1})).toBe('type must be text')
+    expect(errorOf({onExpiry: ['read-only']})).toBe('onExpiry must be text')
     expect(errorOf({expiresAt: undefined, seats: undefined})).toBe(undefined)
   })
 
   test('ignores fields it doesn’t know, so later licenses work on this version', () => {
     const result = parseLicense(
-      signed({onExpiry: [{from: '30d', action: 'read-only'}], futureTerm: true}),
+      signed({onOverSeats: [{from: '30d', action: 'read-only'}], futureTerm: true}),
       publicKeys,
       HOST
     )
@@ -173,5 +177,17 @@ describe('signUsageReport', () => {
       verify(null, Buffer.from(data), publicUsageKey, Buffer.from(signature!, 'base64url'))
     expect(checks(payload!)).toBe(true)
     expect(checks(`${payload}x`)).toBe(false)
+  })
+})
+
+describe('usageReportLevelOf', () => {
+  test('needs a public usage key and a level', () => {
+    expect(usageReportLevelOf({...claims, usageReports: 'user-activity'})).toBe('user-activity')
+    expect(usageReportLevelOf({...claims, usageReports: 'user-count'})).toBe('user-count')
+    expect(usageReportLevelOf({...claims, usageReports: 'something-new'})).toBe('user-count')
+    expect(usageReportLevelOf({...claims, usageReports: ''})).toBe('')
+    expect(
+      usageReportLevelOf({...claims, usageReports: 'user-count', publicUsageKey: undefined})
+    ).toBe('')
   })
 })

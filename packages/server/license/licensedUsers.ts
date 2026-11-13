@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
-import type {UsageReportOrganization} from './licenseToken'
+import {hasEnoughAttendees} from '../postgres/teamActivityCriteria'
+import type {UsageReportFacilitator, UsageReportOrganization} from './licenseToken'
 
 /*
 The users a license covers: a license is for the whole instance, so it's the members of every organization on it. A
@@ -72,4 +73,57 @@ export const readMonthlyPeaks = async (since: Date): Promise<Record<string, numb
     order by 1
   `.execute(getKysely())
   return Object.fromEntries(rows.map(({month, peak}) => [month, peak]))
+}
+
+/**
+ * The people who facilitated the most meetings created since `since`, counting meetings as Reports does: 2 or more
+ * people joined. Each comes with their meetings by type, and whether they're still an active member of an
+ * organization on the instance, since people leave.
+ */
+export const readTopFacilitators = async (
+  since: Date,
+  limit: number
+): Promise<UsageReportFacilitator[]> => {
+  if (limit <= 0) return []
+  const pg = getKysely()
+  const rows = await pg
+    .selectFrom('NewMeeting as m')
+    .innerJoin('User as u', 'u.id', 'm.facilitatorUserId')
+    .where('m.createdAt', '>=', since)
+    .where('m.facilitatorUserId', 'not in', SYSTEM_USER_IDS)
+    .where(({ref}) => hasEnoughAttendees(ref('m.id')))
+    .select(({fn, exists, selectFrom}) => [
+      'u.id',
+      'u.email',
+      'u.preferredName',
+      'm.meetingType',
+      fn.countAll<string>().as('count'),
+      exists(
+        selectFrom('OrganizationUser as ou')
+          .select('ou.id')
+          .whereRef('ou.userId', '=', 'u.id')
+          .where('ou.removedAt', 'is', null)
+          .where('ou.orgId', '!=', SYSTEM_ORG_ID)
+      ).as('isMember'),
+      'u.inactive'
+    ])
+    .groupBy(['u.id', 'u.email', 'u.preferredName', 'u.inactive', 'm.meetingType'])
+    .execute()
+  const byUser = new Map<string, UsageReportFacilitator>()
+  for (const row of rows) {
+    const facilitator = byUser.get(row.id) ?? {
+      name: row.preferredName,
+      email: row.email,
+      active: !!row.isMember && !row.inactive,
+      meetings: {},
+      total: 0
+    }
+    const count = Number(row.count)
+    facilitator.meetings[row.meetingType] = count
+    facilitator.total += count
+    byUser.set(row.id, facilitator)
+  }
+  return [...byUser.values()]
+    .sort((a, b) => b.total - a.total || a.email.localeCompare(b.email))
+    .slice(0, limit)
 }

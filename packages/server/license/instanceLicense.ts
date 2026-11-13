@@ -1,6 +1,7 @@
+import ms from 'ms'
 import {Logger} from '../utils/Logger'
 import {licensePublicKeys} from './licensePublicKeys'
-import {parsePrivateLicenseKey} from './licenseToken'
+import {parsePrivateLicenseKey, usageReportLevelOf} from './licenseToken'
 
 const instanceLicense = parsePrivateLicenseKey(
   process.env.PRIVATE_LICENSE_KEY,
@@ -8,18 +9,47 @@ const instanceLicense = parsePrivateLicenseKey(
   process.env.HOST
 )
 
+/** How long a web server with a test license runs before it freezes, so it can't serve anyone for long */
+export const TEST_LICENSE_LIFETIME_MS = ms('2h')
+
 export const getInstanceLicense = () => instanceLicense.parsed
 
 /** The private usage key that signs usage reports, and the license that goes in them, or why there's none */
 export const getPrivateUsageKey = () => instanceLicense.usage
 
+/** What usage reports carry, '' when the instance can't make them */
+export const getUsageReportLevel = () => {
+  const {parsed, usage} = instanceLicense
+  return parsed.ok && usage.ok ? usageReportLevelOf(parsed.claims) : ''
+}
+
+/** Whether the license has expired and asks for read-only once it does */
+export const isLicenseReadOnly = (now = new Date()) => {
+  const {parsed} = instanceLicense
+  if (!parsed.ok) return false
+  const {onExpiry, expiresAt} = parsed.claims
+  return onExpiry === 'read-only' && !!expiresAt && Date.parse(expiresAt) <= now.getTime()
+}
+
 const day = (iso: string) => iso.slice(0, 10)
+
+// A test license's web server stops answering, /health included, so its pod restarts and it can't serve anyone for
+// long. Busy, rather than exiting, so the restart waits for the liveness probe.
+const freezeForever = () => {
+  Logger.fatal(
+    'This web server has a test license, and has run as long as one may. It stops responding now'
+  )
+  const until = Number.POSITIVE_INFINITY
+  while (Date.now() < until) {
+    // blocks the event loop for good
+  }
+}
 
 /**
  * A production build exits without a valid license. Development builds and tests start without one, so anyone can
  * work on Parabol
  */
-export const requireInstanceLicense = (now = new Date()) => {
+export const requireInstanceLicense = (now = new Date(), freeze = freezeForever) => {
   const {parsed, usage} = instanceLicense
   if (!parsed.ok) {
     const problem =
@@ -34,15 +64,22 @@ export const requireInstanceLicense = (now = new Date()) => {
     process.exit(1)
     return
   }
-  const {id, customer, expiresAt, seats} = parsed.claims
+  const {id, customer, expiresAt, seats, type} = parsed.claims
   const covers = seats === undefined ? 'any number of active users' : `${seats} active users`
   if (expiresAt && Date.parse(expiresAt) <= now.getTime()) {
-    Logger.warn(`License ${id} for ${customer} expired on ${day(expiresAt)}`)
+    const readOnly = isLicenseReadOnly(now) ? ', so Parabol is read-only' : ''
+    Logger.warn(`License ${id} for ${customer} expired on ${day(expiresAt)}${readOnly}`)
   } else {
     const until = expiresAt ? `, until ${day(expiresAt)}` : ''
     Logger.log(`License ${id} for ${customer}: ${covers}${until}`)
   }
   if (parsed.claims.publicUsageKey && !usage.ok) {
     Logger.warn(`Usage reports are off: ${usage.error}`)
+  }
+  if (type === 'test') {
+    Logger.warn(
+      `License ${id} is a test license: this web server stops responding ${ms(TEST_LICENSE_LIFETIME_MS, {long: true})} after it starts`
+    )
+    setTimeout(freeze, TEST_LICENSE_LIFETIME_MS)
   }
 }
