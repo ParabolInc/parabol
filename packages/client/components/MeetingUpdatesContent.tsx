@@ -6,6 +6,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
+import ReviewTasksExampleRoot from './ReviewTasksExampleRoot'
 import StageTimerDisplay from './StageTimerDisplay'
 import TaskColumns from './TaskColumns/TaskColumns'
 
@@ -13,6 +14,7 @@ interface Props {
   avatarGroup: ReactElement
   emptyState: {title: string; description: string} | null
   endedAt: Date | string | null | undefined
+  exampleTeamId?: string | null
   headerPrompt: ReactNode
   isViewerStageOwner: boolean
   meetingId: string
@@ -28,6 +30,7 @@ const MeetingUpdatesContent = (props: Props) => {
     avatarGroup,
     emptyState,
     endedAt,
+    exampleTeamId,
     headerPrompt,
     isViewerStageOwner,
     meetingId,
@@ -37,6 +40,26 @@ const MeetingUpdatesContent = (props: Props) => {
     tasks,
     toggleSidebar
   } = props
+  const board = (
+    <>
+      <TaskColumns
+        area='meeting'
+        isViewerMeetingSection={isViewerStageOwner}
+        meetingId={meetingId}
+        myTeamMemberId={myTeamMemberId}
+        tasks={tasks}
+        teams={null}
+      />
+      {emptyState && (
+        <div className='pointer-events-none absolute inset-x-0 top-[200px] flex flex-col items-center px-6 text-center'>
+          <h2 className='font-semibold text-fg-primary text-xl leading-7'>{emptyState.title}</h2>
+          <p className='mt-2 max-w-[570px] text-fg-secondary text-sm leading-5'>
+            {emptyState.description}
+          </p>
+        </div>
+      )}
+    </>
+  )
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -54,23 +77,10 @@ const MeetingUpdatesContent = (props: Props) => {
               small viewports. */}
           <MeetingPhaseWrapper className='relative'>
             <div className='absolute inset-0 flex overflow-auto'>
-              <TaskColumns
-                area='meeting'
-                isViewerMeetingSection={isViewerStageOwner}
-                meetingId={meetingId}
-                myTeamMemberId={myTeamMemberId}
-                tasks={tasks}
-                teams={null}
-              />
-              {emptyState && (
-                <div className='pointer-events-none absolute inset-x-0 top-[200px] flex flex-col items-center px-6 text-center'>
-                  <h2 className='font-semibold text-fg-primary text-xl leading-7'>
-                    {emptyState.title}
-                  </h2>
-                  <p className='mt-2 max-w-[570px] text-fg-secondary text-sm leading-5'>
-                    {emptyState.description}
-                  </p>
-                </div>
+              {exampleTeamId ? (
+                <ReviewTasksExampleRoot board={board} teamId={exampleTeamId} />
+              ) : (
+                board
               )}
             </div>
           </MeetingPhaseWrapper>
