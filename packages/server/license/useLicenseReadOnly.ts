@@ -15,9 +15,10 @@ export const READ_ONLY_ALLOWED_MUTATIONS: ReadonlySet<string> = new Set([
 ])
 
 /**
- * Refuses mutations once a license that asks for read-only at expiry has expired. Super users run on the private
- * schema, as do the server's own jobs and SAML sign-in, so they aren't affected. A license that can never turn the
- * instance read-only, as most can't, adds no hook at all.
+ * Refuses mutations once a license that asks for read-only at expiry has expired. Super users aren't affected, and
+ * neither is the server itself: callGQL runs SAML sign-in (loginSAML), chronos's jobs and Stripe's webhook through this
+ * same Yoga instance as a super user. A license that can never turn the instance read-only, as most can't, adds no
+ * hook at all.
  */
 export const useLicenseReadOnly = (): Plugin<ServerContext> => {
   if (!canTurnReadOnly()) return {}
@@ -27,6 +28,7 @@ export const useLicenseReadOnly = (): Plugin<ServerContext> => {
   return {
     onExecute({args, setResultAndStopExecution}) {
       if (!isLicenseReadOnly()) return
+      if (args.contextValue.authToken?.rol === 'su') return
       const operation = getOperationAST(args.document, args.operationName)
       if (operation?.operation !== 'mutation') return
       const allowed = operation.selectionSet.selections.every(

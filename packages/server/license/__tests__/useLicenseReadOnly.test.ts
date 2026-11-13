@@ -11,10 +11,10 @@ const mockCanTurn = canTurnReadOnly as jest.Mock
 const mockReadOnly = isLicenseReadOnly as jest.Mock
 const mockLicense = getInstanceLicense as jest.Mock
 
-const run = (query: string) => {
+const run = (query: string, authToken: object = {sub: 'u1'}) => {
   const setResultAndStopExecution = jest.fn()
   useLicenseReadOnly().onExecute!({
-    args: {document: parse(query), contextValue: {authToken: {sub: 'u1'}}},
+    args: {document: parse(query), contextValue: {authToken}},
     setResultAndStopExecution
   } as any)
   return setResultAndStopExecution
@@ -48,6 +48,18 @@ describe('useLicenseReadOnly', () => {
   test('refuses a sign-in sent with a change', () => {
     expect(
       run('mutation { refreshSession addAgendaItem(newAgendaItem: {}) { __typename } }')
+    ).toHaveBeenCalled()
+  })
+
+  test('leaves super users alone, and the server’s own calls, such as SAML sign-in', () => {
+    expect(
+      run('mutation { loginSAML(queryString: "q", samlName: "acme") { __typename } }', {
+        sub: 'aGhostUser',
+        rol: 'su'
+      })
+    ).not.toHaveBeenCalled()
+    expect(
+      run('mutation { loginSAML(queryString: "q", samlName: "acme") { __typename } }')
     ).toHaveBeenCalled()
   })
 
