@@ -2,6 +2,7 @@ import {createRoot} from 'react-dom/client'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
 import registerClientErrorHandlers from './utils/registerClientErrorHandlers'
+import registerServiceWorker from './utils/registerServiceWorker'
 import retryChunkLoadErrorOnce from './utils/retryChunkLoadErrorOnce'
 
 registerClientErrorHandlers()
@@ -12,10 +13,7 @@ createRoot(container).render(<Root />)
 // so in development the worker is only registered when the dev server runs over http
 const canRegisterServiceWorker = __PRODUCTION__ || window.location.protocol === 'http:'
 if (canRegisterServiceWorker && 'serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    // logging from a closure keeps a frame of the app's own beneath console.error, which tells it from an extension's log
-    navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch((error) => console.error(error))
-  })
+  window.addEventListener('load', registerServiceWorker)
 }
 
 // window.addEventListener('beforeinstallprompt', (e) => {
