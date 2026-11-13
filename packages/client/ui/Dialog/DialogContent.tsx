@@ -6,6 +6,7 @@ import {cn} from '../cn'
 import {useDialogState} from './Dialog'
 import {DialogClose} from './DialogClose'
 import {DialogOverlay} from './DialogOverlay'
+import {DialogTitle} from './DialogTitle'
 
 type BaseProps = React.ComponentPropsWithoutRef<
   React.ForwardRefExoticComponent<
@@ -14,7 +15,7 @@ type BaseProps = React.ComponentPropsWithoutRef<
 >
 
 export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
-  ({className, children, noClose, onInteractOutside, ...props}, ref) => {
+  ({className, children, noClose, onInteractOutside, title, ...props}, ref) => {
     const {isOpen} = useDialogState()
     return (
       <AnimatePresence>
@@ -52,6 +53,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
                   <ScrollArea.Viewport className='[&>div]:block! p-6'>
+                    {title && <DialogTitle className='sr-only'>{title}</DialogTitle>}
                     {children}
                   </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />

@@ -4,6 +4,7 @@ import {ArrowBack} from '~/ui/icons'
 import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {Button} from '../../../ui/Button/Button'
+import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
 import scaleValueString from './scaleValueString'
 import TemplateScaleValueList from './TemplateScaleValueList'
@@ -61,9 +62,9 @@ const PokerTemplateScaleDetails = (props: Props) => {
         >
           <ArrowBack className='text-inherit' />
         </Button>
-        <div className='select-none pl-3 font-sans font-semibold text-[16px] leading-8'>
+        <DialogTitle className='select-none pl-3 font-sans text-[16px] leading-8'>
           {'Edit Scale'}
-        </div>
+        </DialogTitle>
       </div>
       <div className='my-4 flex w-full flex-col pr-4 pl-14'>
         <div className='flex flex-col items-start'>

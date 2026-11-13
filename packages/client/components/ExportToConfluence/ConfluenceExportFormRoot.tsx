@@ -3,6 +3,7 @@ import confluenceExportFormQuery, {
   type ConfluenceExportFormQuery
 } from '../../__generated__/ConfluenceExportFormQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {Loader} from '../../utils/relay/renderLoader'
 import {ConfluenceExportForm, type ConfluenceExportFormProps} from './ConfluenceExportForm'
 import {readConfluenceExportDest} from './confluenceExportConstants'
@@ -16,9 +17,17 @@ export const ConfluenceExportFormRoot = (props: Props) => {
     {teamId: props.teamId, preferredCloudId: dest?.cloudId ?? '', hasPreferred: !!dest},
     'network-only'
   )
+  const loadingTitle = <DialogTitle className='sr-only'>Export to Confluence</DialogTitle>
   return (
-    <Suspense fallback={<Loader />}>
-      {queryRef && <ConfluenceExportForm {...props} queryRef={queryRef} />}
+    <Suspense
+      fallback={
+        <>
+          {loadingTitle}
+          <Loader />
+        </>
+      }
+    >
+      {queryRef ? <ConfluenceExportForm {...props} queryRef={queryRef} /> : loadingTitle}
     </Suspense>
   )
 }

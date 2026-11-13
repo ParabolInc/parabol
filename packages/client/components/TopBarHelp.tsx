@@ -35,7 +35,7 @@ const TopBarHelp = () => {
         </Suspense>
       </Menu>
       <Dialog isOpen={isShortcutsOpen} onClose={() => setIsShortcutsOpen(false)}>
-        <DialogContent className='w-[564px] max-w-[95vw]' noClose>
+        <DialogContent className='w-[564px] max-w-[95vw]' noClose title='Formatting Text'>
           <Suspense fallback=''>
             <EditorHelpModal handleCloseModal={() => setIsShortcutsOpen(false)} />
           </Suspense>

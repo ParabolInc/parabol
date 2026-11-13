@@ -13,7 +13,7 @@ const BeginDemoModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen}>
-      <DialogContent noClose>
+      <DialogContent noClose title='Try the Parabol demo'>
         <div className='flex flex-col items-center px-4 pb-8'>
           <Chat className='h-12 w-12 text-sky-500' />
           <p className='mx-0 mt-4 mb-6 p-0 text-center text-[16px] leading-normal'>
