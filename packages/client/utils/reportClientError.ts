@@ -50,9 +50,18 @@ export const describeReason = (reason: unknown) => {
   }
 }
 
-// an error from another realm, such as an extension's isolated world, fails instanceof Error
+// an error from another realm, such as an extension's isolated world, fails instanceof Error,
+// and one made by an Error that an injected script replaced fails the Error tag too
+const hasErrorShape = (reason: unknown) => {
+  if (typeof reason !== 'object' || reason === null) return false
+  const {name, message, stack} = reason as Partial<Error>
+  return typeof name === 'string' && typeof message === 'string' && typeof stack === 'string'
+}
+
 export const isError = (reason: unknown): reason is Error =>
-  reason instanceof Error || Object.prototype.toString.call(reason) === '[object Error]'
+  reason instanceof Error ||
+  Object.prototype.toString.call(reason) === '[object Error]' ||
+  hasErrorShape(reason)
 
 const toError = (reason: unknown) => {
   if (isError(reason)) return reason

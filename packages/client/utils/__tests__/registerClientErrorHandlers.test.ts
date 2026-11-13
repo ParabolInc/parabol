@@ -273,3 +273,53 @@ test("a script of the app's own that fails to parse is still reported", async ()
     expect.objectContaining({name: 'SyntaxError', message})
   ])
 })
+
+// a script some browsers inject replaces the page's Error, and the errors it makes fail both instanceof Error and the Error tag
+const wrapPageErrorConstructor = () => {
+  const NativeError = globalThis.Error
+  function WrappedError(message?: string) {
+    return new Proxy(new NativeError(message), {get: (target, key) => Reflect.get(target, key)})
+  }
+  globalThis.Error = WrappedError as unknown as ErrorConstructor
+  return () => {
+    globalThis.Error = NativeError
+  }
+}
+
+test("a console error keeps its message when the page's Error is wrapped", async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const restoreError = wrapPageErrorConstructor()
+  try {
+    console.error('No base meeting object found in Relay')
+    await Promise.resolve()
+    flushClientErrors()
+  } finally {
+    restoreError()
+  }
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({
+      name: 'ConsoleError',
+      message: 'No base meeting object found in Relay'
+    })
+  ])
+})
+
+test('an error the page makes with its wrapped Error keeps its message and stack, and is reported once', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const restoreError = wrapPageErrorConstructor()
+  let stack: string | undefined
+  try {
+    const error = new Error('No data returned for operation')
+    stack = error.stack
+    console.error(error)
+    rejectUnhandled(error)
+    await Promise.resolve()
+    flushClientErrors()
+  } finally {
+    restoreError()
+  }
+  expect(stack).toContain('No data returned for operation')
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'Error', message: 'No data returned for operation', stack})
+  ])
+})
