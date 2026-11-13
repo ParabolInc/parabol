@@ -30,6 +30,7 @@ const queryNode = graphql`
 
 // Approximates a text line so the handle sits at the top of a media block
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
+const SYNCED_BLOCK_HANDLE_OFFSET = 26
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
@@ -264,24 +265,34 @@ export const PageDragHandle = Extension.create<Options>({
           if (horizontalRef.tagName === 'LI' && horizontalRef.parentElement) {
             horizontalRef = horizontalRef.parentElement
           }
-          const horizontalRect = horizontalRef.getBoundingClientRect()
+          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
+          const syncedBlock = isNested
+            ? editorRef.view.dom.closest<HTMLElement>('[data-synced-block]')
+            : handleNode?.type.name === 'pageLinkBlock' && handleNode.attrs.synced
+              ? dom.querySelector<HTMLElement>('[data-synced-block]')
+              : null
+          const {right} = horizontalRef.getBoundingClientRect()
+          const left = syncedBlock
+            ? syncedBlock.getBoundingClientRect().left -
+              SYNCED_BLOCK_HANDLE_OFFSET +
+              dragHandleElement.offsetWidth
+            : horizontalRef.getBoundingClientRect().left
           // Media blocks carry no text to anchor to. Without this the walker below finds
           // nothing and the handle never renders for an iframe embed, and anchors to the
           // title line rather than the block top for a card.
-          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
           if (handleNode?.type.name === 'embedBlock') {
             const blockRect = dom.getBoundingClientRect()
             const anchorHeight = Math.min(blockRect.height, DRAG_HANDLE_ANCHOR_HEIGHT)
             return {
               getBoundingClientRect: () => ({
-                x: horizontalRect.x,
+                x: left,
                 y: blockRect.y,
-                width: horizontalRect.width,
+                width: right - left,
                 height: anchorHeight,
                 top: blockRect.top,
-                right: horizontalRect.right,
+                right,
                 bottom: blockRect.top + anchorHeight,
-                left: horizontalRect.left
+                left
               }),
               contextElement: horizontalRef
             }
@@ -299,14 +310,14 @@ export const PageDragHandle = Extension.create<Options>({
           if (!lineRect.height) return null
           return {
             getBoundingClientRect: () => ({
-              x: horizontalRect.x,
+              x: left,
               y: lineRect.y,
-              width: horizontalRect.width,
+              width: right - left,
               height: lineRect.height,
               top: lineRect.top,
-              right: horizontalRect.right,
+              right,
               bottom: lineRect.bottom,
-              left: horizontalRect.left
+              left
             }),
             contextElement: horizontalRef
           }

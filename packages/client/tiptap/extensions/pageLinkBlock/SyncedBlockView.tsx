@@ -54,6 +54,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       onBlur={handleBlur}
       className={cn(
         '-mx-3 relative mt-9! mb-3 rounded-md px-3 py-1 outline outline-1 outline-transparent',
+        'before:-top-9 before:-left-[26px] before:absolute before:bottom-0 before:w-[38px] before:content-[""]',
         !showBar && 'hover:outline-hairline-strong',
         showBar &&
           (isViewOnly
