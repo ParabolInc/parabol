@@ -10,6 +10,7 @@ const getCommitHash = require('./utils/getCommitHash')
 const getNestedUsage = require('./utils/getNestedUsage')
 const pruneNestedTypeDefs = require('./utils/pruneNestedTypeDefs')
 const persistentCache = require('./utils/persistentCache')
+const AsciiOnlyPlugin = require('./utils/AsciiOnlyPlugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -21,6 +22,7 @@ const INIT_SERVER_ID = path.join(SERVER_ROOT, 'initServerId.ts')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
 const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
+const MAP_STACK_TRACES = path.join(SERVER_ROOT, 'mapStackTraces.ts')
 
 const COMMIT_HASH = getCommitHash()
 const runtimePlatform = `${process.platform}-${process.arch}`
@@ -41,6 +43,7 @@ module.exports = (config) => {
     },
     entry: {
       web: [
+        MAP_STACK_TRACES,
         DOTENV,
         INIT_SERVER_ID,
         INIT_PUBLIC_PATH,
@@ -48,7 +51,13 @@ module.exports = (config) => {
         DUMP_ON_USR2,
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      embedder: [DOTENV, INIT_SERVER_ID, DUMP_ON_USR2, path.join(EMBEDDER_ROOT, 'embedder.ts')],
+      embedder: [
+        MAP_STACK_TRACES,
+        DOTENV,
+        INIT_SERVER_ID,
+        DUMP_ON_USR2,
+        path.join(EMBEDDER_ROOT, 'embedder.ts')
+      ],
       preDeploy: [
         DOTENV,
         INIT_SERVER_ID,
@@ -143,7 +152,8 @@ module.exports = (config) => {
             to: `sharp-libvips-${runtimePlatform}`
           }
         ]
-      })
+      }),
+      new AsciiOnlyPlugin()
     ].filter(Boolean),
     module: {
       parser: {
