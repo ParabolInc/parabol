@@ -11,6 +11,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
@@ -125,6 +126,7 @@ export const useTipTapReflectionEditor = (
         }),
         SafeTextStyleKit,
         Highlight,
+        SubscriptSuperscriptKit,
         TiptapLinkExtension.configure({
           openOnClick: false
         })

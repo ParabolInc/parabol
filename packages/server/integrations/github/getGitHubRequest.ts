@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {EndpointContext} from 'nest-graphql-endpoint'
 import {githubRequest} from '../../graphql/public/rootSchema'
+import toNestedRequestError from '../platform/toNestedRequestError'
 
 // This helper just cleans up the input/output boilerplate.
 // It breaks githubRequest into 2 parts so the info, endpointContext, and batchRef are kept in context
@@ -21,7 +22,7 @@ const getGitHubRequest = (
       batchRef
     })
     const {data, errors} = result
-    const error = errors ? new Error(errors[0]?.message) : null
+    const error = toNestedRequestError(errors)
     return [data, error] as [TData, typeof error]
   }
 }

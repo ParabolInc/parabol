@@ -237,7 +237,7 @@ const processTranscriptCompleted = async (payload: ZoomRecordingCompletedPayload
     if (!vttRes.ok) {
       throw new Error(`${externalId}: transcript download failed with ${vttRes.status}`)
     }
-    const pageContent = processZoomTranscript(await vttRes.text())
+    const pageContent = await processZoomTranscript(await vttRes.text())
     if (!pageContent) throw new Error(`${externalId}: transcript has no cues`)
     await attachTranscriptToSummaryPage(
       meeting.summaryPageId,

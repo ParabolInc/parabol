@@ -8,7 +8,6 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
@@ -575,10 +574,9 @@ const User: ReqResolvers<'User'> = {
       if (!meeting) return {meetingId}
       teamId = meeting.teamId
     }
-    const teamMember = teamId
-      ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
-      : null
-    if (teamMember?.isNotRemoved) return {isOnTeam: true}
+    // the same teams the auth token lists, so a page that checks the token can't send the viewer straight back
+    const viewerTeamIds = await dataLoader.get('teamIdsByUserId').load(viewerId)
+    if (teamId && viewerTeamIds.includes(teamId)) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null

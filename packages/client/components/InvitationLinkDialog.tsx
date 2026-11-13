@@ -6,6 +6,7 @@ import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/Inv
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import {LocalStorageKey} from '../types/constEnums'
+import setStorageItem from '../utils/setStorageItem'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
 import InvitationLinkErrorExpired from './InvitationLinkErrorExpired'
 import {useIsAuthenticated} from './IsAuthenticatedProvider'
@@ -23,7 +24,7 @@ const InvitationLinkDialog = (props: Props) => {
   const {token} = useParams()
   useEffect(() => {
     if (token) {
-      window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
+      setStorageItem('localStorage', LocalStorageKey.INVITATION_TOKEN, token)
     }
   }, [token])
   const {massInvitation: massInvitationRef} = props

@@ -6,6 +6,7 @@ import nestGraphQLEndpoint, {
   type NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint'
 import {URL} from 'url'
+import {PROVIDER_UNAVAILABLE} from '../../integrations/platform/toNestedRequestError'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -59,7 +60,7 @@ const defaultExecutor: Executor<{
     return {
       errors: [
         {
-          type: 'Linear is down',
+          type: PROVIDER_UNAVAILABLE,
           message: String((e as any).message)
         }
       ],

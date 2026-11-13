@@ -4,7 +4,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {DeleteAccountModal_viewer$key} from '../__generated__/DeleteAccountModal_viewer.graphql'
-import DeleteUserMutation from '../mutations/DeleteUserMutation'
+import useDeleteUserMutation from '../mutations/useDeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
@@ -32,27 +32,23 @@ const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
   const [step, setStep] = useState<'reason' | 'reauth'>('reason')
   const [reason, setReason] = useState('')
   const atmosphere = useAtmosphere()
+  const [deleteUser, submitting] = useDeleteUserMutation()
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReason(e.target.value)
   }
   const validReason = reason.trim().slice(0, 20000)
   const handleDelete = () => {
-    DeleteUserMutation(
-      atmosphere,
-      {
-        userId: atmosphere.viewerId,
-        reason: validReason
-      },
-      {
-        onCompleted: (res) => {
-          if (res?.deleteUser?.error?.message?.includes('re-authenticate')) {
-            setStep('reauth')
-          } else {
-            window.location.href = ExternalLinks.RESOURCES
-          }
+    if (submitting) return
+    deleteUser({
+      variables: {userId: atmosphere.viewerId, reason: validReason},
+      onCompleted: (res) => {
+        if (res.deleteUser.error?.message?.includes('re-authenticate')) {
+          setStep('reauth')
+        } else {
+          window.location.href = ExternalLinks.RESOURCES
         }
       }
-    )
+    })
   }
 
   return (
@@ -86,7 +82,12 @@ const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
                 value={reason}
               />
               <DialogActions>
-                <Button variant='primary' size='md' onClick={handleDelete} disabled={!reason}>
+                <Button
+                  variant='primary'
+                  size='md'
+                  onClick={handleDelete}
+                  disabled={!reason || submitting}
+                >
                   {'Goodbye forever'}
                 </Button>
               </DialogActions>

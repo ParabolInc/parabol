@@ -34,7 +34,6 @@ type BaseNewMeeting = Pick<
   | 'scheduledEndTime'
   | 'summary'
   | 'sentimentScore'
-  | 'slackTs'
   | 'engagement'
   | 'summaryPageId'
 > & {phases: NewMeetingPhase[]; usedReactjis: UsedReactjis | null}

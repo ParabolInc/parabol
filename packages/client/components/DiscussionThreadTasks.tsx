@@ -30,7 +30,7 @@ const DiscussionThreadTasks = (props: Props) => {
       {hiddenCommentCount > 0 && (
         <div className='text-[13px] text-fg-muted leading-[18px]'>
           {hiddenCommentCount} {plural(hiddenCommentCount, 'comment')} hidden.{' '}
-          <button type='button' className='font-semibold text-accent' onClick={onShowAll}>
+          <button type='button' className='font-semibold text-accent-active' onClick={onShowAll}>
             Show all
           </button>
         </div>

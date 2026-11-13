@@ -96,9 +96,10 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     role
   })
   const ownerUsers = await dataLoader.get('users').loadMany(owners.map(({userId}) => userId))
+  const mailManager = await getMailManager()
   await Promise.all(
     ownerUsers.filter(isValid).map(({email}) =>
-      getMailManager().sendEmail({
+      mailManager.sendEmail({
         to: email,
         html,
         subject,

@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import type {BaseGraphQLError} from 'nest-graphql-endpoint'
 import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
@@ -36,6 +37,7 @@ import type {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
+import toNestedRequestError from '../platform/toNestedRequestError'
 import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
 
 export class GitLabRateLimitError extends Error {}
@@ -49,12 +51,12 @@ interface GitLabGraphQLError {
 const isRateLimited = ({message, extensions}: GitLabGraphQLError) =>
   extensions?.error_type === 'rate_limited' || message.includes('too many times')
 
-const toGitLabError = (error: GitLabGraphQLError | undefined) => {
-  if (!error) return null
-  if (isRateLimited(error)) {
+const toGitLabError = (errors: readonly BaseGraphQLError[] | null | undefined) => {
+  const [error] = errors ?? []
+  if (error && isRateLimited(error)) {
     return new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
   }
-  return new Error(error.message)
+  return toNestedRequestError(errors)
 }
 
 class GitLabServerManager implements TaskIntegrationManager {
@@ -90,7 +92,7 @@ class GitLabServerManager implements TaskIntegrationManager {
         batchRef
       })
       const {data, errors} = result
-      const error = toGitLabError(errors?.[0])
+      const error = toGitLabError(errors)
       return [data, error] as [TData, typeof error]
     }
   }

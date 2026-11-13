@@ -6,6 +6,7 @@ import useExportPagesToConfluenceMutation from '../../mutations/useExportPagesTo
 import {Button} from '../../ui/Button/Button'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import setStorageItem from '../../utils/setStorageItem'
 import {ConfluenceExportEmpty} from './ConfluenceExportEmpty'
 import {ConfluenceParentPageSearch} from './ConfluenceParentPageSearch'
 import {ConfluenceSpaceSelect, type SpaceOption} from './ConfluenceSpaceSelect'
@@ -95,7 +96,8 @@ export const ConfluenceExportForm = (props: ConfluenceExportFormProps) => {
       onCompleted: (res, errors) => {
         if (errors?.length) return
         const pageExport = res.exportPagesToConfluence.pageExport
-        window.localStorage.setItem(
+        setStorageItem(
+          'localStorage',
           confluenceExportDestKey(teamId),
           JSON.stringify({cloudId: activeSite.cloudId, spaceId: space.id, spaceName: space.name})
         )
