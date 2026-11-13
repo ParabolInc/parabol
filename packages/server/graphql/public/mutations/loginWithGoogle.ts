@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import AuthIdentityGoogle from '../../../database/types/AuthIdentityGoogle'
 import AuthToken from '../../../database/types/AuthToken'
@@ -10,6 +11,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import {isDeadGrant} from '../../../utils/OAuth2TokenError'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
@@ -21,7 +23,12 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   context
 ) => {
   const {dataLoader} = context
-  const manager = await GoogleServerManager.init(code)
+  const manager = await GoogleServerManager.init(code).catch((error: unknown) => {
+    if (!isDeadGrant(error)) throw error
+    throw new GraphQLError('Google did not accept this sign-in. Please sign in again', {
+      extensions: {code: 'UNAUTHENTICATED'}
+    })
+  })
   const {id} = manager
   if (!id) {
     return standardError(new Error('Invalid login code'))

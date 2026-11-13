@@ -3,7 +3,9 @@ import {authorizeOAuth2} from '../../integrations/helpers/authorizeOAuth2'
 import getKysely from '../../postgres/getKysely'
 import deactivateTeamMemberIntegrationAuthFamily from '../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily'
 import {selectTeamMemberIntegrationAuth} from '../../postgres/select'
+import {Logger} from '../../utils/Logger'
 import logError from '../../utils/logError'
+import {OAuth2TokenError} from '../../utils/OAuth2TokenError'
 import {ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import handleAuthRefreshFailure from '../handleAuthRefreshFailure'
 
@@ -68,10 +70,10 @@ describe('handleAuthRefreshFailure', () => {
     expect(logError).not.toHaveBeenCalled()
   })
 
-  it('logs with user and team/service tags and disconnects when the provider rejects the grant', async () => {
+  it('logs with user and team/service tags and disconnects when the provider rejects our client', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
-    const error = new Error('Token was globally revoked')
+    const error = new OAuth2TokenError('Unauthorized', 'invalid_client')
     await expect(handleAuthRefreshFailure(error, auth)).resolves.toBeNull()
     expect(logError).toHaveBeenCalledWith(error, {
       userId: 'user1',
@@ -83,6 +85,29 @@ describe('handleAuthRefreshFailure', () => {
     expect(chain.where).toHaveBeenCalledWith('providerId', '=', 7)
     expect(chain.where).toHaveBeenCalledWith('teamId', '=', 'team1')
     expect(chain.execute).toHaveBeenCalledTimes(1)
+  })
+
+  it('disconnects without logging an error when the provider says the grant is dead', async () => {
+    mockUpdateChain()
+    mockSelect({...auth})
+    const logInfo = jest.spyOn(Logger, 'info').mockImplementation(() => {})
+    jest.mocked(fetch).mockResolvedValue(
+      new Response(
+        '{"error":"unauthorized_client","error_description":"Token was globally revoked"}',
+        {
+          status: 403,
+          headers: {'content-type': 'application/json'}
+        }
+      )
+    )
+    const error = await authorizeOAuth2({authUrl: 'https://auth.atlassian.com/oauth/token'})
+    await expect(handleAuthRefreshFailure(error as Error, auth)).resolves.toBeNull()
+    expect(logError).not.toHaveBeenCalled()
+    expect(logInfo).toHaveBeenCalledWith(error, {
+      userId: 'user1',
+      tags: {teamId: 'team1', service: 'gcal'}
+    })
+    expect(deactivateTeamMemberIntegrationAuthFamily).toHaveBeenCalledWith(auth)
   })
 
   it('deactivates the token family through the shared helper', async () => {

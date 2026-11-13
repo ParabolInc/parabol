@@ -1,4 +1,5 @@
 import {fetch, Response} from '@whatwg-node/fetch'
+import {isDeadGrant, OAuth2TokenError} from '../../../utils/OAuth2TokenError'
 import {ThirdPartyResponseError} from '../../../utils/ThirdPartyResponseError'
 import {authorizeOAuth2} from '../authorizeOAuth2'
 
@@ -73,18 +74,55 @@ test('a token endpoint that answers JSON without a token or an OAuth2 error is r
   })
 })
 
-test('a token endpoint that names an OAuth2 error is a plain Error with its description', async () => {
+const answerOAuth2Error = (status: number, body: object) =>
   mockFetch.mockResolvedValue(
-    new Response('{"error":"invalid_grant","error_description":"Token was revoked"}', {
-      status: 400,
-      headers: {'content-type': 'application/json'}
-    })
+    new Response(JSON.stringify(body), {status, headers: {'content-type': 'application/json'}})
   )
+
+test('a token endpoint that names an OAuth2 error keeps its code and is described like a plain Error', async () => {
+  answerOAuth2Error(400, {error: 'invalid_grant', error_description: 'Token was revoked'})
   const result = await authorizeOAuth2({authUrl: 'https://gitlab.example.com/oauth/token'})
-  expect(result).toBeInstanceOf(Error)
+  expect(result).toBeInstanceOf(OAuth2TokenError)
   expect(result).not.toBeInstanceOf(ThirdPartyResponseError)
-  expect((result as Error).message).toBe('Token was revoked')
+  expect(result).toMatchObject({name: 'Error', message: 'Token was revoked', code: 'invalid_grant'})
 })
+
+test.each([
+  {provider: 'Google', status: 400, error: 'invalid_grant', description: 'Bad Request'},
+  {provider: 'Linear', status: 400, error: 'invalid_grant', description: 'Refresh token expired'},
+  {
+    provider: 'Atlassian',
+    status: 403,
+    error: 'unauthorized_client',
+    description: 'Token was globally revoked'
+  },
+  {
+    provider: 'Atlassian',
+    status: 403,
+    error: 'unauthorized_client',
+    description: 'refresh_token is invalid'
+  }
+])(
+  '$provider refusing a refresh token with "$description" is a dead grant',
+  async ({status, error, description}) => {
+    answerOAuth2Error(status, {error, error_description: description})
+    const result = await authorizeOAuth2({authUrl: 'https://auth.example.com/oauth/token'})
+    expect(isDeadGrant(result)).toBe(true)
+  }
+)
+
+test.each([
+  ['invalid_client', 'Unauthorized'],
+  ['invalid_request', 'AADSTS9002313: Invalid request. Request is malformed or invalid.']
+])(
+  'a token endpoint refusing our client or request with %s is not a dead grant',
+  async (error, description) => {
+    answerOAuth2Error(400, {error, error_description: description})
+    const result = await authorizeOAuth2({authUrl: 'https://auth.example.com/oauth/token'})
+    expect(result).toBeInstanceOf(OAuth2TokenError)
+    expect(isDeadGrant(result)).toBe(false)
+  }
+)
 
 test('a token response is read into tokens', async () => {
   mockFetch.mockResolvedValue(
