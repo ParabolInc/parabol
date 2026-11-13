@@ -1,8 +1,6 @@
 """
 """
 type LoginSAMLPayload {
-  error: StandardMutationError
-
   userId: ID
 
   """

@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import {GraphQLError} from 'graphql'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {passwordStrength} from '../../../../client/shared/passwordStrength'
@@ -12,8 +13,8 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {blacklistJWT} from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import userErrorResult from './helpers/userErrorResult'
 
 const resetPassword: MutationResolvers['resetPassword'] = async (
   _source,
@@ -21,7 +22,9 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
   context
 ) => {
   if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
-    return {error: {message: 'Resetting password is disabled'}}
+    throw new GraphQLError('Resetting password is disabled', {
+      extensions: {code: 'NOT_IMPLEMENTED'}
+    })
   }
   const pg = getKysely()
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
@@ -32,23 +35,25 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     .executeTakeFirst()
 
   if (!resetRequest) {
-    return {error: {message: 'Invalid reset token'}}
+    return userErrorResult('TOKEN_INVALID', 'Invalid reset token')
   }
 
   const {id: resetRequestId, email, time, isValid} = resetRequest
   const isExpired = time.getTime() + Threshold.RESET_PASSWORD_LIFESPAN < Date.now()
   if (isExpired || !isValid) {
-    return {error: {message: 'Reset token expired'}}
+    return userErrorResult('TOKEN_EXPIRED', 'Reset token expired')
   }
 
   // token is legit, let's invalidate it & set the new password
   const user = await getUserByEmail(email)
   if (!user) {
-    return standardError(new Error(`User ${email} does not exist for password reset`))
+    throw new GraphQLError(`User ${email} does not exist for password reset`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   const weakError = passwordStrength(newPassword, email)
   if (weakError) {
-    return {error: {message: weakError}}
+    return userErrorResult('PASSWORD_TOO_WEAK', weakError, {field: 'newPassword'})
   }
 
   const {id: userId, identities, rol} = user
@@ -56,7 +61,9 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
   ) as AuthIdentityLocal
   if (!localIdentity) {
-    return standardError(new Error(`User ${email} does not have a local identity`), {userId})
+    throw new GraphQLError(`User ${email} does not have a local identity`, {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   await pg
     .updateTable('PasswordResetRequest')

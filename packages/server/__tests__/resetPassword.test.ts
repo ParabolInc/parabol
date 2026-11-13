@@ -28,8 +28,8 @@ test('Reset password', async () => {
     query: `
       mutation ResetPassword($token: ID!, $newPassword: String!) {
         resetPassword(token: $token, newPassword: $newPassword) {
-          error {
-            message
+          userErrors {
+            code
           }
           userId
         }
@@ -46,7 +46,7 @@ test('Reset password', async () => {
     cookie: expect.anything(),
     data: {
       resetPassword: {
-        error: null,
+        userErrors: [],
         userId: expect.anything()
       }
     }
@@ -57,8 +57,8 @@ test('Reset password', async () => {
     query: `
       mutation LoginWithPassword($email: ID!, $password: String!) {
         loginWithPassword(email: $email, password: $password) {
-          error {
-            message
+          userErrors {
+            code
           }
           user {
             id
@@ -73,10 +73,48 @@ test('Reset password', async () => {
   expect(login).toMatchObject({
     data: {
       loginWithPassword: {
-        error: null,
+        userErrors: [],
         user: {
           email
         }
+      }
+    }
+  })
+})
+
+test('An expired reset token comes back as a user error', async () => {
+  const {email} = await signUp()
+  const resetPasswordToken = base64url.encode(crypto.randomBytes(48))
+  const tokenHash = crypto.createHash('sha256').update(resetPasswordToken).digest('hex')
+  await getKysely()
+    .insertInto('PasswordResetRequest')
+    .values({ip: '127.0.0.1', email, tokenHash, isValid: false})
+    .execute()
+
+  const result = await sendPublic({
+    query: `
+      mutation ResetPassword($token: ID!, $newPassword: String!) {
+        resetPassword(token: $token, newPassword: $newPassword) {
+          error {
+            message
+          }
+          userErrors {
+            code
+            message
+          }
+          userId
+        }
+      }
+    `,
+    variables: {token: resetPasswordToken, newPassword: faker.internet.password(20)}
+  })
+
+  expect(result).toEqual({
+    data: {
+      resetPassword: {
+        error: {message: 'Reset token expired'},
+        userErrors: [{code: 'TOKEN_EXPIRED', message: 'Reset token expired'}],
+        userId: null
       }
     }
   })

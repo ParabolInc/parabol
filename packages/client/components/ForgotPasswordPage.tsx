@@ -8,7 +8,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
-import {AuthenticationError} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
@@ -83,12 +82,7 @@ const ForgotPasswordPage = (props: Props) => {
     goToPage('signin', params.toString())
   }
 
-  const errorMessage = {
-    [AuthenticationError.USER_NOT_FOUND]: 'We couldn’t find that email. Please try again.',
-    [AuthenticationError.EXCEEDED_RESET_THRESHOLD]:
-      'Too many reset password attempts. Please try again later.'
-  }
-  const prettyError = error ? errorMessage[error.message as keyof typeof errorMessage] : undefined
+  const isUnexpectedError = error?.code === 'INTERNAL_SERVER_ERROR'
   return (
     <AuthenticationDialog>
       <DialogTitle>{'Forgot your password?'}</DialogTitle>
@@ -116,7 +110,7 @@ const ForgotPasswordPage = (props: Props) => {
           </Button>
           {error && (
             <StyledError className='pt-4 text-[12px]'>
-              {prettyError || (
+              {isUnexpectedError ? (
                 <>
                   {'Oh no! Something went wrong. Try again or '}{' '}
                   <a
@@ -129,6 +123,8 @@ const ForgotPasswordPage = (props: Props) => {
                     {'contact us'}.
                   </a>
                 </>
+              ) : (
+                error.message
               )}
             </StyledError>
           )}

@@ -33,6 +33,14 @@ export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: nu
     )
     .execute()
 }
+const getPageIdFromKey = (pageKey: string) => {
+  try {
+    return CipherId.fromClient(pageKey)
+  } catch {
+    throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+}
+
 export const validateScope = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
@@ -43,38 +51,45 @@ export const validateScope = async (
   const viewerId = getUserId(authToken)
   let scopeCode = scopeKey
   if (scope === 'User' && scopeKey !== viewerId) {
-    return {error: {message: 'scopeKey must match your viewerId'}}
+    throw new GraphQLError('scopeKey must match your viewerId', {extensions: {code: 'FORBIDDEN'}})
   } else if (scope === 'Team') {
     if (!isTeamMember(authToken, scopeKey)) {
-      return {error: {message: 'scopeKey must match one of your teams'}}
+      throw new GraphQLError('scopeKey must match one of your teams', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (resourceGrants && !(await resourceGrants.hasTeam(scopeKey))) {
-      return {error: {message: 'PAT does not grant access to this team'}}
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   } else if (scope === 'Organization') {
     const inOrg = await isUserInOrg(viewerId, scopeKey, dataLoader)
     if (!inOrg) {
-      return {error: {message: 'scopeKey must match one of your organizations'}}
+      throw new GraphQLError('scopeKey must match one of your organizations', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (resourceGrants && !(await resourceGrants.hasOrg(scopeKey))) {
-      return {error: {message: 'PAT does not grant access to this organization'}}
+      throw new GraphQLError('PAT does not grant access to this organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   } else if (scope === 'Page') {
-    try {
-      const [pageId, pageCode] = CipherId.fromClient(scopeKey)
-
-      scopeCode = `${pageCode}`
-      const pageAccess = await dataLoader
-        .get('pageAccessByPageIdUserId')
-        .load({pageId, userId: viewerId})
-      if (!pageAccess || pageAccess === 'viewer') {
-        return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
-      }
-      if (resourceGrants && !(await resourceGrants.hasPage(pageId))) {
-        return {error: {message: 'PAT does not grant access to this page'}}
-      }
-    } catch {
-      return {error: {message: 'Invalid pageId'}}
+    const [pageId, pageCode] = getPageIdFromKey(scopeKey)
+    scopeCode = `${pageCode}`
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
+    if (!pageAccess || pageAccess === 'viewer') {
+      throw new GraphQLError('You must be a page commentor or higher to use the page scope', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
+    if (resourceGrants && !(await resourceGrants.hasPage(pageId))) {
+      throw new GraphQLError('PAT does not grant access to this page', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
   return scopeCode
@@ -95,17 +110,18 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   ])
   const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
   if (BigInt(bytesUploaded) > BigInt(maxSize)) {
-    return {error: {message: `Upload limit reached. Please contact sales`}}
+    throw new GraphQLError('Upload limit reached. Please contact sales', {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
-  if (typeof scopeCode !== 'string') return scopeCode
 
   const contentType = file.type
   const buffer = Buffer.from<ArrayBufferLike>(await file.arrayBuffer())
   const ext = mime.extension(contentType)
   if (!ext) {
-    return {
-      error: {message: `Unable to determine extension for ${contentType}`}
-    }
+    throw new GraphQLError(`Unable to determine extension for ${contentType}`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const mimeError = checkFileMimeType(new Uint8Array(buffer), contentType)
   if (mimeError) throw new GraphQLError(mimeError, {extensions: {code: 'BAD_USER_INPUT'}})
@@ -117,12 +133,16 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     fileBuffer = res.buffer
     fileExtension = res.extension
     if (fileBuffer.byteLength > MAX_IMAGE_SIZE) {
-      return {error: {message: `Max image size is ${MAX_IMAGE_SIZE} bytes`}}
+      throw new GraphQLError(`Max image size is ${MAX_IMAGE_SIZE} bytes`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
   } else {
     const maxSize = viewerTier === 'starter' ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
     if (buffer.byteLength > maxSize) {
-      return {error: {message: `Max file size is ${maxSize} bytes`}}
+      throw new GraphQLError(`Max file size is ${maxSize} bytes`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))

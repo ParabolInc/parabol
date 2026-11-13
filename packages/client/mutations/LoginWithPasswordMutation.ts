@@ -14,7 +14,7 @@ const mutation = graphql`
     $isInvitation: Boolean!
   ) {
     loginWithPassword(email: $email, password: $password) {
-      error {
+      userErrors {
         message
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
@@ -35,10 +35,10 @@ const LoginWithPasswordMutation: StandardMutation<
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithPassword} = res
-      const {error: uiError} = loginWithPassword
+      const [userError] = loginWithPassword.userErrors
       onCompleted({loginWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!uiError && !errors) {
+      if (!userError && !errors) {
         handleSuccessfulLogin(atmosphere, loginWithPassword)
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,

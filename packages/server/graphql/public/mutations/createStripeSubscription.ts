@@ -1,8 +1,9 @@
+import {GraphQLError} from 'graphql'
 import type Stripe from 'stripe'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import toStripeGraphQLError from '../../../utils/stripe/toStripeGraphQLError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createStripeSubscription: MutationResolvers['createStripeSubscription'] = async (
@@ -21,7 +22,9 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
   const manager = getStripeManager()
   const {stripeId, stripeSubscriptionId} = organization
   if (stripeSubscriptionId) {
-    return standardError(new Error('Organization already has a subscription'), {userId: viewerId})
+    throw new GraphQLError('Organization already has a subscription', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   const {email} = viewer
   let customer: Stripe.Response<Stripe.Customer | Stripe.DeletedCustomer>
@@ -29,12 +32,12 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     customer = await manager.retrieveCustomer(stripeId)
     const {id: customerId} = customer
     const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-    if (res instanceof Error) return standardError(res, {userId: viewerId})
+    if (res instanceof Error) throw toStripeGraphQLError(res)
     // cannot updateDefaultPaymentMethod until it is attached to the customer
     await manager.updateDefaultPaymentMethod(customerId, paymentMethodId)
   } else {
     const maybeCustomer = await manager.createCustomer(orgId, email, paymentMethodId)
-    if (maybeCustomer instanceof Error) return {error: {message: maybeCustomer.message}}
+    if (maybeCustomer instanceof Error) throw toStripeGraphQLError(maybeCustomer)
     customer = maybeCustomer
   }
 

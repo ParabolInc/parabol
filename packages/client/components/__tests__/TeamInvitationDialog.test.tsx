@@ -69,7 +69,7 @@ const invitationFor = (user: {preferredName: string} | null) =>
   }) as unknown as TeamInvitationDialog_verifiedInvitation$key
 
 const replyFor = (activeMeetingIds: string[]) => ({
-  error: null,
+  userErrors: [],
   meetingId: null,
   team: {id: 'team-1', activeMeetings: activeMeetingIds.map((id) => ({id}))}
 })

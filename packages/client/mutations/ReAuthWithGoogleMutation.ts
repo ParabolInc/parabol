@@ -7,7 +7,7 @@ import getMutationError from '../utils/relay/getMutationError'
 const mutation = graphql`
   mutation ReAuthWithGoogleMutation($code: ID!, $pseudoId: ID, $params: String!) {
     loginWithGoogle(code: $code, pseudoId: $pseudoId, invitationToken: "", params: $params) {
-      error {
+      userErrors {
         message
       }
       userId
@@ -25,12 +25,8 @@ const ReAuthWithGoogleMutation = (
     variables,
     onError: (err) => onCompleted(getMutationError(err).message),
     onCompleted: (res) => {
-      const {loginWithGoogle} = res
-      if (loginWithGoogle.error) {
-        onCompleted(loginWithGoogle.error.message)
-      } else {
-        onCompleted()
-      }
+      const [userError] = res.loginWithGoogle.userErrors
+      onCompleted(userError?.message)
     }
   })
 }

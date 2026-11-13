@@ -190,10 +190,6 @@ const loginSAML = (samlName: string, samlResponse: string, relayState: object) =
     query: `
       mutation loginSAML($queryString: String!, $samlName: ID!) {
         loginSAML(queryString: $queryString, samlName: $samlName) {
-          error {
-            title
-            message
-          }
           authToken
         }
       }
@@ -217,14 +213,7 @@ describe('loginSAML', () => {
     const samlResponse = await buildSignedResponse(idpMetadata)
     const saml = await loginSAML(samlName, samlResponse, {})
 
-    expect(saml).toMatchObject({
-      data: {
-        loginSAML: {
-          error: null,
-          authToken: expect.anything()
-        }
-      }
-    })
+    expect(saml).toEqual({data: {loginSAML: {authToken: expect.anything()}}})
   })
 
   test('ignores a metadataURL placed in the RelayState', async () => {
@@ -233,14 +222,7 @@ describe('loginSAML', () => {
       metadataURL: 'https://attacker.example/metadata'
     })
 
-    expect(saml).toMatchObject({
-      data: {
-        loginSAML: {
-          error: null,
-          authToken: expect.anything()
-        }
-      }
-    })
+    expect(saml).toEqual({data: {loginSAML: {authToken: expect.anything()}}})
     const stored = await getKysely()
       .selectFrom('SAML')
       .select(['metadata', 'metadataURL'])
@@ -255,13 +237,10 @@ describe('loginSAML', () => {
       metadataChangeId: 'not-issued-by-the-server'
     })
 
-    expect(saml).toMatchObject({
-      data: {
-        loginSAML: {
-          error: {message: expect.stringContaining('expired')},
-          authToken: null
-        }
-      }
+    expect(saml.data).toBeNull()
+    expect(saml.errors?.[0]).toMatchObject({
+      message: expect.stringContaining('expired'),
+      extensions: {code: 'CONFLICT'}
     })
   })
 })

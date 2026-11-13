@@ -15,6 +15,22 @@ import handleInvitationToken from '../../mutations/helpers/handleInvitationToken
 import type {MutationResolvers} from '../resolverTypes'
 import {getIsAnyUserOrgLocked} from './helpers/getIsAnyUserOrgLocked'
 import {getIsUserIdApprovedByOrg} from './helpers/getIsUserIdApprovedByOrg'
+import userErrorResult from './helpers/userErrorResult'
+
+const invitationTokenUserError = {
+  [InvitationTokenError.NOT_FOUND]: ['TOKEN_INVALID', 'The invitation is not valid'],
+  [InvitationTokenError.EXPIRED]: ['TOKEN_EXPIRED', 'The invitation has expired'],
+  [InvitationTokenError.ALREADY_ACCEPTED]: [
+    'TOKEN_ALREADY_USED',
+    'The invitation has already been accepted'
+  ],
+  [InvitationTokenError.NOT_SIGNED_IN]: ['NOT_SIGNED_IN', 'Sign in to accept the invitation']
+} as const
+
+const invitationTokenErrorResult = (tokenError: InvitationTokenError) => {
+  const [code, message] = invitationTokenUserError[tokenError]
+  return userErrorResult(code, message, {legacyMessage: tokenError})
+}
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
@@ -29,7 +45,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   // VALIDATION
   // This can happen if login with an invitation failed. We want to handle this gracefully so the client shows a nice error message
   if (!viewerId) {
-    return {error: {message: InvitationTokenError.NOT_SIGNED_IN}}
+    return invitationTokenErrorResult(InvitationTokenError.NOT_SIGNED_IN)
   }
   const invitationRes = await handleInvitationToken(
     invitationToken,
@@ -38,21 +54,21 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     notificationId ?? undefined
   )
   if (invitationRes.error) {
-    const {error: message, teamId, meetingId} = invitationRes
+    const {error: tokenError, teamId, meetingId} = invitationRes
     // If the user already accepted the invite, then we want to send the needed data together with the error, unless they were removed in the meantime
     if (
-      message === InvitationTokenError.ALREADY_ACCEPTED &&
+      tokenError === InvitationTokenError.ALREADY_ACCEPTED &&
       teamId &&
       isTeamMember(authToken, teamId)
     ) {
       return {
-        error: {message},
+        ...invitationTokenErrorResult(tokenError),
         teamId,
         meetingId,
         teamMemberId: toTeamMemberId(teamId!, viewerId)
       }
     }
-    return {error: {message}}
+    return invitationTokenErrorResult(tokenError)
   }
 
   const {invitation} = invitationRes
@@ -65,25 +81,20 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const redisLock = new RedisLock(`acceptTeamInvitation:${viewerId}:${orgId}`, ttl)
   const lockTTL = await redisLock.checkLock()
   if (lockTTL > 0) {
-    return {
-      error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
-    }
+    return userErrorResult('DUPLICATE_REQUEST', 'The invitation is already being accepted')
   }
 
   const [approvalError, isAnyViewerOrgLocked] = await Promise.all([
     getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken),
     getIsAnyUserOrgLocked(viewerId, dataLoader)
   ])
-  if (approvalError instanceof Error) {
+  if (approvalError) {
     await redisLock.unlock()
-    return {error: {message: approvalError.message}}
+    return userErrorResult(approvalError.code, approvalError.message)
   }
   if (isAnyViewerOrgLocked) {
-    return {
-      error: {
-        message: LOCKED_MESSAGE.TEAM_INVITE
-      }
-    }
+    await redisLock.unlock()
+    return userErrorResult('ORGANIZATION_LOCKED', LOCKED_MESSAGE.TEAM_INVITE)
   }
 
   // RESOLUTION

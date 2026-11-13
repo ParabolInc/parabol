@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import {GraphQLError} from 'graphql'
 import {passwordStrength} from 'parabol-client/shared/passwordStrength'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import createEmailVerification from '../../../email/createEmailVerification'
@@ -10,6 +11,7 @@ import normalizeEmail from '../../../utils/normalizeEmail'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
+import userErrorResult from './helpers/userErrorResult'
 
 const isValidEmailInvitationToken = async (
   email: string,
@@ -37,7 +39,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
 ) => {
   const email = normalizeEmail(denormEmail)
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
-    return {error: {message: 'Email is too long'}}
+    return userErrorResult('EMAIL_INVALID', 'Email is too long', {field: 'email'})
   }
   const pg = getKysely()
   const isOrganic = !invitationToken
@@ -53,22 +55,22 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   }
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-    return {error: {message: 'Try logging in with Google'}}
+    return userErrorResult('SIGN_IN_WITH_GOOGLE', 'Try logging in with Google')
   } else if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
-    return {error: {message: 'Try logging in with Microsoft'}}
+    return userErrorResult('SIGN_IN_WITH_MICROSOFT', 'Try logging in with Microsoft')
   } else if (error === AuthenticationError.INVALID_PASSWORD) {
-    return {error: {message: 'User already exists'}}
+    return userErrorResult('USER_EXISTS', 'User already exists')
   }
 
   // it's a new user!
   const [nickname, domain] = email.split('@')
   if (!nickname || !domain) {
-    return {error: {message: 'Invalid email'}}
+    return userErrorResult('EMAIL_INVALID', 'Invalid email', {field: 'email'})
   }
 
   const weakError = passwordStrength(password, email)
   if (weakError) {
-    return {error: {message: weakError}}
+    return userErrorResult('PASSWORD_TOO_WEAK', weakError, {field: 'password'})
   }
 
   const verifiedByInvite = await isValidEmailInvitationToken(email, invitationToken)
@@ -80,16 +82,25 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
       .where('expiration', '>', new Date())
       .executeTakeFirst()
     if (existingVerification) {
-      return {error: {message: 'Verification email already sent'}}
+      return userErrorResult('EMAIL_VERIFICATION_REQUIRED', 'Verification email already sent')
     }
     const redirectTo = new URLSearchParams(params).get('redirectTo')
-    return createEmailVerification({
+    const isSent = await createEmailVerification({
       invitationToken,
       password,
       pseudoId,
       email,
       redirectTo
     })
+    if (!isSent) {
+      throw new GraphQLError('Unable to send verification email', {
+        extensions: {code: 'SERVICE_UNAVAILABLE'}
+      })
+    }
+    return userErrorResult(
+      'EMAIL_VERIFICATION_REQUIRED',
+      'Verification required. Check your inbox.'
+    )
   }
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const newUser = await createNewLocalUser({

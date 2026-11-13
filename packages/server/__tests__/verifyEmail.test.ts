@@ -7,8 +7,8 @@ import {sendPublic, signUp} from './common'
 const VERIFY_EMAIL_MUTATION = `
   mutation VerifyEmailMutation($verificationToken: ID!) {
     verifyEmail(verificationToken: $verificationToken) {
-      error {
-        message
+      userErrors {
+        code
       }
       user {
         id
@@ -48,7 +48,7 @@ test('Verifying an email signs in an existing user who has only an OAuth identit
     cookie: expect.anything(),
     data: {
       verifyEmail: {
-        error: null,
+        userErrors: [],
         user: {id: userId, email}
       }
     }
@@ -59,4 +59,15 @@ test('Verifying an email signs in an existing user who has only an OAuth identit
     .where('id', '=', userId)
     .executeTakeFirstOrThrow()
   expect(user.identities).toEqual(oauthIdentities)
+})
+
+test('An unknown verification token comes back as a user error', async () => {
+  const verifyEmail = await sendPublic({
+    query: VERIFY_EMAIL_MUTATION,
+    variables: {verificationToken: crypto.randomBytes(48).toString('base64url')}
+  })
+
+  expect(verifyEmail).toEqual({
+    data: {verifyEmail: {userErrors: [{code: 'TOKEN_INVALID'}], user: null}}
+  })
 })

@@ -1,0 +1,99 @@
+"""
+What a UserError is about
+"""
+enum UserErrorCode {
+  """
+  The email and password don't match an account
+  """
+  INVALID_CREDENTIALS
+
+  """
+  The account signs in with Google
+  """
+  SIGN_IN_WITH_GOOGLE
+
+  """
+  The account signs in with Microsoft
+  """
+  SIGN_IN_WITH_MICROSOFT
+
+  """
+  The account's organization requires single sign-on
+  """
+  SIGN_IN_WITH_SSO
+
+  """
+  The account signs in with an email and password
+  """
+  SIGN_IN_WITH_PASSWORD
+
+  """
+  An account already exists for the email
+  """
+  USER_EXISTS
+
+  """
+  No account exists for the email
+  """
+  USER_NOT_FOUND
+
+  """
+  The account has been removed
+  """
+  ACCOUNT_REMOVED
+
+  """
+  The email address isn't valid
+  """
+  EMAIL_INVALID
+
+  """
+  The password is too easy to guess
+  """
+  PASSWORD_TOO_WEAK
+
+  """
+  The email address needs verifying first. Check the inbox for a verification email
+  """
+  EMAIL_VERIFICATION_REQUIRED
+
+  """
+  The link or token isn't valid
+  """
+  TOKEN_INVALID
+
+  """
+  The link or token has expired
+  """
+  TOKEN_EXPIRED
+
+  """
+  The link or token has already been used
+  """
+  TOKEN_ALREADY_USED
+
+  """
+  The viewer needs to sign in first
+  """
+  NOT_SIGNED_IN
+
+  """
+  The organization only admits users it has approved
+  """
+  NOT_APPROVED
+
+  """
+  One of the viewer's organizations is locked because of an overdue payment
+  """
+  ORGANIZATION_LOCKED
+
+  """
+  The same request is already being processed
+  """
+  DUPLICATE_REQUEST
+
+  """
+  Too many attempts. Try again later
+  """
+  TOO_MANY_ATTEMPTS
+}
