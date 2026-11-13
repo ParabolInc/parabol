@@ -7,6 +7,7 @@ import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/cre
 import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
+import getGroupIssues from '../../graphql/nestedSchema/GitLab/queries/getGroupIssues.graphql'
 import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import getLabels from '../../graphql/nestedSchema/GitLab/queries/getLabels.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
@@ -19,6 +20,8 @@ import type {
   CreateLabelMutation,
   CreateLabelMutationVariables,
   CreateNoteMutation,
+  GetGroupIssuesQuery,
+  GetGroupIssuesQueryVariables,
   GetIssueQuery,
   GetLabelsQuery,
   GetProfileQuery,
@@ -34,6 +37,25 @@ import type {
   TaskIntegrationManager
 } from '../platform/TaskIntegrationManager'
 import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
+
+export class GitLabRateLimitError extends Error {}
+
+interface GitLabGraphQLError {
+  message: string
+  extensions?: {error_type?: string}
+}
+
+// GitLab answers a request over the user's quota with this error, and only newer versions add the error_type
+const isRateLimited = ({message, extensions}: GitLabGraphQLError) =>
+  extensions?.error_type === 'rate_limited' || message.includes('too many times')
+
+const toGitLabError = (error: GitLabGraphQLError | undefined) => {
+  if (!error) return null
+  if (isRateLimited(error)) {
+    return new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
+  }
+  return new Error(error.message)
+}
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -68,7 +90,7 @@ class GitLabServerManager implements TaskIntegrationManager {
         batchRef
       })
       const {data, errors} = result
-      const error = errors ? new Error(errors[0]?.message) : null
+      const error = toGitLabError(errors?.[0])
       return [data, error] as [TData, typeof error]
     }
   }
@@ -167,6 +189,15 @@ class GitLabServerManager implements TaskIntegrationManager {
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(
       getProjectIssues,
       projectIssuesArgs
+    )
+    return [issuesData, issuesError] as const
+  }
+
+  async getGroupIssues(groupIssuesArgs: GetGroupIssuesQueryVariables) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [issuesData, issuesError] = await gitlabRequest<GetGroupIssuesQuery>(
+      getGroupIssues,
+      groupIssuesArgs
     )
     return [issuesData, issuesError] as const
   }
