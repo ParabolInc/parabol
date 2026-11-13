@@ -7,6 +7,7 @@ import {GraphiQL} from 'graphiql'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {Button} from '~/ui/Button/Button'
 import {Dialog} from '~/ui/Dialog/Dialog'
 import {DialogActions} from '~/ui/Dialog/DialogActions'
 import {DialogContent} from '~/ui/Dialog/DialogContent'
@@ -114,20 +115,18 @@ const GraphqlContainer = () => {
           )}
           <DialogActions>
             {accessToken && (
-              <button
-                onClick={handleCloseModal}
-                className='rounded px-4 py-2 font-medium text-slate-600 text-sm hover:bg-slate-100'
-              >
+              <Button variant='outline' size='md' onClick={handleCloseModal}>
                 Cancel
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant='primary'
+              size='md'
               onClick={handleSubmitPat}
               disabled={!patInput.trim()}
-              className='rounded bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600 disabled:opacity-50'
             >
               Submit
-            </button>
+            </Button>
           </DialogActions>
         </DialogContent>
       </Dialog>

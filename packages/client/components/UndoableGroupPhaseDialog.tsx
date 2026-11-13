@@ -2,6 +2,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 
@@ -25,18 +26,14 @@ const UndoableGroupPhaseDialog = (props: Props) => {
           <b>Danger zone</b>: to edit groups you must reset the meeting to this point.
         </p>
         <p>All votes and discussion will be lost.</p>
-        <div className='mt-4 flex items-center justify-end'>
-          <Button
-            variant='flat'
-            onClick={closePortal}
-            className='mr-4 px-4 py-2 font-semibold text-fg-secondary'
-          >
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closePortal}>
             Cancel
           </Button>
-          <Button variant='primary' size='sm' className='text-sm' onClick={handleConfirm}>
+          <Button variant='primary' size='md' onClick={handleConfirm}>
             Confirm Reset
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

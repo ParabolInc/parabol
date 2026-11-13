@@ -7,6 +7,7 @@ import useTeamInviteeDrafts, {
 import useInviteToTeamMutation from '../mutations/useInviteToTeamMutation'
 import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import GraphQLServerError from '../utils/relay/GraphQLServerError'
 import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
 import TeamInviteeInput from './TeamInviteeInput'
@@ -123,7 +124,13 @@ const AddTeamMemberEmailInvites = (props: Props) => {
           <span className='font-semibold text-fg-primary'>{requestError}</span>
         </div>
       )}
-      <div className='mt-6 flex flex-wrap items-center gap-x-4 gap-y-2'>
+      <DialogActions className='items-center'>
+        {leftoverCount > 0 && (
+          <span className='mr-auto text-fg-secondary text-sm leading-5'>
+            You can invite up to {MAX_TEAM_INVITEES} people at a time. The other {leftoverCount}{' '}
+            will stay here for the next batch.
+          </span>
+        )}
         <Button
           variant='primary'
           size='md'
@@ -133,13 +140,7 @@ const AddTeamMemberEmailInvites = (props: Props) => {
         >
           {label}
         </Button>
-        {leftoverCount > 0 && (
-          <span className='text-fg-secondary text-sm leading-5'>
-            You can invite up to {MAX_TEAM_INVITEES} people at a time. The other {leftoverCount}{' '}
-            will stay here for the next batch.
-          </span>
-        )}
-      </div>
+      </DialogActions>
     </>
   )
 }

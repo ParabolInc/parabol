@@ -5,6 +5,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import svgToPng from '../utils/svgToPng'
@@ -58,16 +59,11 @@ const UserAvatarInput = (props: Props) => {
           <Avatar picture={picture} className='h-24 w-24' />
         </div>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
-        <div className='flex w-full justify-end'>
-          <Button
-            variant='flat'
-            size='sm'
-            onClick={onClose}
-            className='mr-6 mb-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
-          >
+        <DialogActions>
+          <Button variant='primary' size='md' onClick={onClose}>
             {'Save'}
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

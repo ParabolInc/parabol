@@ -28,7 +28,7 @@ const StartMeetingSeriesNowDialog = (props: Props) => {
           <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='dialogPrimary' size='md' onClick={onConfirm} disabled={isSubmitting}>
+          <Button variant='primary' size='md' onClick={onConfirm} disabled={isSubmitting}>
             Start next meeting
           </Button>
         </DialogActions>

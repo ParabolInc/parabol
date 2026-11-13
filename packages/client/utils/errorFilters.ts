@@ -25,8 +25,18 @@ const isThrownByInjectedScript = (stack: string | undefined) => {
   return !!throwingFrame && /\(<anonymous>:\d+:\d+\)$/.test(throwingFrame)
 }
 
-export const isExtensionError = ({name, stack}: Error) => {
-  return name === 'NotFoundError' || isFromExtension(stack) || isThrownByInjectedScript(stack)
+// A program that embeds Chromium with CefSharp, as link scanners do, rejects with this when its injected script calls an object it unbound
+const isCefSharpBindingError = (message: string) => {
+  return message.startsWith('Object Not Found Matching Id:')
+}
+
+export const isExtensionError = ({name, message, stack}: Error) => {
+  return (
+    name === 'NotFoundError' ||
+    isFromExtension(stack) ||
+    isThrownByInjectedScript(stack) ||
+    isCefSharpBindingError(message)
+  )
 }
 
 export const isIgnoredError = (error: Error) => {

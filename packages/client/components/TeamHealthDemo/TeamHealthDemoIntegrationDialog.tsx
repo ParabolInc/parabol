@@ -2,6 +2,7 @@ import {Link} from 'react-router'
 import {ArrowForward, Check} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {TEAM_HEALTH_DETAILS_URL} from './teamHealthDetailsUrl'
@@ -45,12 +46,14 @@ const TeamHealthDemoIntegrationDialog = (props: Props) => {
             </li>
           ))}
         </ul>
-        <Button asChild variant='primary' size='md' className='mt-6 w-full gap-2'>
-          <Link to={TEAM_HEALTH_DETAILS_URL}>
-            Start Team Health
-            <ArrowForward className='size-4' />
-          </Link>
-        </Button>
+        <DialogActions>
+          <Button asChild variant='primary' size='md' className='gap-2'>
+            <Link to={TEAM_HEALTH_DETAILS_URL}>
+              Start Team Health
+              <ArrowForward className='size-4' />
+            </Link>
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

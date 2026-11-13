@@ -7,8 +7,10 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import {readableReasonsToDowngrade, reasonsToDowngradeLookup} from '../../../../utils/constants'
@@ -114,14 +116,11 @@ const DowngradeModal = (props: Props) => {
                   </div>
                 </>
               )}
-              <div className='flex w-full justify-between pt-8'>
-                <div
-                  onClick={handleSubmit}
-                  className='font-semibold text-[16px] text-accent leading-[1.5] hover:cursor-pointer'
-                >
+              <DialogActions>
+                <Button variant='primary' size='md' onClick={handleSubmit}>
                   Submit
-                </div>
-              </div>
+                </Button>
+              </DialogActions>
             </div>
           </>
         ) : (
@@ -141,20 +140,14 @@ const DowngradeModal = (props: Props) => {
                   </li>
                 ))}
               </ul>
-              <div className='flex w-full justify-between pt-8'>
-                <div
-                  onClick={handleConfirm}
-                  className='font-semibold text-[16px] text-accent leading-[1.5] hover:cursor-pointer'
-                >
-                  Yes, downgrade
-                </div>
-                <div
-                  onClick={closeModal}
-                  className='font-semibold text-[16px] text-accent leading-[1.5] hover:cursor-pointer'
-                >
+              <DialogActions>
+                <Button variant='outline' size='md' onClick={closeModal}>
                   Keep my plan
-                </div>
-              </div>
+                </Button>
+                <Button variant='primary' size='md' onClick={handleConfirm}>
+                  Yes, downgrade
+                </Button>
+              </DialogActions>
             </div>
           </>
         )}

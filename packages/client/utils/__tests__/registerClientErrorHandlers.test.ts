@@ -205,6 +205,22 @@ test('an unhandled rejection from a Safari extension is not reported', async () 
   expect(sentBeacon).not.toHaveBeenCalled()
 })
 
+test('an unhandled rejection from a script a CefSharp host injects is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  rejectUnhandled('Object Not Found Matching Id:3, MethodName:update, ParamCount:4')
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('an unhandled rejection with a string of the app is still reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  rejectUnhandled('Team not found')
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'Error', message: 'Team not found'})
+  ])
+})
+
 test('a console error logged with an error from another realm keeps its message', async () => {
   const {flushClientErrors} = await loadHandlers()
   const stack = 'importRecords@https://example.test/build/app.js:4:900'

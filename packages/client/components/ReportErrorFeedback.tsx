@@ -4,6 +4,7 @@ import useSubmitErrorFeedbackMutation from '../mutations/useSubmitErrorFeedbackM
 import {LocalStorageKey} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import getMutationError from '../utils/relay/getMutationError'
@@ -62,7 +63,7 @@ const ReportErrorFeedback = (props: Props) => {
           value={text}
           error={submitError}
         />
-        <div className='mt-6 flex justify-end'>
+        <DialogActions>
           <Button
             variant='primary'
             onClick={onSubmit}
@@ -71,7 +72,7 @@ const ReportErrorFeedback = (props: Props) => {
           >
             {'Submit Report'}
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

@@ -246,7 +246,7 @@ export const ImportDialog = (props: Props) => {
           </div>
         )}
 
-        <DialogActions className='mt-0 flex w-full gap-4'>
+        <DialogActions>
           {records ? (
             <>
               <Button variant='outline' size='md' onClick={onBack}>

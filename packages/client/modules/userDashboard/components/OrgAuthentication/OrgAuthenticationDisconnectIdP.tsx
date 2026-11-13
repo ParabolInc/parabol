@@ -81,7 +81,7 @@ const OrgAuthenticationDisconnectIdP = (props: Props) => {
             <Button variant='outline' size='md' onClick={close}>
               Cancel
             </Button>
-            <Button variant='destructive' size='md' disabled={submitting} onClick={confirm}>
+            <Button variant='primary' size='md' disabled={submitting} onClick={confirm}>
               Disconnect identity provider
             </Button>
           </DialogActions>

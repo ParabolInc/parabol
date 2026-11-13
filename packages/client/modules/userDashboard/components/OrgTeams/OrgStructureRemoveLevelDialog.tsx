@@ -25,7 +25,7 @@ const OrgStructureRemoveLevelDialog = ({levelName, isOpen, onClose, onConfirm}: 
         <Button variant='outline' size='md' onClick={onClose}>
           Keep it
         </Button>
-        <Button variant='destructive' size='md' onClick={onConfirm}>
+        <Button variant='primary' size='md' onClick={onConfirm}>
           Remove level
         </Button>
       </DialogActions>

@@ -51,7 +51,7 @@ const scrapeLater = async () => {
   }
 }
 
-const HARRIER = 'microsoft/harrier-oss-v1-270m'
+const HARRIER = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const fill = (model: string, workflow: string, state: string) =>
   `parabol_embedder_fill_jobs{model="${model}",workflow="${workflow}",state="${state}"}`
 

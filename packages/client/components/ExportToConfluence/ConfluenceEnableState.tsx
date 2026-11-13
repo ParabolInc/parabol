@@ -52,7 +52,7 @@ export const ConfluenceEnableState = (props: Props) => {
         }
       </p>
       <Button
-        variant='dialogPrimary'
+        variant='primary'
         size='md'
         onClick={enable}
         disabled={submitting || !teamId || !provider}

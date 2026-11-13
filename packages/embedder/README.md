@@ -55,9 +55,14 @@ chunker, its prompts, and its cut-offs for page search, template search, Related
 Discussions and Similar Wording. A cut-off only means something for the model it
 was tuned on, so a new model brings its own.
 
+A model's id is the Hugging Face id of the weights its TEI serves. To rename one,
+keep its old id in `formerModelIds`, since an instance's `AI_EMBEDDING_MODELS` and
+the jobs already queued may still use it, and rename it in the queue with a
+migration.
+
 The first entry in `AI_EMBEDDING_MODELS` is the active model. Searches read its
-vectors and new content is queued for it alone. Later entries only work through
-the jobs already queued for them.
+vectors. New content is queued for every listed model, the later ones behind live work,
+so each keeps up while it fills and after a swap.
 
 Every model's tables have the same columns, so the generated types only need one
 model's. `pnpm pg:generate` and `pnpm dev` leave the others out with
@@ -70,8 +75,9 @@ To try Harrier locally, start its service with
 ### Moving to a new model
 
 The first time the embedder starts with a model listed, it creates that model's
-tables and queues its fill: public templates and the last two weeks of reflections,
-then team templates, then a year of discussions and then pages, each newest first. The
+tables and queues its fill: public templates and every card in a retro that hasn't
+ended (only Similar Wording reads cards, and only while a retro is open), then team
+templates, then a year of discussions and then pages, each newest first. The
 whole fill sits behind every other kind of job. The tables and the jobs commit together,
 so if the embedder dies while queueing, its next start tries again. Startup doesn't wait
 for a model that isn't active.
@@ -95,12 +101,17 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
 2. When the new model has vectors for its templates and recent discussions, swap to
    `[new, old]`. Searches and new content move to it. Pages without vectors yet still
    come up through keywords.
-3. In `psql`, queue what changed since step 1 and anything that failed along the way.
+3. In `psql`, queue anything that failed along the way. New content was queued for
+   both models, so this only matters for failures and for anything written while an
+   older version, which queued new content for the active model alone, was running.
    Set the time from step 1. For another model, change its id and its table names.
-   Both statements are safe to repeat:
+   Like the fill, it takes every card in a retro that hasn't ended. Idle workers check
+   the queue every minute, so the jobs start within one. Objects in a language Postgres
+   has no text search for fail again each time, which is expected. Both statements are
+   safe to repeat:
 
    ```sql
-   \set modelId 'microsoft/harrier-oss-v1-270m'
+   \set modelId 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
    \set step1At '2026-11-10 14:00:00+00'
 
    INSERT INTO "EmbeddingsJobQueueV2" ("jobType", "priority", "embeddingsMetadataId", "modelId", "jobData")
@@ -115,7 +126,14 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
      AND (
        m."objectType" = 'meetingTemplate'
        OR (m."objectType" = 'retrospectiveDiscussionTopic' AND m."refUpdatedAt" > now() - interval '1 year')
-       OR (m."objectType" = 'retroReflection' AND m."refUpdatedAt" > now() - interval '14 days')
+       OR (
+         m."objectType" = 'retroReflection'
+         AND EXISTS (
+           SELECT 1 FROM "RetroReflection" r
+           JOIN "NewMeeting" nm ON nm."id" = r."meetingId"
+           WHERE r."id" = m."refId" AND nm."endedAt" IS NULL
+         )
+       )
      )
      AND (
        m."refUpdatedAt" > :'step1At'
@@ -141,9 +159,8 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
    failed, and check `EmbeddingsFailures`. Then remove the old model, `[new]`. After a
    soak, delete the old model's jobs and drop its tables.
 
-Until the old tables are gone, going back is reordering the list. The old model has no
-vectors for what was written since the swap, so run step 3 for it, with the time of
-the swap.
+Until the old tables are gone, going back is reordering the list: new content is queued
+for both models, so the old one has kept up.
 
 ## Usage
 

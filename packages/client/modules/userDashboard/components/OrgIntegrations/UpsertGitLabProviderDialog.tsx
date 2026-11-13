@@ -5,6 +5,7 @@ import useForm from '../../../../hooks/useForm'
 import {getClientIntegration} from '../../../../integrations/platform/registry'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import linkify from '../../../../utils/linkify'
@@ -143,17 +144,11 @@ const UpsertGitLabProviderDialog = (props: Props) => {
             </div>
           </div>
           {error && <ErrorAlert message={error.message} />}
-          <div className='flex justify-end pt-6'>
-            <Button
-              variant='primary'
-              size='sm'
-              className='text-sm'
-              type='submit'
-              onClick={onSubmit}
-            >
+          <DialogActions>
+            <Button variant='primary' size='md' type='submit' onClick={onSubmit}>
               Save
             </Button>
-          </div>
+          </DialogActions>
         </form>
       </DialogContent>
     </Dialog>
