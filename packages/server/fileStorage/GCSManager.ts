@@ -17,6 +17,50 @@ interface CloudKey {
   privateKey: string
 }
 
+// https://cloud.google.com/storage/docs/retry-strategy
+const MAX_ATTEMPTS = 4
+const BASE_BACKOFF_MS = 500
+const TRANSIENT_ERROR_CODES = new Set([
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'EPIPE',
+  'ETIMEDOUT',
+  'EAI_AGAIN',
+  'UND_ERR_SOCKET'
+])
+
+const isTransientStatus = (status: number) => status === 408 || status === 429 || status >= 500
+
+const getErrorCode = (error: unknown): unknown => {
+  if (!(error instanceof Error)) return undefined
+  return 'code' in error ? error.code : getErrorCode(error.cause)
+}
+
+const isTransientErrorCode = (code: unknown): code is string =>
+  typeof code === 'string' && TRANSIENT_ERROR_CODES.has(code)
+
+const fetchGCS = async (url: string | URL, init: RequestInit, description: string) => {
+  for (let attempt = 1; ; attempt++) {
+    const isLastAttempt = attempt === MAX_ATTEMPTS
+    let failure: number | string
+    try {
+      const res = await fetch(url, init)
+      if (isLastAttempt || !isTransientStatus(res.status)) return res
+      await res.body?.cancel()
+      failure = res.status
+    } catch (e) {
+      const errorCode = getErrorCode(e)
+      if (isLastAttempt || !isTransientErrorCode(errorCode)) throw e
+      failure = errorCode
+    }
+    Logger.warn(
+      `GCS ${description} failed with ${failure} on attempt ${attempt} of ${MAX_ATTEMPTS}, retrying`
+    )
+    const backoffMs = BASE_BACKOFF_MS * 2 ** (attempt - 1) + Math.random() * BASE_BACKOFF_MS
+    await new Promise((resolve) => setTimeout(resolve, backoffMs))
+  }
+}
+
 export default class GCSManager extends FileStoreManager {
   static GOOGLE_EXPIRY = 3600
   // e.g. development, production
@@ -99,13 +143,17 @@ export default class GCSManager extends FileStoreManager {
           expiresIn: GCSManager.GOOGLE_EXPIRY
         }
       )
-      const accessTokenRes = await fetch(authUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: jwt
-        })
-      })
+      const accessTokenRes = await fetchGCS(
+        authUrl,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: jwt
+          })
+        },
+        'token fetch'
+      )
       const accessTokenJson = await accessTokenRes.json()
       return accessTokenJson.access_token
     } catch {
@@ -154,8 +202,9 @@ export default class GCSManager extends FileStoreManager {
       uploadContentType = contentType
     }
 
-    try {
-      const r = await fetch(url, {
+    const res = await fetchGCS(
+      url,
+      {
         method: 'POST',
         body,
         headers: {
@@ -164,19 +213,12 @@ export default class GCSManager extends FileStoreManager {
           'Content-Type': uploadContentType,
           'User-Agent': 'parabol'
         }
-      })
-      if (!r.ok) {
-        throw new Error(`GCS Upload Error: ${r.status}`)
-      }
-    } catch (e) {
-      // https://github.com/nodejs/undici/issues/583#issuecomment-1577475664
-      // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
-      if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
-        Logger.log('   Retrying GCS Post:', fullPath)
-        await this.putFile(file, fullPath, options)
-      } else {
-        throw e
-      }
+      },
+      `upload of ${fullPath}`
+    )
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`GCS Upload Error: ${res.status} ${text}. ${fullPath}`)
     }
   }
 
@@ -191,14 +233,18 @@ export default class GCSManager extends FileStoreManager {
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
     const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
     const copyURL = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/rewriteTo/b/${this.bucket}/o/${newFullPath}`
-    const moveRes = await fetch(copyURL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-        'User-Agent': 'parabol'
-      }
-    })
+    const moveRes = await fetchGCS(
+      copyURL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'User-Agent': 'parabol'
+        }
+      },
+      `copy of ${oldPartialPath} to ${newPartialPath}`
+    )
     if (!moveRes.ok) {
       const text = await moveRes.text()
       throw new Error(`GCS Copy Error: ${moveRes.status} ${text}. ${copyURL}`)
@@ -210,14 +256,18 @@ export default class GCSManager extends FileStoreManager {
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
     const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
     const moveURL = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/moveTo/o/${newFullPath}`
-    const moveRes = await fetch(moveURL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-        'User-Agent': 'parabol'
-      }
-    })
+    const moveRes = await fetchGCS(
+      moveURL,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'User-Agent': 'parabol'
+        }
+      },
+      `move of ${oldPartialPath} to ${newPartialPath}`
+    )
     if (!moveRes.ok) {
       const text = await moveRes.text()
       throw new Error(`GCS Move Error: ${moveRes.status} ${text}. ${moveURL}`)
@@ -233,13 +283,17 @@ export default class GCSManager extends FileStoreManager {
     const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
     const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}?fields=name`
     const accessToken = await this.getAccessToken()
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-        'User-Agent': 'parabol'
-      }
-    })
+    const res = await fetchGCS(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'User-Agent': 'parabol'
+        }
+      },
+      `existence check of ${partialPath}`
+    )
     return res.ok
   }
   async presignUrl(partialPath: PartialPath, _expiresIn = 604800): Promise<string> {
