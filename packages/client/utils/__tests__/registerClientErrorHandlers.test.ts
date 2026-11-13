@@ -273,3 +273,31 @@ test("a script of the app's own that fails to parse is still reported", async ()
     expect.objectContaining({name: 'SyntaxError', message})
   ])
 })
+
+test('a service worker registration that a script injected inline rejects is not reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const rejection = new Error('Blocked')
+  rejection.stack = [
+    'Error: Blocked',
+    '    at ServiceWorkerContainer.<anonymous> (<anonymous>:120:34)',
+    '    at ServiceWorkerContainer.register (<anonymous>:45:67)',
+    '    at https://files.example.test/build/app_0a1b2c.js:8:300'
+  ].join('\n')
+  logFrom([OWN_FRAME, 'https://files.example.test/build/app_0a1b2c.js:8:340'], rejection)
+  await Promise.resolve()
+  flushClientErrors()
+  expect(sentBeacon).not.toHaveBeenCalled()
+})
+
+test('a failed service worker registration logged from the closure its promise catches with is reported', async () => {
+  const {flushClientErrors} = await loadHandlers()
+  const rejection = new TypeError(
+    'Failed to register a ServiceWorker: A bad HTTP response code (404)'
+  )
+  logFrom([OWN_FRAME, 'https://files.example.test/build/app_0a1b2c.js:8:340'], rejection)
+  await Promise.resolve()
+  flushClientErrors()
+  expect(await readBeaconReports()).toEqual([
+    expect.objectContaining({name: 'TypeError', message: rejection.message})
+  ])
+})
