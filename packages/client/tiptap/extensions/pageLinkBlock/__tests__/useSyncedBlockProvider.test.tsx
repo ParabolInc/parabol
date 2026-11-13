@@ -196,6 +196,40 @@ test('a successful authentication clears the stored failure', () => {
   expect(providerManager.getAuthenticationFailure('page:10')).toBeUndefined()
 })
 
+describe('an invalid document', () => {
+  let hrefSetter: jest.SpyInstance
+  beforeEach(() => {
+    hrefSetter = jest.spyOn(window.location, 'href', 'set').mockImplementation(() => {})
+    Object.defineProperty(window, 'indexedDB', {
+      value: {deleteDatabase: jest.fn()},
+      configurable: true
+    })
+  })
+  afterEach(() => {
+    hrefSetter.mockRestore()
+  })
+
+  test('shows the error in a synced block and stays on the page', () => {
+    render(12)
+    act(() => providerFor(12).failAuthentication('InvalidDocument'))
+    expect(statusOf()).toBe('error')
+    expect(hrefSetter).not.toHaveBeenCalled()
+  })
+
+  test('still sends the routed page home', () => {
+    providerManager.register('page:13')
+    providerFor(13).failAuthentication('InvalidDocument')
+    expect(hrefSetter).toHaveBeenCalledWith('/')
+  })
+
+  test('sends the routed page home when a block opened its document first', () => {
+    render(14)
+    providerManager.register('page:14')
+    act(() => providerFor(14).failAuthentication('InvalidDocument'))
+    expect(hrefSetter).toHaveBeenCalledWith('/')
+  })
+})
+
 test('destroying the provider clears the stored failure', () => {
   providerManager.register('page:11')
   providerFor(11).failAuthentication('Unauthorized')

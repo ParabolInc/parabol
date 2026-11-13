@@ -3,6 +3,7 @@ import {type FocusEvent, useContext, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
+import {isValidPageCode} from './isValidPageCode'
 import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
@@ -72,7 +73,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       ) : (
         <SyncedBlockCaption name={name} />
       )}
-      {pageCode <= 0 ? (
+      {!isValidPageCode(pageCode) ? (
         <div className='h-6 rounded-sm bg-surface-hover' />
       ) : !isNearViewport ? (
         <SyncedBlockState status='loading' onRetry={noop} />

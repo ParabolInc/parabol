@@ -8,7 +8,12 @@ class ProviderManager {
   socket: HocuspocusProviderWebsocket | undefined = undefined
   providers: Record<
     string,
-    {count: number; provider: HocuspocusProvider; persistence?: IndexeddbPersistence}
+    {
+      count: number
+      provider: HocuspocusProvider
+      persistence?: IndexeddbPersistence
+      isNestedOnly: boolean
+    }
   > = {}
   authenticationFailures = new Map<string, string>()
   getAuthenticationFailure(documentName: string) {
@@ -24,9 +29,13 @@ class ProviderManager {
     }
     return this.socket
   }
-  get(documentName: string) {
+  get(documentName: string, options: {nested?: boolean} = {}) {
+    const isNested = !!options.nested
     const existing = this.providers[documentName]
-    if (existing) return existing.provider
+    if (existing) {
+      if (!isNested) existing.isNestedOnly = false
+      return existing.provider
+    }
     const doc = new Y.Doc()
     // update the URL to match the title
     const provider = new HocuspocusProvider({
@@ -50,7 +59,7 @@ class ProviderManager {
         if (reason === 'InvalidDocument') {
           // The documentName they passed in cannot exist (DBID out of bounds)
           window.indexedDB.deleteDatabase(documentName)
-          window.location.href = '/'
+          if (!this.providers[documentName]?.isNestedOnly) window.location.href = '/'
         }
         if (reason === 'Unauthenticated') {
           Atmosphere.current?.invalidateSession(reason)
@@ -58,7 +67,7 @@ class ProviderManager {
       }
     })
     provider.attach()
-    this.providers[documentName] = {count: 0, provider}
+    this.providers[documentName] = {count: 0, provider, isNestedOnly: isNested}
     // a render React throws away never registers, so collect the provider unless something does
     setTimeout(() => {
       this.destroy(documentName)
@@ -78,8 +87,8 @@ class ProviderManager {
     }
     return provider
   }
-  register(documentName: string) {
-    const provider = this.get(documentName)
+  register(documentName: string, options: {nested?: boolean} = {}) {
+    const provider = this.get(documentName, options)
     this.providers[documentName]!.count++
     return provider
   }

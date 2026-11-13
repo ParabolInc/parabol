@@ -9,10 +9,13 @@ export const useSyncedBlockProvider = (pageCode: number) => {
   const documentName = `page:${pageCode}`
   const [attempt, setAttempt] = useState(0)
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
-  const provider = useMemo(() => providerManager.get(documentName), [documentName, attempt])
+  const provider = useMemo(
+    () => providerManager.get(documentName, {nested: true}),
+    [documentName, attempt]
+  )
 
   useEffect(() => {
-    providerManager.register(documentName)
+    providerManager.register(documentName, {nested: true})
     return () => {
       providerManager.unregister(documentName)
     }

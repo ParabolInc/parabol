@@ -6,6 +6,7 @@ import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/
 import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {isValidPageCode} from './isValidPageCode'
 import {keepFocusInHost} from './keepFocusInHost'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkNodeView} from './PageLinkNodeView'
@@ -154,6 +155,8 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
               const newChildren: Node[] = []
               frag.forEach((child) => {
                 if (child.type.name === 'pageLinkBlock') {
+                  const pageCode = Number(child.attrs.pageCode)
+                  if (!view.dragging && !isValidPageCode(pageCode)) return
                   const alreadyExists = child.attrs.canonical === true && checkIfExists(child)
                   newChildren.push(
                     child.type.create(
@@ -161,7 +164,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
                         ...child.attrs,
                         canonical: alreadyExists ? false : child.attrs.canonical,
                         // copying will turn numbers to text, but not boolean
-                        pageCode: Number(child.attrs.pageCode)
+                        pageCode
                       },
                       child.content,
                       child.marks

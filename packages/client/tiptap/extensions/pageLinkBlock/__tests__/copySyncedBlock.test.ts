@@ -179,6 +179,21 @@ describe('copy and sync', () => {
     ])
   })
 
+  test.each([
+    ['not a number', 'x'],
+    ['out of range', '99999999999'],
+    ['zero', '0'],
+    ['missing', '']
+  ])('a pasted page link whose page code is %s is dropped', (_label, dataId) => {
+    const page = mountPage([{type: 'paragraph'}])
+    pasteAtEnd(
+      page,
+      `<p>kept</p><div data-type="pageLinkBlock" data-synced data-id="${dataId}"></div><div data-type="pageLinkBlock" data-canonical data-id="${dataId}"></div>`
+    )
+    expect(findLinkPositions(page)).toEqual([])
+    expect(page.state.doc.textContent).toContain('kept')
+  })
+
   test('plain copy of a node-selected synced block puts the synced HTML on the clipboard', () => {
     const {host, linkPos, nested} = mountSyncedPage()
     selectNode(host, linkPos)
