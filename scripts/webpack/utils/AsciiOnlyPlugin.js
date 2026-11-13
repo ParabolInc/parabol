@@ -1,6 +1,8 @@
 const PLUGIN_NAME = 'AsciiOnlyPlugin'
-const NON_ASCII = /[\u0080-￿]/
+const NON_ASCII = /[^\x00-\x7f]/
 const SURROGATE = /[\ud800-\udfff]/
+const LINE_SEPARATOR = 0x2028
+const PARAGRAPH_SEPARATOR = 0x2029
 const JAVASCRIPT_MODULE_TYPES = ['javascript/auto', 'javascript/dynamic', 'javascript/esm']
 
 const toEscapes = (text) => {
@@ -65,8 +67,21 @@ class AsciiOnlyPlugin {
             const code = asset.source()
             if (typeof code !== 'string' || !NON_ASCII.test(code)) return
             const escapedAsset = new sources.ReplaceSource(asset)
-            for (const {0: nonAsciiRun, index} of code.matchAll(/[\u0080-￿]+/g)) {
-              escapedAsset.replace(index, index + nonAsciiRun.length - 1, toEscapes(nonAsciiRun))
+            for (const {0: nonAsciiRun, index} of code.matchAll(/[^\x00-\x7f]+/g)) {
+              let backslashCount = 0
+              while (code[index - 1 - backslashCount] === '\\') backslashCount++
+              // After an odd number of backslashes the run's first character is itself escaped, so that backslash is replaced with it
+              // A backslash before a line separator continues the line, which stands for nothing at all
+              const isEscaped = backslashCount % 2 === 1
+              const firstCharCode = nonAsciiRun.charCodeAt(0)
+              const isLineContinuation =
+                isEscaped &&
+                (firstCharCode === LINE_SEPARATOR || firstCharCode === PARAGRAPH_SEPARATOR)
+              escapedAsset.replace(
+                isEscaped ? index - 1 : index,
+                index + nonAsciiRun.length - 1,
+                toEscapes(isLineContinuation ? nonAsciiRun.slice(1) : nonAsciiRun)
+              )
             }
             compilation.updateAsset(assetName, escapedAsset)
           })
