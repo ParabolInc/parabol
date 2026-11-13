@@ -259,6 +259,66 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
   }
 
+  private removeReflectionFromGroup(reflection: DemoReflection) {
+    const reflectionGroups = this.db.reflectionGroups
+    const oldReflectionGroup = reflectionGroups.find(
+      (group) => group.id === reflection.reflectionGroupId
+    )!
+    const oldReflections = oldReflectionGroup.reflections
+    if (oldReflections.length < 2) return
+    const now = new Date().toJSON()
+    const columnGroups = reflectionGroups.filter((group) => group.promptId === reflection.promptId)
+    const nextGroup = columnGroups[columnGroups.indexOf(oldReflectionGroup) + 1]
+    const sortOrder = nextGroup
+      ? (oldReflectionGroup.sortOrder + nextGroup.sortOrder) / 2 + dndNoise()
+      : oldReflectionGroup.sortOrder + 1 + dndNoise()
+    const reflectionGroupId = this.getTempId('group')
+    const reflectionGroup = {
+      __typename: 'RetroReflectionGroup',
+      id: reflectionGroupId,
+      reflectionGroupId,
+      smartTitle: null,
+      title: null,
+      commentors: null,
+      voteCount: 0,
+      viewerVoteCount: 0,
+      createdAt: now,
+      isActive: true,
+      meetingId: RetroDemo.MEETING_ID,
+      meeting: this.db.newMeeting,
+      prompt: reflection.prompt,
+      promptId: reflection.promptId,
+      reflections: [reflection],
+      sortOrder,
+      summary: null,
+      discussionPromptQuestion: null,
+      tasks: [],
+      thread: makeReflectionGroupThread(),
+      titleIsUserDefined: false,
+      updatedAt: now,
+      voterIds: []
+    } as DemoReflectionGroup
+    reflectionGroups.splice(reflectionGroups.indexOf(oldReflectionGroup) + 1, 0, reflectionGroup)
+    this.db.discussions.push(new DemoDiscussion(reflectionGroupId))
+    oldReflections.splice(
+      oldReflections.findIndex(({id}) => id === reflection.id),
+      1
+    )
+    Object.assign(reflection, {
+      sortOrder: 0,
+      reflectionGroupId,
+      retroReflectionGroup: reflectionGroup,
+      updatedAt: now
+    })
+    const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+    this.updateReflectionGroupTitle(reflectionGroup, [reflection.content])
+    this.updateReflectionGroupTitle(
+      oldReflectionGroup,
+      oldReflections.map(({content}) => content),
+      titleIsUserDefined
+    )
+  }
+
   startDemo() {
     this.startBot()
     this.db._started = true
@@ -1294,6 +1354,29 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {endDraggingReflection: data}
+    },
+    UngroupReflectionMutation: ({
+      reflectionGroupId,
+      reflectionId
+    }: {
+      reflectionGroupId?: string | null
+      reflectionId?: string | null
+    }) => {
+      const reflectionsToUngroup = reflectionId
+        ? this.db.reflections.filter(({id}) => id === reflectionId)
+        : (this.db.reflectionGroups
+            .find(({id}) => id === reflectionGroupId)
+            ?.reflections.slice(1) ?? [])
+      reflectionsToUngroup.forEach((reflection) => {
+        reflection.isHumanTouched = true
+        this.removeReflectionFromGroup(reflection)
+      })
+      return {
+        ungroupReflection: {
+          __typename: 'UngroupReflectionSuccess',
+          meeting: this.db.newMeeting
+        }
+      }
     },
     UpdateDragLocationMutation: ({input}: {input: any}, userId: string) => {
       const {teamId, ...inputData} = input
