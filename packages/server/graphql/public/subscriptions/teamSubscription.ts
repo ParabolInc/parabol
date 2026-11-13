@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isAuthenticated} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
@@ -9,7 +10,7 @@ const teamSubscription: SubscriptionResolvers['teamSubscription'] = {
     const {authToken} = context
     // AUTH
     if (!isAuthenticated(authToken)) {
-      throw new Error('Not authenticated')
+      throw new GraphQLError('Not authenticated', {extensions: {code: 'UNAUTHENTICATED'}})
     }
     // RESOLUTION
     const {tms: teamIds} = authToken
