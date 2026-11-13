@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import {useParams} from 'react-router'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import {LocalStorageKey} from '../types/constEnums'
+import setStorageItem from '../utils/setStorageItem'
 import {useIsAuthenticated} from './IsAuthenticatedProvider'
 import TeamInvitationAccept from './TeamInvitationAccept'
 import TeamInvitationEmailCreateAccount from './TeamInvitationEmailCreateAccount'
@@ -46,7 +47,7 @@ const TeamInvitationDialog = (props: Props) => {
   // a sign-in from this dialog accepts the invitation and redirects by itself
   const isInitiallyLoggedInRef = useRef(isLoggedIn)
   useEffect(() => {
-    window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, invitationToken)
+    setStorageItem('localStorage', LocalStorageKey.INVITATION_TOKEN, invitationToken)
   }, [invitationToken])
 
   if (!verifiedInvitation) {

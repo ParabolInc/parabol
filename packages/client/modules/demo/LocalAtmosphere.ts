@@ -19,6 +19,7 @@ import {
 import type Atmosphere from '../../Atmosphere'
 import {SubscriptionChannel} from '../../types/constEnums'
 import handlerProvider from '../../utils/relay/handlerProvider'
+import setStorageItem from '../../utils/setStorageItem'
 import ClientGraphQLServer from './ClientGraphQLServer'
 
 // import sleep from 'universal/utils/sleep'
@@ -71,7 +72,7 @@ export default class LocalAtmosphere extends Environment {
     } else {
       // await sleep(1000)
       this.clientGraphQLServer.db._updatedAt = new Date()
-      window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
+      setStorageItem('localStorage', 'retroDemo', stringify(this.clientGraphQLServer.db))
     }
     return {...res, extensions: finalPayloadExtensions}
   }
@@ -114,7 +115,7 @@ export default class LocalAtmosphere extends Environment {
         this.clientGraphQLServer.on(fields.channel, (data) => {
           if (this.clientGraphQLServer.db._updatedAt < new Date(Date.now() - 1000)) {
             this.clientGraphQLServer.db._updatedAt = new Date()
-            window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
+            setStorageItem('localStorage', 'retroDemo', stringify(this.clientGraphQLServer.db))
           }
           const nullObj = this.subscriptionInterfaces[fields.dataField]
           sink.next({
