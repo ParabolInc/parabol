@@ -10,7 +10,6 @@ import makeAppURL from '../../../../client/utils/makeAppURL'
 import plural from '../../../../client/utils/plural'
 import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
-import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
@@ -216,7 +215,7 @@ const inviteToTeamHelper = async (
     return {refusal: {code: 'UNACCEPTED_INVITATION_LIMIT', message}}
   }
 
-  const mailManager = getMailManager()
+  const mailManager = await getMailManager()
   const validations = await Promise.all(candidates.map((email) => mailManager.validateEmail(email)))
   const deliverableEmails = candidates.filter((email, idx) => {
     const {result, didYouMean} = validations[idx]!
@@ -274,6 +273,10 @@ const inviteToTeamHelper = async (
       utm_medium: 'email',
       utm_campaign: 'invitations'
     }
+    // this is the only email that oy-vey renders, so the first invitation evaluates it instead of every server's startup
+    const {default: teamInviteEmailCreator} = await import(
+      /* webpackMode: "eager" */ '../../../email/teamInviteEmailCreator'
+    )
     const sendResults = await Promise.all(
       invitations.map((invitation) => {
         const user = userByEmail.get(invitation.email)

@@ -62,7 +62,10 @@ const addConversationStarter = async (
     Math.max(0, ...existingComments.map((comment) => comment.threadSortOrder)) + 1
   const comment = createAIComment(
     discussionId,
-    buildCommentContentBlock('🤖 Conversation starter', `<p>${escapeHtml(discussionQuestion)}</p>`),
+    await buildCommentContentBlock(
+      '🤖 Conversation starter',
+      `<p>${escapeHtml(discussionQuestion)}</p>`
+    ),
     threadSortOrder
   )
   await getKysely().insertInto('Comment').values(comment).execute()
