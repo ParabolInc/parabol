@@ -1,6 +1,6 @@
 import {type Editor, Extension} from '@tiptap/core'
 import type {ResolvedPos} from '@tiptap/pm/model'
-import {NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
+import {type EditorState, NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
 import {keepFocusInHost} from './keepFocusInHost'
 import {exitSyncedBlock} from './syncedBlockFocus'
@@ -27,6 +27,18 @@ const isLastContent = ($head: ResolvedPos) => {
   return true
 }
 
+const isSuggestionOpen = (state: EditorState) =>
+  state.plugins.some((plugin) => {
+    const pluginState: unknown = plugin.getState(state)
+    return (
+      typeof pluginState === 'object' &&
+      pluginState !== null &&
+      'active' in pluginState &&
+      'query' in pluginState &&
+      pluginState.active === true
+    )
+  })
+
 export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
   name: 'syncedBlockEdges',
   priority: 1000,
@@ -35,7 +47,7 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
     const {hostView, getPos, getSize} = this.options
     const leave = (editor: Editor, direction: 'up' | 'down' | 'left' | 'right') => {
       const {selection} = editor.state
-      if (!selection.empty) return false
+      if (!selection.empty || isSuggestionOpen(editor.state)) return false
       const {$head} = selection
       const forward = direction === 'down' || direction === 'right'
       if (!(forward ? isLastContent($head) : isFirstContent($head))) return false
@@ -68,7 +80,7 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
       ArrowDown: ({editor}) => leave(editor, 'down'),
       ArrowLeft: ({editor}) => leave(editor, 'left'),
       ArrowRight: ({editor}) => leave(editor, 'right'),
-      Escape: () => nodeSelectInHost(),
+      Escape: ({editor}) => !isSuggestionOpen(editor.state) && nodeSelectInHost(),
       Backspace: ({editor}) => {
         const {selection, doc} = editor.state
         if (!selection.empty) return false

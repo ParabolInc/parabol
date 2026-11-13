@@ -1,4 +1,4 @@
-import {Editor, Extension, type JSONContent} from '@tiptap/core'
+import {type AnyExtension, Editor, Extension, type JSONContent} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import StarterKit from '@tiptap/starter-kit'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
@@ -47,7 +47,12 @@ export const findLinkPositions = (host: Editor) => {
 
 export const hostLinkCount = (host: Editor) => findLinkPositions(host).length
 
-export const mountNested = (host: Editor, linkPos: number, contentLines: string[]) => {
+export const mountNested = (
+  host: Editor,
+  linkPos: number,
+  contentLines: string[],
+  extraExtensions: AnyExtension[] = []
+) => {
   const link = host.state.doc.nodeAt(linkPos)!
   const nested = new Editor({
     element: document.createElement('div'),
@@ -58,7 +63,8 @@ export const mountNested = (host: Editor, linkPos: number, contentLines: string[
         hostView: host.view,
         getPos: () => linkPos,
         getSize: () => link.nodeSize
-      })
+      }),
+      ...extraExtensions
     ],
     content: {
       type: 'doc',

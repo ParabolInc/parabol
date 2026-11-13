@@ -1,5 +1,6 @@
 import '../../__tests__/installHappyDom'
 import {NodeSelection} from '@tiptap/pm/state'
+import {SlashCommand} from '../../slashCommand/SlashCommand'
 import {
   findLinkPositions,
   hostLinkCount,
@@ -8,6 +9,12 @@ import {
   press,
   syncedLink
 } from './syncedBlockTestHarness'
+
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../renderSuggestion', () => ({
+  __esModule: true,
+  default: () => () => ({onKeyDown: () => false})
+}))
 
 const setup = (contentLines: string[]) => {
   const host = mountHost([{type: 'paragraph'}, syncedLink, {type: 'paragraph'}])
@@ -48,5 +55,54 @@ describe('SyncedBlockEdges', () => {
     const {host, nested} = setup(['Sev 1', 'Sev 2'])
     nested.commands.keyboardShortcut('Escape')
     expect(host.state.selection).toBeInstanceOf(NodeSelection)
+  })
+
+  describe('with the slash menu open', () => {
+    const openSlashMenu = (line: 'first' | 'last') => {
+      const host = mountHost([
+        {type: 'paragraph', content: [{type: 'text', text: 'Above'}]},
+        syncedLink,
+        {type: 'paragraph', content: [{type: 'text', text: 'Below'}]},
+        {type: 'paragraph', content: [{type: 'text', text: 'End'}]}
+      ])
+      const [linkPos] = findLinkPositions(host)
+      const lines = line === 'first' ? ['', 'Sev 2'] : ['Sev 1', '']
+      const nested = mountNested(host, linkPos!, lines, [SlashCommand])
+      const {doc} = nested.state
+      nested.commands.setTextSelection(
+        line === 'first' ? doc.firstChild!.nodeSize + 1 : doc.content.size - 1
+      )
+      nested.commands.insertContent('/')
+      const rect = {left: 0, right: 0, top: 0, bottom: 0}
+      nested.view.endOfTextblock = () => true
+      nested.view.coordsAtPos = () => rect
+      host.view.coordsAtPos = () => rect
+      host.view.posAtCoords = () => null
+      host.commands.setTextSelection(host.state.doc.content.size - 1)
+      return {host, nested, hostSelection: host.state.selection}
+    }
+
+    test.each([
+      ['ArrowDown', 'last'],
+      ['ArrowUp', 'first']
+    ] as const)('%s on the %s line stays in the block', (key, line) => {
+      const {host, nested, hostSelection} = openSlashMenu(line)
+      press(nested, key)
+      expect(host.state.selection.eq(hostSelection)).toBe(true)
+    })
+
+    test('ArrowDown leaves the block once the menu is gone', () => {
+      const {host, nested, hostSelection} = openSlashMenu('last')
+      const {from} = nested.state.selection
+      nested.commands.deleteRange({from: from - 1, to: from})
+      press(nested, 'ArrowDown')
+      expect(host.state.selection.eq(hostSelection)).toBe(false)
+    })
+
+    test('Escape closes the menu and leaves the host selection alone', () => {
+      const {host, nested} = openSlashMenu('last')
+      press(nested, 'Escape')
+      expect(host.state.selection).not.toBeInstanceOf(NodeSelection)
+    })
   })
 })
