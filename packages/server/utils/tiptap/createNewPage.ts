@@ -137,7 +137,9 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}
-  await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
+  if (!isSyncedBlock) {
+    await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
+  }
   dataLoader.dispose()
   return page
 }

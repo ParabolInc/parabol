@@ -42,6 +42,7 @@ const TASK_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Embed: false,
   'Link to page': false,
   'Create page': false,
+  'Synced block': false,
   Database: false,
   Insights: false,
   Image: true,

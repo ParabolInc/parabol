@@ -47,8 +47,8 @@ import {
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
+import {getPageSlashCommands} from '../tiptap/extensions/slashCommand/getPageSlashCommands'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
-import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
@@ -60,30 +60,6 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 import {lookupPageViewerAccess} from './usePageViewerAccess'
-
-const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
-  Text: true,
-  'To-do list': true,
-  'Heading 1': true,
-  'Heading 2': true,
-  'Heading 3': true,
-  'Bullet list': true,
-  'Numbered list': true,
-  Quote: true,
-  Callout: true,
-  Code: true,
-  'Table of contents': true,
-  Details: true,
-  Table: true,
-  Divider: true,
-  Embed: true,
-  'Link to page': true,
-  'Create page': true,
-  Database: false,
-  Insights: true,
-  Image: true,
-  File: true
-}
 
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
@@ -106,6 +82,7 @@ export const useTipTapPageEditor = (
         highestTier
         organizations {
           hasDatabases: featureFlag(featureName: "Databases")
+          hasSyncedBlocks: featureFlag(featureName: "SyncedBlocks")
         }
       }
     `,
@@ -114,6 +91,7 @@ export const useTipTapPageEditor = (
   const [commit] = useUploadUserAsset()
   const preferredName = nested ? nested.preferredName : user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
+  const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
   const editor = useEditor(
@@ -152,11 +130,7 @@ export const useTipTapPageEditor = (
           nested: true
         }),
         SlashCommand.configure({
-          commands: {
-            ...PAGE_SLASH_COMMANDS,
-            Database: hasDatabases && !nested,
-            ...(nested ? {'Create page': false} : {})
-          }
+          commands: getPageSlashCommands({hasDatabases, hasSyncedBlocks, nested: !!nested})
         }),
         ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
         Focus,
