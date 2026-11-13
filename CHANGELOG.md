@@ -5,6 +5,47 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.32.0](https://github.com/ParabolInc/parabol/compare/v15.31.1...v15.32.0) (2026-11-13)
+
+
+### Added
+
+* **client:** nudge for a task on the last retro topic ([#14202](https://github.com/ParabolInc/parabol/issues/14202)) ([391d35a](https://github.com/ParabolInc/parabol/commit/391d35a3db312b7cf66e4f08ad6438fec51fc98d))
+
+
+### Fixed
+
+* **client:** don't log a service worker registration the browser refuses to the page ([#14195](https://github.com/ParabolInc/parabol/issues/14195)) ([2f51ebc](https://github.com/ParabolInc/parabol/commit/2f51ebc40c449ecb19a115a215fd9d6e1aa7a10b))
+* **client:** fail a query whose response ends before its last payload ([#14192](https://github.com/ParabolInc/parabol/issues/14192)) ([9a049ce](https://github.com/ParabolInc/parabol/commit/9a049ce9031726af1980d256a0381c50182bc80e))
+* **client:** give MeetingRoot.test the app version its lazy RetroMeeting reads ([#14208](https://github.com/ParabolInc/parabol/issues/14208)) ([f883847](https://github.com/ParabolInc/parabol/commit/f883847bf2ffff14565563fb33a0924e0b7a7a88))
+* **client:** keep typing when the browser's storage is full ([#14196](https://github.com/ParabolInc/parabol/issues/14196)) ([2f24f30](https://github.com/ParabolInc/parabol/commit/2f24f30b1ec0b88553c334a8dad7e8250e38f645))
+* **client:** let the retro demo take reflections out of a group ([#14182](https://github.com/ParabolInc/parabol/issues/14182)) ([8bcc76f](https://github.com/ParabolInc/parabol/commit/8bcc76f062a42b5a3fd6060323be0025e9005de6))
+* **client:** raise contrast of the task hint and Show all links ([#14205](https://github.com/ParabolInc/parabol/issues/14205)) ([0623983](https://github.com/ParabolInc/parabol/commit/062398303cf1ea4bc207c114ec980c71b621183e))
+* **client:** report the error React recovered from and why a meeting has no phase to show ([#14197](https://github.com/ParabolInc/parabol/issues/14197)) ([1f688e0](https://github.com/ParabolInc/parabol/commit/1f688e07ed395841e993aa4de4aa33c21f3f03b1))
+* **client:** send an account deletion once, however often its button is clicked ([#14193](https://github.com/ParabolInc/parabol/issues/14193)) ([c5ce54c](https://github.com/ParabolInc/parabol/commit/c5ce54cc09790bd18050871b15a624015e85b35f))
+* **client:** skip a subscription payload the server could not resolve ([#14188](https://github.com/ParabolInc/parabol/issues/14188)) ([2f90dfb](https://github.com/ParabolInc/parabol/commit/2f90dfb12ac2dd33f45f4378106eb543bd3bfb72))
+* **client:** stop a paste into a page title from crashing the editor ([#14186](https://github.com/ParabolInc/parabol/issues/14186)) ([2dd970d](https://github.com/ParabolInc/parabol/commit/2dd970de509474e176d4c5779c53c9568455d70e))
+* **client:** stop crashing when going from one meeting to another ([#14187](https://github.com/ParabolInc/parabol/issues/14187)) ([3e1be6e](https://github.com/ParabolInc/parabol/commit/3e1be6e99c772dce6a1243d0c848a6f96681504e))
+* **client:** stop logging the socket a signed-out session gives up on ([#14140](https://github.com/ParabolInc/parabol/issues/14140)) ([297fe61](https://github.com/ParabolInc/parabol/commit/297fe61921ab5280751bfe673edc25dc6856609c))
+* **integrations:** keep GitLab issue searches under GitLab's search rate limit ([#14184](https://github.com/ParabolInc/parabol/issues/14184)) ([71a5233](https://github.com/ParabolInc/parabol/commit/71a5233f7777a08cac8022d760c3df3a9c4cadaf))
+* **jira:** support ADF sub/superscript with TipTap's subscript and superscript marks ([#14160](https://github.com/ParabolInc/parabol/issues/14160)) ([75995a4](https://github.com/ParabolInc/parabol/commit/75995a46bdfdbe323dfcab46da592f02ece5fc04))
+* **server:** edit the Slack message each channel was sent when a meeting is renamed ([#14191](https://github.com/ParabolInc/parabol/issues/14191)) ([f2e580d](https://github.com/ParabolInc/parabol/commit/f2e580d55f70cb027de4e51b4db0b445345ca364))
+* **server:** load estimates for a GitHub issue that has no labels ([#14159](https://github.com/ParabolInc/parabol/issues/14159)) ([828a8eb](https://github.com/ParabolInc/parabol/commit/828a8eb4c681e68745317bbe4b58674b048dc160))
+* **server:** log a crawler's browser errors as warnings ([#14194](https://github.com/ParabolInc/parabol/issues/14194)) ([7797629](https://github.com/ParabolInc/parabol/commit/779762915c5869e876a2195367c4175e8d89b848))
+* **server:** start a meeting on the closest Parabol template when its template has no prompts ([#14183](https://github.com/ParabolInc/parabol/issues/14183)) ([38ff1ce](https://github.com/ParabolInc/parabol/commit/38ff1cec7093f33ceb7a124dffb5e68128590ce3))
+* **server:** stop emailing an invitation to '*' when a page's public link is shared ([#14189](https://github.com/ParabolInc/parabol/issues/14189)) ([b8962bc](https://github.com/ParabolInc/parabol/commit/b8962bcccfb51619961872737f7b25a759124899))
+* **server:** stop logging integration refusals and timeouts as app errors ([#14185](https://github.com/ParabolInc/parabol/issues/14185)) ([3a0614a](https://github.com/ParabolInc/parabol/commit/3a0614ab434cb2da9ed60687677b7feff0c0a11e))
+* **server:** stop sending notification summaries to removed users ([#14190](https://github.com/ParabolInc/parabol/issues/14190)) ([3d4f19e](https://github.com/ParabolInc/parabol/commit/3d4f19e960dc6dd1e17f8e78e20f2aedc81e9a7f))
+* stop bouncing a viewer between a team page and the invitation-required page ([#14199](https://github.com/ParabolInc/parabol/issues/14199)) ([bdf1432](https://github.com/ParabolInc/parabol/commit/bdf143205db3cadfa78d4338ff6f865ba1e1c9ee))
+
+
+### Changed
+
+* **email:** build the team invite email with react-email and drop oy-vey ([#14198](https://github.com/ParabolInc/parabol/issues/14198)) ([6776b77](https://github.com/ParabolInc/parabol/commit/6776b77c55637fc6fc5066a693589e50ac4dfdc4))
+* **integrations:** replace per-service issue loaders with one generic loader ([#14156](https://github.com/ParabolInc/parabol/issues/14156)) ([5851a39](https://github.com/ParabolInc/parabol/commit/5851a390638e61881bbfcdbb1507f974b8905740))
+* let a request to fix an existing PR commit and push the fix ([#14207](https://github.com/ParabolInc/parabol/issues/14207)) ([756edf3](https://github.com/ParabolInc/parabol/commit/756edf3eac20d1eda02cacb2ce8f490c6f8fc937))
+* let Auto-fix events commit and push their fixes ([#14168](https://github.com/ParabolInc/parabol/issues/14168)) ([2867bb0](https://github.com/ParabolInc/parabol/commit/2867bb08f6f68cc8a95b8a696602dcd542bef4ad))
+
 ## [15.31.1](https://github.com/ParabolInc/parabol/compare/v15.31.0...v15.31.1) (2026-11-13)
 
 
