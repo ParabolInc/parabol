@@ -53,8 +53,6 @@ function transformMark(mark: AdfMark): TiptapMark | null {
       return {type: 'underline'}
     case 'code':
       return {type: 'code'}
-    case 'subsup':
-      return {type: mark.attrs?.type === 'sub' ? 'subscript' : 'superscript'}
     case 'link':
       return {
         type: 'link',
@@ -68,7 +66,7 @@ function transformMark(mark: AdfMark): TiptapMark | null {
       return {type: 'textStyle', attrs: {color: mark.attrs?.color ?? null}}
     case 'backgroundColor':
       return {type: 'highlight', attrs: {color: mark.attrs?.color ?? null}}
-    // Unknown marks — drop silently
+    // Unknown marks and subsup, which the app's schema has no mark for — drop silently
     default:
       return null
   }

@@ -1,4 +1,4 @@
-import {generateText} from '@tiptap/core'
+import {generateText, getSchema} from '@tiptap/core'
 import {type AdfNode, convertADFToTipTap} from '../convertADFToTipTap'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
@@ -114,5 +114,23 @@ describe('convertADFToTipTap', () => {
       type: 'blockquote',
       content: [paragraph('x')]
     })
+  })
+
+  test.each([
+    ['strong', {type: 'strong'}],
+    ['em', {type: 'em'}],
+    ['strike', {type: 'strike'}],
+    ['underline', {type: 'underline'}],
+    ['code', {type: 'code'}],
+    ['subscript', {type: 'subsup', attrs: {type: 'sub'}}],
+    ['superscript', {type: 'subsup', attrs: {type: 'sup'}}],
+    ['link', {type: 'link', attrs: {href: 'https://example.test/'}}],
+    ['textColor', {type: 'textColor', attrs: {color: '#ff5630'}}],
+    ['backgroundColor', {type: 'backgroundColor', attrs: {color: '#fffae6'}}]
+  ])('keeps the text of a %s mark in a doc the schema accepts', (_label, mark) => {
+    const adf = doc([{type: 'paragraph', content: [{type: 'text', text: 'H2O', marks: [mark]}]}])
+    const tipTapDoc = convertADFToTipTap(adf, 'Title')
+    expect(() => getSchema(serverTipTapExtensions).nodeFromJSON(tipTapDoc).check()).not.toThrow()
+    expect(generateText(tipTapDoc, serverTipTapExtensions)).toContain('H2O')
   })
 })
