@@ -1,8 +1,7 @@
 import {getText, getTextSerializersFromSchema} from '@tiptap/core'
-import {defaultRules, type RuleContext} from '@tiptap/extension-drag-handle'
 import {Fragment, type Node, type Schema} from '@tiptap/pm/model'
 import {type EditorState, Selection, TextSelection, type Transaction} from '@tiptap/pm/state'
-import {pageDragHandleRules} from '../dragHandleRules'
+import {CALLOUT_CHILD_TYPES} from '../../../shared/tiptap/calloutTones'
 
 export interface TurnIntoTarget {
   type:
@@ -15,7 +14,24 @@ export interface TurnIntoTarget {
     | 'details'
     | 'codeBlock'
     | 'blockquote'
+    | 'callout'
   level?: number
+}
+
+const getCalloutChildren = (callout: Node) =>
+  callout.children.filter((child) => child.type.name !== 'calloutTitle' || child.content.size > 0)
+
+const isCalloutChild = (node: Node) =>
+  CALLOUT_CHILD_TYPES.some((typeName) => typeName === node.type.name)
+
+const toBold = (inline: Fragment, schema: Schema) => {
+  const bold = schema.marks.bold
+  if (!bold) return inline
+  const content: Node[] = []
+  inline.forEach((child) => {
+    content.push(child.isText ? child.mark(bold.create().addToSet(child.marks)) : child)
+  })
+  return Fragment.from(content)
 }
 
 const isListItem = (node: Node) => node.type.name === 'listItem' || node.type.name === 'taskItem'
@@ -39,46 +55,24 @@ export const getTurnIntoTarget = (doc: Node, pos: number): TurnIntoTarget | null
       return {type: 'heading', level: node.attrs.level}
     case 'blockquote':
       return node.firstChild?.isTextblock ? {type: 'blockquote'} : null
+    case 'callout':
+      return getCalloutChildren(node)[0]?.isTextblock ? {type: 'callout'} : null
     default:
       return null
   }
 }
 
-// The score a drag handle candidate starts from, before the rules deduct from it
-const DRAG_HANDLE_BASE_SCORE = 1000
-const dragHandleRules = [...defaultRules, ...pageDragHandleRules]
-
-// Picks the block the way the drag handle does: the innermost one that passes its rules
-export const getSelectionTurnIntoPos = ({doc, selection}: EditorState): number | null => {
-  const {$from, $to} = selection
-  if (!$from.parent.isTextblock || !$from.sameParent($to)) return null
-  for (let depth = $from.depth; depth > 0; depth--) {
-    const parent = $from.node(depth - 1)
-    const index = $from.index(depth - 1)
-    const context = {
-      node: $from.node(depth),
-      pos: $from.before(depth),
-      depth,
-      parent,
-      index,
-      isFirst: index === 0,
-      isLast: index === parent.childCount - 1,
-      $pos: $from
-    }
-    // The rules only read the document, so there is no view to hand them
-    const deduction = dragHandleRules.reduce(
-      (sum, rule) => sum + rule.evaluate(context as RuleContext),
-      0
-    )
-    if (deduction >= DRAG_HANDLE_BASE_SCORE) continue
-    const pos = $from.before(depth)
-    return getTurnIntoTarget(doc, pos) ? pos : null
-  }
-  return null
-}
-
 export const canTurnIntoPage = ({type}: TurnIntoTarget) =>
   type === 'paragraph' || type === 'heading'
+
+export const isInsideCallout = (doc: Node, pos: number) => {
+  if (pos < 0 || pos > doc.content.size) return false
+  const $pos = doc.resolve(pos)
+  for (let depth = $pos.depth; depth > 0; depth--) {
+    if ($pos.node(depth).type.name === 'callout') return true
+  }
+  return false
+}
 
 const codeToInline = (code: string, schema: Schema) => {
   const inline: Node[] = []
@@ -93,12 +87,15 @@ const codeToInline = (code: string, schema: Schema) => {
 }
 
 const getFirstLine = (node: Node): Fragment => {
+  if (node.type.name === 'callout') return getFirstLine(getCalloutChildren(node)[0]!)
+  if (node.type.name === 'calloutTitle') return toBold(node.content, node.type.schema)
   if (node.type.name === 'codeBlock') return codeToInline(node.textContent, node.type.schema)
   return node.isTextblock ? node.content : getFirstLine(node.child(0))
 }
 
 const getBody = (node: Node): readonly Node[] => {
   if (isListItem(node) || node.type.name === 'blockquote') return node.children.slice(1)
+  if (node.type.name === 'callout') return getCalloutChildren(node).slice(1)
   if (node.type.name !== 'details') return []
   const content = node.child(1)
   const isDefaultContent =
@@ -142,6 +139,12 @@ const buildBlocks = (node: Node, target: TurnIntoTarget, schema: Schema): Node[]
     }
     case 'blockquote':
       return [nodes.blockquote!.create(null, [paragraph, ...body])]
+    case 'callout': {
+      const spillIndex = body.findIndex((child) => !isCalloutChild(child))
+      const inside = spillIndex === -1 ? body : body.slice(0, spillIndex)
+      const spilled = spillIndex === -1 ? [] : body.slice(spillIndex)
+      return [nodes.callout!.create({tone: 'plain'}, [paragraph, ...inside]), ...spilled]
+    }
     case 'details':
       return [
         nodes.details!.create({open: true}, [

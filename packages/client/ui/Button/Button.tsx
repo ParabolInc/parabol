@@ -5,7 +5,6 @@ import {cn} from '../cn'
 type Variant =
   | 'primary'
   | 'secondary'
-  | 'destructive'
   | 'ghost'
   | 'link'
   | 'outline'
@@ -21,7 +20,6 @@ const BASE_STYLES =
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
   primary: 'bg-linear-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
-  destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
   outline:
     'text-fg-primary border border-hairline-strong hover:bg-surface-hover px-2.5 py-1 bg-transparent font-semibold',
   dialogPrimary:

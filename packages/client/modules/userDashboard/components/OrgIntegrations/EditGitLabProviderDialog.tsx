@@ -29,7 +29,9 @@ const EditGitLabProviderDialog = (props: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const onUpsert = (serverBaseUrl: string, clientId: string, clientSecret: string) => {
     if (submitting) return

@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
 import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingSuccess {
@@ -34,7 +35,8 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation, Optional
 ) => {
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
-    variables
+    variables,
+    onError: snackOnError(atmosphere)
   })
 }
 

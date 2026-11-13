@@ -47,7 +47,7 @@ class OpenAIServerManager {
         model: AI_MODEL,
         // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
         // because repairGroups patches a forgotten card instead of discarding the whole batch
-        params: {reasoning_effort: options.reasoningEffort ?? 'low'}
+        params: {reasoning_effort: 'low'}
       },
       input,
       options
@@ -614,6 +614,23 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
       return content
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Error in generateInsight')
+      logError(error)
+      return null
+    }
+  }
+
+  async generateGroupingBriefing(prompt: string) {
+    if (!this.openAIApi) return null
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{role: 'user', content: prompt}],
+        // Nobody waits on this, and high effort wrote measurably more useful briefings than medium
+        reasoning_effort: 'high'
+      })
+      return response.choices[0]?.message.content?.trim() || null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('Error in generateGroupingBriefing')
       logError(error)
       return null
     }

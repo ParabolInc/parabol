@@ -6,7 +6,7 @@ import type {
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useLocalStorageState from '../../../hooks/useLocalStorageState'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
-import getServerError from '../../../utils/relay/getServerError'
+import getMutationError from '../../../utils/relay/getMutationError'
 
 type Payload = useGenerateInspirationItemsMutation$data['generateInspirationItems']
 
@@ -65,7 +65,7 @@ const useInspirationDraft = (options: Options) => {
       variables: {input: {meetingId, sources, userPrompt: instructions.trim() || null}},
       onError: (e) => {
         isRequestingRef.current = false
-        setError(getServerError(e)?.message ?? e.message)
+        setError(getMutationError(e).message)
       },
       onCompleted: (res, errors) => {
         isRequestingRef.current = false

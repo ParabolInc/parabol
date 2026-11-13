@@ -27,6 +27,7 @@ export const attachTranscriptToSummaryPage = async (
       title,
       pageCode,
       isDatabase: false,
+      isSyncedBlock: false,
       append: true
     })
   }

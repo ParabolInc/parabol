@@ -1,11 +1,11 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
-import type {GQLContext} from '../../graphql'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isMeetingFacilitator = <T>(dotPath: ResolverDotPath<T>) =>
-  rule(`isMeetingFacilitator`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
+  rule(`isMeetingFacilitator`, {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const meetingId = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
     const viewerId = getUserId(authToken)

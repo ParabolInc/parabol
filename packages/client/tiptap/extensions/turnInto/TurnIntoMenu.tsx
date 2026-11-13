@@ -21,7 +21,7 @@ interface Props {
 
 export const TurnIntoMenu = (props: Props) => {
   const {editor, node, pos, current, canCreateSubPage} = props
-  const rows = getTurnIntoRows(current, canCreateSubPage)
+  const rows = getTurnIntoRows(editor.state.doc, pos, current, canCreateSubPage)
   const currentRow = findTurnIntoRow(rows, current)
 
   const handleValueChange = (title: string) => {

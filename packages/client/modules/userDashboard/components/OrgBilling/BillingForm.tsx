@@ -50,7 +50,9 @@ const BillingForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()

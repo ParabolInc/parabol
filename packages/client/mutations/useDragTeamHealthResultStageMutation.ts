@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useDragTeamHealthResultStageMutation as TDragTeamHealthResultStageMutation} from '../__generated__/useDragTeamHealthResultStageMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import getServerError from '../utils/relay/getServerError'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
+import {snackOnError} from './handlers/snackOnError'
 
 // selected by both the mutation payload and MeetingSubscription so the store stays in sync. The
 // server returns the stages in their new order, so no updater is needed outside the optimistic one
@@ -49,15 +49,8 @@ const useDragTeamHealthResultStageMutation = () => {
         stage.setValue(sortOrder, 'sortOrder')
         handleUpdateStageSort(store, meetingId, 'TEAM_HEALTH_RESULT')
       },
-      ...config,
-      onError: (error) => {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          message: getServerError(error)?.message ?? error.message,
-          autoDismiss: 5,
-          key: 'dragTeamHealthResultStageError'
-        })
-        config.onError?.(error)
-      }
+      onError: snackOnError(atmosphere, 'dragTeamHealthResultStageError'),
+      ...config
     })
   }
   return [execute, submitting] as const

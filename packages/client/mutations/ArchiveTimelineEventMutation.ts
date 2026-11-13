@@ -7,6 +7,7 @@ import type {ArchiveTimelineEventMutation_notification$data} from '../__generate
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {parseQueryParams} from '../utils/useQueryParameterParser'
 import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventSuccess {
@@ -71,6 +72,7 @@ const ArchiveTimelineEventMutation: SimpleMutation<TArchiveTimelineEventMutation
   return commitMutation<TArchiveTimelineEventMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('archiveTimelineEvent')
       archiveTimelineEventNotificationUpdater(payload as any, {

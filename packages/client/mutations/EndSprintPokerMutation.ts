@@ -15,6 +15,7 @@ import {GQLID} from '../utils/GQLID'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -123,7 +124,7 @@ const EndSprintPokerMutation: StandardMutation<
         navigate
       })
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

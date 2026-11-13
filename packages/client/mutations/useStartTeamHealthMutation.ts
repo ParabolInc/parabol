@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useStartTeamHealthMutation as TStartTeamHealthMutation} from '../__generated__/useStartTeamHealthMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useStartTeamHealthMutation_success on StartTeamHealthSuccess {
@@ -54,9 +54,8 @@ const useStartTeamHealthMutation = () => {
       })
     }
     return commit({
+      onError: (error) => showError(getMutationError(error).message),
       ...config,
-      // The server throws for every failure mode (cross-org series, locked team, nothing to
-      // start), and Atmosphere delivers a thrown GraphQLError here rather than to onError
       onCompleted: (res, errors) => {
         const error = errors?.[0]
         if (error) {
@@ -64,10 +63,6 @@ const useStartTeamHealthMutation = () => {
           return
         }
         config.onCompleted?.(res, errors)
-      },
-      onError: (error) => {
-        showError(getServerError(error)?.message ?? error.message)
-        config.onError?.(error)
       }
     })
   }

@@ -37,7 +37,8 @@ export const StandardBubbleMenu = (props: Props) => {
     <BubbleMenu
       editor={editor}
       shouldShow={({editor, element}) => {
-        return element.contains(document.activeElement) || getShouldShow(editor)
+        const isFocusInside = !!startContent && element.contains(document.activeElement)
+        return isFocusInside || getShouldShow(editor)
       }}
       className={cn(className)}
       options={{

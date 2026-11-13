@@ -4,7 +4,7 @@ import {embeddingUsage} from '../../../embedder/embeddingUsage'
 
 jest.mock('parabol-client/utils/sleep', () => ({__esModule: true, default: async () => {}}))
 
-const modelId = 'microsoft/harrier-oss-v1-270m'
+const modelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 
 const makeTei = () =>
   new TextEmbeddingsInference(
@@ -53,7 +53,7 @@ it('counts 0 tokens when TEI sends no count', async () => {
 
 it("prefixes a search with the model's prompt", async () => {
   const tei = new TextEmbeddingsInference(
-    'microsoft/harrier-oss-v1-270m',
+    'Parabol/harrier-oss-v1-270m-ONNX-INT8',
     'http://localhost:1/',
     512
   )
@@ -76,7 +76,7 @@ it('sends a search as is when the model has no prompt', async () => {
 
 it('sends a document as is, whatever the model', async () => {
   const tei = new TextEmbeddingsInference(
-    'microsoft/harrier-oss-v1-270m',
+    'Parabol/harrier-oss-v1-270m-ONNX-INT8',
     'http://localhost:1/',
     512
   )

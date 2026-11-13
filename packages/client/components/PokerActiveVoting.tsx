@@ -11,6 +11,7 @@ import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {PokerCards} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
+import GraphQLServerError from '../utils/relay/GraphQLServerError'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
 import JiraExportUpgradeModal from './JiraExportUpgradeModal'
@@ -82,7 +83,9 @@ const PokerActiveVoting = (props: Props) => {
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
   const showRevealButton = isFacilitator && scores.length > 0
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [isHardBlock, setIsHardBlock] = useState(false)
   const exportCountRef = useRef(MAX_FREE_JIRA_EXPORTS)
@@ -115,11 +118,8 @@ const PokerActiveVoting = (props: Props) => {
       {meetingId, stageId, ignoreSuggestedUpgrade},
       {
         onError: (err) => {
-          const sourceErrors = (err as any)?.source?.errors as
-            | Array<{extensions?: Record<string, unknown>}>
-            | undefined
-          const handled = sourceErrors?.some((e) => tryShowUpgradeModal(e.extensions))
-          if (handled) return
+          const serverErrors = err instanceof GraphQLServerError ? err.errors : []
+          if (serverErrors.some((e) => tryShowUpgradeModal(e.extensions))) return
           onError(err)
         },
         onCompleted: (res, errors) => {

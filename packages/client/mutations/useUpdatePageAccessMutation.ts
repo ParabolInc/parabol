@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 import {handleUpdatePage} from './useUpdatePageMutation'
 
 graphql`
@@ -48,6 +50,7 @@ const mutation = graphql`
 
 export const useUpdatePageAccessMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdatePageAccessMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TuseUpdatePageAccessMutation>) => {
     return commit({
       updater: (store) => {
@@ -55,6 +58,7 @@ export const useUpdatePageAccessMutation = () => {
         if (!payload) return
         handleUpdatePage(payload, {store})
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

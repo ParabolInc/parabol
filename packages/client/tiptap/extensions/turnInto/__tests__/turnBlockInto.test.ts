@@ -4,10 +4,10 @@ import {Node, type Schema} from '@tiptap/pm/model'
 import {EditorState, TextSelection} from '@tiptap/pm/state'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
+import {getSelectionTurnIntoPos} from '../../dragHandleRules'
 import {isLocalEmbedSource, localEmbedSourcesPlugin} from '../../fileBlock/localEmbedSources'
 import {
   canTurnIntoPage,
-  getSelectionTurnIntoPos,
   getTurnIntoTarget,
   type TurnIntoTarget,
   turnBlockInto
@@ -62,6 +62,12 @@ const details = (summary: string | Json[], ...content: Json[]) => ({
     {type: 'detailsContent', content: content.length ? content : [p()]}
   ]
 })
+const callout = (tone: string, content: Json[]) => ({
+  type: 'callout',
+  attrs: {tone, emoji: null},
+  content
+})
+const calloutTitle = (value: string) => ({type: 'calloutTitle', content: inline(value)})
 const image = {type: 'imageBlock', attrs: {src: 'https://example.com/a.png'}}
 const pageLink = (pageCode: number, title: string) => ({
   type: 'pageLinkBlock',
@@ -104,6 +110,7 @@ const TODO: TurnIntoTarget = {type: 'taskList'}
 const DETAILS: TurnIntoTarget = {type: 'details'}
 const CODE: TurnIntoTarget = {type: 'codeBlock'}
 const QUOTE: TurnIntoTarget = {type: 'blockquote'}
+const CALLOUT: TurnIntoTarget = {type: 'callout'}
 const ALL_TARGETS = turnIntoRows.map(({target}) => target)
 
 const convert = (state: EditorState, pos: number, target: TurnIntoTarget) => {
@@ -500,11 +507,16 @@ describe('the block a text selection turns', () => {
     if (found === -1) throw new Error(`No text ${label}`)
     return found
   }
+  const editor = new Editor({extensions: pagesExtensions, content: makeDoc().toJSON()})
+  afterAll(() => editor.destroy())
   const selectText = (blocks: Json[], label: string, toLabel = label) => {
-    const state = makeState(...blocks)
-    const from = findText(state.doc, label)
-    const to = findText(state.doc, toLabel) + toLabel.length
-    return state.apply(state.tr.setSelection(TextSelection.create(state.doc, from, to)))
+    const doc = Node.fromJSON(editor.schema, makeDoc(...blocks).toJSON())
+    const from = findText(doc, label)
+    const to = findText(doc, toLabel) + toLabel.length
+    editor.view.updateState(
+      EditorState.create({doc, selection: TextSelection.create(doc, from, to)})
+    )
+    return editor.view
   }
 
   test.each([
@@ -540,8 +552,8 @@ describe('the block a text selection turns', () => {
   ] as [string, Json[], string, string, string][])(
     '%s',
     (_name, blocks, label, type, blockStart) => {
-      const state = selectText(blocks, label)
-      expect(getSelectionTurnIntoPos(state)).toBe(findPos(state.doc, blockStart, type))
+      const view = selectText(blocks, label)
+      expect(getSelectionTurnIntoPos(view)).toBe(findPos(view.state.doc, blockStart, type))
     }
   )
 
@@ -559,8 +571,8 @@ describe('the block a text selection turns', () => {
   )
 
   test('the picked block converts', () => {
-    const state = selectText([ul('one', 'word', 'three')], 'word')
-    const tr = convert(state, getSelectionTurnIntoPos(state)!, H2)
+    const view = selectText([ul('one', 'word', 'three')], 'word')
+    const tr = convert(view.state, getSelectionTurnIntoPos(view)!, H2)
     expectBlocks(tr.doc, ul('one'), h(2, 'word'), ul('three'))
   })
 })
@@ -602,6 +614,9 @@ describe('every source to every target', () => {
     ['to-do with a nested to-do', tl(ti('word', tl('nested'))), 'word', 'taskItem'],
     ['item with a link', ul(li('word', link)), 'word', 'listItem'],
     ['item with a long body', ul(li('word', ...longBody)), 'word', 'listItem'],
+    ['callout', callout('info', [p('word'), p('more')]), 'word', 'callout'],
+    ['titled callout', callout('tip', [calloutTitle('word'), p('more')]), 'word', 'callout'],
+    ['callout with a long body', callout('info', [p('word'), ...longBody]), 'word', 'callout'],
     ['quote', quote(p('word'), p('more')), 'word', 'blockquote'],
     ['quote with a link', quote(p('word'), link), 'word', 'blockquote'],
     ['quote with a long body', quote(p('word'), ...longBody), 'word', 'blockquote'],
@@ -649,6 +664,7 @@ describe('every source to every target', () => {
     ['code', code(), 'codeBlock'],
     ['bullet', ul(li('')), 'listItem'],
     ['to-do', tl(ti('')), 'taskItem'],
+    ['callout', callout('plain', [p()]), 'callout'],
     ['quote', quote(p()), 'blockquote'],
     ['details', details(''), 'details']
   ]
@@ -782,5 +798,43 @@ describe('with the real editor plugins', () => {
     expect(doc.child(1).type.name).toBe('taskList')
     expect(doc.child(2).type.name).toBe('bulletList')
     expect(doc.child(2).childCount).toBe(2)
+  })
+})
+
+describe('callouts', () => {
+  test('a paragraph becomes a plain callout and back', () => {
+    const into = convertBlock([p('hello')], 'hello', CALLOUT)
+    expectBlocks(into.doc, callout('plain', [p('hello')]))
+    const back = convert(
+      EditorState.create({doc: into.doc}),
+      findPos(into.doc, 'hello', 'callout'),
+      TEXT
+    )
+    expectBlocks(back.doc, p('hello'))
+  })
+
+  test('a titled callout becomes text with the title as a bold first line', () => {
+    const state = makeState(callout('tip', [calloutTitle('T'), p('b')]))
+    const back = convert(state, findPos(state.doc, 'T', 'callout'), TEXT)
+    expectBlocks(
+      back.doc,
+      {type: 'paragraph', content: [{...text('T'), marks: [{type: 'bold'}]}]},
+      p('b')
+    )
+  })
+
+  test('an untitled callout keeps its first line and body', () => {
+    const state = makeState(callout('info', [p('a'), p('b')]))
+    expectBlocks(convert(state, findPos(state.doc, 'a', 'callout'), H2).doc, h(2, 'a'), p('b'))
+  })
+
+  test('an empty title is dropped', () => {
+    const state = makeState(callout('info', [calloutTitle(''), p('b')]))
+    expectBlocks(convert(state, findPos(state.doc, 'b', 'callout'), TEXT).doc, p('b'))
+  })
+
+  test('a callout opening with a block that is not text offers no conversion', () => {
+    const state = makeState(callout('info', [ul('a')]))
+    expect(getTurnIntoTarget(state.doc, findPos(state.doc, 'a', 'callout'))).toBeNull()
   })
 })

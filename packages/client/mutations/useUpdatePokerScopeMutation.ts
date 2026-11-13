@@ -8,7 +8,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
   fragment useUpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -216,7 +216,7 @@ const useUpdatePokerScopeMutation = () => {
           showError(error.message)
         }
       },
-      onError: (error) => showError(getServerError(error)?.message ?? error.message),
+      onError: (error) => showError(getMutationError(error).message),
       ...config
     })
   }

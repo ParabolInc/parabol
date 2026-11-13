@@ -64,19 +64,21 @@ export const SlashCommand = Extension.create<{commands: Record<CommandTitle, boo
           view.focus()
         },
         items: ({query}: {query: string}) => {
+          const queryNormalized = query.toLowerCase().trim()
           return slashCommands
             .map((group) => ({
               ...group,
-              commands: group.commands.filter((item) => {
-                if (!this.options.commands[item.title]) return false
-                const queryNormalized = query.toLowerCase().trim()
-                const isQueryInTerm = item.searchTerms.some((searchTerm) =>
-                  searchTerm.includes(queryNormalized)
-                )
-                if (!isQueryInTerm) return false
-                const {shouldHide} = item as unknown as SlashCommandGroup['commands'][number]
-                return shouldHide ? !shouldHide(this.editor) : true
-              })
+              commands: group.commands
+                .filter((item) => {
+                  if (!this.options.commands[item.title]) return false
+                  const isQueryInTerm = item.searchTerms.some((searchTerm) =>
+                    searchTerm.includes(queryNormalized)
+                  )
+                  if (!isQueryInTerm) return false
+                  const {shouldHide} = item as unknown as SlashCommandGroup['commands'][number]
+                  return shouldHide ? !shouldHide(this.editor) : true
+                })
+                .map((item) => ('forQuery' in item ? item.forQuery(queryNormalized) : null) ?? item)
             }))
             .filter((group) => group.commands.length > 0)
         },

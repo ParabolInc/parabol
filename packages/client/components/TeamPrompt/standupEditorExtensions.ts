@@ -24,6 +24,7 @@ export const STANDUP_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   'Bullet list': true,
   'Numbered list': true,
   Quote: true,
+  Callout: false,
   Code: true,
   'Table of contents': false,
   Details: true,

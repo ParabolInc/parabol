@@ -17,7 +17,9 @@ interface Props {
 
 const MicrosoftOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint, getOffsetTop} = props
-  const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
+  const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const location = useLocation()

@@ -19,7 +19,9 @@ interface Props {
 
 const OrgAvatarInput = (props: Props) => {
   const {isOpen, onClose, picture, orgId} = props
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
 
   const onSubmit = async (file: File) => {

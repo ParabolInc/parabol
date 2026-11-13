@@ -54,7 +54,7 @@ export const ConfluenceExportProgress = (props: Props) => {
           </Button>
           {rootTargetUrl && (
             <Button
-              variant='dialogPrimary'
+              variant='primary'
               size='md'
               onClick={() => window.open(rootTargetUrl, '_blank', 'noopener,noreferrer')}
             >

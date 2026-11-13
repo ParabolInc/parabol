@@ -18,6 +18,7 @@ import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleRemoveUserFromMeeting from './handlers/handleRemoveUserFromMeeting'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
 graphql`
@@ -203,6 +204,7 @@ const RemoveTeamMemberMutation: SimpleMutation<TRemoveTeamMemberMutation> = (
   return commitMutation<TRemoveTeamMemberMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember')
       if (!payload) return

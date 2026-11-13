@@ -12,7 +12,7 @@ jest.mock('../../utils/getRedis', () => ({
 }))
 
 const pg = getKysely()
-const modelId: ModelId = 'microsoft/harrier-oss-v1-270m'
+const modelId: ModelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const userId = `fillOrderTest|${generateUID()}`
 const teamId = `fillOrderTeam${generateUID()}`
 const DAY_MS = 86_400_000
@@ -61,6 +61,82 @@ const insertPage = async (
     .returning('id')
     .executeTakeFirstOrThrow()
   return id
+}
+
+const insertRetroCard = async (
+  trx: Transaction<DB>,
+  {days, ended}: {days: number; ended: boolean}
+) => {
+  const id = generateUID()
+  const orgId = `fillOrderOrg${id}`
+  const retroTeamId = `fillOrderRetroTeam${id}`
+  await trx.insertInto('Organization').values({id: orgId, name: orgId}).execute()
+  await trx.insertInto('Team').values({id: retroTeamId, name: retroTeamId, orgId}).execute()
+  await trx
+    .insertInto('MeetingTemplate')
+    .values({
+      id: `template${id}`,
+      name: 'Fill order retro',
+      orgId,
+      teamId: retroTeamId,
+      type: 'retrospective',
+      illustrationUrl: '',
+      mainCategory: 'retrospective'
+    })
+    .execute()
+  await trx
+    .insertInto('TemplatePrompt')
+    .values({
+      id: `prompt${id}`,
+      templateId: `template${id}`,
+      teamId: retroTeamId,
+      question: 'What went well?',
+      description: '',
+      groupColor: '#000000',
+      sortOrder: 'a0'
+    })
+    .execute()
+  await trx
+    .insertInto('NewMeeting')
+    .values({
+      id: `meeting${id}`,
+      teamId: retroTeamId,
+      meetingType: 'retrospective',
+      facilitatorStageId: 'stage',
+      name: 'Fill order retro',
+      meetingCount: 1,
+      meetingNumber: 1,
+      phases: JSON.stringify([]),
+      endedAt: ended ? new Date() : null
+    })
+    .execute()
+  await trx
+    .insertInto('RetroReflectionGroup')
+    .values({id: `group${id}`, meetingId: `meeting${id}`, promptId: `prompt${id}`})
+    .execute()
+  await trx
+    .insertInto('RetroReflection')
+    .values({
+      id: `reflection${id}`,
+      meetingId: `meeting${id}`,
+      promptId: `prompt${id}`,
+      reflectionGroupId: `group${id}`,
+      content: '{}',
+      plaintextContent: 'A card'
+    })
+    .execute()
+  const {id: metadataId} = await trx
+    .insertInto('EmbeddingsMetadata')
+    .values({
+      objectType: 'retroReflection',
+      refId: `reflection${id}`,
+      teamId: retroTeamId,
+      refUpdatedAt: daysAgo(days),
+      language: 'en'
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return metadataId
 }
 
 const fillJobs = async (trx: Transaction<DB>) => {
@@ -140,7 +216,7 @@ it('queues public templates, team templates, discussions, then pages, newest fir
   })
 })
 
-it('puts the last two weeks of reflections with the public templates', async () => {
+it('puts the cards of open retros with the public templates', async () => {
   await withRollback(async (trx) => {
     const publicTemplate = await insertMetadata(trx, {
       objectType: 'meetingTemplate',
@@ -148,16 +224,22 @@ it('puts the last two weeks of reflections with the public templates', async () 
       days: 900
     })
     const teamTemplate = await insertMetadata(trx, {objectType: 'meetingTemplate', teamId, days: 2})
-    const liveReflection = await insertMetadata(trx, {
-      objectType: 'retroReflection',
-      teamId,
-      days: 10
-    })
+    const liveReflection = await insertRetroCard(trx, {days: 10, ended: false})
     const jobs = await fillJobs(trx)
     const priorityOf = (id: number) =>
       jobs.find(({embeddingsMetadataId}) => embeddingsMetadataId === id)!.priority
     expect(priorityOf(liveReflection)).toBe(priorityOf(publicTemplate))
     expect(priorityOf(liveReflection)).toBeLessThan(priorityOf(teamTemplate))
+  })
+})
+
+it('queues the cards of retros that have not ended, however old, and no others, since only Similar Wording reads them', async () => {
+  await withRollback(async (trx) => {
+    const oldOpenRetroCard = await insertRetroCard(trx, {days: 60, ended: false})
+    const newEndedRetroCard = await insertRetroCard(trx, {days: 1, ended: true})
+    const metadataIds = (await fillJobs(trx)).map(({embeddingsMetadataId}) => embeddingsMetadataId)
+    expect(metadataIds).toContain(oldOpenRetroCard)
+    expect(metadataIds).not.toContain(newEndedRetroCard)
   })
 })
 

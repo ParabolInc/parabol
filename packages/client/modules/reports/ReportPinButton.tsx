@@ -4,7 +4,7 @@ import {Bookmark, BookmarkBorder} from '~/ui/icons'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {ReportPinButton_organization$key} from '../../__generated__/ReportPinButton_organization.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import usePinReportMutation from '../../mutations/usePinReportMutation'
@@ -57,7 +57,7 @@ const ReportPinButton = ({organizationRef, spec, title, period, reportQuestionId
       onCompleted: (_response: unknown, errors?: readonly {message: string}[] | null) => {
         if (errors?.[0]) showError(errors[0].message)
       },
-      onError: (error: Error) => showError(getServerError(error)?.message ?? error.message)
+      onError: (error: Error) => showError(getMutationError(error).message)
     }
     if (pinned) {
       unpin({variables: {orgId, pinId: pinned.id}, ...callbacks})

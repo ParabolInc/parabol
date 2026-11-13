@@ -182,12 +182,7 @@ export const ConfluenceExportForm = (props: ConfluenceExportFormProps) => {
         <Button variant='outline' size='md' onClick={onClose}>
           Cancel
         </Button>
-        <Button
-          variant='dialogPrimary'
-          size='md'
-          onClick={onSubmit}
-          disabled={!space || submitting}
-        >
+        <Button variant='primary' size='md' onClick={onSubmit} disabled={!space || submitting}>
           Export
         </Button>
       </DialogActions>

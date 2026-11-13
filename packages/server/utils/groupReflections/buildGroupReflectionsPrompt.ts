@@ -6,7 +6,11 @@ import type {GroupReflectionsInput} from './types'
  * Shared by every provider on purpose: comparing OpenAI against DeepSeek is only meaningful if
  * they are handed byte-identical input, and a copy in each manager would drift on the first edit.
  */
-const buildGroupReflectionsPrompt = (input: GroupReflectionsInput, userPrompt?: string | null) => {
+const buildGroupReflectionsPrompt = (
+  input: GroupReflectionsInput,
+  userPrompt?: string | null,
+  teamBriefing?: string | null
+) => {
   const {reflections, meetingName} = input
   const isScoped = 'prompt' in input
   const columnQuestion = isScoped ? input.prompt : null
@@ -64,7 +68,18 @@ Rules you must follow exactly:
 
 Return JSON: { "groups": [{ "title": "...", "reflectionIds": ["id1", "id2"] }] }`
 
-  return `${userPrompt || strategy}\n\n${invariants}`
+  // Background, not strategy, so a custom prompt keeps it too. It sits before the invariants so the
+  // rules still come last.
+  const background = teamBriefing?.trim()
+    ? `Team background, written from this team's earlier retrospectives. Use it to recognize the people, projects, systems, acronyms and recurring themes the reflections refer to, so you can tell when two reflections are about the same specific thing. It is context only: group these reflections on their own merits.
+<team_background>
+${teamBriefing.trim()}
+</team_background>
+
+`
+    : ''
+
+  return `${userPrompt || strategy}\n\n${background}${invariants}`
 }
 
 export default buildGroupReflectionsPrompt

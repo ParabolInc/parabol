@@ -10,6 +10,7 @@ import type {
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {useCreateOAuthAPICodeMutation} from '../mutations/useCreateOAuthAPICodeMutation'
 import {Button} from '../ui/Button/Button'
+import getMutationError from '../utils/relay/getMutationError'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
@@ -100,9 +101,7 @@ const OAuthAuthorize = (props: Props) => {
         setIsLeaving(true)
         window.location.assign(createOAuthAPICode.redirectUri)
       },
-      onError: (error: Error & {source?: {errors?: readonly {message: string}[]}}) => {
-        setErrorMessage(error.source?.errors?.[0]?.message ?? error.message)
-      }
+      onError: (error) => setErrorMessage(getMutationError(error).message)
     })
   }
 

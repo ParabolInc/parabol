@@ -43,7 +43,6 @@ const upsertSuggestedGrouping = async (
         inputHash: eb.ref('excluded.inputHash'),
         groups: eb.ref('excluded.groups'),
         model: eb.ref('excluded.model'),
-        reasoningEffort: eb.ref('excluded.reasoningEffort'),
         tokenCost: eb.ref('excluded.tokenCost'),
         repairedReflectionCount: eb.ref('excluded.repairedReflectionCount'),
         groupPhaseCompletedAt: null,

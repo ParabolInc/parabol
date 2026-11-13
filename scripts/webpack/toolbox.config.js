@@ -21,6 +21,7 @@ module.exports = {
   },
   entry: {
     assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
+    createEmbeddingsTables: [DOTENV, path.join(TOOLBOX_SRC, 'createEmbeddingsTables.ts')],
     setIsEnterprise: [DOTENV, path.join(TOOLBOX_SRC, 'setIsEnterprise.ts')],
     updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
   },

@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {useTeamPromptOptionItems_meeting$key} from '~/__generated__/useTeamPromptOptionItems_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import {Edit, Flag, Link as MuiLink, Replay} from '~/ui/icons'
+import {Edit, Flag, Link as MuiLink, Replay, SwapHoriz} from '~/ui/icons'
 import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
 import makeAppURL from '../../utils/makeAppURL'
@@ -110,6 +110,18 @@ const useTeamPromptOptionItems = (
     to: `/team/${team.id}/integrations#${getProviderAnchorId(Providers.SLACK_NAME)}`,
     isNewTab: true
   })
+  if (!isEnded) {
+    items.push({
+      key: 'changeTemplate',
+      label: 'Change template',
+      icon: <SwapHoriz className='text-fg-secondary' />,
+      onClick: () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          store.get(meetingId)?.setValue('template', 'rightDrawerOpen')
+        })
+      }
+    })
+  }
   if (template?.isActive && template.viewerLowestScope === 'TEAM') {
     items.push({
       key: 'template',

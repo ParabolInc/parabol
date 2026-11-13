@@ -79,10 +79,17 @@ test('names the selected block and checks it in the list', async () => {
   await renderMenu([p('word')], TITLE_SIZE + 1, TITLE_SIZE + 5)
   expect(trigger()?.textContent).toBe('Text')
   await openMenu()
-  expect(rows()).toHaveLength(11)
+  expect(rows()).toHaveLength(12)
   expect(rows().filter((row) => row.getAttribute('aria-checked') === 'true')).toEqual([
     rowNamed('Text')
   ])
+})
+
+test('hides the Callout row inside a callout', async () => {
+  const callout = {type: 'callout', attrs: {tone: 'plain'}, content: [p('word')]}
+  await renderMenu([callout], TITLE_SIZE + 2, TITLE_SIZE + 6)
+  await openMenu()
+  expect(rows().map((row) => row.textContent)).not.toContain('Callout')
 })
 
 test.each([

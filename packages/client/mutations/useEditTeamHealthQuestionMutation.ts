@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useEditTeamHealthQuestionMutation as TEditTeamHealthQuestionMutation} from '../__generated__/useEditTeamHealthQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useEditTeamHealthQuestionMutation($questionId: ID!, $question: String!) {
@@ -19,6 +21,7 @@ const mutation = graphql`
 // The in-place edit case needs no updater — Relay merges the new text by id.
 const useEditTeamHealthQuestionMutation = (templateId: string) => {
   const [commit, submitting] = useMutation<TEditTeamHealthQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TEditTeamHealthQuestionMutation>) => {
     return commit({
       updater: (store) => {
@@ -46,6 +49,7 @@ const useEditTeamHealthQuestionMutation = (templateId: string) => {
           }
         })
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

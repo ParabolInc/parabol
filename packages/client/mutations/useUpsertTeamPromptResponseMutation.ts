@@ -2,8 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/useUpsertTeamPromptResponseMutation.graphql'
 import type {useUpsertTeamPromptResponseMutation_meeting$data} from '../__generated__/useUpsertTeamPromptResponseMutation_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
 import handleUpsertTeamPromptResponses from './handlers/handleUpsertTeamPromptResponses'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment TeamPromptStructuredResponse_response on TeamPromptResponse {
@@ -49,6 +51,7 @@ export const upsertTeamPromptResponseMeetingUpdater: SharedUpdater<
 
 const useUpsertTeamPromptResponseMutation = () => {
   const [commit, submitting] = useMutation<TUpsertTeamPromptResponseMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TUpsertTeamPromptResponseMutation>) => {
     return commit({
       updater: (store) => {
@@ -56,6 +59,7 @@ const useUpsertTeamPromptResponseMutation = () => {
         const response = payload.getLinkedRecord('teamPromptResponse')
         handleUpsertTeamPromptResponses([response], config.variables.meetingId, store)
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

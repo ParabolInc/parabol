@@ -7,6 +7,7 @@ import type {SharedUpdater} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useAddPromptTemplateMutation_team on AddPromptTemplateSuccess {
@@ -94,6 +95,7 @@ const useAddPromptTemplateMutation = () => {
         }
         handleAddMeetingTemplate(proxyTemplate, type, store)
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

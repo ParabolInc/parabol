@@ -63,7 +63,7 @@ const handleCompletedRetrospectiveStage = async (
       unlockAllStagesForPhase(phases, 'discuss', true)
       await pg
         .updateTable('NewMeeting')
-        .set({phases: JSON.stringify(phases)})
+        .set({phases: JSON.stringify(phases), resetReflectionGroups: null})
         .where('id', '=', meeting.id)
         .execute()
       data.meeting = meeting

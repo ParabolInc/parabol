@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
-import getServerError, {type ServerError} from '~/utils/relay/getServerError'
+import getMutationError, {type MutationError} from '~/utils/relay/getMutationError'
 import type {
   PageRoleEnum,
   PageSubjectEnum
@@ -35,14 +35,14 @@ export const PageAccessCombobox = (props: Props) => {
 
   const toggleRole = (role: PageRoleEnum | null) => {
     if (submitting) return
-    const showAccessError = (accessError: ServerError) => {
-      if (accessError.extensions?.code === 'UNAPPROVED_UNLINK') {
+    const showAccessError = ({message, code}: MutationError) => {
+      if (code === 'UNAPPROVED_UNLINK') {
         setAttemptedRole(role)
         return
       }
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'PageAccessCombobox',
-        message: accessError.message,
+        message,
         autoDismiss: 5
       })
     }
@@ -54,12 +54,12 @@ export const PageAccessCombobox = (props: Props) => {
         subjectType,
         unlinkApproved: unlinkApprovedRef.current
       },
-      onCompleted(_res, errors) {
-        const firstError = errors?.[0]
-        if (firstError) showAccessError(firstError)
+      onCompleted(res, errors) {
+        const accessError = getMutationError(res, errors)
+        if (accessError) showAccessError(accessError)
       },
       onError(error) {
-        showAccessError(getServerError(error) ?? error)
+        showAccessError(getMutationError(error))
       }
     })
   }

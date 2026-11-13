@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {usePlaceTeamMutation as TPlaceTeamMutation} from '../__generated__/usePlaceTeamMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation usePlaceTeamMutation($teamId: ID!, $levelId: ID!, $valueId: ID) {
@@ -23,6 +25,7 @@ const mutation = graphql`
 
 const usePlaceTeamMutation = () => {
   const [commit, submitting] = useMutation<TPlaceTeamMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TPlaceTeamMutation>) => {
     const {teamId, levelId, valueId} = config.variables
     return commit({
@@ -40,6 +43,7 @@ const usePlaceTeamMutation = () => {
             value.setLinkedRecords(isPlacedHere ? [...otherTeams, team] : otherTeams, 'teams')
           })
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

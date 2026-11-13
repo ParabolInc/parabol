@@ -44,10 +44,10 @@ export const PageNoAccess = (props: Props) => {
               ? 'Create an account to get access to this page.'
               : 'Log in to view pages you have access to.'}
           </DialogDescription>
-          <DialogActions className='mt-0'>
+          <DialogActions className='mt-0 justify-center'>
             <Button
-              variant='dialogPrimary'
-              className='p-3 px-6'
+              variant='primary'
+              size='md'
               onClick={() => {
                 if (inviteEmail) {
                   navigate(

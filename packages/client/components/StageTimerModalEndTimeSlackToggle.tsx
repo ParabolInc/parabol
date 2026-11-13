@@ -73,7 +73,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   )
   const slackToggleActive = (timeLimitEvent && !!timeLimitEvent.channelId) || false
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
   const isMattermostActive = isNotificationActive(mattermost)
   const isMSTeamsActive = isNotificationActive(msTeams)

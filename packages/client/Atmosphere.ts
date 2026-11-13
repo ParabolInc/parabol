@@ -36,6 +36,7 @@ import deletePageDatabases from './utils/deletePageDatabases'
 import getTabSessionId from './utils/getTabSessionId'
 import makeTraceparent from './utils/makeTraceparent'
 import {logRelayEvent} from './utils/navigationTimings'
+import GraphQLServerError from './utils/relay/GraphQLServerError'
 import handlerProvider from './utils/relay/handlerProvider'
 import {reportClientWarning, reportUnexpectedGraphQLErrors} from './utils/reportClientError'
 import sleep from './utils/sleep'
@@ -63,6 +64,24 @@ const MAX_SUBSCRIPTION_HOLD = 30_000
 // to 10 minutes, so now and then it sends a request down a connection the server is closing and answers 502 (classic) or
 // 503 (Envoy). A query is safe to send again
 const DROPPED_CONNECTION_STATUSES = new Set([502, 503])
+
+interface ResponsePayload {
+  data?: Record<string, unknown> | null
+  errors?: readonly PayloadError[]
+}
+
+// Relay hides errors that come without data inside an error of its own, and completes a mutation
+// whose nullable field failed as if it had succeeded
+const toServerError = (
+  {data, errors}: ResponsePayload,
+  isMutationResult: boolean,
+  traceId: string | undefined
+) => {
+  if (!errors?.length) return undefined
+  const isFailure =
+    !data || (isMutationResult && Object.values(data).every((value) => value === null))
+  return isFailure ? new GraphQLServerError(errors, traceId) : undefined
+}
 
 interface RetainedSubscription {
   disposable: Disposable
@@ -227,6 +246,7 @@ export default class Atmosphere extends Environment {
               })
         })
       const isQuery = request.operationKind === 'query'
+      const isMutation = request.operationKind === 'mutation'
       const postRetryingDroppedQuery = async () => {
         const res = await postOperation()
         if (isQuery && DROPPED_CONNECTION_STATUSES.has(res.status)) return postOperation()
@@ -274,12 +294,26 @@ export default class Atmosphere extends Environment {
                       sink.error(new Error(`${request.name} got a multipart part that is not JSON`))
                       return
                     }
-                    if (Array.isArray(parsed.incremental)) {
-                      for (const item of parsed.incremental) {
-                        sink.next({...item, hasNext: parsed.hasNext})
+                    const isIncremental = Array.isArray(parsed.incremental)
+                    const payloads = isIncremental
+                      ? parsed.incremental.map((item: object) => ({
+                          ...item,
+                          hasNext: parsed.hasNext
+                        }))
+                      : [parsed]
+                    for (const payload of payloads) {
+                      reportUnexpectedGraphQLErrors(payload.errors, request.name, traceId)
+                      rememberServerErrors(payload.errors)
+                      const serverError = toServerError(
+                        payload,
+                        isMutation && !isIncremental,
+                        traceId
+                      )
+                      if (serverError) {
+                        sink.error(serverError)
+                        return
                       }
-                    } else {
-                      sink.next(parsed)
+                      sink.next(payload)
                     }
                     if (!parsed.hasNext) {
                       sink.complete()
@@ -296,6 +330,11 @@ export default class Atmosphere extends Environment {
                 const result = await res.json()
                 reportUnexpectedGraphQLErrors(result.errors, request.name, traceId)
                 rememberServerErrors(result.errors)
+                const serverError = toServerError(result, isMutation, traceId)
+                if (serverError) {
+                  sink.error(serverError)
+                  return
+                }
                 sink.next(result)
                 sink.complete()
               } catch (e) {
@@ -335,7 +374,7 @@ export default class Atmosphere extends Environment {
           } else {
             reportUnexpectedGraphQLErrors(error, operation.name, traceId)
             rememberServerErrors(error)
-            _error(new Error(error[0]?.message ?? 'Unknown Error'))
+            _error(new GraphQLServerError(error, traceId))
           }
         } else if (error instanceof CloseEvent) {
           // convert to an error so subscribers only have to worry about handling Error types
@@ -347,6 +386,13 @@ export default class Atmosphere extends Environment {
       sink.next = (value: any) => {
         if (Array.isArray(value.incremental)) {
           for (const item of value.incremental) {
+            reportUnexpectedGraphQLErrors(item.errors, operation.name, traceId)
+            rememberServerErrors(item.errors)
+            const serverError = toServerError(item, false, traceId)
+            if (serverError) {
+              _error(serverError)
+              return
+            }
             _next({...item, hasNext: value.hasNext})
           }
           return
@@ -356,6 +402,11 @@ export default class Atmosphere extends Environment {
         rememberServerErrors(errors)
         // Relay ends an operation that gets no data, so a subscription skips the event and keeps listening
         if (!data && isSubscription) return
+        const serverError = toServerError(value, operation.operationKind === 'mutation', traceId)
+        if (serverError) {
+          _error(serverError)
+          return
+        }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
         const nextObj =

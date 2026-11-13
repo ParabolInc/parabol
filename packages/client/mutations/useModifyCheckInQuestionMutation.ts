@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useModifyCheckInQuestionMutation as TModifyCheckInQuestionMutation} from '../__generated__/useModifyCheckInQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useModifyCheckInQuestionMutation_success on ModifyCheckInQuestionSuccess {
@@ -31,8 +33,9 @@ const mutation = graphql`
 
 export const useModifyCheckInQuestionMutation = () => {
   const [commit, submitting] = useMutation<TModifyCheckInQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TModifyCheckInQuestionMutation>) => {
-    return commit(config)
+    return commit({onError: snackOnError(atmosphere), ...config})
   }
   return [execute, submitting] as const
 }

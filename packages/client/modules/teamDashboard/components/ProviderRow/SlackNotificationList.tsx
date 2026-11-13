@@ -62,7 +62,9 @@ const SlackNotificationList = (props: Props) => {
   const {slack} = integrations
   const notifications = slack?.notifications ?? []
   const {channels, refetch: refetchChannels} = useSlackChannels(slack)
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id

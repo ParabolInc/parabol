@@ -1,5 +1,5 @@
 import {useRef, useState} from 'react'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useSetOrgStructureMutation from '../../../../mutations/useSetOrgStructureMutation'
 import {
@@ -38,7 +38,7 @@ const useOrgStructureEdits = (orgId: string, levels: readonly OrgStructureLevelD
         if (error) stopSaving(error.message)
         else saveNext(response.setOrgStructure.organization.structure)
       },
-      onError: (error) => stopSaving(getServerError(error)?.message ?? error.message)
+      onError: (error) => stopSaving(getMutationError(error).message)
     })
   }
   const commit = (edit: OrgStructureEdit) => {

@@ -46,7 +46,7 @@ const InspirationSettingsDialog = (props: Props) => {
           )}
         </div>
         <DialogActions>
-          <Button variant='secondary' size='md' onClick={onClose}>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
           <Button variant='primary' size='md' onClick={() => onSave(dateRange, instructions)}>

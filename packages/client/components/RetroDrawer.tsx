@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Close} from '~/ui/icons'
 import type {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import {DiscussionThreadEnum} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import MeetingTemplateSeriesOption from './MeetingTemplateSeriesOption'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
 
@@ -29,6 +31,11 @@ const RetroDrawer = (props: Props) => {
         viewer {
           meeting(meetingId: $meetingId) {
             id
+            ... on RetrospectiveMeeting {
+              meetingSeries {
+                cancelledAt
+              }
+            }
           }
           availableTemplates(first: $first, type: $type)
             @connection(key: "RetroDrawer_availableTemplates")
@@ -48,6 +55,8 @@ const RetroDrawer = (props: Props) => {
 
   const templates = viewer.availableTemplates?.edges
   const meeting = viewer.meeting
+  const [isSeriesChecked, setIsSeriesChecked] = useState(false)
+  const isSeriesActive = !!meeting?.meetingSeries && !meeting.meetingSeries.cancelledAt
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
@@ -90,10 +99,19 @@ const RetroDrawer = (props: Props) => {
                 <Close />
               </div>
             </div>
+            {isSeriesActive && (
+              <div className='px-4 pb-2'>
+                <MeetingTemplateSeriesOption
+                  checked={isSeriesChecked}
+                  onCheckedChange={setIsSeriesChecked}
+                />
+              </div>
+            )}
             {templates?.map((template) => (
               <RetroDrawerTemplateCard
                 key={template.node.id}
                 meetingId={meeting!.id}
+                applyToSeries={isSeriesActive && isSeriesChecked}
                 templateRef={template.node}
                 handleCloseDrawer={handleCloseDrawer}
               />

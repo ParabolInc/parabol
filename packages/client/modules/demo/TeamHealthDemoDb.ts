@@ -121,6 +121,7 @@ export default class TeamHealthDemoDb {
       id,
       content,
       createdByUserNullable: author,
+      authorId: author?.id ?? null,
       isActive: true,
       isViewerComment: true,
       reactjis: [],

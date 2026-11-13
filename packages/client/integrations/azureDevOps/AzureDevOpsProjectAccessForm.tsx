@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {AzureDevOpsProjectAccessFormQuery} from '../../__generated__/AzureDevOpsProjectAccessFormQuery.graphql'
 import useUpdateIntegrationRepoAccessMutation from '../../mutations/useUpdateIntegrationRepoAccessMutation'
 import {Button} from '../../ui/Button/Button'
@@ -78,7 +78,7 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
         repoAccess: sharesAll ? 'all' : 'selected',
         integrationRepoIds: sharesAll ? [] : [...selectedIds]
       },
-      onError: (e) => setError(getServerError(e)?.message ?? e.message),
+      onError: (e) => setError(getMutationError(e).message),
       onCompleted: (_res, errors) => (errors ? setError(errors[0]?.message) : onClose())
     })
   }
@@ -125,10 +125,10 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
         <span className='mr-auto text-fg-secondary text-sm'>
           {sharesAll ? 'All projects' : `${selectedIds.size} of ${projects.length} selected`}
         </span>
-        <Button variant='ghost' size='md' onClick={onClose}>
+        <Button variant='outline' size='md' onClick={onClose}>
           Cancel
         </Button>
-        <Button variant='dialogPrimary' size='md' disabled={submitting} onClick={save}>
+        <Button variant='primary' size='md' disabled={submitting} onClick={save}>
           Save
         </Button>
       </DialogActions>

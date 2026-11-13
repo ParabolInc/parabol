@@ -95,7 +95,9 @@ const PokerCardDeck = (props: Props) => {
     radius,
     estimateAreaWidth
   )
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const onMouseEnter = (cardId: string) => () => {
     if (isCollapsed) return
     if (!hoveringCardIdRef.current) {

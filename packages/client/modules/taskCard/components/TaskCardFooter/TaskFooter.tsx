@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskJiraFieldsContent} from '~/components/TaskJiraFieldsContent'
 import {cn} from '~/ui/cn'
-import getServerError from '~/utils/relay/getServerError'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -53,10 +53,12 @@ const TaskFooter = (props: Props) => {
     `,
     taskRef
   )
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const handleError = (err: Error) => {
     onError(err)
-    const message = getServerError(err)?.message ?? err.message
+    const message = getMutationError(err).message
     if (message) {
       setLocalTaskError(atmosphere, taskId, message)
     }

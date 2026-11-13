@@ -16,7 +16,6 @@ export type ComputeSuggestedGroupsConfig = {
 
 export type SuggestedGroupsRunTelemetry = {
   model: string | null
-  reasoningEffort: string | null
   tokenCost: number
   repairedReflectionCount: number
 }
@@ -32,7 +31,6 @@ export type ComputedSuggestedGroups = SuggestedGroupsRunTelemetry & {
 
 const NO_LLM_TELEMETRY: SuggestedGroupsRunTelemetry = {
   model: null,
-  reasoningEffort: null,
   tokenCost: 0,
   repairedReflectionCount: 0
 }
@@ -85,13 +83,12 @@ const computeSuggestedGroups = async (
   const base = {inputHash, reflectionCount: reflections.length, promptCount: 0}
 
   if (stored && isReusable(stored, config, inputHash)) {
-    const {groups, model, reasoningEffort, tokenCost, repairedReflectionCount} = stored
+    const {groups, model, tokenCost, repairedReflectionCount} = stored
     return {
       ...base,
       groups,
       cacheHit: true,
       model,
-      reasoningEffort,
       tokenCost,
       repairedReflectionCount
     }
@@ -102,15 +99,17 @@ const computeSuggestedGroups = async (
     return {...base, ...NO_LLM_TELEMETRY, groups, cacheHit: false}
   }
 
-  const {groups, promptCount, tokenCost, repairedCount, model, reasoningEffort} =
-    await computeAISuggestedGroups(reflections, dataLoader, {userPrompt, sameColumnOnly})
+  const {groups, promptCount, tokenCost, repairedCount, model} = await computeAISuggestedGroups(
+    reflections,
+    dataLoader,
+    {userPrompt, sameColumnOnly}
+  )
   return {
     ...base,
     groups,
     cacheHit: false,
     promptCount,
     model,
-    reasoningEffort,
     tokenCost,
     repairedReflectionCount: repairedCount
   }

@@ -16,7 +16,7 @@ const PasswordResetLink = (props: Props) => {
   const {viewerRef} = props
   const [isClicked, setIsClicked] = useState(false)
   const atmosphere = useAtmosphere()
-  const {error, onError, onCompleted, submitMutation} = useMutationProps()
+  const {error, onError, onCompleted, submitMutation} = useMutationProps({errorDisplay: 'inline'})
   const viewer = useFragment(
     graphql`
       fragment PasswordResetLink_viewer on User {

@@ -24,7 +24,9 @@ const DeleteTeamDialog = (props: Props) => {
   const navigate = useNavigate()
   const {isOpen, onClose, teamId, teamName, teamOrgId, onDeleteTeam} = props
 
-  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
+  const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const [typedTeamName, setTypedTeamName] = useState(false)
 
@@ -61,17 +63,11 @@ const DeleteTeamDialog = (props: Props) => {
         </fieldset>
 
         <DialogActions>
-          <Button
-            variant='primary'
-            size='md'
-            className='text-[15px]'
-            onClick={handleDeleteTeam}
-            disabled={!typedTeamName}
-          >
-            I understand the consequences, delete this team
-          </Button>
-          <Button variant='outline' size='sm' onClick={onClose}>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
+          </Button>
+          <Button variant='primary' size='md' onClick={handleDeleteTeam} disabled={!typedTeamName}>
+            I understand the consequences, delete this team
           </Button>
         </DialogActions>
       </DialogContent>

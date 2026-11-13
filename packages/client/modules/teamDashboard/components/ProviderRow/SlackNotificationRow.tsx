@@ -55,7 +55,9 @@ const SlackNotificationRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const existingNotification = notifications.find((notification) => notification.event === event)
   const active = !!(existingNotification && existingNotification.channelId)
-  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
+  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const onClick = () => {
     if (submitting) return
     submitMutation()

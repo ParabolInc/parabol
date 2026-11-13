@@ -9,6 +9,7 @@ import IconLabel from '../../../../components/IconLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 
 interface Props {
   queryRef: PreloadedQuery<UnpaidTeamModalQuery>
@@ -79,24 +80,23 @@ const UnpaidTeamModal = (props: Props) => {
           {isALeader ? (
             <>
               <p>You can re-activate your teams by upgrading your account.</p>
-              If you’d like to keep using Parabol on the Starter Plan, please{' '}
-              <a
-                href={ExternalLinks.CONTACT}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-accent underline'
-              >
-                contact us
-              </a>{' '}
-              to let us know which teams you’d like to delete to fit within the two-team limit.
-              <Button
-                variant='primary'
-                size='md'
-                className='mx-auto mt-6 mb-0'
-                onClick={goToBilling}
-              >
-                <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
-              </Button>
+              <p>
+                If you’d like to keep using Parabol on the Starter Plan, please{' '}
+                <a
+                  href={ExternalLinks.CONTACT}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-accent underline'
+                >
+                  contact us
+                </a>{' '}
+                to let us know which teams you’d like to delete to fit within the two-team limit.
+              </p>
+              <DialogActions>
+                <Button variant='primary' size='md' onClick={goToBilling}>
+                  <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
+                </Button>
+              </DialogActions>
             </>
           ) : (
             `Try reaching out to ${billingLeaderName} at ${email}`
@@ -126,9 +126,11 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <Button variant='primary' size='md' className='mx-auto mt-6 mb-0' onClick={goToBilling}>
-            <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
-          </Button>
+          <DialogActions>
+            <Button variant='primary' size='md' onClick={goToBilling}>
+              <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
+            </Button>
+          </DialogActions>
         )}
       </DialogContent>
     </DashModal>

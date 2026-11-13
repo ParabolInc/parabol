@@ -1,3 +1,4 @@
+import type {Node} from '@tiptap/pm/model'
 import type {IconComponent} from '~/ui/icons'
 import {
   ArrowRight,
@@ -10,9 +11,10 @@ import {
   FormatListNumbered,
   FormatQuote,
   NoteAdd,
+  Notes,
   TextFields
 } from '~/ui/icons'
-import {canTurnIntoPage, type TurnIntoTarget} from './turnBlockInto'
+import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget} from './turnBlockInto'
 
 export const turnIntoRows: {title: string; icon: IconComponent; target: TurnIntoTarget}[] = [
   {title: 'Text', icon: TextFields, target: {type: 'paragraph'}},
@@ -25,13 +27,22 @@ export const turnIntoRows: {title: string; icon: IconComponent; target: TurnInto
   {title: 'To-do list', icon: Checklist, target: {type: 'taskList'}},
   {title: 'Details', icon: ArrowRight, target: {type: 'details'}},
   {title: 'Code', icon: Code, target: {type: 'codeBlock'}},
-  {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}}
+  {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}},
+  {title: 'Callout', icon: Notes, target: {type: 'callout'}}
 ]
 
-export const getTurnIntoRows = (current: TurnIntoTarget, canCreateSubPage: boolean) =>
-  turnIntoRows.filter(
-    ({target}) => target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
-  )
+export const getTurnIntoRows = (
+  doc: Node,
+  pos: number,
+  current: TurnIntoTarget,
+  canCreateSubPage: boolean
+) => {
+  const isInCallout = isInsideCallout(doc, pos)
+  return turnIntoRows.filter(({target}) => {
+    if (target.type === 'callout') return !isInCallout
+    return target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
+  })
+}
 
 export const findTurnIntoRow = (rows: typeof turnIntoRows, current: TurnIntoTarget) =>
   rows.find(({target}) => target.type === current.type && target.level === current.level)

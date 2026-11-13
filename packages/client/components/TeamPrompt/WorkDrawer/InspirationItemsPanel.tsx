@@ -11,7 +11,7 @@ import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
-import getServerError from '../../../utils/relay/getServerError'
+import getMutationError from '../../../utils/relay/getMutationError'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import type {InspirationItemData} from './InspirationDraftList'
 import {NO_WORK_LINE} from './inspirationCopy'
@@ -64,7 +64,7 @@ const InspirationItemsPanel = (props: Props) => {
       variables: {
         input: {meetingId, sources: [{service, searchQuery}], userPrompt: userPrompt.trim() || null}
       },
-      onError: (e) => setError(getServerError(e)?.message ?? e.message),
+      onError: (e) => setError(getMutationError(e).message),
       onCompleted: (res, errors) => {
         if (errors) {
           setError(errors[0]?.message ?? 'Something went wrong')
@@ -101,11 +101,11 @@ const InspirationItemsPanel = (props: Props) => {
         />
         <DialogActions>
           {userPrompt.trim() && (
-            <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
+            <Button variant='outline' size='md' onClick={() => setUserPrompt('')}>
               Clear
             </Button>
           )}
-          <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
+          <Button variant='primary' size='md' onClick={() => setPromptOpen(false)}>
             Done
           </Button>
         </DialogActions>

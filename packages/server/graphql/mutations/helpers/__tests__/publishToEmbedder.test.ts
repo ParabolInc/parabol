@@ -5,8 +5,8 @@ const mockInsertedValues: Record<string, unknown>[] = []
 
 jest.mock('../../../../postgres/getKysely', () => {
   const insertQuery = {
-    values: (values: Record<string, unknown>) => {
-      mockInsertedValues.push(values)
+    values: (values: Record<string, unknown> | Record<string, unknown>[]) => {
+      mockInsertedValues.push(...[values].flat())
       return insertQuery
     },
     $if: () => insertQuery,

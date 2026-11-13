@@ -5,7 +5,7 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import type {EmbeddingsJobQueueV2} from '../../postgres/types'
 
-const modelId = 'microsoft/harrier-oss-v1-270m'
+const modelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const mockModel = {isReady: true, ready: jest.fn(async () => true)}
 
 jest.mock('../../../embedder/ai_models/ModelManager', () => ({
@@ -20,13 +20,13 @@ const orchestrator = new WorkflowOrchestrator()
 const run = jest.fn()
 orchestrator.workflows.embedPage = {start: {run}}
 
-const insertRunningJob = async (priority: number) =>
+const insertRunningJob = async (priority: number, jobModelId: string = modelId) =>
   (await pg
     .insertInto('EmbeddingsJobQueueV2')
     .values({
       jobType: 'embedPage:start',
       priority,
-      modelId,
+      modelId: jobModelId,
       pageId: -Math.floor(Math.random() * 1_000_000_000),
       state: 'running',
       startAt: new Date()
@@ -132,4 +132,14 @@ describe('a live job', () => {
     expect(mockModel.ready).not.toHaveBeenCalled()
     await cleanUp(job.id, message)
   })
+})
+
+it('runs a job queued under the id its model went by before under its id now', async () => {
+  const job = await insertRunningJob(FIRST_FILL_PRIORITY + 1, 'microsoft/harrier-oss-v1-270m')
+  run.mockResolvedValue(false)
+  await orchestrator.runStep(job)
+  expect(run).toHaveBeenCalledWith(
+    expect.objectContaining({data: expect.objectContaining({modelId})})
+  )
+  await pg.deleteFrom('EmbeddingsJobQueueV2').where('id', '=', job.id).execute()
 })

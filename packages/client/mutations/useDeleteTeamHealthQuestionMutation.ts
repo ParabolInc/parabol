@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useDeleteTeamHealthQuestionMutation as TDeleteTeamHealthQuestionMutation} from '../__generated__/useDeleteTeamHealthQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useDeleteTeamHealthQuestionMutation($questionId: ID!) {
@@ -14,6 +16,7 @@ const mutation = graphql`
 // deleted question from that template's selected questions and from every available pack's question list.
 const useDeleteTeamHealthQuestionMutation = (templateId: string) => {
   const [commit, submitting] = useMutation<TDeleteTeamHealthQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TDeleteTeamHealthQuestionMutation>) => {
     const {questionId} = config.variables
     const updater = (store: Parameters<NonNullable<typeof config.updater>>[0]) => {
@@ -36,6 +39,7 @@ const useDeleteTeamHealthQuestionMutation = (templateId: string) => {
     return commit({
       optimisticUpdater: updater,
       updater,
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {ReAuthWithMicrosoftMutation as TReAuthWithMicrosoftMutation} from '../__generated__/ReAuthWithMicrosoftMutation.graphql'
 import type Atmosphere from '../Atmosphere'
-import getServerError from '../utils/relay/getServerError'
+import getMutationError from '../utils/relay/getMutationError'
 
 const mutation = graphql`
   mutation ReAuthWithMicrosoftMutation($code: ID!, $pseudoId: ID, $params: String!) {
@@ -23,7 +23,7 @@ const ReAuthWithMicrosoftMutation = (
   return commitMutation<TReAuthWithMicrosoftMutation>(atmosphere, {
     mutation,
     variables,
-    onError: (err) => onCompleted(getServerError(err)?.message ?? err.message),
+    onError: (err) => onCompleted(getMutationError(err).message),
     onCompleted: (res) => {
       const {loginWithMicrosoft} = res
       if (loginWithMicrosoft.error) {

@@ -11,8 +11,9 @@ import upsertSuggestedGrouping from './upsertSuggestedGrouping'
 // Matches generateSuggestedGroups, since this can now hold the lock for a whole LLM run
 const LOCK_TTL_MS = 60_000
 
-const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: false}
-const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: false}
+// One column at a time: models mostly erred by merging cards across columns that teams kept apart
+const AI_CONFIG = {mode: 'ai' as const, userPrompt: null, sameColumnOnly: true}
+const SIMILARITY_CONFIG = {mode: 'similarity' as const, userPrompt: null, sameColumnOnly: true}
 
 /**
  * AI grouping when the team is entitled to it, similar wording otherwise. Similar wording is also
@@ -68,16 +69,8 @@ const generateDefaultSuggestedGroups = async (
     if (!hasLock) return
 
     try {
-      const {
-        config,
-        requestedMode,
-        groups,
-        inputHash,
-        model,
-        reasoningEffort,
-        tokenCost,
-        repairedReflectionCount
-      } = await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
+      const {config, requestedMode, groups, inputHash, model, tokenCost, repairedReflectionCount} =
+        await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
       // Stored even when empty: "we looked and nothing was similar enough" is an answer, and it
       // keeps the panel from offering to regenerate the identical result
       await upsertSuggestedGrouping(
@@ -89,7 +82,6 @@ const generateDefaultSuggestedGroups = async (
           inputHash,
           groups,
           model,
-          reasoningEffort,
           tokenCost,
           repairedReflectionCount
         },

@@ -814,19 +814,196 @@ test('a draft cannot be reacted to until it is shared', async () => {
   expect(onShared.data.addReactjiToReactable.error).toBeUndefined()
 })
 
-test('updateMeetingTemplate rejects a stand-up instead of throwing', async () => {
-  const {owner, meeting} = await startTemplatedStandup()
-  const res = await sendPublic({
-    query: `mutation U($meetingId: ID!, $templateId: ID!) {
-      updateMeetingTemplate(meetingId: $meetingId, templateId: $templateId) {
-        ... on ErrorPayload { error { message } }
+const UPDATE_MEETING_TEMPLATE = `
+  mutation UpdateMeetingTemplate(
+    $meetingId: ID!
+    $templateId: ID!
+    $applyToSeries: Boolean
+    $clearTeamPromptResponses: Boolean
+  ) {
+    updateMeetingTemplate(
+      meetingId: $meetingId
+      templateId: $templateId
+      applyToSeries: $applyToSeries
+      clearTeamPromptResponses: $clearTeamPromptResponses
+    ) {
+      meeting {
+        id
+        ... on TeamPromptMeeting {
+          template {
+            id
+          }
+          prompts {
+            id
+          }
+        }
       }
-    }`,
-    variables: {meetingId: meeting.id, templateId: ENTERPRISE_TEMPLATE_ID},
+    }
+  }
+`
+
+const cloneStandupTemplate = async (auth: {cookie: string}, teamId: string) => {
+  const created = await sendPublic({
+    query: ADD_TEAM_PROMPT_TEMPLATE,
+    variables: {teamId, parentTemplateId: ENTERPRISE_TEMPLATE_ID},
+    ...auth
+  })
+  expect(created.errors).toBeUndefined()
+  return created.data.addPromptTemplate.template as {id: string; prompts: {id: string}[]}
+}
+
+const switchTemplate = (
+  auth: {cookie?: string; bearerToken?: string},
+  variables: {
+    meetingId: string
+    templateId: string
+    applyToSeries?: boolean
+    clearTeamPromptResponses?: boolean
+  }
+) => sendPublic({query: UPDATE_MEETING_TEMPLATE, variables, ...auth})
+
+const discussionIdFor = async (meetingId: string, userId: string) => {
+  const {phases} = await getKysely()
+    .selectFrom('NewMeeting')
+    .select('phases')
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+  const stages = (phases as {stages: {teamMemberId: string; discussionId: string}[]}[])[0]!.stages
+  return stages.find(({teamMemberId}) => teamMemberId.startsWith(`${userId}::`))!.discussionId
+}
+
+test('a stand-up switches to a template made after it started and shows its questions', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const template = await cloneStandupTemplate({cookie: owner.cookie}, owner.teamId)
+  const res = await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: template.id}
+  )
+  expect(res.errors).toBeUndefined()
+  const switched = res.data.updateMeetingTemplate.meeting
+  expect(switched.template.id).toBe(template.id)
+  expect(switched.prompts.map(({id}: {id: string}) => id)).toEqual(
+    template.prompts.map(({id}) => id)
+  )
+})
+
+test('switching refuses while anyone has an answer, then clears drafts on confirm and notes threads with replies', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const [workingOn] = meeting.prompts
+  const teammate = await addTeammate(owner.teamId)
+  await joinMeeting({bearerToken: teammate.bearerToken}, meeting.id)
+  await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: workingOn.id, content: paragraph('Shipped it')},
     cookie: owner.cookie
   })
-  expect(res.errors).toBeUndefined()
-  expect(res.data.updateMeetingTemplate.error.message).toBe('Meeting has no template')
+  await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
+  await sendPublic({
+    query: UPSERT,
+    variables: {meetingId: meeting.id, promptId: workingOn.id, content: paragraph('Secret draft')},
+    bearerToken: teammate.bearerToken
+  })
+  const ownerDiscussionId = await discussionIdFor(meeting.id, owner.userId)
+  const teammateDiscussionId = await discussionIdFor(meeting.id, teammate.userId)
+  await getKysely()
+    .insertInto('Comment')
+    .values({
+      id: randomUUIDv7(),
+      discussionId: ownerDiscussionId,
+      content: paragraph('Nice work'),
+      plaintextContent: 'Nice work',
+      createdBy: teammate.userId,
+      threadSortOrder: 0
+    })
+    .execute()
+  const template = await cloneStandupTemplate({cookie: owner.cookie}, owner.teamId)
+
+  const refused = await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: template.id}
+  )
+  expect(refused.errors?.[0]?.extensions?.code).toBe('CONFLICT')
+  expect(refused.errors?.[0]?.extensions?.answeredCount).toBe(2)
+
+  const cleared = await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: template.id, clearTeamPromptResponses: true}
+  )
+  expect(cleared.errors).toBeUndefined()
+  const pg = getKysely()
+  const remaining = await pg
+    .selectFrom('TeamPromptResponse')
+    .select('id')
+    .where('meetingId', '=', meeting.id)
+    .execute()
+  expect(remaining).toHaveLength(0)
+  const ownerThread = await pg
+    .selectFrom('Comment')
+    .select(['createdBy', 'plaintextContent'])
+    .where('discussionId', '=', ownerDiscussionId)
+    .orderBy('threadSortOrder')
+    .execute()
+  expect(ownerThread).toHaveLength(2)
+  expect(ownerThread[1]!.createdBy).toBe('parabolAIUser')
+  expect(ownerThread[1]!.plaintextContent).toContain(
+    'so the answer these replies were about was cleared'
+  )
+  const teammateThread = await pg
+    .selectFrom('Comment')
+    .select('id')
+    .where('discussionId', '=', teammateDiscussionId)
+    .execute()
+  expect(teammateThread).toHaveLength(0)
+})
+
+test('applyToSeries changes the series template only when asked', async () => {
+  const owner = await signUp()
+  const {meeting, meetingSeries} = await startStandup(
+    {cookie: owner.cookie},
+    owner.teamId,
+    immediateRrule()
+  )
+  const seriesTemplateId = async () =>
+    (
+      await getKysely()
+        .selectFrom('MeetingSeries')
+        .select('templateId')
+        .where('id', '=', MeetingSeriesId.split(meetingSeries.id))
+        .executeTakeFirstOrThrow()
+    ).templateId
+  const first = await cloneStandupTemplate({cookie: owner.cookie}, owner.teamId)
+  const second = await cloneStandupTemplate({cookie: owner.cookie}, owner.teamId)
+
+  await switchTemplate({cookie: owner.cookie}, {meetingId: meeting.id, templateId: first.id})
+  expect(await seriesTemplateId()).toBe(ENTERPRISE_TEMPLATE_ID)
+  await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: second.id, applyToSeries: true}
+  )
+  expect(await seriesTemplateId()).toBe(second.id)
+})
+
+test('switching rejects a template from another org and an ended meeting', async () => {
+  const {owner, meeting} = await startTemplatedStandup()
+  const outsider = await signUp()
+  const foreign = await cloneStandupTemplate({cookie: outsider.cookie}, outsider.teamId)
+  const foreignRes = await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: foreign.id}
+  )
+  expect(foreignRes.errors?.[0]?.extensions?.code).toBe('NOT_FOUND')
+
+  await sendPublic({
+    query: END_TEAM_PROMPT,
+    variables: {meetingId: meeting.id},
+    cookie: owner.cookie
+  })
+  const own = await cloneStandupTemplate({cookie: owner.cookie}, owner.teamId)
+  const endedRes = await switchTemplate(
+    {cookie: owner.cookie},
+    {meetingId: meeting.id, templateId: own.id}
+  )
+  expect(endedRes.errors?.[0]?.extensions?.code).toBe('CONFLICT')
 })
 
 const addBorrowerTeam = async (orgId: string) => {

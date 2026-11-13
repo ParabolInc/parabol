@@ -576,6 +576,17 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Forms every stored suggested group that can be applied without splitting a group people made or
+  merging two groups people named. Facilitator only. Undo with resetReflectionGroups.
+  """
+  acceptSuggestedGroups(
+    """
+    The retrospective to group. Must be in the group phase and not yet ended
+    """
+    meetingId: ID!
+  ): AcceptSuggestedGroupsSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Compute suggested reflection groups for a retrospective. Never moves a card: the suggestions are
   stored on the meeting and previewed on hover until someone groups by hand.
   """
@@ -2243,7 +2254,18 @@ type Mutation {
     The id of the meeting template
     """
     templateId: ID!
-  ): UpdateMeetingTemplatePayload! @scope(name: MEETINGS_WRITE)
+
+    """
+    Also make it the template of the meeting's series, so future meetings use it
+    """
+    applyToSeries: Boolean
+
+    """
+    Standup only. Clear every answer, private drafts included. Without it, the mutation refuses
+    with a CONFLICT error carrying answeredCount when anyone has started answering
+    """
+    clearTeamPromptResponses: Boolean
+  ): UpdateMeetingTemplateSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Update an with a change in name, avatar

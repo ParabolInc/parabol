@@ -29,7 +29,7 @@ const JiraExportUpgradeModal = (props: Props) => {
   })
   return (
     <Dialog isOpen={isOpen} onClose={isHardBlock ? undefined : onClose}>
-      <DialogContent noClose={isHardBlock} className='text-center'>
+      <DialogContent noClose={isHardBlock}>
         <DialogTitle>{title}</DialogTitle>
         <p className='mt-2 text-fg-primary text-sm leading-5'>
           {isHardBlock ? (
@@ -42,15 +42,15 @@ const JiraExportUpgradeModal = (props: Props) => {
             </span>
           )}
         </p>
-        <DialogActions className='flex-col items-center justify-center gap-2'>
-          <Button variant='primary' size='md' onClick={goToUpgrade}>
-            {'Upgrade Now'}
-          </Button>
+        <DialogActions>
           {!isHardBlock && (
             <Button variant='outline' size='md' onClick={onClose}>
               {'Upgrade Later'}
             </Button>
           )}
+          <Button variant='primary' size='md' onClick={goToUpgrade}>
+            {'Upgrade Now'}
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

@@ -5,7 +5,7 @@ import useUnpinReportMutation from '../../mutations/useUnpinReportMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
-import getServerError from '../../utils/relay/getServerError'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   orgId: string
@@ -26,7 +26,7 @@ const ReportCardMenu = ({orgId, pinId, title, index, pinCount}: Props) => {
     onCompleted: (_response: unknown, errors?: readonly {message: string}[] | null) => {
       if (errors?.[0]) showError(errors[0].message)
     },
-    onError: (error: Error) => showError(getServerError(error)?.message ?? error.message)
+    onError: (error: Error) => showError(getMutationError(error).message)
   }
   return (
     <Menu

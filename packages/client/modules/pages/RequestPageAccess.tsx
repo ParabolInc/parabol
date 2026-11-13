@@ -10,7 +10,7 @@ import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import getServerError from '../../utils/relay/getServerError'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   pageId: string
@@ -62,7 +62,7 @@ export const RequestPageAccess = (props: Props) => {
         reason,
         role: 'viewer'
       },
-      onError: (error) => showRequestError(getServerError(error)?.extensions?.code),
+      onError: (error) => showRequestError(getMutationError(error).code),
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]
         if (firstError) {
@@ -105,10 +105,10 @@ export const RequestPageAccess = (props: Props) => {
             />
           </DialogDescription>
           <DialogActions className='mt-0 flex w-full justify-between gap-4'>
-            <Button variant='outline' className='p-3 px-6' onClick={cancel}>
+            <Button variant='outline' size='md' onClick={cancel}>
               Cancel
             </Button>
-            <Button variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
+            <Button variant='primary' size='md' className='grow' onClick={submit}>
               Request Access
             </Button>
           </DialogActions>

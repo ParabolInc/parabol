@@ -5,9 +5,9 @@ import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import AtlassianClientManager from '../../../../integrations/jira/AtlassianClientManager'
 import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
 import {Providers} from '../../../../types/constEnums'
-import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
 import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
 import ProviderRow from './ProviderRow'
 
@@ -42,7 +42,9 @@ const ConfluenceProviderRow = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const atlassian = teamMember?.integrations.atlassian

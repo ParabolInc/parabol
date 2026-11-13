@@ -42,7 +42,7 @@ const StartMeetingUpgradeModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={isHardBlock ? undefined : onClose}>
-      <DialogContent noClose={isHardBlock} className='text-center'>
+      <DialogContent noClose={isHardBlock}>
         <DialogTitle>{title}</DialogTitle>
         <p className='mt-2 text-fg-primary text-sm leading-5'>
           {'Your company has run '}
@@ -66,10 +66,7 @@ const StartMeetingUpgradeModal = (props: Props) => {
             {SALES_EMAIL}
           </a>
         </p>
-        <DialogActions className='flex-col items-center justify-center gap-2'>
-          <Button variant='primary' size='md' onClick={goToUpgrade}>
-            {'Upgrade Now'}
-          </Button>
+        <DialogActions>
           {!isHardBlock && onStartAnyway && (
             <Button variant='outline' size='md' onClick={onStartAnyway}>
               {'Start Anyway'}
@@ -80,6 +77,9 @@ const StartMeetingUpgradeModal = (props: Props) => {
               {'Upgrade Later'}
             </Button>
           )}
+          <Button variant='primary' size='md' onClick={goToUpgrade}>
+            {'Upgrade Now'}
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

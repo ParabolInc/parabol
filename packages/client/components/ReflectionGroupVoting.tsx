@@ -5,12 +5,9 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '~/ui/icons'
 import type {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import type {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
-import type Atmosphere from '../Atmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
-import type {CompletedHandler} from '../types/relayMutations'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
-import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
 
 interface Props {
@@ -28,20 +25,6 @@ const getUpvoteButtonHoverClass = (isExpanded: boolean, disabled: boolean) =>
     ? // sits on the dark expanded-stack scrim — invariant
       'hover:bg-slate-500 focus:bg-slate-500 active:bg-slate-500'
     : 'hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover')
-
-const makeHandleCompleted =
-  (onCompleted: () => void, atmosphere: Atmosphere): CompletedHandler =>
-  (res, errors) => {
-    onCompleted()
-    const error = getGraphQLError(res, errors)
-    if (error) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'voteError',
-        message: error.message || 'Error submitting vote',
-        autoDismiss: 5
-      })
-    }
-  }
 
 const ReflectionGroupVoting = (props: Props) => {
   const {isExpanded, meeting: meetingRef, reflectionGroup: reflectionGroupRef} = props
@@ -82,21 +65,19 @@ const ReflectionGroupVoting = (props: Props) => {
   const vote = () => {
     if (isComplete || isTempId(reflectionGroupId) || !canUpvote) return
     submitMutation()
-    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
     VoteForReflectionGroupMutation(
       atmosphere,
       {reflectionGroupId},
-      {onError, onCompleted: handleCompleted, meetingId}
+      {onError, onCompleted, meetingId}
     )
   }
   const downvote = () => {
     if (isComplete || isTempId(reflectionGroupId) || !canDownvote) return
     submitMutation()
-    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
-      {onError, onCompleted: handleCompleted, meetingId}
+      {onError, onCompleted, meetingId}
     )
   }
 

@@ -10,6 +10,7 @@ import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useEndTeamHealthMutation_team on EndTeamHealthSuccess {
@@ -97,6 +98,7 @@ const useEndTeamHealthMutation = () => {
         if (!payload) return
         endTeamHealthTeamUpdater(payload as any, {atmosphere, store: store as any})
       },
+      onError: snackOnError(atmosphere),
       ...config,
       onCompleted: (res, errors) => {
         config.onCompleted?.(res, errors)

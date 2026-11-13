@@ -4,6 +4,7 @@ import type {MoveTemplatePromptMutation as TMoveTemplatePromptMutation} from '~/
 import type {MoveTemplatePromptMutation_team$data} from '../__generated__/MoveTemplatePromptMutation_team.graphql'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
+import {snackOnError} from './handlers/snackOnError'
 
 interface Context {
   templateId: string
@@ -43,6 +44,7 @@ const MoveTemplatePromptMutation: StandardMutation<TMoveTemplatePromptMutation, 
   return commitMutation<TMoveTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('moveTemplatePrompt')
       if (!payload) return

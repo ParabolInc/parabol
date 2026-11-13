@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import {ContentCopy as ContentCopyIcon} from '~/ui/icons'
+import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
@@ -45,15 +47,12 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
               <TooltipContent>{'Copied!'}</TooltipContent>
             </Tooltip>
           </div>
-          <div className='flex justify-end'>
-            <button
-              onClick={onClose}
-              className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600'
-            >
-              Done
-            </button>
-          </div>
         </div>
+        <DialogActions>
+          <Button variant='primary' size='md' onClick={onClose}>
+            Done
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

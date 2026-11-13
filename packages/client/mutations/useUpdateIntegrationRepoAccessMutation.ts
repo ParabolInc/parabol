@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdateIntegrationRepoAccessMutation as TUpdateIntegrationRepoAccessMutation} from '../__generated__/useUpdateIntegrationRepoAccessMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useUpdateIntegrationRepoAccessMutation(
@@ -25,8 +27,9 @@ const mutation = graphql`
 
 const useUpdateIntegrationRepoAccessMutation = () => {
   const [commit, submitting] = useMutation<TUpdateIntegrationRepoAccessMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TUpdateIntegrationRepoAccessMutation>) =>
-    commit({...config})
+    commit({onError: snackOnError(atmosphere), ...config})
   return [execute, submitting] as const
 }
 

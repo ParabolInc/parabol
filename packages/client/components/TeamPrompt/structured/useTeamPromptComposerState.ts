@@ -3,7 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import type {useTeamPromptComposer_meeting$data} from '~/__generated__/useTeamPromptComposer_meeting.graphql'
 import isEmptyTipTapDoc from '../../../shared/tiptap/isEmptyTipTapDoc'
 import lastAnswerUpdatedAt from './lastAnswerUpdatedAt'
-import {clearStageDrafts, readDraftAnswer} from './teamPromptDraftStorage'
+import {clearStageDrafts, clearStaleDraftAnswers, readDraftAnswer} from './teamPromptDraftStorage'
 import {getMemberSharedAt, getSharedResponses} from './teamPromptStages'
 import type {DirtyAnswer} from './useTeamPromptAnswersAutosave'
 
@@ -59,6 +59,12 @@ const useTeamPromptComposerState = (options: Options) => {
   useEffect(() => {
     if (!stage || hasSeededRef.current) return
     hasSeededRef.current = true
+    if (prompts.length > 0) {
+      clearStaleDraftAnswers(
+        stage.id,
+        prompts.map(({id}) => id)
+      )
+    }
     const entries = prompts.reduce<DirtyAnswer[]>((acc, prompt) => {
       const draft = readDraftAnswer(stage.id, prompt.id)
       if (!draft) return acc

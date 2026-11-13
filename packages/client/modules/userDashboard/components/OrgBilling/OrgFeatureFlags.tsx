@@ -20,7 +20,7 @@ interface Props {
 const OrgFeatureFlags = (props: Props) => {
   const {organizationRef} = props
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, error} = useMutationProps()
+  const {onError, onCompleted, error} = useMutationProps({errorDisplay: 'inline'})
   const organization = useFragment(
     graphql`
       fragment OrgFeatureFlags_organization on Organization {

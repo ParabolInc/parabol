@@ -6,7 +6,7 @@ import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileU
 import {checkFileMimeType} from '../../../shared/utils/checkFileMimeType'
 import {MAX_FILE_SIZE_FREE, MAX_FILE_SIZE_PAID, MAX_IMAGE_SIZE} from '../../../utils/constants'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
-import getServerError from '../../../utils/relay/getServerError'
+import getMutationError from '../../../utils/relay/getMutationError'
 
 export const fileUploadSettledMeta = 'fileUploadSettled'
 
@@ -82,7 +82,7 @@ export const onUploadTipTapFile =
       commit({
         variables: {scope: assetScope, scopeKey},
         uploadables: {file: file},
-        onError: (error) => failUpload(getServerError(error)?.message ?? error.message),
+        onError: (error) => failUpload(getMutationError(error).message),
         onCompleted: (res, errors) => {
           const {uploadUserAsset} = res
           const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
