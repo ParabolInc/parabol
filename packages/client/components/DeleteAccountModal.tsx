@@ -8,6 +8,7 @@ import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
@@ -84,11 +85,11 @@ const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
                 placeholder=''
                 value={reason}
               />
-              <div className='mt-6 flex justify-end'>
+              <DialogActions>
                 <Button variant='primary' size='md' onClick={handleDelete} disabled={!reason}>
                   {'Goodbye forever'}
                 </Button>
-              </div>
+              </DialogActions>
             </div>
           </div>
         )}

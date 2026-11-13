@@ -21,10 +21,10 @@ export const UnlinkPageDialog = (props: Props) => {
           <div>You can undo this at any time.</div>
         </div>
         <DialogActions>
-          <Button variant='flat' onClick={closeDialog} className='p-2'>
+          <Button variant='outline' size='md' onClick={closeDialog}>
             Cancel
           </Button>
-          <Button variant='primary' onClick={approveUnlink} className='p-2'>
+          <Button variant='primary' size='md' onClick={approveUnlink}>
             Change and unlink
           </Button>
         </DialogActions>

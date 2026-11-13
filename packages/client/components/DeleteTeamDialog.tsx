@@ -63,17 +63,11 @@ const DeleteTeamDialog = (props: Props) => {
         </fieldset>
 
         <DialogActions>
-          <Button
-            variant='primary'
-            size='md'
-            className='text-[15px]'
-            onClick={handleDeleteTeam}
-            disabled={!typedTeamName}
-          >
-            I understand the consequences, delete this team
-          </Button>
-          <Button variant='outline' size='sm' onClick={onClose}>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
+          </Button>
+          <Button variant='primary' size='md' onClick={handleDeleteTeam} disabled={!typedTeamName}>
+            I understand the consequences, delete this team
           </Button>
         </DialogActions>
       </DialogContent>

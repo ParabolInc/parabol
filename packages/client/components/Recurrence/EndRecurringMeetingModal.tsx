@@ -17,8 +17,9 @@ import type {
   NavigateMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
-import {cn} from '../../ui/cn'
+import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
@@ -65,9 +66,6 @@ interface Props {
   hasUnsharedDraft?: boolean
   closeModal: () => void
 }
-
-const ACTION_BUTTON_CLASSES =
-  'font-sans text-base font-medium cursor-pointer text-center rounded-md px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
   const {
@@ -157,27 +155,14 @@ export const EndRecurringMeetingModal = (props: Props) => {
             You have an unshared draft. Drafts are not included in the summary.
           </p>
         )}
-        <div className='flex justify-end gap-2.5'>
-          <button
-            className={cn(
-              'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-hover',
-              ACTION_BUTTON_CLASSES
-            )}
-            onClick={closeModal}
-          >
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
             Cancel
-          </button>
-          <button
-            className={cn(
-              'bg-sky-500 text-white hover:bg-sky-600 disabled:pointer-events-none disabled:opacity-50',
-              ACTION_BUTTON_CLASSES
-            )}
-            onClick={onConfirm}
-            disabled={submitting}
-          >
+          </Button>
+          <Button variant='primary' size='md' onClick={onConfirm} disabled={submitting}>
             Confirm
-          </button>
-        </div>
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

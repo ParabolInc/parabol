@@ -44,7 +44,7 @@ const TeamPromptSwitchTemplateDialog = (props: Props) => {
             Cancel
           </Button>
           <Button
-            variant='destructive'
+            variant='primary'
             size='md'
             className='h-11 sm:h-9'
             onClick={onConfirm}
