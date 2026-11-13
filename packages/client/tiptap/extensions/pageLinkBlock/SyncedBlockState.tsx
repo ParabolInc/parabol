@@ -6,7 +6,7 @@ interface Props {
   onRetry: () => void
 }
 
-const SKELETON_LINE_WIDTHS = ['62%', '70%', '54%']
+const SKELETON_LINE_WIDTH_CLASSES = ['w-[62%]', 'w-[70%]', 'w-[54%]']
 
 export const SyncedBlockState = (props: Props) => {
   const {status, onRetry} = props
@@ -18,8 +18,8 @@ export const SyncedBlockState = (props: Props) => {
         contentEditable={false}
         className='flex flex-col gap-2 py-1'
       >
-        {SKELETON_LINE_WIDTHS.map((width) => (
-          <div key={width} className='h-3 rounded-sm bg-surface-hover' style={{width}} />
+        {SKELETON_LINE_WIDTH_CLASSES.map((widthClass) => (
+          <div key={widthClass} className={`h-3 rounded-sm bg-surface-hover ${widthClass}`} />
         ))}
       </div>
     )

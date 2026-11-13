@@ -12,9 +12,21 @@ jest.mock('@hocuspocus/provider', () => {
     synced = false
     awareness = null
     document: unknown
+    onAuthenticationFailed: (payload: {reason: string}) => void
     listeners: Record<string, Set<Listener>> = {}
-    constructor({document}: {document: unknown}) {
+    constructor({
+      document,
+      onAuthenticationFailed
+    }: {
+      document: unknown
+      onAuthenticationFailed: (payload: {reason: string}) => void
+    }) {
       this.document = document
+      this.onAuthenticationFailed = onAuthenticationFailed
+    }
+    failAuthentication(reason: string) {
+      this.onAuthenticationFailed({reason})
+      this.emit('authenticationFailed', {reason})
     }
     on(eventName: string, listener: Listener) {
       this.listeners[eventName] ??= new Set()
@@ -39,7 +51,10 @@ jest.mock('../../../../Atmosphere', () => ({
   default: {closeHandlers: new Set(), current: null}
 }))
 
-type EmittingProvider = HocuspocusProvider & {emit: (eventName: string, payload?: unknown) => void}
+type EmittingProvider = HocuspocusProvider & {
+  emit: (eventName: string, payload?: unknown) => void
+  failAuthentication: (reason: string) => void
+}
 
 const SECRET_TEXT = 'Sev 1'
 
@@ -149,4 +164,42 @@ test('unregisters the provider on unmount', () => {
   act(() => root.unmount())
   expect(getCount(6)).toBe(0)
   root = createRoot(container)
+})
+
+test('a block mounting after the page was already denied shows the locked panel at once', () => {
+  providerManager.register('page:7')
+  act(() => providerFor(7).failAuthentication('Unauthorized'))
+  render(7)
+  expect(statusOf()).toBe('locked')
+  expect(screenText()).toContain("You don't have access to this synced block.")
+})
+
+test('a non-Unauthorized failure shows the error at once', () => {
+  render(8)
+  act(() => providerFor(8).failAuthentication('Forbidden'))
+  expect(statusOf()).toBe('error')
+  expect(screenText()).toContain("This synced block didn't load.")
+})
+
+test('a stored non-Unauthorized failure shows the error at once on mount', () => {
+  providerManager.register('page:9')
+  act(() => providerFor(9).failAuthentication('Forbidden'))
+  render(9)
+  expect(statusOf()).toBe('error')
+})
+
+test('a successful authentication clears the stored failure', () => {
+  providerManager.register('page:10')
+  providerFor(10).failAuthentication('Unauthorized')
+  expect(providerManager.getAuthenticationFailure('page:10')).toBe('Unauthorized')
+  providerFor(10).emit('authenticated', {scope: 'readonly'})
+  expect(providerManager.getAuthenticationFailure('page:10')).toBeUndefined()
+})
+
+test('destroying the provider clears the stored failure', () => {
+  providerManager.register('page:11')
+  providerFor(11).failAuthentication('Unauthorized')
+  providerManager.providers['page:11']!.count = 0
+  providerManager.destroy('page:11')
+  expect(providerManager.getAuthenticationFailure('page:11')).toBeUndefined()
 })

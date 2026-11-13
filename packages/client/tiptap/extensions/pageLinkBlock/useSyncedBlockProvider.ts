@@ -23,6 +23,11 @@ export const useSyncedBlockProvider = (pageCode: number) => {
       setStatus('ready')
       return
     }
+    const storedFailure = providerManager.getAuthenticationFailure(documentName)
+    if (storedFailure) {
+      setStatus(storedFailure === 'Unauthorized' ? 'locked' : 'error')
+      return
+    }
     setStatus('loading')
     const timeoutId = setTimeout(() => setStatus('error'), SYNCED_BLOCK_LOAD_TIMEOUT_MS)
     const handleSynced = () => {
@@ -30,9 +35,8 @@ export const useSyncedBlockProvider = (pageCode: number) => {
       setStatus('ready')
     }
     const handleAuthenticationFailed = ({reason}: {reason: string}) => {
-      if (reason !== 'Unauthorized') return
       clearTimeout(timeoutId)
-      setStatus('locked')
+      setStatus(reason === 'Unauthorized' ? 'locked' : 'error')
     }
     provider.on('synced', handleSynced)
     provider.on('authenticationFailed', handleAuthenticationFailed)
@@ -41,7 +45,7 @@ export const useSyncedBlockProvider = (pageCode: number) => {
       provider.off('synced', handleSynced)
       provider.off('authenticationFailed', handleAuthenticationFailed)
     }
-  }, [provider, attempt])
+  }, [provider, attempt, documentName])
 
   const retry = useCallback(() => setAttempt((previous) => previous + 1), [])
 

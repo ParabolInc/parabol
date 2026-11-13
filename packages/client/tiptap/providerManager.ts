@@ -10,6 +10,10 @@ class ProviderManager {
     string,
     {count: number; provider: HocuspocusProvider; persistence?: IndexeddbPersistence}
   > = {}
+  authenticationFailures = new Map<string, string>()
+  getAuthenticationFailure(documentName: string) {
+    return this.authenticationFailures.get(documentName)
+  }
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
@@ -33,6 +37,7 @@ class ProviderManager {
       token: window.document.cookie,
       onAuthenticationFailed: ({reason}) => {
         console.log('fail', reason)
+        this.authenticationFailures.set(documentName, reason)
         if (reason === 'Unauthorized') {
           const entry = this.providers[documentName]
           if (entry) {
@@ -60,6 +65,7 @@ class ProviderManager {
     }, 10000)
     if (documentName.startsWith('page:')) {
       provider.on('authenticated', ({scope}: {scope: string}) => {
+        this.authenticationFailures.delete(documentName)
         const entry = this.providers[documentName]
         if (!entry) return
         if (scope === 'readonly') {
@@ -123,12 +129,14 @@ class ProviderManager {
     if (prevProviderEntry.count === 0) {
       prevProviderEntry.provider.destroy()
       delete this.providers[documentName!]
+      this.authenticationFailures.delete(documentName)
     }
   }
 
   close() {
     const entries = Object.values(this.providers)
     this.providers = {}
+    this.authenticationFailures.clear()
     entries.forEach((e) => e.provider.destroy())
     return Promise.all(entries.map((e) => e.persistence?.clearData()))
   }
