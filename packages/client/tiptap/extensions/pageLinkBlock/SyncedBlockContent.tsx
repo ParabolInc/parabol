@@ -1,6 +1,7 @@
 import type {Editor} from '@tiptap/core'
-import {usePageProvider} from '../../../hooks/usePageProvider'
 import {SyncedBlockEditor} from './SyncedBlockEditor'
+import {SyncedBlockState} from './SyncedBlockState'
+import {useSyncedBlockProvider} from './useSyncedBlockProvider'
 
 interface Props {
   pageCode: number
@@ -11,13 +12,12 @@ interface Props {
 
 export const SyncedBlockContent = (props: Props) => {
   const {pageCode, hostEditor, getPos, getSize} = props
-  const pageId = `page:${pageCode}`
-  const {provider, synced} = usePageProvider(pageId)
-  if (!synced) return <div className='h-6 rounded-sm bg-surface-hover' />
+  const {provider, status, retry} = useSyncedBlockProvider(pageCode)
+  if (status !== 'ready') return <SyncedBlockState status={status} onRetry={retry} />
   return (
     <SyncedBlockEditor
       provider={provider}
-      pageId={pageId}
+      pageId={`page:${pageCode}`}
       hostEditor={hostEditor}
       getPos={getPos}
       getSize={getSize}
