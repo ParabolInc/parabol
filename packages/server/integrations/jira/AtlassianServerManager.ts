@@ -1,4 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
+import {GraphQLError} from 'graphql'
 
 import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
 import type {AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
@@ -305,6 +306,13 @@ export class JiraNoAccessResponseError extends Error {
   name = 'JiraNoAccessResponseError'
 }
 
+const deniesAccess = (status: number) => status === 401 || status === 403 || status === 404
+
+const atlassianUnavailable = (error: unknown) =>
+  new GraphQLError(error instanceof Error ? error.message : 'Atlassian is down', {
+    extensions: {code: 'SERVICE_UNAVAILABLE'}
+  })
+
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
 
@@ -318,7 +326,7 @@ class AtlassianServerManager extends AtlassianManager {
       const {headers} = res
       const contentType = headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
-        if (res.status === 403) {
+        if (deniesAccess(res.status)) {
           await res.body?.cancel()
           return new JiraNoAccessResponseError('Jira denied this account access')
         }
@@ -331,15 +339,19 @@ class AtlassianServerManager extends AtlassianManager {
           json.message === 'No message available' && 'error' in json
             ? (json as JiraGetError).error
             : json.message
-        return res.status === 404 ? new JiraNoAccessResponseError(message) : new Error(message)
+        return deniesAccess(res.status)
+          ? new JiraNoAccessResponseError(message)
+          : new Error(message)
       }
       if (isJiraNoAccessError(json)) {
-        return new JiraNoAccessResponseError(json.errorMessages[0])
+        const [message] = json.errorMessages
+        return deniesAccess(res.status)
+          ? new JiraNoAccessResponseError(message)
+          : new Error(message)
       }
       return json as T
     } catch (error) {
-      if (error instanceof Error) return error
-      return new Error('Atlassian is down')
+      return atlassianUnavailable(error)
     }
   }
 
@@ -374,8 +386,7 @@ class AtlassianServerManager extends AtlassianManager {
       }
       return json as T
     } catch (error) {
-      if (error instanceof Error) return error
-      return new Error('Atlassian is down')
+      return atlassianUnavailable(error)
     }
   }
 
