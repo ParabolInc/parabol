@@ -6,6 +6,7 @@ import type {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequ
 import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import Checkbox from './Checkbox'
@@ -86,11 +87,11 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
             <div className='py-4 text-fg-primary text-sm leading-relaxed'>
               Request expired or deleted
             </div>
-            <div className='flex w-full justify-end'>
-              <Button variant='outline' onClick={onClose} size='sm'>
+            <DialogActions>
+              <Button variant='outline' onClick={onClose} size='md'>
                 Cancel
               </Button>
-            </div>
+            </DialogActions>
           </>
         ) : (
           <>
@@ -138,20 +139,14 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
                 )
               })}
             </div>
-            <div className='flex w-full justify-end gap-2 pt-2'>
-              <Button variant='outline' onClick={onClose} size='sm' disabled={submitting}>
+            <DialogActions>
+              <Button variant='outline' onClick={onClose} size='md' disabled={submitting}>
                 Cancel
               </Button>
-              <Button
-                variant='primary'
-                size='sm'
-                className='text-sm'
-                onClick={onAdd}
-                disabled={submitting}
-              >
+              <Button variant='primary' size='md' onClick={onAdd} disabled={submitting}>
                 Add to teams
               </Button>
-            </div>
+            </DialogActions>
           </>
         )}
       </DialogContent>

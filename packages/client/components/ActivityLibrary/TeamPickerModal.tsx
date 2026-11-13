@@ -12,16 +12,15 @@ import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/us
 import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
 import useAddPromptTemplateMutation from '../../mutations/useAddPromptTemplateMutation'
 import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import getMutationError from '../../utils/relay/getMutationError'
 import sortByTier from '../../utils/sortByTier'
 import TeamPicker from '../TeamPicker/TeamPicker'
-
-const ACTION_BUTTON_CLASSES =
-  'w-max cursor-pointer rounded-md px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
   preferredTeamId: string | null | undefined
@@ -136,7 +135,7 @@ const TeamPickerModal = (props: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent
-        className='w-[440px] p-6'
+        className='w-[440px]'
         onCloseAutoFocus={(e) => {
           if (isNavigatingAwayRef.current) e.preventDefault()
         }}
@@ -163,41 +162,31 @@ const TeamPickerModal = (props: Props) => {
             </div>
           )}
           {error && <div className='w-full text-fg-error'>{error}</div>}
-          <div className='flex gap-2.5 self-end'>
-            <button
-              className={cn(
-                ACTION_BUTTON_CLASSES,
-                'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-hover'
-              )}
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
-            {selectedTeam.tier === 'starter' ? (
-              <button
-                className={cn(
-                  ACTION_BUTTON_CLASSES,
-                  'bg-rose-500 px-4 py-2 text-white hover:bg-rose-600',
-                  submitting && 'cursor-wait'
-                )}
-                onClick={handleUpgrade}
-              >
-                Upgrade Now
-              </button>
-            ) : (
-              <button
-                className={cn(
-                  ACTION_BUTTON_CLASSES,
-                  'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
-                  submitting && 'cursor-wait'
-                )}
-                onClick={handleSelectTeam}
-              >
-                Clone Template
-              </button>
-            )}
-          </div>
         </div>
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
+            Cancel
+          </Button>
+          {selectedTeam.tier === 'starter' ? (
+            <Button
+              variant='primary'
+              size='md'
+              className={cn(submitting && 'cursor-wait')}
+              onClick={handleUpgrade}
+            >
+              Upgrade Now
+            </Button>
+          ) : (
+            <Button
+              variant='primary'
+              size='md'
+              className={cn(submitting && 'cursor-wait')}
+              onClick={handleSelectTeam}
+            >
+              Clone Template
+            </Button>
+          )}
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

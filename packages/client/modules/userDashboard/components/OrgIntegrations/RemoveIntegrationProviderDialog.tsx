@@ -6,6 +6,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveIntegrationProviderMutation from '../../../../mutations/RemoveIntegrationProviderMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 
@@ -61,17 +62,11 @@ const RemoveIntegrationProviderDialog = (props: Props) => {
           </b>{' '}
           integration, it will no longer be available to any teams.
         </div>
-        <div className='flex justify-end pt-6'>
-          <Button
-            variant='primary'
-            size='sm'
-            className='text-sm'
-            type='submit'
-            onClick={handleClick}
-          >
+        <DialogActions>
+          <Button variant='primary' size='md' type='submit' onClick={handleClick}>
             Remove {prettyService} integration
           </Button>
-        </div>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

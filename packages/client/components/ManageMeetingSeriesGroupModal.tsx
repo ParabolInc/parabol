@@ -213,7 +213,7 @@ export const ManageMeetingSeriesGroupModal = (props: Props) => {
           <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='dialogPrimary' size='md' onClick={onConfirm}>
+          <Button variant='primary' size='md' onClick={onConfirm}>
             Save changes
           </Button>
         </DialogActions>

@@ -6,6 +6,7 @@ import IconLabel from '../../../../components/IconLabel'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 
@@ -41,13 +42,15 @@ const RemoveTeamMemberModal = (props: Props) => {
       <DialogContent>
         <DialogTitle>Are you sure?</DialogTitle>
         <p>This will remove {preferredName} from the team.</p>
-        <Button variant='primary' size='md' className='mx-auto mt-6 mb-0' onClick={handleClick}>
-          <IconLabel
-            icon='arrow_forward'
-            iconAfter
-            label={<div className='break-word whitespace-normal'>Remove {preferredName}</div>}
-          />
-        </Button>
+        <DialogActions>
+          <Button variant='primary' size='md' onClick={handleClick}>
+            <IconLabel
+              icon='arrow_forward'
+              iconAfter
+              label={<div className='break-word whitespace-normal'>Remove {preferredName}</div>}
+            />
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

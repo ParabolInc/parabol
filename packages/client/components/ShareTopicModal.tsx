@@ -250,13 +250,12 @@ const ShareTopicModal = (props: Props) => {
           </Select>
         </fieldset>
         <DialogActions>
-          <Button variant='outline' size='sm' onClick={onClose}>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
           <Button
             variant='primary'
-            size='sm'
-            className='text-sm'
+            size='md'
             onClick={onShare}
             disabled={isLoading || channelsLoading}
           >

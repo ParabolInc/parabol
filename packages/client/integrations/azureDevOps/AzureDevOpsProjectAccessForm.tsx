@@ -125,10 +125,10 @@ const AzureDevOpsProjectAccessForm = (props: Props) => {
         <span className='mr-auto text-fg-secondary text-sm'>
           {sharesAll ? 'All projects' : `${selectedIds.size} of ${projects.length} selected`}
         </span>
-        <Button variant='ghost' size='md' onClick={onClose}>
+        <Button variant='outline' size='md' onClick={onClose}>
           Cancel
         </Button>
-        <Button variant='dialogPrimary' size='md' disabled={submitting} onClick={save}>
+        <Button variant='primary' size='md' disabled={submitting} onClick={save}>
           Save
         </Button>
       </DialogActions>

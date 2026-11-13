@@ -101,11 +101,11 @@ const InspirationItemsPanel = (props: Props) => {
         />
         <DialogActions>
           {userPrompt.trim() && (
-            <Button variant='ghost' size='md' onClick={() => setUserPrompt('')}>
+            <Button variant='outline' size='md' onClick={() => setUserPrompt('')}>
               Clear
             </Button>
           )}
-          <Button variant='secondary' size='md' onClick={() => setPromptOpen(false)}>
+          <Button variant='primary' size='md' onClick={() => setPromptOpen(false)}>
             Done
           </Button>
         </DialogActions>
