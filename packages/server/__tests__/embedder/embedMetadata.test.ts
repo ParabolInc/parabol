@@ -80,7 +80,7 @@ it('embeds everything else as it reads', async () => {
 })
 
 describe('when the text is rebuilt', () => {
-  const OTHER_MODEL: ModelId = 'microsoft/harrier-oss-v1-270m'
+  const OTHER_MODEL: ModelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
   const QWEN3: ModelId = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
   const notActive = activeEmbeddingModelId === OTHER_MODEL ? QWEN3 : OTHER_MODEL
 

@@ -126,7 +126,8 @@ export const modelIdDefinitions = {
     languages: embeddingLanguages,
     ...legacySettings
   },
-  'microsoft/harrier-oss-v1-270m': {
+  // Our INT8 build of microsoft/harrier-oss-v1-270m, which is what TEI serves
+  'Parabol/harrier-oss-v1-270m-ONNX-INT8': {
     embeddingDimensions: 640,
     precision: 16,
     tableSuffix: 'harrier270m',
@@ -158,3 +159,11 @@ export const modelIdDefinitions = {
 } satisfies Record<string, EmbeddingModelParams>
 
 export type ModelId = keyof typeof modelIdDefinitions
+
+// Ids a model went by before, mapped to its id now. An instance's AI_EMBEDDING_MODELS, and jobs queued before the
+// rename or by a server that hasn't restarted yet, may still use an old one.
+const formerModelIds: Record<string, ModelId> = {
+  'microsoft/harrier-oss-v1-270m': 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
+}
+
+export const resolveModelId = (modelId: string) => (formerModelIds[modelId] ?? modelId) as ModelId

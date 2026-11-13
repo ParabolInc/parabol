@@ -55,6 +55,11 @@ chunker, its prompts, and its cut-offs for page search, template search, Related
 Discussions and Similar Wording. A cut-off only means something for the model it
 was tuned on, so a new model brings its own.
 
+A model's id is the Hugging Face id of the weights its TEI serves. To rename one,
+keep its old id in `formerModelIds`, since an instance's `AI_EMBEDDING_MODELS` and
+the jobs already queued may still use it, and rename it in the queue with a
+migration.
+
 The first entry in `AI_EMBEDDING_MODELS` is the active model. Searches read its
 vectors and new content is queued for it alone. Later entries only work through
 the jobs already queued for them.
@@ -100,7 +105,7 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
    Both statements are safe to repeat:
 
    ```sql
-   \set modelId 'microsoft/harrier-oss-v1-270m'
+   \set modelId 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
    \set step1At '2026-11-10 14:00:00+00'
 
    INSERT INTO "EmbeddingsJobQueueV2" ("jobType", "priority", "embeddingsMetadataId", "modelId", "jobData")

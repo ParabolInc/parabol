@@ -12,7 +12,7 @@ jest.mock('../../utils/getRedis', () => ({
 }))
 
 const pg = getKysely()
-const modelId: ModelId = 'microsoft/harrier-oss-v1-270m'
+const modelId: ModelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const userId = `fillOrderTest|${generateUID()}`
 const teamId = `fillOrderTeam${generateUID()}`
 const DAY_MS = 86_400_000
