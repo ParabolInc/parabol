@@ -214,11 +214,11 @@ export default class Atmosphere extends Environment {
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    // DeleteUserMutation is required to unset the cookie
+    // useDeleteUserMutation is required to unset the cookie
     // ReAuth mutations are required to set a new auth cookie
     const isAuth =
       request.name.startsWith('Atmosphere') ||
-      request.name === 'DeleteUserMutation' ||
+      request.name === 'useDeleteUserMutation' ||
       request.name === 'ReAuthWithGoogleMutation' ||
       request.name === 'ReAuthWithMicrosoftMutation' ||
       request.name === 'ReAuthWithPasswordMutation'
