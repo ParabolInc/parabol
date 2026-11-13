@@ -36,14 +36,14 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
       pg
         .selectFrom('OrganizationUser as ou')
         .innerJoin('User as u', 'ou.userId', 'u.id')
-        .select(({fn}) => fn.count<number>('ou.id').as('count'))
+        .select(({fn}) => fn.count('ou.id').as('count'))
         .where('orgId', '=', orgId)
         .where('ou.removedAt', 'is', null)
         .where('u.inactive', '=', false)
         .executeTakeFirstOrThrow(),
       manager.getSubscriptionItem(stripeSubscriptionId)
     ])
-    const {count: orgUserCount} = orgUserCountRes
+    const orgUserCount = Number(orgUserCountRes.count)
     if (
       teamSubscription &&
       teamSubscription.quantity !== undefined &&
