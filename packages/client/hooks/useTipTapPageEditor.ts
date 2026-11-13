@@ -54,7 +54,7 @@ import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
 import {getPageFileType} from '../tiptap/getPageFileType'
-import {pagePlaceholderText} from '../tiptap/pagePlaceholderText'
+import {pagePlaceholderText, syncedBlockPlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
@@ -153,7 +153,9 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: (props) => placeholderRef.current || pagePlaceholderText(props)
+          placeholder: (props) =>
+            placeholderRef.current ||
+            (nested ? syncedBlockPlaceholderText(props) : pagePlaceholderText(props))
         }),
         PageUserMention.configure({
           atmosphere,

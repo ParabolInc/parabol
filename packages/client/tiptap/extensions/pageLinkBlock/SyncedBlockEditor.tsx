@@ -1,8 +1,13 @@
-import type {HocuspocusProvider} from '@hocuspocus/provider'
+import type {AuthorizedScope, HocuspocusProvider} from '@hocuspocus/provider'
 import type {Editor} from '@tiptap/core'
+import {useEffect, useState} from 'react'
 import {TipTapEditor} from '../../../components/TipTapEditor/TipTapEditor'
 import {useTipTapPageEditor} from '../../../hooks/useTipTapPageEditor'
-import {useEditablePage} from '../../../modules/pages/useEditablePage'
+
+export interface SyncedBlockChrome {
+  editor: Editor
+  isViewOnly: boolean
+}
 
 interface Props {
   provider: HocuspocusProvider
@@ -10,10 +15,11 @@ interface Props {
   hostEditor: Editor
   getPos: () => number | undefined
   getSize: () => number
+  onChromeChange: (chrome: SyncedBlockChrome | null) => void
 }
 
 export const SyncedBlockEditor = (props: Props) => {
-  const {provider, pageId, hostEditor, getPos, getSize} = props
+  const {provider, pageId, hostEditor, getPos, getSize, onChromeChange} = props
   const {editor} = useTipTapPageEditor(provider, {
     pageId,
     viewerRef: null,
@@ -25,7 +31,31 @@ export const SyncedBlockEditor = (props: Props) => {
       highestTier: hostEditor.storage.pageLinkBlock.highestTier
     }
   })
-  useEditablePage(provider, editor!)
+  const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
+  const [isHostEditable, setIsHostEditable] = useState(hostEditor.isEditable)
+  const isViewOnly = authorizedScope === 'readonly' || !isHostEditable
+
+  useEffect(() => {
+    const handleAuthenticated = ({scope}: {scope: AuthorizedScope}) => setAuthorizedScope(scope)
+    const handleHostUpdate = () => setIsHostEditable(hostEditor.isEditable)
+    setAuthorizedScope(provider.authorizedScope)
+    handleHostUpdate()
+    provider.on('authenticated', handleAuthenticated)
+    hostEditor.on('update', handleHostUpdate)
+    return () => {
+      provider.off('authenticated', handleAuthenticated)
+      hostEditor.off('update', handleHostUpdate)
+    }
+  }, [provider, hostEditor])
+
+  useEffect(() => {
+    if (!editor) return
+    if (editor.isEditable === isViewOnly) editor.setEditable(!isViewOnly)
+    onChromeChange({editor, isViewOnly})
+  }, [editor, isViewOnly, onChromeChange])
+
+  useEffect(() => () => onChromeChange(null), [onChromeChange])
+
   if (!editor) return null
   return (
     <div data-synced-editor>

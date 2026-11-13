@@ -1,7 +1,14 @@
-import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useContext, useMemo, useRef} from 'react'
+import {isNodeSelection, type NodeViewProps, NodeViewWrapper, useEditorState} from '@tiptap/react'
+import {type FocusEvent, useContext, useMemo, useRef, useState} from 'react'
+import {cn} from '../../../ui/cn'
+import {SyncedBlockBar} from './SyncedBlockBar'
+import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
+import type {SyncedBlockChrome} from './SyncedBlockEditor'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
+import {useSyncedBlockName} from './useSyncedBlockName'
+
+const copySyncedBlock = () => {}
 
 export const SyncedBlockView = (props: NodeViewProps) => {
   const {node, editor, getPos} = props
@@ -12,11 +19,49 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const chain = getEnclosingChain(providedChain, editor.storage.pageLinkBlock.pageId)
   const nestedChain = useMemo(() => [...chain, pageCode], [chain.join(','), pageCode])
   const canNest = canNestSyncedBlock(chain, pageCode)
+  const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
+  const [hasFocusWithin, setHasFocusWithin] = useState(false)
+  const isNodeSelected = useEditorState({
+    editor,
+    selector: ({editor: hostEditor}) => {
+      const {selection} = hostEditor.state
+      return isNodeSelection(selection) && selection.from === getPos()
+    }
+  })
+  const name = useSyncedBlockName(chrome?.editor ?? null)
+  const isViewOnly = chrome?.isViewOnly ?? false
+  const isFocused = hasFocusWithin || isNodeSelected
+  const showBar = !!chrome && isFocused
+  const handleBlur = (event: FocusEvent<HTMLElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setHasFocusWithin(false)
+    }
+  }
   return (
     <NodeViewWrapper
       data-synced-block
-      className='my-3 rounded-md px-3 py-1 outline outline-1 outline-transparent focus-within:outline-2 focus-within:outline-accent-active hover:outline-hairline-strong'
+      tabIndex={-1}
+      onFocus={() => setHasFocusWithin(true)}
+      onBlur={handleBlur}
+      className={cn(
+        '-mx-3 relative mt-9! mb-3 rounded-md px-3 py-1 outline outline-1 outline-transparent',
+        !showBar && 'hover:outline-hairline-strong',
+        showBar &&
+          (isViewOnly
+            ? 'outline-hairline-strong'
+            : 'rounded-t-none outline-2 outline-accent-active')
+      )}
     >
+      {showBar ? (
+        <SyncedBlockBar
+          name={name}
+          isOriginal={node.attrs.canonical === true}
+          isViewOnly={isViewOnly}
+          onCopy={copySyncedBlock}
+        />
+      ) : (
+        <SyncedBlockCaption name={name} />
+      )}
       {pageCode <= 0 ? (
         <div className='h-6 rounded-sm bg-surface-hover' />
       ) : canNest ? (
@@ -27,6 +72,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
             hostEditor={editor}
             getPos={getPos}
             getSize={() => sizeRef.current}
+            onChromeChange={setChrome}
           />
         </SyncedBlockChainContext.Provider>
       ) : (
