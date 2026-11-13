@@ -1,4 +1,5 @@
 import type Atmosphere from '../../Atmosphere'
+import {reportClientWarning} from '../reportClientError'
 
 type ClientOptions = {on: {closed: (event: unknown) => void}}
 
@@ -41,19 +42,13 @@ jest.mock('relay-runtime', () => ({commitLocalUpdate: jest.fn()}))
 jest.mock('../reportClientError', () => ({reportClientWarning: jest.fn()}))
 
 const consoleError = console.error
-const consoleWarn = console.warn
 const loggedToConsole = jest.fn()
 
-const waitForSocket = async () => {
-  await new Promise((resolve) => setTimeout(resolve))
-  return mockSockets.at(-1)!
-}
-
 beforeEach(() => {
-  loggedToConsole.mockClear()
+  jest.clearAllMocks()
+  jest.useFakeTimers()
   mockSockets.length = 0
   console.error = loggedToConsole
-  console.warn = jest.fn()
   Object.assign(globalThis, {__APP_VERSION__: '15.16.0'})
   Object.defineProperty(globalThis, 'window', {
     value: {
@@ -66,13 +61,17 @@ beforeEach(() => {
     configurable: true
   })
   Object.defineProperty(globalThis, 'document', {
-    value: {visibilityState: 'visible', addEventListener: jest.fn()},
+    value: {
+      visibilityState: 'visible',
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    },
     configurable: true
   })
 })
 afterEach(() => {
   console.error = consoleError
-  console.warn = consoleWarn
+  jest.useRealTimers()
 })
 
 test('a socket that closes before it ever connects stays disconnected without logging a console error', async () => {
@@ -84,29 +83,34 @@ test('a socket that closes before it ever connects stays disconnected without lo
   expect(loggedToConsole).not.toHaveBeenCalled()
 })
 
-test('a socket that drops after the session signs out stops retrying without logging a console error', async () => {
+test('a socket that drops after the session signs out stops retrying without reporting it', async () => {
   const {createWSClient} = await import('../createWSClient')
   const atmosphere = {authObj: {sub: 'user1'}} as unknown as Atmosphere
   createWSClient(atmosphere)
-  const socket = await waitForSocket()
   atmosphere.authObj = null
-  socket.dropConnection()
-  await waitForSocket()
+  mockSockets.at(-1)!.dropConnection()
+  await jest.advanceTimersByTimeAsync(60_000)
   expect(mockSockets).toHaveLength(1)
   expect(loggedToConsole).not.toHaveBeenCalled()
+  expect(reportClientWarning).not.toHaveBeenCalled()
 })
 
-test('a signed in socket that closes for good reports why', async () => {
-  const {createWSClient} = await import('../createWSClient')
-  const {reportClientWarning} = await import('../reportClientError')
-  const atmosphere = {authObj: {sub: 'user1'}} as unknown as Atmosphere
-  createWSClient(atmosphere)
-  const socket = await waitForSocket()
-  socket.onclose?.({code: 4406, reason: 'Subprotocol not acceptable', wasClean: true})
-  await waitForSocket()
-  expect(reportClientWarning).toHaveBeenCalledWith(
-    'WebSocketCloseError',
-    'closed 4406 Subprotocol not acceptable'
-  )
-  expect(loggedToConsole).not.toHaveBeenCalled()
-})
+test.each([
+  {code: 4406, reason: 'Subprotocol not acceptable'},
+  {code: 4400, reason: 'Bad request'}
+])(
+  'a signed in socket that closes for good with $code reports why once',
+  async ({code, reason}) => {
+    const {createWSClient} = await import('../createWSClient')
+    const atmosphere = {authObj: {sub: 'user1'}} as unknown as Atmosphere
+    createWSClient(atmosphere)
+    mockSockets.at(-1)!.onclose?.({code, reason, wasClean: true})
+    await jest.advanceTimersByTimeAsync(0)
+    expect(reportClientWarning).toHaveBeenCalledTimes(1)
+    expect(reportClientWarning).toHaveBeenCalledWith(
+      'WebSocketCloseError',
+      `closed ${code} ${reason}`
+    )
+    expect(loggedToConsole).not.toHaveBeenCalled()
+  }
+)
