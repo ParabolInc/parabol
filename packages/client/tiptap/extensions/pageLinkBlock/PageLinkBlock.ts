@@ -1,13 +1,14 @@
 import {GapCursor} from '@tiptap/pm/gapcursor'
 import {Fragment, type Node, Slice} from '@tiptap/pm/model'
-import {Plugin, TextSelection} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkNodeView} from './PageLinkNodeView'
-import {syncedBlockEntryPlugin} from './syncedBlockFocus'
+import {serializeSyncedBlock} from './serializeSyncedBlock'
+import {getNestedEditor, syncedBlockEntryPlugin} from './syncedBlockFocus'
 
 declare module '@tiptap/core' {
   // interface Commands<ReturnType> {
@@ -113,13 +114,14 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
             function decanonPageLinks(frag: Fragment): Fragment {
               const newChildren: Node[] = []
               frag.forEach((child) => {
-                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
-                  const alreadyExists = checkIfExists(child)
+                if (child.type.name === 'pageLinkBlock') {
+                  const alreadyExists = child.attrs.canonical === true && checkIfExists(child)
                   newChildren.push(
                     child.type.create(
                       {
                         ...child.attrs,
-                        canonical: alreadyExists ? false : child.attrs.canonical,
+                        canonical:
+                          alreadyExists || child.attrs.synced ? false : child.attrs.canonical,
                         // copying will turn numbers to text, but not boolean
                         pageCode: Number(child.attrs.pageCode)
                       },
@@ -139,6 +141,23 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
             }
             const newContent = decanonPageLinks(slice.content)
             return new Slice(newContent, slice.openStart, slice.openEnd)
+          },
+          handleDOMEvents: {
+            copy(view, event) {
+              const {selection} = view.state
+              if (!(selection instanceof NodeSelection) || !event.clipboardData) return false
+              const {node, from} = selection
+              if (node.type.name !== 'pageLinkBlock' || !node.attrs.synced) return false
+              const {html, text} = serializeSyncedBlock(
+                {pageCode: Number(node.attrs.pageCode), title: node.attrs.title},
+                getNestedEditor(view, from)
+              )
+              event.preventDefault()
+              event.clipboardData.clearData()
+              event.clipboardData.setData('text/html', html)
+              event.clipboardData.setData('text/plain', text)
+              return true
+            }
           },
           handleKeyDown(view, event) {
             // return false // false means you can backspace to delete pagelinks

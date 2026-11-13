@@ -1,6 +1,8 @@
 import {isNodeSelection, type NodeViewProps, NodeViewWrapper, useEditorState} from '@tiptap/react'
 import {type FocusEvent, useContext, useMemo, useRef, useState} from 'react'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
+import {copySyncedBlock} from './copySyncedBlock'
 import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
@@ -10,11 +12,11 @@ import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './
 import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockName} from './useSyncedBlockName'
 
-const copySyncedBlock = () => {}
 const noop = () => {}
 
 export const SyncedBlockView = (props: NodeViewProps) => {
   const {node, editor, getPos} = props
+  const atmosphere = useAtmosphere()
   const pageCode = Number(node.attrs.pageCode)
   const sizeRef = useRef(node.nodeSize)
   sizeRef.current = node.nodeSize
@@ -63,7 +65,9 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           name={name}
           isOriginal={node.attrs.canonical === true}
           isViewOnly={isViewOnly}
-          onCopy={copySyncedBlock}
+          onCopy={() =>
+            copySyncedBlock({pageCode, title: node.attrs.title}, chrome?.editor ?? null, atmosphere)
+          }
         />
       ) : (
         <SyncedBlockCaption name={name} />

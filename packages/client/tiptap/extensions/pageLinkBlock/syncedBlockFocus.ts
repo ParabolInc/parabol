@@ -16,7 +16,7 @@ const ARROWS: Record<string, Direction> = {
 const isVertical = (direction: Direction) => direction === 'up' || direction === 'down'
 const isForward = (direction: Direction) => direction === 'down' || direction === 'right'
 
-const getNestedEditor = (view: EditorView, pos: number) => {
+export const getNestedEditor = (view: EditorView, pos: number) => {
   const dom = view.nodeDOM(pos) as HTMLElement | null
   const nested = dom?.querySelector<HTMLElement & {editor?: Editor}>('.ProseMirror')
   return nested?.editor ?? null
