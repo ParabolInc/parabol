@@ -30,7 +30,7 @@ const handleAuthRefreshFailure = async (
   if (current && current.accessToken !== accessToken) return current
   const logOptions = {userId, tags: {teamId, service}}
   if (isDeadGrant(error)) {
-    Logger.info(error, logOptions)
+    Logger.warn(error, logOptions)
   } else {
     logError(error, logOptions)
   }

@@ -90,7 +90,7 @@ describe('handleAuthRefreshFailure', () => {
   it('disconnects without logging an error when the provider says the grant is dead', async () => {
     mockUpdateChain()
     mockSelect({...auth})
-    const logInfo = jest.spyOn(Logger, 'info').mockImplementation(() => {})
+    const logWarn = jest.spyOn(Logger, 'warn').mockImplementation(() => {})
     jest.mocked(fetch).mockResolvedValue(
       new Response(
         '{"error":"unauthorized_client","error_description":"Token was globally revoked"}',
@@ -103,7 +103,7 @@ describe('handleAuthRefreshFailure', () => {
     const error = await authorizeOAuth2({authUrl: 'https://auth.atlassian.com/oauth/token'})
     await expect(handleAuthRefreshFailure(error as Error, auth)).resolves.toBeNull()
     expect(logError).not.toHaveBeenCalled()
-    expect(logInfo).toHaveBeenCalledWith(error, {
+    expect(logWarn).toHaveBeenCalledWith(error, {
       userId: 'user1',
       tags: {teamId: 'team1', service: 'gcal'}
     })
