@@ -134,3 +134,24 @@ test('a browser warning stays out of Error Reporting', async () => {
   expect(record).toMatchObject({severity: 'WARNING', service: 'parabol-client'})
   expect(record).not.toHaveProperty('stack_trace')
 })
+
+test("a crawler's browser error is only a warning", async () => {
+  await logClientError(
+    {
+      ...report,
+      name: 'Error',
+      message: 'HTTP 403: Forbidden',
+      stack: `Error: HTTP 403: Forbidden\n    at ${BUNDLE_URL}:1:29`,
+      userAgent:
+        'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/136.0.0.0 Safari/537.36'
+    },
+    {ip: '40.77.167.247'},
+    BUILD_DIR
+  )
+  expect(errorSpy).not.toHaveBeenCalled()
+  expect(warnSpy).toHaveBeenCalledTimes(1)
+  expect(JSON.parse(warnSpy.mock.calls[0][0])).toMatchObject({
+    severity: 'WARNING',
+    service: 'parabol-client'
+  })
+})
