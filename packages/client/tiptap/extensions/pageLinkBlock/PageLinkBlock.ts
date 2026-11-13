@@ -36,6 +36,7 @@ interface PageLinkBlockOptions {
   preferredName?: string
   highestTier?: TierEnum
   pageId?: string
+  pastedLinksAreCopies?: boolean
 }
 
 const isSyncedLink = (node: Node) => node.type.name === 'pageLinkBlock' && !!node.attrs.synced
@@ -120,6 +121,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
     }
   },
   addProseMirrorPlugins() {
+    const {pastedLinksAreCopies} = this.options
     return [
       keepUnownedPageLinksPlugin(this.options.getViewerAccess),
       syncedBlockEntryPlugin(),
@@ -157,12 +159,13 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
                 if (child.type.name === 'pageLinkBlock') {
                   const pageCode = Number(child.attrs.pageCode)
                   if (!view.dragging && !isValidPageCode(pageCode)) return
-                  const alreadyExists = child.attrs.canonical === true && checkIfExists(child)
+                  const isCopy =
+                    pastedLinksAreCopies || (child.attrs.canonical === true && checkIfExists(child))
                   newChildren.push(
                     child.type.create(
                       {
                         ...child.attrs,
-                        canonical: alreadyExists ? false : child.attrs.canonical,
+                        canonical: isCopy ? false : child.attrs.canonical,
                         // copying will turn numbers to text, but not boolean
                         pageCode
                       },

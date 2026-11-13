@@ -115,7 +115,7 @@ export const PageDragHandle = Extension.create<Options>({
     let dragHandleNodePos: number = -1
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
-    const {atmosphere, pageId} = this.options
+    const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
       if (!menuRenderer) return
@@ -151,7 +151,8 @@ export const PageDragHandle = Extension.create<Options>({
           pos,
           onClose: closeMenu,
           anchorElement: dragHandleElement,
-          canCreateSubPage: !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+          canCreateSubPage:
+            !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
         }
       })
 

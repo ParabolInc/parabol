@@ -245,7 +245,8 @@ export const useTipTapPageEditor = (
           getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode),
           preferredName,
           highestTier: nested ? nested.highestTier : user?.highestTier,
-          pageId
+          pageId,
+          pastedLinksAreCopies: !!nested
         }),
         TableOfContents,
         TaskBlock,

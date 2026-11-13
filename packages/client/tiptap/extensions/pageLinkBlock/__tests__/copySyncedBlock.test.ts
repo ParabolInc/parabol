@@ -194,6 +194,33 @@ describe('copy and sync', () => {
     expect(page.state.doc.textContent).toContain('kept')
   })
 
+  test('inside a synced block every pasted page link is a copy', () => {
+    const page = mountPage([
+      {type: 'paragraph'},
+      {...plainLink, attrs: {...plainLink.attrs, canonical: true}},
+      syncedLink
+    ])
+    const {dom} = page.view.serializeForClipboard(
+      page.state.doc.slice(page.state.doc.child(0).nodeSize, page.state.doc.content.size)
+    )
+    const block = new Editor({
+      element: document.createElement('div'),
+      extensions: [
+        StarterKit,
+        PageLinkBlock.extend({addNodeView: null}).configure({
+          yDoc: new Y.Doc(),
+          pastedLinksAreCopies: true
+        })
+      ],
+      content: {type: 'doc', content: [{type: 'paragraph'}]}
+    })
+    pasteAtEnd(block, dom.innerHTML)
+    expect(linkAttrs(block)).toEqual([
+      expect.objectContaining({pageCode: 8, canonical: false}),
+      expect.objectContaining({pageCode: 7, canonical: false, synced: true})
+    ])
+  })
+
   test('plain copy of a node-selected synced block puts the synced HTML on the clipboard', () => {
     const {host, linkPos, nested} = mountSyncedPage()
     selectNode(host, linkPos)
