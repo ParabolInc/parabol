@@ -6,6 +6,7 @@ import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/
 import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {keepFocusInHost} from './keepFocusInHost'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkNodeView} from './PageLinkNodeView'
 import {serializeSyncedBlock} from './serializeSyncedBlock'
@@ -91,7 +92,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
   },
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(PageLinkNodeView, {
+    const renderer = ReactNodeViewRenderer(PageLinkNodeView, {
       className: 'group',
       stopEvent({event}) {
         if ((event.target as HTMLElement | null)?.closest?.('[data-synced-editor]')) return true
@@ -107,6 +108,15 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
         'data-type': 'pageLinkBlock'
       }
     })
+    return (props) => {
+      const nodeView = renderer(props)
+      const selectNode = nodeView.selectNode?.bind(nodeView)
+      nodeView.selectNode = () => {
+        keepFocusInHost(nodeView.dom)
+        selectNode?.()
+      }
+      return nodeView
+    }
   },
   addProseMirrorPlugins() {
     return [
