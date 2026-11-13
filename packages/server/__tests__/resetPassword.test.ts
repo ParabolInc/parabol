@@ -84,8 +84,8 @@ test('Reset password', async () => {
 
 test('An expired reset token comes back as a user error', async () => {
   const {email} = await signUp()
-  const resetPasswordToken = base64url.encode(crypto.randomBytes(48))
-  const tokenHash = crypto.createHash('sha256').update(resetPasswordToken).digest('hex')
+  const resetToken = base64url.encode(crypto.randomBytes(48))
+  const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex')
   await getKysely()
     .insertInto('PasswordResetRequest')
     .values({ip: '127.0.0.1', email, tokenHash, isValid: false})
@@ -106,7 +106,7 @@ test('An expired reset token comes back as a user error', async () => {
         }
       }
     `,
-    variables: {token: resetPasswordToken, newPassword: faker.internet.password(20)}
+    variables: {token: resetToken, newPassword: faker.internet.password(20)}
   })
 
   expect(result).toEqual({
