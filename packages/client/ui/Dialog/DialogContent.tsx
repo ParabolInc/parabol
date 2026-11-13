@@ -1,5 +1,6 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {AnimatePresence, motion} from 'motion/react'
 import * as React from 'react'
 import {cn} from '../cn'
@@ -53,7 +54,11 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
                   <ScrollArea.Viewport className='[&>div]:block! p-6'>
-                    {title && <DialogTitle className='sr-only'>{title}</DialogTitle>}
+                    {title && (
+                      <VisuallyHidden asChild>
+                        <DialogTitle>{title}</DialogTitle>
+                      </VisuallyHidden>
+                    )}
                     {children}
                   </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />

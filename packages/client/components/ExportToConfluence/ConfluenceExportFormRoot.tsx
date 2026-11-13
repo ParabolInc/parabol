@@ -1,3 +1,4 @@
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {Suspense} from 'react'
 import confluenceExportFormQuery, {
   type ConfluenceExportFormQuery
@@ -17,7 +18,11 @@ export const ConfluenceExportFormRoot = (props: Props) => {
     {teamId: props.teamId, preferredCloudId: dest?.cloudId ?? '', hasPreferred: !!dest},
     'network-only'
   )
-  const loadingTitle = <DialogTitle className='sr-only'>Export to Confluence</DialogTitle>
+  const loadingTitle = (
+    <VisuallyHidden asChild>
+      <DialogTitle>Export to Confluence</DialogTitle>
+    </VisuallyHidden>
+  )
   return (
     <Suspense
       fallback={
