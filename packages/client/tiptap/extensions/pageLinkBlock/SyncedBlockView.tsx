@@ -5,10 +5,13 @@ import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
 import type {SyncedBlockChrome} from './SyncedBlockEditor'
+import {SyncedBlockState} from './SyncedBlockState'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
+import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockName} from './useSyncedBlockName'
 
 const copySyncedBlock = () => {}
+const noop = () => {}
 
 export const SyncedBlockView = (props: NodeViewProps) => {
   const {node, editor, getPos} = props
@@ -19,6 +22,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const chain = getEnclosingChain(providedChain, editor.storage.pageLinkBlock.pageId)
   const nestedChain = useMemo(() => [...chain, pageCode], [chain.join(','), pageCode])
   const canNest = canNestSyncedBlock(chain, pageCode)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const isNodeSelected = useEditorState({
@@ -39,6 +44,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   }
   return (
     <NodeViewWrapper
+      ref={wrapperRef}
       data-synced-block
       tabIndex={-1}
       onFocus={() => setHasFocusWithin(true)}
@@ -64,6 +70,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       )}
       {pageCode <= 0 ? (
         <div className='h-6 rounded-sm bg-surface-hover' />
+      ) : !isNearViewport ? (
+        <SyncedBlockState status='loading' onRetry={noop} />
       ) : canNest ? (
         <SyncedBlockChainContext.Provider value={nestedChain}>
           <SyncedBlockContent
