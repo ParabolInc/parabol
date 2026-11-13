@@ -21,7 +21,7 @@ runs:
         set +a
         docker run --detach --name postgres --publish 5432:5432 \
           --env POSTGRES_PASSWORD --env POSTGRES_USER --env POSTGRES_DB \
-          pgvector/pgvector:0.8.2-pg18-trixie > "$RUNNER_TEMP/postgres.log" 2>&1 &
+          pgvector/pgvector:0.8.2-pg18-trixie -c max_connections=200 > "$RUNNER_TEMP/postgres.log" 2>&1 &
         docker run --detach --name valkey --publish 6379:6379 \
           valkey/valkey:9.0-alpine > "$RUNNER_TEMP/valkey.log" 2>&1 &
 
