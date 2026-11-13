@@ -191,17 +191,14 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
               ]),
               and([
                 eb('objectType', '=', 'retroReflection'),
-                or([
-                  eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '14 days'`),
-                  eb.exists(
-                    eb
-                      .selectFrom('RetroReflection as r')
-                      .innerJoin('NewMeeting as nm', 'nm.id', 'r.meetingId')
-                      .select('r.id')
-                      .whereRef('r.id', '=', 'EmbeddingsMetadata.refId')
-                      .where('nm.endedAt', 'is', null)
-                  )
-                ])
+                eb.exists(
+                  eb
+                    .selectFrom('RetroReflection as r')
+                    .innerJoin('NewMeeting as nm', 'nm.id', 'r.meetingId')
+                    .select('r.id')
+                    .whereRef('r.id', '=', 'EmbeddingsMetadata.refId')
+                    .where('nm.endedAt', 'is', null)
+                )
               ])
             ])
           )

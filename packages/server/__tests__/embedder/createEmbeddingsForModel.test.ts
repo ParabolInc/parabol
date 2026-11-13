@@ -216,7 +216,7 @@ it('queues public templates, team templates, discussions, then pages, newest fir
   })
 })
 
-it('puts the last two weeks of reflections with the public templates', async () => {
+it('puts the cards of open retros with the public templates', async () => {
   await withRollback(async (trx) => {
     const publicTemplate = await insertMetadata(trx, {
       objectType: 'meetingTemplate',
@@ -224,11 +224,7 @@ it('puts the last two weeks of reflections with the public templates', async () 
       days: 900
     })
     const teamTemplate = await insertMetadata(trx, {objectType: 'meetingTemplate', teamId, days: 2})
-    const liveReflection = await insertMetadata(trx, {
-      objectType: 'retroReflection',
-      teamId,
-      days: 10
-    })
+    const liveReflection = await insertRetroCard(trx, {days: 10, ended: false})
     const jobs = await fillJobs(trx)
     const priorityOf = (id: number) =>
       jobs.find(({embeddingsMetadataId}) => embeddingsMetadataId === id)!.priority
@@ -237,13 +233,13 @@ it('puts the last two weeks of reflections with the public templates', async () 
   })
 })
 
-it('queues every card in a retro that has not ended, however old, since Similar Wording reads them', async () => {
+it('queues the cards of retros that have not ended, however old, and no others, since only Similar Wording reads them', async () => {
   await withRollback(async (trx) => {
-    const openRetroCard = await insertRetroCard(trx, {days: 60, ended: false})
-    const endedRetroCard = await insertRetroCard(trx, {days: 60, ended: true})
+    const oldOpenRetroCard = await insertRetroCard(trx, {days: 60, ended: false})
+    const newEndedRetroCard = await insertRetroCard(trx, {days: 1, ended: true})
     const metadataIds = (await fillJobs(trx)).map(({embeddingsMetadataId}) => embeddingsMetadataId)
-    expect(metadataIds).toContain(openRetroCard)
-    expect(metadataIds).not.toContain(endedRetroCard)
+    expect(metadataIds).toContain(oldOpenRetroCard)
+    expect(metadataIds).not.toContain(newEndedRetroCard)
   })
 })
 

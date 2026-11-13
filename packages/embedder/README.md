@@ -75,8 +75,9 @@ To try Harrier locally, start its service with
 ### Moving to a new model
 
 The first time the embedder starts with a model listed, it creates that model's
-tables and queues its fill: public templates, the last two weeks of reflections and
-every card in a retro that hasn't ended, then team templates, then a year of discussions and then pages, each newest first. The
+tables and queues its fill: public templates and every card in a retro that hasn't
+ended (only Similar Wording reads cards, and only while a retro is open), then team
+templates, then a year of discussions and then pages, each newest first. The
 whole fill sits behind every other kind of job. The tables and the jobs commit together,
 so if the embedder dies while queueing, its next start tries again. Startup doesn't wait
 for a model that isn't active.
@@ -127,13 +128,10 @@ takes fill jobs, so a fill can't stall searches or new content. A job that's in 
        OR (m."objectType" = 'retrospectiveDiscussionTopic' AND m."refUpdatedAt" > now() - interval '1 year')
        OR (
          m."objectType" = 'retroReflection'
-         AND (
-           m."refUpdatedAt" > now() - interval '14 days'
-           OR EXISTS (
-             SELECT 1 FROM "RetroReflection" r
-             JOIN "NewMeeting" nm ON nm."id" = r."meetingId"
-             WHERE r."id" = m."refId" AND nm."endedAt" IS NULL
-           )
+         AND EXISTS (
+           SELECT 1 FROM "RetroReflection" r
+           JOIN "NewMeeting" nm ON nm."id" = r."meetingId"
+           WHERE r."id" = m."refId" AND nm."endedAt" IS NULL
          )
        )
      )
