@@ -15,6 +15,9 @@ graphql`
   fragment AddCommentMutation_meeting on AddCommentSuccess {
     comment {
       ...ThreadedItem_threadable
+      ... on Comment {
+        authorId: createdBy
+      }
       discussionId
       threadSortOrder
       threadParentId
