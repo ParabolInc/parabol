@@ -20,6 +20,7 @@ import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 import findStageById from '../../utils/meetings/findStageById'
+import setStorageItem from '../../utils/setStorageItem'
 import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
@@ -261,7 +262,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   startDemo() {
     this.startBot()
     this.db._started = true
-    window.localStorage.setItem('retroDemo', stringify(this.db))
+    setStorageItem('localStorage', 'retroDemo', stringify(this.db))
   }
 
   getUnlockedStages(stageIds: string[]) {
