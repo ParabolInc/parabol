@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
@@ -23,7 +23,7 @@ const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
   const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return standardError(new Error('Task not found'), {userId: viewerId})
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

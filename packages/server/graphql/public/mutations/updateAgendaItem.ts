@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
@@ -19,7 +20,7 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
 
   // VALIDATION
   if (content && content.length > 64) {
-    return {error: {message: 'Agenda item must be shorter'}}
+    throw new GraphQLError('Agenda item must be shorter', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

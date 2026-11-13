@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -14,7 +15,7 @@ const editTask: MutationResolvers['editTask'] = async (
   // AUTH
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return {error: {message: 'Task not found'}}
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const viewerId = getUserId(authToken)
   const {tags, teamId, userId: taskUserId} = task

@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const addNotifications = async (orgId: string, userId: string) => {
@@ -36,9 +36,7 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   const organizationUser = orgUsers.find((orgUser) => orgUser.userId === userId)
   const viewerOrgUser = orgUsers.find((orgUser) => orgUser.userId === viewerId)
   if (!organizationUser) {
-    return standardError(new Error('Cannot find org user'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Cannot find org user', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (
@@ -46,8 +44,8 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     organizationUser.role === 'ORG_ADMIN' // the user is already an ORG_ADMIN so the mutation is intended to change their role
   ) {
     if (!isSuperUser(authToken) && viewerOrgUser?.role !== 'ORG_ADMIN') {
-      return standardError(new Error('Only super user or org admin can perform this action'), {
-        userId: viewerId
+      throw new GraphQLError('Only super user or org admin can perform this action', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
   }
@@ -59,8 +57,8 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
     )
     const leaderCount = leaders.length
     if (leaderCount === 1) {
-      return standardError(new Error('Cannot remove permissions of the last leader'), {
-        userId: viewerId
+      throw new GraphQLError('Cannot remove permissions of the last leader', {
+        extensions: {code: 'CONFLICT'}
       })
     }
   }

@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {isTeamMember} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const selectTemplate: MutationResolvers['selectTemplate'] = async (
@@ -13,30 +13,25 @@ const selectTemplate: MutationResolvers['selectTemplate'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
 
   if (!template || !template.isActive) {
     Logger.log('no template', selectedTemplateId, template)
-    return standardError(new Error('Template not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {scope} = template
   const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
   if (scope === 'TEAM') {
     if (!isTeamMember(authToken, template.teamId))
-      return standardError(new Error('Template is scoped to team'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('Template is scoped to team', {extensions: {code: 'FORBIDDEN'}})
   } else if (scope === 'ORGANIZATION') {
     const templateTeam = await dataLoader.get('teams').loadNonNull(template.teamId)
     if (viewerTeam.orgId !== templateTeam.orgId) {
-      return standardError(new Error('Template is scoped to organization'), {
-        userId: viewerId
+      throw new GraphQLError('Template is scoped to organization', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
   }
@@ -51,8 +46,8 @@ const selectTemplate: MutationResolvers['selectTemplate'] = async (
     .executeTakeFirst()
 
   if (!meetingSettings) {
-    return standardError(new Error('Failed to update meeting settings with selected template'), {
-      userId: viewerId
+    throw new GraphQLError('Failed to update meeting settings with selected template', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
     })
   }
 

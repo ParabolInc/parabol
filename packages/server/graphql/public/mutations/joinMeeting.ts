@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isOpenTask from 'parabol-client/utils/isOpenTask'
@@ -59,14 +60,15 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return {error: {message: 'Invalid meeting ID'}}
+  if (!meeting) throw new GraphQLError('Invalid meeting ID', {extensions: {code: 'BAD_USER_INPUT'}})
   const {endedAt, teamId, phases} = meeting
   if (endedAt) {
     // a member can still subscribe to a meeting that ended, but nobody new joins it
     const meetingMember = await dataLoader
       .get('meetingMembers')
       .load(MeetingMemberId.join(meetingId, viewerId))
-    if (!meetingMember) return {error: {message: 'Meeting has already ended'}}
+    if (!meetingMember)
+      throw new GraphQLError('Meeting has already ended', {extensions: {code: 'CONFLICT'}})
     return {meetingId, userId: viewerId}
   }
 

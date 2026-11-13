@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
 import removeSlackAuths from '../../mutations/helpers/removeSlackAuths'
 import type {MutationResolvers} from '../resolverTypes'
@@ -12,7 +13,9 @@ const removeSlackAuth: MutationResolvers['removeSlackAuth'] = async (
   // RESOLUTION
   const res = await removeSlackAuths(viewerId, teamId, true)
   if (!res.authIds) {
-    return {error: {message: res.error ?? 'Failed to remove Slack auth'}}
+    throw new GraphQLError(res.error ?? 'Failed to remove Slack auth', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const authId = res.authIds[0]
 

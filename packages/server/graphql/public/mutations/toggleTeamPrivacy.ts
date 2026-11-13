@@ -1,5 +1,5 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
@@ -13,7 +13,9 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
 
   if (team.isPublic && org.tier === 'starter') {
-    return standardError(new Error('Cannot make a public team private on the starter tier'))
+    throw new GraphQLError('Cannot make a public team private on the starter tier', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   await pg

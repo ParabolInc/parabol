@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import {meetingsStarted} from '../../../metricsHandler'
@@ -7,7 +8,6 @@ import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
-import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getActiveStandupTemplateId from '../../mutations/helpers/getActiveStandupTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -34,7 +34,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     isStartMeetingLocked(teamId, dataLoader),
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
   ])
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
 
   const templateId = await getActiveStandupTemplateId(
     meetingSettings?.selectedTemplateId ?? null,
@@ -49,7 +49,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     try {
       await scheduleLock.lock(0)
     } catch {
-      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+      throw new GraphQLError('Meeting already scheduled', {extensions: {code: 'CONFLICT'}})
     }
     const meetingSeries = await createMeetingSeries({
       meetingType: 'teamPrompt',
@@ -90,16 +90,14 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   try {
     await redisLock.lock(0)
   } catch {
-    return standardError(new Error('Meeting already started'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
 
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader, {
     templateId
   })
   if (!meeting) {
-    return {error: {message: 'Meeting already started'}}
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   const {id: meetingId} = meeting
   await updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)

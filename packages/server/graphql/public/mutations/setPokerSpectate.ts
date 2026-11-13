@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type EstimateStage from '../../../database/types/EstimateStage'
@@ -26,13 +27,13 @@ const setPokerSpectate: MutationResolvers['setPokerSpectate'] = async (
   ])
   const {endedAt, phases, meetingType, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
   if (meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (meetingMember.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // VALIDATION

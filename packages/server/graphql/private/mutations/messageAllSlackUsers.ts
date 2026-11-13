@@ -1,6 +1,6 @@
+import {GraphQLError} from 'graphql'
 import {selectSlackAuths} from '../../../postgres/select'
 import SlackServerManager from '../../../utils/SlackServerManager'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 interface MessageSlackUserError {
@@ -15,7 +15,7 @@ const messageAllSlackUsers: MutationResolvers['messageAllSlackUsers'] = async (
   // RESOLUTION
   const allSlackAuths = await selectSlackAuths().where('isActive', '=', true).execute()
   if (!allSlackAuths.length) {
-    return standardError(new Error('No authorised Slack users'))
+    throw new GraphQLError('No authorised Slack users', {extensions: {code: 'CONFLICT'}})
   }
 
   const messagedUserIds = new Set<string>()

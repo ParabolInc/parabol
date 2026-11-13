@@ -1,10 +1,10 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import safelyCastVote from '../../mutations/helpers/safelyCastVote'
 import safelyWithdrawVote from '../../mutations/helpers/safelyWithdrawVote'
 import type {MutationResolvers} from '../resolverTypes'
@@ -21,36 +21,33 @@ const voteForReflectionGroup: MutationResolvers['voteForReflectionGroup'] = asyn
   const viewerId = getUserId(authToken)
   const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
   if (!reflectionGroup || !reflectionGroup.isActive) {
-    return standardError(new Error('Reflection group not found'), {
-      userId: viewerId,
-      tags: {reflectionGroupId, isUnvote: JSON.stringify(isUnvote)}
-    })
+    throw new GraphQLError('Reflection group not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {meetingId} = reflectionGroup
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   if (meeting.meetingType !== 'retrospective')
-    return {error: {message: 'Meeting type is not retrospective'}}
+    throw new GraphQLError('Meeting type is not retrospective', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   const {endedAt, phases} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (isPhaseComplete(VOTE, phases)) {
-    return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+    throw new GraphQLError('Meeting phase already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!meetingMember) {
-    return standardError(new Error('Meeting member not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting member not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION
   dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
   if (isUnvote) {
-    const votingError = await safelyWithdrawVote(meetingId, viewerId, reflectionGroupId)
-    if (votingError) return votingError
+    await safelyWithdrawVote(meetingId, viewerId, reflectionGroupId)
   } else {
-    const votingError = await safelyCastVote(meetingId, viewerId, reflectionGroupId)
-    if (votingError) return votingError
+    await safelyCastVote(meetingId, viewerId, reflectionGroupId)
   }
   dataLoader.clearAll('meetingMembers')
 

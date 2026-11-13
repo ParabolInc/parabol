@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../client/utils/constants'
 import {
@@ -7,7 +8,6 @@ import {
   isUserOrgAdmin
 } from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -22,14 +22,14 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
 
   const viewerId = getUserId(authToken)
   if (userIds.length === 0) {
-    return standardError(new Error('Empty userIds array is provided'), {
-      userId: viewerId
+    throw new GraphQLError('Empty userIds array is provided', {
+      extensions: {code: 'BAD_USER_INPUT'}
     })
   }
   if (userIds.length > BATCH_ORG_USER_REMOVAL_LIMIT) {
-    return standardError(
-      new Error(`Cannot remove more than ${BATCH_ORG_USER_REMOVAL_LIMIT} org users at once`),
-      {userId: getUserId(authToken)}
+    throw new GraphQLError(
+      `Cannot remove more than ${BATCH_ORG_USER_REMOVAL_LIMIT} org users at once`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
 
@@ -41,23 +41,21 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
       !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
       !isSuperUser(authToken)
     ) {
-      return standardError(new Error('Must be the organization leader to remove other users'), {
-        userId: viewerId
+      throw new GraphQLError('Must be the organization leader to remove other users', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
   }
 
   if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
-    return standardError(new Error('PAT does not grant access to this organization'), {
-      userId: viewerId
+    throw new GraphQLError('PAT does not grant access to this organization', {
+      extensions: {code: 'FORBIDDEN'}
     })
   }
 
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
-    return standardError(new Error('Organization not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const allOrgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
@@ -65,22 +63,24 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     (userId) => !allOrgUsers.some((orgUser) => orgUser.userId === userId)
   )
   if (nonOrgUsers.length > 0) {
-    return standardError(
-      new Error(`User(s) ${nonOrgUsers.join(', ')} are not members of the organization ${orgId}`),
-      {userId: viewerId}
+    throw new GraphQLError(
+      `User(s) ${nonOrgUsers.join(', ')} are not members of the organization ${orgId}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
 
   const remainingOrgUsers = allOrgUsers.filter((orgUser) => !userIds.includes(orgUser.userId))
   if (remainingOrgUsers.length === 0) {
-    return standardError(new Error('Cannot remove all members from an org'))
+    throw new GraphQLError('Cannot remove all members from an org', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   if (
     !remainingOrgUsers.some(
       (orgUser) => orgUser.role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(orgUser.role)
     )
   ) {
-    return standardError(new Error('Cannot remove last billing leader'))
+    throw new GraphQLError('Cannot remove last billing leader', {extensions: {code: 'CONFLICT'}})
   }
 
   const {removedUsers, teamMemberIds, teamIds, taskIds, activeMeetingIds, kickOutNotificationIds} =

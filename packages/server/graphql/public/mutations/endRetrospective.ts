@@ -1,5 +1,4 @@
-import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
+import {GraphQLError} from 'graphql'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -9,22 +8,18 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
   context,
   info
 ) => {
-  const {authToken, dataLoader} = context
-  const viewerId = getUserId(authToken)
+  const {dataLoader} = context
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   if (meeting.meetingType !== 'retrospective') {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {endedAt} = meeting
 
   // VALIDATION
-  if (endedAt)
-    return standardError(new Error('Meeting already ended'), {
-      userId: viewerId
-    })
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // RESOLUTION
   const res = await safeEndRetrospective({meeting, context, info})

@@ -1,10 +1,10 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import deleteConflictingIntegratedTask from '../../../postgres/queries/deleteConflictingIntegratedTask'
 import type {TeamMemberIntegrationAuth} from '../../../postgres/types/pg'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -44,15 +44,15 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   const viewerId = getUserId(authToken)
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return standardError(new Error('Task not found'), {userId: viewerId})
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {tags, teamId: oldTeamId} = task
   if (!isTeamMember(authToken, oldTeamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (task.userId !== viewerId) {
-    return standardError(new Error('Cannot change team for a task assigned to someone else'), {
-      userId: viewerId
+    throw new GraphQLError('Cannot change team for a task assigned to someone else', {
+      extensions: {code: 'FORBIDDEN'}
     })
   }
 
@@ -78,9 +78,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
           : authKeys.map(() => null)
 
     if (!targetTeamAuth && !sourceTeamAuth && !accessUsersTargetTeamAuth) {
-      return standardError(new Error('No valid integration found'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('No valid integration found', {extensions: {code: 'NOT_FOUND'}})
     }
 
     // Transfer integration to target team

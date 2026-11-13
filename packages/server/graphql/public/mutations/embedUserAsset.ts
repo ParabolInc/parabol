@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {MutationResolvers} from '../resolverTypes'
 import {hostUserAsset} from './helpers/hostUserAsset'
 import {validateScope} from './uploadUserAsset'
@@ -13,7 +14,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   try {
     parsedUrl = new URL(rawUrl)
   } catch {
-    return {error: {message: 'Invalid asset URL'}}
+    throw new GraphQLError('Invalid asset URL', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants)
   if (typeof scopeCode !== 'string') return scopeCode

@@ -56,8 +56,9 @@ test('names the subjects that do not exist and applies the flag to none', async 
 
   const res = await applyDatabasesFlag([orgId, 'missingOrg'])
 
-  expect(res).toEqual({
-    data: {applyFeatureFlag: {error: {message: 'No Organization found with ID: missingOrg'}}}
+  expect(res.errors?.[0]).toMatchObject({
+    message: 'No Organization found with ID: missingOrg',
+    extensions: {code: 'NOT_FOUND'}
   })
   expect(await getFlagOwnerCount(orgId)).toBe(0)
 })

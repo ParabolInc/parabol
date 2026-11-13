@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../../database/types/AuthToken'
@@ -6,7 +7,6 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import addOrgValidation from '../../mutations/helpers/addOrgValidation'
 import createNewOrg from '../../mutations/helpers/createNewOrg'
 import createTeamAndLeader from '../../mutations/helpers/createTeamAndLeader'
@@ -29,15 +29,11 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
     errors
   } = addOrgValidation()(args) as any
   if (Object.keys(errors).length) {
-    return standardError(new Error('Failed input validation'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Failed input validation', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const viewer = await dataLoader.get('users').load(viewerId)
   if (!viewer) {
-    return standardError(new Error('Authorization error'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Authorization error', {extensions: {code: 'FORBIDDEN'}})
   }
 
   // RESOLUTION

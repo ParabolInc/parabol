@@ -31,30 +31,32 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!task) {
-    return {error: {message: 'Task not found'}}
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = task
 
   // VALIDATION
   if (value.length > 4) {
-    return {error: {message: 'Estimate score is too long'}}
+    throw new GraphQLError('Estimate score is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (dimensionName.length === 0 || dimensionName.length > Threshold.MAX_POKER_DIMENSION_NAME) {
-    return {error: {message: 'Invalid dimension name'}}
+    throw new GraphQLError('Invalid dimension name', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Invalid poker meeting'}}
+    throw new GraphQLError('Invalid poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {phases, templateRefId, name: meetingName} = meeting
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
   const {dimensions} = templateRef
   const dimensionRefIdx = dimensions.findIndex((dimension) => dimension.name === dimensionName)
   if (dimensionRefIdx === -1) {
-    return {error: {message: 'Invalid dimensionName for meeting'}}
+    throw new GraphQLError('Invalid dimensionName for meeting', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -63,7 +65,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     (stage) => stage.taskId === taskId && stage.dimensionRefIdx === dimensionRefIdx
   )
   if (!stage) {
-    return {error: {message: 'Stage not found for meetingId'}}
+    throw new GraphQLError('Stage not found for meetingId', {extensions: {code: 'NOT_FOUND'}})
   }
   const discussionId = stage.discussionId
   const stageId = stage.id
@@ -159,7 +161,9 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
     return data
   } else {
-    return {error: {message: errorMessage ?? 'Unknown error'}}
+    throw new GraphQLError(errorMessage ?? 'Unknown error', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
 }
 

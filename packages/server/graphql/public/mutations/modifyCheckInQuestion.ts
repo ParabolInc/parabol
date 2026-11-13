@@ -1,28 +1,20 @@
-import {getUserId} from '../../../utils/authorization'
+import {GraphQLError} from 'graphql'
 
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async (
   _source,
   {meetingId, checkInQuestion, modifyType},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  const viewerId = getUserId(authToken)
-
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting)
-    return standardError(new Error('Meeting not found'), {
-      userId: viewerId
-    })
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {endedAt} = meeting
 
   if (endedAt) {
-    return standardError(new Error('Meeting has already ended'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Meeting has already ended', {extensions: {code: 'CONFLICT'}})
   }
 
   const openai = new OpenAIServerManager()

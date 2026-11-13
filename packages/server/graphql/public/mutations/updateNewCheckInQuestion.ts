@@ -1,26 +1,24 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateNewCheckInQuestion: MutationResolvers['updateNewCheckInQuestion'] = async (
   _source,
   {meetingId, checkInQuestion},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {endedAt, phases, teamId} = meeting
-  if (endedAt) return {error: {message: 'Meeting has already ended'}}
+  if (endedAt) throw new GraphQLError('Meeting has already ended', {extensions: {code: 'CONFLICT'}})
 
   // VALIDATION
   const normalizedCheckInQuestion =

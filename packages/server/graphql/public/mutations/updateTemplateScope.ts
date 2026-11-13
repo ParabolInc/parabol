@@ -7,7 +7,6 @@ import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 import {isPromptTemplateType} from './helpers/promptTemplateRules'
 
@@ -25,15 +24,15 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   //AUTH
   const template = await dataLoader.get('meetingTemplates').load(templateId)
   if (!template || !template.isActive) {
-    return {error: {message: `Template not found`}}
+    throw new GraphQLError(`Template not found`, {extensions: {code: 'NOT_FOUND'}})
   }
   const {name, teamId, orgId, scope} = template
   if (
     !isTeamMember(authToken, teamId) &&
     !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
   ) {
-    return standardError(new Error('You are not authorized to update the scope of this template'), {
-      userId: viewerId
+    throw new GraphQLError('You are not authorized to update the scope of this template', {
+      extensions: {code: 'FORBIDDEN'}
     })
   }
   if (context.resourceGrants) {
@@ -42,18 +41,20 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
       context.resourceGrants.hasOrg(orgId)
     ])
     if (!teamOk && !orgOk) {
-      return standardError(new Error('PAT does not grant access to this template'), {
-        userId: viewerId
+      throw new GraphQLError('PAT does not grant access to this template', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
   }
 
   // VALIDATION
   if (template.type === 'teamHealth') {
-    return {error: {message: 'Team health templates are always shared across the organization'}}
+    throw new GraphQLError('Team health templates are always shared across the organization', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (scope === newScope) {
-    return {error: {message: 'Template scope already set'}}
+    throw new GraphQLError('Template scope already set', {extensions: {code: 'CONFLICT'}})
   }
   const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
   const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)

@@ -1,7 +1,7 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
@@ -11,7 +11,7 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
 ) => {
   const viewerId = getUserId(authToken)
   const viewer = await getUserById(viewerId)
-  if (!viewer) return standardError(new Error('User not found'), {userId: viewerId})
+  if (!viewer) throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
 
   // RESOLUTION
   const {sendSummaryEmail} = viewer
@@ -22,7 +22,7 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
     .where('id', '=', viewerId)
     .execute()
 
-  return true
+  return true as const
 }
 
 export default toggleSummaryEmail

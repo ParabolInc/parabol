@@ -1,12 +1,11 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import handleCompletedStage from '../../mutations/helpers/handleCompletedStage'
 import removeScheduledJobs from '../../mutations/helpers/removeScheduledJobs'
 import type {MutationResolvers} from '../resolverTypes'
@@ -14,16 +13,15 @@ import type {MutationResolvers} from '../resolverTypes'
 const navigateMeeting: MutationResolvers['navigateMeeting'] = async (
   _source,
   {completedStageId, facilitatorStageId, meetingId},
-  {authToken, socketId: mutatorId, dataLoader}
+  {socketId: mutatorId, dataLoader}
 ) => {
   const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {
     endedAt,
     facilitatorUserId: nullableFacilitatorUserId,
@@ -32,7 +30,7 @@ const navigateMeeting: MutationResolvers['navigateMeeting'] = async (
     meetingType
   } = meeting
   const facilitatorUserId = nullableFacilitatorUserId!
-  if (endedAt) return {error: {message: 'Meeting already ended'}}
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // VALIDATION
   let phaseCompleteData
@@ -40,11 +38,11 @@ const navigateMeeting: MutationResolvers['navigateMeeting'] = async (
   if (completedStageId) {
     const completedStageRes = findStageById(phases, completedStageId)
     if (!completedStageRes) {
-      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+      throw new GraphQLError('Meeting stage not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {stage} = completedStageRes
     if (!stage.isNavigableByFacilitator) {
-      return standardError(new Error('Stage has not started'), {userId: viewerId})
+      throw new GraphQLError('Stage has not started', {extensions: {code: 'CONFLICT'}})
     }
     if (!stage.isComplete) {
       stage.isComplete = true
@@ -65,14 +63,14 @@ const navigateMeeting: MutationResolvers['navigateMeeting'] = async (
   if (facilitatorStageId) {
     const facilitatorStageRes = findStageById(phases, facilitatorStageId)
     if (!facilitatorStageRes) {
-      return standardError(new Error('Stage not found'), {userId: viewerId})
+      throw new GraphQLError('Stage not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {stage: facilitatorStage} = facilitatorStageRes
     if (!facilitatorStage.isNavigableByFacilitator) {
-      return standardError(new Error('Stage has not started'), {userId: viewerId})
+      throw new GraphQLError('Stage has not started', {extensions: {code: 'CONFLICT'}})
     }
     if (meeting.facilitatorStageId === facilitatorStageId) {
-      return standardError(new Error('Already at this stage'), {userId: viewerId})
+      throw new GraphQLError('Already at this stage', {extensions: {code: 'CONFLICT'}})
     }
     startStage_(facilitatorStage)
     unlockedStageIds = unlockNextStages(facilitatorStageId, phases)

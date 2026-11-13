@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingPoker from '../../../database/types/MeetingPoker'
@@ -10,7 +11,6 @@ import type {PokerMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import getHashAndJSON from '../../../utils/getHashAndJSON'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -92,13 +92,13 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
       getNextFacilitatorUserId(teamId, viewerId, dataLoader),
       dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
     ])
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
   const {selectedTemplateId} = meetingSettings
   if (!selectedTemplateId) {
     throw new Error('selectedTemplateId is required')
   }
   if (!teamMember.isNotRemoved) {
-    return {error: {message: 'Team member was removed'}}
+    throw new GraphQLError('Team member was removed', {extensions: {code: 'FORBIDDEN'}})
   }
 
   // RESOLUTION
@@ -131,7 +131,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
     updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
   if (newMeetingRes.status === 'rejected') {
-    return {error: {message: 'Meeting already started'}}
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   dataLoader.clearAll('newMeetings')
   const meetingMember = createMeetingMember(meeting, teamMember)

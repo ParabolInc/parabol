@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
@@ -19,9 +20,9 @@ const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   }
   const userIds = users.map(({id}) => id).filter((id): id is string => !!id)
   if (users.length === 0) {
-    return {
-      error: {message: 'No users found matching the email or domain'}
-    }
+    throw new GraphQLError('No users found matching the email or domain', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   await updateUser({isWatched: includeInWatchlist}, userIds)
 

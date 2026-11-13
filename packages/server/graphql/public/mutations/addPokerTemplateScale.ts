@@ -1,27 +1,25 @@
+import {GraphQLError} from 'graphql'
 import {PokerCards, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] = async (
   _source,
   {parentScaleId, teamId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
   if (activeScales.length >= Threshold.MAX_POKER_TEMPLATE_SCALES) {
-    return standardError(new Error('Too many scales'), {userId: viewerId})
+    throw new GraphQLError('Too many scales', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION
@@ -31,13 +29,11 @@ export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] =
   if (parentScaleId) {
     const parentScale = await dataLoader.get('templateScales').load(parentScaleId)
     if (!parentScale) {
-      return standardError(new Error('Parent scale not found'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('Parent scale not found', {extensions: {code: 'NOT_FOUND'}})
     }
     if (!parentScale.isStarter && parentScale.teamId !== teamId) {
-      return standardError(new Error('Cannot copy from a scale not owned by the team'), {
-        userId: viewerId
+      throw new GraphQLError('Cannot copy from a scale not owned by the team', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
     const {name} = parentScale

@@ -1,7 +1,7 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import resolveDowngradeToStarter from '../../mutations/helpers/resolveDowngradeToStarter'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -18,14 +18,14 @@ const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
 
   // VALIDATION
   if (otherTool && otherTool?.length > 100) {
-    return standardError(new Error('Other tool name is too long'), {userId: viewerId})
+    throw new GraphQLError('Other tool name is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').loadNonNull(orgId)
   dataLoader.get('organizations').clear(orgId)
 
   if (tier === 'starter') {
-    return standardError(new Error('Already on free tier'), {userId: viewerId})
+    throw new GraphQLError('Already on free tier', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION
