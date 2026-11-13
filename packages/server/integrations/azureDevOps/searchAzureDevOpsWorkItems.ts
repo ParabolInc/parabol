@@ -117,7 +117,7 @@ const searchAzureDevOpsWorkItems = async (
     const ids = await manager.queryWorkItemIds(instanceId, null, query, limit)
     if (ids instanceof Error) return ids
     if (ids.length === 0) return []
-    const workItems = await manager.getWorkItems(instanceId, ids)
+    const workItems = await manager.getIssues(instanceId, ids)
     if (workItems instanceof Error) return workItems
     const rankById = new Map(ids.map((id, rank) => [String(id), rank]))
     return workItems
