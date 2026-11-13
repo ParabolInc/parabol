@@ -49,8 +49,17 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
       const pos = getPos()
       if (pos === undefined) return false
       const {state} = hostView
-      hostView.dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)))
-      hostView.focus()
+      const blockDom = hostView.nodeDOM(pos) as HTMLElement | null
+      const contentEditable = blockDom?.contentEditable
+      // Chrome moves focus into a nested editor when the host selection starts between two uneditable blocks
+      // (ProseMirror's temporarilyEditableNear does the same for Safari)
+      if (blockDom) blockDom.contentEditable = 'true'
+      try {
+        hostView.dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)))
+        hostView.focus()
+      } finally {
+        if (blockDom && contentEditable) blockDom.contentEditable = contentEditable
+      }
       return true
     }
     const removeFromHost = () => {
