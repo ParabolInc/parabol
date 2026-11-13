@@ -1,5 +1,6 @@
 import {createBlockMarkdownSpec, generateText} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
+import {emptyBlockContent} from '../emptyBlockContent'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
 export interface TaskBlockAttrs {
@@ -64,7 +65,7 @@ export const TaskBlockBase = Node.create({
   parseHTML() {
     return [
       {
-        tag: `div[data-type="${this.name}"]`
+        tag: `div[data-type="${this.name}"][content]`
       }
     ]
   },
@@ -74,7 +75,10 @@ export const TaskBlockBase = Node.create({
   renderText({node}) {
     const attrs = node.attrs as TaskBlockAttrs
     const {content} = attrs
-    const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
+    const plaintextContent = generateText(
+      JSON.parse(content || emptyBlockContent),
+      serverTipTapExtensions
+    )
     return `Task: ${plaintextContent}`
   },
   ...createBlockMarkdownSpec({
