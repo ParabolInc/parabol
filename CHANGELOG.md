@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.30.1](https://github.com/ParabolInc/parabol/compare/v15.30.0...v15.30.1) (2026-11-13)
+
+
+### Fixed
+
+* **embedder:** keep every listed model current, so a swap needs no catch-up ([#14145](https://github.com/ParabolInc/parabol/issues/14145)) ([f88fb76](https://github.com/ParabolInc/parabol/commit/f88fb76082bfc5eea47c93c11092785e585d4757))
+
 ## [15.30.0](https://github.com/ParabolInc/parabol/compare/v15.29.1...v15.30.0) (2026-11-13)
 
 
