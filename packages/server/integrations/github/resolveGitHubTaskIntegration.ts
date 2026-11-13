@@ -1,6 +1,7 @@
 import GitHubRepoId from '../../../client/integrations/github/shared/GitHubRepoId'
 import logError from '../../utils/logError'
 import type {IssueReadCtx} from '../platform/ServerIntegrationDefinition'
+import {NestedRequestRefusedError} from '../platform/toNestedRequestError'
 import getGitHubRequest from './getGitHubRequest'
 
 const resolveGitHubTaskIntegration = async ({
@@ -30,7 +31,7 @@ const resolveGitHubTaskIntegration = async ({
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest(query)
 
-  if (error) {
+  if (error && !(error instanceof NestedRequestRefusedError)) {
     logError(error, {userId: accessUserId})
   }
   return data
