@@ -85,15 +85,8 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
     const config = {mode, userPrompt, sameColumnOnly}
     // Throws a GraphQLError the client shows in a snackbar. Nothing is stored for a failed run, so
     // the previous suggestions stay on the board rather than being replaced by an empty set.
-    const {
-      groups,
-      inputHash,
-      cacheHit,
-      model,
-      reasoningEffort,
-      tokenCost,
-      repairedReflectionCount
-    } = await computeSuggestedGroups(meetingId, config, dataLoader)
+    const {groups, inputHash, cacheHit, model, tokenCost, repairedReflectionCount} =
+      await computeSuggestedGroups(meetingId, config, dataLoader)
 
     await upsertSuggestedGrouping(
       {
@@ -104,7 +97,6 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
         inputHash,
         groups,
         model,
-        reasoningEffort,
         tokenCost,
         repairedReflectionCount
       },

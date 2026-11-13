@@ -69,16 +69,8 @@ const generateDefaultSuggestedGroups = async (
     if (!hasLock) return
 
     try {
-      const {
-        config,
-        requestedMode,
-        groups,
-        inputHash,
-        model,
-        reasoningEffort,
-        tokenCost,
-        repairedReflectionCount
-      } = await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
+      const {config, requestedMode, groups, inputHash, model, tokenCost, repairedReflectionCount} =
+        await computeDefaultSuggestedGroups(meetingId, teamId, dataLoader)
       // Stored even when empty: "we looked and nothing was similar enough" is an answer, and it
       // keeps the panel from offering to regenerate the identical result
       await upsertSuggestedGrouping(
@@ -90,7 +82,6 @@ const generateDefaultSuggestedGroups = async (
           inputHash,
           groups,
           model,
-          reasoningEffort,
           tokenCost,
           repairedReflectionCount
         },

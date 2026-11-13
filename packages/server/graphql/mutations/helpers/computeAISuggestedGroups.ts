@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import type {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {AI_MODEL} from '../../../utils/aiModel'
 import {Logger} from '../../../utils/Logger'
-import OpenAIServerManager, {GROUPING_REASONING_EFFORT} from '../../../utils/OpenAIServerManager'
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 
 const LLM_TIMEOUT_MS = 45_000
@@ -18,7 +18,6 @@ type Result = {
   tokenCost: number
   repairedCount: number
   model: string
-  reasoningEffort: typeof GROUPING_REASONING_EFFORT
 }
 
 /**
@@ -146,8 +145,7 @@ const computeAISuggestedGroups = async (
     promptCount: promptIds.length,
     tokenCost,
     repairedCount,
-    model: AI_MODEL,
-    reasoningEffort: GROUPING_REASONING_EFFORT
+    model: AI_MODEL
   }
 }
 

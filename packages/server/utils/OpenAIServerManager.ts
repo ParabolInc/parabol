@@ -25,10 +25,6 @@ export interface TeamHealthCategorySummaryInput {
 // spot. The model can't be trusted to hold back when there are no comments, so the cap is enforced
 const UNCORROBORATED_SENTIMENT_LIMIT = 0.75
 
-// Hidden reasoning dominated grouping latency, and holding the effort down is only safe because
-// repairGroups patches a forgotten card instead of discarding the whole batch
-export const GROUPING_REASONING_EFFORT = 'low'
-
 class OpenAIServerManager {
   openAIApi
   constructor() {
@@ -49,7 +45,9 @@ class OpenAIServerManager {
         label: 'openai',
         client: this.openAIApi,
         model: AI_MODEL,
-        params: {reasoning_effort: GROUPING_REASONING_EFFORT}
+        // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
+        // because repairGroups patches a forgotten card instead of discarding the whole batch
+        params: {reasoning_effort: 'low'}
       },
       input,
       options
