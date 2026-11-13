@@ -19,8 +19,14 @@ export const isFromExtension = (source: string | undefined) => {
   return EXTENSION_URL_SCHEMES.some((scheme) => source?.includes(scheme))
 }
 
+// A script injected inline has no URL, so its frames read <anonymous> with a line, where a browser builtin's have none
+const isThrownByInjectedScript = (stack: string | undefined) => {
+  const throwingFrame = stack?.split('\n').find((line) => line.trim().startsWith('at '))
+  return !!throwingFrame && /\(<anonymous>:\d+:\d+\)$/.test(throwingFrame)
+}
+
 export const isExtensionError = ({name, stack}: Error) => {
-  return name === 'NotFoundError' || isFromExtension(stack)
+  return name === 'NotFoundError' || isFromExtension(stack) || isThrownByInjectedScript(stack)
 }
 
 export const isIgnoredError = (error: Error) => {
