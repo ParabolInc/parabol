@@ -27,6 +27,7 @@ export const SyncedBlockState = (props: Props) => {
   const Icon = status === 'locked' ? Lock : ErrorOutline
   return (
     <div
+      data-synced-chrome
       contentEditable={false}
       className='flex min-h-6 items-center gap-2 text-fg-secondary text-sm'
     >

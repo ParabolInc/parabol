@@ -11,6 +11,7 @@ import {keepFocusInHost} from './keepFocusInHost'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
 import {PageLinkNodeView} from './PageLinkNodeView'
 import {serializeSyncedBlock} from './serializeSyncedBlock'
+import {stopPageLinkBlockEvent} from './stopPageLinkBlockEvent'
 import {getNestedEditor, syncedBlockEntryPlugin} from './syncedBlockFocus'
 
 declare module '@tiptap/core' {
@@ -96,16 +97,6 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
     // By convention, components rendered here are named with a *View suffix
     const renderer = ReactNodeViewRenderer(PageLinkNodeView, {
       className: 'group',
-      stopEvent({event}) {
-        if ((event.target as HTMLElement | null)?.closest?.('[data-synced-editor]')) return true
-        // stopping the mousedown event prevents dragging the node directly when it's active
-        // we only want to allow drags from the drag handler
-        if (event.type === 'mousedown') return true
-
-        // TipTap is being bad about intercepting drag/drop handling
-        //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
-        return false
-      },
       attrs: {
         'data-type': 'pageLinkBlock'
       }
@@ -117,6 +108,8 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
         keepFocusInHost(nodeView.dom)
         selectNode?.()
       }
+      nodeView.stopEvent = (event: Event) =>
+        nodeView.dom instanceof HTMLElement && stopPageLinkBlockEvent(event, nodeView.dom)
       return nodeView
     }
   },

@@ -13,6 +13,7 @@ export const SyncedBlockBar = (props: Props) => {
   const {name, isOriginal, isViewOnly, onCopy} = props
   return (
     <div
+      data-synced-chrome
       contentEditable={false}
       className={cn(
         'absolute right-[-2px] bottom-[calc(100%+2px)] left-[-2px] flex h-7 select-none items-center gap-2 whitespace-nowrap rounded-t-md pr-1 pl-2.5 text-xs',
