@@ -198,3 +198,21 @@ test('an empty block asks for content and the hidden heading never shows a place
     syncedBlockPlaceholderText({editor: nested, node: doc.child(2), pos: secondParagraphPos})
   ).toBe("Press '/' for commands")
 })
+
+test('a viewer sees no placeholder in an empty block', () => {
+  const host = mountHost()
+  const nested = mountNested(host, findLinkPositions(host)[0]!, ['', ''])
+  nested.setEditable(false)
+  const {doc} = nested.state
+  const firstParagraphPos = doc.firstChild!.nodeSize
+  expect(
+    syncedBlockPlaceholderText({editor: nested, node: doc.child(1), pos: firstParagraphPos})
+  ).toBe('')
+  expect(
+    syncedBlockPlaceholderText({
+      editor: nested,
+      node: doc.child(2),
+      pos: firstParagraphPos + doc.child(1).nodeSize
+    })
+  ).toBe('')
+})

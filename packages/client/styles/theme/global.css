@@ -1757,6 +1757,6 @@
   }
 }
 
-body:has([data-synced-editor]:hover) [data-host-handle] {
+.page-editor:has([data-synced-editor]:hover) [data-host-handle] {
   visibility: hidden !important;
 }

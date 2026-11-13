@@ -37,7 +37,7 @@ export const pagePlaceholderText = ({node, pos}: Props) => {
 
 export const syncedBlockPlaceholderText = (props: Props & {editor: Editor}) => {
   const {node, pos, editor} = props
-  if (pos === 0) return ''
+  if (pos === 0 || !editor.isEditable) return ''
   const firstContentPos = editor.state.doc.firstChild?.nodeSize
   if (node.type.name === 'paragraph' && pos === firstContentPos) {
     return 'Type here. It stays in sync wherever you paste it.'

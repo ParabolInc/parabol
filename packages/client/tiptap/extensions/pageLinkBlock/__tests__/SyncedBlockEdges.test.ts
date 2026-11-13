@@ -57,6 +57,23 @@ describe('SyncedBlockEdges', () => {
     expect(host.state.selection).toBeInstanceOf(NodeSelection)
   })
 
+  describe('a block holding only its name', () => {
+    test('gets an empty line to type in', () => {
+      const {nested} = setup([])
+      nested.view.dispatch(nested.state.tr.setMeta('anything', true))
+      expect(nested.state.doc.childCount).toBe(2)
+      expect(nested.state.doc.child(1).type.name).toBe('paragraph')
+    })
+
+    test('stays as it is for a viewer, and Mod-a does not throw', () => {
+      const {nested} = setup([])
+      nested.setEditable(false)
+      nested.view.dispatch(nested.state.tr.setMeta('anything', true))
+      expect(nested.state.doc.childCount).toBe(1)
+      expect(() => press(nested, 'a', {ctrlKey: true})).not.toThrow()
+    })
+  })
+
   describe('with the slash menu open', () => {
     const openSlashMenu = (line: 'first' | 'last') => {
       const host = mountHost([

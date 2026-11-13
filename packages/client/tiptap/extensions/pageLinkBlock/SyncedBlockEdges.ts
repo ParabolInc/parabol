@@ -102,6 +102,7 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
       'Mod-a': ({editor}) => {
         const {state, view} = editor
         const {doc} = state
+        if (doc.childCount < 2) return true
         const from = doc.firstChild!.nodeSize + 1
         const to = doc.content.size - 1
         view.dispatch(state.tr.setSelection(TextSelection.create(doc, from, to)))
@@ -111,12 +112,19 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
   },
 
   addProseMirrorPlugins() {
+    const {editor} = this
     return [
       new Plugin({
         appendTransaction: (_transactions, _oldState, state) => {
           const {selection, doc} = state
+          if (doc.childCount < 2) {
+            if (!editor.isEditable) return null
+            return state.tr
+              .insert(doc.content.size, state.schema.nodes.paragraph!.create())
+              .setMeta('addToHistory', false)
+          }
           const titleEnd = doc.firstChild!.nodeSize
-          if (doc.childCount < 2 || selection.from >= titleEnd) return null
+          if (selection.from >= titleEnd) return null
           const to = Math.max(selection.to, titleEnd + 1)
           return state.tr.setSelection(
             selection.empty
