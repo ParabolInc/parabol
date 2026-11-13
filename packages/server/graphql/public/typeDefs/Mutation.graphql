@@ -2639,8 +2639,8 @@ type Mutation {
   ): RateReportQuestionSuccess! @scope(name: REPORTS_WRITE)
 
   """
-  Sign a report of this Parabol instance's active users with its usage key, to send to Parabol. Billing leaders and
-  org admins can, when its license key can sign reports
+  Sign a report of this Parabol instance's active users with its private usage key, to send to Parabol. Billing
+  leaders and org admins can, when its PRIVATE_LICENSE_KEY has one
   """
   signUsageReport(
     """

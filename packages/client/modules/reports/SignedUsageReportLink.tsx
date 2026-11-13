@@ -5,7 +5,7 @@ interface Props {
   orgId: string
 }
 
-// Downloads the instance's active users, signed with its license key's usage key, for the admin to send to Parabol
+// Downloads the instance's active users, signed with its private usage key, for the admin to send to Parabol
 const SignedUsageReportLink = ({orgId}: Props) => {
   const [commit, signing] = useSignUsageReportMutation()
   const [error, setError] = useState<string | null>(null)

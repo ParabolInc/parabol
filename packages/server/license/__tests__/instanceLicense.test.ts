@@ -1,5 +1,6 @@
 import {generateKeyPairSync} from 'node:crypto'
-import {generateUsageKeyPair, type LicenseClaims, signLicense} from '../licenseToken'
+import type {LicenseClaims} from '../licenseToken'
+import {makeUsageKeys, signLicense} from './licenseFixtures'
 
 const {privateKey, publicKey} = generateKeyPairSync('ed25519')
 const privatePem = privateKey.export({type: 'pkcs8', format: 'pem'}).toString()
@@ -18,10 +19,10 @@ const now = new Date('2026-12-01T00:00:00.000Z')
 const logger = {log: jest.fn(), warn: jest.fn(), fatal: jest.fn()}
 let exit: jest.SpyInstance
 
-const load = (env: {LICENSE_KEY?: string; HOST?: string}, isProduction: boolean) => {
+const load = (env: {PRIVATE_LICENSE_KEY?: string; HOST?: string}, isProduction: boolean) => {
   let mod: typeof import('../instanceLicense') | undefined
   jest.isolateModules(() => {
-    for (const name of ['LICENSE_KEY', 'HOST'] as const) {
+    for (const name of ['PRIVATE_LICENSE_KEY', 'HOST'] as const) {
       if (env[name] === undefined) delete process.env[name]
       else process.env[name] = env[name]
     }
@@ -48,28 +49,31 @@ const forged = signLicense(
 
 describe('requireInstanceLicense', () => {
   test('a production build starts with a valid license and can sign usage reports', () => {
-    const usage = generateUsageKeyPair()
-    const key = `${signLicense({...claims, usageKey: usage.publicKey}, privatePem)}.${usage.privateKey}`
-    const instance = load({LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true)
+    const usage = makeUsageKeys()
+    const license = signLicense({...claims, publicUsageKey: usage.publicUsageKey}, privatePem)
+    const instance = load(
+      {PRIVATE_LICENSE_KEY: `${license}.${usage.privateUsageKey}`, HOST: 'parabol.acme.mil'},
+      true
+    )
     instance.requireInstanceLicense(now)
     expect(exit).not.toHaveBeenCalled()
     expect(logger.log).toHaveBeenCalledWith(
       'License lic_1 for Acme: any number of active users, until 2027-11-01'
     )
-    expect(instance.getUsageKey().ok).toBe(true)
+    expect(instance.getPrivateUsageKey().ok).toBe(true)
   })
 
   test.each([
-    ['no license', {HOST: 'parabol.acme.mil'}, 'LICENSE_KEY is not set'],
+    ['no license', {HOST: 'parabol.acme.mil'}, 'PRIVATE_LICENSE_KEY is not set'],
     [
       'a license Parabol didn’t sign',
-      {LICENSE_KEY: forged, HOST: 'parabol.acme.mil'},
-      'LICENSE_KEY is not a valid license: the signature does not match'
+      {PRIVATE_LICENSE_KEY: forged, HOST: 'parabol.acme.mil'},
+      'PRIVATE_LICENSE_KEY is not a valid license: the signature does not match'
     ],
     [
       'a license for another host',
-      {LICENSE_KEY: signLicense(claims, privatePem), HOST: 'parabol.other.mil'},
-      'LICENSE_KEY is not a valid license: it covers parabol.acme.mil, not parabol.other.mil'
+      {PRIVATE_LICENSE_KEY: signLicense(claims, privatePem), HOST: 'parabol.other.mil'},
+      'PRIVATE_LICENSE_KEY is not a valid license: it covers parabol.acme.mil, not parabol.other.mil'
     ]
   ])('a production build exits with %s', (_name, env, problem) => {
     load(env, true).requireInstanceLicense(now)
@@ -81,7 +85,7 @@ describe('requireInstanceLicense', () => {
 
   test('an expired license only warns, since nothing acts on expiry yet', () => {
     const key = signLicense({...claims, expiresAt: '2026-11-15T00:00:00.000Z'}, privatePem)
-    load({LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true).requireInstanceLicense(now)
+    load({PRIVATE_LICENSE_KEY: key, HOST: 'parabol.acme.mil'}, true).requireInstanceLicense(now)
     expect(exit).not.toHaveBeenCalled()
     expect(logger.warn).toHaveBeenCalledWith('License lic_1 for Acme expired on 2026-11-15')
   })
@@ -90,7 +94,7 @@ describe('requireInstanceLicense', () => {
     load({}, false).requireInstanceLicense(now)
     expect(exit).not.toHaveBeenCalled()
     expect(logger.warn).toHaveBeenCalledWith(
-      "LICENSE_KEY is not set. A production build won't start without a license"
+      "PRIVATE_LICENSE_KEY is not set. A production build won't start without a license"
     )
   })
 })

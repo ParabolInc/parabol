@@ -1,4 +1,4 @@
-import {createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify} from 'node:crypto'
+import {createPrivateKey, createPublicKey, sign, verify} from 'node:crypto'
 
 /*
 A license is what lets a production build of Parabol start: without a valid one, the web server exits (see
@@ -6,15 +6,13 @@ instanceLicense.ts). It says who it's for and can limit the hosts it runs on. It
 usage reports and for later versions to act on; nothing acts on them yet. Fields a version doesn't know are ignored,
 so later licenses can carry new terms without breaking the versions before them.
 
-A license key, the LICENSE_KEY environment variable, is three base64url parts separated by dots:
-`<payload>.<signature>.<usage key>`.
-- The payload is the license's JSON, and the signature is Parabol's Ed25519 signature of the payload's base64url
-  text, checked against the public keys in licensePublicKeys.ts, picked by `kid`. Together they're the license.
-- The usage key is the private half of the instance's own Ed25519 key, whose public half the license names as
-  `usageKey`. It signs usage reports, which carry the license, so Parabol checks a report with its own public key
-  alone. The usage key isn't part of the license, so a report never carries it.
-
-This file imports nothing relative, so Parabol's scripts can import it as it is.
+PRIVATE_LICENSE_KEY holds three base64url parts separated by dots: `<payload>.<signature>.<private usage key>`.
+- The payload is the license's JSON, and the signature is Parabol's signature of the payload's base64url text,
+  checked against the public keys in licensePublicKeys.ts, picked by `kid`. Together they're the license.
+- The private usage key is the private half of the instance's own Ed25519 key pair, whose public half the license
+  names as `publicUsageKey`. It signs usage reports, which carry the license, so Parabol checks a report with its own
+  public key alone. A report never carries the private usage key.
+Parabol issues licenses and checks usage reports with tools in parabol-infra.
 */
 
 export interface LicenseClaims {
@@ -34,8 +32,8 @@ export interface LicenseClaims {
   issuedAt: string
   /** ISO 8601. Absent: it never expires */
   expiresAt?: string
-  /** The public half of the instance's usage key: a raw Ed25519 key in base64url. Absent: no usage reports */
-  usageKey?: string
+  /** The public half of the instance's usage key pair: a raw Ed25519 key in base64url. Absent: no usage reports */
+  publicUsageKey?: string
 }
 
 export type LicenseParseResult =
@@ -53,29 +51,22 @@ const rawKey = (key: string) => {
   if (raw.length !== 32) throw new Error('an Ed25519 key is 32 bytes')
   return raw
 }
-const usagePrivateKey = (key: string) =>
+const privateUsageKeyObject = (privateUsageKey: string) =>
   createPrivateKey({
-    key: Buffer.concat([ED25519_PKCS8_PREFIX, rawKey(key)]),
+    key: Buffer.concat([ED25519_PKCS8_PREFIX, rawKey(privateUsageKey)]),
     format: 'der',
     type: 'pkcs8'
   })
-const usagePublicKey = (key: string) =>
+const publicUsageKeyObject = (publicUsageKey: string) =>
   createPublicKey({
-    key: Buffer.concat([ED25519_SPKI_PREFIX, rawKey(key)]),
+    key: Buffer.concat([ED25519_SPKI_PREFIX, rawKey(publicUsageKey)]),
     format: 'der',
     type: 'spki'
   })
 
-/** A new usage key pair, each half a raw Ed25519 key in base64url */
-export const generateUsageKeyPair = () => {
-  const jwk = generateKeyPairSync('ed25519').privateKey.export({format: 'jwk'})
-  return {privateKey: jwk.d!, publicKey: jwk.x!}
-}
-
-/** The public half of a usage key, or undefined when it isn't one */
-export const usagePublicKeyOf = (privateKey: string) => {
+const publicUsageKeyOf = (privateUsageKey: string) => {
   try {
-    return createPublicKey(usagePrivateKey(privateKey)).export({format: 'jwk'}).x
+    return createPublicKey(privateUsageKeyObject(privateUsageKey)).export({format: 'jwk'}).x
   } catch {
     return undefined
   }
@@ -105,20 +96,14 @@ export const checkClaims = (claims: any): string | undefined => {
   if (claims.expiresAt !== undefined && !isIsoDate(claims.expiresAt)) {
     return 'expiresAt is not a date'
   }
-  if (claims.usageKey !== undefined) {
+  if (claims.publicUsageKey !== undefined) {
     try {
-      usagePublicKey(claims.usageKey)
+      publicUsageKeyObject(claims.publicUsageKey)
     } catch {
-      return 'usageKey is not an Ed25519 public key'
+      return 'publicUsageKey is not an Ed25519 public key'
     }
   }
   return undefined
-}
-
-export const signLicense = (claims: LicenseClaims, privateKeyPem: string) => {
-  const payload = base64url(Buffer.from(JSON.stringify(claims)))
-  const signature = sign(null, Buffer.from(payload), createPrivateKey(privateKeyPem))
-  return `${payload}.${base64url(signature)}`
 }
 
 const hostOnly = (host: string) => host.trim().toLowerCase().replace(/:\d+$/, '')
@@ -138,11 +123,11 @@ export const isHostCovered = (hosts: string[] | undefined, host: string | undefi
  * It doesn't look at expiry.
  */
 export const parseLicense = (
-  token: string | undefined,
+  license: string | undefined,
   publicKeys: Record<string, string>,
   host: string | undefined
 ): LicenseParseResult => {
-  const trimmed = token?.trim()
+  const trimmed = license?.trim()
   if (!trimmed) return {ok: false, reason: 'missing'}
   const parts = trimmed.split('.')
   if (parts.length !== 2) {
@@ -181,32 +166,40 @@ export const parseLicense = (
   return {ok: true, claims}
 }
 
-export type UsageKeyResult =
-  | {ok: true; privateKey: string; license: string}
+export type PrivateUsageKeyResult =
+  | {ok: true; privateUsageKey: string; license: string}
   | {ok: false; error: string}
 
-/** Splits a license key into the license, checked as parseLicense checks it, and the usage key that signs reports */
-export const parseLicenseKey = (
-  licenseKey: string | undefined,
+/**
+ * Splits PRIVATE_LICENSE_KEY into the license, checked as parseLicense checks it, and the private usage key that
+ * signs usage reports
+ */
+export const parsePrivateLicenseKey = (
+  privateLicenseKey: string | undefined,
   publicKeys: Record<string, string>,
   host: string | undefined
-): {parsed: LicenseParseResult; usage: UsageKeyResult} => {
-  const parts = licenseKey?.trim().split('.') ?? []
-  const license = parts.length === 3 ? `${parts[0]}.${parts[1]}` : licenseKey
+): {parsed: LicenseParseResult; usage: PrivateUsageKeyResult} => {
+  const parts = privateLicenseKey?.trim().split('.') ?? []
+  const license = parts.length === 3 ? `${parts[0]}.${parts[1]}` : privateLicenseKey
   const parsed = parseLicense(license, publicKeys, host)
   if (!parsed.ok) return {parsed, usage: {ok: false, error: 'there is no valid license'}}
-  if (!parsed.claims.usageKey) {
-    return {parsed, usage: {ok: false, error: 'the license names no usage key'}}
+  if (!parsed.claims.publicUsageKey) {
+    return {parsed, usage: {ok: false, error: 'the license names no public usage key'}}
   }
-  const privateKey = parts[2]
-  if (!privateKey) return {parsed, usage: {ok: false, error: 'the license key has no usage key'}}
-  if (usagePublicKeyOf(privateKey) !== parsed.claims.usageKey) {
+  const privateUsageKey = parts[2]
+  if (!privateUsageKey) {
+    return {parsed, usage: {ok: false, error: 'PRIVATE_LICENSE_KEY has no private usage key'}}
+  }
+  if (publicUsageKeyOf(privateUsageKey) !== parsed.claims.publicUsageKey) {
     return {
       parsed,
-      usage: {ok: false, error: 'the license key’s usage key isn’t the one its license names'}
+      usage: {
+        ok: false,
+        error: 'the private usage key isn’t the pair of the public usage key the license names'
+      }
     }
   }
-  return {parsed, usage: {ok: true, privateKey, license: license!.trim()}}
+  return {parsed, usage: {ok: true, privateUsageKey, license: license!.trim()}}
 }
 
 export interface UsageReportOrganization {
@@ -218,7 +211,7 @@ export interface UsageReportOrganization {
 export interface UsageReportClaims {
   v: 1
   type: 'usage'
-  /** The instance's license, `<payload>.<signature>`, which names the key that signed the report */
+  /** The instance's license, `<payload>.<signature>`, which names the public usage key that checks the report */
   license: string
   /** Parabol's HOST */
   host: string
@@ -232,71 +225,9 @@ export interface UsageReportClaims {
   monthlyPeaks: Record<string, number>
 }
 
-export type UsageReportVerifyResult =
-  | {ok: true; report: UsageReportClaims; license: LicenseClaims}
-  | {ok: false; error: string}
-
-/** Signs a usage report with the instance's usage key: `<payload>.<signature>` */
-export const signUsageReport = (report: UsageReportClaims, usageKey: string) => {
+/** Signs a usage report with the instance's private usage key: `<payload>.<signature>` */
+export const signUsageReport = (report: UsageReportClaims, privateUsageKey: string) => {
   const payload = base64url(Buffer.from(JSON.stringify(report)))
-  const signature = sign(null, Buffer.from(payload), usagePrivateKey(usageKey))
+  const signature = sign(null, Buffer.from(payload), privateUsageKeyObject(privateUsageKey))
   return `${payload}.${base64url(signature)}`
-}
-
-const isCount = (value: unknown) => Number.isInteger(value) && (value as number) >= 0
-
-/**
- * Checks a signed usage report: that its license is one Parabol signed, and that the usage key the license names
- * signed the report, so nothing in it changed after it was made
- */
-export const verifyUsageReport = (
-  token: string,
-  publicKeys: Record<string, string>
-): UsageReportVerifyResult => {
-  const parts = token.trim().split('.')
-  if (parts.length !== 2) return {ok: false, error: 'it is not a signed usage report'}
-  const [payload, signature] = parts as [string, string]
-  let report: any
-  try {
-    report = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'))
-  } catch {
-    return {ok: false, error: 'the payload is not JSON'}
-  }
-  if (report?.v !== 1 || report.type !== 'usage')
-    return {ok: false, error: 'it is not a usage report'}
-  const license = parseLicense(report.license, publicKeys, report.host)
-  if (!license.ok) {
-    return {ok: false, error: `its license is invalid: ${license.error ?? license.reason}`}
-  }
-  const {usageKey} = license.claims
-  if (!usageKey) return {ok: false, error: 'its license names no usage key'}
-  let signatureOk = false
-  try {
-    signatureOk = verify(
-      null,
-      Buffer.from(payload),
-      usagePublicKey(usageKey),
-      Buffer.from(signature, 'base64url')
-    )
-  } catch {
-    signatureOk = false
-  }
-  if (!signatureOk) {
-    return {
-      ok: false,
-      error: 'the signature does not match: the report was changed, or another key signed it'
-    }
-  }
-  const wellFormed =
-    isIsoDate(report.generatedAt) &&
-    isCount(report.activeUsers) &&
-    Array.isArray(report.organizations) &&
-    report.organizations.every(
-      (org: any) => typeof org?.id === 'string' && isCount(org.activeUsers)
-    ) &&
-    report.monthlyPeaks &&
-    typeof report.monthlyPeaks === 'object' &&
-    Object.values(report.monthlyPeaks).every(isCount)
-  if (!wellFormed) return {ok: false, error: 'the report is missing fields'}
-  return {ok: true, report, license: license.claims}
 }

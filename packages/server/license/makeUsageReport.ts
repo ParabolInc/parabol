@@ -1,4 +1,4 @@
-import {getInstanceLicense, getUsageKey} from './instanceLicense'
+import {getInstanceLicense, getPrivateUsageKey} from './instanceLicense'
 import {countActiveUsers, countActiveUsersByOrg, readMonthlyPeaks} from './licensedUsers'
 import {signUsageReport, type UsageReportClaims} from './licenseToken'
 
@@ -7,14 +7,14 @@ const MAX_MONTHS = 24
 
 const ABOUT =
   'A usage report from a Parabol instance, to send to Parabol. `report` is there to read. `signed` is what ' +
-  'Parabol checks: the same report, signed with the instance’s usage key, which its license names.'
+  'Parabol checks: the same report, signed with the instance’s private usage key, whose public half its license names.'
 
 /**
- * The instance's usage report, signed with its usage key, as a JSON file: active users now, in each organization, and
+ * The instance's usage report, signed with its private usage key, as a JSON file: active users now, in each organization, and
  * each month's peak since the license was issued
  */
 export const makeUsageReport = async (now = new Date()) => {
-  const usage = getUsageKey()
+  const usage = getPrivateUsageKey()
   const license = getInstanceLicense()
   if (!usage.ok || !license.ok) {
     throw new Error(
@@ -53,7 +53,7 @@ export const makeUsageReport = async (now = new Date()) => {
       organizations,
       monthlyPeaks
     },
-    signed: signUsageReport(report, usage.privateKey)
+    signed: signUsageReport(report, usage.privateUsageKey)
   }
   const safeHost = host.replace(/[^a-zA-Z0-9.-]+/g, '-') || 'parabol'
   return {
