@@ -371,7 +371,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         role,
         newUser
       })
-      await getMailManager().sendEmail({
+      const mailManager = await getMailManager()
+      await mailManager.sendEmail({
         to: invitationEmail,
         html,
         subject,

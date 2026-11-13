@@ -1,25 +1,28 @@
 import typedLookup from '../../client/types/typedLookup'
 import type MailManager from './MailManager'
-import MailManagerDebug from './MailManagerDebug'
-import MailManagerGoogle from './MailManagerGoogle'
-import MailManagerMailgun from './MailManagerMailgun'
-import MailManagerSMTP from './MailManagerSMTP'
 
-let mailManager: MailManager
-
-const managers = {
-  mailgun: MailManagerMailgun,
-  google: MailManagerGoogle,
-  smtp: MailManagerSMTP,
-  debug: MailManagerDebug
+// each provider's client is a lot of code, so the first email evaluates only the configured one
+const managerLoaders = {
+  mailgun: async () => (await import(/* webpackMode: "eager" */ './MailManagerMailgun')).default,
+  google: async () => (await import(/* webpackMode: "eager" */ './MailManagerGoogle')).default,
+  smtp: async () => (await import(/* webpackMode: "eager" */ './MailManagerSMTP')).default,
+  debug: async () => (await import(/* webpackMode: "eager" */ './MailManagerDebug')).default
 } as const
 
+// the SMTP manager verifies its transport when it is evaluated, which an admin debugging SMTP expects at startup
+if (process.env.MAIL_SMTP_DEBUG === 'true') managerLoaders.smtp()
+
+const makeMailManager = async (): Promise<MailManager> => {
+  const mailProvider = process.env.MAIL_PROVIDER!
+  const loadManager = typedLookup(managerLoaders, mailProvider) ?? managerLoaders.debug
+  const Manager = await loadManager()
+  return new Manager()
+}
+
+let mailManager: Promise<MailManager> | undefined
+
 const getMailManager = () => {
-  if (!mailManager) {
-    const mailProvider = process.env.MAIL_PROVIDER!
-    const Manager = typedLookup(managers, mailProvider) ?? MailManagerDebug
-    mailManager = new Manager()
-  }
+  mailManager ??= makeMailManager()
   return mailManager
 }
 

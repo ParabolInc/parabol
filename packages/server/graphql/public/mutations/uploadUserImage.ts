@@ -25,7 +25,7 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
 
   // RESOLUTION
   const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(normalBuffer, userId, normalExt)
 
   await pg.updateTable('User').set({picture: publicLocation}).where('id', '=', userId).execute()
