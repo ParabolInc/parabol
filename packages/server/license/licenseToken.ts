@@ -1,8 +1,10 @@
 import {createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify} from 'node:crypto'
 
 /*
-A license lets the instance's organizations keep a paid tier without a Stripe subscription, and says what happens
-around its expiry and while more users are active than it covers.
+A license is what lets a production build of Parabol start: without a valid one, the web server exits (see
+instanceLicense.ts). It says who it's for and can limit the hosts it runs on. Its expiry and seats travel with it for
+usage reports and for later versions to act on; nothing acts on them yet. Fields a version doesn't know are ignored,
+so later licenses can carry new terms without breaking the versions before them.
 
 A license key, the LICENSE_KEY environment variable, is three base64url parts separated by dots:
 `<payload>.<signature>.<usage key>`.
@@ -14,20 +16,6 @@ A license key, the LICENSE_KEY environment variable, is three base64url parts se
 
 This file imports nothing relative, so Parabol's scripts can import it as it is.
 */
-
-export type LicenseNoticeAudience = 'none' | 'admins' | 'everyone'
-/** What a step does besides its notice. read-only: people can see everything, and change nothing */
-export type LicenseAction = 'read-only'
-
-/** A step in what happens once a license nears or passes its expiry, or once more users are active than it covers */
-export interface LicenseStage {
-  /** When the step starts, in days after the condition began, such as '90d', or before it, such as '-30d' */
-  from: string
-  /** Who sees a notice: nobody, the admins of the organizations that depend on the license, or all their members */
-  notice: LicenseNoticeAudience
-  /** What happens to the instance. Absent: nothing besides the notice */
-  action?: LicenseAction
-}
 
 export interface LicenseClaims {
   /** The format's version */
@@ -46,55 +34,16 @@ export interface LicenseClaims {
   issuedAt: string
   /** ISO 8601. Absent: it never expires */
   expiresAt?: string
-  /** What happens around expiry, counted from expiresAt. The last step whose `from` has passed applies. []: nothing */
-  onExpiry: LicenseStage[]
-  /** What happens while more users are active than it covers, counted from when that began. []: nothing */
-  onOverSeats: LicenseStage[]
   /** The public half of the instance's usage key: a raw Ed25519 key in base64url. Absent: no usage reports */
   usageKey?: string
-  /**
-   * Parabol's own cloud: the license only keeps organizations without a Stripe subscription on their paid tier. New
-   * organizations start on Starter, and there are no usage reports. Absent: an enterprise instance
-   */
-  saas?: true
 }
 
 export type LicenseParseResult =
   | {ok: true; claims: LicenseClaims}
   | {ok: false; reason: 'missing' | 'invalid'; error?: string}
 
-const DAY_MS = 24 * 60 * 60 * 1000
 const base64url = (buf: Buffer) => buf.toString('base64url')
 const isIsoDate = (value: unknown) => typeof value === 'string' && !Number.isNaN(Date.parse(value))
-
-/** A stage's `from` in milliseconds, or undefined when it isn't a whole number of days such as '90d' or '-30d' */
-export const stageOffsetMs = (from: unknown) => {
-  const match = typeof from === 'string' ? /^(-?\d+)d$/.exec(from) : null
-  return match ? Number(match[1]) * DAY_MS : undefined
-}
-
-const NOTICE_AUDIENCES: readonly unknown[] = ['none', 'admins', 'everyone']
-const ACTIONS: readonly unknown[] = ['read-only']
-
-const checkStages = (stages: unknown, name: string): string | undefined => {
-  if (!Array.isArray(stages)) return `${name} must be a list, [] for nothing`
-  let previous = -Infinity
-  for (const stage of stages) {
-    if (!stage || typeof stage !== 'object') return `${name} has a step that isn't an object`
-    const offset = stageOffsetMs(stage.from)
-    if (offset === undefined)
-      return `${name} has a from of ${stage.from}, not days such as 90d or -30d`
-    if (offset <= previous) return `${name}'s steps must go from earliest to latest`
-    previous = offset
-    if (!NOTICE_AUDIENCES.includes(stage.notice)) {
-      return `${name} has a notice of ${stage.notice}, not none, admins or everyone`
-    }
-    if (stage.action !== undefined && !ACTIONS.includes(stage.action)) {
-      return `${name} has an action of ${stage.action}, not read-only`
-    }
-  }
-  return undefined
-}
 
 const ED25519_PKCS8_PREFIX = Buffer.from('302e020100300506032b657004220420', 'hex')
 const ED25519_SPKI_PREFIX = Buffer.from('302a300506032b6570032100', 'hex')
@@ -132,7 +81,7 @@ export const usagePublicKeyOf = (privateKey: string) => {
   }
 }
 
-/** What's wrong with a license's claims, or undefined when nothing is */
+/** What's wrong with the claims this version knows, or undefined when nothing is */
 export const checkClaims = (claims: any): string | undefined => {
   if (!claims || typeof claims !== 'object') return 'the payload is not an object'
   if (claims.v !== 1) return `unsupported version ${claims.v}`
@@ -156,16 +105,6 @@ export const checkClaims = (claims: any): string | undefined => {
   if (claims.expiresAt !== undefined && !isIsoDate(claims.expiresAt)) {
     return 'expiresAt is not a date'
   }
-  const stagesError =
-    checkStages(claims.onExpiry, 'onExpiry') ?? checkStages(claims.onOverSeats, 'onOverSeats')
-  if (stagesError) return stagesError
-  if (claims.onExpiry.length > 0 && claims.expiresAt === undefined) {
-    return 'onExpiry has steps, but the license never expires'
-  }
-  if (claims.onOverSeats.length > 0 && claims.seats === undefined) {
-    return 'onOverSeats has steps, but the license covers any number of users'
-  }
-  if (claims.saas !== undefined && claims.saas !== true) return 'saas is true or absent'
   if (claims.usageKey !== undefined) {
     try {
       usagePublicKey(claims.usageKey)

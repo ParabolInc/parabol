@@ -7,7 +7,6 @@ import {
   parseLicenseKey,
   signLicense,
   signUsageReport,
-  stageOffsetMs,
   type UsageReportClaims,
   verifyUsageReport
 } from '../licenseToken'
@@ -32,11 +31,6 @@ const claims: LicenseClaims = {
   hosts: ['parabol.acme.mil'],
   issuedAt: '2026-11-01T00:00:00.000Z',
   expiresAt: '2027-11-01T00:00:00.000Z',
-  onExpiry: [
-    {from: '-30d', notice: 'admins'},
-    {from: '90d', notice: 'everyone', action: 'read-only'}
-  ],
-  onOverSeats: [{from: '14d', notice: 'admins'}],
   usageKey: usage.publicKey
 }
 const HOST = 'parabol.acme.mil'
@@ -93,35 +87,20 @@ describe('parseLicense', () => {
       return result.ok ? undefined : result.error
     }
     expect(errorOf({seats: 0})).toBe('seats must be a positive integer')
-    expect(errorOf({onExpiry: undefined})).toBe('onExpiry must be a list, [] for nothing')
-    expect(errorOf({onExpiry: [{from: '3 months', notice: 'admins'}]})).toBe(
-      'onExpiry has a from of 3 months, not days such as 90d or -30d'
-    )
-    expect(
-      errorOf({
-        onExpiry: [
-          {from: '90d', notice: 'admins'},
-          {from: '30d', notice: 'admins'}
-        ]
-      })
-    ).toBe("onExpiry's steps must go from earliest to latest")
-    expect(errorOf({onOverSeats: [{from: '0d', notice: 'boss'}]})).toBe(
-      'onOverSeats has a notice of boss, not none, admins or everyone'
-    )
-    expect(
-      errorOf({onOverSeats: [{from: '0d', notice: 'none', action: 'delete-everything'}]})
-    ).toBe('onOverSeats has an action of delete-everything, not read-only')
-    expect(errorOf({expiresAt: undefined})).toBe(
-      'onExpiry has steps, but the license never expires'
-    )
-    expect(errorOf({seats: undefined})).toBe(
-      'onOverSeats has steps, but the license covers any number of users'
-    )
+    expect(errorOf({hosts: []})).toBe('hosts must be a non-empty list of hostnames')
+    expect(errorOf({expiresAt: 'soon'})).toBe('expiresAt is not a date')
     expect(errorOf({usageKey: 'abc'})).toBe('usageKey is not an Ed25519 public key')
-    expect(errorOf({saas: false})).toBe('saas is true or absent')
-    expect(errorOf({expiresAt: undefined, seats: undefined, onExpiry: [], onOverSeats: []})).toBe(
-      undefined
+    expect(errorOf({v: 2})).toBe('unsupported version 2')
+    expect(errorOf({expiresAt: undefined, seats: undefined})).toBe(undefined)
+  })
+
+  test('ignores fields it doesn’t know, so later licenses work on this version', () => {
+    const result = parseLicense(
+      signed({onExpiry: [{from: '30d', action: 'read-only'}], futureTerm: true}),
+      publicKeys,
+      HOST
     )
+    expect(result).toMatchObject({ok: true, claims: {customer: 'Acme'}})
   })
 
   test('rejects a license for another host', () => {
@@ -131,16 +110,6 @@ describe('parseLicense', () => {
       reason: 'invalid',
       error: 'it covers parabol.acme.mil, not parabol.other.mil'
     })
-  })
-})
-
-describe('stageOffsetMs', () => {
-  test('reads whole days, before or after', () => {
-    expect(stageOffsetMs('90d')).toBe(90 * 86400000)
-    expect(stageOffsetMs('-30d')).toBe(-30 * 86400000)
-    expect(stageOffsetMs('0d')).toBe(0)
-    expect(stageOffsetMs('2w')).toBeUndefined()
-    expect(stageOffsetMs(90)).toBeUndefined()
   })
 })
 

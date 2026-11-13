@@ -6,22 +6,14 @@
 //     packages/server/license/licensePublicKeys.ts before signing with it.
 //
 //   node scripts/issueLicense.mjs --key private.pem --kid 2026-11 --claims acme.json
-//     prints a license key for the customer's LICENSE_KEY, and the license's claims on stderr. The claims file says
-//     who it's for and what it allows, as scripts/license.example.json does:
+//     prints a license key for the instance's LICENSE_KEY, and the license's claims on stderr. A production build of
+//     Parabol won't start without a valid one. The claims file says who it's for, as scripts/license.example.json does:
 //       customer      who it's for
 //       seats         how many active users it covers. Leave it out for any number
 //       hosts         the hostnames (Parabol's HOST) it works on, *.example.com for any subdomain. Leave it out for any
 //       expiresAt     a date, such as 2027-11-30. Leave it out for a license that never expires
-//       onExpiry      what happens around expiry, counted from expiresAt
-//       onOverSeats   what happens while more users are active than seats, counted from when that began
-//       saas          true only for Parabol's own cloud: new organizations start on Starter, and no usage reports
-//     Each of onExpiry and onOverSeats is a list of steps, earliest first; [] means nothing ever happens. A step is
-//     {"from": "90d", "notice": "everyone", "action": "read-only"}: from when ("-30d" is 30 days before), who sees a
-//     notice (none, admins or everyone in the organizations that depend on the license), and, optionally, what happens
-//     to the instance: read-only lets people sign in and see their work, but change nothing. The last step that has
-//     started applies.
-//     A license is for a whole instance. It lets organizations without a Stripe subscription keep their paid tier,
-//     whatever its steps, and, unless it's saas, makes the instance an enterprise one, as IS_ENTERPRISE used to.
+//       usageReports  false for an instance whose admins mustn't see every organization on it, such as Parabol's cloud
+//     Nothing acts on seats or expiresAt yet: they're there for usage reports and for later versions.
 //     The claims file never has the usage key: the script makes a new one for each license, writes its public half
 //     into the license as usageKey, and appends its private half to the license key it prints, for usage reports.
 //     The script also adds the format's version, the key ID, a license ID and the issue date. Parabol keeps no copy of
@@ -64,7 +56,7 @@ const fail = (message) => {
 }
 if (!values.key) fail('--key is the private key file')
 if (!values.kid) fail('--kid is the key ID that licensePublicKeys.ts lists its public key under')
-if (!values.claims) fail('--claims is the file that says who the license is for and what it allows')
+if (!values.claims) fail('--claims is the file that says who the license is for')
 
 const privateKeyPem = readFileSync(values.key, 'utf8')
 const publicKeyPem = createPublicKey(createPrivateKey(privateKeyPem)).export({
@@ -77,7 +69,7 @@ if (licensePublicKeys[values.kid]?.trim() !== publicKeyPem.toString().trim()) {
   )
 }
 
-const FIELDS = ['customer', 'seats', 'hosts', 'expiresAt', 'onExpiry', 'onOverSeats', 'saas']
+const FIELDS = ['customer', 'seats', 'hosts', 'expiresAt', 'usageReports']
 let input
 try {
   input = JSON.parse(readFileSync(values.claims, 'utf8'))
@@ -90,8 +82,10 @@ if (input.expiresAt !== undefined && Number.isNaN(Date.parse(input.expiresAt))) 
   fail('expiresAt is a date, such as 2027-11-30')
 }
 
-// Parabol's cloud has no usage reports, so its license has no usage key
-const usage = input.saas ? undefined : generateUsageKeyPair()
+if (input.usageReports !== undefined && input.usageReports !== false) {
+  fail('usageReports is false or left out')
+}
+const usage = input.usageReports === false ? undefined : generateUsageKeyPair()
 const claims = {
   v: 1,
   kid: values.kid,
@@ -101,10 +95,7 @@ const claims = {
   ...(input.hosts !== undefined && {hosts: input.hosts}),
   issuedAt: new Date().toISOString(),
   ...(input.expiresAt !== undefined && {expiresAt: new Date(input.expiresAt).toISOString()}),
-  onExpiry: input.onExpiry,
-  onOverSeats: input.onOverSeats,
-  ...(usage && {usageKey: usage.publicKey}),
-  ...(input.saas !== undefined && {saas: input.saas})
+  ...(usage && {usageKey: usage.publicKey})
 }
 const claimsError = checkClaims(claims)
 if (claimsError) fail(`The license would be invalid: ${claimsError}`)

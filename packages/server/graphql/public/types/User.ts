@@ -22,9 +22,6 @@ import {
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
-import {dependsOnLicense} from '../../../license/capTierByLicense'
-import {getLicenseNotice} from '../../../license/getLicenseNotice'
-import {getCurrentLicenseStatus} from '../../../license/licenseState'
 import getKysely from '../../../postgres/getKysely'
 import {
   selectNewMeetings,
@@ -274,26 +271,6 @@ const User: ReqResolvers<'User'> = {
       (organizationUser) =>
         organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
     )
-  },
-
-  licenseNotice: async ({id: userId}, _args, {authToken, dataLoader}) => {
-    if (getUserId(authToken) !== userId) return null
-    const notice = getLicenseNotice(getCurrentLicenseStatus())
-    if (!notice) return null
-    if (isSuperUser(authToken)) return notice
-    // only people in an organization whose paid tier rests on the license, so SaaS customers never see it
-    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const orgIds = organizationUsers
-      .filter(
-        ({role}) =>
-          notice.audience === 'everyone' || role === 'BILLING_LEADER' || role === 'ORG_ADMIN'
-      )
-      .map(({orgId}) => orgId)
-    if (orgIds.length === 0) return null
-    const orgs = await dataLoader.get('organizations').loadMany(orgIds)
-    return orgs.some((org) => org && !(org instanceof Error) && dependsOnLicense(org))
-      ? notice
-      : null
   },
 
   isConnected: async ({id: userId, isConnected}: {isConnected?: boolean; id: string}) => {

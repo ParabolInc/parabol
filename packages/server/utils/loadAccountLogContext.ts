@@ -30,7 +30,7 @@ interface AccountSubject {
 const queryOrgs = ({userId, orgId}: AccountSubject) => {
   const orgQuery = getKysely()
     .selectFrom('Organization')
-    .select(['id', 'tier', 'trialStartDate', 'stripeSubscriptionId'])
+    .select(['id', 'tier', 'trialStartDate'])
     .orderBy('tier', 'desc')
     .limit(MAX_ORGS)
   if (!userId) return orgQuery.where('id', '=', orgId ?? '').execute()
@@ -78,9 +78,9 @@ const queryAccount = async (subject: AccountSubject): Promise<AccountLogContext>
     subject.userId,
     orgRows.map(({id}) => id)
   )
-  const orgs = orgRows.map(({id, tier, trialStartDate, stripeSubscriptionId}) => ({
+  const orgs = orgRows.map(({id, tier, trialStartDate}) => ({
     id,
-    tier: getFeatureTier({tier, trialStartDate, stripeSubscriptionId}),
+    tier: getFeatureTier({tier, trialStartDate}),
     featureFlags: flagRows.filter((flag) => flag.orgId === id).map(({featureName}) => featureName)
   }))
   const featureFlags = [

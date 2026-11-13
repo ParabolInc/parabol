@@ -1,12 +1,6 @@
+import {Logger} from '../utils/Logger'
 import {licensePublicKeys} from './licensePublicKeys'
 import {parseLicenseKey} from './licenseToken'
-
-/*
-The instance's license, read from LICENSE_KEY once when the process starts. A license is for the whole instance, not an
-organization. One without `saas` makes this an enterprise instance, as IS_ENTERPRISE used to: new organizations start on
-Enterprise, IS_SINGLE_ORG can apply, and admins can download signed usage reports. Parabol's cloud has a `saas` license,
-which only keeps its organizations without a Stripe subscription on their paid tier.
-*/
 
 const instanceLicense = parseLicenseKey(
   process.env.LICENSE_KEY,
@@ -14,12 +8,41 @@ const instanceLicense = parseLicenseKey(
   process.env.HOST
 )
 
-export const getInstanceLicense = () => instanceLicense
+export const getInstanceLicense = () => instanceLicense.parsed
 
-/** Whether a valid license, expired or not, makes this an enterprise instance rather than Parabol's cloud */
-export const isEnterpriseInstance = () =>
-  instanceLicense.parsed.ok && !instanceLicense.parsed.claims.saas
+/** The usage key that signs usage reports, and the license that goes in them, or why there's none */
+export const getUsageKey = () => instanceLicense.usage
 
-/** Whether new organizations can't be created: IS_SINGLE_ORG, on an enterprise instance */
-export const isSingleOrgInstance = () =>
-  process.env.IS_SINGLE_ORG === 'true' && isEnterpriseInstance()
+const day = (iso: string) => iso.slice(0, 10)
+
+/**
+ * A production build exits without a valid license. Development builds and tests start without one, so anyone can
+ * work on Parabol
+ */
+export const requireInstanceLicense = (now = new Date()) => {
+  const {parsed, usage} = instanceLicense
+  if (!parsed.ok) {
+    const problem =
+      parsed.reason === 'missing'
+        ? 'LICENSE_KEY is not set'
+        : `LICENSE_KEY is not a valid license: ${parsed.error}`
+    if (!__PRODUCTION__) {
+      Logger.warn(`${problem}. A production build won't start without a license`)
+      return
+    }
+    Logger.fatal(`Parabol can't start: ${problem}. Contact love@parabol.co for a license`)
+    process.exit(1)
+    return
+  }
+  const {id, customer, expiresAt, seats} = parsed.claims
+  const covers = seats === undefined ? 'any number of active users' : `${seats} active users`
+  if (expiresAt && Date.parse(expiresAt) <= now.getTime()) {
+    Logger.warn(`License ${id} for ${customer} expired on ${day(expiresAt)}`)
+  } else {
+    const until = expiresAt ? `, until ${day(expiresAt)}` : ''
+    Logger.log(`License ${id} for ${customer}: ${covers}${until}`)
+  }
+  if (parsed.claims.usageKey && !usage.ok) {
+    Logger.warn(`Usage reports are off: ${usage.error}`)
+  }
+}

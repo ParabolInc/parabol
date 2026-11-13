@@ -10,8 +10,8 @@ const OrganizationUser: OrganizationUserResolvers = {
   },
   tier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
-    const {tier, trialStartDate, stripeSubscriptionId} = org
-    return tier ? getFeatureTier({tier, trialStartDate, stripeSubscriptionId}) : tier
+    const {tier, trialStartDate} = org
+    return tier ? getFeatureTier({tier, trialStartDate}) : tier
   },
   billingTier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)

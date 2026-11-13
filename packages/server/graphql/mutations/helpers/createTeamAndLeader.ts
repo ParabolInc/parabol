@@ -4,7 +4,6 @@ import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
-import {capTierByLicense} from '../../../license/capTierByLicense'
 import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
 import promptTemplateRules from '../../public/mutations/helpers/promptTemplateRules'
@@ -39,9 +38,10 @@ export default async function createTeamAndLeader(
       .where('CompanyClusterOrganization.orgId', '=', orgId)
       .executeTakeFirst()
   ])
+  const {tier} = organization
   const maxTeamTrialExpiresAt = clusterRow?.maxTeamLimitAt ?? null
 
-  const isPublic = capTierByLicense(organization) === 'starter' ? true : requestedIsPublic
+  const isPublic = tier === 'starter' ? true : requestedIsPublic
 
   const verifiedTeam = new Team({
     ...newTeam,

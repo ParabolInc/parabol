@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import Organization from '../../../database/types/Organization'
 import generateUID from '../../../generateUID'
-import {isEnterpriseInstance} from '../../../license/instanceLicense'
 import getKysely from '../../../postgres/getKysely'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import type {DataLoaderWorker} from '../../graphql'
@@ -39,7 +38,7 @@ export default async function createNewOrg(
       role: 'BILLING_LEADER'
     })
     .execute()
-  if (!isEnterpriseInstance()) {
+  if (process.env.IS_ENTERPRISE !== 'true') {
     const pg = getKysely()
     await pg
       .insertInto('CompanyClusterOrganization')

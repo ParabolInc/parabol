@@ -95,6 +95,8 @@ jobs:
 
       - name: Start testing server in background
         uses: JarvusInnovations/background-action@v1
+        env:
+          LICENSE_KEY: ${{ secrets.CI_LICENSE_KEY }}
         with:
           run: |
             pnpm start &

@@ -1,5 +1,5 @@
+import {getInstanceLicense, getUsageKey} from './instanceLicense'
 import {countActiveUsers, countActiveUsersByOrg, readMonthlyPeaks} from './licensedUsers'
-import {getCurrentLicenseStatus, getUsageKey} from './licenseState'
 import {signUsageReport, type UsageReportClaims} from './licenseToken'
 
 // how far back monthly peaks go, at most
@@ -15,12 +15,13 @@ const ABOUT =
  */
 export const makeUsageReport = async (now = new Date()) => {
   const usage = getUsageKey()
-  const {claims} = getCurrentLicenseStatus()
-  if (!usage.ok || !claims) {
+  const license = getInstanceLicense()
+  if (!usage.ok || !license.ok) {
     throw new Error(
       `This instance can't sign usage reports: ${usage.ok ? 'no license' : usage.error}`
     )
   }
+  const {claims} = license
   const earliest = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (MAX_MONTHS - 1), 1))
   const issuedAt = new Date(claims.issuedAt)
   const since = issuedAt > earliest ? issuedAt : earliest

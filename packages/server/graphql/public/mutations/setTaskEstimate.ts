@@ -6,7 +6,6 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {getServerIntegration} from '../../../integrations/platform/registry'
-import {capTierByLicense} from '../../../license/capTierByLicense'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimatePushResult} from '../../../postgres/types/EstimatePushResult'
 import {getUserId} from '../../../utils/authorization'
@@ -81,7 +80,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     // Check Jira export limits for starter-tier orgs
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
-    if (capTierByLicense(org) === 'starter') {
+    if (org.tier === 'starter') {
       const pg = getKysely()
       const result = await pg
         .insertInto('JiraExport')

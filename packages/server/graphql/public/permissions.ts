@@ -14,7 +14,6 @@ import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
-import {isSingleOrgInstance} from './rules/isSingleOrgInstance'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
@@ -65,10 +64,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasOrgFeatureFlag<'Mutation.askReportQuestion'>('args.orgId', 'Reports'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
-    signUsageReport: and(
-      or(isSuperUser, isViewerBillingLeader<'Mutation.signUsageReport'>('args.orgId')),
-      rateLimit({perMinute: 5, perHour: 30})
-    ),
     pinReport: and(
       or(isSuperUser, isViewerBillingLeader<'Mutation.pinReport'>('args.orgId')),
       hasOrgFeatureFlag<'Mutation.pinReport'>('args.orgId', 'Reports'),
@@ -106,7 +101,14 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
-    addOrg: and(not(isSingleOrgInstance), rateLimit({perMinute: 2, perHour: 5})),
+    signUsageReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.signUsageReport'>('args.orgId')),
+      rateLimit({perMinute: 5, perHour: 30})
+    ),
+    addOrg: and(
+      not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
+      rateLimit({perMinute: 2, perHour: 5})
+    ),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
     addPokerTemplateDimension: isTeamMember<'Mutation.addPokerTemplateDimension'>(
       'args.templateId',

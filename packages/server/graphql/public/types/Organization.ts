@@ -1,6 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {isEnterpriseInstance} from '../../../license/instanceLicense'
-import {getUsageKey} from '../../../license/licenseState'
+import {getUsageKey} from '../../../license/instanceLicense'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
@@ -39,8 +38,8 @@ const Organization: OrganizationResolvers = {
       .get('featureFlagByOwnerId')
       .load({ownerId: orgId, featureName: featureName as FeatureFlagName})
   },
-  tier: ({tier, trialStartDate, stripeSubscriptionId}) => {
-    return getFeatureTier({tier, trialStartDate, stripeSubscriptionId})
+  tier: ({tier, trialStartDate}) => {
+    return getFeatureTier({tier, trialStartDate})
   },
   billingTier: ({tier}) => tier,
   saml: async ({id: orgId}, _args, {dataLoader}) => {
@@ -56,16 +55,15 @@ const Organization: OrganizationResolvers = {
     return isUserBillingLeader(viewerId, orgId, dataLoader)
   },
 
-  canSignUsageReport: async ({id: orgId}, _args, {authToken, dataLoader}) => {
-    // a license is for the whole instance, and Parabol's cloud has no usage reports
-    if (!getUsageKey().ok || !isEnterpriseInstance()) return false
-    if (isSuperUser(authToken)) return true
-    return isUserBillingLeader(getUserId(authToken), orgId, dataLoader)
-  },
-
   isOrgAdmin: async ({id: orgId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     return isUserOrgAdmin(viewerId, orgId, dataLoader)
+  },
+
+  canSignUsageReport: async ({id: orgId}, _args, {authToken, dataLoader}) => {
+    if (!getUsageKey().ok) return false
+    if (isSuperUser(authToken)) return true
+    return isUserBillingLeader(getUserId(authToken), orgId, dataLoader)
   },
 
   activeTeamCount: async ({id: orgId}, _args, {dataLoader}) => {

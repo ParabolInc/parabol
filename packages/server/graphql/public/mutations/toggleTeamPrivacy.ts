@@ -1,4 +1,3 @@
-import {capTierByLicense} from '../../../license/capTierByLicense'
 import getKysely from '../../../postgres/getKysely'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -13,7 +12,7 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
 
-  if (team.isPublic && capTierByLicense(org) === 'starter') {
+  if (team.isPublic && org.tier === 'starter') {
     return standardError(new Error('Cannot make a public team private on the starter tier'))
   }
 

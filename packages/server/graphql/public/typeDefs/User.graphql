@@ -79,11 +79,6 @@ type User {
   isAnyBillingLeader: Boolean!
 
   """
-  A warning about the instance's license, when the viewer administers an organization whose paid tier depends on it
-  """
-  licenseNotice: LicenseNotice
-
-  """
   true if the user is currently online
   """
   isConnected: Boolean

@@ -12,7 +12,6 @@ import useSidebar from '../hooks/useSidebar'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
-import LicenseNoticeBanner from './LicenseNoticeBanner'
 import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
@@ -97,7 +96,6 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           ...Page_viewer
-          ...LicenseNoticeBanner_viewer
           overLimitCopy
           theme
           teams {
@@ -134,7 +132,6 @@ const Dashboard = (props: Props) => {
         ) : (
           <MobileDashTopBar queryRef={data} toggle={toggle} />
         )}
-        <LicenseNoticeBanner viewerRef={viewer} />
         <div className='flex h-full flex-1 overflow-hidden'>
           {isDesktop ? (
             <DashSidebar viewerRef={viewer} isOpen={isOpen} />
