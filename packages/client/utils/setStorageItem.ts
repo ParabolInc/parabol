@@ -3,7 +3,9 @@
 const setStorageItem = (storage: 'localStorage' | 'sessionStorage', key: string, value: string) => {
   try {
     window[storage].setItem(key, value)
-  } catch {}
+  } catch (error) {
+    console.warn(`Could not save ${key} to ${storage}`, error)
+  }
 }
 
 export default setStorageItem
