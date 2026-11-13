@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.31.0](https://github.com/ParabolInc/parabol/compare/v15.30.1...v15.31.0) (2026-11-13)
+
+
+### Added
+
+* **tasks:** Tasks · 0 turns gold after people comment with no tasks ([#14153](https://github.com/ParabolInc/parabol/issues/14153)) ([abff2b6](https://github.com/ParabolInc/parabol/commit/abff2b69f1bb7888a92609c5bd13ff0004ee0411))
+
+
+### Fixed
+
+* **ci:** give the CI Postgres container 200 connections ([#14151](https://github.com/ParabolInc/parabol/issues/14151)) ([1f7e802](https://github.com/ParabolInc/parabol/commit/1f7e802f7edb2fd1dbb913080b42b5752832884e))
+* **client:** don't report errors thrown by scripts injected into the page, but keep reporting real service worker registration failures ([#14142](https://github.com/ParabolInc/parabol/issues/14142)) ([06b1ad1](https://github.com/ParabolInc/parabol/commit/06b1ad1ba5ad82738f7706bf9889334fa7ae723c))
+* **client:** give every dialog the same button row ([#14147](https://github.com/ParabolInc/parabol/issues/14147)) ([475de71](https://github.com/ParabolInc/parabol/commit/475de715f0425c9869f2aa855ec33dbbf1a5a0ce))
+
 ## [15.30.1](https://github.com/ParabolInc/parabol/compare/v15.30.0...v15.30.1) (2026-11-13)
 
 
