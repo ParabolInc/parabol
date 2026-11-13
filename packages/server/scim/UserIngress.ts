@@ -17,6 +17,16 @@ import {SCIMContext} from './SCIMContext'
 import {softDeleteUser} from './softDeleteUser'
 import {getUserCategory} from './UserCategory'
 
+// RFC 7643 §7 calls canonical values suggestions, and Parabol reads none of a User's type labels,
+// so a label an IdP coins, like a work_mobile phone, must not refuse the whole user
+const acceptAnyCanonicalValue = (attributes: SCIMMY.Types.Attribute[]) => {
+  attributes.forEach((attribute) => {
+    if (attribute.config.direction !== 'out') attribute.config.canonicalValues = false
+    acceptAnyCanonicalValue(attribute.subAttributes ?? [])
+  })
+}
+acceptAnyCanonicalValue(SCIMMY.Schemas.User.definition.attributes)
+
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
   async (resource, instance, context: SCIMContext) => {
     const {ip, authToken, dataLoader} = context
