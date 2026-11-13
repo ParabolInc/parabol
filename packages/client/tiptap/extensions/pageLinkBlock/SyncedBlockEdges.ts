@@ -3,6 +3,7 @@ import type {ResolvedPos} from '@tiptap/pm/model'
 import {type EditorState, NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
 import {keepFocusInHost} from './keepFocusInHost'
+import {refuseForeignDrops} from './refuseForeignDrops'
 import {exitSyncedBlock} from './syncedBlockFocus'
 
 export interface SyncedBlockEdgesOptions {
@@ -114,6 +115,7 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
   addProseMirrorPlugins() {
     const {editor} = this
     return [
+      refuseForeignDrops(),
       new Plugin({
         appendTransaction: (_transactions, _oldState, state) => {
           const {selection, doc} = state
