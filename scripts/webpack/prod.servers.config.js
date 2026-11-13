@@ -89,9 +89,7 @@ module.exports = (config) => {
         'parabol-client': CLIENT_ROOT,
         'parabol-server': SERVER_ROOT,
         // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
-        'react/jsx-runtime': require.resolve('react/jsx-runtime'),
-        // oy-vey asks for the browser build by name, everything else renders with the node build
-        'react-dom/server.browser$': 'react-dom/server'
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
       extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
     },
