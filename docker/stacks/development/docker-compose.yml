@@ -65,8 +65,8 @@ services:
     profiles:
       - harrier
     environment:
-      - MODEL_ID=onnx-community/harrier-oss-v1-270m-ONNX
-      - REVISION=d59c919d0159aea2c19ed7d04288fcdd048d0f9c
+      - MODEL_ID=Parabol/harrier-oss-v1-270m-ONNX-INT8
+      - REVISION=368b2b058533ede4e7eebb7dfc1f3cedf7d10a76
       - POOLING=last-token
       - MAX_CLIENT_BATCH_SIZE=8
       - MAX_BATCH_TOKENS=4096
