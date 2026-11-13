@@ -1,4 +1,4 @@
-import {isFromExtension} from './errorFilters'
+import {getStackScripts, isAppScript} from './errorFilters'
 import reportClientError, {
   describeReason,
   flushClientErrors,
@@ -6,9 +6,9 @@ import reportClientError, {
   isReportedError
 } from './reportClientError'
 
-// browsers report the first two with no error object to look into, and a failed service worker update retries on its own
+// browsers report a ResizeObserver loop with no error object to look into, and a failed service worker update retries on its own
 // Each browser words that failure differently, so it is matched by what createWSClient logs with it
-const IGNORED_MESSAGES = ['ResizeObserver loop', 'Script error', 'Error updating service worker']
+const IGNORED_MESSAGES = ['ResizeObserver loop', 'Error updating service worker']
 
 const isIgnoredMessage = (message: string | undefined) =>
   IGNORED_MESSAGES.some((ignored) => message?.includes(ignored))
@@ -18,17 +18,15 @@ const describeConsoleArg = (arg: unknown) => {
   return typeof arg === 'string' ? arg : describeReason(arg)
 }
 
-// Extensions run scripts in the page and log to its console, but only the page's own scripts are served over http
-const isLoggedByPage = (callStack: string | undefined) => {
-  if (!callStack) return true
-  const [ownFrame, ...callerFrames] = callStack
-    .split('\n')
-    .filter((frame) => /https?:\/\//.test(frame))
+// Extensions and other hosts' scripts log to the page's console too. Below this wrapper's own frame,
+// a frame of the app's means the app logged it, even through a console an extension wraps
+const isLoggedByApp = (callStack: string | undefined) => {
+  const [ownFrame, ...callerFrames] = getStackScripts(callStack).filter(isAppScript)
   return !ownFrame || callerFrames.length > 0
 }
 
 const reportConsoleError = (args: unknown[], callStack: string | undefined) => {
-  if (!isLoggedByPage(callStack)) return
+  if (!isLoggedByApp(callStack)) return
   const message = args.map(describeConsoleArg).join(' ')
   if (isIgnoredMessage(message)) return
   const cause = args.find(isError)
@@ -49,13 +47,16 @@ const reportConsoleError = (args: unknown[], callStack: string | undefined) => {
 }
 
 const registerClientErrorHandlers = () => {
-  // a script that fails to parse has no stack, so only the event says which script it was
+  // the event names the script that threw, even one that failed to parse and so has no stack.
+  // A browser leaves it empty for another origin's script, whose error reads "Script error."
   window.addEventListener('error', (event) => {
-    if (isIgnoredMessage(event.message) || isFromExtension(event.filename)) return
+    if (isIgnoredMessage(event.message) || !isAppScript(event.filename)) return
     reportClientError(event.error ?? event.message)
   })
-  window.addEventListener('unhandledrejection', (event) => {
-    reportClientError(event.reason)
+  // a string, a plain object or a browser API's error has no frame to tell whose it is
+  window.addEventListener('unhandledrejection', ({reason}) => {
+    const hasThrowingFrame = isError(reason) && getStackScripts(reason.stack).length > 0
+    reportClientError(reason, hasThrowingFrame ? undefined : {level: 'warn'})
   })
   window.addEventListener('pagehide', flushClientErrors)
   document.addEventListener('visibilitychange', () => {

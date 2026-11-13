@@ -3,7 +3,7 @@ const sendBeacon = jest.fn((_url: string, _body: Blob) => true)
 // the reporter reads the release and browser globals when it loads, so each test needs a fresh copy
 const loadReporter = () => {
   jest.resetModules()
-  Object.assign(globalThis, {__APP_VERSION__: '15.11.0'})
+  Object.assign(globalThis, {__APP_VERSION__: '15.11.0', __PRODUCTION__: true})
   Object.defineProperty(globalThis, 'window', {
     value: {location: {pathname: '/reset-password/secret-token'}},
     configurable: true
@@ -124,7 +124,8 @@ const makeErrorWithStack = (message: string, frames: string[]) => {
   return error
 }
 
-const APP_FRAME = 'https://files.example.test/build/app_0a1b2c.js:4:1200'
+// the reporter takes the directory of its own script for the app's, as a production build serves every script from one
+const APP_FRAME = `${__dirname}/app_0a1b2c.js:4:1200`
 
 test('an error a script injected inline throws from an API it wraps is not reported', async () => {
   const {default: reportClientError, flushClientErrors} = await loadReporter()
@@ -132,6 +133,18 @@ test('an error a script injected inline throws from an API it wraps is not repor
     makeErrorWithStack('Blocked', [
       'ServiceWorkerContainer.<anonymous> (<anonymous>:120:34)',
       'ServiceWorkerContainer.register (<anonymous>:45:67)',
+      APP_FRAME
+    ])
+  )
+  flushClientErrors()
+  expect(sendBeacon).not.toHaveBeenCalled()
+})
+
+test('an error a script from another host throws is not reported, even when the app called it', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(
+    makeErrorWithStack('Widget failed to load', [
+      'loadWidget (https://widget.example.com/embed.js:1:500)',
       APP_FRAME
     ])
   )

@@ -50,7 +50,7 @@ export const describeReason = (reason: unknown) => {
   }
 }
 
-// an error from another realm, such as an extension's isolated world, fails instanceof Error
+// an error fails instanceof Error when it comes from another realm or the page's Error was replaced, but keeps its tag
 export const isError = (reason: unknown): reason is Error =>
   reason instanceof Error || Object.prototype.toString.call(reason) === '[object Error]'
 
