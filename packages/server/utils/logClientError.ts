@@ -1,4 +1,4 @@
-import describeUserAgent from './describeUserAgent'
+import describeUserAgent, {isCrawler} from './describeUserAgent'
 import {CLIENT_LOG_SERVICE, normalizeErrorMessage} from './getErrorFingerprint'
 import {Logger} from './Logger'
 import normalizeUrlPath from './normalizeUrlPath'
@@ -52,7 +52,8 @@ const logClientError = async (
       version: release ?? 'unknown'
     },
     () => {
-      Logger[level](error, {
+      // a crawler renders the app under limits no visitor has: it blocks requests, answers some itself, cuts rendering short
+      Logger[isCrawler(userAgent) ? 'warn' : level](error, {
         client: {
           ...(route && {route: normalizeUrlPath(route), rawRoute: route}),
           ...describeUserAgent(userAgent),
