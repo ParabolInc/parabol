@@ -7,8 +7,8 @@ import {chatNotificationsSent} from '../../../../metricsHandler'
 import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/types/IntegrationProvider'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import logError from '../../../../utils/logError'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
+import {logWebhookError} from '../../../../utils/postWebhook'
 import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import type {SlackNotificationEventEnum} from '../../../public/resolverTypes'
@@ -29,7 +29,7 @@ const notifyMSTeams = async (
   const manager = new MSTeamsServerManager(webhookUrl)
   const result = await manager.post(textOrAttachmentsArray)
   if (result instanceof Error) {
-    logError(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
+    logWebhookError(result, webhookUrl, {userId: user.id, tags: {teamId, event}})
     return {
       error: result
     }
