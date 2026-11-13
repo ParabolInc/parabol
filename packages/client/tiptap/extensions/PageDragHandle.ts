@@ -51,6 +51,7 @@ interface NodeChangeData {
 type Options = {
   atmosphere: Atmosphere
   pageId: string
+  isNested?: boolean
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',
@@ -109,6 +110,7 @@ export const PageDragHandle = Extension.create<Options>({
   addExtensions() {
     const dragHandleElement = document.createElement('div')
     this.storage.dragHandleElement = dragHandleElement
+    if (!this.options.isNested) dragHandleElement.dataset.hostHandle = ''
     let dragHandleNode: Node | null = null
     let dragHandleNodePos: number = -1
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null

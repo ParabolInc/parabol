@@ -5,7 +5,8 @@ import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/
 import type * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
-import {PageLinkBlockView} from './PageLinkBlockView'
+import {PageLinkNodeView} from './PageLinkNodeView'
+import {syncedBlockEntryPlugin} from './syncedBlockFocus'
 
 declare module '@tiptap/core' {
   // interface Commands<ReturnType> {
@@ -20,10 +21,12 @@ declare module '@tiptap/core' {
 
 interface PageLinkBlockStorage {
   yDoc: Y.Doc
+  preferredName?: string
 }
 interface PageLinkBlockOptions {
   yDoc: Y.Doc
   getViewerAccess: GetPageViewerAccess
+  preferredName?: string
 }
 
 export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
@@ -35,7 +38,8 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
   addStorage(this) {
     const {options} = this
     return {
-      yDoc: options.yDoc
+      yDoc: options.yDoc,
+      preferredName: options.preferredName
     }
   },
   addCommands() {
@@ -50,9 +54,10 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
   },
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(PageLinkBlockView, {
+    return ReactNodeViewRenderer(PageLinkNodeView, {
       className: 'group',
       stopEvent({event}) {
+        if ((event.target as HTMLElement | null)?.closest?.('[data-synced-editor]')) return true
         // stopping the mousedown event prevents dragging the node directly when it's active
         // we only want to allow drags from the drag handler
         if (event.type === 'mousedown') return true
@@ -69,6 +74,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
   addProseMirrorPlugins() {
     return [
       keepUnownedPageLinksPlugin(this.options.getViewerAccess),
+      syncedBlockEntryPlugin(),
       new Plugin({
         props: {
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!

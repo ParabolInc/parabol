@@ -37,6 +37,10 @@ import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
 import {ThinkingBlock} from '../tiptap/extensions/insightsBlock/ThinkingBlock'
 import {PageDragHandle} from '../tiptap/extensions/PageDragHandle'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
+import {
+  SyncedBlockEdges,
+  type SyncedBlockEdgesOptions
+} from '../tiptap/extensions/pageLinkBlock/SyncedBlockEdges'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
@@ -91,9 +95,10 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
+    nested?: SyncedBlockEdgesOptions & {preferredName?: string}
   }
 ) => {
-  const {pageId, viewerRef} = options
+  const {pageId, viewerRef, nested} = options
   const user = readInlineData(
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
@@ -107,7 +112,7 @@ export const useTipTapPageEditor = (
     viewerRef
   )
   const [commit] = useUploadUserAsset()
-  const preferredName = user?.preferredName
+  const preferredName = nested ? nested.preferredName : user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
@@ -122,9 +127,7 @@ export const useTipTapPageEditor = (
           document: false,
           undoRedo: false,
           link: false,
-          trailingNode: {
-            node: 'paragraph'
-          }
+          trailingNode: nested ? false : {node: 'paragraph'}
         }),
         SafeTextStyleKit,
         Highlight,
@@ -148,7 +151,14 @@ export const useTipTapPageEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({commands: {...PAGE_SLASH_COMMANDS, Database: hasDatabases}}),
+        SlashCommand.configure({
+          commands: {
+            ...PAGE_SLASH_COMMANDS,
+            Database: hasDatabases && !nested,
+            ...(nested ? {'Create page': false} : {})
+          }
+        }),
+        ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,
@@ -164,7 +174,7 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
@@ -256,7 +266,8 @@ export const useTipTapPageEditor = (
         }),
         PageLinkBlock.configure({
           yDoc: provider.document,
-          getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode)
+          getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode),
+          preferredName
         }),
         TableOfContents,
         TaskBlock,
@@ -331,7 +342,7 @@ export const useTipTapPageEditor = (
           }
         })
       ],
-      autofocus: true,
+      autofocus: !nested,
       editable: true
     },
     [provider]

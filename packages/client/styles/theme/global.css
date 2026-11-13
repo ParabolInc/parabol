@@ -1756,3 +1756,7 @@
     opacity: 0.25;
   }
 }
+
+body:has([data-synced-editor]:hover) [data-host-handle] {
+  visibility: hidden !important;
+}
