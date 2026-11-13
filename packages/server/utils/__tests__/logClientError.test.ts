@@ -104,6 +104,29 @@ test("a render error's component stack is mapped to source like its stack", asyn
   )
 })
 
+test('the causes React hides behind its own error are logged mapped to source, under the same fingerprint', async () => {
+  await logClientError(report, {userId: 'user1', ip: '203.0.113.7'}, BUILD_DIR)
+  const withoutCause = JSON.parse(errorSpy.mock.calls[0][0])
+  await logClientError(
+    {
+      ...report,
+      causes: [{name: 'RangeError', message: 'the real error', stack: report.stack}]
+    },
+    {userId: 'user1', ip: '203.0.113.7'},
+    BUILD_DIR
+  )
+  const record = JSON.parse(errorSpy.mock.calls[1][0])
+  expect(record.error.fingerprint).toBe(withoutCause.error.fingerprint)
+  expect(record.error.cause).toEqual([
+    {
+      kind: 'RangeError',
+      message: 'the real error',
+      stack:
+        'RangeError: the real error\n    at toUpperCase (packages/client/components/TeamList.tsx:2:20)'
+    }
+  ])
+})
+
 test('a browser warning stays out of Error Reporting', async () => {
   await logClientError({...report, level: 'warn'}, {ip: '203.0.113.7'}, BUILD_DIR)
   expect(warnSpy).toHaveBeenCalledTimes(1)

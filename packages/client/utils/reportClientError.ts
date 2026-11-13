@@ -12,11 +12,18 @@ interface ReportOptions {
   traceId?: string
 }
 
+interface ClientErrorCause {
+  name: string
+  message: string
+  stack?: string
+}
+
 interface ClientErrorReport {
   level: ClientErrorLevel
   name: string
   message: string
   stack?: string
+  causes?: ClientErrorCause[]
   componentStack?: string
   eventId?: string
   traceId?: string
@@ -35,6 +42,8 @@ const FLUSH_DELAY_MS = 1000
 const MAX_MESSAGE_LENGTH = 1000
 const MAX_STACK_LENGTH = 6000
 const MAX_COMPONENT_STACK_LENGTH = 3000
+const MAX_CAUSES = 3
+const MAX_CAUSE_STACK_LENGTH = 2000
 const RELEASE = __APP_VERSION__
 
 let queue: ClientErrorReport[] = []
@@ -57,6 +66,23 @@ export const isError = (reason: unknown): reason is Error =>
 const toError = (reason: unknown) => {
   if (isError(reason)) return reason
   return new Error(typeof reason === 'string' ? reason : describeReason(reason))
+}
+
+// React wraps an error it recovered from by rendering again, so the error that broke the render is only in its cause
+const describeCauses = (error: Error) => {
+  const causes: ClientErrorCause[] = []
+  const seen = new Set<unknown>([error])
+  let {cause} = error
+  while (isError(cause) && !seen.has(cause) && causes.length < MAX_CAUSES) {
+    seen.add(cause)
+    causes.push({
+      name: cause.name,
+      message: cause.message.slice(0, MAX_MESSAGE_LENGTH),
+      stack: cause.stack?.slice(0, MAX_CAUSE_STACK_LENGTH)
+    })
+    cause = cause.cause
+  }
+  return causes
 }
 
 const isOverRateLimit = (now: number) => {
@@ -97,11 +123,13 @@ const reportClientError = (reason: unknown, options: ReportOptions = {}) => {
   }
   if (isOverRateLimit(Date.now())) return
   const {componentStack, eventId} = options
+  const causes = describeCauses(error)
   queue.push({
     level: isIgnoredError(error) ? 'warn' : (options.level ?? 'error'),
     name: error.name,
     message,
     stack,
+    ...(causes.length > 0 && {causes}),
     componentStack: componentStack?.slice(0, MAX_COMPONENT_STACK_LENGTH),
     eventId,
     traceId: options.traceId ?? getLastTraceId(),
