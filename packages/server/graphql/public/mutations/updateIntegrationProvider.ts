@@ -36,6 +36,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     .selectFrom('IntegrationProvider')
     .selectAll()
     .where('id', '=', providerDbId)
+    .where('isActive', '=', true)
     .executeTakeFirst()
   if (!currentProvider) {
     return {error: {message: 'Invalid provider ID'}}
