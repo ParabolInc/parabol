@@ -12,11 +12,18 @@ interface Props {
   isSubmitting: boolean
   onConfirm: () => void
   onClose: () => void
+  onCloseAutoFocus?: (event: Event) => void
 }
 
-export const SyncedBlockUnsyncAllDialog = ({rows, isSubmitting, onConfirm, onClose}: Props) => (
+export const SyncedBlockUnsyncAllDialog = ({
+  rows,
+  isSubmitting,
+  onConfirm,
+  onClose,
+  onCloseAutoFocus
+}: Props) => (
   <Dialog isOpen onClose={onClose}>
-    <DialogContent className='md:w-md md:max-w-md'>
+    <DialogContent className='md:w-md md:max-w-md' onCloseAutoFocus={onCloseAutoFocus}>
       <DialogTitle>Unsync this block everywhere?</DialogTitle>
       <DialogDescription>
         Each page gets its own text and later edits stop syncing. Pages where someone couldn't read

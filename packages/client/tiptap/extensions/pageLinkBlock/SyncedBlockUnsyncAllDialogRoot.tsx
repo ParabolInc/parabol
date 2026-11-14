@@ -17,9 +17,11 @@ interface Props {
   pageCode: number
   currentPageId: string | undefined
   onClose: () => void
+  onCloseAutoFocus: (event: Event) => void
 }
 
-export const SyncedBlockUnsyncAllDialogRoot = ({pageCode, currentPageId, onClose}: Props) => {
+export const SyncedBlockUnsyncAllDialogRoot = (props: Props) => {
+  const {pageCode, currentPageId, onClose, onCloseAutoFocus} = props
   const pageId = GQLID.toKey(pageCode, 'page')
   const atmosphere = useAtmosphere()
   const [rows, setRows] = useState<SyncedBlockDialogRows | null>(null)
@@ -51,6 +53,7 @@ export const SyncedBlockUnsyncAllDialogRoot = ({pageCode, currentPageId, onClose
         isSubmitting={submitting}
         onConfirm={onConfirm}
         onClose={onClose}
+        onCloseAutoFocus={onCloseAutoFocus}
       />
       <ErrorBoundary
         fallback={(error) => (

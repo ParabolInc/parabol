@@ -10,11 +10,18 @@ interface Props {
   body: string
   onConfirm: () => void
   onClose: () => void
+  onCloseAutoFocus?: (event: Event) => void
 }
 
-export const SyncedBlockUnsyncCopyDialog = ({title, body, onConfirm, onClose}: Props) => (
+export const SyncedBlockUnsyncCopyDialog = ({
+  title,
+  body,
+  onConfirm,
+  onClose,
+  onCloseAutoFocus
+}: Props) => (
   <Dialog isOpen onClose={onClose}>
-    <DialogContent className='md:w-md md:max-w-md'>
+    <DialogContent className='md:w-md md:max-w-md' onCloseAutoFocus={onCloseAutoFocus}>
       <DialogTitle>{title}</DialogTitle>
       <DialogDescription>{body}</DialogDescription>
       <DialogActions>

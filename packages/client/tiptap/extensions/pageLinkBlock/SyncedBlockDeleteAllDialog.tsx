@@ -13,13 +13,14 @@ interface Props {
   isSubmitting: boolean
   onConfirm: () => void
   onClose: () => void
+  onCloseAutoFocus?: (event: Event) => void
 }
 
 export const SyncedBlockDeleteAllDialog = (props: Props) => {
-  const {rows, hostTitle, isSubmitting, onConfirm, onClose} = props
+  const {rows, hostTitle, isSubmitting, onConfirm, onClose, onCloseAutoFocus} = props
   return (
     <Dialog isOpen onClose={onClose}>
-      <DialogContent className='md:w-md md:max-w-md'>
+      <DialogContent className='md:w-md md:max-w-md' onCloseAutoFocus={onCloseAutoFocus}>
         <DialogTitle>
           {rows
             ? `Delete this block from ${rows.pageCount} pages?`

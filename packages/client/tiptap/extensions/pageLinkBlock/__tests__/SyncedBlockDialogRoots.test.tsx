@@ -85,6 +85,7 @@ const renderDeleteAll = () => {
       currentPageId='page:1'
       hostTitle='Runbook'
       onClose={onClose}
+      onCloseAutoFocus={jest.fn()}
     />
   )
   click('Delete all')
@@ -93,7 +94,14 @@ const renderDeleteAll = () => {
 
 const renderUnsyncAll = () => {
   const onClose = jest.fn()
-  render(<SyncedBlockUnsyncAllDialogRoot pageCode={7} currentPageId='page:1' onClose={onClose} />)
+  render(
+    <SyncedBlockUnsyncAllDialogRoot
+      pageCode={7}
+      currentPageId='page:1'
+      onClose={onClose}
+      onCloseAutoFocus={jest.fn()}
+    />
+  )
   click('Unsync all')
   return {onClose, config: mockUnsync.mock.calls[0]![0]}
 }

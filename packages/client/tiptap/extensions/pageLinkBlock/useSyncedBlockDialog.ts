@@ -16,27 +16,33 @@ interface Params {
 export const useSyncedBlockDialog = ({wrapperRef, editor, getPos, pageCode}: Params) => {
   const atmosphere = useAtmosphere()
   const [dialog, setDialog] = useState<SyncedBlockDialog | null>(null)
+  const [isCheckingUnsync, setIsCheckingUnsync] = useState(false)
   useEffect(() => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
     const target = getSyncedBlockEventTarget(wrapper)
-    const handleDialog = (event: Event) => {
+    const handleDialog = async (event: Event) => {
       const kind = (event as CustomEvent<SyncedBlockDialogKind>).detail
       if (kind !== 'unsyncCopy') {
         setDialog({kind})
         return
       }
-      requestSyncedBlockUnsyncCopy({
-        atmosphere,
-        hostEditor: editor,
-        getPos,
-        pageCode,
-        onConfirmNeeded: (confirm) => setDialog({kind, ...confirm})
-      })
+      setIsCheckingUnsync(true)
+      try {
+        await requestSyncedBlockUnsyncCopy({
+          atmosphere,
+          hostEditor: editor,
+          getPos,
+          pageCode,
+          onConfirmNeeded: (confirm) => setDialog({kind, ...confirm})
+        })
+      } finally {
+        setIsCheckingUnsync(false)
+      }
     }
     target.addEventListener(SYNCED_BLOCK_DIALOG_EVENT, handleDialog)
     return () => target.removeEventListener(SYNCED_BLOCK_DIALOG_EVENT, handleDialog)
   }, [wrapperRef, atmosphere, editor, getPos, pageCode])
   const closeDialog = useCallback(() => setDialog(null), [])
-  return {dialog, closeDialog}
+  return {dialog, isCheckingUnsync, closeDialog}
 }

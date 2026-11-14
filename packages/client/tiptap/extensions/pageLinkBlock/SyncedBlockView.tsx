@@ -50,8 +50,13 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const name = useSyncedBlockName(chrome?.editor ?? null)
   const isViewOnly = chrome?.isViewOnly ?? false
   canRenameRef.current = !!chrome && !isViewOnly
-  const {dialog, closeDialog} = useSyncedBlockDialog({wrapperRef, editor, getPos, pageCode})
-  const isHeldOpen = openMenus > 0 || isRenaming || dialog !== null
+  const {dialog, isCheckingUnsync, closeDialog} = useSyncedBlockDialog({
+    wrapperRef,
+    editor,
+    getPos,
+    pageCode
+  })
+  const isHeldOpen = openMenus > 0 || isRenaming || isCheckingUnsync || dialog !== null
   const isFocused = hasFocusWithin || isNodeSelected
   const showBar = !!chrome && (isFocused || isHeldOpen)
   const handleBlur = (event: FocusEvent<HTMLElement>) => {

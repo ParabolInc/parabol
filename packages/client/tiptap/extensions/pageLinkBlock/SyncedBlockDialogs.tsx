@@ -21,6 +21,10 @@ interface Props {
 export const SyncedBlockDialogs = ({dialog, hostEditor, getPos, pageCode, onClose}: Props) => {
   const atmosphere = useAtmosphere()
   const currentPageId = hostEditor.storage.pageLinkBlock.pageId
+  const returnFocusToPage = (event: Event) => {
+    event.preventDefault()
+    if (!hostEditor.isDestroyed) hostEditor.commands.focus()
+  }
   switch (dialog?.kind) {
     case 'unsyncCopy':
       return (
@@ -32,6 +36,7 @@ export const SyncedBlockDialogs = ({dialog, hostEditor, getPos, pageCode, onClos
             unsyncCopyAt(atmosphere, hostEditor, getPos(), pageCode)
           }}
           onClose={onClose}
+          onCloseAutoFocus={returnFocusToPage}
         />
       )
     case 'unsyncAll':
@@ -40,6 +45,7 @@ export const SyncedBlockDialogs = ({dialog, hostEditor, getPos, pageCode, onClos
           pageCode={pageCode}
           currentPageId={currentPageId}
           onClose={onClose}
+          onCloseAutoFocus={returnFocusToPage}
         />
       )
     case 'deleteAll':
@@ -49,6 +55,7 @@ export const SyncedBlockDialogs = ({dialog, hostEditor, getPos, pageCode, onClos
           currentPageId={currentPageId}
           hostTitle={hostEditor.state.doc.firstChild?.textContent || '<Untitled>'}
           onClose={onClose}
+          onCloseAutoFocus={returnFocusToPage}
         />
       )
     default:
