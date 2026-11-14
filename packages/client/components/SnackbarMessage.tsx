@@ -1,10 +1,11 @@
 import * as Toast from '@radix-ui/react-toast'
 import {Close} from '~/ui/icons'
-import type {SnackAction} from './Snackbar'
+import type {SnackAction, SnackLink} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
 
 interface Props {
   message: string
+  link?: SnackLink
   dismissSnack: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const SnackbarMessage = (props: Props) => {
-  const {action, secondaryAction, message, dismissSnack, showDismissButton} = props
+  const {action, secondaryAction, message, link, dismissSnack, showDismissButton} = props
   return (
     <div className='pb-2 print:hidden'>
       <div
@@ -20,7 +21,26 @@ const SnackbarMessage = (props: Props) => {
         onClick={dismissSnack}
       >
         <Toast.Description asChild>
-          <div className='px-2 py-1.5 text-sm text-white leading-[normal]'>{message}</div>
+          <div className='px-2 py-1.5 text-sm text-white leading-[normal]'>
+            {link ? (
+              <>
+                {message}{' '}
+                <button
+                  type='button'
+                  className='cursor-pointer underline'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    link.callback()
+                  }}
+                >
+                  {link.label}
+                </button>
+                {link.suffix}
+              </>
+            ) : (
+              message
+            )}
+          </div>
         </Toast.Description>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />

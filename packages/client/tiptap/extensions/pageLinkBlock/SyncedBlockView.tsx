@@ -1,5 +1,5 @@
 import {isNodeSelection, type NodeViewProps, NodeViewWrapper, useEditorState} from '@tiptap/react'
-import {type FocusEvent, useContext, useMemo, useRef, useState} from 'react'
+import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
@@ -8,7 +8,11 @@ import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
 import type {SyncedBlockChrome} from './SyncedBlockEditor'
+import {SyncedBlockMoreMenu} from './SyncedBlockMoreMenu'
+import {SyncedBlockNameInput} from './SyncedBlockNameInput'
+import {SyncedBlockPlacesRoot} from './SyncedBlockPlacesRoot'
 import {SyncedBlockState} from './SyncedBlockState'
+import {SYNCED_BLOCK_RENAME_EVENT} from './startSyncedBlockRename'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
 import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockName} from './useSyncedBlockName'
@@ -29,6 +33,10 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
+  const [openMenus, setOpenMenus] = useState(0)
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [placesLabel, setPlacesLabel] = useState<string | null>(null)
+  const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
     selector: ({editor: hostEditor}) => {
@@ -38,13 +46,35 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   })
   const name = useSyncedBlockName(chrome?.editor ?? null)
   const isViewOnly = chrome?.isViewOnly ?? false
+  canRenameRef.current = !!chrome && !isViewOnly
   const isFocused = hasFocusWithin || isNodeSelected
-  const showBar = !!chrome && isFocused
+  const showBar = !!chrome && (isFocused || openMenus > 0 || isRenaming)
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
+    if (openMenus > 0 || isRenaming) return
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
       setHasFocusWithin(false)
     }
   }
+  const handleMenuOpenChange = useCallback((open: boolean) => {
+    setOpenMenus((count) => Math.max(0, count + (open ? 1 : -1)))
+  }, [])
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const target = wrapper.closest('.react-renderer') ?? wrapper
+    const handleRename = () => {
+      if (canRenameRef.current) setIsRenaming(true)
+    }
+    target.addEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
+    return () => target.removeEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
+  }, [])
+  useEffect(() => {
+    if (openMenus > 0 || isRenaming) return
+    const timer = setTimeout(() => {
+      if (!wrapperRef.current?.contains(document.activeElement)) setHasFocusWithin(false)
+    })
+    return () => clearTimeout(timer)
+  }, [openMenus, isRenaming])
   return (
     <NodeViewWrapper
       ref={wrapperRef}
@@ -67,6 +97,40 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           name={name}
           isOriginal={node.attrs.canonical === true}
           isViewOnly={isViewOnly}
+          places={
+            <SyncedBlockPlacesRoot
+              pageCode={pageCode}
+              currentPageId={editor.storage.pageLinkBlock.pageId}
+              isViewOnly={isViewOnly}
+              lastLabel={placesLabel}
+              onLabel={setPlacesLabel}
+              onOpenChange={handleMenuOpenChange}
+            />
+          }
+          more={
+            isViewOnly ? null : (
+              <SyncedBlockMoreMenu
+                hostEditor={editor}
+                getPos={getPos}
+                pageCode={pageCode}
+                isOriginal={node.attrs.canonical === true}
+                currentPageId={editor.storage.pageLinkBlock.pageId}
+                onOpenChange={handleMenuOpenChange}
+              />
+            )
+          }
+          renameInput={
+            isRenaming && chrome && !isViewOnly ? (
+              <SyncedBlockNameInput
+                chrome={chrome}
+                name={name}
+                hostEditor={editor}
+                getPos={getPos}
+                onClose={() => setIsRenaming(false)}
+              />
+            ) : null
+          }
+          onStartRename={() => setIsRenaming(true)}
           onCopy={() =>
             copySyncedBlock({pageCode, title: node.attrs.title}, chrome?.editor ?? null, atmosphere)
           }

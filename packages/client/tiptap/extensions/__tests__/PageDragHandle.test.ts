@@ -12,6 +12,11 @@ import {endBlockDrag, startBlockDrag} from '../../blockMove/blockDragSession'
 import {createBlockSelection, getSelectedBlockRange} from '../../blockSelection/blockSelectionState'
 import {BlockSelection} from '../BlockSelection'
 import {PageDragHandle} from '../PageDragHandle'
+import {
+  findLinkPositions,
+  mountNested,
+  syncedLink
+} from '../pageLinkBlock/__tests__/syncedBlockTestHarness'
 import {happyWindow} from './installHappyDom'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
@@ -101,6 +106,27 @@ describe('the Delete shortcut', () => {
     const {doc} = activeEditor.state
     expect(doc.childCount).toBe(2)
     expect(doc.child(1).textContent).toBe('after')
+  })
+})
+
+describe('the Mod-d shortcut', () => {
+  test('on a selected synced block duplicates its content as plain blocks', () => {
+    const activeEditor = makeEditor(p('Above'), syncedLink, p('Below'))
+    const [linkPos] = findLinkPositions(activeEditor)
+    mountNested(activeEditor, linkPos!, ['Sev 1: page the on-call lead.'])
+    const {doc, tr} = activeEditor.state
+    activeEditor.view.dispatch(tr.setSelection(NodeSelection.create(doc, linkPos!)))
+    activeEditor.commands.keyboardShortcut('Mod-d')
+    const blocks: string[] = []
+    activeEditor.state.doc.forEach((node) => blocks.push(node.textContent || node.type.name))
+    expect(blocks).toEqual([
+      'Title',
+      'Above',
+      'pageLinkBlock',
+      'Sev 1: page the on-call lead.',
+      'Below'
+    ])
+    expect(findLinkPositions(activeEditor)).toHaveLength(1)
   })
 })
 

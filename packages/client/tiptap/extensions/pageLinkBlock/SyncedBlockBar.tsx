@@ -1,16 +1,23 @@
+import type {ReactNode} from 'react'
 import {Autorenew, ContentCopy} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
+import {SyncedBlockTag} from './SyncedBlockTag'
+import {syncedBlockBarButtonClass} from './syncedBlockBarButtonClass'
 
 interface Props {
   name: string
   isOriginal: boolean
   isViewOnly: boolean
+  places: ReactNode
+  more: ReactNode | null
+  renameInput?: ReactNode
+  onStartRename?: () => void
   onCopy: () => void
 }
 
 export const SyncedBlockBar = (props: Props) => {
-  const {name, isOriginal, isViewOnly, onCopy} = props
+  const {name, isOriginal, isViewOnly, places, more, renameInput, onStartRename, onCopy} = props
   return (
     <div
       data-synced-chrome
@@ -23,24 +30,29 @@ export const SyncedBlockBar = (props: Props) => {
       )}
     >
       <Autorenew className='text-[14px]' />
-      <span className='min-w-[72px] shrink truncate font-semibold'>{name || 'Synced block'}</span>
-      {isOriginal && !isViewOnly && (
-        <span className='inline-flex h-4 shrink-0 items-center rounded-sm bg-[color-mix(in_srgb,currentColor_18%,transparent)] px-[5px] pb-px font-semibold text-xs leading-[14px] tracking-[.06em] [font-variant-caps:all-small-caps]'>
-          Original
-        </span>
-      )}
+      {renameInput ??
+        (onStartRename && !isViewOnly ? (
+          <button
+            type='button'
+            onClick={onStartRename}
+            className='min-w-[72px] shrink cursor-text truncate border-0 bg-transparent p-0 text-left font-semibold text-inherit text-xs'
+          >
+            {name || 'Synced block'}
+          </button>
+        ) : (
+          <span className='min-w-[72px] shrink truncate font-semibold'>
+            {name || 'Synced block'}
+          </span>
+        ))}
+      {isOriginal && !isViewOnly && <SyncedBlockTag>Original</SyncedBlockTag>}
       {isViewOnly && <span>View only</span>}
-      <span className='flex-auto' />
-      <Button
-        onClick={onCopy}
-        className={cn(
-          'h-[22px] gap-1 rounded-sm px-1.5 font-medium',
-          isViewOnly ? 'hover:bg-surface-hover' : 'hover:bg-white/18 dark:hover:bg-grape-950/16'
-        )}
-      >
+      {!renameInput && <span className='flex-auto' />}
+      {places}
+      <Button onClick={onCopy} className={syncedBlockBarButtonClass(isViewOnly)}>
         <ContentCopy className='text-[14px]' />
         <span>Copy and sync</span>
       </Button>
+      {more}
     </div>
   )
 }

@@ -11,7 +11,9 @@ const globals: Record<string, unknown> = {
   getSelection: happyWindow.getSelection.bind(happyWindow),
   requestAnimationFrame: happyWindow.requestAnimationFrame.bind(happyWindow),
   cancelAnimationFrame: happyWindow.cancelAnimationFrame.bind(happyWindow),
-  IS_REACT_ACT_ENVIRONMENT: true
+  IS_REACT_ACT_ENVIRONMENT: true,
+  __APP_VERSION__: 'test',
+  __PRODUCTION__: false
 }
 for (const key of [
   'Node',
