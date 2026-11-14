@@ -11,11 +11,13 @@ interface Props {
   isViewOnly: boolean
   places: ReactNode
   more: ReactNode | null
+  renameInput?: ReactNode
+  onStartRename?: () => void
   onCopy: () => void
 }
 
 export const SyncedBlockBar = (props: Props) => {
-  const {name, isOriginal, isViewOnly, places, more, onCopy} = props
+  const {name, isOriginal, isViewOnly, places, more, renameInput, onStartRename, onCopy} = props
   return (
     <div
       data-synced-chrome
@@ -28,10 +30,23 @@ export const SyncedBlockBar = (props: Props) => {
       )}
     >
       <Autorenew className='text-[14px]' />
-      <span className='min-w-[72px] shrink truncate font-semibold'>{name || 'Synced block'}</span>
+      {renameInput ??
+        (onStartRename && !isViewOnly ? (
+          <button
+            type='button'
+            onClick={onStartRename}
+            className='min-w-[72px] shrink cursor-text truncate border-0 bg-transparent p-0 text-left font-semibold text-inherit text-xs'
+          >
+            {name || 'Synced block'}
+          </button>
+        ) : (
+          <span className='min-w-[72px] shrink truncate font-semibold'>
+            {name || 'Synced block'}
+          </span>
+        ))}
       {isOriginal && !isViewOnly && <SyncedBlockTag>Original</SyncedBlockTag>}
       {isViewOnly && <span>View only</span>}
-      <span className='flex-auto' />
+      {!renameInput && <span className='flex-auto' />}
       {places}
       <Button onClick={onCopy} className={syncedBlockBarButtonClass(isViewOnly)}>
         <ContentCopy className='text-[14px]' />

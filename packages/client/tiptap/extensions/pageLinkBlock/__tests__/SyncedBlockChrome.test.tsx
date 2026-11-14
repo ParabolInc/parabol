@@ -11,10 +11,12 @@ import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
 import {SyncedBlockView} from '../SyncedBlockView'
+import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
 let mockNestedEditor: Editor | null = null
+const hostRef: {current: Editor | null} = {current: null}
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
 }))
@@ -284,6 +286,7 @@ const mountView = () => {
     content: {type: 'doc', content: [{type: 'paragraph'}, syncedLink]}
   })
   const linkPos = findLinkPositions(host)[0]!
+  hostRef.current = host
   mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
   const props = {
     node: host.state.doc.nodeAt(linkPos)!,
@@ -322,4 +325,104 @@ test('keeps the bar while the places menu is open', async () => {
   expect(copyButton()).toBeUndefined()
   expect(text()).toContain('Escalation path')
   outside.remove()
+})
+
+const nameButton = () =>
+  Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Escalation path'
+  )
+const nameInput = () => container.querySelector<HTMLInputElement>('input[aria-label="Block name"]')
+const typeInto = (input: HTMLInputElement, value: string) => {
+  const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')!.set!
+  act(() => {
+    setter.call(input, value)
+    input.dispatchEvent(new Event('input', {bubbles: true}))
+  })
+}
+const pressKey = (input: HTMLInputElement, key: string) =>
+  act(() => {
+    input.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles: true, cancelable: true}))
+  })
+
+const mountFocusedView = () => {
+  mountView()
+  const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
+  act(() => wrapper.focus())
+  return wrapper
+}
+
+test('clicking the name opens the rename input with the name selected', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  const input = nameInput()!
+  expect(input.value).toBe('Escalation path')
+  expect(input.placeholder).toBe('Name this block')
+  expect(document.activeElement).toBe(input)
+  expect(input.selectionStart).toBe(0)
+  expect(input.selectionEnd).toBe('Escalation path'.length)
+})
+
+test('Enter commits and Escape cancels', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  pressKey(nameInput()!, 'Enter')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+  expect(text()).toContain('Paging policy')
+
+  act(() =>
+    Array.from(container.querySelectorAll('button'))
+      .find((button) => button.textContent === 'Paging policy')!
+      .click()
+  )
+  typeInto(nameInput()!, 'Discarded')
+  pressKey(nameInput()!, 'Escape')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+})
+
+test('Enter does not commit a second time on blur', () => {
+  mountFocusedView()
+  const spy = jest.spyOn(mockNestedEditor!.view, 'dispatch')
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  const input = nameInput()!
+  pressKey(input, 'Enter')
+  expect(spy).toHaveBeenCalledTimes(1)
+})
+
+test('committing returns focus to the host with the block node-selected', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  pressKey(nameInput()!, 'Escape')
+  const selection = hostRef.current!.state.selection
+  expect(selection.constructor.name).toBe('NodeSelection')
+})
+
+test('the view-only bar name is not clickable', () => {
+  const onStartRename = jest.fn()
+  act(() =>
+    root.render(
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly
+        places={null}
+        more={null}
+        onStartRename={onStartRename}
+        onCopy={jest.fn()}
+      />
+    )
+  )
+  expect(nameButton()).toBeUndefined()
+})
+
+test('the rename event opens the input', () => {
+  const wrapper = mountFocusedView()
+  expect(nameInput()).toBeNull()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  expect(nameInput()).not.toBeNull()
 })
