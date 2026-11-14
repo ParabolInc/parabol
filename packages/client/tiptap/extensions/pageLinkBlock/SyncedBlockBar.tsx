@@ -16,7 +16,7 @@ export const SyncedBlockBar = (props: Props) => {
       data-synced-chrome
       contentEditable={false}
       className={cn(
-        'absolute right-[-2px] bottom-[calc(100%+2px)] left-[-2px] flex h-7 select-none items-center gap-2 whitespace-nowrap rounded-t-md pr-1 pl-2.5 text-xs',
+        'absolute right-[-2px] bottom-[calc(100%+2px)] left-[-2px] flex h-7 select-none items-center gap-2 whitespace-nowrap rounded-t-md pr-1 @min-[852px]/page:pl-[34px] pl-2.5 text-xs',
         isViewOnly
           ? 'bg-surface-raised text-fg-secondary shadow-[inset_0_0_0_1px_var(--color-hairline-strong)]'
           : 'bg-accent-active text-white dark:text-grape-950'

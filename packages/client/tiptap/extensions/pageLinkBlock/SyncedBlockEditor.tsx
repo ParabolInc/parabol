@@ -61,7 +61,7 @@ export const SyncedBlockEditor = (props: Props) => {
     <div data-synced-editor>
       <TipTapEditor
         editor={editor}
-        className='page-editor [&>.tiptap]:-ml-[19px] relative flex w-full [&>.tiptap]:box-content [&>.tiptap]:pl-[19px] [&_.tiptap>h1:first-child]:hidden'
+        className='page-editor [&>.tiptap]:-ml-[19px] @min-[852px]/page:[&>.tiptap]:-ml-9 relative flex w-full [&>.tiptap]:box-content @min-[852px]/page:[&>.tiptap]:pl-9 [&>.tiptap]:pl-[19px] [&_.tiptap>h1:first-child]:hidden'
       />
     </div>
   )

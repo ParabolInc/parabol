@@ -7,7 +7,7 @@ interface Props {
 export const SyncedBlockCaption = ({name}: Props) => (
   <div
     contentEditable={false}
-    className='pointer-events-none absolute bottom-[calc(100%+2px)] left-3 flex select-none items-center gap-1 whitespace-nowrap text-fg-muted text-xs'
+    className='pointer-events-none absolute bottom-[calc(100%+2px)] @min-[852px]/page:left-9 left-3 flex select-none items-center gap-1 whitespace-nowrap text-fg-muted text-xs'
   >
     <Autorenew className='text-[12px]' />
     <span>{name || 'Synced block'}</span>

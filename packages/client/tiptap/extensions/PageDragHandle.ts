@@ -31,6 +31,7 @@ const queryNode = graphql`
 // Approximates a text line so the handle sits at the top of a media block
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
 const SYNCED_BLOCK_HANDLE_OFFSET = 26
+const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
@@ -272,11 +273,18 @@ export const PageDragHandle = Extension.create<Options>({
               ? dom.querySelector<HTMLElement>('[data-synced-block]')
               : null
           const {right} = horizontalRef.getBoundingClientRect()
-          const left = syncedBlock
-            ? syncedBlock.getBoundingClientRect().left -
-              SYNCED_BLOCK_HANDLE_OFFSET +
-              dragHandleElement.offsetWidth
-            : horizontalRef.getBoundingClientRect().left
+          const handleWidth = dragHandleElement.offsetWidth
+          const blockLeft = syncedBlock?.getBoundingClientRect().left
+          const fitsInsideBlock =
+            !!syncedBlock &&
+            parseFloat(getComputedStyle(syncedBlock).paddingLeft) >=
+              SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
+          const left =
+            blockLeft === undefined
+              ? horizontalRef.getBoundingClientRect().left
+              : isNested && fitsInsideBlock
+                ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
+                : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
           // Media blocks carry no text to anchor to. Without this the walker below finds
           // nothing and the handle never renders for an iframe embed, and anchors to the
           // title line rather than the block top for a card.
