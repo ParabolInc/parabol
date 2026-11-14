@@ -329,6 +329,7 @@
           "SuggestedAction": "../../postgres/types/index#SuggestedAction as SuggestedActionDB",
           "RetroSuggestedGrouping": "../../postgres/types/index#RetroSuggestedGrouping as RetroSuggestedGroupingDB",
           "SuggestedGroupsSuccess": "./types/SuggestedGroupsSuccess#SuggestedGroupsSuccessSource",
+          "SyncedBlockPlacements": "./types/SyncedBlockPlacements#SyncedBlockPlacementsSource",
           "Task": "../../postgres/types/index#Task as TaskDB",
           "TaskEstimate": "../../postgres/types/index#TaskEstimate as TaskEstimateDB",
           "Team": "../../postgres/types/index#Team as TeamDB",

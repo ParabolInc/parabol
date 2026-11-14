@@ -1,0 +1,25 @@
+"""
+Where a synced block appears. Lists only pages the viewer can open, in the order they were placed
+"""
+type SyncedBlockPlacements {
+  """
+  Pages showing the block that the viewer can open, oldest placement first. The original's page is listed even when it is in Trash
+  """
+  pages: [SyncedBlockPlacement!]!
+  """
+  How many other pages show the block that the viewer can't open
+  """
+  hiddenCount: Int!
+  """
+  The page that would hold the original if it were removed from its current page. Null if no page qualifies or the viewer can't open it
+  """
+  successor: Page
+}
+
+type SyncedBlockPlacement {
+  page: Page!
+  """
+  true if this page holds the original
+  """
+  isOriginal: Boolean!
+}
