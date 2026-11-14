@@ -9,7 +9,7 @@ import {useErrorLogging} from '../useErrorLogging'
 const yoga = createYoga({
   schema: createSchema({
     typeDefs:
-      'type Query { caughtBug: String, crash: String, denied: String, logContext(teamId: ID): String, team: Team, tenantCrash: String } type Team { teamLead: String } type Subscription { logContext: String }',
+      'type Query { caughtBug: String, crash: String, denied: String, logContext(teamId: ID): String, team: Team, tenantCrash: String } type Team { teamLead: String } type Subscription { logContext: String, notInvited: String, subscribeCrash: String }',
     resolvers: {
       Query: {
         caughtBug: () => {
@@ -43,6 +43,16 @@ const yoga = createYoga({
             yield {}
           },
           resolve: () => JSON.stringify(getLogContext())
+        },
+        notInvited: {
+          subscribe: async () => {
+            throw new GraphQLError('Not invited to the meeting', {extensions: {code: 'FORBIDDEN'}})
+          }
+        },
+        subscribeCrash: {
+          subscribe: async () => {
+            throw new TypeError('no channel')
+          }
         }
       }
     }
@@ -225,5 +235,41 @@ test('what a resolver adds to the log context reaches the error logged after it'
     orgId: 'org1',
     operationName: 'TenantCrash',
     graphql: {path: 'tenantCrash', field: 'Query.tenantCrash'}
+  })
+})
+
+const subscribeInProduction = async (query: string) => {
+  Reflect.set(globalThis, '__PRODUCTION__', true)
+  try {
+    return await subscribe(query)
+  } finally {
+    Reflect.set(globalThis, '__PRODUCTION__', false)
+  }
+}
+
+test('a subscription the server refuses is logged once, as a warning, in its operation context', async () => {
+  const event = await subscribeInProduction('subscription NotInvited { notInvited }')
+  expect(event.errors[0].message).toBe('Not invited to the meeting')
+  expect(errorSpy).not.toHaveBeenCalled()
+  expect(warnSpy).toHaveBeenCalledTimes(1)
+  expect(JSON.parse(warnSpy.mock.calls[0][0])).toMatchObject({
+    level: 'warn',
+    userId: 'user1',
+    operationName: 'NotInvited',
+    error: {message: 'Not invited to the meeting', expected: true}
+  })
+})
+
+test('a subscription that crashes while subscribing is logged once, as an error, in its operation context', async () => {
+  const event = await subscribeInProduction('subscription SubscribeCrash { subscribeCrash }')
+  expect(event.errors[0].message).toBe('Unexpected error.')
+  expect(warnSpy).not.toHaveBeenCalled()
+  expect(errorSpy).toHaveBeenCalledTimes(1)
+  expect(JSON.parse(errorSpy.mock.calls[0][0])).toMatchObject({
+    level: 'error',
+    userId: 'user1',
+    operationName: 'SubscribeCrash',
+    graphql: {path: 'subscribeCrash', field: 'Subscription.subscribeCrash'},
+    error: {message: 'no channel', expected: false}
   })
 })

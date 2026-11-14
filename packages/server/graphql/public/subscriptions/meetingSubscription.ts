@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
@@ -18,7 +19,9 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
       .where('id', '=', meetingMemberId)
       .executeTakeFirst()
     if (!meetingMember) {
-      throw new Error('Not invited to the meeting. Cannot subscribe')
+      throw new GraphQLError('Not invited to the meeting. Cannot subscribe', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
 
     // RESOLUTION
