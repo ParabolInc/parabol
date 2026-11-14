@@ -20,6 +20,11 @@ export interface UnsyncCopyConfirm {
   body: string
 }
 
+export type UnsyncCopyCheck =
+  | {kind: 'unknown'}
+  | {kind: 'safe'}
+  | ({kind: 'confirm'} & UnsyncCopyConfirm)
+
 const morePeople = (count: number) => (count === 1 ? '1 more person' : `${count} more people`)
 const peopleOn = (count: number, page: string) =>
   `${count === 1 ? '1 person' : `${count} people`} on ${page}`
@@ -29,26 +34,29 @@ const unsyncShows = (reader: string) =>
 export const getUnsyncCopyConfirm = (
   page: DialogPage,
   currentPageId: string | undefined
-): UnsyncCopyConfirm | null => {
+): UnsyncCopyCheck => {
   const row = page.syncedBlockPlacements?.pages.find(({page}) => page.id === currentPageId)
-  if (!row) return null
+  if (!row) return {kind: 'unknown'}
   const count = row.hiddenReaderCount
   const isLinkOnly = !!row.page.access.public && !page.access.public
   const title = row.page.title || '<Untitled>'
-  if (count === 0 && !isLinkOnly) return null
+  if (count === 0 && !isLinkOnly) return {kind: 'safe'}
   if (count === 0) {
     return {
+      kind: 'confirm',
       title: 'Show this text to anyone with the link?',
       body: `${title} is shared by link, and this block isn't. ${unsyncShows('anyone with the link')}`
     }
   }
   if (!isLinkOnly) {
     return {
+      kind: 'confirm',
       title: `Show this text to ${morePeople(count)}?`,
       body: `${peopleOn(count, title)} can't see this block today. ${unsyncShows('they')}`
     }
   }
   return {
+    kind: 'confirm',
     title: `Show this text to ${morePeople(count)} and anyone with the link?`,
     body: `${peopleOn(count, title)} can't see this block today, and the page is shared by link. ${unsyncShows('they')}`
   }

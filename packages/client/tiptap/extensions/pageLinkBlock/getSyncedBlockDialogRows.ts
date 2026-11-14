@@ -3,6 +3,7 @@ interface DialogPage {
   readonly syncedBlockPlacements:
     | {
         readonly pages: ReadonlyArray<{
+          readonly isOriginal: boolean
           readonly hiddenReaderCount: number
           readonly page: {
             readonly id: string
@@ -20,7 +21,7 @@ export type SyncedBlockDialogRowIcon = 'page' | 'removed' | 'locked'
 
 export interface SyncedBlockDialogRows {
   pageCount: number
-  currentTitle: string
+  originalTitle: string | null
   deleteRows: {key: string; icon: 'page' | 'locked'; title: string; isThisPage: boolean}[]
   unsyncRows: {
     key: string
@@ -52,6 +53,7 @@ export const getSyncedBlockDialogRows = (
     key: placement.page.id,
     title: placement.page.title || '<Untitled>',
     isThisPage: placement.page.id === currentPageId,
+    isOriginal: placement.isOriginal,
     hiddenReaderCount: placement.hiddenReaderCount,
     isLinkOnly: !!placement.page.access.public && !page.access.public
   }))
@@ -60,7 +62,7 @@ export const getSyncedBlockDialogRows = (
   const hasHidden = hiddenCount > 0
   return {
     pageCount: rows.length + hiddenCount,
-    currentTitle: rows.find((row) => row.isThisPage)?.title ?? '<Untitled>',
+    originalTitle: rows.find((row) => row.isOriginal)?.title ?? null,
     deleteRows: [
       ...rows.map(({key, title, isThisPage}) => ({key, icon: 'page' as const, title, isThisPage})),
       ...(hasHidden ? [{...hiddenRow, icon: 'locked' as const}] : [])

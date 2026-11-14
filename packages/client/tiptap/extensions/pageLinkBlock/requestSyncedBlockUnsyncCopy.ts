@@ -51,8 +51,8 @@ export const requestSyncedBlockUnsyncCopy = async (params: Params) => {
   const {atmosphere, hostEditor, getPos, pageCode, onConfirmNeeded} = params
   const currentPageId = hostEditor.storage.pageLinkBlock.pageId
   const page = await readBlockPage(atmosphere, pageCode)
-  const isListed = page?.syncedBlockPlacements?.pages.some((row) => row.page.id === currentPageId)
-  if (!page || !isListed) {
+  const check = page ? getUnsyncCopyConfirm(page, currentPageId) : {kind: 'unknown' as const}
+  if (check.kind === 'unknown') {
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: 'SyncedBlockUnsyncFailed',
       message: "Couldn't unsync this copy. Try again.",
@@ -60,9 +60,8 @@ export const requestSyncedBlockUnsyncCopy = async (params: Params) => {
     })
     return
   }
-  const confirm = getUnsyncCopyConfirm(page, currentPageId)
-  if (confirm) {
-    onConfirmNeeded(confirm)
+  if (check.kind === 'confirm') {
+    onConfirmNeeded({title: check.title, body: check.body})
     return
   }
   unsyncCopyAt(atmosphere, hostEditor, getPos(), pageCode)

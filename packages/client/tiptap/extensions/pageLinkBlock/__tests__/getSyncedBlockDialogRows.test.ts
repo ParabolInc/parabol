@@ -5,11 +5,15 @@ type Public = 'viewer' | null
 const host = (
   id: string,
   title: string,
-  {hiddenReaderCount = 0, isPublic = null}: {hiddenReaderCount?: number; isPublic?: Public} = {}
+  {
+    hiddenReaderCount = 0,
+    isPublic = null,
+    isOriginal = id === 'page:1'
+  }: {hiddenReaderCount?: number; isPublic?: Public; isOriginal?: boolean} = {}
 ) => ({
-  isOriginal: id === 'page:1',
+  isOriginal,
   hiddenReaderCount,
-  page: {id, title, deletedAt: null, access: {public: isPublic}}
+  page: {id, title, access: {public: isPublic}}
 })
 
 const blockPage = (
@@ -27,7 +31,7 @@ test('counts every page, hidden ones included', () => {
   })
   const result = getSyncedBlockDialogRows(page, 'page:1')
   expect(result.pageCount).toBe(4)
-  expect(result.currentTitle).toBe('Runbook')
+  expect(result.originalTitle).toBe('Runbook')
   expect(result.deleteRows.map((row) => row.title)).toEqual([
     'Runbook',
     'Handbook',
@@ -38,12 +42,20 @@ test('counts every page, hidden ones included', () => {
 test('tags this page in both row lists', () => {
   const page = blockPage([host('page:1', ''), host('page:2', 'Handbook')])
   const result = getSyncedBlockDialogRows(page, 'page:1')
-  expect(result.currentTitle).toBe('<Untitled>')
   expect(result.deleteRows).toEqual([
     {key: 'page:1', icon: 'page', title: '<Untitled>', isThisPage: true},
     {key: 'page:2', icon: 'page', title: 'Handbook', isThisPage: false}
   ])
   expect(result.unsyncRows.map((row) => row.isThisPage)).toEqual([true, false])
+})
+
+test('names the original page, not this one', () => {
+  const page = blockPage([host('page:1', 'Runbook'), host('page:2', 'Handbook')])
+  expect(getSyncedBlockDialogRows(page, 'page:2').originalTitle).toBe('Runbook')
+  const untitled = blockPage([host('page:1', ''), host('page:2', 'Handbook')])
+  expect(getSyncedBlockDialogRows(untitled, 'page:2').originalTitle).toBe('<Untitled>')
+  const noOriginal = blockPage([host('page:2', 'Handbook')], {hiddenCount: 1})
+  expect(getSyncedBlockDialogRows(noOriginal, 'page:2').originalTitle).toBeNull()
 })
 
 test("keeps text where everyone can read and removes it where readers can't", () => {

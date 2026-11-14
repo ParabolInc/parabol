@@ -13,7 +13,7 @@ jest.mock('relay-runtime', () => ({
 
 const syncedCopy = {...syncedLink, attrs: {...syncedLink.attrs, canonical: false}}
 
-const blockPage = (hiddenReaderCount: number) => ({
+const blockPage = (hiddenReaderCount: number, hostId = 'page:1') => ({
   public: {
     page: {
       access: {public: null},
@@ -22,7 +22,7 @@ const blockPage = (hiddenReaderCount: number) => ({
           {
             isOriginal: false,
             hiddenReaderCount,
-            page: {id: 'page:1', title: 'Q3 Planning', deletedAt: null, access: {public: null}}
+            page: {id: hostId, title: 'Q3 Planning', access: {public: null}}
           }
         ],
         hiddenCount: 0
@@ -88,4 +88,13 @@ test("says it couldn't unsync and changes nothing when the check fails", async (
     "Couldn't unsync this copy. Try again.",
     "Couldn't unsync this copy. Try again."
   ])
+})
+
+test("says it couldn't unsync and changes nothing when this page is not among the places", async () => {
+  const {host, emit, onConfirmNeeded, request} = setup()
+  mockFetch.mockResolvedValueOnce(blockPage(0, 'page:2'))
+  await request()
+  expect(onConfirmNeeded).not.toHaveBeenCalled()
+  expect(linkCount(host)).toBe(1)
+  expect(snackMessages(emit)).toEqual(["Couldn't unsync this copy. Try again."])
 })

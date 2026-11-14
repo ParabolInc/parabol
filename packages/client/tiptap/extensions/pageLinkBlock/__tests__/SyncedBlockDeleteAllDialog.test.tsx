@@ -9,7 +9,7 @@ MotionGlobalConfig.skipAnimations = true
 
 const rows: SyncedBlockDialogRows = {
   pageCount: 3,
-  currentTitle: 'Runbook',
+  originalTitle: 'Runbook',
   deleteRows: [
     {key: 'page:1', icon: 'page', title: 'Runbook', isThisPage: true},
     {key: 'page:2', icon: 'page', title: 'Handbook', isThisPage: false},
@@ -70,6 +70,32 @@ test('says every page and disables Delete all while loading', () => {
   expect(dialog().querySelector('h2')?.textContent).toBe('Delete this block from every page?')
   expect(dialog().textContent).toContain('Restoring it puts it back on Runbook only.')
   expect(button('Delete all').disabled).toBe(true)
+})
+
+test("names the original page over this page's title once rows load", () => {
+  render(
+    <SyncedBlockDeleteAllDialog
+      rows={rows}
+      hostTitle='Handbook'
+      isSubmitting={false}
+      onConfirm={jest.fn()}
+      onClose={jest.fn()}
+    />
+  )
+  expect(dialog().textContent).toContain('Restoring it puts it back on Runbook only.')
+})
+
+test('falls back to the host title when no original page is openable', () => {
+  render(
+    <SyncedBlockDeleteAllDialog
+      rows={{...rows, originalTitle: null}}
+      hostTitle='Handbook'
+      isSubmitting={false}
+      onConfirm={jest.fn()}
+      onClose={jest.fn()}
+    />
+  )
+  expect(dialog().textContent).toContain('Restoring it puts it back on Handbook only.')
 })
 
 test('Delete all calls onConfirm', () => {

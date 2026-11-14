@@ -27,7 +27,7 @@ export const SyncedBlockDeleteAllDialog = (props: Props) => {
         </DialogTitle>
         <DialogDescription>
           It disappears from every page it's on and goes to Trash. Restoring it puts it back on{' '}
-          {rows?.currentTitle ?? hostTitle} only.
+          {rows?.originalTitle ?? hostTitle} only.
         </DialogDescription>
         <SyncedBlockDialogRows rows={rows?.deleteRows ?? null} />
         <DialogActions>

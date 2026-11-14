@@ -7,6 +7,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {snackOnError} from '../../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
+import {GQLID} from '../../../utils/GQLID'
 import type {SyncedBlockDialogRows} from './getSyncedBlockDialogRows'
 import {SyncedBlockDeleteAllDialog} from './SyncedBlockDeleteAllDialog'
 import {SyncedBlockDialogLoadFailed} from './SyncedBlockDialogLoadFailed'
@@ -21,7 +22,7 @@ interface Props {
 
 export const SyncedBlockDeleteAllDialogRoot = (props: Props) => {
   const {pageCode, currentPageId, hostTitle, onClose} = props
-  const pageId = `page:${pageCode}`
+  const pageId = GQLID.toKey(pageCode, 'page')
   const atmosphere = useAtmosphere()
   const [rows, setRows] = useState<SyncedBlockDialogRows | null>(null)
   const queryRef = useQueryLoaderNow<SyncedBlockDialogQuery>(

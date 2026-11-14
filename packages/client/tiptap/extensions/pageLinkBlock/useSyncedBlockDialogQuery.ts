@@ -32,7 +32,6 @@ export const useSyncedBlockDialogQuery = (queryRef: PreloadedQuery<SyncedBlockDi
                 page {
                   id
                   title
-                  deletedAt
                   access {
                     public
                   }
