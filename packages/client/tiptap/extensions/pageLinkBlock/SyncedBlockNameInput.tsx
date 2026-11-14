@@ -22,11 +22,12 @@ export const SyncedBlockNameInput = (props: Props) => {
     inputRef.current?.select()
   }, [])
 
-  const finish = (shouldCommit: boolean) => {
+  const finish = (shouldCommit: boolean, shouldReturnFocus: boolean) => {
     if (isDoneRef.current) return
     isDoneRef.current = true
     if (shouldCommit) renameSyncedBlock(chrome.editor, inputRef.current?.value ?? name)
     onClose()
+    if (!shouldReturnFocus) return
     const pos = getPos()
     if (pos !== undefined) {
       const {view} = hostEditor
@@ -38,10 +39,10 @@ export const SyncedBlockNameInput = (props: Props) => {
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      finish(true)
+      finish(true, true)
     } else if (event.key === 'Escape') {
       event.preventDefault()
-      finish(false)
+      finish(false, true)
     }
   }
 
@@ -52,7 +53,7 @@ export const SyncedBlockNameInput = (props: Props) => {
       placeholder='Name this block'
       aria-label='Block name'
       onKeyDown={handleKeyDown}
-      onBlur={() => finish(true)}
+      onBlur={() => finish(true, false)}
       className='min-w-[72px] flex-auto border-0 bg-transparent p-0 font-semibold text-inherit text-xs outline-none placeholder:text-current placeholder:opacity-60'
     />
   )

@@ -16,6 +16,7 @@ import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
 let mockNestedEditor: Editor | null = null
+let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
 const hostRef: {current: Editor | null} = {current: null}
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
@@ -29,7 +30,8 @@ jest.mock('../SyncedBlockContent', () => ({
   SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
     const {useEffect} = jest.requireActual<typeof import('react')>('react')
     useEffect(() => {
-      onChromeChange({editor: mockNestedEditor, isViewOnly: false})
+      if (mockChromeState === 'none') return
+      onChromeChange({editor: mockNestedEditor, isViewOnly: mockChromeState === 'viewOnly'})
     }, [onChromeChange])
     return null
   }
@@ -87,6 +89,7 @@ afterEach(() => {
   act(() => root.unmount())
   container.remove()
   mockNestedEditor = null
+  mockChromeState = 'editable'
 })
 
 const text = () => container.textContent ?? ''
@@ -388,8 +391,55 @@ test('Enter does not commit a second time on blur', () => {
   act(() => nameButton()!.click())
   typeInto(nameInput()!, 'Paging policy')
   const input = nameInput()!
-  pressKey(input, 'Enter')
+  act(() => {
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true})
+    )
+    input.dispatchEvent(new Event('focusout', {bubbles: true}))
+  })
   expect(spy).toHaveBeenCalledTimes(1)
+})
+
+test('blur commits without taking focus or selection back from where the user went', () => {
+  mountFocusedView()
+  const focusSpy = jest.spyOn(hostRef.current!.view, 'focus')
+  const selectionBefore = hostRef.current!.state.selection
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+  expect(focusSpy).not.toHaveBeenCalled()
+  expect(hostRef.current!.state.selection.eq(selectionBefore)).toBe(true)
+  expect(document.activeElement).toBe(outside)
+  outside.remove()
+})
+
+test('the rename event is ignored on a view-only block', async () => {
+  mockChromeState = 'viewOnly'
+  const wrapper = mountFocusedView()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  expect(nameInput()).toBeNull()
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  await flushTimers()
+  expect(text()).not.toContain('View only')
+  outside.remove()
+})
+
+test('the rename event is ignored before the block loads', () => {
+  mockChromeState = 'none'
+  const wrapper = mountFocusedView()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  mockChromeState = 'editable'
+  expect(nameInput()).toBeNull()
 })
 
 test('committing returns focus to the host with the block node-selected', () => {

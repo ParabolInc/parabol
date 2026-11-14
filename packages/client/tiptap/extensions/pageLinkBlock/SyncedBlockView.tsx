@@ -34,6 +34,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
+  const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
     selector: ({editor: hostEditor}) => {
@@ -43,6 +44,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   })
   const name = useSyncedBlockName(chrome?.editor ?? null)
   const isViewOnly = chrome?.isViewOnly ?? false
+  canRenameRef.current = !!chrome && !isViewOnly
   const isFocused = hasFocusWithin || isNodeSelected
   const showBar = !!chrome && (isFocused || openMenus > 0 || isRenaming)
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
@@ -58,7 +60,9 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
     const target = wrapper.closest('.react-renderer') ?? wrapper
-    const handleRename = () => setIsRenaming(true)
+    const handleRename = () => {
+      if (canRenameRef.current) setIsRenaming(true)
+    }
     target.addEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
     return () => target.removeEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
   }, [])
