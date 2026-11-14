@@ -37,6 +37,7 @@ export const SyncedBlockNameInput = (props: Props) => {
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing) return
     if (event.key === 'Enter') {
       event.preventDefault()
       finish(true, true)

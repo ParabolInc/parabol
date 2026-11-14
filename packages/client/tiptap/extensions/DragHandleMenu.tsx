@@ -12,12 +12,9 @@ import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
-import {deleteSyncedBlockFromPage} from './pageLinkBlock/deleteSyncedBlockFromPage'
-import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
-import {getSyncedBlockMenuRows} from './pageLinkBlock/getSyncedBlockMenuRows'
-import {SyncedBlockMenuRoot} from './pageLinkBlock/SyncedBlockMenuRoot'
+import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
+import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
-import {useRunAfterMenuClose} from './pageLinkBlock/useRunAfterMenuClose'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
@@ -34,7 +31,6 @@ interface DragHandleMenuProps {
 const DragHandleMenu = (props: DragHandleMenuProps) => {
   const {editor, node, pos, onClose, anchorElement, canCreateSubPage, selection} = props
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const {runAfterClose, handleCloseAutoFocus} = useRunAfterMenuClose()
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
   const isDocumentHeading = pos === 0
@@ -42,18 +38,9 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const nested = isSyncedLink ? getNestedEditor(editor.view, pos) : null
   const isSyncedMounted = !!nested
   const isSyncedViewOnly = !editor.isEditable || (!!nested && !nested.isEditable)
-  const syncedRows = isSyncedLink
-    ? getSyncedBlockMenuRows({
-        isOriginal: isCanonicalPageLink,
-        isViewOnly: isSyncedViewOnly,
-        canGoToOriginal: false,
-        isMounted: isSyncedMounted
-      })
-    : []
   const pageCode = Number(node.attrs.pageCode)
-  const showDelete = !!selection || isSyncedLink || (!isCanonicalPageLink && !isDocumentHeading)
-  const turnIntoCurrent =
-    selection || isSyncedLink ? null : getTurnIntoTarget(editor.state.doc, pos)
+  const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
+  const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -78,11 +65,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       runOnSelection(duplicateBlocks)
       return
     }
-    if (isSyncedLink) {
-      duplicateSyncedBlockAsPlain(editor, pos)
-      editor.commands.focus()
-      return
-    }
     const json = node.toJSON()
     if (json.type === 'pageLinkBlock' && json.attrs?.canonical) {
       json.attrs = {...json.attrs, canonical: false}
@@ -97,11 +79,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const handleDelete = () => {
     if (selection) {
       runOnSelection(deleteBlocks)
-      return
-    }
-    if (isSyncedLink) {
-      deleteSyncedBlockFromPage(editor, pos, pageCode)
-      editor.commands.focus()
       return
     }
     const currentNode = editor.state.doc.nodeAt(pos)
@@ -121,9 +98,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     // keys from the Turn into submenu bubble here through its portal
     if (!e.currentTarget.contains(e.target as HTMLElement)) return
     if (isDeleteKey && !showDelete) return
-    if (isSyncedLink && !syncedRows.includes(isDeleteKey ? 'deleteFromPage' : 'duplicatePlain')) {
-      return
-    }
     if (isDeleteKey) handleDelete()
     else handleDuplicate()
     queueMicrotask(onClose)
@@ -145,62 +119,64 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         />
       }
     >
-      <MenuContent
-        align='start'
-        sideOffset={4}
-        collisionPadding={8}
-        onCloseAutoFocus={(e) => {
-          e.preventDefault()
-          handleCloseAutoFocus(e)
-        }}
-        onKeyDown={handleContentKeyDown}
-        className='z-50'
-      >
-        {selection && (
-          <div className={menuSectionTitleClass}>
-            {selection.count} {blocks}
-          </div>
-        )}
-        {turnIntoCurrent && (
-          <TurnIntoMenu
-            editor={editor}
-            node={node}
-            pos={pos}
-            current={turnIntoCurrent}
-            canCreateSubPage={canCreateSubPage}
-          />
-        )}
-        {!selection && node.type.name === 'callout' && (
-          <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
-        )}
-        {isSyncedLink ? (
-          <SyncedBlockMenuRoot
-            hostEditor={editor}
-            pos={pos}
-            pageCode={pageCode}
-            isOriginal={isCanonicalPageLink}
-            isViewOnly={isSyncedViewOnly}
-            isMounted={isSyncedMounted}
-            currentPageId={editor.storage.pageLinkBlock.pageId}
-            runAfterClose={runAfterClose}
-          />
-        ) : (
-          <>
-            <MenuItem onSelect={handleDuplicate}>
-              <ContentCopy className={MENU_ITEM_ICON} />
-              <span className='flex-1 text-left'>Duplicate {blocks}</span>
-              <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
+      {isSyncedLink ? (
+        <SyncedBlockMenuContent
+          hostEditor={editor}
+          getPos={() => findSyncedLinkNear(editor.state.doc, pos, pageCode)}
+          pageCode={pageCode}
+          isOriginal={isCanonicalPageLink}
+          isViewOnly={isSyncedViewOnly}
+          isMounted={isSyncedMounted}
+          currentPageId={editor.storage.pageLinkBlock.pageId}
+          onClose={() => queueMicrotask(onClose)}
+          contentProps={{
+            align: 'start',
+            sideOffset: 4,
+            collisionPadding: 8,
+            className: 'z-50',
+            onCloseAutoFocus: (e) => e.preventDefault()
+          }}
+        />
+      ) : (
+        <MenuContent
+          align='start'
+          sideOffset={4}
+          collisionPadding={8}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          onKeyDown={handleContentKeyDown}
+          className='z-50'
+        >
+          {selection && (
+            <div className={menuSectionTitleClass}>
+              {selection.count} {blocks}
+            </div>
+          )}
+          {turnIntoCurrent && (
+            <TurnIntoMenu
+              editor={editor}
+              node={node}
+              pos={pos}
+              current={turnIntoCurrent}
+              canCreateSubPage={canCreateSubPage}
+            />
+          )}
+          {!selection && node.type.name === 'callout' && (
+            <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
+          )}
+          <MenuItem onSelect={handleDuplicate}>
+            <ContentCopy className={MENU_ITEM_ICON} />
+            <span className='flex-1 text-left'>Duplicate {blocks}</span>
+            <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
+          </MenuItem>
+          {showDelete && (
+            <MenuItem onSelect={handleDelete}>
+              <DeleteOutlined className={MENU_ITEM_ICON} />
+              <span className='flex-1 text-left'>Delete {blocks}</span>
+              <span className='ml-4 text-fg-muted text-xs'>Del</span>
             </MenuItem>
-            {showDelete && (
-              <MenuItem onSelect={handleDelete}>
-                <DeleteOutlined className={MENU_ITEM_ICON} />
-                <span className='flex-1 text-left'>Delete {blocks}</span>
-                <span className='ml-4 text-fg-muted text-xs'>Del</span>
-              </MenuItem>
-            )}
-          </>
-        )}
-      </MenuContent>
+          )}
+        </MenuContent>
+      )}
     </Menu>
   )
 }

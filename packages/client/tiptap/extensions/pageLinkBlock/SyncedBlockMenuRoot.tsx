@@ -1,33 +1,31 @@
-import {Suspense, useState} from 'react'
+import {Suspense} from 'react'
 import syncedBlockPlacesQuery, {
   type SyncedBlockPlacesQuery
 } from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {SyncedBlockMenuItems, type SyncedBlockMenuItemsProps} from './SyncedBlockMenuItems'
 import {SyncedBlockOriginalProbe} from './SyncedBlockOriginalProbe'
+import type {SyncedBlockOriginal} from './useSyncedBlockMenuActions'
 
-type Props = Omit<SyncedBlockMenuItemsProps, 'original'>
+interface Props {
+  pageCode: number
+  currentPageId: string | undefined
+  onOriginal: (original: SyncedBlockOriginal | null) => void
+}
 
-export const SyncedBlockMenuRoot = (props: Props) => {
-  const {pageCode, currentPageId} = props
-  const [original, setOriginal] = useState<SyncedBlockMenuItemsProps['original']>(null)
+export const SyncedBlockMenuRoot = ({pageCode, currentPageId, onOriginal}: Props) => {
   const queryRef = useQueryLoaderNow<SyncedBlockPlacesQuery>(
     syncedBlockPlacesQuery,
     {pageId: `page:${pageCode}`},
     'store-and-network'
   )
+  if (!queryRef) return null
   return (
-    <>
-      <SyncedBlockMenuItems {...props} original={original} />
-      {queryRef && (
-        <Suspense fallback={null}>
-          <SyncedBlockOriginalProbe
-            queryRef={queryRef}
-            currentPageId={currentPageId}
-            onOriginal={setOriginal}
-          />
-        </Suspense>
-      )}
-    </>
+    <Suspense fallback={null}>
+      <SyncedBlockOriginalProbe
+        queryRef={queryRef}
+        currentPageId={currentPageId}
+        onOriginal={onOriginal}
+      />
+    </Suspense>
   )
 }

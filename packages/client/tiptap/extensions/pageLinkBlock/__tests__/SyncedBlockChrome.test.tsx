@@ -299,9 +299,10 @@ const mountView = () => {
   const props = {
     node: host.state.doc.nodeAt(linkPos)!,
     editor: host,
-    getPos: () => linkPos
+    getPos: () => findLinkPositions(host)[0]
   } as unknown as NodeViewProps
   act(() => root.render(<SyncedBlockView {...props} />))
+  return host
 }
 
 test('keeps the bar while the places menu is open', async () => {
@@ -353,10 +354,10 @@ const pressKey = (input: HTMLInputElement, key: string) =>
   })
 
 const mountFocusedView = () => {
-  mountView()
+  const host = mountView()
   const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
   act(() => wrapper.focus())
-  return wrapper
+  return Object.assign(wrapper, {host})
 }
 
 test('clicking the name opens the rename input with the name selected', () => {
@@ -518,4 +519,91 @@ test('a view-only bar has no more button', () => {
   expect(
     container.querySelector('button[aria-label="More options for this synced block"]')
   ).toBeNull()
+})
+
+const openMoreMenu = async () => {
+  const more = container.querySelector<HTMLElement>(
+    'button[aria-label="More options for this synced block"]'
+  )!
+  act(() => more.focus())
+  act(() => {
+    more.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  await flushTimers()
+  return document.body.querySelector<HTMLElement>('[role="menu"]')!
+}
+const menuItem = (menu: HTMLElement, label: string) =>
+  Array.from(menu.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((item) =>
+    item.textContent?.startsWith(label)
+  )!
+const hostBlocks = (host: Editor) => {
+  const all: string[] = []
+  host.state.doc.forEach((node) => {
+    all.push(node.type.name === 'paragraph' ? node.textContent : node.type.name)
+  })
+  return all
+}
+
+test('the more menu deletes the block where it is now, after someone edits above it', async () => {
+  const {host} = mountFocusedView()
+  const menu = await openMoreMenu()
+  act(() => {
+    host.view.dispatch(
+      host.state.tr.insert(0, host.schema.nodes.paragraph!.create(null, host.schema.text('New')))
+    )
+  })
+  act(() => menuItem(menu, 'Delete from this page').click())
+  await flushTimers()
+  await flushTimers()
+  expect(findLinkPositions(host)).toEqual([])
+  expect(hostBlocks(host)[0]).toBe('New')
+})
+
+test('the more menu handles the shortcuts its rows show', async () => {
+  const {host} = mountFocusedView()
+  const menu = await openMoreMenu()
+  const duplicateKey = new KeyboardEvent('keydown', {
+    key: 'd',
+    metaKey: true,
+    bubbles: true,
+    cancelable: true
+  })
+  act(() => {
+    menuItem(menu, 'Copy and sync').dispatchEvent(duplicateKey)
+  })
+  await flushTimers()
+  await flushTimers()
+  expect(duplicateKey.defaultPrevented).toBe(true)
+  expect(document.body.querySelector('[role="menu"]')).toBeNull()
+  expect(hostBlocks(host).slice(0, 3)).toEqual([
+    '',
+    'pageLinkBlock',
+    'Sev 1: page the on-call lead.'
+  ])
+  act(() => container.querySelector<HTMLElement>('[data-synced-block]')!.focus())
+  const reopened = await openMoreMenu()
+  const deleteKey = new KeyboardEvent('keydown', {key: 'Delete', bubbles: true, cancelable: true})
+  act(() => {
+    menuItem(reopened, 'Copy and sync').dispatchEvent(deleteKey)
+  })
+  await flushTimers()
+  await flushTimers()
+  expect(deleteKey.defaultPrevented).toBe(true)
+  expect(findLinkPositions(host)).toEqual([])
+  expect(hostBlocks(host).slice(0, 2)).toEqual(['', 'Sev 1: page the on-call lead.'])
+})
+
+test('Enter and Escape while composing text leave the rename input open', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'ペー')
+  for (const key of ['Enter', 'Escape']) {
+    act(() => {
+      nameInput()!.dispatchEvent(
+        new KeyboardEvent('keydown', {key, isComposing: true, bubbles: true, cancelable: true})
+      )
+    })
+  }
+  expect(nameInput()?.value).toBe('ペー')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Escalation path')
 })

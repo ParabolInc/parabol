@@ -139,7 +139,7 @@ export const PageDragHandle = Extension.create<Options>({
           selection.node.type.name === 'pageLinkBlock' &&
           selection.node.attrs.synced
         ) {
-          duplicateSyncedBlockAsPlain(editor, selection.from)
+          duplicateSyncedBlockAsPlain(editor, selection.from, Number(selection.node.attrs.pageCode))
           return true
         }
         const {$from} = selection

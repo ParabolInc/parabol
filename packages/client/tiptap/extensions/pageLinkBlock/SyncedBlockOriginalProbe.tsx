@@ -1,15 +1,13 @@
 import {useEffect} from 'react'
 import type {PreloadedQuery} from 'react-relay'
 import type {SyncedBlockPlacesQuery} from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
-import type {SyncedBlockMenuItemsProps} from './SyncedBlockMenuItems'
+import type {SyncedBlockOriginal} from './useSyncedBlockMenuActions'
 import {useSyncedBlockPlaces} from './useSyncedBlockPlaces'
-
-type Original = SyncedBlockMenuItemsProps['original']
 
 interface Props {
   queryRef: PreloadedQuery<SyncedBlockPlacesQuery>
   currentPageId: string | undefined
-  onOriginal: (original: Original) => void
+  onOriginal: (original: SyncedBlockOriginal | null) => void
 }
 
 export const SyncedBlockOriginalProbe = ({queryRef, currentPageId, onOriginal}: Props) => {

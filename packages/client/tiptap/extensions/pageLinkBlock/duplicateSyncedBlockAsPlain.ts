@@ -4,9 +4,9 @@ import {copyAsPlainLinks, createBlockSelection} from '../../blockSelection/block
 import {getSyncedLinkAt} from './getSyncedLinkAt'
 import {getNestedEditor} from './syncedBlockFocus'
 
-export const duplicateSyncedBlockAsPlain = (hostEditor: Editor, pos: number) => {
+export const duplicateSyncedBlockAsPlain = (hostEditor: Editor, pos: number, pageCode: number) => {
   const {state, view} = hostEditor
-  const block = getSyncedLinkAt(state.doc, pos)
+  const block = getSyncedLinkAt(state.doc, pos, pageCode)
   const nested = getNestedEditor(view, pos)
   if (!block || !nested) return false
   const nestedDoc = nested.state.doc

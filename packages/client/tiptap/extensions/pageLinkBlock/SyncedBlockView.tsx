@@ -35,6 +35,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
+  const [placesLabel, setPlacesLabel] = useState<string | null>(null)
   const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
@@ -101,6 +102,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
               pageCode={pageCode}
               currentPageId={editor.storage.pageLinkBlock.pageId}
               isViewOnly={isViewOnly}
+              lastLabel={placesLabel}
+              onLabel={setPlacesLabel}
               onOpenChange={handleMenuOpenChange}
             />
           }

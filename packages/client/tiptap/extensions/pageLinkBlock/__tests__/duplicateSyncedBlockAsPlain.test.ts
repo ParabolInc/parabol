@@ -27,7 +27,7 @@ const children = (editor: Editor) => {
 test('inserts the block content after it as ordinary blocks', () => {
   const {host, linkPos, blockEnd} = mountBlock()
   mountNested(host, linkPos, ['Sev 1: page the on-call lead.', 'Sev 2: open a ticket.'])
-  expect(duplicateSyncedBlockAsPlain(host, linkPos)).toBe(true)
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 7)).toBe(true)
   expect(children(host)).toEqual([
     'Above',
     'pageLinkBlock',
@@ -49,7 +49,7 @@ test('duplicate turns canonical links into copies', () => {
     type: 'pageLinkBlock',
     attrs: {pageCode: 9, title: 'Child page', canonical: true, synced: false}
   })
-  expect(duplicateSyncedBlockAsPlain(host, linkPos)).toBe(true)
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 7)).toBe(true)
   const links = findLinkPositions(host).map((pos) => host.state.doc.nodeAt(pos)!.attrs)
   expect(links).toEqual([
     expect.objectContaining({pageCode: 7, canonical: true, synced: true}),
@@ -60,7 +60,7 @@ test('duplicate turns canonical links into copies', () => {
 test('a block that holds only its name duplicates as one empty paragraph', () => {
   const {host, linkPos, blockEnd} = mountBlock()
   mountNested(host, linkPos, [])
-  expect(duplicateSyncedBlockAsPlain(host, linkPos)).toBe(true)
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 7)).toBe(true)
   expect(children(host)).toEqual(['Above', 'pageLinkBlock', '', 'Below'])
   expect(getSelectedBlockRange(host.state)?.from).toBe(blockEnd)
 })
@@ -68,6 +68,14 @@ test('a block that holds only its name duplicates as one empty paragraph', () =>
 test('returns false when the block is not mounted', () => {
   const {host, linkPos} = mountBlock()
   const before = host.state.doc
-  expect(duplicateSyncedBlockAsPlain(host, linkPos)).toBe(false)
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 7)).toBe(false)
+  expect(host.state.doc.eq(before)).toBe(true)
+})
+
+test('returns false when another synced block sits at the position', () => {
+  const {host, linkPos} = mountBlock()
+  mountNested(host, linkPos, ['Sev 1'])
+  const before = host.state.doc
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 9)).toBe(false)
   expect(host.state.doc.eq(before)).toBe(true)
 })

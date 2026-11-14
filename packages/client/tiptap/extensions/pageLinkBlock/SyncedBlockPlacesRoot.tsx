@@ -14,31 +14,35 @@ interface Props {
   pageCode: number
   currentPageId: string | undefined
   isViewOnly: boolean
+  lastLabel: string | null
+  onLabel: (label: string) => void
   onOpenChange: (open: boolean) => void
 }
 
 export const SyncedBlockPlacesRoot = (props: Props) => {
-  const {pageCode, currentPageId, isViewOnly, onOpenChange} = props
+  const {pageCode, currentPageId, isViewOnly, lastLabel, onLabel, onOpenChange} = props
   const queryRef = useQueryLoaderNow<SyncedBlockPlacesQuery>(
     syncedBlockPlacesQuery,
     {pageId: `page:${pageCode}`},
     'store-and-network'
   )
   const skeleton = <MenuSkeletonRows count={2} />
+  const fallbackLabel = lastLabel ?? LOADING_LABEL
   return (
     <SyncedBlockPlacesMenu
       isViewOnly={isViewOnly}
       onOpenChange={onOpenChange}
       label={
-        <Suspense fallback={LOADING_LABEL}>
+        <Suspense fallback={fallbackLabel}>
           {queryRef ? (
             <SyncedBlockPlacesLabel
               queryRef={queryRef}
               currentPageId={currentPageId}
-              fallback={LOADING_LABEL}
+              fallback={fallbackLabel}
+              onLabel={onLabel}
             />
           ) : (
-            LOADING_LABEL
+            fallbackLabel
           )}
         </Suspense>
       }

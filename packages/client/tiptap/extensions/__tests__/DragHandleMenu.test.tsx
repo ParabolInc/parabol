@@ -233,6 +233,7 @@ describe('the menu on a synced block', () => {
   test('Mod+D in the synced menu duplicates as plain blocks', async () => {
     const {host, onClose} = await openSyncedMenu()
     await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
+    await act(tick)
     expect(hostBlocks(host)).toEqual([
       'Above',
       'pageLinkBlock',
@@ -246,6 +247,7 @@ describe('the menu on a synced block', () => {
   test('Delete in the synced menu removes the block from this page', async () => {
     const {host} = await openSyncedMenu()
     await pressKey(itemNamed('Copy and sync'), 'Delete')
+    await act(tick)
     expect(hostBlocks(host)).toEqual(['Above', 'Below'])
   })
 
@@ -273,7 +275,55 @@ describe('the menu on a synced block', () => {
   test('Delete in the menu of a block that is not mounted removes it', async () => {
     const {host} = await openSyncedMenu({isMounted: false})
     await pressKey(itemNamed('Copy and sync'), 'Backspace')
+    await act(tick)
     expect(hostBlocks(host)).toEqual(['Above', 'Below'])
+  })
+
+  const insertAt = (host: Editor, pos: number, content: JSONContent) =>
+    act(() => {
+      host.view.dispatch(host.state.tr.insert(pos, host.schema.nodeFromJSON(content)))
+    })
+
+  test('Delete finds the block after someone edits above it while the menu is open', async () => {
+    const {host} = await openSyncedMenu()
+    insertAt(host, 0, p('New'))
+    await click(itemNamed('Delete from this page'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['New', 'Above', 'Below'])
+  })
+
+  test('Duplicate copies the block the menu opened on, not one that took its place', async () => {
+    const {host, pos} = await openSyncedMenu()
+    insertAt(host, pos, {...syncedLink, attrs: {...syncedLink.attrs, pageCode: 9}})
+    await click(itemNamed('Duplicate as plain blocks'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual([
+      'Above',
+      'pageLinkBlock',
+      'pageLinkBlock',
+      'Sev 1: page the on-call lead.',
+      'Below'
+    ])
+  })
+
+  test('Rename selects the block after someone edits above it', async () => {
+    const {host} = await openSyncedMenu()
+    insertAt(host, 0, p('New'))
+    const movedPos = findLinkPositions(host)[0]!
+    await click(itemNamed('Rename'))
+    await act(tick)
+    const {selection} = host.state
+    expect(selection instanceof NodeSelection && selection.from === movedPos).toBe(true)
+  })
+
+  test('Rename does nothing once the block is gone', async () => {
+    const {host, pos} = await openSyncedMenu()
+    act(() => {
+      host.view.dispatch(host.state.tr.delete(pos, pos + host.state.doc.nodeAt(pos)!.nodeSize))
+    })
+    await click(itemNamed('Rename'))
+    await act(tick)
+    expect(host.state.selection instanceof NodeSelection).toBe(false)
   })
 
   test('Rename starts only once the menu has closed', async () => {
