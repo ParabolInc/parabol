@@ -10,6 +10,11 @@ import DragHandleMenu from '../../DragHandleMenu'
 import {Callout} from '../Callout'
 import {CalloutStyleMenu} from '../CalloutStyleMenu'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
 const titled = (text: string): Json => ({type: 'calloutTitle', content: [{type: 'text', text}]})

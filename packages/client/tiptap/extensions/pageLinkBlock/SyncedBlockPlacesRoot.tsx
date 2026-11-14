@@ -1,12 +1,10 @@
 import {Suspense} from 'react'
-import syncedBlockPlacesQuery, {
-  type SyncedBlockPlacesQuery
-} from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 import MenuSkeletonRows from '../../../ui/Menu/MenuSkeletonRows'
 import {SyncedBlockPlacesLabel} from './SyncedBlockPlacesLabel'
 import {SyncedBlockPlacesList} from './SyncedBlockPlacesList'
 import {SyncedBlockPlacesMenu} from './SyncedBlockPlacesMenu'
+import {useSyncedBlockPlacesQuery} from './useSyncedBlockPlacesQuery'
 
 const LOADING_LABEL = 'Also on …'
 
@@ -21,11 +19,7 @@ interface Props {
 
 export const SyncedBlockPlacesRoot = (props: Props) => {
   const {pageCode, currentPageId, isViewOnly, lastLabel, onLabel, onOpenChange} = props
-  const queryRef = useQueryLoaderNow<SyncedBlockPlacesQuery>(
-    syncedBlockPlacesQuery,
-    {pageId: `page:${pageCode}`},
-    'store-and-network'
-  )
+  const queryRef = useSyncedBlockPlacesQuery(pageCode)
   const skeleton = <MenuSkeletonRows count={2} />
   const fallbackLabel = lastLabel ?? LOADING_LABEL
   return (
@@ -33,27 +27,31 @@ export const SyncedBlockPlacesRoot = (props: Props) => {
       isViewOnly={isViewOnly}
       onOpenChange={onOpenChange}
       label={
-        <Suspense fallback={fallbackLabel}>
-          {queryRef ? (
-            <SyncedBlockPlacesLabel
-              queryRef={queryRef}
-              currentPageId={currentPageId}
-              fallback={fallbackLabel}
-              onLabel={onLabel}
-            />
-          ) : (
-            fallbackLabel
-          )}
-        </Suspense>
+        <ErrorBoundary fallback={() => fallbackLabel}>
+          <Suspense fallback={fallbackLabel}>
+            {queryRef ? (
+              <SyncedBlockPlacesLabel
+                queryRef={queryRef}
+                currentPageId={currentPageId}
+                fallback={fallbackLabel}
+                onLabel={onLabel}
+              />
+            ) : (
+              fallbackLabel
+            )}
+          </Suspense>
+        </ErrorBoundary>
       }
     >
-      <Suspense fallback={skeleton}>
-        {queryRef ? (
-          <SyncedBlockPlacesList queryRef={queryRef} currentPageId={currentPageId} />
-        ) : (
-          skeleton
-        )}
-      </Suspense>
+      <ErrorBoundary fallback={() => null}>
+        <Suspense fallback={skeleton}>
+          {queryRef ? (
+            <SyncedBlockPlacesList queryRef={queryRef} currentPageId={currentPageId} />
+          ) : (
+            skeleton
+          )}
+        </Suspense>
+      </ErrorBoundary>
     </SyncedBlockPlacesMenu>
   )
 }

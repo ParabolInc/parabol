@@ -15,6 +15,10 @@ import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
 let mockNestedEditor: Editor | null = null
 let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
 const hostRef: {current: Editor | null} = {current: null}

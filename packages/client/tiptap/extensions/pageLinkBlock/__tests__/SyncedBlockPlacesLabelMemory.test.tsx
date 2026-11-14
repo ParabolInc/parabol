@@ -8,6 +8,10 @@ import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBl
 import {SyncedBlockView} from '../SyncedBlockView'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
 let mockNestedEditor: Editor | null = null
 let mockQueryReady = true
 jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))

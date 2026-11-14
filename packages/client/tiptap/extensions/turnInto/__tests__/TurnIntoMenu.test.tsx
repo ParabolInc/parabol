@@ -8,6 +8,11 @@ import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExte
 import {happyWindow} from '../../__tests__/installHappyDom'
 import DragHandleMenu from '../../DragHandleMenu'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
 const h = (level: number, text: string): Json => ({

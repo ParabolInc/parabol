@@ -1,10 +1,8 @@
 import {Suspense} from 'react'
-import syncedBlockPlacesQuery, {
-  type SyncedBlockPlacesQuery
-} from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 import {SyncedBlockOriginalProbe} from './SyncedBlockOriginalProbe'
 import type {SyncedBlockOriginal} from './useSyncedBlockMenuActions'
+import {useSyncedBlockPlacesQuery} from './useSyncedBlockPlacesQuery'
 
 interface Props {
   pageCode: number
@@ -13,19 +11,17 @@ interface Props {
 }
 
 export const SyncedBlockMenuRoot = ({pageCode, currentPageId, onOriginal}: Props) => {
-  const queryRef = useQueryLoaderNow<SyncedBlockPlacesQuery>(
-    syncedBlockPlacesQuery,
-    {pageId: `page:${pageCode}`},
-    'store-and-network'
-  )
+  const queryRef = useSyncedBlockPlacesQuery(pageCode)
   if (!queryRef) return null
   return (
-    <Suspense fallback={null}>
-      <SyncedBlockOriginalProbe
-        queryRef={queryRef}
-        currentPageId={currentPageId}
-        onOriginal={onOriginal}
-      />
-    </Suspense>
+    <ErrorBoundary fallback={() => null}>
+      <Suspense fallback={null}>
+        <SyncedBlockOriginalProbe
+          queryRef={queryRef}
+          currentPageId={currentPageId}
+          onOriginal={onOriginal}
+        />
+      </Suspense>
+    </ErrorBoundary>
   )
 }

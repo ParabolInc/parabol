@@ -18,6 +18,10 @@ import {
 import {SYNCED_BLOCK_RENAME_EVENT} from '../pageLinkBlock/startSyncedBlockRename'
 import {happyWindow} from './installHappyDom'
 
+jest.mock('../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
 jest.mock('../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
 jest.mock('../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-router', () => ({
