@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react'
 import {ArrowDropDown} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
+import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import menuSectionTitleClass from '../../../ui/Menu/menuSectionTitleClass'
@@ -22,7 +23,12 @@ export const SyncedBlockPlacesMenu = (props: Props) => {
       open={isOpen}
       onOpenChange={handleOpenChange}
       trigger={
-        <Button className={syncedBlockBarButtonClass(isViewOnly)}>
+        <Button
+          className={cn(
+            syncedBlockBarButtonClass(isViewOnly),
+            isViewOnly && 'hover:text-fg-primary'
+          )}
+        >
           <span>{label}</span>
           <ArrowDropDown className='text-[16px]' />
         </Button>

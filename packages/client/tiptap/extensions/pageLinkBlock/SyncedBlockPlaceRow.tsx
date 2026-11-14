@@ -20,10 +20,10 @@ export const SyncedBlockPlaceRow = ({row}: Props) => {
       <Icon className='shrink-0 text-[18px] text-fg-secondary' />
       <span className='min-w-0 flex-auto'>
         <span className='block truncate'>{title}</span>
-        {isInTrash && <span className='block text-fg-muted text-xs'>In Trash</span>}
+        {isInTrash && <span className='block text-fg-secondary text-xs'>In Trash</span>}
       </span>
       {(isThisPage || isOriginal) && (
-        <SyncedBlockTag className='text-fg-muted'>
+        <SyncedBlockTag className='bg-[color-mix(in_srgb,currentColor_18%,var(--color-surface-modal))] text-fg-secondary'>
           {isThisPage ? 'This page' : 'Original'}
         </SyncedBlockTag>
       )}
