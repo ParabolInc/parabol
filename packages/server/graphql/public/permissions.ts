@@ -455,8 +455,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
     updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
-    updateDragLocation:
-      isTeamMemberOfMeeting<'Mutation.updateDragLocation'>('args.input.meetingId'),
+    // A drag update is a broadcast that must not touch Postgres or a dataloader, so this checks
+    // only the teams in the auth token, not that meetingId belongs to teamId. A user who knows
+    // another team's meetingId can broadcast fake drag positions into that meeting. The payload is
+    // only coordinates, so nothing is read or changed, and the risk is worth it: checking the
+    // meeting (isTeamMemberOfMeeting, #14104) loaded it on each of ~2,400 updates a minute during
+    // a retro of ~35 people on 2026-11-13 and grew each production web server by ~1 GiB.
+    updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
     updateFacilitatorRotation:
       isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateIntegrationRepoAccess:
