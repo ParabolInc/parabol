@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useRef} from 'react'
+import {Fragment, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {MeetingControlBar_meeting$key} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -13,7 +13,7 @@ import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import useClickConfirmation from '../hooks/useClickConfirmation'
-import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
+import {cn} from '../ui/cn'
 import showTimerInPhase from '../utils/showTimerInPhase'
 import BottomControlBarMusic from './BottomControlBarMusic'
 import BottomControlBarReady from './BottomControlBarReady'
@@ -53,7 +53,16 @@ const MeetingControlBar = (props: Props) => {
         facilitatorUserId
         meetingType
         showSidebar
+        ... on ActionMeeting {
+          rightDrawerOpen
+        }
         ... on PokerMeeting {
+          rightDrawerOpen
+        }
+        ... on RetrospectiveMeeting {
+          rightDrawerOpen
+        }
+        ... on TeamPromptMeeting {
           rightDrawerOpen
         }
         localStage {
@@ -71,6 +80,7 @@ const MeetingControlBar = (props: Props) => {
           phaseType
           stages {
             id
+            isNavigable
           }
         }
       }
@@ -98,13 +108,16 @@ const MeetingControlBar = (props: Props) => {
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === 'checkin'
   const isPoker = meetingType === 'poker'
+  const nextStage = findStageAfterId(phases, localStageId)?.stage
+  // poker participants advance themselves, but only through stages the facilitator has unlocked
+  const canGotoNext = !!nextStage && (isFacilitating || (isPoker && nextStage.isNavigable))
   const getPossibleButtons = () => {
     const buttons = ['music']
     if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if (isDesktop) buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
+    if (canGotoNext) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }
@@ -175,10 +188,12 @@ const MeetingControlBar = (props: Props) => {
   return (
     <div
       ref={ref}
-      className='fixed bottom-0 single-reflection-column:bottom-2 flex h-14 min-h-14 single-reflection-column:w-auto w-full flex-nowrap items-center justify-between single-reflection-column:rounded bg-white p-2 text-slate-600 text-sm'
+      className={cn(
+        'fixed bottom-0 single-reflection-column:bottom-2 flex h-14 min-h-14 single-reflection-column:w-auto w-full flex-nowrap items-center justify-between single-reflection-column:rounded bg-surface-card p-2 text-fg-primary text-sm',
+        isDesktop ? 'shadow-[var(--shadow-bar)]' : 'shadow-[var(--shadow-bar-up)]'
+      )}
       style={{
         left: controlBarLeft,
-        boxShadow: isDesktop ? desktopBarShadow : bottomBarShadow,
         transition: `all 200ms ${BezierCurve.DECELERATE}`,
         zIndex: ZIndex.BOTTOM_BAR
       }}
@@ -186,7 +201,12 @@ const MeetingControlBar = (props: Props) => {
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
     >
-      {buttons.map(({key}) => renderButton(key))}
+      {buttons.map(({key}, idx) => (
+        <Fragment key={key}>
+          {idx > 0 && <div className='h-8 w-px shrink-0 bg-hairline' />}
+          {renderButton(key)}
+        </Fragment>
+      ))}
     </div>
   )
 }

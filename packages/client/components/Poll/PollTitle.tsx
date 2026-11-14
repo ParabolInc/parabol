@@ -1,12 +1,6 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PollTitle_poll$key} from '../../__generated__/PollTitle_poll.graphql'
-
-const PollTitleHeader = styled('div')({
-  padding: `10px 12px 0px 12px`,
-  fontSize: '14px'
-})
 
 interface Props {
   pollRef: PollTitle_poll$key
@@ -23,7 +17,7 @@ const PollTitle = (props: Props) => {
     pollRef
   )
 
-  return <PollTitleHeader>{poll.title}</PollTitleHeader>
+  return <div className='px-3 pt-[10px] text-[14px]'>{poll.title}</div>
 }
 
 export default PollTitle

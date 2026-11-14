@@ -1,8 +1,10 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import base64url from 'base64url'
+import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import faker from 'faker'
 import {sql} from 'kysely'
+import {Threshold} from 'parabol-client/types/constEnums'
 import {Doc} from 'yjs'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
@@ -11,7 +13,7 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 export const HOST =
   process.env.HOST === 'localhost' ? `localhost:${process.env.PORT}` : process.env.HOST!
 export const PROTOCOL = process.env.PROTO || 'http'
-const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
+export const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
@@ -42,7 +44,7 @@ const persistFunction = (text: string) => {
   return id
 }
 
-const persistQuery = async (query: string) => {
+export const persistQuery = async (query: string) => {
   const pg = getKysely()
   const id = persistFunction(query.trim())
   const record = {
@@ -85,30 +87,44 @@ export async function sendTipTap<T>(
     })
   })
 }
+const toFormData = (operations: string, uploadables: Record<string, File>) => {
+  const formData = new FormData()
+  formData.append('operations', operations)
+  const map: Record<string, string[]> = {}
+  Object.entries(uploadables).forEach(([key, file], idx) => {
+    map[idx] = [`variables.${key}`]
+    formData.append(String(idx), file)
+  })
+  formData.append('map', JSON.stringify(map))
+  return formData
+}
+
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   cookie?: string
   bearerToken?: string
+  uploadables?: Record<string, File>
 }) {
   const cookie = req.cookie ?? ''
   const authorization = req.bearerToken ? `Bearer ${req.bearerToken}` : ''
-  const {query, variables} = req
+  const {query, variables, uploadables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
 
   const docId = await persistQuery(query)
+  const operations = JSON.stringify({
+    docId,
+    variables
+  })
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
-      'content-type': 'application/json',
+      ...(!uploadables && {'content-type': 'application/json'}),
       authorization,
       cookie
     },
-    body: JSON.stringify({
-      docId,
-      variables
-    })
+    body: uploadables ? toFormData(operations, uploadables) : operations
   })
 
   const authCookie = response.headers.get('set-cookie')
@@ -163,41 +179,24 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
   }
 `
 
-export const signUpWithEmail = async (emailInput: string) => {
-  //FIXME #1402 email addresses are case sensitive
-  const email = emailInput.toLowerCase()
+// Test DBs are never truncated between runs, so every generated email/domain must be unique
+// across all runs & parallel workers, or signUp fails with "User already exists"
+const uniqueToken = () => crypto.randomBytes(8).toString('hex')
 
-  const password = faker.internet.password()
-  const signUp = await sendPublic({
-    query: SIGNUP_WITH_PASSWORD_MUTATION,
-    variables: {
-      email,
-      password,
-      pseudoId: null,
-      invitationToken: '',
-      params: ''
-    }
-  })
+export const getTestDomain = (suffix = faker.internet.domainSuffix()) =>
+  `${faker.internet.domainWord()}-${uniqueToken()}.${suffix}`.toLowerCase()
 
-  expect(signUp).toMatchObject({
-    data: {
-      signUpWithPassword: {
-        error: {
-          message: 'Verification required. Check your inbox.'
-        },
-        user: null
-      }
-    }
-  })
+export const getTestEmail = (domain?: string) => {
+  const base = domain ? `${faker.internet.userName()}@${domain}` : faker.internet.email()
+  const [localPart, emailDomain] = base.toLowerCase().split('@')
+  return `${localPart}-${uniqueToken()}@${emailDomain}`
+}
 
-  const pg = getKysely()
-  const verification = await pg
-    .selectFrom('EmailVerification')
-    .selectAll()
-    .where('email', '=', email)
-    .where('expiration', '>', new Date())
-    .executeTakeFirst()
-
+const completeEmailVerification = async (
+  email: string,
+  password: string,
+  verificationToken: string
+) => {
   const verifyEmail = await sendPublic({
     query: `
       mutation VerifyEmailMutation(
@@ -225,7 +224,7 @@ export const signUpWithEmail = async (emailInput: string) => {
       }
     `,
     variables: {
-      verificationToken: verification!.token
+      verificationToken
     }
   })
 
@@ -257,9 +256,102 @@ export const signUpWithEmail = async (emailInput: string) => {
   }
 }
 
+export const signUpWithPasswordMutation = async (emailInput: string) => {
+  //FIXME #1402 email addresses are case sensitive
+  const email = emailInput.toLowerCase()
+
+  const password = faker.internet.password()
+  const signUp = await sendPublic({
+    query: SIGNUP_WITH_PASSWORD_MUTATION,
+    variables: {
+      email,
+      password,
+      pseudoId: null,
+      invitationToken: '',
+      params: ''
+    }
+  })
+
+  expect(signUp).toMatchObject({
+    data: {
+      signUpWithPassword: {
+        error: {
+          message: 'Verification required. Check your inbox.'
+        },
+        user: null
+      }
+    }
+  })
+
+  const pg = getKysely()
+  await pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
+  const verification = await pg
+    .selectFrom('EmailVerification')
+    .selectAll()
+    .where('email', '=', email)
+    .where('expiration', '>', new Date())
+    .executeTakeFirst()
+
+  return completeEmailVerification(email, password, verification!.token)
+}
+
+// The signUpWithPassword mutation hashes at Security.SALT_ROUNDS, ~250ms of server CPU per user.
+// Seeding the verification with a cheap hash keeps hundreds of signups from dominating the run;
+// signUpWithPasswordMutation covers the real mutation
+const TEST_SALT_ROUNDS = 4
+
+export const signUpWithEmail = async (emailInput: string) => {
+  //FIXME #1402 email addresses are case sensitive
+  const email = emailInput.toLowerCase()
+  const password = faker.internet.password()
+  const verificationToken = crypto.randomBytes(48).toString('base64url')
+  await getKysely()
+    .insertInto('EmailVerification')
+    .values({
+      email,
+      token: verificationToken,
+      hashedPassword: await bcrypt.hash(password, TEST_SALT_ROUNDS),
+      expiration: new Date(Date.now() + Threshold.EMAIL_VERIFICATION_LIFESPAN)
+    })
+    .execute()
+  return completeEmailVerification(email, password, verificationToken)
+}
+
 export const signUp = async () => {
-  const email = faker.internet.email()
-  return signUpWithEmail(email)
+  return signUpWithEmail(getTestEmail())
+}
+
+export const createOrgAdmin = async (email: string) => {
+  const {userId, cookie, orgId} = await signUpWithEmail(email)
+  const promoteToOrgAdmin = await sendIntranet({
+    query: `
+      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
+        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
+          __typename
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      orgId,
+      userId,
+      role: 'ORG_ADMIN'
+    }
+  })
+
+  expect(promoteToOrgAdmin).toMatchObject({
+    data: {
+      setOrgUserRole: {
+        __typename: 'SetOrgUserRoleSuccess'
+      }
+    }
+  })
+
+  return {cookie, orgId, userId}
 }
 
 export const getUserTeams = async (userId: string) => {

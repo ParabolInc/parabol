@@ -1,0 +1,16 @@
+"""
+Success result for updateFacilitatorRotation mutation
+"""
+type UpdateFacilitatorRotationSuccess {
+  "The team whose facilitator rotation changed"
+  team: Team!
+
+  """
+  The meeting whose facilitator changed. Null when the rotation moved but the
+  head of the queue, and therefore the facilitator, stayed put
+  """
+  meeting: NewMeeting
+
+  "The stage the new facilitator is now on"
+  facilitatorStage: NewMeetingStage
+}

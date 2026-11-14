@@ -1,29 +1,22 @@
-import styled from '@emotion/styled'
-import {MailOutlined} from '@mui/icons-material'
+import {MailOutlined} from '~/ui/icons'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'
 
-const Form = styled('form')({
-  display: 'flex',
-  flex: 1
-})
-
 interface Props {
   contactUsUrl: string
-  onContactUsSubmit: () => void
 }
 
 const ContactUsButton = (props: Props) => {
-  const {contactUsUrl, onContactUsSubmit} = props
+  const {contactUsUrl} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
-    <Form method='get' target='_blank' action={contactUsUrl} onSubmit={onContactUsSubmit}>
-      <ProviderRowActionButton key='request' palette='warm'>
+    <form className='flex flex-1' method='get' target='_blank' action={contactUsUrl}>
+      <ProviderRowActionButton key='request'>
         {isDesktop ? 'Contact Us' : <MailOutlined />}
       </ProviderRowActionButton>
-    </Form>
+    </form>
   )
 }
 

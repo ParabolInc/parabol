@@ -23,7 +23,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PokerRevealVotesMutation_meeting @relay(mask: false)
+      ...PokerRevealVotesMutation_meeting @relay(mask: false) @alias
     }
   }
 `

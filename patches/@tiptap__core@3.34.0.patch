@@ -1,0 +1,54 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 30371677b4e32734cd44d826b683d6affb0a368b..d348e8050ee059b83fe1e0118dfa0b7de3bf889f 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -6734,6 +6734,7 @@ var Editor = class extends EventEmitter {
+ 	* An object of all registered commands.
+ 	*/
+ 	get commands() {
++		if (!this.commandManager) return new Proxy({}, { get: () => () => false });
+ 		return this.commandManager.commands;
+ 	}
+ 	/**
+@@ -7070,12 +7071,14 @@ var Editor = class extends EventEmitter {
+ 	* Get the document as HTML.
+ 	*/
+ 	getHTML() {
++		if (!this.schema) return "";
+ 		return getHTMLFromFragment(this.state.doc.content, this.schema);
+ 	}
+ 	/**
+ 	* Get the document as text.
+ 	*/
+ 	getText(options) {
++		if (!this.schema) return "";
+ 		const { blockSeparator = "\n\n", textSerializers = {} } = options || {};
+ 		return getText(this.state.doc, {
+ 			blockSeparator,
+diff --git a/dist/index.js b/dist/index.js
+index 158d419e30c111209ff390b864013124767636e0..1a3af3c1c31599bb4bf32295128fbd371b5e2498 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -6722,6 +6722,7 @@ var Editor = class extends EventEmitter {
+ 	* An object of all registered commands.
+ 	*/
+ 	get commands() {
++		if (!this.commandManager) return new Proxy({}, { get: () => () => false });
+ 		return this.commandManager.commands;
+ 	}
+ 	/**
+@@ -7058,12 +7059,14 @@ var Editor = class extends EventEmitter {
+ 	* Get the document as HTML.
+ 	*/
+ 	getHTML() {
++		if (!this.schema) return "";
+ 		return getHTMLFromFragment(this.state.doc.content, this.schema);
+ 	}
+ 	/**
+ 	* Get the document as text.
+ 	*/
+ 	getText(options) {
++		if (!this.schema) return "";
+ 		const { blockSeparator = "\n\n", textSerializers = {} } = options || {};
+ 		return getText(this.state.doc, {
+ 			blockSeparator,

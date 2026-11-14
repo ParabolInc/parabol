@@ -23,10 +23,10 @@ type ReflectPhase implements NewMeetingPhase {
   """
   the Prompt that the facilitator wants the group to focus on
   """
-  focusedPrompt: ReflectPrompt
+  focusedPrompt: TemplatePrompt
 
   """
   The prompts used during the reflect phase
   """
-  reflectPrompts: [ReflectPrompt!]!
+  reflectPrompts: [TemplatePrompt!]!
 }

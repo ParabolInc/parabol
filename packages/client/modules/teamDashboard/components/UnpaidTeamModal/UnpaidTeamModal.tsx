@@ -1,6 +1,4 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
@@ -8,28 +6,10 @@ import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
-
-const LockedAtContent = styled(DialogContent)({
-  textAlign: 'left',
-  p: {
-    marginBottom: 16
-  }
-})
-
-const ContactUsLink = styled('a')({
-  color: PALETTE.SKY_500,
-  textDecoration: 'underline'
-})
+import {Button} from '../../../../ui/Button/Button'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 
 interface Props {
   queryRef: PreloadedQuery<UnpaidTeamModalQuery>
@@ -71,15 +51,6 @@ const UnpaidTeamModal = (props: Props) => {
   const {viewerId} = atmosphere
   const {team} = viewer
 
-  useEffect(() => {
-    if (team?.organization.lockedAt) {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'organizationLockedModal',
-        orgId: team.organization.id
-      })
-    }
-  }, [])
-
   if (!team) return null
   const {name: teamName, organization} = team
 
@@ -92,10 +63,7 @@ const UnpaidTeamModal = (props: Props) => {
   const email = firstBillingLeaderUser?.email ?? 'Unknown'
   const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
-  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation
-    })
+  const goToBilling = () => {
     navigate(`/me/organizations/${orgId}`)
   }
 
@@ -103,7 +71,7 @@ const UnpaidTeamModal = (props: Props) => {
     return (
       <DashModal>
         <DialogTitle>{'Organization Locked'}</DialogTitle>
-        <LockedAtContent>
+        <DialogContent className='text-left [&_p]:mb-4'>
           <p>
             Unfortunately, <strong>{organizationName}</strong> has exceeded the{' '}
             {Threshold.MAX_STARTER_TIER_TEAMS} teams limit on the Starter Plan for more than{' '}
@@ -112,19 +80,28 @@ const UnpaidTeamModal = (props: Props) => {
           {isALeader ? (
             <>
               <p>You can re-activate your teams by upgrading your account.</p>
-              If you’d like to keep using Parabol on the Starter Plan, please{' '}
-              <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
-                contact us
-              </ContactUsLink>{' '}
-              to let us know which teams you’d like to delete to fit within the two-team limit.
-              <StyledButton size='medium' onClick={() => goToBilling('organizationLockedModal')}>
-                <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
-              </StyledButton>
+              <p>
+                If you’d like to keep using Parabol on the Starter Plan, please{' '}
+                <a
+                  href={ExternalLinks.CONTACT}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-accent underline'
+                >
+                  contact us
+                </a>{' '}
+                to let us know which teams you’d like to delete to fit within the two-team limit.
+              </p>
+              <DialogActions>
+                <Button variant='primary' size='md' onClick={goToBilling}>
+                  <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
+                </Button>
+              </DialogActions>
             </>
           ) : (
             `Try reaching out to ${billingLeaderName} at ${email}`
           )}
-        </LockedAtContent>
+        </DialogContent>
       </DashModal>
     )
   }
@@ -149,9 +126,11 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <StyledButton size='medium' onClick={() => goToBilling('unpaidTeamModal')}>
-            <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
-          </StyledButton>
+          <DialogActions>
+            <Button variant='primary' size='md' onClick={goToBilling}>
+              <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
+            </Button>
+          </DialogActions>
         )}
       </DialogContent>
     </DashModal>

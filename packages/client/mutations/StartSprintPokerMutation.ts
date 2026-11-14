@@ -27,7 +27,15 @@ const mutation = graphql`
           message
         }
       }
-      ...StartSprintPokerMutation_team @relay(mask: false)
+      ... on StartSprintPokerSuccess {
+        meeting {
+          # lets useJoinedMeetingQuery subscribe while the starter joins
+          viewerMeetingMember {
+            id
+          }
+        }
+      }
+      ...StartSprintPokerMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -43,7 +51,7 @@ const StartSprintPokerMutation: StandardMutation<
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startSprintPoker} = res
-      const {meeting, hasGcalError} = startSprintPoker
+      const {meeting, hasGcalError} = startSprintPoker.StartSprintPokerMutation_team ?? {}
       if (!meeting) return
       const {id: meetingId} = meeting
       if (hasGcalError) {

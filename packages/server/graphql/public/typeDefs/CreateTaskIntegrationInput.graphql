@@ -20,15 +20,7 @@ input CreateTaskIntegrationInput {
   service: TaskServiceEnum!
 
   """
-  A service-specific identifier for the project or repository that will own the new issue.
-  The required format differs by service:
-  - github:      "owner/repo"  (nameWithOwner, e.g. "ParabolInc/parabol")
-  - jira:        "cloudId:projectKey"  (e.g. "abc123:ENG")
-  - jiraServer:  service-specific composite key for the Jira Server project
-  - gitlab:      full project path (e.g. "group/subgroup/project")
-  - azureDevOps: IntegrationRepoId composite (instanceId:projectId)
-  - linear:      Linear team/project identifier
-  Passing an unrecognised format for the selected service will cause task creation to fail.
+  RepoIntegration.integrationRepoId of the repo or project that will own the new issue, exactly as the server returned it
   """
-  serviceProjectHash: String!
+  serviceProjectHash: ID!
 }

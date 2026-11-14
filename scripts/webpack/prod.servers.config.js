@@ -6,7 +6,11 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const cp = require('child_process')
+const getCommitHash = require('./utils/getCommitHash')
+const getNestedUsage = require('./utils/getNestedUsage')
+const pruneNestedTypeDefs = require('./utils/pruneNestedTypeDefs')
+const persistentCache = require('./utils/persistentCache')
+const AsciiOnlyPlugin = require('./utils/AsciiOnlyPlugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -14,17 +18,24 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
+const INIT_SERVER_ID = path.join(SERVER_ROOT, 'initServerId.ts')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
-const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
 const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
+const MAP_STACK_TRACES = path.join(SERVER_ROOT, 'mapStackTraces.ts')
 
-const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
+const COMMIT_HASH = getCommitHash()
 const runtimePlatform = `${process.platform}-${process.arch}`
+const SHARP_ROOT = path.dirname(path.dirname(require.resolve('sharp', {paths: [SERVER_ROOT]})))
+const SHARP_LIBVIPS_ROOT = path.dirname(
+  require.resolve(`@img/sharp-libvips-${runtimePlatform}/package`, {paths: [SHARP_ROOT]})
+)
 
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
+  const nestedUsage = getNestedUsage()
   return {
+    ...persistentCache(`servers-noDeps-${noDeps}`, __filename),
     mode: 'production',
     devtool: noDeps ? 'source-map' : undefined,
     node: {
@@ -32,39 +43,45 @@ module.exports = (config) => {
     },
     entry: {
       web: [
+        MAP_STACK_TRACES,
         DOTENV,
+        INIT_SERVER_ID,
         INIT_PUBLIC_PATH,
-        INIT_LOGGING,
         MONKEYPATCHES,
         DUMP_ON_USR2,
-        // each instance of web needs to generate its own index.html to use on startup
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      embedder: [DOTENV, DUMP_ON_USR2, path.join(EMBEDDER_ROOT, 'embedder.ts')],
+      embedder: [
+        MAP_STACK_TRACES,
+        DOTENV,
+        INIT_SERVER_ID,
+        DUMP_ON_USR2,
+        path.join(EMBEDDER_ROOT, 'embedder.ts')
+      ],
       preDeploy: [
         DOTENV,
+        INIT_SERVER_ID,
         INIT_PUBLIC_PATH,
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
       ],
-      pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
-      migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],
-      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')],
-      pg: {
-        // bundle pg with all its dependencies into a single file
-        // so dd-trace-js can monkeypatch require('pg')
-        import: [path.join(SERVER_ROOT, 'postgres/pg.ts')],
-        library: {
-          type: 'commonjs2'
-        }
-      }
+      pushToCDN: [
+        DOTENV,
+        // index.html & the like need the public path
+        INIT_PUBLIC_PATH,
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')
+      ],
+      migrate: [
+        DOTENV,
+        INIT_SERVER_ID,
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')
+      ],
+      assignSURole: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/assignSURole.ts')]
     },
     output: {
-      filename: (pathData) => {
-        // trick dd-trace-js into thinking our standalone pg file is a node_module
-        return pathData.chunk.name === 'pg' ? 'node_modules/pg/lib/index.js' : '[name].js'
-      },
-      path: distPath
+      filename: '[name].js',
+      path: distPath,
+      // V8 compiles a parenthesized module factory with the bundle, so the factories land in the image's compile cache
+      environment: {methodShorthand: false}
     },
     resolve: {
       alias: {
@@ -80,7 +97,7 @@ module.exports = (config) => {
     externals: [
       !noDeps && {
         ...nodeExternals({
-          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+          allowlist: [/parabol-client/, /parabol-server/, 'node:crypto']
         }),
         sharp: 'commonjs sharp'
       }
@@ -98,6 +115,8 @@ module.exports = (config) => {
         __PRODUCTION__: true,
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __COMMIT_HASH__: JSON.stringify(COMMIT_HASH),
+        __NESTED_USAGE__: JSON.stringify(nestedUsage),
+        __NESTED_TYPE_DEFS__: JSON.stringify(nestedUsage && pruneNestedTypeDefs(nestedUsage)),
         // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
         'process.platform': JSON.stringify(process.platform),
         'process.arch': JSON.stringify(process.arch),
@@ -113,39 +132,38 @@ module.exports = (config) => {
         contextRegExp: /pg\/lib/
       }),
       new webpack.IgnorePlugin({
-        resourceRegExp: /^exiftool-vendored$/,
-        contextRegExp: /@dicebear/
+        // metascraper's url-regex-safe prefers the re2 native binding but falls back to RegExp
+        resourceRegExp: /^re2$/,
+        contextRegExp: /url-regex-safe/
       }),
       new webpack.IgnorePlugin({
-        resourceRegExp: /^@resvg\/resvg-js$/,
-        contextRegExp: /@dicebear/
+        // gaxios fetches with node-fetch, whose fetch-blob only falls back to this when node has no web streams
+        resourceRegExp: /^web-streams-polyfill\//,
+        contextRegExp: /fetch-blob/
+      }),
+      // Server modules compile to CommonJS & the client modules they share are ESM, so each would bundle its own build of these
+      // Resolving every request as an import leaves 1 TipTap & 1 ProseMirror, so instanceof holds between them
+      new webpack.NormalModuleReplacementPlugin(/^(@tiptap\/|prosemirror-)/, (resolveData) => {
+        resolveData.dependencyType = 'esm'
       }),
       new webpack.IgnorePlugin({
-        resourceRegExp: /inter-regular.otf$/,
-        contextRegExp: /@dicebear/
+        // sharp statically requires a prebuilt binary for every platform, we only ship ours
+        resourceRegExp: new RegExp(`^@img/sharp-(?!${runtimePlatform}/)[^/]+/sharp\\.node$`)
       }),
       new webpack.IgnorePlugin({
-        resourceRegExp: /inter-bold.otf$/,
-        contextRegExp: /@dicebear/
+        // the prebuilt binary finds libvips via rpath, the dylib itself is copied below
+        resourceRegExp: /^@img\/sharp-libvips-[^/]+\/binary$/
       }),
       new CopyWebpackPlugin({
         patterns: [
           {
             // copy sharp's libvips to the output
-            from: path.resolve(
-              PROJECT_ROOT,
-              `node_modules/.pnpm/sharp@0.34.3/node_modules/@img/sharp-libvips-${runtimePlatform}`
-            ),
+            from: SHARP_LIBVIPS_ROOT,
             to: `sharp-libvips-${runtimePlatform}`
-          },
-          noDeps && {
-            // dd-trace-js has a lookup table for hooks, which includes the key `pg`
-            // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
-            from: path.resolve(SERVER_ROOT, 'node_modules', 'pg', 'package.json'),
-            to: 'node_modules/pg/package.json'
           }
-        ].filter(Boolean)
-      })
+        ]
+      }),
+      new AsciiOnlyPlugin()
     ].filter(Boolean),
     module: {
       parser: {
@@ -155,21 +173,17 @@ module.exports = (config) => {
         }
       },
       rules: [
-        ...transformRules(PROJECT_ROOT, true),
+        ...transformRules(PROJECT_ROOT, {isProd: true}),
+        {
+          // cheerio only needs undici for fromURL, metascraper just calls load
+          test: /cheerio\/dist\/commonjs\/index\.js$/,
+          resolve: {alias: {undici$: false}}
+        },
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
           type: 'asset/resource',
           generator: {
             filename: 'images/[name][ext]'
-          }
-        },
-        {
-          test: /sharp\.js$/,
-          loader: 'string-replace-loader',
-          options: {
-            search: 'sharp = require(path)',
-            replace: `sharp = require('@img/sharp-${runtimePlatform}/sharp.node')`,
-            strict: true
           }
         },
         {

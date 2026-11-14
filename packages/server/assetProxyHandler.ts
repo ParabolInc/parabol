@@ -1,13 +1,13 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {fetch} from '@whatwg-node/fetch'
 import imageNotSupportedPlaceholder from '../../static/images/illustrations/imageNotSupportedPlaceholder.png'
-import {atlassianProxyHandler} from './atlassianProxyHandler'
 import type AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import type {AssetType, PartialPath} from './fileStorage/FileStoreManager'
 import getFileStoreManager from './fileStorage/getFileStoreManager'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
+import {atlassianProxyHandler} from './integrations/jira/atlassianProxyHandler'
 import getKysely from './postgres/getKysely'
 import {getUserId, isTeamMember} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
@@ -37,7 +37,7 @@ export const checkAccess = async (
   authToken: AuthToken | null,
   scope: AssetScopeEnum,
   scopeCode: string,
-  assetType: AssetType | 'idpMetadata.xml'
+  assetType: AssetType | 'idpMetadata' | 'idpMetadata.xml'
 ) => {
   const viewerId = getUserId(authToken)
   if (scope === 'User') {
@@ -55,7 +55,7 @@ export const checkAccess = async (
       if (isTeamMember(authToken, scopeCode)) return true
     }
   } else if (scope === 'Organization') {
-    if (assetType === 'picture' || assetType === 'idpMetadata.xml') {
+    if (assetType === 'picture' || assetType === 'idpMetadata' || assetType === 'idpMetadata.xml') {
       // all org avatars and metadata are visible to all users
       return true
     } else {
@@ -110,7 +110,7 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
 
   const partialPath = decodeURIComponent(rawPath)
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,
     () => manager.presignUrl(partialPath as PartialPath),

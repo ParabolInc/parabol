@@ -1,25 +1,7 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
-
 interface Props {
   isComplete: boolean
   isMeeting: boolean
 }
-
-const EmptyBlock = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  padding: '8px 8px 0 56px'
-})
-
-const EmptyMessage = styled('div')({
-  color: PALETTE.SLATE_600,
-  flex: 1,
-  fontSize: 13,
-  fontWeight: 400,
-  lineHeight: '20px',
-  paddingTop: 4
-})
 
 const AgendaListEmptyState = (props: Props) => {
   const {isComplete, isMeeting} = props
@@ -27,15 +9,15 @@ const AgendaListEmptyState = (props: Props) => {
 
   if (isComplete) return null
   return (
-    <EmptyBlock>
-      <EmptyMessage>
+    <div className='flex items-start pt-2 pr-2 pb-0 pl-14'>
+      <div className='flex-1 pt-1 font-normal text-[13px] text-fg-secondary leading-[20px]'>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
         <b>
           <i>{'upcoming vacation'}</i>
         </b>
         {'.”'}
-      </EmptyMessage>
-    </EmptyBlock>
+      </div>
+    </div>
   )
 }
 

@@ -1,16 +1,15 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
+import type {RepoAccessMeta} from './RepoAccessMeta'
 import {
   type selectAgendaItems,
   type selectAtlassianAuth,
   type selectComments,
   type selectDiscussion,
   type selectGitHubAuth,
-  type selectGitHubDimensionFieldMap,
-  type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
-  type selectJiraDimensionFieldMap,
-  type selectJiraServerDimensionFieldMap,
+  type selectIntegrationDimensionFieldMap,
+  type selectIntegrationSearchQuery,
   type selectMassInvitations,
   type selectMeetingSeries,
   type selectMeetingSettings,
@@ -20,18 +19,27 @@ import {
   type selectOAuthAPICode,
   type selectOAuthAPIProvider,
   type selectOrganizations,
+  type selectPageExports,
   type selectPages,
   selectPersonalAccessToken,
   type selectPoll,
   type selectPollOption,
-  type selectReflectPrompts,
+  type selectTemplatePrompts,
   type selectRetroReflections,
+  type selectRetroSuggestedGrouping,
   type selectSlackAuths,
   type selectSlackNotifications,
   type selectSuggestedAction,
+  type selectTaskEstimate,
   type selectTasks,
   type selectTeamInvitations,
   type selectTeamMemberIntegrationAuth,
+  type selectTeamHealthCategories,
+  type selectTeamHealthCategorySummaries,
+  type selectTeamHealthQuestionPacks,
+  type selectTeamHealthQuestions,
+  type selectTeamHealthResponses,
+  type selectTeamHealthTemplateQuestions,
   type selectTeamPromptResponses,
   type selectTeams,
   type selectTemplateDimension,
@@ -51,7 +59,6 @@ import {
   PageOrganizationAccess as PageOrganizationAccessPG,
   PageTeamAccess as PageTeamAccessPG,
   PageUserAccess as PageUserAccessPG,
-  TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
 
@@ -86,6 +93,21 @@ export type AutogroupReflectionGroupType = {
   reflectionIds: string[]
 }
 
+/** Accept all writes the optional fields so undo can restore each card exactly. */
+export type ResetReflectionGroupType = AutogroupReflectionGroupType & {
+  reflectionGroupId?: string
+  intoReflectionGroupId?: string
+  sortOrderByReflectionId?: Record<string, number>
+  intoPriorTitle?: string | null
+  intoPriorSmartTitle?: string | null
+  intoAppliedTitle?: string | null
+}
+
+export type SuggestedGroupsModeType = 'similarity' | 'ai'
+export type RetroSuggestedGrouping = ExtractTypeFromQueryBuilderSelect<
+  typeof selectRetroSuggestedGrouping
+>
+
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
 export type OrganizationUser = Selectable<OrganizationUserPG>
@@ -99,10 +121,25 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-export interface TeamMemberIntegrationAuth
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
+export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamMemberIntegrationAuth
+>
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
+export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthCategories
+>
+export type TeamHealthQuestionPack = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthQuestionPacks
+>
+export type TeamHealthQuestion = ExtractTypeFromQueryBuilderSelect<typeof selectTeamHealthQuestions>
+export type TeamHealthTemplateQuestion = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthTemplateQuestions
+>
+export type TeamHealthResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamHealthResponses>
+export type TeamHealthCategorySummary = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthCategorySummaries
+>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 
 // TODO refactor getTemplateScaleRefsByIds to kysely
@@ -123,25 +160,19 @@ export type TemplateDimension = ExtractTypeFromQueryBuilderSelect<typeof selectT
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
-export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
+export type TemplatePrompt = ExtractTypeFromQueryBuilderSelect<typeof selectTemplatePrompts>
 export type Insight = Selectable<InsightPG>
 
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
 export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
-export type TaskEstimate = Selectable<TaskEstimatePG>
+export type TaskEstimate = ExtractTypeFromQueryBuilderSelect<typeof selectTaskEstimate>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 // userSortOrder comes from PageUserSortOrder table, and is sometimes prefetched for performance
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages> & {
   userSortOrder?: string | null
-}
-export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId'> & {
-  __typename: 'Page' | 'PagePreview'
-}
-export type PagePreview = PagePartial & {
-  __typename: 'PagePreview'
 }
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
 export type PageAccessRequest = Selectable<PageAccessRequestPG>
@@ -160,27 +191,62 @@ export type JiraSearchQuery = {
   lastUsedAt: string
 }
 
+export type JiraSearchQueryJson = {
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters: string[]
+}
+
+export type GitHubSearchQueryJson = {
+  queryString: string
+}
+
+export type GitLabSearchQueryJson = {
+  queryString: string
+  projectIds: string[]
+}
+
+export type LinearSearchQueryJson = {
+  queryString: string
+  projectIds: string[]
+  teamIds: string[]
+}
+
+export type AzureDevOpsSearchQueryJson = {
+  queryString: string
+  isWIQL: boolean
+  projectNames: string[]
+}
+
+/** What each service's issueSearch.buildQuery stores in IntegrationSearchQuery.query */
+export type IntegrationSearchQueryJsonByService = {
+  jira: JiraSearchQueryJson
+  jiraServer: JiraSearchQueryJson
+  github: GitHubSearchQueryJson
+  gitlab: GitLabSearchQueryJson
+  linear: LinearSearchQueryJson
+  azureDevOps: AzureDevOpsSearchQueryJson
+  clickup: {queryString: string; listIds: string[]}
+}
+
+export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationSearchQuery
+>
+
+export type JiraAuthMeta = {cloudIds: string[]}
+
+/** Services that persist something in TeamMemberIntegrationAuth.meta and its shape; services absent here have meta: null.
+ * This map is the only place to extend when a new integration stores auth meta. */
+export type IntegrationAuthMetaByService = {
+  jira: JiraAuthMeta
+  azureDevOps: RepoAccessMeta | null
+}
+
 export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
 
-export interface GitHubSearchQuery {
-  id: string
-  queryString: string
-  lastUsedAt: string
-}
 export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
-export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectGitLabDimensionFieldMap
->
-export type GitHubDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectGitHubDimensionFieldMap
->
-
-export type JiraDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectJiraDimensionFieldMap
->
-
-export type JiraServerDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
-  typeof selectJiraServerDimensionFieldMap
+export type IntegrationDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationDimensionFieldMap
 >
 
 export type TAuthIdentity = 'GOOGLE' | 'LOCAL' | 'MICROSOFT'
@@ -208,3 +274,5 @@ export type TimelineEvent = ExtractTypeFromQueryBuilderSelect<typeof selectTimel
 export type PersonalAccessToken = ExtractTypeFromQueryBuilderSelect<
   typeof selectPersonalAccessToken
 >
+
+export type PageExport = ExtractTypeFromQueryBuilderSelect<typeof selectPageExports>

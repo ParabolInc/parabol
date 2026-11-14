@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import type {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import type useGotoStageId from '~/hooks/useGotoStageId'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
@@ -41,7 +40,7 @@ const EstimatePhaseArea = (props: Props) => {
         ...PokerCardDeck_meeting
         ...EstimateDimensionColumn_meeting
         localStage {
-          ...EstimatePhaseAreaStage @relay(mask: false)
+          ...EstimatePhaseAreaStage @relay(mask: false) @alias
         }
         phases {
           ... on EstimatePhase {
@@ -57,9 +56,12 @@ const EstimatePhaseArea = (props: Props) => {
     meetingRef
   )
   const {localStage, phases} = meeting
-  const {id: localStageId, taskId} = localStage
+  const estimateStage = localStage.EstimatePhaseAreaStage
+  const localStageId = estimateStage?.id
+  const taskId = estimateStage?.taskId
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const dimensionStages = stages!.filter((stage) => stage.taskId === taskId)
+  // The facilitator's navigation can reach the viewer before the stages it points to have loaded
+  const dimensionStages = taskId ? stages!.filter((stage) => stage.taskId === taskId) : []
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const estimateAreaRef = useRef<HTMLDivElement>(null)
@@ -82,7 +84,9 @@ const EstimatePhaseArea = (props: Props) => {
                 key={idx}
                 className='mx-0.5 h-2 w-2 cursor-pointer rounded-full'
                 style={{
-                  backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_600,
+                  backgroundColor: isActive
+                    ? 'var(--color-accent-active)'
+                    : 'var(--color-fg-muted)',
                   opacity: isActive ? undefined : 0.35
                 }}
                 onClick={() => onChangeIdx(idx)}
@@ -101,11 +105,12 @@ const EstimatePhaseArea = (props: Props) => {
         {dimensionStages.map((stage, idx) => (
           <div
             key={idx}
-            className='flex-1 rounded-t-lg'
+            className='h-full rounded-t-lg'
             style={{
-              background: PALETTE.SLATE_300,
-              paddingBottom: isDesktop ? 8 * 19 : 8 * 12,
-              padding: isDesktop ? '0 8px' : '0 4px'
+              background: 'var(--color-surface-well)',
+              paddingLeft: isDesktop ? 8 : 4,
+              paddingRight: isDesktop ? 8 : 4,
+              paddingBottom: isDesktop ? 8 * 19 : 8 * 12
             }}
           >
             <EstimateDimensionColumn meeting={meeting} stage={stage} />

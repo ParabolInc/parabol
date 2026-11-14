@@ -4,13 +4,13 @@ import groupReflections from '../../../../client/utils/smartGroup/groupReflectio
 import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import getKysely from '../../../postgres/getKysely'
 import type {AnyMeeting, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
-import {Logger} from '../../../utils/Logger'
 import type {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
+import generateDefaultSuggestedGroups from './generateDefaultSuggestedGroups'
 import generateDiscussionPrompt from './generateDiscussionPrompt'
-import generateGroups from './generateGroups'
 import {publishToEmbedder} from './publishToEmbedder'
+import recordSuggestedGroupingOutcome from './recordSuggestedGroupingOutcome'
 import removeEmptyReflections from './removeEmptyReflections'
 
 /*
@@ -55,18 +55,21 @@ const handleCompletedRetrospectiveStage = async (
       )
 
       data.reflectionGroups = sortedReflectionGroups
-      generateGroups(reflections, meeting.teamId).catch(Logger.log)
+      // Entering the group phase. Don't await: suggested groups are a convenience, and the
+      // navigation must not wait on them (or fail with them)
+      generateDefaultSuggestedGroups(meeting.id, meeting.teamId, meeting.facilitatorUserId!)
     } else if (stage.phaseType === GROUP) {
-      const {facilitatorUserId, phases, teamId} = meeting
+      const {phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await pg
         .updateTable('NewMeeting')
-        .set({phases: JSON.stringify(phases)})
+        .set({phases: JSON.stringify(phases), resetReflectionGroups: null})
         .where('id', '=', meeting.id)
         .execute()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId!)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader)
+      recordSuggestedGroupingOutcome(meeting.id)
     }
 
     return {[stage.phaseType]: data}

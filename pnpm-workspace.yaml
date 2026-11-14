@@ -1,29 +1,65 @@
 packages:
   - packages/*
+
 minimumReleaseAge: 2880
+
 minimumReleaseAgeExclude:
   - nest-graphql-endpoint
   - '@tiptap/*'
   - fast-xml-parser
-onlyBuiltDependencies:
-  - '@datadog/native-appsec'
-  - '@datadog/native-iast-taint-tracking'
-  - '@datadog/native-metrics'
-  - '@datadog/pprof'
-  - '@parcel/watcher'
-  - '@scarf/scarf'
-  - '@swc/core'
-  - core-js
-  - core-js-pure
-  - cpu-features
-  - dd-trace
-  - es5-ext
-  - esbuild
-  - msgpackr-extract
-  - nx
-  - protobufjs
-  - sharp
-  - ssh2
-  - styled-components
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@scarf/scarf': true
+  '@swc/core': true
+  core-js: true
+  core-js-pure: true
+  cpu-features: true
+  es5-ext: true
+  esbuild: true
+  msgpackr-extract: true
+  nx: true
+  protobufjs: true
+  re2: false
+  sharp: true
+  ssh2: true
+  styled-components: true
+
+overrides:
+  typescript: '^7.0.2'
+  hoist-non-react-statics: '^3.3.0'
+  '@types/react': '^19.3.0'
+  '@types/react-dom': '^19.3.0'
+  clean-css: '^5.2.2'
+  node-forge: '^1.3.2'
+  glob-parent: '^6.0.2'
+  node-pre-gyp: '^0.17.0'
+  ansi-regex: '^5.0.1'
+  json-schema: '^0.4.0'
+  nanoid: '^3.3.18'
+  '@xmldom/xmldom': '^0.8.15'
+  simple-get: '^4.0.1'
+  caniuse-lite: '~1.0.0'
+  git-url-parse: 12.0.0
+  fbjs: '^3.0.0'
+  parse-url: '^8.1.0'
+  fast-xml-parser: '^5.8.0'
+  recursive-readdir: '^2.2.3'
+  redux-offline: 'enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df'
+  react: '^19.3.1'
+  react-dom: '^19.3.1'
+  '@babel/runtime': '^7.27.1'
+  source-map: 0.7.6
+  qs: '^6.14.1'
+  handlebars: '^4.7.9'
+  '@graphql-tools/utils': '^12.0.3'
+  'pm2>js-yaml': '^4.3.2'
+  '@emotion/is-prop-valid': '-'
+  '@tiptap/html>happy-dom': '^21.0.4'
+  'sockjs>uuid': '^11.1.1'
+
 patchedDependencies:
-  '@tiptap/core@3.23.6': patches/@tiptap__core@3.23.6.patch
+  '@sereneinserenade/tiptap-search-and-replace@0.1.1': patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
+  '@tiptap/core@3.34.0': patches/@tiptap__core@3.34.0.patch
+  graphql-ws@6.2.1: patches/graphql-ws@6.2.1.patch
+  graphql-yoga@5.24.1: patches/graphql-yoga@5.24.1.patch

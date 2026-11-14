@@ -1,7 +1,7 @@
-import DateRangeIcon from '@mui/icons-material/DateRange'
 import type {NodeViewProps} from '@tiptap/core'
 import dayjs from 'dayjs'
 import {DayPicker} from 'react-day-picker'
+import {DateRange as DateRangeIcon} from '~/ui/icons'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
@@ -20,7 +20,7 @@ export const MeetingDatePicker = (props: Props) => {
   return (
     <Menu
       trigger={
-        <MenuLabelTrigger icon={<DateRangeIcon className='text-slate-600' />}>
+        <MenuLabelTrigger icon={<DateRangeIcon className='text-fg-secondary' />}>
           {dateRangeLabel}
         </MenuLabelTrigger>
       }

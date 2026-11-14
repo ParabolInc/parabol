@@ -2,20 +2,25 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import * as React from 'react'
 import {cn} from '../cn'
 
-interface MenuItemProps {
-  onSelect?: (event: Event) => void
-  onClick?: React.MouseEventHandler
+export const MENU_ITEM_ICON = 'mr-2 text-[20px] text-fg-secondary'
+export const MENU_ITEM =
+  'mx-1 flex select-none items-center rounded-md px-2 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover'
+
+interface MenuItemProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DropdownMenu.Item>, 'disabled'> {
   isDisabled?: boolean
-  className?: string
+  // renders the child as the menu item itself, e.g. a <Link>, so selecting it both navigates & closes the menu
+  asChild?: boolean
   children: React.ReactNode
 }
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({onSelect, onClick, isDisabled, className, children}, ref) => {
+  ({onSelect, onClick, isDisabled, className, asChild, children, ...rest}, ref) => {
     return (
       <DropdownMenu.Item
+        asChild={asChild}
         className={cn(
-          'mx-1 flex items-center rounded-md px-4 py-1 text-slate-700 text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100',
+          MENU_ITEM,
           isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}
@@ -24,6 +29,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         onSelect={onSelect}
         onClick={onClick}
         ref={ref}
+        {...rest}
       >
         {children}
       </DropdownMenu.Item>

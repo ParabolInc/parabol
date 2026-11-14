@@ -1,5 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import type {OAuth2Error, OAuth2Success} from '../../types/custom'
+import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 
 type OAuth2Response = OAuth2Success | OAuth2Error
 
@@ -68,15 +69,20 @@ export const authorizeOAuth2 = async <
   })
   const contentTypeHeader = oauth2Response.headers.get('content-type') || ''
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {
-    await oauth2Response.body?.cancel()
-    return new Error('Received non-JSON OAuth2 Response')
+    const response = await readThirdPartyResponse('oauth2', oauth2Response, {method: 'POST', url})
+    return new ThirdPartyResponseError('Received non-JSON OAuth2 Response', response)
   }
+  const unreadResponse = oauth2Response.clone()
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
   if ('error' in tokenJson) {
     // any logging should be performed by the caller
     const errorMessage =
       tokenJson.error_description || tokenJson.error || `Received OAuth2 Error from ${authUrl}`
     return new Error(errorMessage)
+  }
+  if (!tokenJson.access_token) {
+    const response = await readThirdPartyResponse('oauth2', unreadResponse, {method: 'POST', url})
+    return new ThirdPartyResponseError(`${authUrl} returned no access_token`, response)
   }
   const {
     access_token: accessToken,

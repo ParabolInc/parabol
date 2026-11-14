@@ -5,7 +5,7 @@ type PageAccessOrganization {
   """
   The organization that was granted access
   """
-  organization: OrganizationPreview!
+  organization: Organization!
 
   """
   The access role granted to all members of the organization

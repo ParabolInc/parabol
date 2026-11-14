@@ -10,8 +10,8 @@ export interface LazyExoticPreload<T extends ComponentType<any>> extends LazyExo
 /**
  * A lazy-preloadable component for heterogeneous component maps.
  * Use instead of LazyExoticPreload<any> — avoids React 18's
- * CustomComponentPropsWithRef conditional type chain that tsgo
- * cannot resolve when the type parameter is `any`.
+ * CustomComponentPropsWithRef conditional type chain that the
+ * native compiler cannot resolve when the type parameter is `any`.
  */
 export type LazyPreloadedComponent = ExoticComponent<any> & {
   preload: () => Promise<{default: ComponentType<any>}>

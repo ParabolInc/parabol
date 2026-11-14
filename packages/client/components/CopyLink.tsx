@@ -1,7 +1,8 @@
-import type {ReactNode} from 'react'
+import {type ReactNode, useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   children: ReactNode
@@ -13,27 +14,27 @@ interface Props {
 
 const CopyLink = (props: Props) => {
   const {title, children, tooltip, url, onCopy} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
-    MenuPosition.LOWER_CENTER
-  )
+  const [isCopied, setIsCopied] = useState(false)
 
   const handleCopy = () => {
     if (tooltip) {
-      openTooltip()
+      setIsCopied(true)
       setTimeout(() => {
-        closeTooltip()
+        setIsCopied(false)
       }, 2000)
     }
 
     onCopy && onCopy()
   }
   return (
-    <>
+    <Tooltip open={isCopied}>
       <CopyToClipboard text={url} onCopy={handleCopy} title={title}>
-        <span ref={originRef}>{children}</span>
+        <TooltipTrigger asChild>
+          <span>{children}</span>
+        </TooltipTrigger>
       </CopyToClipboard>
-      {tooltipPortal(tooltip)}
-    </>
+      <TooltipContent>{tooltip}</TooltipContent>
+    </Tooltip>
   )
 }
 

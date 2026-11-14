@@ -7,19 +7,20 @@ import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
-import type {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
-import type {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import teamHealthTemplate from '../../../../../static/images/illustrations/teamHealth.png'
+import teamPromptTemplate from '../../../../../static/images/illustrations/teamPrompt.png'
+import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation$data} from '../../../__generated__/useAddPromptTemplateMutation.graphql'
+import type {useAddTeamHealthTemplateMutation$data} from '../../../__generated__/useAddTeamHealthTemplateMutation.graphql'
 import useMutationProps from '../../../hooks/useMutationProps'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
+import useAddPromptTemplateMutation from '../../../mutations/useAddPromptTemplateMutation'
+import useAddTeamHealthTemplateMutation from '../../../mutations/useAddTeamHealthTemplateMutation'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
-import BaseButton from '../../BaseButton'
 import IconLabel from '../../IconLabel'
-import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
-import RaisedButton from '../../RaisedButton'
+import TeamPicker from '../../TeamPicker/TeamPicker'
 import {ActivityBadge} from '../ActivityBadge'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {
@@ -33,18 +34,20 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
 
   return (
-    <span className={cn('font-semibold text-slate-800', className)} {...rest}>
+    <span className={cn('font-semibold text-fg-primary', className)} {...rest}>
       {children}
     </span>
   )
 }
 
-type ActivityType = 'retrospective' | 'poker'
+type ActivityType = 'retrospective' | 'poker' | 'teamPrompt' | 'teamHealth'
 
 type SupportedActivity = {
   title: string
   type: ActivityType
   includedCategories: CategoryID[]
+  // the background illustration behind the card image
+  imageCategory: CategoryID
   image: string
   phases: React.ReactNode
 }
@@ -54,6 +57,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     title: 'Process Feedback',
     type: 'retrospective',
     includedCategories: ['retrospective', 'feedback', 'strategy'],
+    imageCategory: 'retrospective',
     image: newTemplate,
     phases: (
       <>
@@ -79,6 +83,7 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
     title: 'Estimate Items',
     type: 'poker',
     includedCategories: ['estimation'],
+    imageCategory: 'estimation',
     image: estimatedEffortTemplate,
     phases: (
       <>
@@ -93,6 +98,52 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
         </div>
       </>
     )
+  },
+  {
+    title: 'Async Standup',
+    type: 'teamPrompt',
+    includedCategories: ['standup'],
+    imageCategory: 'standup',
+    image: teamPromptTemplate,
+    phases: (
+      <>
+        <div>
+          <Bold>Answer</Bold> each question on your own time
+        </div>
+        <div>
+          <Bold>Discuss</Bold> updates in threads
+        </div>
+        <div>
+          <Bold>Review</Bold> together on a call
+        </div>
+      </>
+    )
+  },
+  {
+    title: 'Measure Team Health',
+    type: 'teamHealth',
+    includedCategories: ['teamHealth'],
+    imageCategory: 'teamHealth',
+    image: teamHealthTemplate,
+    phases: (
+      <>
+        <div>
+          <Bold>Pick</Bold> questions from research-backed packs
+        </div>
+        <div>
+          <Bold>Run</Bold> across one or many teams in your org
+        </div>
+        <div>
+          <Bold>Answer</Bold> anonymously on a 1–5 scale
+        </div>
+        <div>
+          <Bold>Reveal</Bold> results by category
+        </div>
+        <div>
+          <Bold>Discuss</Bold> where each team can improve
+        </div>
+      </>
+    )
   }
 ]
 
@@ -101,14 +152,14 @@ const query = graphql`
     viewer {
       freeCustomRetroTemplatesRemaining
       freeCustomPokerTemplatesRemaining
+      freeCustomStandupTemplatesRemaining
       preferredTeamId
       teams {
         id
         tier
         name
         orgId
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
+        ...TeamPicker_teams
       }
     }
   }
@@ -120,7 +171,6 @@ interface Props {
 
 export const CreateNewActivity = (props: Props) => {
   const {queryRef} = props
-  const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<CreateNewActivityQuery>(query, queryRef)
 
   const {categoryId} = useParams()
@@ -140,21 +190,31 @@ export const CreateNewActivity = (props: Props) => {
     teams,
     preferredTeamId,
     freeCustomRetroTemplatesRemaining,
-    freeCustomPokerTemplatesRemaining
+    freeCustomPokerTemplatesRemaining,
+    freeCustomStandupTemplatesRemaining
   } = viewer
   const sortedTeams = sortByTier(teams)
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
 
-  const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
+  const [executeAddPromptTemplate] = useAddPromptTemplateMutation()
+  const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
+  const [executeAddTeamHealthTemplate] = useAddTeamHealthTemplateMutation()
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
-  const freeCustomTemplatesRemaining =
-    selectedActivity.type === 'retrospective'
-      ? freeCustomRetroTemplatesRemaining
-      : freeCustomPokerTemplatesRemaining
+  const freeCustomTemplatesRemainingByType: Record<ActivityType, number> = {
+    retrospective: freeCustomRetroTemplatesRemaining,
+    poker: freeCustomPokerTemplatesRemaining,
+    teamPrompt: freeCustomStandupTemplatesRemaining,
+    // team health has no free-template allowance, so starter teams always see the upgrade CTA
+    teamHealth: 0
+  }
+  const freeCustomTemplatesRemaining = freeCustomTemplatesRemainingByType[selectedActivity.type]
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
@@ -162,22 +222,17 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddReflectTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddReflectTemplateMutation$data) => {
-          const templateId = res.addReflectTemplate?.reflectTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
-        }
+    executeAddPromptTemplate({
+      variables: {teamId: selectedTeam.id, type: 'retrospective'},
+      onError,
+      onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
+        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+          state: {prevCategory: categoryId, edit: true}
+        })
       }
-    )
+    })
   }
 
   const handleCreatePokerTemplate = () => {
@@ -186,35 +241,70 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddPokerTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddPokerTemplateMutation$data) => {
-          const templateId = res.addPokerTemplate?.pokerTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
+    executeAddPokerTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddPokerTemplateMutation$data) => {
+        const templateId = res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
         }
+        onCompleted()
       }
-    )
+    })
+  }
+
+  const handleCreateStandupTemplate = () => {
+    if (submitting) {
+      return
+    }
+
+    submitMutation()
+    executeAddPromptTemplate({
+      variables: {teamId: selectedTeam.id, type: 'teamPrompt'},
+      onError,
+      onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
+        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+          state: {prevCategory: categoryId, edit: true}
+        })
+      }
+    })
+  }
+
+  const handleCreateTeamHealthTemplate = () => {
+    if (submitting) {
+      return
+    }
+
+    submitMutation()
+    executeAddTeamHealthTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddTeamHealthTemplateMutation$data) => {
+        const templateId = res.addTeamHealthTemplate?.teamHealthTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
+        }
+        onCompleted()
+      }
+    })
   }
 
   const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'createNewTemplateAL',
-      meetingType: selectedActivity.type
-    })
     navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
     retrospective: handleCreateRetroTemplate,
-    poker: handleCreatePokerTemplate
+    poker: handleCreatePokerTemplate,
+    teamPrompt: handleCreateStandupTemplate,
+    teamHealth: handleCreateTeamHealthTemplate
   }
 
   const handleActivitySelection = (activityType: ActivityType) => {
@@ -224,7 +314,7 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col bg-surface-card'>
       <div className='mx-1'>
         <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
           <Link className='p-4' to={`/activity-library/`} replace={true}>
@@ -235,12 +325,12 @@ export const CreateNewActivity = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className='flex flex-1 flex-col items-center gap-y-8'>
+      <div className='flex min-h-0 flex-1 flex-col items-center gap-y-8 overflow-y-auto'>
         <h1 className='font-normal text-lg'>
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
         <RadioGroup.Root
-          className='mx-auto flex flex-col gap-8 sm:flex-row'
+          className='mx-auto flex flex-col gap-8 md:grid md:grid-cols-2 2xl:grid-cols-4'
           aria-label='Choose an Activity Format'
           value={selectedActivity?.type}
           onValueChange={handleActivitySelection}
@@ -249,7 +339,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-slate-100 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-hover focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500 dark:border dark:border-hairline dark:bg-surface-raised'
                 value={activity.type}
               >
                 <ActivityCard
@@ -258,10 +348,7 @@ export const CreateNewActivity = (props: Props) => {
                   title={activity.title}
                   type={activity.type}
                 >
-                  <ActivityCardImage
-                    src={activity.image}
-                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
-                  />
+                  <ActivityCardImage src={activity.image} category={activity.imageCategory} />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (
@@ -284,9 +371,9 @@ export const CreateNewActivity = (props: Props) => {
             template:
           </div>
           <div className='w-full px-4'>
-            <NewMeetingTeamPicker
+            <TeamPicker
               teamsRef={teams}
-              selectedTeamRef={selectedTeam}
+              selectedTeamId={selectedTeam.id}
               onSelectTeam={(teamId) => {
                 const newTeam = teams.find((team) => team.id === teamId)
                 newTeam && setSelectedTeam(newTeam)
@@ -294,31 +381,33 @@ export const CreateNewActivity = (props: Props) => {
             />
           </div>
         </div>
-        {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
-        <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
-            <div className='flex w-full items-center justify-center gap-4'>
-              <span className='pr-4 text-center'>
-                Upgrade to the <b>Team Plan</b> to create more custom activities
-              </span>
+        {error && <div className='px-4 text-fg-error'>{error.message}</div>}
+      </div>
+      <div className='flex w-full shrink-0 bg-surface-well p-2 shadow-card-1'>
+        {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
+          <div className='flex w-full items-center justify-center gap-4'>
+            <span className='pr-4 text-center'>
+              Upgrade to the <b>Team Plan</b> to create more custom activities
+            </span>
 
-              <RaisedButton
-                palette='pink'
-                className='h-12 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
-                onClick={handleUpgrade}
-              >
-                Upgrade to Team Plan
-              </RaisedButton>
-            </div>
-          ) : (
-            <BaseButton
-              className='mx-auto h-12 rounded-full bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
-              onClick={createCustomActivityLookup[selectedActivity.type]}
+            <Button
+              variant='raised'
+              size='sm'
+              className='h-12 bg-rose-500 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
+              onClick={handleUpgrade}
             >
-              Confirm Format & Team
-            </BaseButton>
-          )}
-        </div>
+              Upgrade to Team Plan
+            </Button>
+          </div>
+        ) : (
+          <Button
+            size='default'
+            className='mx-auto h-12 rounded-md bg-sky-500 px-6 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+            onClick={createCustomActivityLookup[selectedActivity.type]}
+          >
+            Confirm Format & Team
+          </Button>
+        )}
       </div>
     </div>
   )

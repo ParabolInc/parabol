@@ -17,6 +17,7 @@ export default class DemoUser {
   picture: string
   preferredName: string
   tms = [RetroDemo.TEAM_ID]
+  timeline = {edges: []}
   constructor(preferredName: string, email: string, picture: string, idx: number) {
     this.id = idx === 0 ? demoViewerId : `bot${idx}`
     this.preferredName = preferredName

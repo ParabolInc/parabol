@@ -1,9 +1,14 @@
+import {isNodeRangeSelection} from '@tiptap/extension-node-range'
 import {type Editor, useEditorState} from '@tiptap/react'
 import isTextSelected from '../components/TipTapEditor/isTextSelected'
 import {isCustomNodeSelected} from '../tiptap/isCustomNodeSelected'
 
 export const getShouldShow = (editor: Editor) => {
-  if (editor.view.dragging || isCustomNodeSelected(editor)) {
+  if (
+    editor.view.dragging ||
+    isNodeRangeSelection(editor.state.selection) ||
+    isCustomNodeSelected(editor)
+  ) {
     return false
   }
 
@@ -19,7 +24,9 @@ export const useBubbleMenuStates = (editor: Editor) => {
         isItalic: ctx.editor.isActive('italic'),
         isStrike: ctx.editor.isActive('strike'),
         isUnderline: ctx.editor.isActive('underline'),
-        isLink: ctx.editor.isActive('link')
+        isLink: ctx.editor.isActive('link'),
+        isBulletList: ctx.editor.isActive('bulletList'),
+        isOrderedList: ctx.editor.isActive('orderedList')
       }
     }
   })

@@ -1,4 +1,5 @@
 import {
+  getMarkAttributes,
   getMarkRange,
   getMarkType,
   type RawCommands,
@@ -35,6 +36,17 @@ export const getRangeForType = (state: EditorState, typeOrName: string) => {
 export const TiptapLinkExtension = BaseLink.extend({
   // if the caret is at the end of the link, it is not part of the link
   inclusive: false,
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      // the external service of the issue that a link was drafted from
+      issueService: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-issue-service'),
+        renderHTML: ({issueService}) => (issueService ? {'data-issue-service': issueService} : {})
+      }
+    }
+  },
   addKeyboardShortcuts(this) {
     return {
       'Mod-k': () => {
@@ -80,6 +92,7 @@ export const TiptapLinkExtension = BaseLink.extend({
         }
         const {from} = range
         const to = from + text.length
+        const {href, issueService} = getMarkAttributes(state, 'link')
         return chain()
           .focus()
           .setTextSelection(range)
@@ -89,6 +102,7 @@ export const TiptapLinkExtension = BaseLink.extend({
             to
           })
           .setLink({href: url, target: '_blank'})
+          .updateAttributes('link', {issueService: href === url ? issueService : null})
           .setTextSelection({from: to, to})
           .run()
       }

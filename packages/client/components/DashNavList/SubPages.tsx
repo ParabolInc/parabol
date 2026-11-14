@@ -65,7 +65,7 @@ export const SubPages = (props: Props) => {
   if (!children || children.length === 0) {
     const noLinksMessage = !children ? 'Loading' : 'No pages inside'
     return (
-      <div style={{paddingLeft: depth * 8 + 8}} className='font-medium text-slate-500 text-sm'>
+      <div style={{paddingLeft: depth * 8 + 8}} className='font-medium text-fg-nav-muted text-sm'>
         {noLinksMessage}
       </div>
     )

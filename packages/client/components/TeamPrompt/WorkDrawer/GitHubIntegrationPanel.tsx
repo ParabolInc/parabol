@@ -1,15 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useFragment} from 'react-relay'
-import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import {usePreloadedQuery} from 'react-relay'
+import type {GitHubIntegrationPanelQuery} from '../../../__generated__/GitHubIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
-import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
-import GitHubClientManager from '../../../utils/GitHubClientManager'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
@@ -31,18 +28,11 @@ const GITHUB_QUERY_MAPPING = {
   pullRequest: 'is:pr sort:updated involves:@me'
 }
 
-interface Props {
-  meetingRef: GitHubIntegrationPanel_meeting$key
-}
-
-const GitHubIntegrationPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment GitHubIntegrationPanel_meeting on NewMeeting {
+const query = graphql`
+  query GitHubIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
         ...useInspirationDrawer_meeting
-        teamId
-        id
         githubInspirationItems: inspirationItems(service: github) {
           id
           title
@@ -51,34 +41,32 @@ const GitHubIntegrationPanel = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            teamId
-            integrations {
-              github {
-                isActive
-              }
-            }
             ...GitHubRepoFilterBar_teamMember
           }
         }
       }
-    `,
-    meetingRef
-  )
+    }
+  }
+`
 
-  const atmosphere = useAtmosphere()
+const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<GitHubIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
+
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'github',
     meeting
   )
 
   const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
-    `Inspiration:github:type:${meeting.id}`,
-    'issue'
+    `Inspiration:github:type:${meetingId}`,
+    'pullRequest'
   )
   const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
-    `Inspiration:github:repos:${meeting.id}`,
+    `Inspiration:github:repos:${meetingId}`,
     []
   )
 
@@ -89,104 +77,57 @@ const GitHubIntegrationPanel = (props: Props) => {
   const searchQuery = [GITHUB_QUERY_MAPPING[githubType], repoQueryString, dateQueryString]
     .filter(Boolean)
     .join(' ')
-  const hasResults = getHasResults(searchQuery)
 
-  const mutationProps = useMutationProps()
-  const {error, onError} = mutationProps
-
-  const authGitHub = () => {
-    if (!teamMember) {
-      return onError(new Error('Could not find team member'))
-    }
-    teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'github'
-    })
-  }
-
-  const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
-      service: 'github',
-      buttonLabel: label
-    })
-  }
+  const filterBar = teamMember ? (
+    <>
+      <GitHubRepoFilterBar
+        teamMemberRef={teamMember}
+        selectedRepos={selectedRepos}
+        setSelectedRepos={setSelectedRepos}
+      />
+      <div className='mb-2 flex w-full gap-2 px-4'>
+        {GITHUB_QUERY_TABS.map((tab) => (
+          <Button
+            key={tab.key}
+            size='md'
+            aria-pressed={tab.key === githubType}
+            className={cn(
+              'w-1/2 text-fg-primary',
+              tab.key === githubType
+                ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
+                : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
+            )}
+            onClick={() => setGithubType(tab.key)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+      <div className='mb-2 flex w-full px-2'>
+        <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+      </div>
+    </>
+  ) : null
 
   return (
     <>
-      {teamMember?.integrations.github?.isActive ? (
-        <>
-          <GitHubRepoFilterBar
-            teamMemberRef={teamMember}
-            selectedRepos={selectedRepos}
-            setSelectedRepos={(repos) => {
-              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-                teamId: meeting.teamId,
-                meetingId: meeting.id,
-                service: 'github'
-              })
-              setSelectedRepos(repos)
-            }}
+      {filterBar}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meetingId}
+          service='github'
+          searchQuery={searchQuery}
+          initialItems={meeting.githubInspirationItems}
+          hideDraftPanel={!getResultCount(searchQuery)}
+        >
+          <GitHubIntegrationResultsRoot
+            teamId={teamId}
+            queryType={githubType}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
           />
-          <div className='mb-2 flex w-full gap-2 px-4'>
-            {GITHUB_QUERY_TABS.map((tab) => (
-              <div
-                key={tab.key}
-                className={cn(
-                  'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-slate-800 text-sm leading-3',
-                  tab.key === githubType
-                    ? 'bg-grape-700 font-semibold text-white focus:text-white'
-                    : 'border border-slate-300 bg-white'
-                )}
-                onClick={() => {
-                  trackTabNavigated(tab.label)
-                  setGithubType(tab.key)
-                }}
-              >
-                {tab.label}
-              </div>
-            ))}
-          </div>
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
-          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='github'
-                searchQuery={searchQuery}
-                initialItems={meeting.githubInspirationItems}
-              />
-            )}
-            <GitHubIntegrationResultsRoot
-              teamId={teamMember.teamId}
-              queryType={githubType}
-              searchQuery={searchQuery}
-              onResultCount={onResultCount}
-            />
-          </div>
-        </>
-      ) : (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <div className='h-10 w-10'>
-            <img className='h-10 w-10' src={gitHubSVG} />
-          </div>
-          <b>Connect to GitHub</b>
-          <div className='w-1/2 text-center text-sm'>
-            Connect to GitHub to view your issues and PRs.
-          </div>
-          <button
-            className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
-            onClick={authGitHub}
-          >
-            Connect
-          </button>
-          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
-        </div>
-      )}
+        </InspirationItemsPanel>
+      </div>
     </>
   )
 }

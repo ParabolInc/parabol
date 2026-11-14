@@ -52,6 +52,11 @@ type JiraServerIssue implements TaskIntegration {
   summary: String!
 
   """
+  The plaintext title of the issue, same as the summary
+  """
+  title: String!
+
+  """
   The stringified ADF description of the Jira issue
   """
   description: String!

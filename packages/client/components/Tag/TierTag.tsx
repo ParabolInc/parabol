@@ -1,7 +1,6 @@
-import styled from '@emotion/styled'
 import type {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
-import {PALETTE} from '../../styles/paletteV3'
 import {TierLabel} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import BaseTag from './BaseTag'
 
 interface Props {
@@ -10,28 +9,26 @@ interface Props {
   billingTier: TierEnum | null
 }
 
-const StarterTag = styled(BaseTag)({
-  backgroundColor: PALETTE.SLATE_200,
-  color: PALETTE.SLATE_700
-})
-
-const TeamTag = styled(BaseTag)({
-  backgroundColor: PALETTE.GOLD_300,
-  color: PALETTE.GRAPE_700
-})
-
-const EnterpriseTag = styled(BaseTag)({
-  backgroundColor: PALETTE.SKY_500,
-  color: '#FFFFFF'
-})
-
 const TierTag = (props: Props) => {
   const {className, tier, billingTier} = props
-  if (tier !== billingTier) return <StarterTag className={className}>{'Free Trial'}</StarterTag>
-  if (tier === 'starter') return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
-  if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
+  if (tier !== billingTier)
+    return (
+      <BaseTag className={cn('bg-slate-200 text-slate-700', className)}>{'Free Trial'}</BaseTag>
+    )
+  if (tier === 'starter')
+    return (
+      <BaseTag className={cn('bg-slate-200 text-slate-700', className)}>
+        {TierLabel.STARTER}
+      </BaseTag>
+    )
+  if (tier === 'team')
+    return (
+      <BaseTag className={cn('bg-gold-300 text-grape-700', className)}>{TierLabel.TEAM}</BaseTag>
+    )
   if (tier === 'enterprise')
-    return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
+    return (
+      <BaseTag className={cn('bg-sky-500 text-white', className)}>{TierLabel.ENTERPRISE}</BaseTag>
+    )
   return null
 }
 export default TierTag

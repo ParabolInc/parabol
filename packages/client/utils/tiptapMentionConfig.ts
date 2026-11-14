@@ -8,7 +8,7 @@ import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import renderSuggestion from '../tiptap/extensions/renderSuggestion'
 
 const queryNode = graphql`
-  query tiptapMentionConfigQuery($teamId: ID!) {
+  query tiptapMentionConfigQuery($teamId: ID!) @raw_response_type {
     viewer {
       team(teamId: $teamId) {
         teamMembers {

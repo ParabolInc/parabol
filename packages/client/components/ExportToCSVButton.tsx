@@ -1,5 +1,3 @@
-import styled from '@emotion/styled'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {ExternalLinks} from '../types/constEnums'
 import type {CorsOptions} from '../types/cors'
 import PlainButton from './PlainButton/PlainButton'
@@ -11,30 +9,18 @@ interface Props {
 
 const label = 'Export to CSV'
 
-const Button = styled(PlainButton)({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
-
-const Label = styled('div')({
-  color: PALETTE.SKY_400,
-  fontSize: 14,
-  fontWeight: 600
-})
-
-const Img = styled('img')({
-  paddingRight: 8,
-  filter: `sepia(100%) hue-rotate(195deg) saturate(1500%)` // make img blue
-})
-
 const ExportToCSVButton = (props: Props) => {
   const {handleClick, corsOptions} = props
   return (
-    <Button onClick={handleClick}>
-      <Img alt={label} src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`} {...corsOptions} />
-      <Label>{label}</Label>
-    </Button>
+    <PlainButton className='flex items-center justify-end' onClick={handleClick}>
+      <img
+        className='pr-2 [filter:sepia(100%)_hue-rotate(195deg)_saturate(1500%)]'
+        alt={label}
+        src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
+        {...corsOptions}
+      />
+      <div className='font-semibold text-[14px] text-sky-400'>{label}</div>
+    </PlainButton>
   )
 }
 

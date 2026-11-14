@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
@@ -6,37 +5,14 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps from '../../hooks/useMutationProps'
 import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
-import {passwordStrength} from '../../shared/passwordStrength'
 import {Security} from '../../types/constEnums'
+import {Button} from '../../ui/Button/Button'
 import Legitity from '../../validation/Legitity'
 import AuthenticationDialog from '../AuthenticationDialog'
 import DialogTitle from '../DialogTitle'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import PasswordInputField from '../PasswordInputField'
-import PrimaryButton from '../PrimaryButton'
 import TeamInvitationWrapper from '../TeamInvitationWrapper'
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const P = styled('p')({
-  fontSize: 14,
-  lineHeight: 1.5,
-  margin: '16px 0',
-  textAlign: 'center'
-})
-
-const Container = styled('div')({
-  margin: '0 auto',
-  maxWidth: 240,
-  width: '100%'
-})
-
-const SubmitButton = styled(PrimaryButton)({
-  marginTop: 16
-})
 
 const validatePassword = (password: string) => {
   return new Legitity(password)
@@ -50,7 +26,9 @@ const SetNewPassword = () => {
   const {token} = useParams()
   const atmosphere = useAtmosphere()
   useCanonical('reset-password')
-  const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps()
+  const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {fields, onChange, setDirtyField, validateField} = useForm({
     password: {
       getDefault: () => '',
@@ -70,11 +48,6 @@ const SetNewPassword = () => {
     setDirtyField()
     const {password: passwordRes} = validateField()
     if (passwordRes.error) return
-    const strengthError = passwordStrength(passwordRes.value)
-    if (strengthError) {
-      fields.password.setError(strengthError)
-      return
-    }
     const {value: newPassword} = passwordRes
     submitMutation()
     ResetPasswordMutation(
@@ -87,21 +60,28 @@ const SetNewPassword = () => {
     <TeamInvitationWrapper>
       <AuthenticationDialog>
         <DialogTitle>{'Reset Password'}</DialogTitle>
-        <Container>
-          <P>{'Type your new password below'}</P>
+        <div className='mx-auto w-full max-w-[240px]'>
+          <p className='my-4 text-center text-[14px] leading-normal'>
+            {'Type your new password below'}
+          </p>
           {error && <ErrorAlert message={error.message} />}
-          <Form onSubmit={onSubmit}>
+          <form className='flex flex-col' onSubmit={onSubmit}>
             <PasswordInputField
               {...fields.password}
               autoFocus
               onChange={onChange}
               onBlur={handleBlur}
             />
-            <SubmitButton size='medium' waiting={submitting}>
+            <Button
+              variant='primary'
+              className='mt-4 h-10 text-[15px]'
+              size='md'
+              disabled={submitting}
+            >
               {'Reset Password'}
-            </SubmitButton>
-          </Form>
-        </Container>
+            </Button>
+          </form>
+        </div>
       </AuthenticationDialog>
     </TeamInvitationWrapper>
   )

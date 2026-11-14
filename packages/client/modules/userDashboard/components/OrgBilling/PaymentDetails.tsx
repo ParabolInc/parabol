@@ -1,8 +1,7 @@
-import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe, type StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import {type MutableRefObject, useRef} from 'react'
+import {type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
@@ -12,7 +11,7 @@ import BillingForm from './BillingForm'
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
-  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
+  cardNumberRef: RefObject<StripeCardNumberElement | null>
   organizationRef: PaymentDetails_organization$key
 }
 
@@ -43,9 +42,9 @@ const PaymentDetails = (props: Props) => {
   return (
     <Panel label='Credit Card' className='max-w-[976px]'>
       {/* overflow-hidden, text-center, capitalize, leading-4 promoted from the two column divs below */}
-      <div className='flex w-full flex-col-reverse flex-wrap items-start justify-between overflow-hidden border-slate-300 border-t px-4 py-3 text-center capitalize leading-4 md:flex-row'>
+      <div className='flex w-full flex-col-reverse flex-wrap items-start justify-between overflow-hidden border-hairline border-t px-4 py-3 text-center capitalize leading-4 md:flex-row'>
         <div className='flex w-full flex-wrap px-4 pb-4 md:w-1/2' ref={ref}>
-          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-slate-800 capitalize leading-[30px]'>
+          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-fg-primary capitalize leading-[30px]'>
             {'Credit Card Details'}
           </h6>
           <div className='w-full'>
@@ -55,32 +54,32 @@ const PaymentDetails = (props: Props) => {
           </div>
         </div>
         <div className='flex w-full flex-wrap px-4 pb-4 md:w-1/2'>
-          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-slate-800 capitalize leading-[30px]'>
+          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-fg-primary capitalize leading-[30px]'>
             {'Team Plan Pricing'}
           </h6>
           <div className='w-full'>
-            <span className='block pb-1 text-left font-semibold text-slate-600 text-xs uppercase'>
+            <span className='block pb-1 text-left font-semibold text-fg-secondary text-xs uppercase'>
               {'Billing Cycle'}
             </span>
-            <div className='flex pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+            <div className='flex pb-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
               {'Monthly'}
             </div>
             <div className='pt-4'>
-              <span className='block pb-1 text-left font-semibold text-slate-600 text-xs uppercase'>
+              <span className='block pb-1 text-left font-semibold text-fg-secondary text-xs uppercase'>
                 {'Active Users'}
               </span>
-              <span className='block pb-2 text-left font-semibold text-slate-600 text-xs normal-case'>
-                {'Active users are anyone who uses Parabol within a billing period'}
+              <span className='block pb-2 text-left font-semibold text-fg-secondary text-xs normal-case'>
+                {'Active users are people seen in the last 30 days'}
               </span>
-              <div className='flex pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+              <div className='flex pb-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
                 {activeUserCount}
               </div>
             </div>
-            <Divider />
+            <div className='w-full border-hairline border-b' />
             {coupon ? (
               <>
                 {/* shared classes promoted from children to each row div */}
-                <div className='flex justify-between pt-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                <div className='flex justify-between pt-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
                   <div>{'Price'}</div>
                   <div>{`$${price.toFixed(2)}`}</div>
                 </div>
@@ -88,18 +87,18 @@ const PaymentDetails = (props: Props) => {
                   <div>{`Discount (${coupon.percentOff}% off${coupon.durationInMonths ? ` for ${coupon.durationInMonths} months` : ''})`}</div>
                   <div>{`-$${(price - discountedPrice!).toFixed(2)}`}</div>
                 </div>
-                <div className='flex justify-between pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                <div className='flex justify-between pb-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
                   <div>{'Total'}</div>
                   <div>{`$${discountedPrice!.toFixed(2)}`}</div>
                 </div>
               </>
             ) : (
-              <div className='flex justify-between py-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+              <div className='flex justify-between py-2 font-semibold text-base text-fg-primary capitalize leading-[30px]'>
                 <div>{'Total'}</div>
                 <div>{`$${price.toFixed(2)}`}</div>
               </div>
             )}
-            <span className='block pb-2 text-left font-semibold text-slate-600 text-xs normal-case'>
+            <span className='block pb-2 text-left font-semibold text-fg-secondary text-xs normal-case'>
               {'All prices are in USD'}
             </span>
           </div>

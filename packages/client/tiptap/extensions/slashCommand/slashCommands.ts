@@ -1,20 +1,30 @@
-import DetailsIcon from '@mui/icons-material/ArrowRight'
-import AttachFileIcon from '@mui/icons-material/AttachFile'
-import ChecklistIcon from '@mui/icons-material/Checklist'
-import CodeIcon from '@mui/icons-material/Code'
-import FileOpenIcon from '@mui/icons-material/FileOpen'
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
-import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
-import TableIcon from '@mui/icons-material/GridOn'
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule'
-import ImageIcon from '@mui/icons-material/Image'
-import InsightsIcon from '@mui/icons-material/Insights'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
-import TextFieldsIcon from '@mui/icons-material/TextFields'
-import TitleIcon from '@mui/icons-material/Title'
-import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
+import type {IconComponent} from '~/ui/icons'
+import {
+  AttachFile as AttachFileIcon,
+  Autorenew as AutorenewIcon,
+  Checklist as ChecklistIcon,
+  Code as CodeIcon,
+  ArrowRight as DetailsIcon,
+  FileOpen as FileOpenIcon,
+  FormatH1 as FormatH1Icon,
+  FormatH2 as FormatH2Icon,
+  FormatH3 as FormatH3Icon,
+  FormatListBulleted as FormatListBulletedIcon,
+  FormatListNumbered as FormatListNumberedIcon,
+  FormatQuote as FormatQuoteIcon,
+  HorizontalRule as HorizontalRuleIcon,
+  Image as ImageIcon,
+  Insights as InsightsIcon,
+  NoteAdd as NoteAddIcon,
+  Notes as NotesIcon,
+  GridOn as TableIcon,
+  TextFields as TextFieldsIcon,
+  Toc as TocIcon,
+  WebAsset as WebAssetIcon
+} from '~/ui/icons'
+import {CALLOUT_TONE_LABELS, CALLOUT_TONES} from '../../../shared/tiptap/calloutTones'
+import {calloutForQuery} from '../callout/calloutSlashCommand'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -30,8 +40,14 @@ export interface SlashCommandGroup {
     description: string
     searchTerms: string[]
     shouldHide?: (editor: Editor) => boolean
-    icon: OverridableComponent<any>
+    icon: IconComponent
     action: (editor: Editor) => void
+    forQuery?: (query: string) => {
+      title: string
+      description: string
+      icon: IconComponent
+      action: (editor: Editor) => void
+    } | null
   }[]
 }
 
@@ -62,7 +78,7 @@ export const slashCommands = [
         title: 'Heading 1',
         description: 'Big section heading',
         searchTerms: ['title', 'big', 'large', 'heading', 'h1'],
-        icon: TitleIcon,
+        icon: FormatH1Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 1}).run()
         }
@@ -71,7 +87,7 @@ export const slashCommands = [
         title: 'Heading 2',
         description: 'Medium section heading',
         searchTerms: ['subtitle', 'medium', 'heading', 'h2'],
-        icon: TitleIcon,
+        icon: FormatH2Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 2}).run()
         }
@@ -80,7 +96,7 @@ export const slashCommands = [
         title: 'Heading 3',
         description: 'Small section heading',
         searchTerms: ['subtitle', 'small', 'heading', 'h3'],
-        icon: TitleIcon,
+        icon: FormatH3Icon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 3}).run()
         }
@@ -111,11 +127,34 @@ export const slashCommands = [
         action: (editor: Editor) => editor.chain().focus().toggleBlockquote().run()
       },
       {
+        title: 'Callout',
+        description: 'Make a note, tip or warning stand out',
+        searchTerms: [
+          'callout',
+          'note',
+          'aside',
+          'panel',
+          'alert',
+          ...CALLOUT_TONES.map((tone) => CALLOUT_TONE_LABELS[tone].toLowerCase())
+        ],
+        icon: NotesIcon,
+        shouldHide: (editor: Editor) => !editor.schema.nodes.callout,
+        action: (editor: Editor) => editor.chain().focus().setCallout().run(),
+        forQuery: calloutForQuery
+      },
+      {
         title: 'Code',
         description: 'Insert code snippet',
         searchTerms: ['codeblock'],
         icon: CodeIcon,
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
+      },
+      {
+        title: 'Table of contents',
+        description: 'Navigate the headings on this page',
+        searchTerms: ['toc', 'table of contents', 'contents', 'outline', 'navigation', 'headings'],
+        icon: TocIcon,
+        action: (editor: Editor) => editor.chain().focus().setTableOfContents().run()
       },
       {
         title: 'Details',
@@ -177,6 +216,34 @@ export const slashCommands = [
         }
       },
       {
+        title: 'Synced block',
+        description: 'Content that stays the same on every page',
+        searchTerms: ['sync', 'synced', 'shared', 'reuse'],
+        icon: AutorenewIcon,
+        action: (editor: Editor) => {
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          const pageLinkNode = schema.nodes.pageLinkBlock!.create({
+            pageCode: -1,
+            title: undefined,
+            canonical: true,
+            synced: true
+          })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, pageLinkNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
+        }
+      },
+      {
         title: 'Database',
         description: 'Create a new database',
         searchTerms: ['database', 'import'],
@@ -223,6 +290,37 @@ export const slashCommands = [
   {
     group: 'Media',
     commands: [
+      {
+        title: 'Embed',
+        description: 'Embed a video, doc, or link',
+        searchTerms: [
+          'embed',
+          'video',
+          'youtube',
+          'loom',
+          'vimeo',
+          'google docs',
+          'figma',
+          'miro',
+          'bookmark',
+          'link',
+          'url'
+        ],
+        icon: WebAssetIcon,
+        action: (editor: Editor) => {
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          let command = editor
+            .chain()
+            .focus()
+            .setEmbedBlock()
+            .setTextSelection(to + 1)
+          if (size - to <= 1) {
+            command = command.insertContent('<p></p>').setTextSelection(to + 1)
+          }
+          return command.scrollIntoView().run()
+        }
+      },
       {
         title: 'Image',
         description: 'Upload any image from your device',

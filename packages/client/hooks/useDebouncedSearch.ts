@@ -5,8 +5,8 @@ import {useEffect, useRef, useState} from 'react'
  */
 export const useDebouncedSearch = (search: string) => {
   const wordEndChars = /[\s,.!?:;\-()[\]{}<>"'\\|&*+=#%@$]/
-  const timer = useRef<NodeJS.Timeout>()
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const timer = useRef<NodeJS.Timeout>(undefined)
+  const [debouncedSearch, setDebouncedSearch] = useState(search)
 
   useEffect(() => {
     if (!search) {

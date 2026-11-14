@@ -5,9 +5,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
 import standardError from '../../../utils/standardError'
@@ -98,33 +96,26 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
-    const [organizationUser] = await Promise.all([
-      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
-      pg
-        .insertInto('TeamMember')
-        .values({
-          id: TeamMemberId.join(teamId, userId),
-          teamId,
-          userId,
-          openDrawer: 'manageTeam'
-        })
-        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
-        .execute()
-    ])
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({orgId, userId})
 
     if (!organizationUser) {
-      try {
-        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
-      } catch (e) {
-        Logger.log(e)
-      }
-      const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
-      analytics.identify({
-        userId,
-        email: user.email,
-        highestTier
-      })
+      // join the org before the team, otherwise a failure here leaves a TeamMember who passes
+      // isTeamMember but fails isViewerOnOrg on every org-scoped field. See acceptTeamInvitation
+      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     }
+
+    await pg
+      .insertInto('TeamMember')
+      .values({
+        id: TeamMemberId.join(teamId, userId),
+        teamId,
+        userId,
+        openDrawer: 'manageTeam'
+      })
+      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
+      .execute()
   }
   dataLoader.clearAll(['users', 'teamMembers'])
   await redisLock.unlock()

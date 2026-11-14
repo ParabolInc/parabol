@@ -35,7 +35,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).egress(async (resource, ctx: SC
     if (!team || team.orgId !== orgId || (team.isArchived && !team.scimCreated)) {
       throw new SCIMMY.Types.Error(404, '', 'Team not found')
     }
-    return mapGroupToSCIM(team, dataLoader)
+    return mapGroupToSCIM(team, saml, dataLoader)
   }
 
   try {
@@ -108,7 +108,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).egress(async (resource, ctx: SC
 
     const [teams, total] = await Promise.all([teamQuery.execute(), totalQuery.executeTakeFirst()])
 
-    const scimTeams = await Promise.all(teams.map((team) => mapGroupToSCIM(team, dataLoader)))
+    const scimTeams = await Promise.all(teams.map((team) => mapGroupToSCIM(team, saml, dataLoader)))
     // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
     // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
     scimTeams.length = total ? Number(total.total) : teams.length

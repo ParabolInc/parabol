@@ -8,4 +8,6 @@
 
 - The default commit message for that PR is `chore(release): release vX.Y.Z`
 
-- When the release-please PR gets merged, our [GitHub Release Action](../.github/workflows/release.yml) tags the pre-built image with the version number and moves it to our production repository
+- When the release-please PR gets merged, our [Release to Staging action](../.github/workflows/release-to-staging.yml) tags the pre-built image with the version number in our production repository, deploys it to staging, and opens a PR against the `production` branch
+
+- When that PR gets merged, our [Release to Production action](../.github/workflows/release-to-prod.yml) deploys the release to production

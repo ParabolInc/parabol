@@ -9,21 +9,30 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
-
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
-import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
+import type {
+  TierEnum,
+  useTipTapPageEditor_viewer$key
+} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {BlockArrival} from '../tiptap/extensions/BlockArrival'
+import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
+import {BlockSelection} from '../tiptap/extensions/BlockSelection'
+import {Callout} from '../tiptap/extensions/callout/Callout'
+import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
+import {handleServerEmbedMessage} from '../tiptap/extensions/fileBlock/embedManager'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
@@ -34,25 +43,27 @@ import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
 import {ThinkingBlock} from '../tiptap/extensions/insightsBlock/ThinkingBlock'
 import {PageDragHandle} from '../tiptap/extensions/PageDragHandle'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
+import {
+  SyncedBlockEdges,
+  type SyncedBlockEdgesOptions
+} from '../tiptap/extensions/pageLinkBlock/SyncedBlockEdges'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
+import {getPageSlashCommands} from '../tiptap/extensions/slashCommand/getPageSlashCommands'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
+import {TableOfContents} from '../tiptap/extensions/tableOfContents/TableOfContents'
+import {getPageFileType} from '../tiptap/getPageFileType'
+import {pagePlaceholderText, syncedBlockPlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
+import {lookupPageViewerAccess} from './usePageViewerAccess'
 
-const getFileType = (file: File) => {
-  if (file.type.startsWith('image/')) return 'image'
-  if (file.type.includes('text/csv')) return 'csv'
-  if (file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
-    return 'xlsx'
-  return 'file'
-}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
   provider: HocuspocusProvider,
@@ -60,9 +71,13 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
+    nested?: SyncedBlockEdgesOptions & {
+      preferredName?: string
+      highestTier?: TierEnum
+    }
   }
 ) => {
-  const {pageId, viewerRef} = options
+  const {pageId, viewerRef, nested} = options
   const user = readInlineData(
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
@@ -70,14 +85,16 @@ export const useTipTapPageEditor = (
         highestTier
         organizations {
           hasDatabases: featureFlag(featureName: "Databases")
+          hasSyncedBlocks: featureFlag(featureName: "SyncedBlocks")
         }
       }
     `,
     viewerRef
   )
   const [commit] = useUploadUserAsset()
-  const preferredName = user?.preferredName
+  const preferredName = nested ? nested.preferredName : user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
+  const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
   const editor = useEditor(
@@ -91,11 +108,10 @@ export const useTipTapPageEditor = (
           document: false,
           undoRedo: false,
           link: false,
-          trailingNode: {
-            node: 'paragraph'
-          }
+          dropcursor: {color: 'var(--color-accent)', width: 3},
+          trailingNode: nested ? false : {node: 'paragraph'}
         }),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
         Details.configure({
           persist: true,
@@ -105,6 +121,8 @@ export const useTipTapPageEditor = (
         }),
         DetailsSummary,
         DetailsContent,
+        Callout,
+        CalloutTitleBase,
         Table.configure({
           allowTableNodeSelection: true
         }),
@@ -116,60 +134,33 @@ export const useTipTapPageEditor = (
           nested: true
         }),
         SlashCommand.configure({
-          Database: hasDatabases
+          commands: getPageSlashCommands({hasDatabases, hasSyncedBlocks, nested: !!nested})
         }),
+        ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,
           assetScope: 'Page',
           atmosphere,
           commit,
-          highestTier: user?.highestTier
+          highestTier: nested ? nested.highestTier : user?.highestTier
         }),
+        EmbedBlock,
         ImageBlock.configure({
           editorWidth: 720,
           editorHeight: 400
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
+        BlockSelection,
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
           emptyNodeClass: 'is-empty print:hidden',
-          placeholder: ({node, pos}) => {
-            if (placeholderRef.current) {
-              return placeholderRef.current
-            }
-            const {type, attrs} = node
-            const {name} = type
-            switch (name) {
-              case 'heading':
-                if (pos === 0) return 'New Page'
-                return `Heading ${attrs.level}`
-              case 'codeBlock':
-                return 'New code'
-              case 'blockquote':
-                return 'New quote'
-              case 'paragraph':
-                return "Press '/' for commands"
-              case 'detailsSummary':
-                return 'New summary'
-              case 'detailsContent': {
-                const isDefaultEmpty =
-                  node.childCount === 0 ||
-                  (node.childCount === 1 &&
-                    node.firstChild?.type.name === 'paragraph' &&
-                    node.firstChild.content.size === 0)
-                return isDefaultEmpty ? 'Add details, use / to add blocks' : ''
-              }
-              case 'bulletList':
-              case 'listItem':
-              case 'orderedList':
-              default:
-                return ''
-            }
-          }
+          placeholder: (props) =>
+            placeholderRef.current ||
+            (nested ? syncedBlockPlaceholderText(props) : pagePlaceholderText(props))
         }),
         PageUserMention.configure({
           atmosphere,
@@ -216,7 +207,9 @@ export const useTipTapPageEditor = (
               'hover:opacity-20',
               'print:hidden'
             )
-            cursor.setAttribute('style', `border-color: ${user.color}`)
+            // awareness comes from other clients, so only a hex color may reach the style attribute
+            const color = /^#[0-9a-f]{6}$/i.test(user.color) ? user.color : '#808080'
+            cursor.setAttribute('style', `border-color: ${color}`)
 
             const label = document.createElement('div')
             label.classList.add(
@@ -234,7 +227,7 @@ export const useTipTapPageEditor = (
               'text-white',
               'text-xs'
             )
-            label.setAttribute('style', `background-color: ${user.color}`)
+            label.setAttribute('style', `background-color: ${color}`)
             label.insertBefore(document.createTextNode(user.name), null)
             cursor.insertBefore(label, null)
 
@@ -246,13 +239,23 @@ export const useTipTapPageEditor = (
             color: `#${themeBackgroundColors[colorIdx]}`
           }
         }),
+        BlockMoveHistory.configure({atmosphere}),
+        BlockArrival,
         InsightsBlock,
         AutoJoiner.configure({elementsToJoin: ['taskList']}),
         Markdown,
         PageLinkPicker.configure({
           atmosphere
         }),
-        PageLinkBlock.configure({yDoc: provider.document}),
+        PageLinkBlock.configure({
+          yDoc: provider.document,
+          getViewerAccess: (pageCode) => lookupPageViewerAccess(atmosphere, pageCode),
+          preferredName,
+          highestTier: nested ? nested.highestTier : user?.highestTier,
+          pageId,
+          pastedLinksAreCopies: !!nested
+        }),
+        TableOfContents,
         TaskBlock,
         ThinkingBlock,
         ResponseBlock,
@@ -262,7 +265,7 @@ export const useTipTapPageEditor = (
             ;(async () => {
               for (let i = 0; i < files.length; i++) {
                 const file = files[i]!
-                const targetType = getFileType(file)
+                const targetType = getPageFileType(file, !!nested)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   if (file.size > MAX_FILE_SIZE_FREE) {
                     atmosphere.eventEmitter.emit('addSnackbar', {
@@ -296,7 +299,7 @@ export const useTipTapPageEditor = (
               // These typically correspond to data: URI images that parseHTML excludes.
               ;(async () => {
                 for (const file of files) {
-                  if (getFileType(file) !== 'image') continue
+                  if (getPageFileType(file, !!nested) !== 'image') continue
                   await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
                 }
               })()
@@ -305,7 +308,7 @@ export const useTipTapPageEditor = (
             ;(async () => {
               for (let i = 0; i < files.length; i++) {
                 const file = files[i]!
-                const targetType = getFileType(file)
+                const targetType = getPageFileType(file, !!nested)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   if (file.size > MAX_FILE_SIZE_FREE) {
                     atmosphere.eventEmitter.emit('addSnackbar', {
@@ -325,13 +328,19 @@ export const useTipTapPageEditor = (
           }
         })
       ],
-      autofocus: true,
+      autofocus: !nested,
       editable: true
     },
     [provider]
   )
 
   usePageLinkPlaceholder(editor!, placeholderRef)
+  useEffect(() => {
+    provider.on('stateless', handleServerEmbedMessage)
+    return () => {
+      provider.off('stateless', handleServerEmbedMessage)
+    }
+  }, [provider])
 
   return {editor}
 }

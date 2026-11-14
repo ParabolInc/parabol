@@ -8,11 +8,14 @@ import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {getStrongestRole} from '../../hooks/usePageViewerAccess'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
+import {getBlockDropRefusal} from '../../tiptap/blockMove/getBlockDropRefusal'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {PageDropTarget} from './PageDropTarget'
+import {PageNoAccessLock} from './PageNoAccessLock'
 
 interface Props {
   pageRef: PageBreadCrumbs_page$key
@@ -47,18 +50,23 @@ export const PageBreadCrumbs = (props: Props) => {
         id
         title
         team {
-          __typename
           id
           name
+          isViewerOnTeam
         }
         ancestors {
-          __typename
           id
           title
+          isDatabase
+          isMeetingTOC
+          access {
+            viewer
+            public
+          }
           team {
-            __typename
             id
             name
+            isViewerOnTeam
           }
         }
       }
@@ -67,7 +75,13 @@ export const PageBreadCrumbs = (props: Props) => {
   )
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageViewerAccess} = viewer
+  const {
+    draggingPageId,
+    draggingPageViewerAccess,
+    draggingBlocksSourcePageId,
+    draggingBlocksChildPageIds,
+    draggingBlocksRefusal
+  } = viewer
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const {ancestors, id, title, team} = page
   const self = {id, title}
@@ -84,9 +98,8 @@ export const PageBreadCrumbs = (props: Props) => {
     ] as const
     hiddenAncestors = ancestors.slice(1, -1) // All middle ancestors
   }
-  const renderTeamCrumb = (team: {id: string; name: string; __typename: string}) => {
-    const hasDropAccess = team.__typename === 'Team'
-    const canDropIn = draggingPageId && hasDragAccess && hasDropAccess
+  const renderTeamCrumb = (team: {id: string; name: string; isViewerOnTeam: boolean}) => {
+    const canDropIn = draggingPageId && hasDragAccess && team.isViewerOnTeam
     return (
       <>
         <PageDropTarget
@@ -96,7 +109,7 @@ export const PageBreadCrumbs = (props: Props) => {
           <Link
             draggable={false}
             to={`/team/${team.id}`}
-            className='rounded-md px-1 hover:bg-slate-200'
+            className='rounded-md px-1 hover:bg-surface-hover'
           >
             {team.name}
           </Link>
@@ -105,25 +118,50 @@ export const PageBreadCrumbs = (props: Props) => {
       </>
     )
   }
+  const getBlockDropProps = (crumb: (typeof ancestors)[number], canDropPage: boolean) => {
+    const viewerRole = getStrongestRole(crumb.access)
+    if (!draggingBlocksSourcePageId || !viewerRole) {
+      return {
+        'data-drop-in': canDropPage ? crumb.id : undefined,
+        'data-drop-title': crumb.title || '<Untitled>'
+      }
+    }
+    const blockRefusal = getBlockDropRefusal(
+      {
+        pageId: crumb.id,
+        viewerRole,
+        isDatabase: crumb.isDatabase,
+        isMeetingTOC: crumb.isMeetingTOC
+      },
+      {
+        sourcePageId: draggingBlocksSourcePageId,
+        childPageIds: draggingBlocksChildPageIds ?? [],
+        refusal: draggingBlocksRefusal ?? null
+      }
+    )
+    const canDropBlocks = !blockRefusal
+    return {
+      'data-drop-in': canDropPage || canDropBlocks ? crumb.id : undefined,
+      'data-drop-refused': blockRefusal ?? undefined,
+      'data-drop-title': crumb.title || '<Untitled>'
+    }
+  }
   const nextPageAncestors = ancestors.map(({id}) => id)
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
     const isSelf = page.id === draggingPageId
-    const hasDropAccess = page.__typename === 'Page'
-    const canDropIn =
-      draggingPageId && !isSourceDragParent && !isSelf && hasDropAccess && hasDragAccess
+    const canOpen = !!(page.access.viewer || page.access.public)
+    const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && canOpen && hasDragAccess
     return (
       <React.Fragment key={page.id}>
-        <PageDropTarget
-          className='inline rounded-sm'
-          data-drop-in={canDropIn ? page.id : undefined}
-        >
+        <PageDropTarget className='inline rounded-sm' {...getBlockDropProps(page, !!canDropIn)}>
           {page.team && renderTeamCrumb(page.team)}
           <Link
             draggable={false}
             to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
-            className='rounded-md px-1 hover:bg-slate-200'
+            className='rounded-md px-1 hover:bg-surface-hover'
           >
+            {!canOpen && <PageNoAccessLock className='mr-1 align-[-2px]' />}
             {page.title}
           </Link>
         </PageDropTarget>
@@ -133,7 +171,7 @@ export const PageBreadCrumbs = (props: Props) => {
   }
 
   return (
-    <nav className='flex items-center pl-2 text-slate-600 text-sm'>
+    <nav className='flex items-center pl-2 text-fg-secondary text-sm'>
       {/* Oldest ancestor (if any) */}
       {visibleAncestors.length > 0 && renderBreadcrumbItem(visibleAncestors[0]!)}
 
@@ -147,10 +185,10 @@ export const PageBreadCrumbs = (props: Props) => {
             }}
             trigger={
               <button
-                className='cursor-pointer rounded-md bg-white px-1 hover:bg-slate-200'
+                className='cursor-pointer rounded-md bg-surface-document px-1 hover:bg-surface-hover'
                 aria-label='Open ancestor menu'
                 onDragEnter={() => {
-                  if (draggingPageId) {
+                  if (draggingPageId || draggingBlocksSourcePageId) {
                     setIsAncestorsOpen(true)
                   }
                 }}
@@ -159,15 +197,18 @@ export const PageBreadCrumbs = (props: Props) => {
               </button>
             }
           >
-            <DropdownMenu.Content className='rounded bg-white p-2 shadow-md' sideOffset={5}>
+            <DropdownMenu.Content
+              className='rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
+              sideOffset={5}
+            >
               {hiddenAncestors.map((page) => {
                 const isSelf = page.id === draggingPageId
                 const canDropIn = draggingPageId && !isSelf && !isSourceDragParent && hasDragAccess
                 return (
                   <MenuItem key={page.id} className='p-0'>
                     <PageDropTarget
-                      className='rounded p-1 hover:bg-slate-200'
-                      data-drop-in={canDropIn ? page.id : undefined}
+                      className='rounded p-1 hover:bg-surface-hover'
+                      {...getBlockDropProps(page, !!canDropIn)}
                     >
                       <Link
                         draggable={false}
@@ -190,7 +231,7 @@ export const PageBreadCrumbs = (props: Props) => {
 
       {/* Self (not a link) */}
       {ancestors.length === 0 && team && renderTeamCrumb(team)}
-      <span className='font-medium text-slate-900'>{self.title}</span>
+      <span className='font-medium text-fg-primary'>{self.title}</span>
     </nav>
   )
 }

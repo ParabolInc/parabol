@@ -49,6 +49,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] deleteTask — extracted `isTeamMember('args.taskId', 'tasks')`
 - [ ] deleteUser — complex: `or(isSuperUser, viewerDeletesSelf)` with re-auth time check
 - [x] denyPushInvitation
+- [x] disconnectSAML
 - [x] dismissNewFeature — no auth check beyond `isAuthenticated` wildcard
 - [x] dismissSuggestedAction — viewer-ownership check; no existing rule
 - [x] downgradeToStarter — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
@@ -81,9 +82,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] moveReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [x] moveTeamToOrg
 - [x] navigateMeeting — extracted `isMeetingFacilitator('args.meetingId')`
-- [x] persistGitHubSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] persistIntegrationSearchQuery — extracted `isTeamMember('args.teamId')`
-- [x] persistJiraSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] pokerAnnounceDeckHover — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] pokerResetDimension — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] pokerRevealVotes — extracted `isMeetingFacilitator('args.meetingId')`
@@ -294,7 +293,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] NotifyTeamsLimitReminder
 - [ ] OAuthAPIProvider
 - [ ] OAuthScopeEnum
-- [x] Organization *(oauthAPIProvider, saml)*
+- [x] Organization *(oauthAPIProvider, saml, samls)*
 - [ ] OrgIntegrationProviders
 - [ ] OrganizationUser
 - [x] Page *(parentPage)*

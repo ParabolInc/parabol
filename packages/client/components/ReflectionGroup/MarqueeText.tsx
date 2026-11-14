@@ -42,7 +42,7 @@ const MarqueeText = (props: Props) => {
       className={cn(
         'absolute top-0 left-0 z-1 overflow-hidden whitespace-nowrap font-sans font-semibold text-sm leading-5',
         'py-[.3125rem]',
-        isExpanded ? 'text-white' : 'text-slate-700',
+        isExpanded ? 'text-white' : 'text-fg-primary',
         readOnly ? 'cursor-default' : 'cursor-text'
       )}
       style={{width: CONTAINER_WIDTH}}

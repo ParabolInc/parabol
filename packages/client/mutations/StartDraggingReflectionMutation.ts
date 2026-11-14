@@ -7,6 +7,7 @@ import type {StartDraggingReflectionMutation as TStartDraggingReflectionMutation
 import type Atmosphere from '../Atmosphere'
 import type {ClientRetroReflection} from '../types/clientSchema'
 import type {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {
@@ -113,7 +114,7 @@ const StartDraggingReflectionMutation = (
   return commitMutation<TStartDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted,
     updater: (store) => {
       const {viewerId} = atmosphere

@@ -1,8 +1,10 @@
-import HeadphonesIcon from '@mui/icons-material/Headphones'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
+import {
+  Headphones as HeadphonesIcon,
+  PlayArrow as PlayArrowIcon,
+  Stop as StopIcon
+} from '~/ui/icons'
 import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
@@ -50,11 +52,10 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
             <HeadphonesIcon
               className={cn(
                 'size-6',
-                isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700'
+                isPlaying ? 'animate-pulse text-fg-primary' : 'text-fg-primary'
               )}
-              fontSize='medium'
             />
-            <span className='mt-0.5 font-medium text-slate-600 text-xs'>Music</span>
+            <span className='mt-0.5 font-medium text-fg-secondary text-xs'>Music</span>
           </span>
         </BottomNavControl>
       </RadixPopover.Trigger>
@@ -63,10 +64,10 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
           sideOffset={2}
           className={`background-music-popover z-10 m-0 w-64 min-w-[14rem] max-w-md p-0`}
         >
-          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-2xl'>
+          <div className='flex flex-col gap-4 rounded-lg bg-surface-card p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
-              <HeadphonesIcon className='text-blue-500' fontSize='small' />
-              <span className='font-semibold text-base text-gray-800'>Background music</span>
+              <HeadphonesIcon className='text-[20px] text-blue-500' />
+              <span className='font-semibold text-base text-fg-primary'>Background music</span>
             </div>
             <div className='relative'>
               <div
@@ -91,10 +92,10 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                         }
                       }}
                       className={cn(
-                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-slate-200 px-3 py-2 font-normal text-base leading-tight outline-none transition-colors focus:outline-none',
+                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-surface-well px-3 py-2 font-normal text-base leading-tight outline-none transition-colors focus:outline-none',
                         isSelected
                           ? 'font-semibold shadow'
-                          : 'cursor-pointer border-transparent text-slate-700 hover:bg-slate-300 hover:text-slate-900'
+                          : 'cursor-pointer border-transparent text-fg-primary hover:bg-surface-hover hover:text-fg-primary'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
@@ -103,7 +104,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 })}
               </div>
               {showFade && (
-                <div className='pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t from-white to-transparent' />
+                <div className='pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t from-surface-card to-transparent' />
               )}
             </div>
 
@@ -113,10 +114,11 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 onClick={() => playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 font-semibold text-sm transition',
+                  'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
+                  'bg-jade-500 text-white',
                   playEnabled
-                    ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
-                    : 'cursor-not-allowed bg-jade-100 text-jade-300'
+                    ? 'cursor-pointer shadow-sm hover:bg-jade-400'
+                    : 'cursor-not-allowed opacity-50'
                 )}
                 aria-label='Play'
               >
@@ -127,10 +129,11 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 onClick={stop}
                 disabled={!stopEnabled}
                 className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 font-semibold text-sm transition',
+                  'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
+                  'bg-tomato-600 text-white',
                   stopEnabled
-                    ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
-                    : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
+                    ? 'cursor-pointer shadow-sm hover:bg-tomato-500'
+                    : 'cursor-not-allowed opacity-50'
                 )}
                 aria-label='Stop'
               >
@@ -139,7 +142,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
             </div>
 
             <div className='mt-2 flex items-center gap-3'>
-              <span className='w-14 text-gray-500 text-sm'>Volume</span>
+              <span className='w-14 text-fg-secondary text-sm'>Volume</span>
               <div className='min-w-0 flex-1'>
                 <input
                   type='range'

@@ -24,7 +24,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetPokerSpectateMutation_team @relay(mask: false)
+      ...SetPokerSpectateMutation_team @relay(mask: false) @alias
     }
   }
 `

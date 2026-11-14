@@ -1,12 +1,13 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import TaskIntegrationManagerFactory from '../../../integrations/TaskIntegrationManagerFactory'
+import {getServerIntegration} from '../../../integrations/platform/registry'
 import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
+import getIssueTitleAndBody from '../../mutations/helpers/getIssueTitleAndBody'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async (
@@ -30,34 +31,22 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   // VALIDATION
   if (task.integration) {
     return {
-      error: {message: `That task is already linked to ${(task.integration as any).service}`}
+      error: {message: `That task is already linked to ${task.integration.service}`}
     }
   }
 
+  const definition = getServerIntegration(integrationProviderService)
+  const issueCreate = definition?.capabilities.issueCreate
+  if (!definition || !issueCreate) {
+    return {error: {message: 'Unknown integration'}}
+  }
+  const initManager = (accessUserId: string) =>
+    issueCreate.initManager({dataLoader, teamId, userId: accessUserId, context, info})
+
   const [viewerTaskManager, assigneeTaskManager, team, teamMembers, viewer, assigneeUser] =
     await Promise.all([
-      TaskIntegrationManagerFactory.initManager(
-        dataLoader,
-        integrationProviderService,
-        {
-          teamId: teamId,
-          userId: viewerId
-        },
-        context,
-        info
-      ),
-      userId
-        ? TaskIntegrationManagerFactory.initManager(
-            dataLoader,
-            integrationProviderService,
-            {
-              teamId: teamId,
-              userId
-            },
-            context,
-            info
-          )
-        : null,
+      initManager(viewerId),
+      userId ? initManager(userId) : null,
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId),
@@ -88,8 +77,14 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   const {preferredName: assigneeName = ''} = assigneeUser || {}
 
   const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+  const {title, bodyContent} = await getIssueTitleAndBody(
+    JSON.parse(rawContentJSON),
+    teamId,
+    dataLoader
+  )
   const createTaskResponse = await taskIntegrationManager.createTask({
-    rawContentJSON: JSON.parse(rawContentJSON),
+    title,
+    bodyContent,
     integrationRepoId
   })
 
@@ -114,7 +109,13 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     }
   }
 
-  updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
+  updatePrevUsedRepoIntegrationsCache(definition.service, integrationRepoId, {
+    dataLoader,
+    teamId,
+    userId: viewerId,
+    context,
+    info
+  })
   await pg
     .updateTable('Task')
     .set({

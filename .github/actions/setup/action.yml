@@ -1,0 +1,48 @@
+name: Setup
+description: Installs Node, pnpm and node_modules and writes the pipeline .env
+inputs:
+  services:
+    description: Start Postgres and Valkey in the background. Nothing waits for them, see .github/scripts/migrate.sh
+    default: "false"
+outputs:
+  node-version:
+    description: The Node version that package.json asks for
+    value: ${{ steps.versions.outputs.node }}
+runs:
+  using: composite
+  steps:
+    # A service container blocks the job until its image is pulled. These pull while the dependencies install
+    - name: Start Postgres and Valkey
+      if: inputs.services == 'true'
+      shell: bash
+      run: |
+        set -a
+        source docker/images/parabol-ubi/environments/pipeline
+        set +a
+        docker run --detach --name postgres --publish 5432:5432 \
+          --env POSTGRES_PASSWORD --env POSTGRES_USER --env POSTGRES_DB \
+          pgvector/pgvector:0.8.2-pg18-trixie -c max_connections=200 > "$RUNNER_TEMP/postgres.log" 2>&1 &
+        docker run --detach --name valkey --publish 6379:6379 \
+          valkey/valkey:9.0-alpine > "$RUNNER_TEMP/valkey.log" 2>&1 &
+
+    - name: Read the Node version
+      id: versions
+      shell: bash
+      run: echo "node=$(jq -r '.engines.node | ltrimstr("^")' package.json)" >> "$GITHUB_OUTPUT"
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: package.json
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v6
+
+    # Not cached: restoring node_modules is only seconds faster than installing them, and saving them takes far longer
+    - name: Install node_modules
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Write the pipeline .env
+      shell: bash
+      run: cp docker/images/parabol-ubi/environments/pipeline .env

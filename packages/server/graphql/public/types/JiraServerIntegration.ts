@@ -1,8 +1,6 @@
-import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {selectIntegrationSearchQuery} from '../../../postgres/select'
 import type {TeamMember} from '../../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
@@ -171,44 +169,6 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     }
 
     return IntegrationProviderId.join(auth.providerId)
-  },
-
-  searchQueries: async ({teamId, userId}, _args, {dataLoader}) => {
-    const auth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'jiraServer', teamId, userId})
-
-    if (!auth) {
-      return []
-    }
-
-    const {providerId} = auth
-    const searchQueries = await selectIntegrationSearchQuery()
-      .where('teamId', '=', teamId)
-      .where('userId', '=', userId)
-      .where('service', '=', 'jiraServer')
-      .$if(!providerId, (qb) => qb.where('providerId', 'is', null))
-      .$if(!!providerId, (qb) => qb.where('providerId', '=', providerId))
-      .where('lastUsedAt', '>', sql<Date>`NOW() - INTERVAL '60 days'`)
-      .orderBy('lastUsedAt', 'desc')
-      .limit(5)
-      .execute()
-
-    return searchQueries.map((searchQuery) => {
-      const query = searchQuery.query as {
-        queryString: string | null
-        isJQL: boolean
-        projectKeyFilters: string[] | null
-      }
-
-      return {
-        id: String(searchQuery.id),
-        queryString: query.queryString || '',
-        isJQL: query.isJQL,
-        projectKeyFilters: query.projectKeyFilters || [],
-        lastUsedAt: searchQuery.lastUsedAt.toJSON()
-      }
-    })
   }
 }
 

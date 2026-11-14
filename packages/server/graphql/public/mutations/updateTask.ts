@@ -4,8 +4,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {convertTiptapToADF} from '../../../../client/shared/tiptap/convertTipTapToADF'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
+import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
 import getKysely from '../../../postgres/getKysely'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -66,7 +66,11 @@ const updateTask: MutationResolvers['updateTask'] = async (
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (auth) {
       const manager = new AtlassianServerManager(auth.accessToken)
-      const adf = convertTiptapToADF(validContent as TipTapSerializedContent)
+      const [, ...descriptionBlocks] = validContent.content ?? []
+      const adf = convertTiptapToADF({
+        ...validContent,
+        content: descriptionBlocks
+      } as TipTapSerializedContent)
       // fire-and-forget; don't block the response on Jira's API
       manager.updateDescription(cloudId, issueKey, adf).catch(() => {})
     }

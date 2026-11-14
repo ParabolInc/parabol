@@ -1,15 +1,16 @@
-import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
+import {PersonAdd} from '~/ui/icons'
 import type {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
+import type {TeamInviteeResult} from '../hooks/useTeamInviteeDrafts'
 import AddTeamMemberModal from './AddTeamMemberModal'
 
 interface Props {
   meetingId?: string
   teamId: string
   teamMembers: InviteTeamMemberAvatar_teamMembers$key
+  initialResults?: readonly TeamInviteeResult[]
 }
 
 const InviteTeamMemberAvatar = (props: Props) => {
@@ -22,7 +23,12 @@ const InviteTeamMemberAvatar = (props: Props) => {
     `,
     props.teamMembers
   )
-  const [isOpen, setIsOpen] = useState(false)
+  const [initialResults, setInitialResults] = useState(props.initialResults)
+  const [isOpen, setIsOpen] = useState(!!initialResults)
+  const onClose = () => {
+    setIsOpen(false)
+    setInitialResults(undefined)
+  }
   return (
     <>
       <div
@@ -30,23 +36,19 @@ const InviteTeamMemberAvatar = (props: Props) => {
         onClick={() => setIsOpen(true)}
       >
         <div className='flex h-7 justify-center'>
-          <span style={{color: PALETTE.SKY_500, height: 24, width: 24, alignSelf: 'center'}}>
+          <span className='h-6 w-6 self-center text-accent'>
             <PersonAdd />
           </span>
         </div>
-        <div
-          className='text-center font-semibold text-xs leading-4'
-          style={{color: PALETTE.SLATE_700}}
-        >
-          Invite
-        </div>
+        <div className='text-center font-semibold text-fg-primary text-xs leading-4'>Invite</div>
       </div>
       <AddTeamMemberModal
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={onClose}
         meetingId={meetingId}
         teamId={teamId}
         teamMembers={teamMembers}
+        initialResults={initialResults}
       />
     </>
   )

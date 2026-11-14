@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
-import {MoreVert} from '@mui/icons-material'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV3'
+import {Suspense} from 'react'
+import {MoreVert} from '~/ui/icons'
+import {Menu} from '~/ui/Menu/Menu'
 import lazyPreload from '~/utils/lazyPreload'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -10,30 +8,6 @@ const CommentAuthorOptionsDropdown = lazyPreload(
   () =>
     import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
 )
-
-const StyledButton = styled(PlainButton)({
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
-
-const StyledIconWrapper = styled('div')({
-  borderRadius: 24,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: 'inherit',
-  flexShrink: 0,
-  height: 24,
-  lineHeight: '24px',
-  marginLeft: 'auto',
-  width: 24
-})
-
-const StyledIcon = styled(MoreVert)({
-  height: 18,
-  width: 18
-})
 
 interface Props {
   commentId: string
@@ -43,25 +17,28 @@ interface Props {
 
 const CommentAuthorOptionsButton = (props: Props) => {
   const {commentId, editComment, meetingId} = props
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
-    <StyledButton
-      onMouseEnter={CommentAuthorOptionsDropdown.preload}
-      ref={originRef}
-      onClick={togglePortal}
+    <Menu
+      trigger={
+        <PlainButton
+          aria-label='Comment options'
+          className='hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+          onMouseEnter={CommentAuthorOptionsDropdown.preload}
+        >
+          <div className='ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-3xl text-inherit leading-6'>
+            <MoreVert className='h-[18px] w-[18px]' />
+          </div>
+        </PlainButton>
+      }
     >
-      <StyledIconWrapper>
-        <StyledIcon />
-      </StyledIconWrapper>
-      {menuPortal(
+      <Suspense fallback={null}>
         <CommentAuthorOptionsDropdown
-          menuProps={menuProps}
           commentId={commentId}
           editComment={editComment}
           meetingId={meetingId}
         />
-      )}
-    </StyledButton>
+      </Suspense>
+    </Menu>
   )
 }
 

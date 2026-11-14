@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 
 interface GridProps {
@@ -6,13 +5,6 @@ interface GridProps {
   gap: number
   maxCols?: number
 }
-
-const Grid = styled('div')<GridProps>(({colWidth, gap, maxCols}) => ({
-  display: 'grid',
-  gridColumnGap: gap,
-  gridAutoRows: gap / 2,
-  gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, ${colWidth}px)`
-}))
 
 type SetItemRef = (id: string) => (c: HTMLElement | null) => any
 type RenderProp = (setItemRef: SetItemRef) => ReactNode
@@ -97,9 +89,17 @@ const MasonryCSSGrid = (props: Props) => {
   )
 
   return (
-    <Grid gap={gap} colWidth={colWidth} maxCols={maxCols} ref={gridRef}>
+    <div
+      ref={gridRef}
+      className='grid'
+      style={{
+        columnGap: gap,
+        gridAutoRows: gap / 2,
+        gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, ${colWidth}px)`
+      }}
+    >
       {children(setItemRef)}
-    </Grid>
+    </div>
   )
 }
 

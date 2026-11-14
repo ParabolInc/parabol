@@ -6,6 +6,7 @@ import findStageById from '../../utils/meetings/findStageById'
 import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from '../../utils/meetings/getMeetingPathParams'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapDiscussionMentionedToToast_notification on NotifyDiscussionMentioned {
@@ -41,10 +42,9 @@ graphql`
 `
 
 const mapDiscussionMentionedToToast = (
-  notification: mapDiscussionMentionedToToast_notification$data,
+  notification: UnmaskedNotification<mapDiscussionMentionedToToast_notification$data>,
   {navigate}: OnNextNavigateContext
 ): Snack | null => {
-  if (!notification) return null
   const {id: notificationId, meeting, author, discussion} = notification
   const authorName = author ? author.preferredName : 'Anonymous'
   const {id: meetingId, name: meetingName} = meeting

@@ -1,31 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import type {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import {usePreloadedQuery} from 'react-relay'
+import type {LinearIntegrationPanelQuery} from '../../../__generated__/LinearIntegrationPanelQuery.graphql'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
-import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import linearSVG from '../../../styles/theme/images/graphics/linear.svg'
-import LinearClientManager from '../../../utils/LinearClientManager'
+import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
-interface Props {
-  meetingRef: LinearIntegrationPanel_meeting$key
-}
-
-const LinearIntegrationPanel = (props: Props) => {
-  const {meetingRef} = props
-  const meeting = useFragment(
-    graphql`
-      fragment LinearIntegrationPanel_meeting on NewMeeting {
+const query = graphql`
+  query LinearIntegrationPanelQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) @required(action: THROW) {
         ...useInspirationDrawer_meeting
-        teamId
-        id
         linearInspirationItems: inspirationItems(service: linear) {
           id
           title
@@ -34,120 +23,66 @@ const LinearIntegrationPanel = (props: Props) => {
         }
         viewerMeetingMember {
           teamMember {
-            teamId
-            integrations {
-              linear {
-                auth {
-                  isActive
-                }
-                cloudProvider {
-                  id
-                  clientId
-                  serverBaseUrl
-                }
-              }
-            }
             ...LinearProjectFilterBar_teamMember
           }
         }
       }
-    `,
-    meetingRef
-  )
+    }
+  }
+`
 
-  const atmosphere = useAtmosphere()
+const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrationPanelQuery>) => {
+  const {queryRef, meetingId, teamId} = props
+  const {viewer} = usePreloadedQuery<LinearIntegrationPanelQuery>(query, queryRef)
+  const {meeting} = viewer
+
   const teamMember = meeting.viewerMeetingMember?.teamMember
-  const linear = teamMember?.integrations?.linear
-  const isActive = !!linear?.auth?.isActive
-  const provider = linear?.cloudProvider
 
-  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+  const {dateRange, setDateRange, onResultCount, getResultCount} = useInspirationDrawer(
     'linear',
     meeting
   )
 
   const [selectedLinearIds, setSelectedLinearIds] = useSessionStorageState<string[]>(
-    `Inspiration:linear:ids:${meeting.id}`,
+    `Inspiration:linear:ids:${meetingId}`,
     []
   )
 
   const filter = makeLinearWorkFilter(selectedLinearIds, dateRange)
   const searchQuery = JSON.stringify(filter)
-  const hasResults = getHasResults(searchQuery)
 
-  const mutationProps = useMutationProps()
-  const {error, onError} = mutationProps
-
-  const authLinear = () => {
-    if (!teamMember) {
-      return onError(new Error('Could not find team member'))
-    }
-    if (!provider) {
-      return onError(new Error('Could not find Linear provider'))
-    }
-    LinearClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
-
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
-      teamId: meeting.teamId,
-      meetingId: meeting.id,
-      service: 'linear'
-    })
-  }
+  const filterBar = teamMember ? (
+    <>
+      <LinearProjectFilterBar
+        teamMemberRef={teamMember}
+        selectedLinearIds={selectedLinearIds}
+        setSelectedLinearIds={setSelectedLinearIds}
+      />
+      <div className='mb-2 flex w-full px-2'>
+        <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+      </div>
+    </>
+  ) : null
 
   return (
     <>
-      {isActive && teamMember ? (
-        <>
-          <LinearProjectFilterBar
-            teamMemberRef={teamMember}
-            selectedLinearIds={selectedLinearIds}
-            setSelectedLinearIds={(ids) => {
-              SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
-                teamId: meeting.teamId,
-                meetingId: meeting.id,
-                service: 'linear'
-              })
-              setSelectedLinearIds(ids)
-            }}
+      {filterBar}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meetingId}
+          service='linear'
+          searchQuery={searchQuery}
+          initialItems={meeting.linearInspirationItems}
+          hideDraftPanel={!getResultCount(searchQuery)}
+        >
+          <LinearIntegrationResultsRoot
+            filter={filter}
+            searchQuery={searchQuery}
+            teamId={teamId}
+            onResultCount={onResultCount}
           />
-          <div className='mb-2 flex w-full px-2'>
-            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
-          </div>
-          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
-            {hasResults && (
-              <InspirationItemsPanel
-                meetingId={meeting.id}
-                service='linear'
-                searchQuery={searchQuery}
-                initialItems={meeting.linearInspirationItems}
-              />
-            )}
-            <LinearIntegrationResultsRoot
-              filter={filter}
-              searchQuery={searchQuery}
-              teamId={teamMember.teamId}
-              onResultCount={onResultCount}
-            />
-          </div>
-        </>
-      ) : (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <div className='h-10 w-10'>
-            <img className='h-10 w-10' src={linearSVG} />
-          </div>
-          <b>Connect to Linear</b>
-          <div className='w-1/2 text-center text-sm'>
-            Connect to Linear to view your issues and PRs.
-          </div>
-          <button
-            className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
-            onClick={authLinear}
-          >
-            Connect
-          </button>
-          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
-        </div>
-      )}
+        </InspirationItemsPanel>
+      </div>
     </>
   )
 }

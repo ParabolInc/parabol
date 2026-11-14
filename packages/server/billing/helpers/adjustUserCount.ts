@@ -7,11 +7,9 @@ import getKysely from '../../postgres/getKysely'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import type {User} from '../../postgres/types'
 import type {OrganizationUserAudit} from '../../postgres/types/pg'
-import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import {Logger} from '../../utils/Logger'
-import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 
 const maybeUpdateOrganizationActiveDomain = async (
@@ -42,13 +40,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: User) => {
   const pg = getKysely()
-  const {id: userId, email} = user
-  inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
-  analytics.identify({
-    userId,
-    email,
-    isActive: !inactive
-  })
+  const {id: userId} = user
   await pg.updateTable('User').set({inactive}).where('id', '=', userId).execute()
 }
 
@@ -74,15 +66,19 @@ const addUser = async (orgIds: string[], user: User, dataLoader: DataLoaderWorke
       })
     )
     .execute()
+  // best effort, the org membership above is what callers depend on
   await Promise.all(
-    orgIds.map((orgId) => {
-      return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
+    orgIds.map(async (orgId) => {
+      try {
+        await maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
+      } catch (e) {
+        Logger.error(`Failed to update activeDomain for org ${orgId}`, e)
+      }
     })
   )
 }
 
 const deleteUser = async (orgIds: string[], user: User) => {
-  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   await getKysely()
     .updateTable('OrganizationUser')
     .set({removedAt: sql`CURRENT_TIMESTAMP`})
@@ -91,10 +87,11 @@ const deleteUser = async (orgIds: string[], user: User) => {
     .execute()
 }
 
+type AdjustableInvoiceItemType = Exclude<InvoiceItemType, InvoiceItemType.PAUSE_USER>
+
 const dbActionTypeLookup = {
   [InvoiceItemType.ADD_USER]: addUser,
   [InvoiceItemType.AUTO_PAUSE_USER]: changePause(true),
-  [InvoiceItemType.PAUSE_USER]: changePause(true),
   [InvoiceItemType.REMOVE_USER]: deleteUser,
   [InvoiceItemType.UNPAUSE_USER]: changePause(false)
 }
@@ -102,18 +99,19 @@ const dbActionTypeLookup = {
 const auditEventTypeLookup = {
   [InvoiceItemType.ADD_USER]: 'added',
   [InvoiceItemType.AUTO_PAUSE_USER]: 'inactivated',
-  [InvoiceItemType.PAUSE_USER]: 'inactivated',
   [InvoiceItemType.REMOVE_USER]: 'removed',
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
-} as {[key in InvoiceItemType]: OrganizationUserAudit['eventType']}
+} as {[key in AdjustableInvoiceItemType]: OrganizationUserAudit['eventType']}
 
 /**
- * Also adds the organization user if not present
+ * Also adds the organization user if not present.
+ * Only the OrganizationUser write rejects; audit & Stripe sync are best effort, so callers may
+ * treat a rejection as "the user is not in the org" and roll back accordingly.
  */
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
-  type: InvoiceItemType,
+  type: AdjustableInvoiceItemType,
   dataLoader: DataLoaderWorker
 ) {
   const pg = getKysely()
@@ -124,25 +122,27 @@ export default async function adjustUserCount(
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user, dataLoader)
   const auditEventType = auditEventTypeLookup[type]
+  // best effort, a missing audit row must not fail the membership change above
   await Promise.all(
-    orgIds.map((orgId) => {
-      return pg
-        .insertInto('OrganizationUserAudit')
-        .values({
-          orgId,
-          userId,
-          eventDate: new Date(),
-          eventType: auditEventType
-        })
-        .execute()
+    orgIds.map(async (orgId) => {
+      try {
+        await pg
+          .insertInto('OrganizationUserAudit')
+          .values({
+            orgId,
+            userId,
+            eventDate: new Date(),
+            eventType: auditEventType
+          })
+          .execute()
+      } catch (e) {
+        Logger.error(`Failed to write OrganizationUserAudit for ${userId} in ${orgId}`, e)
+      }
     })
   )
 
   const organizations = await dataLoader.get('organizations').loadMany(orgIds)
   const paidOrgs = organizations.filter(isValid).filter((org) => org.stripeSubscriptionId)
 
-  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch(() => {
-    /*ignore*/
-  })
   handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

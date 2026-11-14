@@ -1,4 +1,3 @@
-import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
@@ -9,17 +8,20 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {
+  activeEmbeddingDefinition,
+  activeEmbeddingModelId
+} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
+import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
 import {
   selectNewMeetings,
@@ -32,13 +34,14 @@ import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
-import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import getUserDetail from '../../../utils/getUserDetail'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canReadMeetingSeries from '../../mutations/helpers/canReadMeetingSeries'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
@@ -47,10 +50,10 @@ import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import {pages} from '../fields/pages'
 import {search} from '../fields/search'
-import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {ReqResolvers} from './ReqResolvers'
 
-const SIMILARITY_THRESHOLD = 0.5
+const TEMPLATE_SEARCH_LIMIT = 12
 
 const getValidUserIds = async (
   userIds: null | string[] | undefined,
@@ -73,11 +76,23 @@ const getValidUserIds = async (
   return userIds.filter((userId) => teamMemberUserIds.has(userId))
 }
 
+const filterGrantedOrgIds = async (orgIds: string[], resourceGrants?: ResourceGrants) => {
+  if (!resourceGrants) return orgIds
+  const isOrgGranted = await Promise.all(orgIds.map((orgId) => resourceGrants.hasOrg(orgId)))
+  return orgIds.filter((_, idx) => isOrgGranted[idx])
+}
+
 const User: ReqResolvers<'User'> = {
   organization: (_source, {orgId}, {dataLoader}) => {
     return dataLoader.get('organizations').loadNonNull(orgId)
   },
   invoices,
+  freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomRetroTemplatesRemaining', dataLoader),
+  freeCustomPokerTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomPokerTemplatesRemaining', dataLoader),
+  freeCustomStandupTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
+    getUserDetail(userId, 'freeCustomStandupTemplatesRemaining', dataLoader),
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const userId = getUserId(authToken)
     const tasks = await selectTasks()
@@ -120,13 +135,18 @@ const User: ReqResolvers<'User'> = {
   meeting: async (_source, {meetingId}, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
   },
-  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
+  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader, resourceGrants}) => {
     const numericId = MeetingSeriesId.split(meetingSeriesId)
     if (!Number.isFinite(numericId)) return null
     const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
     if (!meetingSeries) return null
-    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
-    return meetingSeries
+    const isReadable = await canReadMeetingSeries(
+      meetingSeries,
+      authToken,
+      dataLoader,
+      resourceGrants
+    )
+    return isReadable ? meetingSeries : null
   },
   meetings: async (
     _source,
@@ -151,7 +171,9 @@ const User: ReqResolvers<'User'> = {
       }
     }
     if (meetingTypes.length < 1) {
-      throw new GraphQLError('Must provide at least 1 meetingType')
+      throw new GraphQLError('Must provide at least 1 meetingType', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
 
     const nodes = await selectNewMeetings()
@@ -552,10 +574,9 @@ const User: ReqResolvers<'User'> = {
       if (!meeting) return {meetingId}
       teamId = meeting.teamId
     }
-    const teamMember = teamId
-      ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
-      : null
-    if (teamMember?.isNotRemoved) return {isOnTeam: true}
+    // the same teams the auth token lists, so a page that checks the token can't send the viewer straight back
+    const viewerTeamIds = await dataLoader.get('teamIdsByUserId').load(viewerId)
+    if (teamId && viewerTeamIds.includes(teamId)) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null
@@ -593,15 +614,15 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
 
-  tms: async ({id: userId}, _args, {authToken, dataLoader}) => {
+  tms: async ({id: userId}, _args, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
     const tms = await dataLoader.get('teamIdsByUserId').load(userId)
-    return viewerId === userId
+    return viewerId === userId && !resourceGrants
       ? tms
       : tms.filter((teamId: string) => authToken.tms.includes(teamId))
   },
 
-  activity: async (_source, {activityId}, {dataLoader, authToken}) => {
+  activity: async (_source, {activityId}, {dataLoader, authToken, resourceGrants}) => {
     const viewerId = getUserId(authToken)
 
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
@@ -616,6 +637,7 @@ const User: ReqResolvers<'User'> = {
         if (!organizationUser) {
           return null
         }
+        if (resourceGrants && !(await resourceGrants.hasOrg(activity.orgId))) return null
       }
     }
     return activity || null
@@ -653,11 +675,12 @@ const User: ReqResolvers<'User'> = {
     if (!domain || !(await dataLoader.get('isCompanyDomain').load(domain))) return null
     return {id: domain}
   },
-  domains: async ({id: userId}, _args, {dataLoader}) => {
+  domains: async ({id: userId}, _args, {dataLoader, resourceGrants}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const orgIds = organizationUsers
-      .filter(({suggestedTier}) => suggestedTier)
-      .map(({orgId}) => orgId)
+    const orgIds = await filterGrantedOrgIds(
+      organizationUsers.filter(({suggestedTier}) => suggestedTier).map(({orgId}) => orgId),
+      resourceGrants
+    )
 
     const organizations = await Promise.all(
       orgIds.map((orgId) => dataLoader.get('organizations').loadNonNull(orgId))
@@ -675,7 +698,11 @@ const User: ReqResolvers<'User'> = {
     }
     return request
   },
-  favoriteTemplates: async ({favoriteTemplateIds}, _args, {authToken, dataLoader}) => {
+  favoriteTemplates: async (
+    {favoriteTemplateIds},
+    _args,
+    {authToken, dataLoader, resourceGrants}
+  ) => {
     const templates = (
       await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)
     ).filter(isValid)
@@ -688,7 +715,8 @@ const User: ReqResolvers<'User'> = {
           const organizationUsers = await dataLoader
             .get('organizationUsersByUserId')
             .load(getUserId(authToken))
-          return organizationUsers.some((ou) => ou.orgId === orgId)
+          if (!organizationUsers.some((ou) => ou.orgId === orgId)) return false
+          return !resourceGrants || resourceGrants.hasOrg(orgId)
         }
         return false
       })
@@ -700,16 +728,23 @@ const User: ReqResolvers<'User'> = {
       .get('featureFlagByOwnerId')
       .load({ownerId: userId, featureName: featureName as FeatureFlagName})
   },
-  availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
+  availableTemplates: async (
+    {id: userId},
+    {first, after, type},
+    {authToken, dataLoader, resourceGrants}
+  ) => {
     const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
-      viewerId === userId || isSuperUser(authToken)
+      (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
         : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
+    const userOrgIds = await filterGrantedOrgIds(
+      organizationUsers.map(({orgId}) => orgId),
+      resourceGrants
+    )
     const availableOrgIds = ['aGhostOrg', ...userOrgIds]
     const [parabolActivities, ...userActivities] = await Promise.all(
       availableOrgIds.map((orgId) => dataLoader.get('meetingTemplatesByOrgId').load(orgId))
@@ -765,20 +800,22 @@ const User: ReqResolvers<'User'> = {
       }))
       .filter((activity) => !type || activity.type === type)
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
-
     return connectionFromTemplateArray(allActivities, first, after)
   },
-  templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
+  templateSearch: async ({id: userId}, {search}, {authToken, dataLoader, resourceGrants}) => {
     if (!search) return []
     const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
-      viewerId === userId || isSuperUser(authToken)
+      (viewerId === userId && !resourceGrants) || isSuperUser(authToken)
         ? allTms
         : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const userOrgIds = organizationUsers.map(({orgId}) => orgId)
+    const userOrgIds = await filterGrantedOrgIds(
+      organizationUsers.map(({orgId}) => orgId),
+      resourceGrants
+    )
 
     const allOrgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(userOrgIds))
       .filter(isValid)
@@ -786,6 +823,8 @@ const User: ReqResolvers<'User'> = {
     // all team ids which could have accessible templates
     const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
 
+    if (!activeEmbeddingDefinition) return []
+    const {templateSearchFloor, templateSearchGap} = activeEmbeddingDefinition
     const vector = await publishToEmbedder({
       jobType: 'userQuery:start',
       data: getUserQueryJobData(search),
@@ -796,7 +835,7 @@ const User: ReqResolvers<'User'> = {
 
     const pg = getKysely()
     const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
-    const similarEmbeddings = await pg
+    const similarTemplates = await pg
       .with('Model', (qc) =>
         qc
           .selectFrom(tableName)
@@ -824,33 +863,27 @@ const User: ReqResolvers<'User'> = {
           ])
       )
       .selectFrom('CosineSimilarity')
-      .select(['embeddingId', 'similarity', 'embeddingsMetadataId', 'refId'])
-      .where('similarity', '>=', SIMILARITY_THRESHOLD)
+      .select(({fn}) => ['refId', fn.max('similarity').as('similarity')])
+      .where('similarity', '>=', templateSearchFloor)
+      .groupBy('refId')
       .orderBy('similarity', 'desc')
       .execute()
 
-    const aiActivityIds = similarEmbeddings.map(({refId}) => refId)
-
     // TODO filter out seasonal templates
-    const activities = await dataLoader.get('meetingTemplates').loadMany(aiActivityIds)
-    const accessibleActivities = activities.filter(isValid).filter((activity) => {
-      return activity.scope !== 'TEAM' || teamIds.includes(activity.teamId)
+    const activities = await dataLoader
+      .get('meetingTemplates')
+      .loadMany(similarTemplates.map(({refId}) => refId))
+    const accessibleMatches = similarTemplates.flatMap(({similarity}, idx) => {
+      const activity = activities[idx]
+      if (!isValid(activity)) return []
+      if (activity.scope === 'TEAM' && !teamIds.includes(activity.teamId)) return []
+      return [{activity, similarity}]
     })
-    return accessibleActivities
-  },
-  parseSAMLMetadata: async (_source, {metadataURL, domain}) => {
-    const metadata = await getSSOMetadataFromURL(metadataURL)
-    if (metadata instanceof Error) return {error: {message: metadata.message}}
-    const baseUrl = getSignOnURL(metadata, domain)
-    if (baseUrl instanceof Error) {
-      return {error: {message: baseUrl.message}}
-    }
-    // append the new metadataURL to the RelayState
-    // The IdP will forward this to us and our SAMLHandler/loginSAML will use this instead of what's in the DB
-    const relayState = base64url.encode(JSON.stringify({metadataURL}))
-    const urlObj = new URL(baseUrl)
-    urlObj.searchParams.append('RelayState', relayState)
-    return {url: urlObj.toString()}
+    const floor = (accessibleMatches[0]?.similarity ?? 0) - templateSearchGap
+    return accessibleMatches
+      .filter(({similarity}) => similarity >= floor)
+      .slice(0, TEMPLATE_SEARCH_LIMIT)
+      .map(({activity}) => activity)
   },
   samlIdP: async ({email}, _args, {dataLoader}) => {
     return getSAMLURLFromEmail(email, dataLoader)
@@ -873,6 +906,12 @@ const User: ReqResolvers<'User'> = {
     const viewerId = getUserId(authToken)
     const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
     return tokens
+  },
+  oauthAuthorizationRequest: async ({id: userId}, {request}, {dataLoader}) => {
+    const authorization = await validateOAuthAuthorizationRequest(request, userId, dataLoader)
+    if ('error' in authorization) return null
+    const {provider, scopes} = authorization
+    return {name: provider.name, orgId: provider.orgId, scopes, redirectUri: request.redirectUri}
   }
 }
 

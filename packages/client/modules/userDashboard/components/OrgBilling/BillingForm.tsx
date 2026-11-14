@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -12,55 +11,30 @@ import type {
   StripeElementChangeEvent
 } from '@stripe/stripe-js'
 import type * as React from 'react'
-import {type MutableRefObject, useState} from 'react'
+import {type RefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import {Button} from '../../../../ui/Button/Button'
 
-const ButtonBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  paddingTop: 16,
-  wrap: 'nowrap',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
-  boxShadow: 'none',
-  marginTop: 16,
-  width: '100%',
-  elevation: 0,
-  '&:hover, &:focus': {
-    boxShadow: 'none',
-    background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
-  }
-}))
-
-const ErrorMsg = styled(StyledError)({
-  paddingTop: 8,
-  textTransform: 'none'
-})
-
-const CARD_ELEMENT_OPTIONS: StripeCardNumberElementOptions = {
-  disableLink: true,
-  style: {
-    base: {
-      color: PALETTE.SLATE_800,
-      fontFamily: '"IBM Plex Sans", sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': {
-        color: PALETTE.SLATE_600
+const getCardElementOptions = (): StripeCardNumberElementOptions => {
+  const isDark = document.documentElement.classList.contains('theme-dark')
+  return {
+    disableLink: true,
+    style: {
+      base: {
+        color: isDark ? '#EEEDF7' : PALETTE.SLATE_800,
+        fontFamily: '"IBM Plex Sans", sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: isDark ? '#938CBF' : PALETTE.SLATE_600
+        }
       }
     }
   }
@@ -68,7 +42,7 @@ const CARD_ELEMENT_OPTIONS: StripeCardNumberElementOptions = {
 
 type Props = {
   orgId: string
-  cardNumberRef: MutableRefObject<StripeCardNumberElement | null>
+  cardNumberRef: RefObject<StripeCardNumberElement | null>
 }
 
 const BillingForm = (props: Props) => {
@@ -76,8 +50,9 @@ const BillingForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
-  const [hasStarted, setHasStarted] = useState(false)
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [cardNumberError, setCardNumberError] = useState<null | string>()
   const [expiryDateError, setExpiryDateError] = useState<null | string>()
   const [cvcError, setCvcError] = useState<null | string>()
@@ -92,6 +67,7 @@ const BillingForm = (props: Props) => {
     !expiryDateError &&
     !cvcError
   const isUpgradeDisabled = submitting || !stripe || !elements || !hasValidCCDetails
+  const cardElementOptions = getCardElementOptions()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -115,7 +91,8 @@ const BillingForm = (props: Props) => {
     const handleCompletedSubscription = async (res: CreateStripeSubscriptionMutation$data) => {
       const {createStripeSubscription} = res
       const stripeSubscriptionClientSecret =
-        createStripeSubscription?.stripeSubscriptionClientSecret
+        createStripeSubscription?.CreateStripeSubscriptionMutation_organization
+          ?.stripeSubscriptionClientSecret
       if (createStripeSubscription.error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           createStripeSubscription.error?.message ??
@@ -147,14 +124,6 @@ const BillingForm = (props: Props) => {
   const handleChange =
     (type: 'CardNumber' | 'ExpiryDate' | 'CVC') => (event: StripeElementChangeEvent) => {
       if (error) onCompleted()
-      if (!hasStarted && !event.empty) {
-        SendClientSideEvent(atmosphere, 'Payment Details Started', {orgId})
-        setHasStarted(true)
-      }
-      if (event.complete) {
-        SendClientSideEvent(atmosphere, 'Payment Details Complete', {orgId})
-      }
-
       const errorSetters = {
         CardNumber: setCardNumberError,
         ExpiryDate: setExpiryDateError,
@@ -180,7 +149,7 @@ const BillingForm = (props: Props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className='mb-4'>
-        <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+        <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
           Card number
         </label>
 
@@ -189,49 +158,53 @@ const BillingForm = (props: Props) => {
             onReady={(e) => {
               cardNumberRef.current = e
             }}
-            className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-            options={CARD_ELEMENT_OPTIONS}
+            className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+            options={cardElementOptions}
             onChange={handleChange('CardNumber')}
           />
-          {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
+          {cardNumberError && (
+            <StyledError className='pt-2 normal-case'>{cardNumberError}</StyledError>
+          )}
         </div>
       </div>
 
       <div className='flex space-x-5'>
         <div className='w-1/2'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             Expiry date
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('ExpiryDate')}
             />
-            {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
+            {expiryDateError && (
+              <StyledError className='pt-2 normal-case'>{expiryDateError}</StyledError>
+            )}
           </div>
         </div>
         <div className='w-1/2'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             CVC
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('CVC')}
             />
-            {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}
+            {cvcError && <StyledError className='pt-2 normal-case'>{cvcError}</StyledError>}
           </div>
         </div>
       </div>
-      <ButtonBlock>
-        {error && <ErrorMsg>{error.message}</ErrorMsg>}
-        <UpgradeButton
-          size='medium'
+      <div className='flex w-full flex-col justify-center pt-4'>
+        {error && <StyledError className='pt-2 normal-case'>{error.message}</StyledError>}
+        <Button
+          variant='primary'
           disabled={isUpgradeDisabled}
-          isDisabled={isUpgradeDisabled}
           type={'submit'}
+          className='mt-4 h-10 w-full text-[15px]'
         >
           {submitting ? (
             <>
@@ -240,8 +213,8 @@ const BillingForm = (props: Props) => {
           ) : (
             'Upgrade'
           )}
-        </UpgradeButton>
-      </ButtonBlock>
+        </Button>
+      </div>
     </form>
   )
 }

@@ -1,6 +1,6 @@
 # Parabol — Full API Reference for LLMs
 
-Parabol is a collaborative workspace that helps teams run more effective, inclusive, and engaging meetings.
+Parabol is an open-source collaborative workspace that helps teams run more effective, inclusive, and engaging meetings — retrospectives, sprint poker, check-ins, standups — and measure team health with anonymous, research-backed engagement surveys (team health checks) that turn into discussions and tasks.
 
 ## GraphQL API
 
@@ -42,7 +42,7 @@ Each mutation and query field is annotated with the required scope in the schema
 query GetViewerTeams {
   viewer {
     id
-    name
+    preferredName
     email
     teams {
       id
@@ -63,20 +63,24 @@ Requires: `meetings:write`
 ```graphql
 mutation StartRetro($teamId: ID!) {
   startRetrospective(teamId: $teamId) {
-    meeting {
-      id
-      name
-      meetingType
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
+    ... on StartRetrospectiveSuccess {
+      meeting {
+        id
+        name
+        meetingType
+        phases {
+          phaseType
+          stages {
+            id
+            isComplete
+          }
         }
       }
     }
-    error {
-      message
+    ... on ErrorPayload {
+      error {
+        message
+      }
     }
   }
 }
@@ -212,13 +216,17 @@ Sprint Poker is Parabol's estimation meeting type where the team collectively si
 ```graphql
 mutation StartSprintPoker($teamId: ID!) {
   startSprintPoker(teamId: $teamId) {
-    meeting {
-      id
-      name
-      meetingType
+    ... on StartSprintPokerSuccess {
+      meeting {
+        id
+        name
+        meetingType
+      }
     }
-    error {
-      message
+    ... on ErrorPayload {
+      error {
+        message
+      }
     }
   }
 }
@@ -271,9 +279,149 @@ Variables:
 
 ---
 
+### 8. Start a Team Health Check
+
+Requires: `meetings:write`
+
+Team Health is Parabol's anonymous engagement survey. Members answer research-backed questions on a 1–5 Likert scale; results are withheld until the meeting ends and are revealed by category (Psychological Safety, Dependability, Structure & Clarity, Meaning, Impact). Pass several `teamIds` to run the same check across many teams, and an `rrule` to make it recurring (weekly, per sprint, monthly).
+
+```graphql
+mutation StartTeamHealth($teamIds: [ID!]!, $templateId: ID!, $name: String, $rrule: RRule) {
+  startTeamHealth(teamIds: $teamIds, templateId: $templateId, name: $name, rrule: $rrule) {
+    meetings {
+      id
+      name
+      meetingType
+      template {
+        id
+        name
+      }
+    }
+    teams {
+      id
+      name
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "teamIds": ["team123"],
+  "templateId": "googleProjectAristotleTemplate",
+  "name": "Weekly Team Health",
+  "rrule": "DTSTART:20260921T090000Z\nRRULE:FREQ=WEEKLY;BYDAY=MO"
+}
+```
+
+> Built-in template ids include `googleProjectAristotleTemplate`, `edmondsonPsychologicalSafetyTemplate`, `lencioniFiveDysfunctionsTemplate`, `hackmanTeamDiagnosticTemplate`, `gallupQ12Template`, `spotifySquadHealthCheckTemplate`, `atlassianTeamHealthMonitorTemplate`, `googleProjectOxygenTemplate`, `scarfModelTemplate`, and `everythingBagelTemplate` (every built-in question). Custom templates are created with `addTeamHealthTemplate` (`templates:write`).
+
+---
+
+### 9. Answer a Team Health Question
+
+Requires: `meetings:write`
+
+Each question is a `TeamHealthResponseStage`. A `score` of `null` skips the question. Set `isAnonymous: true` to have the comment paraphrased by AI before the team reads it, so writing style cannot identify the author.
+
+```graphql
+mutation SetTeamHealthResponse($meetingId: ID!, $stageId: ID!, $score: Int, $comment: String, $isAnonymous: Boolean!) {
+  setTeamHealthResponse(meetingId: $meetingId, stageId: $stageId, score: $score, comment: $comment, isAnonymous: $isAnonymous) {
+    meeting {
+      id
+      isViewerComplete
+      respondentCount
+    }
+    stage {
+      id
+      isComplete
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "meetingId": "meeting123",
+  "stageId": "stage456",
+  "score": 4,
+  "comment": "Blameless write-ups after incidents have made it easier to speak up.",
+  "isAnonymous": true
+}
+```
+
+> Scores are only readable by their author. After `endTeamHealth` (`meetings:write`) closes the check, the team reads the aggregate via `TeamHealthResultStage.spreadScores` and `TeamHealthMeeting.responses`.
+
+---
+
+### 10. Run a Standup
+
+Requires: `meetings:write`
+
+A standup asks every member the prompts of the team's selected standup template (`enterpriseDailyStandupTemplate` unless changed with `selectTemplate`, `teams:write`). Custom standup templates are created with `addPromptTemplate(type: teamPrompt)` (`templates:write`). Start the standup, then read its `prompts` to get the ids to answer:
+
+```graphql
+mutation StartStandup($teamId: ID!) {
+  startTeamPrompt(teamId: $teamId) {
+    ... on StartTeamPromptSuccess {
+      meeting {
+        id
+        prompts {
+          id
+          question
+        }
+      }
+    }
+    ... on ErrorPayload {
+      error {
+        message
+      }
+    }
+  }
+}
+```
+
+Answer one prompt at a time. Each answer is a private draft until you share it:
+
+```graphql
+mutation AnswerStandupPrompt($meetingId: ID!, $promptId: ID!, $content: String!) {
+  upsertTeamPromptResponse(meetingId: $meetingId, promptId: $promptId, content: $content) {
+    teamPromptResponse {
+      id
+      promptId
+      sharedAt
+    }
+  }
+}
+
+mutation ShareStandupAnswers($meetingId: ID!) {
+  shareTeamPromptResponses(meetingId: $meetingId) {
+    responses {
+      id
+      sharedAt
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "meetingId": "meeting123",
+  "promptId": "prompt456",
+  "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Finished the billing migration; pairing on search next.\"}]}]}"
+}
+```
+
+> Editing an answer that's already shared updates it for everyone. An empty document clears the answer and unshares it. Teammates' answers appear in `TeamPromptResponseStage.responses` only once shared.
+
+---
+
 ## Error Handling
 
-Most mutations return a payload type with an optional `error` field:
+Older mutations return either a payload type with an optional `error` field or a `*Success | ErrorPayload` union (select fields with inline fragments, as in the start-meeting examples); newer ones (e.g. `startTeamHealth`, `setTeamHealthResponse`, `upsertTeamPromptResponse`, `shareTeamPromptResponses`, `addPromptTemplate`) return a `*Success` type directly and surface failures as GraphQL errors.
 
 ```graphql
 type StandardMutationError {
@@ -290,7 +438,7 @@ List fields on `viewer` (e.g. meetings, tasks) follow the Relay Connections spec
 
 ## Rich Text Content
 
-Reflection content, task content, and comment content are all stringified [TipTap](https://tiptap.dev/) JSONContent documents. The minimal valid document for plain text is:
+Reflection, standup answer, task, and comment content are all stringified [TipTap](https://tiptap.dev/) JSONContent documents. The minimal valid document for plain text is:
 
 ```json
 {

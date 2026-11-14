@@ -1,53 +1,16 @@
-import styled from '@emotion/styled'
-import DeleteIcon from '@mui/icons-material/Delete'
+import {Delete as DeleteIcon} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
-const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'flex',
-  padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
-}))
+const headerCardClassName =
+  'relative mx-auto h-full w-full max-w-[1504px] rounded bg-surface-card px-4 py-3 shadow-[var(--shadow-card)]'
 
-const HeaderCard = styled('div')({
-  background: PALETTE.WHITE,
-  borderRadius: 4,
-  boxShadow: Elevation.Z1,
-  height: '100%',
-  padding: '12px 16px',
-  position: 'relative',
-  maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
-  margin: '0 auto',
-  width: '100%'
-})
-
-const CardTitle = styled('h1')({
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: '0 0 8px'
-})
-
-const CardTitleWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  width: '100%'
-})
-
-const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  color: PALETTE.SLATE_700,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  maxHeight: isExpanded ? 300 : 30,
-  overflowY: isExpanded ? 'auto' : 'hidden',
-  transition: 'all 300ms'
-}))
+const cardDescriptionClassName =
+  'm-0 font-normal text-[14px] text-fg-primary leading-5 transition-all duration-300'
 
 interface Props {
   service?: string
@@ -58,11 +21,11 @@ const PokerEstimateHeaderCardError = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!service) {
     return (
-      <HeaderCardWrapper isDesktop={isDesktop}>
-        <HeaderCard>
+      <div className={cn('flex pb-1', isDesktop ? 'px-4' : 'px-2')}>
+        <div className={headerCardClassName}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className='absolute top-2 right-2 cursor-pointer bg-inherit'>
+              <button className='absolute top-2 right-2 cursor-pointer select-none bg-inherit'>
                 <DeleteIcon onClick={() => onRemove()} />
               </button>
             </TooltipTrigger>
@@ -70,23 +33,23 @@ const PokerEstimateHeaderCardError = (props: Props) => {
               {'Remove from Scope'}
             </TooltipContent>
           </Tooltip>
-          <CardTitleWrapper>
-            <CardTitle>{`That story doesn't exist!`}</CardTitle>
-          </CardTitleWrapper>
-          <CardDescription isExpanded={false}>
+          <div className='flex w-full items-start justify-between'>
+            <h1 className='m-0 mb-2 text-[16px] leading-6'>{`That story doesn't exist!`}</h1>
+          </div>
+          <div className={cn(cardDescriptionClassName, 'max-h-[30px] overflow-y-hidden')}>
             {`The story was deleted. You can add another story in the Scope phase.`}
-          </CardDescription>
-        </HeaderCard>
-      </HeaderCardWrapper>
+          </div>
+        </div>
+      </div>
     )
   }
   const serviceName = service.charAt(0).toUpperCase() + service.slice(1)
   return (
-    <HeaderCardWrapper isDesktop={isDesktop}>
-      <HeaderCard>
+    <div className={cn('flex pb-1', isDesktop ? 'px-4' : 'px-2')}>
+      <div className={headerCardClassName}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className='absolute top-2 right-2 cursor-pointer bg-inherit'>
+            <button className='absolute top-2 right-2 cursor-pointer select-none bg-inherit'>
               <DeleteIcon onClick={() => onRemove()} />
             </button>
           </TooltipTrigger>
@@ -94,14 +57,14 @@ const PokerEstimateHeaderCardError = (props: Props) => {
             {'Remove from Scope'}
           </TooltipContent>
         </Tooltip>
-        <CardTitleWrapper>
-          <CardTitle>{`${serviceName} is Down!`}</CardTitle>
-        </CardTitleWrapper>
-        <CardDescription isExpanded>
+        <div className='flex w-full items-start justify-between'>
+          <h1 className='m-0 mb-2 text-[16px] leading-6'>{`${serviceName} is Down!`}</h1>
+        </div>
+        <div className={cn(cardDescriptionClassName, 'max-h-[300px] overflow-y-auto')}>
           {`Cannot connect to ${serviceName}. Voting will be disabled. If the problem persists, please re-add the issue or re-integrate.`}
-        </CardDescription>
-      </HeaderCard>
-    </HeaderCardWrapper>
+        </div>
+      </div>
+    </div>
   )
 }
 

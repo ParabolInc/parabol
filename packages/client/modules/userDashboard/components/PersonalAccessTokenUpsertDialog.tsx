@@ -2,11 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {PersonalAccessTokenUpsertDialog_viewer$key} from '~/__generated__/PersonalAccessTokenUpsertDialog_viewer.graphql'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthScopeEnum} from '../../../__generated__/useCreatePersonalAccessTokenMutation.graphql'
 import BasicInput from '../../../components/InputField/BasicInput'
 import {useCreatePersonalAccessToken} from '../../../mutations/useCreatePersonalAccessToken'
 import {useUpdatePersonalAccessToken} from '../../../mutations/useUpdatePersonalAccessToken'
+import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {ExpirationDatePicker} from './ExpirationDatePicker'
@@ -174,7 +177,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           }
           onClose()
         },
-        onError: (err) => setError(err.message)
+        onError: (err) => setError(getMutationError(err).message)
       })
     } else {
       commitCreate({
@@ -194,7 +197,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           }
           setCreatedToken(response.createPersonalAccessToken.token)
         },
-        onError: (err) => setError(err.message)
+        onError: (err) => setError(getMutationError(err).message)
       })
     }
   }
@@ -205,20 +208,18 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
 
   return (
     <Dialog onClose={onClose} isOpen>
-      <DialogContent className='flex flex-col overflow-hidden p-0!'>
-        <div className='shrink-0 px-6 pt-6 pb-4'>
-          <DialogTitle>
-            {isEdit ? 'Edit Personal Access Token' : 'New Personal Access Token'}
-          </DialogTitle>
-        </div>
+      <DialogContent>
+        <DialogTitle className='mb-4'>
+          {isEdit ? 'Edit Personal Access Token' : 'New Personal Access Token'}
+        </DialogTitle>
         {error && (
-          <div className='mx-6 mb-4 shrink-0 animate-shake rounded-md py-2 font-medium text-sm text-tomato-500'>
+          <div className='mb-4 animate-shake rounded-md py-2 font-medium text-fg-error text-sm'>
             {error}
           </div>
         )}
-        <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
+        <div className='space-y-6'>
           <div className='flex flex-col gap-1'>
-            <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+            <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
               Name
             </label>
             <BasicInput
@@ -234,10 +235,10 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           <TokenScopesTable selectedScopes={selectedScopes} toggleScope={toggleScope} />
           <div className='flex flex-col gap-4'>
             <div>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Resource Grants
               </label>
-              <p className='mt-1 text-slate-500 text-xs'>
+              <p className='mt-1 text-fg-muted text-xs'>
                 By default, a token has access to all resources you can access. Optionally restrict
                 it to specific organizations, teams, or pages below.
               </p>
@@ -265,18 +266,11 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
             />
           </div>
         </div>
-        <div className='flex shrink-0 justify-end gap-2 border-slate-200 border-t bg-slate-50/50 px-6 py-4'>
-          <button
-            onClick={onClose}
-            className='cursor-pointer rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-700 text-sm hover:bg-slate-100'
-          >
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600 disabled:opacity-50'
-          >
+          </Button>
+          <Button variant='primary' size='md' onClick={handleSubmit} disabled={submitting}>
             {submitting
               ? isEdit
                 ? 'Saving…'
@@ -284,8 +278,8 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
               : isEdit
                 ? 'Save Changes'
                 : 'Create Token'}
-          </button>
-        </div>
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

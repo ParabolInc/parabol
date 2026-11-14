@@ -1,13 +1,10 @@
 import {generateJSON, generateText, type JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import type {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
 import type {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
 import type Atmosphere from '../Atmosphere'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
-import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import type {
   OnNextHandler,
@@ -21,12 +18,14 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAzureCreateIssue from './handlers/handleAzureCreateIssue'
+import handleClickUpCreateTask from './handlers/handleClickUpCreateTask'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleLinearCreateIssue from './handlers/handleLinearCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
@@ -41,6 +40,7 @@ graphql`
         ...ThreadedRepliesList_replies
       }
       integrationHash
+      taskService
       integration {
         ... on JiraIssue {
           cloudId
@@ -87,6 +87,17 @@ graphql`
           }
           url
         }
+        ... on ClickUpTask {
+          __typename
+          id
+          title
+          clickUpDescription: description
+          taskId
+          customId
+          listName
+          folderName
+          clickUpUrl: url
+        }
       }
     }
   }
@@ -104,7 +115,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateTaskMutation($newTask: CreateTaskInput!) {
+  mutation CreateTaskMutation($newTask: CreateTaskInput!) @raw_response_type {
     createTask(newTask: $newTask) {
       error {
         message
@@ -129,12 +140,17 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
     (rawContent.content.length === 1 && rawContent.content[0]?.text === '')
   const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
+  // The meeting's task board reads isHighlighted(meetingId), which this payload doesn't select.
+  // If missing, the board suspends until the deferred fields arrive. A new task isn't highlighted
+  const meetingId = task.getValue('meetingId')
+  if (meetingId) task.setValue(false, 'isHighlighted', {meetingId})
   handleUpsertTasks(task, store)
   handleJiraCreateIssue(task, store)
   handleGitHubCreateIssue(task, store)
   handleGitLabCreateIssue(task, store)
   handleAzureCreateIssue(task, store)
   handleLinearCreateIssue(task, store)
+  handleClickUpCreateTask(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -162,6 +178,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
   const {viewerId} = atmosphere
   const {newTask} = variables
   const isEditing = !newTask.content
+  const taskId = clientTempId(newTask.teamId)
   return commitMutation<TCreateTaskMutation>(atmosphere, {
     mutation,
     variables,
@@ -174,7 +191,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     optimisticUpdater: (store) => {
       const {teamId, userId, integration, ...rest} = newTask
       const now = new Date().toJSON()
-      const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const plaintextContent =
         newTask.plaintextContent ||
@@ -197,77 +213,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
-      if (integration) {
-        const {service, serviceProjectHash} = integration
-        if (service === 'jira') {
-          const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
-          const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
-            cloudId,
-            url: '',
-            issueKey: `${projectKey}-?`,
-            summary: plaintextContent,
-            title: plaintextContent,
-            descriptionHTML: ''
-          })
-          task.setLinkedRecord(optimisticJiraIssue, 'integration')
-        } else if (service === 'github') {
-          const {nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(serviceProjectHash)
-          const repository = createProxyRecord(store, '_xGitHubRepository', {
-            nameWithOwner,
-            name: repoName,
-            owner: repoOwner
-          })
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
-            number: 0,
-            title: plaintextContent,
-            description: '',
-            url: '',
-            bodyHTML: ''
-          })
-          optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'gitlab') {
-          const webPath = `/${serviceProjectHash}/-/issues/?`
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
-            state: 'opened',
-            title: plaintextContent,
-            description: '',
-            webPath,
-            webUrl: `/${webPath}`,
-            iid: '?'
-          })
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'azureDevOps') {
-          const {instanceId} = AzureDevOpsProjectId.split(serviceProjectHash)
-          const project = createProxyRecord(store, 'AzureDevOpsRemoteProject', {
-            name: '?'
-          })
-          const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
-            title: plaintextContent,
-            url: `https://${instanceId}`,
-            type: 'Basic:Issue',
-            id: '?'
-          })
-          optimisticTaskIntegration.setLinkedRecord(project, 'project')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else if (service === 'linear') {
-          const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
-            state: 'opened',
-            identifier: '?',
-            title: plaintextContent,
-            description: '',
-            url: '?'
-          })
-          const optimisticTeam = createProxyRecord(store, '_xLinearTeam', {
-            id: 'temp-linear-team-id:' + (integration.serviceProjectHash || 'unknown'),
-            name: '?'
-          })
-          optimisticTaskIntegration.setLinkedRecord(optimisticTeam, 'team')
-          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
-        } else {
-          console.log('FIXME: implement createTask')
-        }
-      }
       const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
       //TODO #7943 Optimistic updates on arrays has a bug in Relay. As a workaround until it's fixed properly, let's just not do optimistic updates
@@ -277,8 +222,9 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleGitLabCreateIssue(task as any, store)
       handleAzureCreateIssue(task as any, store)
       handleLinearCreateIssue(task as any, store)
+      handleClickUpCreateTask(task, store)
     },
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted
   })
 }

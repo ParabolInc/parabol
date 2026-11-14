@@ -1,8 +1,7 @@
-import AttachFileIcon from '@mui/icons-material/AttachFile'
-import ImageIcon from '@mui/icons-material/Image'
 import * as Popover from '@radix-ui/react-popover'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect, useRef, useState} from 'react'
+import {AttachFile as AttachFileIcon, Image as ImageIcon} from '~/ui/icons'
 import useEventCallback from '../../../hooks/useEventCallback'
 import type {FileUploadAttrs} from '../../../shared/tiptap/extensions/FileUploadBase'
 import {FileSelector} from './FileSelector'
@@ -73,7 +72,7 @@ export const FileUploadView = (props: NodeViewProps) => {
       <Popover.Root open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild>
           <div className='m-0 p-0' contentEditable={false} ref={triggerRef}>
-            <div className='flex cursor-pointer items-center rounded-sm bg-slate-200 p-2 transition-colors hover:bg-slate-300 group-[.ProseMirror-selectednode]:bg-slate-300'>
+            <div className='flex cursor-pointer items-center rounded-sm bg-surface-raised p-2 transition-colors hover:bg-surface-hover group-[.ProseMirror-selectednode]:bg-surface-hover'>
               <Icon className='mr-2 size-5' />
               <span className='text-sm'>{label}</span>
             </div>

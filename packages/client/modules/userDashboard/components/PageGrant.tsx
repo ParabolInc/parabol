@@ -32,17 +32,17 @@ export const PageGrant = ({
   return (
     <div className={cn('flex flex-col gap-2')}>
       <div className='flex items-center gap-2'>
-        <span className='font-medium text-slate-700 text-sm'>Pages</span>
+        <span className='font-medium text-fg-primary text-sm'>Pages</span>
         <RadioGroup
           value={pageGrantMode}
           onValueChange={(v) => setPageGrantMode(v as GrantModeOption)}
           className='flex flex-row gap-3'
         >
-          <label className='flex cursor-pointer select-none items-center gap-1 text-slate-600 text-xs'>
+          <label className='flex cursor-pointer select-none items-center gap-1 text-fg-secondary text-xs'>
             <RadioGroupItem value='all' />
             All
           </label>
-          <label className='flex cursor-pointer select-none items-center gap-1 text-slate-600 text-xs'>
+          <label className='flex cursor-pointer select-none items-center gap-1 text-fg-secondary text-xs'>
             <RadioGroupItem value='custom' />
             Custom
           </label>

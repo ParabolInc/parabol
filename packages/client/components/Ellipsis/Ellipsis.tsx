@@ -1,38 +1,13 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
-
-const keyframesOpacity = keyframes`
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.25;
-  }
-}`
-
-const DotSpan = styled('span')<{dotNumber: number}>(({dotNumber}) => ({
-  animationDelay: `${dotNumber * 200}ms`,
-  animationDuration: '.8s',
-  animationIterationCount: 'infinite',
-  animationName: keyframesOpacity.toString(),
-  display: 'inline-block',
-  fontWeight: 600,
-  lineHeight: 'inherit',
-  verticalAlign: 'baseline'
-}))
-
-const GroupStyle = styled('span')({
-  display: 'inline',
-  fontSize: 'inherit'
-})
+const dotClassName =
+  'inline-block animate-[ellipsis-blink_0.8s_infinite] align-baseline font-semibold'
 
 const Ellipsis = () => {
   return (
-    <GroupStyle>
-      <DotSpan dotNumber={0}>.</DotSpan>
-      <DotSpan dotNumber={1}>.</DotSpan>
-      <DotSpan dotNumber={2}>.</DotSpan>
-    </GroupStyle>
+    <span>
+      <span className={dotClassName}>.</span>
+      <span className={`${dotClassName} [animation-delay:200ms]`}>.</span>
+      <span className={`${dotClassName} [animation-delay:400ms]`}>.</span>
+    </span>
   )
 }
 

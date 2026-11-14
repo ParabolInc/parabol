@@ -1,4 +1,4 @@
-import type {FindStageByIdPhase} from './findStageById'
+import type {FindStageByIdPhase, FindStageByIdStage} from './findStageById'
 
 const findStageAfterId = <T extends FindStageByIdPhase>(
   phases: readonly T[] | null | undefined,
@@ -10,7 +10,7 @@ const findStageAfterId = <T extends FindStageByIdPhase>(
     const phase = phases[ii]!
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
-      const stage = stages[jj]!
+      const stage = stages[jj] as T['stages'][number] & FindStageByIdStage
       if (stageFound) {
         return {phase, stage}
       }

@@ -14,7 +14,11 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
+import FileStoreManager, {
+  type FileAssetDir,
+  type PartialPath,
+  type PutFileOptions
+} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
   public async refreshRetryTokenForRetry(
@@ -37,6 +41,12 @@ class CloudflareRetry extends StandardRetryStrategy {
   }
 }
 
+// the deploy chart substitutes real values for `key_*` placeholders, so an unsubstituted placeholder means unset
+const getEnv = (name: string) => {
+  const value = process.env[name]
+  return !value || value === `key_${name}` ? undefined : value
+}
+
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
   private envSubDir: string
@@ -49,9 +59,12 @@ export default class S3Manager extends FileStoreManager {
   private s3: S3Client
   constructor() {
     super()
-    const {CDN_BASE_URL, AWS_REGION, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, AWS_S3_BUCKET} =
-      process.env
-    if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
+    const CDN_BASE_URL = getEnv('CDN_BASE_URL')
+    const AWS_REGION = getEnv('AWS_REGION')
+    const AWS_SECRET_ACCESS_KEY = getEnv('AWS_SECRET_ACCESS_KEY')
+    const AWS_ACCESS_KEY_ID = getEnv('AWS_ACCESS_KEY_ID')
+    const AWS_S3_BUCKET = getEnv('AWS_S3_BUCKET')
+    if (!CDN_BASE_URL) {
       throw new Error('CDN_BASE_URL ENV VAR NOT SET')
     }
 
@@ -72,7 +85,12 @@ export default class S3Manager extends FileStoreManager {
     this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
     this.bucket = AWS_S3_BUCKET
 
-    // credentials are optional since the file store could be public & not need a key to write
+    // the default chain reads these from the environment itself, so a placeholder left in the pod spec
+    // would beat the IRSA web identity token
+    if (!AWS_ACCESS_KEY_ID) delete process.env.AWS_ACCESS_KEY_ID
+    if (!AWS_SECRET_ACCESS_KEY) delete process.env.AWS_SECRET_ACCESS_KEY
+
+    // when unset, the SDK's default chain resolves credentials from IRSA, an instance profile, or shared config
     const credentials =
       AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY
         ? {
@@ -90,17 +108,14 @@ export default class S3Manager extends FileStoreManager {
     })
   }
 
-  protected async putFile(
-    file: ArrayBufferLike,
-    fullPath: string,
-    options?: {contentDisposition?: string}
-  ) {
+  protected async putFile(file: ArrayBufferLike, fullPath: string, options?: PutFileOptions) {
     const s3Params = {
       Body: Buffer.from(file),
       Bucket: this.bucket,
       Key: fullPath,
       ContentType: mime.lookup(fullPath) || 'application/octet-stream',
-      ...(options?.contentDisposition && {ContentDisposition: options.contentDisposition})
+      ...(options?.contentDisposition && {ContentDisposition: options.contentDisposition}),
+      ...(options?.cacheControl && {CacheControl: options.cacheControl})
     }
     await this.s3.send(new PutObjectCommand(s3Params))
   }
@@ -115,18 +130,20 @@ export default class S3Manager extends FileStoreManager {
 
   async putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
-    await this.putFile(file, fullPath)
+    await this.putFile(file, fullPath, {cacheControl: this.getBuildFileCacheControl(partialPath)})
     return this.getPublicFileLocation(fullPath)
   }
   async checkExists(key: string, assetDir?: FileAssetDir) {
     const Key = this.prependPath(key, assetDir)
     try {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
+      return true
     } catch (e) {
-      if (e instanceof Error && e.name === 'NotFound') return false
-      Logger.log(`Invalid error ${(e as Error).name}`)
+      if (!(e instanceof Error && e.name === 'NotFound')) {
+        Logger.log(`Invalid error ${(e as Error).name}`)
+      }
+      return false
     }
-    return true
   }
 
   async copyFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {

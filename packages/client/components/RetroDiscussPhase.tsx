@@ -1,15 +1,15 @@
-import {datadogRum} from '@datadog/browser-rum'
-import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useRightDrawer from '~/hooks/useRightDrawer'
+import {ThumbUp} from '~/ui/icons'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
+import reportClientError from '../utils/reportClientError'
 import DiscussionDrawer from './DiscussionDrawer'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
@@ -45,12 +45,18 @@ const RetroDiscussPhase = (props: Props) => {
         rightDrawerOpen
         showSidebar
         phases {
+          phaseType
           stages {
+            id
             ...RetroDiscussPhase_stage @relay(mask: false)
           }
         }
         localStage {
+          id
           ...RetroDiscussPhase_stage @relay(mask: false)
+        }
+        tasks {
+          id
         }
       }
     `,
@@ -63,10 +69,15 @@ const RetroDiscussPhase = (props: Props) => {
     localStage,
     showSidebar,
     isCommentUnread,
-    rightDrawerOpen
+    rightDrawerOpen,
+    phases,
+    tasks
   } = meeting
   const {reflectionGroup, discussionId} = localStage
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+  const discussStages = phases.find(({phaseType}) => phaseType === 'discuss')?.stages ?? []
+  const showLastTopicLine =
+    !endedAt && discussStages.at(-1)?.id === localStage.id && tasks.length === 0
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const [toggleDrawer] = useRightDrawer(meetingId)
   const title = reflectionGroup?.title ?? ''
@@ -75,8 +86,6 @@ const RetroDiscussPhase = (props: Props) => {
   // bugs shown on screen when the discussion group title contains "bug"
   //
   // const {isComplete} = localStage
-  // const isBuggy = (!isComplete && title?.toLowerCase().includes('bug')) ?? false
-  // useScreenBugs(isBuggy, meetingId)
 
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
@@ -84,8 +93,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    const errObj = {id: reflectionGroup.id} as Parameters<typeof JSON.stringify>[0]
-    datadogRum.addError(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
+    reportClientError(new Error('The discussed reflectionGroup has no reflections'))
   }
 
   return (
@@ -110,15 +118,15 @@ const RetroDiscussPhase = (props: Props) => {
             <div className='mx-auto max-w-456 select-none px-5'>
               <div className='mb-3 flex items-center'>
                 <div className='relative text-2xl'>{`"${title}"`}</div>
-                <div className='ml-4 flex items-center rounded-[5em] bg-slate-600 px-3 py-0.5 font-semibold text-base text-white'>
-                  <ThumbUp sx={{fontSize: 18}} className='mr-0.5' />
+                <div className='ml-4 flex items-center rounded-[5em] bg-surface-well px-3 py-0.5 font-semibold text-accent text-base'>
+                  <ThumbUp className='mr-0.5 text-[18px]' />
                   {voteCount || 0}
                 </div>
               </div>
             </div>
             <div className='mx-auto flex h-full w-full max-w-456 flex-1 single-reflection-column:flex-row flex-col overflow-hidden'>
               <div className='flex single-reflection-column:h-full w-full single-reflection-column:flex-1 flex-col overflow-hidden'>
-                <LabelHeading className='normal-case! sticky top-0 z-2 mx-4 bg-slate-200 single-reflection-column:pb-2'>
+                <LabelHeading className='normal-case! sticky top-0 z-2 mx-4 bg-surface-app single-reflection-column:pb-2'>
                   {reflections.length} {plural(reflections.length, 'Reflection')}
                 </LabelHeading>
                 <div className='single-reflection-column:block flex h-full w-full justify-center single-reflection-column:p-0 pb-2 single-reflection-column:pb-4'>
@@ -149,6 +157,7 @@ const RetroDiscussPhase = (props: Props) => {
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
           meetingRef={meeting}
+          showLastTopicLine={showLastTopicLine}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

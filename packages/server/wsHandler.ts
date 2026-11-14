@@ -1,6 +1,7 @@
+import uws from 'uWebSockets.js'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
-import {handleProtocols} from 'graphql-ws'
+import {CloseCode, handleProtocols, MessageType, stringifyMessage} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
@@ -11,26 +12,35 @@ import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
-import {getIsShuttingDown} from './getIsShuttingDown'
+import {getIsRefusingSockets, getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
-import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
+import {
+  websocketConnectAttempts,
+  websocketConnectDuration,
+  websocketConnects,
+  websocketMessagesDropped
+} from './metricsHandler'
 import getKysely from './postgres/getKysely'
-import {analytics} from './utils/analytics/analytics'
+import socketDrainSchedule from './socketDrainSchedule'
 import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import isWorthCompressingSocketMessage from './utils/isWorthCompressingSocketMessage'
 import {Logger} from './utils/Logger'
+import parseSessionId from './utils/parseSessionId'
 import publish from './utils/publish'
+import rejectNonWebSocketUpgrade from './utils/rejectNonWebSocketUpgrade'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
+    upgradeStartedAt: number
     closed?: true
     authToken?: AuthToken
     user?: {
@@ -44,9 +54,12 @@ declare module 'graphql-ws/use/uWebSockets' {
     ip: string
     authToken: AuthToken
     socketId: string
+    sessionId?: string
     resubscribe: Record<string, () => void>
     // not present for subscription IDs
     dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
+    // set while a draining server waits for this socket's running queries and mutations to finish
+    onIdle?: () => void
   }
 }
 
@@ -77,8 +90,11 @@ const dehydrateResult = (result: ExecutionResult) => {
   return {...rest, data: dehydratedData}
 }
 
+const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStartedAt'>) =>
+  (performance.now() - upgradeStartedAt) / 1000
+
 const documentCache = new Map()
-export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
+export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
 
@@ -108,7 +124,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
           .where('isRemoved', '=', false)
           .executeTakeFirst()
     ])
-    if (!user) return false
+    // graphql-ws only calls onDisconnect for an acknowledged socket, so a socket that closed during the awaits would never leave activeClients
+    if (!user || extra.socket.closed) return false
 
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
@@ -116,15 +133,13 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
       typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
     extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
+    extra.sessionId = parseSessionId(connectionParams?.sessionId)
     extra.resubscribe = {}
     extra.dataLoaders = {}
-    activeClients.set(extra.socketId, extra.socket)
-    logOperation(viewerId, extra.ip, 'connectSocket', {})
-    analytics.websocketConnected(user, {
-      socketCount,
-      socketId: extra.socketId,
-      tms: teamIds
-    })
+    activeClients.set(extra.socketId, extra)
+    websocketConnects.inc()
+    websocketConnectDuration.observe({outcome: 'connected'}, secondsSinceUpgrade(extra.socket))
+    logOperation({authToken, ip: extra.ip, operation: 'connectSocket', variables: {}})
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
     }
@@ -178,20 +193,38 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     }
     return subResult
   },
+  onOperation: (ctx, id, payload, _args, result) => {
+    // graphql-ws has no message that acknowledges a subscribe, so like its author suggests (enisdenjo/graphql-ws#364),
+    // a ping carries the client's ackId once the subscription is listening, ahead of its first next message
+    const ackId = payload.extensions?.ackId
+    if (
+      typeof ackId !== 'string' ||
+      !(id in ctx.subscriptions) ||
+      !(Symbol.asyncIterator in result)
+    ) {
+      return
+    }
+    ctx.extra.socket.send(stringifyMessage({type: MessageType.Ping, payload: {ackId}}))
+  },
   execute: (args) => {
     return (args as EnvelopedExecutionArgs).rootValue.execute(args)
   },
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
+    const {ip, authToken, socketId, sessionId, resubscribe} = extra
     const docId = extractPersistedOperationId(params as any)
-    // armor requires a docId to know this isn't an adhoc query
-    ;(ctx as any).docId = docId
+    const query = await getPersistedOperation(docId!)
+    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped({
+      ...ctx,
+      // armor requires a docId to know this isn't an adhoc query
+      docId,
+      authToken,
+      // like yoga's own context, so plugins can see the operation before it is parsed
+      params: {query}
+    })
     let document = documentCache.get(docId!)
     if (!document) {
-      const query = await getPersistedOperation(docId!)
       document = parse(query)
       documentCache.set(docId, document)
     }
@@ -223,7 +256,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     }
     const envelopeContext = await contextFactory()
     const args: EnvelopedExecutionArgs = {
-      schema: authToken.rol === 'su' ? privateSchema : schema,
+      schema,
       operationName: params.operationName,
       document,
       variableValues: params.variables,
@@ -235,6 +268,11 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         ip,
         authToken,
         socketId,
+        sessionId,
+        traceparent:
+          typeof params.extensions?.traceparent === 'string'
+            ? params.extensions.traceparent
+            : undefined,
         _wsAuthTokenAtStart: authToken
       },
       rootValue: {
@@ -250,10 +288,12 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     dataLoaders[id]?.dispose()
     delete dataLoaders[id]
     delete resubscribe[id]
+    // graphql-ws sends the complete message after this returns, so the socket can close on the next tick
+    if (extra.onIdle && Object.keys(dataLoaders).length === 0) setImmediate(extra.onIdle)
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
-    const {authToken, socketId} = extra
+    const {authToken} = extra
     const {sub: viewerId, tms: teamIds} = authToken
     // Ensure every active subscription iterator is released.
     // graphql-ws is supposed to .return() each entry in ctx.subscriptions
@@ -283,15 +323,10 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     // Wait for the notification subscription to unsubscribe
     // Don't do it in notificationSubscription because
     // subscriptions get re-run when the authToken updates.
-    // A client may also reconnect quickly
-    await sleep(1000)
+    // A client may also reconnect quickly, and every client of a server that is shutting down is reconnecting
+    await sleep(getIsShuttingDown() ? Math.max(1000, socketDrainSchedule.reconnectGrace) : 1000)
     const socketCount = await getUserSocketCount(viewerId)
     const user = {id: viewerId, isConnected: false}
-    analytics.websocketDisconnected(user, {
-      socketCount: socketCount + 1,
-      socketId,
-      tms: teamIds
-    })
     if (socketCount === 0) {
       const userIds = await getTeamMemberUserIds(teamIds)
       const data = {user}
@@ -299,19 +334,54 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         publish(SubscriptionChannel.NOTIFICATION, userId, 'DisconnectSocketPayload', data)
       })
     }
+  },
+  onClose: (ctx, code) => {
+    if (ctx.acknowledged) return
+    ctx.extra.socket.closed = true
+    // graphql-ws closes as Forbidden when onConnect refuses a connection, and as InternalServerError when it throws.
+    // Any other close before the acknowledgement is the client going away
+    const outcome =
+      code === CloseCode.Forbidden
+        ? 'rejected'
+        : code === CloseCode.InternalServerError
+          ? 'failed'
+          : 'abandoned'
+    websocketConnectDuration.observe({outcome}, secondsSinceUpgrade(ctx.extra.socket))
   }
 })
 
+// uWS drops a send while the socket has more than maxBackpressure queued, and graphql-ws counts a dropped message as sent.
+// uWS calls drain before the queue is empty, so graphql-ws sends an operation's next message while most of the last one
+// is still queued. The 64 KiB default dropped the message after any larger result, like the @defer payloads that follow
+// a meeting query. graphql-ws holds each operation until a drain, so a queue only nears this limit for a slow client
+wsHandler.maxBackpressure = 4 * 1024 * 1024
+wsHandler.dropped = () => {
+  websocketMessagesDropped.inc({route: 'graphql'})
+}
+
+wsHandler.compression = uws.SHARED_COMPRESSOR | uws.SHARED_DECOMPRESSOR
+// graphql-ws sends every message without asking for compression, so the socket asks for it on the large ones
+const openGraphQLSocket = wsHandler.open!
+wsHandler.open = (socket) => {
+  const send = socket.send.bind(socket)
+  socket.send = (message, isBinary, compress) =>
+    send(message, isBinary, compress ?? isWorthCompressingSocketMessage(message))
+  openGraphQLSocket(socket)
+}
+
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = async (res, req, context) => {
-  // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
+  if (rejectNonWebSocketUpgrade(res, req)) return
+  // check isRefusingSockets here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
-  const isUnavailable = getIsShuttingDown() || getIsBusy()
+  const isUnavailable = getIsRefusingSockets() || getIsBusy()
   if (isUnavailable) {
     res.end()
     return
   }
+  const upgradeStartedAt = performance.now()
+  websocketConnectAttempts.inc()
   const headers: http.IncomingHttpHeaders = {}
   req.forEach((key, value) => {
     if (headers[key]) {
@@ -324,6 +394,7 @@ wsHandler.upgrade = async (res, req, context) => {
     Buffer.from(res.getRemoteAddressAsText()).toString()
   const upgradeData: UpgradeData = {
     ip,
+    upgradeStartedAt,
     persistedRequest: {
       method: req.getMethod(),
       url: req.getUrl(),
@@ -374,6 +445,7 @@ wsHandler.upgrade = async (res, req, context) => {
         : ([true, null, []] as const)
 
     if (isAborted) {
+      websocketConnectDuration.observe({outcome: 'abandoned'}, secondsSinceUpgrade(upgradeData))
       return
     }
     if (!authToken || isBlacklistedJWT || !user) {

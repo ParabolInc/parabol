@@ -1,7 +1,7 @@
-import {Favorite} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
+import {Favorite} from '~/ui/icons'
 import type {ActivityCardFavorite_user$key} from '../../__generated__/ActivityCardFavorite_user.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -45,8 +45,8 @@ const ActivityCardFavorite = (props: Props) => {
     <Tooltip>
       <div
         className={cn(
-          className,
-          `flex h-10 w-10 items-center justify-center rounded-full bg-white`
+          'flex h-10 w-10 items-center justify-center rounded-md bg-surface-card',
+          className
         )}
       >
         <TooltipTrigger asChild>
@@ -54,7 +54,7 @@ const ActivityCardFavorite = (props: Props) => {
             onClick={handleClick}
             className='flex h-full w-full cursor-pointer items-center justify-center bg-transparent'
           >
-            <Favorite className={isFavorite ? 'text-rose-600' : 'text-slate-600'} />
+            <Favorite className={isFavorite ? 'text-rose-500' : 'text-fg-secondary'} />
           </button>
         </TooltipTrigger>
       </div>

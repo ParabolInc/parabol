@@ -5,30 +5,31 @@ import {cn} from '../cn'
 type Variant =
   | 'primary'
   | 'secondary'
-  | 'destructive'
   | 'ghost'
   | 'link'
   | 'outline'
   | 'flat'
+  | 'raised'
   | 'dialogPrimary'
 type Size = 'sm' | 'md' | 'lg' | 'default'
-type Shape = 'pill' | 'circle' | 'default'
+type Shape = 'icon' | 'default'
 
 const BASE_STYLES =
-  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
+  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
 
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
   primary: 'bg-linear-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
-  destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
   outline:
-    'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent font-semibold',
+    'text-fg-primary border border-hairline-strong hover:bg-surface-hover px-2.5 py-1 bg-transparent font-semibold',
   dialogPrimary:
-    'text-white bg-grape-700 hover:bg-grape-600 focus-visible:ring-grape-500 font-semibold',
+    'text-white bg-surface-cta hover:bg-surface-cta-hover focus-visible:ring-grape-500 font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',
-  flat: 'rounded-full bg-transparent outline-hidden shadow-none hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 focus-visible:ring-0'
+  flat: 'bg-transparent outline-hidden shadow-none hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover focus-visible:ring-0',
+  raised:
+    'font-semibold shadow-[0px_3px_1px_-2px_rgba(0,0,0,.2),0px_2px_2px_0px_rgba(0,0,0,.14),0px_1px_5px_0px_rgba(0,0,0,.12)] transition-[box-shadow,color,background-color] duration-100 ease-in hover:shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)] focus:shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)] active:shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)]'
 }
 
 const SIZE_STYLES: Record<Size, string> = {
@@ -39,8 +40,7 @@ const SIZE_STYLES: Record<Size, string> = {
 }
 
 const SHAPE_STYLES: Record<Shape, string> = {
-  pill: 'rounded-full',
-  circle: 'rounded-full aspect-square',
+  icon: 'aspect-square',
   default: ''
 }
 

@@ -1,12 +1,16 @@
 import {fetch} from '@whatwg-node/fetch'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
 export default class ZoomOAuth2Manager extends OAuth2Manager {
-  async authorize(code: string, redirectUri: string) {
-    return this.fetchToken<{
+  static readonly REDIRECT_URI = makeAppURL(appOrigin, 'auth/zoom')
+
+  async authorize(code: string) {
+    const auth = await this.fetchToken<{
       accessToken: string
       refreshToken: string
       scopes: string
@@ -14,8 +18,14 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
     }>({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: redirectUri
+      redirect_uri: ZoomOAuth2Manager.REDIRECT_URI
     })
+    if (auth instanceof Error) return auth
+    const res = await fetch('https://api.zoom.us/v2/users/me', {
+      headers: {Authorization: `Bearer ${auth.accessToken}`}
+    })
+    const providerUserId = res.ok ? (((await res.json()) as {id?: string}).id ?? null) : null
+    return {...auth, providerUserId}
   }
 
   async refresh(refreshToken: string) {
@@ -64,14 +74,5 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
       scopes: scope,
       expiresIn: expires_in
     } as TSuccess
-  }
-
-  async getProviderUserId(accessToken: string): Promise<string | null> {
-    const res = await fetch('https://api.zoom.us/v2/users/me', {
-      headers: {Authorization: `Bearer ${accessToken}`}
-    })
-    if (!res.ok) return null
-    const data = (await res.json()) as {id?: string}
-    return data.id ?? null
   }
 }

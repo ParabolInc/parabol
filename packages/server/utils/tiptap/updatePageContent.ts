@@ -4,10 +4,14 @@ import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 
 export const updatePageContent = async (
   pageId: number,
-  content: JSONContent,
+  content: JSONContent | null,
   state: Buffer<ArrayBufferLike>
 ) => {
   const pg = getKysely()
+  if (!content) {
+    await pg.updateTable('Page').set({yDoc: state}).where('id', '=', pageId).execute()
+    return {updatedTitle: undefined}
+  }
   const {title, plaintextContent} = getPlaintextFromTipTap(content)
   const {titleChanged} = await pg
     .updateTable('Page')

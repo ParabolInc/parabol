@@ -1,35 +1,14 @@
-import styled from '@emotion/styled'
 import endTimerSound from '../../../static/sounds/tic-tac.mp3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
 import useSoundEffect from '../hooks/useSoundEffect'
-import {DECELERATE, fadeIn} from '../styles/animation'
-import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {countdown} from '../utils/date/relativeDate'
 
 interface Props {
   endTime: string
 }
-
-const Gauge = styled('div')<{isTimeUp: boolean; isDesktop: boolean}>(({isTimeUp, isDesktop}) => ({
-  alignItems: 'flex-end',
-  animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  color: isTimeUp ? PALETTE.SLATE_700 : '#FFFFFF',
-  background: isTimeUp ? PALETTE.GOLD_300 : PALETTE.JADE_400,
-  borderRadius: 4,
-  display: 'flex',
-  fontSize: isTimeUp ? 14 : 16,
-  fontVariantNumeric: 'tabular-nums',
-  fontWeight: 600,
-  justifyContent: 'center',
-  lineHeight: '28px',
-  margin: isDesktop ? '0 0 16px' : '0 0 8px',
-  minWidth: 100,
-  padding: '0 8px',
-  transition: `background 1s ${DECELERATE}`,
-  userSelect: 'none'
-}))
 
 const StageTimerDisplayGauge = (props: Props) => {
   const {endTime} = props
@@ -42,9 +21,17 @@ const StageTimerDisplayGauge = (props: Props) => {
   const countdownTimerLabel = timeLeft || 'Time’s Up!'
   return (
     <>
-      <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
+      <div
+        className={cn(
+          'flex h-7 min-w-[100px] animate-[fade-in_300ms_cubic-bezier(0,0,.2,1)] select-none items-center justify-center rounded-[4px] px-2 font-semibold tabular-nums leading-7 transition-[background] duration-1000 ease-[cubic-bezier(0,0,.2,1)]',
+          timeLeft
+            ? 'bg-jade-400 text-[16px] text-white'
+            : 'bg-gold-300 text-[14px] text-slate-700',
+          isDesktop ? 'mb-4' : 'mb-2'
+        )}
+      >
         {countdownTimerLabel}
-      </Gauge>
+      </div>
       <audio ref={soundRef} aria-hidden className='hidden' autoPlay={false}>
         <source src={endTimerSound} type='audio/mp3' />
       </audio>

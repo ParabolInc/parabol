@@ -1,6 +1,13 @@
 import {expect, test} from '@playwright/test'
 import config from '../config'
-import {goToNextPhase, goToNextPhaseWhenReady, startDemo} from './retrospective-demo-helpers'
+import {
+  goToNextPhase,
+  goToNextPhaseWhenReady,
+  meetingNav,
+  promptColumn,
+  reflectionEditor,
+  startDemo
+} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / reflect page', () => {
   test('it shows an explanation popup', async ({page}) => {
@@ -20,97 +27,77 @@ test.describe('retrospective-demo / reflect page', () => {
   test('allows the user to enter feedback in start column', async ({page}) => {
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Start doing this')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.pressSequentially('Start doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    await expect(
-      page.locator('[data-cy="reflection-stack-Start"] :text("Start doing this")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('Start doing this')).toBeVisible()
   })
 
   test('allows the user to enter feedback in the stop column', async ({page}) => {
     await startDemo(page)
 
-    const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
-    await page.click(stopTextbox)
-    await page.type(stopTextbox, 'Stop doing this')
+    const stopTextbox = reflectionEditor(page, 'Stop')
+    await stopTextbox.click()
+    await stopTextbox.pressSequentially('Stop doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    await expect(
-      page.locator('[data-cy="reflection-stack-Stop"] :text("Stop doing this")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText('Stop doing this')).toBeVisible()
   })
 
   test('allows the user to enter feedback in the continue column', async ({page}) => {
     await startDemo(page)
 
-    const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
-    await page.click(continueTextbox)
-    await page.fill(continueTextbox, 'Continue doing this')
+    const continueTextbox = reflectionEditor(page, 'Continue')
+    await continueTextbox.click()
+    await continueTextbox.fill('Continue doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    await expect(
-      page.locator('[data-cy="reflection-stack-Continue"] :text("Continue doing this")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Continue').getByText('Continue doing this')).toBeVisible()
   })
 
   test('allows the user to delete previously entered feedback', async ({page}) => {
     await startDemo(page)
 
-    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
-    await page.click(startTextbox)
-    await page.fill(startTextbox, 'Start doing this')
+    const startTextbox = reflectionEditor(page, 'Start')
+    await startTextbox.click()
+    await startTextbox.fill('Start doing this')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')
 
-    await expect(
-      page.locator('[data-cy="reflection-stack-Start"] :text("Start doing this")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('Start doing this')).toBeVisible()
 
-    await page.click(
-      '[data-cy="reflection-stack-Start"] [aria-label="Delete this reflection card"]'
-    )
+    await promptColumn(page, 'Start')
+      .getByRole('button', {name: 'Delete this reflection card'})
+      .click()
 
-    await expect(
-      page.locator('[data-cy="reflection-stack-Start"] :text("Start doing this")')
-    ).not.toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('Start doing this')).not.toBeVisible()
   })
 
   test('displays simulated users writing reflections in the start column', async ({page}) => {
     await startDemo(page)
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Start] :text("2 team members writing reflections...")'
-      )
+      promptColumn(page, 'Start').getByText('2 team members writing reflections...')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Start] :text("1 team member reflection + 2 in progress")'
-      )
+      promptColumn(page, 'Start').getByText('1 team member reflection + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Start] :text("2 team member reflections + 2 in progress")'
-      )
+      promptColumn(page, 'Start').getByText('2 team member reflections + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Start] :text("2 team member reflections + 1 in progress")'
-      )
+      promptColumn(page, 'Start').getByText('2 team member reflections + 1 in progress')
     ).toBeVisible()
 
-    await expect(
-      page.locator('[data-cy=reflection-column-Start] :text("2 team member reflections")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Start').getByText('2 team member reflections')).toBeVisible()
   })
 
   test.skip('displays simulated users writing reflections in the stop column', async ({page}) => {
@@ -119,56 +106,40 @@ test.describe('retrospective-demo / reflect page', () => {
     await startDemo(page)
 
     await expect(
-      page.locator('[data-cy=reflection-column-Stop] :text("1 team member writing reflections...")')
+      promptColumn(page, 'Stop').getByText('1 team member writing reflections...')
     ).toBeVisible({
       timeout: 20_000 // first, the simulated users are only typing in the "Start" column, so this takes > 5 seconds
     })
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("1 team member reflection + 1 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('1 team member reflection + 1 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("1 team member reflection + 2 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('1 team member reflection + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("2 team member reflections + 2 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('2 team member reflections + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("3 team member reflections + 2 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('3 team member reflections + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("4 team member reflections + 2 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('4 team member reflections + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("5 team member reflections + 2 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('5 team member reflections + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Stop] :text("5 team member reflections + 1 in progress")'
-      )
+      promptColumn(page, 'Stop').getByText('5 team member reflections + 1 in progress')
     ).toBeVisible()
 
-    await expect(
-      page.locator('[data-cy=reflection-column-Stop] :text("5 team member reflections")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Stop').getByText('5 team member reflections')).toBeVisible()
   })
 
   test.skip('displays simulated users writing reflections in the continue column', async ({
@@ -179,36 +150,26 @@ test.describe('retrospective-demo / reflect page', () => {
     await startDemo(page)
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member writing reflections...")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member writing reflections...')
     ).toBeVisible({
       timeout: 40_000 // first, the simulated users are only typing in the "Start"/"Stop" columns, so this takes > 5 seconds
     })
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("2 team members writing reflections...")'
-      )
+      promptColumn(page, 'Continue').getByText('2 team members writing reflections...')
     ).toBeVisible({
       timeout: 20_000 // this seems to be delayed from the server
     })
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 2 in progress")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member reflection + 2 in progress')
     ).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 1 in progress")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member reflection + 1 in progress')
     ).toBeVisible()
 
-    await expect(
-      page.locator('[data-cy=reflection-column-Continue] :text("1 team member reflection")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Continue').getByText('1 team member reflection')).toBeVisible()
   })
 
   test('transitions to the group phase after clicking "next" twice', async ({page}) => {
@@ -216,38 +177,28 @@ test.describe('retrospective-demo / reflect page', () => {
 
     await startDemo(page)
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member writing reflections...")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member writing reflections...')
     ).toBeVisible({
       timeout: 40_000 // first, the simulated users are only typing in the "Start"/"Stop" columns, so this takes > 5 seconds
     })
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("2 team members writing reflections...")'
-      )
+      promptColumn(page, 'Continue').getByText('2 team members writing reflections...')
     ).toBeVisible({
       timeout: 20_000 // this seems to be delayed from the server
     })
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 2 in progress")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member reflection + 2 in progress')
     ).toBeVisible()
 
     await expect(page.locator('button :text("1 / 2 Ready")')).toBeVisible()
 
     await expect(
-      page.locator(
-        '[data-cy=reflection-column-Continue] :text("1 team member reflection + 1 in progress")'
-      )
+      promptColumn(page, 'Continue').getByText('1 team member reflection + 1 in progress')
     ).toBeVisible()
 
-    await expect(
-      page.locator('[data-cy=reflection-column-Continue] :text("1 team member reflection")')
-    ).toBeVisible()
+    await expect(promptColumn(page, 'Continue').getByText('1 team member reflection')).toBeVisible()
 
     await goToNextPhaseWhenReady(page)
 
@@ -266,7 +217,7 @@ test.describe('retrospective-demo / reflect page', () => {
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
-    await page.click('[data-cy=sidebar] :text("Reflect")')
+    await meetingNav(page).getByText('Reflect', {exact: true}).click()
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/reflect`)
     await expect(page.locator(':text("Phase Completed")')).toBeVisible()
   })

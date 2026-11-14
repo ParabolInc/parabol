@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {SuggestedActionTryActionMeeting_suggestedAction$key} from '../__generated__/SuggestedActionTryActionMeeting_suggestedAction.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
@@ -35,7 +34,7 @@ const SuggestedActionTryActionMeeting = (props: Props) => {
 
   return (
     <SuggestedActionCard
-      backgroundColor={PALETTE.AQUA_400}
+      backgroundColor='var(--color-aqua-400)'
       iconName='change_history'
       suggestedActionId={suggestedActionId}
     >

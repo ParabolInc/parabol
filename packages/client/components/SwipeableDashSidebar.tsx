@@ -1,49 +1,13 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {createPortal} from 'react-dom'
 import useEventCallback from '~/hooks/useEventCallback'
-import usePortal from '../hooks/usePortal'
-import {DECELERATE} from '../styles/animation'
-import {navDrawerShadow} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar, ZIndex} from '../types/constEnums'
+import {NavSidebar} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 
 const PEEK_WIDTH = 20
-
-const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
-  background: PALETTE.SLATE_900_32,
-  height: '100%',
-  left: 0,
-  opacity: x / SIDEBAR_WIDTH,
-  position: 'fixed',
-  pointerEvents: x > 0 ? undefined : 'none',
-  transition: `opacity 200ms ${DECELERATE}`,
-  width: '100%',
-  zIndex: ZIndex.SIDEBAR
-}))
-
-const SidebarAndHandle = styled('div')<{x: number; isRightDrawer: boolean}>(
-  ({x, isRightDrawer}) => ({
-    display: 'flex',
-    flexDirection: isRightDrawer ? 'row-reverse' : 'row',
-    position: 'fixed',
-    transform: `translateX(${isRightDrawer ? -x : x}px)`,
-    transition: `transform 200ms ${DECELERATE}`,
-    zIndex: ZIndex.SIDEBAR
-  })
-)
-const Sidebar = styled('div')<{x: number; HYSTERESIS_THRESH: number}>(({x, HYSTERESIS_THRESH}) => ({
-  boxShadow: x > 0 ? navDrawerShadow : undefined,
-  height: '100vh',
-  pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none'
-}))
-
-const SwipeHandle = styled(PlainButton)({
-  width: PEEK_WIDTH
-})
 
 const updateSpeed = (clientX: number) => {
   const movementX = swipe.lastX - clientX
@@ -106,16 +70,12 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, isRightDrawer = false, onToggle, sidebarWidth} = props
-  const {portal, openPortal} = usePortal({
-    allowScroll: true,
-    noClose: true
-  })
   const [x, setX] = useState(0)
+  const appliedIsOpenRef = useRef(false)
   const SIDEBAR_WIDTH: number = sidebarWidth || NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
   useEffect(() => {
-    openPortal()
     return () => {
       window.clearTimeout(swipe.peekTimeout)
       hideSidebar()
@@ -134,7 +94,11 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    if (isOpen !== swipe.isOpen) {
+    // swipe is shared by every sidebar on the page, so a meeting with both a left sidebar and a
+    // right drawer has to track what this instance last applied, or one skips the other's hide.
+    // A gesture then starts from this instance's state, see onMouseDown
+    if (isOpen !== appliedIsOpenRef.current) {
+      appliedIsOpenRef.current = isOpen
       swipe.isOpen = isOpen
       isOpen ? showSidebar() : hideSidebar()
     }
@@ -196,6 +160,7 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     if (x !== 0 && x !== SIDEBAR_WIDTH) return
+    swipe.isOpen = appliedIsOpenRef.current
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {
@@ -222,24 +187,42 @@ const SwipeableDashSidebar = (props: Props) => {
     }
   })
 
-  return portal(
+  return createPortal(
     <div
       className={cn('absolute top-0 print:hidden', isRightDrawer ? 'right-5' : '')}
       style={{left: isRightDrawer ? undefined : -SIDEBAR_WIDTH}}
     >
-      <Scrim x={x} SIDEBAR_WIDTH={SIDEBAR_WIDTH} onClick={onToggle} />
-      <SidebarAndHandle
-        x={x}
+      <div
+        className={cn(
+          'fixed left-0 z-sidebar h-full w-full bg-[#1c1c2152] transition-[opacity] duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+          x <= 0 && 'pointer-events-none'
+        )}
+        style={{opacity: x / SIDEBAR_WIDTH}}
+        onClick={onToggle}
+      />
+      <div
+        className={cn(
+          'fixed z-sidebar flex transition-[transform] duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+          isRightDrawer ? 'flex-row-reverse' : 'flex-row'
+        )}
+        style={{transform: `translateX(${isRightDrawer ? -x : x}px)`}}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
-        isRightDrawer={isRightDrawer}
       >
-        <Sidebar x={x} HYSTERESIS_THRESH={HYSTERESIS_THRESH}>
+        <div
+          className={cn(
+            'h-dvh',
+            x > 0 &&
+              'shadow-[0px_8px_10px_-5px_rgba(0,0,0,.2),0px_16px_24px_2px_rgba(0,0,0,.14),0px_6px_30px_5px_rgba(0,0,0,.12)]',
+            x <= HYSTERESIS_THRESH && 'pointer-events-none'
+          )}
+        >
           {children}
-        </Sidebar>
-        <SwipeHandle />
-      </SidebarAndHandle>
-    </div>
+        </div>
+        <PlainButton className='w-5' />
+      </div>
+    </div>,
+    document.body
   )
 }
 

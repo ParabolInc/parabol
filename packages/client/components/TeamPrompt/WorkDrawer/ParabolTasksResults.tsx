@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {
@@ -14,14 +15,16 @@ interface Props {
   queryRef: PreloadedQuery<ParabolTasksResultsQuery>
   selectedStatuses: TaskStatusEnum[]
   dateRange: WorkDrawerDateRange | undefined
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const ParabolTasksResults = (props: Props) => {
-  const {queryRef, selectedStatuses, dateRange} = props
+  const {queryRef, selectedStatuses, dateRange, searchQuery, onResultCount} = props
   const atmosphere = useAtmosphere()
 
   // :TODO: (jmtaber129): Add pagination of tasks.
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<ParabolTasksResultsQuery>(
     graphql`
       query ParabolTasksResultsQuery($userId: ID!) {
         viewer {
@@ -58,12 +61,17 @@ const ParabolTasksResults = (props: Props) => {
       return updatedAt >= startAt && updatedAt <= endAt
     })
 
+  const resultCount = selectedTasks.length
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
+
   return (
     <div className='flex flex-col items-center gap-y-2 px-4 pt-1 pb-4'>
       {selectedTasks.length > 0 ? (
         selectedTasks.map((task) => (
           <NullableTask
-            className='w-full rounded-sm border border-slate-100 border-solid'
+            className='w-full max-w-75 rounded-sm border border-hairline border-solid'
             key={task.id}
             area={'userDash'}
             task={task}

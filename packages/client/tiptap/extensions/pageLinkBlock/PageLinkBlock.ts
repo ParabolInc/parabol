@@ -1,10 +1,23 @@
 import {GapCursor} from '@tiptap/pm/gapcursor'
 import {Fragment, type Node, Slice} from '@tiptap/pm/model'
-import {Plugin, TextSelection} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
+import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
+import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
-import {PageLinkBlockView} from './PageLinkBlockView'
+import {findSyncedOriginalBesideCaret, isSyncedOriginal} from './findSyncedOriginalBesideCaret'
+import {isValidPageCode} from './isValidPageCode'
+import {keepFocusInHost} from './keepFocusInHost'
+import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
+import {PageLinkNodeView} from './PageLinkNodeView'
+import {serializeSyncedBlock} from './serializeSyncedBlock'
+import {stopPageLinkBlockEvent} from './stopPageLinkBlockEvent'
+import {
+  clearDropCursorOverSyncedBlocks,
+  disableDropCursorInSyncedBlock
+} from './syncedBlockDropCursor'
+import {getNestedEditor, syncedBlockEntryPlugin} from './syncedBlockFocus'
 
 declare module '@tiptap/core' {
   // interface Commands<ReturnType> {
@@ -19,16 +32,60 @@ declare module '@tiptap/core' {
 
 interface PageLinkBlockStorage {
   yDoc: Y.Doc
+  preferredName?: string
+  highestTier?: TierEnum
+  pageId?: string
 }
-export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlockStorage>({
+interface PageLinkBlockOptions {
+  yDoc: Y.Doc
+  getViewerAccess: GetPageViewerAccess
+  preferredName?: string
+  highestTier?: TierEnum
+  pageId?: string
+  pastedLinksAreCopies?: boolean
+}
+
+const isSyncedLink = (node: Node) => node.type.name === 'pageLinkBlock' && !!node.attrs.synced
+
+const syncedLinksAsCopies = (fragment: Fragment): Fragment => {
+  const children: Node[] = []
+  fragment.forEach((child) => {
+    children.push(
+      isSyncedLink(child)
+        ? child.type.create({...child.attrs, canonical: false}, child.content, child.marks)
+        : child.content.size
+          ? child.copy(syncedLinksAsCopies(child.content))
+          : child
+    )
+  })
+  return Fragment.fromArray(children)
+}
+
+const serializeSyncedLinksAsCopies = (view: EditorView, slice: Slice) => {
+  let hasSyncedLink = false
+  slice.content.descendants((node) => {
+    hasSyncedLink ||= isSyncedLink(node)
+    return !hasSyncedLink
+  })
+  if (!hasSyncedLink) return null
+  const copies = new Slice(syncedLinksAsCopies(slice.content), slice.openStart, slice.openEnd)
+  const {dom, text} = view.serializeForClipboard(copies)
+  return {html: dom.innerHTML, text}
+}
+
+export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, PageLinkBlockStorage>({
   addOptions: () => ({
     // hack to enforce document
-    yDoc: undefined as any
+    yDoc: undefined as any,
+    getViewerAccess: () => undefined
   }),
   addStorage(this) {
     const {options} = this
     return {
-      yDoc: options.yDoc
+      yDoc: options.yDoc,
+      preferredName: options.preferredName,
+      highestTier: options.highestTier,
+      pageId: options.pageId
     }
   },
   addCommands() {
@@ -41,26 +98,35 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
         }
     }
   },
+  extendNodeSchema(extension) {
+    return extension.name === this.name ? {disableDropCursor: disableDropCursorInSyncedBlock} : {}
+  },
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(PageLinkBlockView, {
+    const renderer = ReactNodeViewRenderer(PageLinkNodeView, {
       className: 'group',
-      stopEvent({event}) {
-        // stopping the mousedown event prevents dragging the node directly when it's active
-        // we only want to allow drags from the drag handler
-        if (event.type === 'mousedown') return true
-
-        // TipTap is being bad about intercepting drag/drop handling
-        //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
-        return false
-      },
       attrs: {
         'data-type': 'pageLinkBlock'
       }
     })
+    return (props) => {
+      const nodeView = renderer(props)
+      const selectNode = nodeView.selectNode?.bind(nodeView)
+      nodeView.selectNode = () => {
+        keepFocusInHost(nodeView.dom)
+        selectNode?.()
+      }
+      nodeView.stopEvent = (event: Event) =>
+        nodeView.dom instanceof HTMLElement && stopPageLinkBlockEvent(event, nodeView.dom)
+      return nodeView
+    }
   },
   addProseMirrorPlugins() {
+    const {pastedLinksAreCopies} = this.options
     return [
+      keepUnownedPageLinksPlugin(this.options.getViewerAccess),
+      syncedBlockEntryPlugin(),
+      clearDropCursorOverSyncedBlocks(),
       new Plugin({
         props: {
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!
@@ -92,15 +158,18 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
             function decanonPageLinks(frag: Fragment): Fragment {
               const newChildren: Node[] = []
               frag.forEach((child) => {
-                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
-                  const alreadyExists = checkIfExists(child)
+                if (child.type.name === 'pageLinkBlock') {
+                  const pageCode = Number(child.attrs.pageCode)
+                  if (!view.dragging && !isValidPageCode(pageCode)) return
+                  const isCopy =
+                    pastedLinksAreCopies || (child.attrs.canonical === true && checkIfExists(child))
                   newChildren.push(
                     child.type.create(
                       {
                         ...child.attrs,
-                        canonical: alreadyExists ? false : child.attrs.canonical,
+                        canonical: isCopy ? false : child.attrs.canonical,
                         // copying will turn numbers to text, but not boolean
-                        pageCode: Number(child.attrs.pageCode)
+                        pageCode
                       },
                       child.content,
                       child.marks
@@ -119,6 +188,32 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
             const newContent = decanonPageLinks(slice.content)
             return new Slice(newContent, slice.openStart, slice.openEnd)
           },
+          handleDOMEvents: {
+            copy(view, event) {
+              const {selection} = view.state
+              if (!event.clipboardData) return false
+              const clipboard =
+                selection instanceof NodeSelection && isSyncedLink(selection.node)
+                  ? serializeSyncedBlock(
+                      {
+                        pageCode: Number(selection.node.attrs.pageCode),
+                        title: selection.node.attrs.title
+                      },
+                      getNestedEditor(view, selection.from)
+                    )
+                  : serializeSyncedLinksAsCopies(view, selection.content())
+              if (!clipboard) return false
+              event.preventDefault()
+              event.clipboardData.clearData()
+              event.clipboardData.setData('text/html', clipboard.html)
+              event.clipboardData.setData('text/plain', clipboard.text)
+              return true
+            }
+          },
+          handleTextInput(view) {
+            const {selection} = view.state
+            return isNodeSelection(selection) && isSyncedOriginal(selection.node)
+          },
           handleKeyDown(view, event) {
             // return false // false means you can backspace to delete pagelinks
             const isBackspace = event.key === 'Backspace'
@@ -126,6 +221,14 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
             if (!isBackspace && !isDelete) return false
             const {state, dispatch} = view
             const {selection, tr} = state
+            if (isNodeSelection(selection) && isSyncedOriginal(selection.node)) return false
+            const originalPos = findSyncedOriginalBesideCaret(selection, isDelete)
+            if (originalPos !== null) {
+              dispatch(
+                tr.setSelection(NodeSelection.create(state.doc, originalPos)).scrollIntoView()
+              )
+              return true
+            }
             const {$from, empty} = selection
             // if the pageLinkBlock is currently selected, then that's our node
             // if backspace is hit, look at the nodeBefore

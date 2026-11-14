@@ -1,4 +1,3 @@
-import {EventRepeat, ExpandMore} from '@mui/icons-material'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
@@ -7,6 +6,7 @@ import {type ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {RRule} from 'rrule'
 import type {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
+import {EventRepeat, ExpandMore} from '~/ui/icons'
 import type {CreateGcalEventInput} from '../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
@@ -16,16 +16,15 @@ import GcalSettings, {
 } from '../modules/userDashboard/components/GcalModal/GcalSettings'
 import logo from '../styles/theme/images/graphics/google.svg'
 import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {DialogActions} from '../ui/Dialog/DialogActions'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import GcalClientManager from '../utils/GcalClientManager'
 import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
-import PrimaryButton from './PrimaryButton'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
-import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
 
 const validateTitle = (title: string) =>
@@ -72,7 +71,6 @@ export const ScheduleDialog = (props: Props) => {
             }
           }
         }
-        ...GcalModal_team
         ...GcalSettings_team
       }
     `,
@@ -125,11 +123,6 @@ export const ScheduleDialog = (props: Props) => {
     if (!gcal?.auth) {
       const {clientId, id: providerId} = gcal.cloudProvider
       GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamId, mutationProps)
-
-      SendClientSideEvent(atmosphere, 'Schedule meeting add gcal clicked', {
-        teamId: teamId,
-        service: 'gcal'
-      })
       setAddedInvite(true)
     } else {
       setAddedInvite(true)
@@ -139,11 +132,11 @@ export const ScheduleDialog = (props: Props) => {
   const subTitle = `Create a ${withRecurrence ? 'recurring meeting series' : 'meeting'}${gcal?.cloudProvider ? ' or add the meeting to your calendar.' : '.'}`
   return (
     <div className='space-y-4 overflow-auto p-4'>
-      <div className='font-semibold text-lg leading-none'>Schedule Your Meeting</div>
-      <div className='text-slate-800 text-sm'>{subTitle}</div>
+      <DialogTitle className='text-lg leading-none'>Schedule Your Meeting</DialogTitle>
+      <div className='text-fg-primary text-sm'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
-          className='form-input rounded-sm border border-slate-500 border-solid p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-hidden focus:ring-1 focus:ring-slate-600'
+          className='form-input rounded-sm border border-hairline-field border-solid bg-surface-input p-2 font-sans text-base hover:border-fg-secondary focus:border-fg-secondary focus:outline-hidden focus:ring-1 focus:ring-fg-secondary'
           type='text'
           name='title'
           placeholder={placeholder}
@@ -157,7 +150,7 @@ export const ScheduleDialog = (props: Props) => {
       {gcal?.cloudProvider &&
         (gcal?.auth && addedInvite ? (
           <Collapsible.Root
-            className='flex flex-col rounded-sm border border-slate-500'
+            className='flex flex-col rounded-sm border border-hairline-strong'
             open={openGcalEvent}
             onOpenChange={setOpenGcalEvent}
           >
@@ -176,20 +169,20 @@ export const ScheduleDialog = (props: Props) => {
           </Collapsible.Root>
         ) : (
           <div>
-            <SecondaryButton className='h-11 pr-4 pl-3' onClick={onAddInvite}>
+            <Button variant='outline' size='sm' className='h-11 pr-4 pl-3' onClick={onAddInvite}>
               <img src={logo} className='mr-2' />
               {gcal?.auth ? 'Add Calendar Event' : 'Connect to Google Calendar'}
-            </SecondaryButton>
+            </Button>
           </div>
         ))}
       {withRecurrence && (
         <Collapsible.Root
-          className='flex flex-col rounded-sm border border-slate-500'
+          className='flex flex-col rounded-sm border border-hairline-strong'
           open={openRecurrence}
           onOpenChange={setOpenRecurrence}
         >
           <Collapsible.Trigger className='flex cursor-pointer items-center justify-between bg-transparent p-2'>
-            <EventRepeat className='mr-2 text-slate-600' />
+            <EventRepeat className='mr-2 text-fg-secondary' />
             <div className='grow text-left font-semibold text-lg leading-none'>
               {rrule
                 ? toHumanReadable(rrule, {
@@ -210,10 +203,12 @@ export const ScheduleDialog = (props: Props) => {
         </Collapsible.Root>
       )}
       <DialogActions>
-        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
-        <PrimaryButton size='medium' onClick={handleSubmit}>
+        <Button variant='outline' size='md' onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button variant='primary' size='md' onClick={handleSubmit}>
           Create Meeting
-        </PrimaryButton>
+        </Button>
       </DialogActions>
     </div>
   )

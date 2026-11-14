@@ -1,8 +1,13 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
+import {useRef} from 'react'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
+import {useArrivalHighlight} from '../../hooks/useArrivalHighlight'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
+import {BlockDropHint} from './BlockDropHint'
+import {BlockMarquee} from './BlockMarquee'
+import {BlockSelectionAnnouncer} from './BlockSelectionAnnouncer'
 import {StarterActions} from './StarterActions'
 import {useEditablePage} from './useEditablePage'
 
@@ -16,13 +21,18 @@ export const PageEditor = (props: Props) => {
   const {provider, viewerRef, pageId} = props
   const {editor} = useTipTapPageEditor(provider, {viewerRef, pageId})
   const isEditable = useEditablePage(provider, editor)
+  useArrivalHighlight(editor, pageId)
+  const containerRef = useRef<HTMLDivElement>(null)
   if (!editor) return <div>No editor</div>
   return (
-    <div className='flex w-full flex-col'>
+    <div ref={containerRef} className='flex w-full flex-col'>
       <TipTapEditor
         editor={editor}
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
+      <BlockDropHint />
+      <BlockMarquee editor={editor} containerRef={containerRef} />
+      <BlockSelectionAnnouncer editor={editor} />
       {isEditable && <StarterActions editor={editor} />}
     </div>
   )

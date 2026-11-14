@@ -1,0 +1,17 @@
+import type {RepoIntegrationResolvers} from '../resolverTypes'
+
+export const TYPENAME_BY_SERVICE = {
+  azureDevOps: 'AzureDevOpsRemoteProject',
+  clickup: 'RepoContainer',
+  github: 'RepoContainer',
+  gitlab: 'RepoContainer',
+  jira: 'JiraRemoteProject',
+  jiraServer: 'JiraServerRemoteProject',
+  linear: 'RepoContainer'
+} as const
+
+const RepoIntegration: RepoIntegrationResolvers = {
+  __resolveType: ({service}) => TYPENAME_BY_SERVICE[service]
+}
+
+export default RepoIntegration

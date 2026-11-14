@@ -1,22 +1,19 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
-import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
+import isValid from '../../isValid'
+import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import type {MutationResolvers} from '../resolverTypes'
-import {stopMeetingSeries, updateGCalRecurrenceRule} from './updateRecurrenceSettings'
+import {applySeriesRecurrence} from './updateRecurrenceSettings'
 
 const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   _source,
   {meetingSeriesId, name, rrule: rruleString},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
-  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -26,78 +23,29 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   if (!Number.isFinite(numericId)) {
     return standardError(new Error('Invalid meeting series id'), {userId: viewerId})
   }
-  const [meetingSeries, viewer] = await Promise.all([
-    dataLoader.get('meetingSeries').load(numericId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
   if (!meetingSeries) {
     return standardError(new Error('Meeting series not found'), {userId: viewerId})
   }
-  const {teamId, gcalSeriesId, facilitatorId, recurrenceRule, cancelledAt} = meetingSeries
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Not on team'), {userId: viewerId})
-  }
-
-  if (!rrule) {
-    if (cancelledAt) {
-      return {meetingSeriesId: numericId}
-    }
-    await stopMeetingSeries(meetingSeries)
-    analytics.recurrenceStopped(viewer, meetingSeries)
-  } else if (cancelledAt) {
-    await pg
-      .updateTable('MeetingSeries')
-      .set({
-        cancelledAt: null,
-        recurrenceRule: rrule.toString(),
-        ...(name ? {title: name} : null)
-      })
-      .where('id', '=', numericId)
-      .execute()
-    analytics.recurrenceStarted(viewer, meetingSeries)
-  } else {
-    await pg
-      .updateTable('MeetingSeries')
-      .set({
-        recurrenceRule: rrule.toString(),
-        ...(name ? {title: name} : null)
-      })
-      .where('id', '=', numericId)
-      .where('cancelledAt', 'is', null)
-      .execute()
-    const activeMeetings = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(numericId)
-    if (activeMeetings.length > 0) {
-      const nextMeetingStartDate = getNextRRuleDate(rrule)
-      await pg
-        .updateTable('NewMeeting')
-        .set({scheduledEndTime: nextMeetingStartDate})
-        .where(
-          'id',
-          'in',
-          activeMeetings.map(({id}) => id)
-        )
-        .execute()
-    }
-    analytics.recurrenceStarted(viewer, meetingSeries)
-  }
-
-  if (gcalSeriesId) {
-    const newRrule = updateGCalRecurrenceRule(RRuleSet.parse(recurrenceRule), rrule)
-    await updateGcalSeries({
-      gcalSeriesId,
-      name: name ?? undefined,
-      meetingSeriesId: numericId,
-      rrule: newRrule,
-      teamId,
-      userId: facilitatorId,
-      dataLoader
+  if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
+    return standardError(new Error('Only the owner of this meeting series can change it'), {
+      userId: viewerId
     })
   }
 
+  const {seriesIds} = await applySeriesRecurrence(meetingSeries, {rrule, name}, dataLoader)
+  // read the teams before clearing the cache, so the subscription reaches every team on the group
+  const seriesTeamIds = new Set(
+    (await dataLoader.get('meetingSeries').loadMany(seriesIds))
+      .filter(isValid)
+      .map((series) => series.teamId)
+  )
   dataLoader.clearAll(['meetingSeries', 'newMeetings'])
 
   const data = {meetingSeriesId: numericId}
-  publish(SubscriptionChannel.TEAM, teamId, 'UpdateMeetingSeriesSuccess', data, subOptions)
+  for (const seriesTeamId of seriesTeamIds) {
+    publish(SubscriptionChannel.TEAM, seriesTeamId, 'UpdateMeetingSeriesSuccess', data, subOptions)
+  }
   return data
 }
 

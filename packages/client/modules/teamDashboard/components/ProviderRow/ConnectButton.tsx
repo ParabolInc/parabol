@@ -1,5 +1,5 @@
-import {Add as AddIcon} from '@mui/icons-material'
 import type * as React from 'react'
+import {Add as AddIcon} from '~/ui/icons'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'
@@ -22,12 +22,7 @@ const ConnectButton = (props: Props) => {
   } = props
 
   return (
-    <ProviderRowActionButton
-      key='linkAccount'
-      onClick={onConnectClick}
-      palette='warm'
-      waiting={submitting}
-    >
+    <ProviderRowActionButton key='linkAccount' onClick={onConnectClick} waiting={submitting}>
       {isDesktop ? connectButtonText : connectButtonIcon}
     </ProviderRowActionButton>
   )

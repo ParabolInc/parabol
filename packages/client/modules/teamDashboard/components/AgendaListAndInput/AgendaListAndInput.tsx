@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {
@@ -7,31 +6,9 @@ import type {
 } from '~/__generated__/AgendaListAndInput_meeting.graphql'
 import type {AgendaListAndInput_team$key} from '../../../../__generated__/AgendaListAndInput_team.graphql'
 import type useGotoStageId from '../../../../hooks/useGotoStageId'
+import {cn} from '../../../../ui/cn'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
-
-const RootStyles = styled('div')<{
-  isMeeting: boolean | undefined
-  disabled: boolean
-}>(({disabled, isMeeting}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingRight: isMeeting ? 0 : 8,
-  paddingTop: 0,
-  position: 'relative',
-  width: '100%',
-  minHeight: 0, // required for FF68
-  cursor: disabled ? 'not-allowed' : undefined,
-  filter: disabled ? 'blur(3px)' : undefined,
-  pointerEvents: disabled ? 'none' : undefined,
-  height: isMeeting ? '100%' : undefined // 100% is required due to the flex logo in the meeting sidebar
-}))
-
-const StyledAgendaInput = styled(AgendaInput)<{
-  isMeeting: boolean | undefined
-}>(({isMeeting}) => ({
-  paddingRight: isMeeting ? 8 : undefined
-}))
 
 interface Props {
   dashSearch?: string
@@ -79,7 +56,13 @@ const AgendaListAndInput = (props: Props) => {
   const agendaItems = getAgendaItems(meeting) || team.agendaItems
 
   return (
-    <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
+    <div
+      className={cn(
+        'relative flex min-h-0 w-full flex-col pt-0',
+        meeting ? 'h-full pr-0' : 'pr-2',
+        isDisabled && 'pointer-events-none cursor-not-allowed blur-[3px]'
+      )}
+    >
       {agendaItems && (
         <AgendaList
           agendaItems={agendaItems}
@@ -88,8 +71,10 @@ const AgendaListAndInput = (props: Props) => {
           meeting={meeting}
         />
       )}
-      {!endedAt && <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />}
-    </RootStyles>
+      {!endedAt && (
+        <AgendaInput className={meeting ? 'pr-2' : undefined} disabled={!!isDisabled} team={team} />
+      )}
+    </div>
   )
 }
 

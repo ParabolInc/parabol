@@ -1,16 +1,20 @@
-import {generateText, type JSONContent} from '@tiptap/core'
+import {generateText} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
+import JiraServerIssueId from 'parabol-client/integrations/jiraServer/shared/JiraServerIssueId'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import JiraServerIssueId from 'parabol-client/shared/gqlIds/JiraServerIssueId'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
 
 const MAX_PAGINATION_RESULTS = 5000
 const MAX_RESULTS_PER_PAGE = 50
@@ -136,11 +140,17 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return json.errorMessages?.join('\n')
   }
 
-  async parseJsonResponse<T>(response: Response): Promise<T | Error> {
+  async parseJsonResponse<T>(response: Response, method?: string): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
-      await response.body?.cancel()
-      return new Error('Received non-JSON Jira Data Center Response')
+      const thirdPartyResponse = await readThirdPartyResponse('jiraServer', response, {
+        method,
+        url: response.url
+      })
+      return new ThirdPartyResponseError(
+        'Received non-JSON Jira Data Center Response',
+        thirdPartyResponse
+      )
     }
     const json = await response.json()
 
@@ -173,7 +183,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
 
   async request<T>(method: string, path: string, body?: any) {
     const response = await this.requestRaw(method, path, body)
-    return this.parseJsonResponse<T>(response)
+    return this.parseJsonResponse<T>(response, method)
   }
 
   async requestAll<T>(method: string, path: string, body?: any): Promise<T[] | Error> {
@@ -228,7 +238,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return this.request<JiraServerIssuesResponse>('POST', '/rest/api/2/search', payload)
   }
 
-  async createIssue(projectId: string, summary: string, description: string) {
+  async createIssue(projectId: string, summary: string, description: string | null) {
     const issueTypes = await this.getIssueTypes(projectId)
     if (issueTypes instanceof Error) {
       return issueTypes
@@ -252,7 +262,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
             id: bestIssueType.id
           },
           summary,
-          description
+          ...(description && {description})
         }
       }
     )
@@ -290,16 +300,12 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title: summary,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
-    const {title: summary, bodyContent} = splitTipTapContent(rawContentJSON)
-
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
     // TODO: implement stateToJiraServerFormat
-    const description = generateText(bodyContent, serverTipTapExtensions)
+    const description = bodyContent ? generateText(bodyContent, serverTipTapExtensions) : null
 
     const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 

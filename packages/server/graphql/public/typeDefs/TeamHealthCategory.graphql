@@ -1,0 +1,31 @@
+"""
+A category that a team health question maps to, e.g. Psychological Safety
+"""
+type TeamHealthCategory {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The name of the category
+  """
+  name: String!
+
+  """
+  A longer description of what the category measures
+  """
+  description: String
+
+  """
+  The order in which the category should be displayed
+  """
+  sortOrder: Int!
+
+  """
+  *Foreign key. The user that owns the category. 'aGhostUser' for built-in categories
+  """
+  userId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

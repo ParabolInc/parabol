@@ -1,0 +1,1595 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Sprint 41 Retro - Oct 9, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Harbor Platform",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Hb7QmR2xKd",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {"type": "text", "text": " — Oct 9, 2026", "marks": [{"type": "bold", "attrs": {}}]}
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {"type": "text", "text": "4 Topics - 3 New Tasks - 11 Reflections - 5 Participants"}
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "insightsBlock",
+      "attrs": {
+        "id": "8b32fc51-db41-4b38-8eed-3edd16982e46",
+        "editing": false,
+        "teamIds": ["Hb7QmR2xKd"],
+        "meetingTypes": ["retrospective"],
+        "after": "2026-10-09T14:00:00.000Z",
+        "before": "2026-10-09T16:52:00.000Z",
+        "meetingIds": ["8uYDvBArM6"],
+        "title": "Top Topics",
+        "hash": "jv7kilhx",
+        "prompt": "You are an expert in agile retrospectives and project management.\nYour team has just completed a meeting and it is your job to generate insights from the data and report to senior management.\nSenior management wants to know where to best focus their time, so be concise and focus on next steps to take.\nIf there is not enough data to generate insightful findings, respond with \"Not enough data to generate insights\".\nIt should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.\n"
+      },
+      "content": [
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥇 "},
+                    {
+                      "type": "text",
+                      "text": "Deploy reliability is the biggest risk",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Flaky deploys drew the most votes and produced two action items. Ship the rollback button and the pre-deploy smoke test before the next release."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥈 "},
+                    {
+                      "type": "text",
+                      "text": "On-call load is wearing the team down",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": Repeated low-value pages are driving fatigue. Prune noisy alerts and add a shadow slot so more people can share the rotation."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "🥉 "},
+                    {
+                      "type": "text",
+                      "text": "Slow CI delays reviews",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    },
+                    {
+                      "type": "text",
+                      "text": ": A twenty-five minute test run slows even one-line changes. Cache dependencies and split the integration suite."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "3 Tasks"}]},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "f3393a6e-e218-4ede-9859-05899954de73",
+        "status": "active",
+        "preferredName": "Priya Raman",
+        "avatar": "https://app.example.com/assets/User/local|isMgHCfwAa/picture/mUrPJLD4Pe.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Add a rollback button to the deploy dashboard\", \"type\": \"text\"}]}]}",
+        "service": "github"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "f3393a6e-e218-4ede-9859-05899954de73",
+        "status": "active",
+        "preferredName": "Callum Reyes",
+        "avatar": "https://app.example.com/assets/User/local|VgTZ11cIAE/picture/HBVCc48Oe4.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Write a pre-deploy smoke test for the invoice API\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {"type": "paragraph"},
+    {
+      "type": "taskBlock",
+      "attrs": {
+        "id": "f3393a6e-e218-4ede-9859-05899954de73",
+        "status": "active",
+        "preferredName": "Ingrid Solheim",
+        "avatar": "https://app.example.com/assets/User/local|gzh8j9UvBD/picture/Owe0TI5jvk.png",
+        "content": "{\"type\": \"doc\", \"content\": [{\"type\": \"paragraph\", \"content\": [{\"text\": \"Prune noisy alerts and review the paging policy\", \"type\": \"text\"}]}]}"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "4 Voted Topics"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Flaky deploys",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/8uYDvBArM6/discuss/6",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "7 Votes, 2 Tasks, 1 Comment, 3 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "On-call fatigue",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/8uYDvBArM6/discuss/7",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "5 Votes, 1 Task, 1 Comment, 3 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Slow CI",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/8uYDvBArM6/discuss/8",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "3 Votes, 0 Tasks, 0 Comments, 2 Reflections"}
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Pairing sessions",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://app.example.com/meet/8uYDvBArM6/discuss/9",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow",
+                        "class": "link",
+                        "title": null
+                      }
+                    },
+                    {"type": "bold", "attrs": {}}
+                  ]
+                },
+                {"type": "hardBreak"},
+                {"type": "text", "text": "1 Vote, 0 Tasks, 0 Comments, 2 Reflections"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "5 Participants"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Priya Raman"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Tomasz Brandt"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Ingrid Solheim"}]}
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Callum Reyes"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Wanjiru Kamau"}]}]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "details",
+      "attrs": {"open": false},
+      "content": [
+        {"type": "detailsSummary", "content": [{"type": "text", "text": "Table View"}]},
+        {
+          "type": "detailsContent",
+          "content": [
+            {
+              "type": "table",
+              "content": [
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Reflection Group",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Votes",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Type",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Author",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Prompt",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Content",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableHeader",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Discussion Thread",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Deploys that fail halfway and leave staging in a strange state"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Rolling back by hand at 11 pm because the dashboard has no rollback button"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Run a smoke test automatically before a deploy goes out"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Priya Raman"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Add a rollback button to the deploy dashboard"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Callum Reyes"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Write a pre-deploy smoke test for the invoice API"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Callum Reyes"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The Tuesday deploy took three tries and each retry re-ran the migrations."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Flaky deploys",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "7"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reply"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Priya Raman"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "I will check that every migration is safe to run twice."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "The Tuesday deploy took three tries and each retry re-ran the migrations."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "On-call fatigue",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Getting paged for alerts that nobody acts on"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "On-call fatigue",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Add a shadow slot so new people can learn the on-call rotation"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "On-call fatigue",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Writing a short handoff note at the end of each on-call week"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "On-call fatigue",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Task"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Ingrid Solheim"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Prune noisy alerts and review the paging policy"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "On-call fatigue",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Comment"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "Ingrid Solheim"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Eleven of last week's pages were the same disk space warning."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Slow CI",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Stop"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Waiting twenty-five minutes for the full test run to review a one-line change"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Slow CI",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {"type": "text", "text": "Cache dependencies between CI jobs"}
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pairing sessions",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "1"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pairing on the webhook retry work saved us a day of review"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Pairing sessions",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "1"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Continue"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [{"type": "text", "text": "The Friday pairing hour"}]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableRow",
+                  "content": [
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Runbooks",
+                              "marks": [{"type": "bold", "attrs": {}}]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph", "content": [{"type": "text", "text": "0"}]}]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Reflection"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Anonymous"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Start"}]}
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Write a runbook for the staging database refresh"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableCell",
+                      "attrs": {"colspan": 1, "rowspan": 1},
+                      "content": [{"type": "paragraph"}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {"type": "paragraph"},
+    {
+      "type": "pageLinkBlock",
+      "attrs": {"pageCode": 1575232670, "title": "Transcript", "canonical": true}
+    },
+    {
+      "type": "pageLinkBlock",
+      "attrs": {
+        "pageCode": 1157936090,
+        "title": "Zoom Summary for Sprint 41 Retro",
+        "canonical": true
+      }
+    },
+    {"type": "paragraph"}
+  ]
+}

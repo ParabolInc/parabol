@@ -1,15 +1,16 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import AuthToken from '../../../database/types/AuthToken'
 import generateUID from '../../../generateUID'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
-import {analytics} from '../../../utils/analytics/analytics'
+import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import addOrgValidation from '../../mutations/helpers/addOrgValidation'
 import createNewOrg from '../../mutations/helpers/createNewOrg'
 import createTeamAndLeader from '../../mutations/helpers/createTeamAndLeader'
-import inviteToTeamHelper from '../../mutations/helpers/inviteToTeamHelper'
+import {assertInviteeCount, inviteToNewTeam} from '../../mutations/helpers/inviteToTeamHelper'
 import {MutationResolvers} from '../resolverTypes'
 
 const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
@@ -22,6 +23,7 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   const viewerId = getUserId(authToken)
 
   // VALIDATION
+  if (invitees) assertInviteeCount(invitees)
   const {
     data: {newTeam, orgName},
     errors
@@ -52,7 +54,19 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   const {tms} = authToken
   // MUTATIVE
   tms.push(teamId)
-  analytics.newOrg(viewer, orgId, teamId, false)
+  const nextAuthToken = new AuthToken({
+    tms,
+    sub: viewerId,
+    rol: authToken.rol,
+    exp: authToken.exp,
+    act: authToken.act,
+    aud: authToken.aud,
+    scope: authToken.scope
+  })
+  context.authToken = nextAuthToken
+  if (context.request) {
+    setAuthCookie(context, nextAuthToken)
+  }
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
     tms
   })
@@ -67,11 +81,8 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
   }
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AddOrgPayload', data, subOptions)
 
-  if (invitees?.length) {
-    await inviteToTeamHelper(invitees, teamId, undefined, context)
-  }
-
-  return data
+  const inviteResults = await inviteToNewTeam(invitees, teamId, context)
+  return {...data, invitees: inviteResults}
 }
 
 export default addOrg

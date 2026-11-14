@@ -1,7 +1,6 @@
-import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {MoreVert} from '~/ui/icons'
 import type {DiscussionDrawerZoomRow_zoom$key} from '../__generated__/DiscussionDrawerZoomRow_zoom.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -16,11 +15,11 @@ import {ZoomSVG} from './ZoomSVG'
 interface Props {
   zoomRef: DiscussionDrawerZoomRow_zoom$key
   teamId: string
+  // replaces the OAuth flow, e.g. a demo that has no account to connect
+  onConnect?: () => void
 }
 
-const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
-  const [clickCount, setClickCount] = useState(0)
-
+const DiscussionDrawerZoomRow = ({zoomRef, teamId, onConnect}: Props) => {
   const zoom = useFragment(
     graphql`
       fragment DiscussionDrawerZoomRow_zoom on ZoomIntegration {
@@ -42,6 +41,7 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
   if (!cloudProvider) return null
 
   const handleConnect = () => {
+    if (onConnect) return onConnect()
     if (submitting) return
     ZoomClientManager.openOAuth(
       atmosphere,
@@ -62,12 +62,12 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
   }
 
   return (
-    <div className='flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5'>
+    <div className='flex items-center justify-between rounded-lg border border-hairline px-3 py-2.5'>
       <div className='flex items-center gap-2.5'>
         <div className='h-6 w-6'>
           <ZoomSVG />
         </div>
-        <span className='font-medium text-slate-700 text-sm'>Zoom</span>
+        <span className='font-medium text-fg-primary text-sm'>Zoom</span>
       </div>
       {zoom.isActive ? (
         <div className='flex items-center gap-1'>
@@ -75,7 +75,7 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
           <Menu
             trigger={
               <Button variant='ghost' className='h-6 w-6 p-0'>
-                <MoreVert className='text-base text-slate-500' />
+                <MoreVert className='text-base text-fg-secondary' />
               </Button>
             }
           >
@@ -87,11 +87,11 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
         </div>
       ) : (
         <button
-          className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
-          onClick={clickCount >= 3 ? handleConnect : () => setClickCount((c) => c + 1)}
+          className='cursor-pointer select-none whitespace-nowrap rounded border border-hairline-strong bg-transparent px-1.5 py-0.5 font-semibold text-fg-secondary text-xs hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50'
+          onClick={handleConnect}
           disabled={submitting}
         >
-          {clickCount >= 3 ? 'Connect' : 'Coming Soon'}
+          {'Connect'}
         </button>
       )}
     </div>

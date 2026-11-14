@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type KeyboardEvent, type RefObject, useEffect, useMemo, useRef, useState} from 'react'
@@ -14,23 +13,13 @@ import useLeft from '../hooks/useLeft'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
 import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
-import {BezierCurve, PokerCards} from '../types/constEnums'
+import {PokerCards} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import PokerCard from './PokerCard'
-
-const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpectating}) => ({
-  bottom: 0,
-  display: 'flex',
-  left,
-  opacity: isSpectating ? 0 : 1,
-  position: 'fixed',
-  transition: `200ms ${BezierCurve.DECELERATE}`,
-  visibility: isSpectating ? 'hidden' : 'visible',
-  zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
-}))
 
 interface Props {
   meeting: PokerCardDeck_meeting$key
-  estimateAreaRef: RefObject<HTMLDivElement>
+  estimateAreaRef: RefObject<HTMLDivElement | null>
 }
 
 const swipe = {
@@ -64,7 +53,7 @@ const PokerCardDeck = (props: Props) => {
           }
         }
         localStage {
-          ...PokerCardDeckStage @relay(mask: false)
+          ...PokerCardDeckStage @relay(mask: false) @alias
         }
         viewerMeetingMember {
           isSpectating
@@ -76,10 +65,11 @@ const PokerCardDeck = (props: Props) => {
   const {id: meetingId, rightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
   // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
-  const stageId = localStage.id ?? ''
-  const cards = localStage.dimensionRef?.scale.values ?? []
-  const scores = localStage.scores ?? []
-  const isVoting = localStage.isVoting ?? false
+  const pokerStage = localStage.PokerCardDeckStage
+  const stageId = pokerStage?.id ?? ''
+  const cards = pokerStage?.dimensionRef?.scale.values ?? []
+  const scores = pokerStage?.scores ?? []
+  const isVoting = pokerStage?.isVoting ?? false
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
@@ -105,7 +95,9 @@ const PokerCardDeck = (props: Props) => {
     radius,
     estimateAreaWidth
   )
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const onMouseEnter = (cardId: string) => () => {
     if (isCollapsed) return
     if (!hoveringCardIdRef.current) {
@@ -246,11 +238,13 @@ const PokerCardDeck = (props: Props) => {
   useHotkey(['up', 'down'], onKeyDown)
 
   return (
-    <Deck
+    <div
       ref={deckRef}
-      left={left}
-      isSpectating={isSpectating}
-      // style={{transform}}
+      className={cn(
+        'fixed bottom-0 z-[1] flex transition-all duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+        isSpectating ? 'invisible opacity-0' : 'visible opacity-100'
+      )}
+      style={{left}}
       onMouseDown={onMouseDown}
       onTouchStart={onMouseDown}
     >
@@ -294,7 +288,7 @@ const PokerCardDeck = (props: Props) => {
           />
         )
       })}
-    </Deck>
+    </div>
   )
 }
 

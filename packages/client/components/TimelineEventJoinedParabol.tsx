@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventJoinedParabol_timelineEvent$key} from '../__generated__/TimelineEventJoinedParabol_timelineEvent.graphql'
@@ -10,10 +9,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventJoinedParabol_timelineEvent$key
 }
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventJoinedParabol = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -34,7 +29,9 @@ const TimelineEventJoinedParabol = (props: Props) => {
     >
       <TimelineEventBody>
         {'Get started by updating your name and avatar in your '}
-        <Link to='/me/profile'>user profile</Link>
+        <StyledLink className='font-semibold' to='/me/profile'>
+          user profile
+        </StyledLink>
       </TimelineEventBody>
     </TimelineEventCard>
   )

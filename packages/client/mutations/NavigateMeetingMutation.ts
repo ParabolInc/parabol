@@ -15,6 +15,7 @@ import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import {isViewerTyping} from '../utils/viewerTypingUtils'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment NavigateMeetingMutation_meeting on NewMeeting {
@@ -126,10 +127,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   const viewerStageId = safeProxy(meeting).getLinkedRecord('localStage').getValue('id')
   const facilitatorStageId = safeProxy(meeting).getValue('facilitatorStageId')
   const oldMeeting = getBaseRecord(store, meetingId)
-  if (!oldMeeting) {
-    console.error(`No base meeting object found in Relay ${meetingId}`)
-    return
-  }
+  if (!oldMeeting) return
   if (viewerStageId === oldMeeting.facilitatorStageId) {
     const viewerPhaseType = meeting
       .getLinkedRecord('localPhase')!
@@ -185,6 +183,7 @@ const NavigateMeetingMutation: SimpleMutation<TNavigateMeetingMutation> = (
   return commitMutation<TNavigateMeetingMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('navigateMeeting')
       navigateMeetingTeamUpdater(payload, {atmosphere, store})

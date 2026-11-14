@@ -1,8 +1,8 @@
-import {google} from 'googleapis'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import type {RRuleSet} from 'rrule-rust'
 import appOrigin from '../../../appOrigin'
 import generateUID from '../../../generateUID'
+import makeGcalCalendar from '../../../integrations/gcal/makeGcalCalendar'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
@@ -55,24 +55,17 @@ const createGcalEvent = async (
 
   const {startTimestamp, endTimestamp, timeZone, invitees, videoType} = gcalInput
 
-  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
+  const gcalAuth = await dataLoader
+    .get('freshAuth')
+    .load({service: 'gcal', teamId, userId: viewerId})
   if (!gcalAuth) {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {
       userId: viewerId
     })
   }
-  const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
-  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
-  const REDIRECT_URI = appOrigin
-
   const startDateTime = new Date(startTimestamp * 1000).toISOString()
   const endDateTime = new Date(endTimestamp * 1000).toISOString()
-  const expiry_date = expiresAt ? expiresAt.getTime() : undefined
-
-  const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-  oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
-  const calendar = google.calendar({version: 'v3', auth: oauth2Client})
+  const calendar = makeGcalCalendar(gcalAuth)
   const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
   const description = meetingSeriesId
     ? buildSeriesEventDescription(meetingSeriesId, name)
@@ -144,22 +137,13 @@ export type UpdateGcalSeriesInput = {
 export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
   const {gcalSeriesId, name, meetingSeriesId, rrule, userId, teamId, dataLoader} = input
 
-  const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
+  const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
   if (!gcalAuth) {
     return standardError(new Error('Could not retrieve Google Calendar auth'), {
       userId
     })
   }
-  const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
-  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
-  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET
-  const REDIRECT_URI = appOrigin
-
-  const expiry_date = expiresAt ? expiresAt.getTime() : undefined
-
-  const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-  oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
-  const calendar = google.calendar({version: 'v3', auth: oauth2Client})
+  const calendar = makeGcalCalendar(gcalAuth)
   const recurrence = convertRruleToGcal(rrule)
 
   const description =

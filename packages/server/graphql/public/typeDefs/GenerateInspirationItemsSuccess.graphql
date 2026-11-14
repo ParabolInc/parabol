@@ -3,9 +3,15 @@ The result of successfully generating inspiration items from a user's recent wor
 """
 type GenerateInspirationItemsSuccess {
   """
-  The generated inspiration items, 0 or more
+  The generated inspiration items, 0 or more. A retrospective's are saved to the meeting;
+  a standup's are only returned here
   """
   inspirationItems: [InspirationItem!]!
+
+  """
+  Every issue the sources matched. Empty for a retrospective
+  """
+  issues: [InspirationIssue!]!
 
   """
   The meeting the items were generated for

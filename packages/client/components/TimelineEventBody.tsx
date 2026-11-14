@@ -1,13 +1,15 @@
-import styled from '@emotion/styled'
-import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const TimelineEventBody = styled('div')({
-  padding: '0 16px 16px 16px',
-  fontSize: 14,
-  lineHeight: '20px',
-  [makeMinWidthQuery(600)]: {
-    padding: '0 16px 16px 56px'
+const TimelineEventBody = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>(
+  (props, ref) => {
+    const {className, children, ...rest} = props
+    return (
+      <div ref={ref} className={cn('px-4 pb-4 text-sm min-[600px]:pl-14', className)} {...rest}>
+        {children}
+      </div>
+    )
   }
-})
+)
 
 export default TimelineEventBody

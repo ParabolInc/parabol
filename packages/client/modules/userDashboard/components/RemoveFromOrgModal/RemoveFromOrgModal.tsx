@@ -3,14 +3,16 @@ import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RemoveFromOrgModal_organizationUsers$key} from '../../../../__generated__/RemoveFromOrgModal_organizationUsers.graphql'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import plural from '../../../../utils/plural'
+import getMutationError from '../../../../utils/relay/getMutationError'
 
 interface Props {
   isOpen: boolean
@@ -35,7 +37,9 @@ const RemoveFromOrgModal = (props: Props) => {
   const {isOpen, orgId, userIds, organizationUsers, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const {viewerId} = atmosphere
 
   const users = useFragment(organizationUsersFragment, organizationUsers)
@@ -68,8 +72,9 @@ const RemoveFromOrgModal = (props: Props) => {
       {
         navigate,
         onError,
-        onCompleted: () => {
-          onCompleted()
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          if (getMutationError(res, errors)) return
           closePortal()
           onSuccess?.()
         }
@@ -86,46 +91,47 @@ const RemoveFromOrgModal = (props: Props) => {
         )}
         {skippedCount > 0 && (
           <div className='mt-4'>
-            <div className='mb-2 font-medium text-slate-700 text-sm'>
+            <div className='mb-2 font-medium text-fg-primary text-sm'>
               {`The following ${plural(skippedCount, 'user')} will not be removed:`}
             </div>
-            <div className='max-h-60 overflow-auto rounded border border-slate-600'>
-              <div className='flex items-center justify-between border-slate-400 border-b bg-slate-100 px-3 py-2 font-semibold text-sm'>
+            <div className='max-h-60 overflow-auto rounded border border-hairline-strong'>
+              <div className='flex items-center justify-between border-hairline-strong border-b bg-surface-raised px-3 py-2 font-semibold text-sm'>
                 <div>Name</div>
                 <div>Reason</div>
               </div>
               {nonRemovableUsers.map((item) => (
                 <div
                   key={item.user.id}
-                  className='flex items-center justify-between border-slate-400 border-b px-3 py-2 last:border-0'
+                  className='flex items-center justify-between border-hairline-strong border-b px-3 py-2 last:border-0'
                 >
                   <div className='font-medium'>{item.user.preferredName}</div>
-                  <div className='text-slate-600 text-sm'>{item.reason}</div>
+                  <div className='text-fg-secondary text-sm'>{item.reason}</div>
                 </div>
               ))}
             </div>
           </div>
         )}
-        {removableCount > 0 ? (
-          <PrimaryButton
-            size='medium'
-            className='mx-auto mt-6 mb-0'
-            onClick={handleClick}
-            waiting={submitting}
-          >
-            <IconLabel
-              icon='arrow_forward'
-              iconAfter
-              label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
-            />
-          </PrimaryButton>
-        ) : (
-          <div className='mt-4'>
-            <PrimaryButton size='medium' className='mx-auto mb-0' onClick={closePortal}>
+        {error && <div className='mt-4 font-semibold text-fg-error text-sm'>{error.message}</div>}
+        <DialogActions>
+          {removableCount > 0 ? (
+            <>
+              <Button variant='outline' size='md' onClick={closePortal}>
+                Cancel
+              </Button>
+              <Button variant='primary' size='md' onClick={handleClick} disabled={submitting}>
+                <IconLabel
+                  icon='arrow_forward'
+                  iconAfter
+                  label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
+                />
+              </Button>
+            </>
+          ) : (
+            <Button variant='primary' size='md' onClick={closePortal}>
               <IconLabel icon='close' label='Close' />
-            </PrimaryButton>
-          </div>
-        )}
+            </Button>
+          )}
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

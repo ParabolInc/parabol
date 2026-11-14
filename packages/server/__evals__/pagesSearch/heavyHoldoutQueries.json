@@ -1,0 +1,651 @@
+[
+  {
+    "query": "beacon growth meeting summaries",
+    "category": "title",
+    "relevant": {
+      "beacon-meeting-summaries": 3
+    }
+  },
+  {
+    "query": "atlas standup aug 25",
+    "category": "title",
+    "relevant": {
+      "atlas-standup-2026-08-25": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "beacon retro 3",
+    "category": "title",
+    "relevant": {
+      "beacon-retro-3": 3,
+      "beacon-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "atlas sprint poker #8",
+    "category": "title",
+    "relevant": {
+      "atlas-poker-8": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "atlas retro oct 1",
+    "category": "title",
+    "relevant": {
+      "atlas-retro-9": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "beacon standup june 26",
+    "category": "title",
+    "relevant": {
+      "beacon-standup-2026-06-26": 3,
+      "beacon-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "valkey sessions rfc",
+    "category": "title",
+    "relevant": {
+      "doc-session-store-rfc": 3,
+      "doc-postgres-failover-runbook": 1,
+      "doc-rate-limiting-rfc": 1,
+      "doc-on-call-handbook": 1,
+      "atlas-standup-2026-09-21": 1
+    }
+  },
+  {
+    "query": "on-call handbook",
+    "category": "title",
+    "relevant": {
+      "doc-on-call-handbook": 3,
+      "doc-cdn-purge-postmortem": 1,
+      "doc-session-store-rfc": 1,
+      "doc-saml-certificate-runbook": 1
+    }
+  },
+  {
+    "query": "q4 planning",
+    "category": "title",
+    "relevant": {
+      "doc-q4-planning-draft": 3
+    }
+  },
+  {
+    "query": "sprint poker beacon aug 4",
+    "category": "title",
+    "relevant": {
+      "beacon-poker-5": 3,
+      "beacon-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "saml signing certif",
+    "category": "prefix",
+    "relevant": {
+      "doc-saml-certificate-runbook": 3,
+      "doc-postgres-failover-runbook": 1,
+      "doc-rate-limiting-rfc": 1,
+      "doc-cdn-purge-postmortem": 1
+    }
+  },
+  {
+    "query": "atlas retro aug 2",
+    "category": "prefix",
+    "relevant": {
+      "atlas-retro-6": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "acme corp interv",
+    "category": "prefix",
+    "relevant": {
+      "doc-acme-interview-notes": 3,
+      "doc-q3-growth-plan": 1,
+      "doc-pricing-experiment-results": 1,
+      "doc-referral-program-spec": 1,
+      "beacon-standup-2026-07-09": 1
+    }
+  },
+  {
+    "query": "hackathon slack b",
+    "category": "prefix",
+    "relevant": {
+      "atlas-standup-2026-10-06": 3,
+      "doc-ideas-backlog": 1
+    }
+  },
+  {
+    "query": "webinar regis",
+    "category": "prefix",
+    "relevant": {
+      "beacon-standup-2026-06-10": 3
+    }
+  },
+  {
+    "query": "datadog renew",
+    "category": "prefix",
+    "relevant": {
+      "atlas-standup-2026-09-02": 3
+    }
+  },
+  {
+    "query": "churn analy",
+    "category": "prefix",
+    "relevant": {
+      "beacon-standup-2026-09-22": 3
+    }
+  },
+  {
+    "query": "okta support ticket",
+    "category": "body",
+    "relevant": {
+      "atlas-standup-2026-06-04": 3
+    }
+  },
+  {
+    "query": "jury duty",
+    "category": "body",
+    "relevant": {
+      "atlas-standup-2026-07-08": 3
+    }
+  },
+  {
+    "query": "waiting on hamid ci queue",
+    "category": "body",
+    "relevant": {
+      "atlas-standup-2026-08-04": 3,
+      "atlas-standup-2026-07-31": 1,
+      "atlas-standup-2026-08-25": 1,
+      "atlas-standup-2026-09-02": 1,
+      "atlas-standup-2026-09-07": 1,
+      "atlas-standup-2026-10-02": 1,
+      "beacon-retro-9": 1
+    }
+  },
+  {
+    "query": "sso live 12 beta orgs",
+    "category": "body",
+    "relevant": {
+      "atlas-standup-2026-08-19": 3
+    }
+  },
+  {
+    "query": "ci bill doubled",
+    "category": "body",
+    "relevant": {
+      "atlas-standup-2026-09-10": 3
+    }
+  },
+  {
+    "query": "pg_partman newer build",
+    "category": "body",
+    "relevant": {
+      "doc-postgres-18-upgrade-plan": 3,
+      "atlas-standup-2026-06-17": 3
+    }
+  },
+  {
+    "query": "atlas retro meeting-free wednesdays",
+    "category": "body",
+    "relevant": {
+      "atlas-retro-1": 3,
+      "atlas-retro-3": 3,
+      "beacon-retro-2": 1,
+      "beacon-retro-4": 1
+    }
+  },
+  {
+    "query": "dach launch",
+    "category": "body",
+    "relevant": {
+      "beacon-standup-2026-06-16": 3,
+      "doc-onboarding-email-sequence": 1
+    }
+  },
+  {
+    "query": "legal approval referral terms",
+    "category": "body",
+    "relevant": {
+      "beacon-standup-2026-07-21": 3,
+      "doc-referral-program-spec": 2
+    }
+  },
+  {
+    "query": "drop segment",
+    "category": "body",
+    "relevant": {
+      "beacon-standup-2026-08-05": 3,
+      "doc-analytics-vendor-evaluation": 2,
+      "beacon-retro-5": 1
+    }
+  },
+  {
+    "query": "camila review activation dashboard",
+    "category": "body",
+    "relevant": {
+      "beacon-standup-2026-09-25": 3,
+      "beacon-standup-2026-06-10": 1,
+      "beacon-standup-2026-09-03": 1
+    }
+  },
+  {
+    "query": "skip integration suite for docs changes",
+    "category": "body",
+    "relevant": {
+      "beacon-retro-9": 3,
+      "atlas-standup-2026-09-10": 1
+    }
+  },
+  {
+    "query": "activation target 42%",
+    "category": "body",
+    "relevant": {
+      "doc-q3-growth-plan": 3
+    }
+  },
+  {
+    "query": "why did signups get the same message two times",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-duplicate-trial-emails-postmortem": 3,
+      "beacon-standup-2026-08-27": 2,
+      "beacon-retro-7": 1
+    }
+  },
+  {
+    "query": "steps if the main database dies",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-postgres-failover-runbook": 3
+    }
+  },
+  {
+    "query": "idea to chase people who forget their daily update",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-ideas-backlog": 3,
+      "atlas-standup-2026-10-06": 2
+    }
+  },
+  {
+    "query": "how much downtime for the database version bump",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-postgres-18-upgrade-plan": 3,
+      "atlas-standup-2026-08-03": 1,
+      "atlas-retro-6": 1
+    }
+  },
+  {
+    "query": "did steering people to yearly billing pay off",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-pricing-experiment-results": 3,
+      "beacon-standup-2026-08-13": 2,
+      "doc-q3-growth-plan": 1,
+      "beacon-standup-2026-06-02": 1
+    }
+  },
+  {
+    "query": "why did the website look broken in july",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-cdn-purge-postmortem": 3,
+      "atlas-standup-2026-07-14": 2,
+      "atlas-retro-4": 1,
+      "atlas-standup-2026-07-15": 1
+    }
+  },
+  {
+    "query": "what went wrong when we changed tracking vendors",
+    "category": "paraphrase",
+    "relevant": {
+      "beacon-retro-5": 3,
+      "beacon-standup-2026-09-14": 2,
+      "beacon-standup-2026-08-05": 1,
+      "doc-analytics-vendor-evaluation": 1,
+      "doc-q3-growth-plan": 1
+    }
+  },
+  {
+    "query": "how long can an alert sit unanswered",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-on-call-handbook": 3
+    }
+  },
+  {
+    "query": "stop hammering customers when their servers are down",
+    "category": "paraphrase",
+    "relevant": {
+      "atlas-standup-2026-07-22": 3
+    }
+  },
+  {
+    "query": "why throttle by account rather than by network",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-rate-limiting-rfc": 3
+    }
+  },
+  {
+    "query": "what time do signup emails go out",
+    "category": "paraphrase",
+    "relevant": {
+      "doc-onboarding-email-sequence": 3,
+      "doc-duplicate-trial-emails-postmortem": 1
+    }
+  },
+  {
+    "query": "atlas standpu sep 18",
+    "category": "typo",
+    "relevant": {
+      "atlas-standup-2026-09-18": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "beacon rerto 8",
+    "category": "typo",
+    "relevant": {
+      "beacon-retro-8": 3,
+      "beacon-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "referal program spec",
+    "category": "typo",
+    "relevant": {
+      "doc-referral-program-spec": 3,
+      "doc-analytics-vendor-evaluation": 1,
+      "doc-duplicate-trial-emails-postmortem": 1,
+      "doc-acme-interview-notes": 1,
+      "beacon-standup-2026-09-03": 1,
+      "beacon-standup-2026-07-21": 1
+    }
+  },
+  {
+    "query": "atlas sprint pokr 3",
+    "category": "typo",
+    "relevant": {
+      "atlas-poker-3": 3,
+      "atlas-meeting-summaries": 1
+    }
+  },
+  {
+    "query": "atlas platfrom meeting summaries",
+    "category": "typo",
+    "relevant": {
+      "atlas-meeting-summaries": 3
+    }
+  },
+  {
+    "query": "warehouse tabels data team owen",
+    "category": "typo",
+    "relevant": {
+      "beacon-standup-2026-07-31": 3,
+      "beacon-standup-2026-06-03": 1,
+      "beacon-standup-2026-06-24": 1,
+      "beacon-standup-2026-07-23": 1,
+      "beacon-standup-2026-09-25": 1,
+      "beacon-standup-2026-10-05": 1,
+      "beacon-standup-2026-09-14": 1
+    }
+  },
+  {
+    "query": "flaky biling suite lukas",
+    "category": "typo",
+    "relevant": {
+      "atlas-standup-2026-06-03": 3,
+      "atlas-standup-2026-07-31": 1,
+      "atlas-standup-2026-08-03": 1,
+      "atlas-standup-2026-08-19": 1,
+      "atlas-standup-2026-09-04": 1,
+      "atlas-standup-2026-09-07": 1
+    }
+  },
+  {
+    "query": "stagng credentails new cluster arjun",
+    "category": "typo",
+    "relevant": {
+      "atlas-standup-2026-07-13": 3,
+      "atlas-standup-2026-06-09": 1,
+      "atlas-standup-2026-10-05": 1
+    }
+  },
+  {
+    "query": "quarantine flaky tests points",
+    "category": "table",
+    "relevant": {
+      "atlas-poker-5": 3,
+      "atlas-poker-4": 2,
+      "atlas-standup-2026-06-11": 1,
+      "atlas-standup-2026-10-02": 1,
+      "atlas-standup-2026-10-06": 1
+    }
+  },
+  {
+    "query": "latency slo alerts estimate",
+    "category": "table",
+    "relevant": {
+      "atlas-poker-7": 3,
+      "atlas-poker-2": 2,
+      "atlas-standup-2026-07-13": 1,
+      "atlas-standup-2026-08-19": 1,
+      "atlas-standup-2026-09-18": 1
+    }
+  },
+  {
+    "query": "pricing faq story points",
+    "category": "table",
+    "relevant": {
+      "beacon-poker-9": 3,
+      "beacon-poker-6": 2,
+      "beacon-poker-3": 2
+    }
+  },
+  {
+    "query": "posthog annual cost",
+    "category": "table",
+    "relevant": {
+      "doc-analytics-vendor-evaluation": 3
+    }
+  },
+  {
+    "query": "trial ending email which day",
+    "category": "table",
+    "relevant": {
+      "doc-onboarding-email-sequence": 3
+    }
+  },
+  {
+    "query": "when did the cdn status page go up",
+    "category": "table",
+    "relevant": {
+      "doc-cdn-purge-postmortem": 3,
+      "atlas-retro-4": 2,
+      "atlas-standup-2026-07-14": 1,
+      "atlas-standup-2026-07-15": 1
+    }
+  },
+  {
+    "query": "failover replication lag threshold",
+    "category": "longDoc",
+    "relevant": {
+      "doc-postgres-failover-runbook": 3
+    }
+  },
+  {
+    "query": "api key rate limit burst size",
+    "category": "longDoc",
+    "relevant": {
+      "doc-rate-limiting-rfc": 3
+    }
+  },
+  {
+    "query": "what if valkey loses session data",
+    "category": "longDoc",
+    "relevant": {
+      "doc-session-store-rfc": 3,
+      "atlas-standup-2026-09-21": 1
+    }
+  },
+  {
+    "query": "how long are both saml certs published",
+    "category": "longDoc",
+    "relevant": {
+      "doc-saml-certificate-runbook": 3
+    }
+  },
+  {
+    "query": "referral launch beta or all accounts",
+    "category": "longDoc",
+    "relevant": {
+      "doc-referral-program-spec": 3,
+      "beacon-standup-2026-09-03": 1,
+      "doc-q3-growth-plan": 1
+    }
+  },
+  {
+    "query": "q3 staffing customer escalations",
+    "category": "longDoc",
+    "relevant": {
+      "doc-q3-growth-plan": 3
+    }
+  },
+  {
+    "query": "acme scheduled export s3",
+    "category": "longDoc",
+    "relevant": {
+      "doc-acme-interview-notes": 3,
+      "beacon-standup-2026-07-09": 1
+    }
+  },
+  {
+    "query": "who owns the duplicate email alert",
+    "category": "longDoc",
+    "relevant": {
+      "doc-duplicate-trial-emails-postmortem": 3,
+      "beacon-retro-7": 1
+    }
+  },
+  {
+    "query": "what did lukas need from northwind",
+    "category": "person",
+    "relevant": {
+      "atlas-standup-2026-08-11": 3,
+      "atlas-standup-2026-08-19": 1
+    }
+  },
+  {
+    "query": "arjun api key scopes review",
+    "category": "person",
+    "relevant": {
+      "atlas-standup-2026-09-29": 3,
+      "atlas-standup-2026-06-17": 1,
+      "atlas-standup-2026-09-25": 1
+    }
+  },
+  {
+    "query": "tess cdn postmortem draft",
+    "category": "person",
+    "relevant": {
+      "atlas-standup-2026-07-15": 3,
+      "doc-cdn-purge-postmortem": 2,
+      "atlas-standup-2026-07-14": 1,
+      "atlas-retro-4": 1
+    }
+  },
+  {
+    "query": "what did sofia change in pgbouncer",
+    "category": "person",
+    "relevant": {
+      "atlas-standup-2026-08-03": 3,
+      "doc-postgres-18-upgrade-plan": 2,
+      "atlas-retro-6": 1
+    }
+  },
+  {
+    "query": "what was mei exporting for the auditor",
+    "category": "person",
+    "relevant": {
+      "atlas-standup-2026-08-26": 3
+    }
+  },
+  {
+    "query": "leila nps survey",
+    "category": "person",
+    "relevant": {
+      "beacon-standup-2026-06-25": 3
+    }
+  },
+  {
+    "query": "what did owen say about acme",
+    "category": "person",
+    "relevant": {
+      "beacon-standup-2026-07-09": 3,
+      "doc-acme-interview-notes": 2
+    }
+  },
+  {
+    "query": "bianca parental leave",
+    "category": "person",
+    "relevant": {
+      "beacon-standup-2026-09-30": 3
+    }
+  },
+  {
+    "query": "camila day 3 email subject",
+    "category": "person",
+    "relevant": {
+      "beacon-standup-2026-10-07": 3,
+      "doc-onboarding-email-sequence": 2,
+      "beacon-standup-2026-10-08": 1
+    }
+  },
+  {
+    "query": "kubernetes cluster upgrade",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "holiday party planning",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "salesforce crm sync",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "gdpr deletion requests",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "mobile app crash rate",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "pentest report findings",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "qzvx blorp",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {
+    "query": "fjdkslq wpeor",
+    "category": "noAnswer",
+    "relevant": {}
+  }
+]

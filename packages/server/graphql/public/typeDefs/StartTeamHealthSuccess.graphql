@@ -1,0 +1,10 @@
+"""
+Success result for the startTeamHealth mutation
+"""
+type StartTeamHealthSuccess {
+  "The newly started team health meetings, one per team"
+  meetings: [TeamHealthMeeting!]!
+
+  "The teams the meetings were started for"
+  teams: [Team!]!
+}

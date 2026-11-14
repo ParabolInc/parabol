@@ -1,0 +1,15 @@
+"""
+Returned when the upsertTeamHealthQuestionCategory mutation succeeds. The question's category was
+changed, creating the category if it did not already exist for the organization.
+"""
+type UpsertTeamHealthQuestionCategorySuccess {
+  """
+  The question whose category was updated
+  """
+  question: TeamHealthQuestion!
+
+  """
+  The category the question now maps to
+  """
+  category: TeamHealthCategory!
+}

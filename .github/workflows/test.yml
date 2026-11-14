@@ -7,71 +7,51 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+permissions:
+  contents: "read"
 env:
-  PARABOL_BUILD_ENV_PATH: docker/images/parabol-ubi/environments/pipeline
+  # pnpm records each package.json version, so after a release it sees a changed workspace and reinstalls before the first script
+  PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN: "false"
+# The jobs run in parallel, and each one builds only what its own checks need
 jobs:
-  test:
+  # The suites in packages/server/__tests__ call the built server. Every other server suite runs in the unit job without one.
+  # The full build makes this the slowest job, so it is the only one on a paid runner
+  integration:
     runs-on: ubuntu-8cores
     timeout-minutes: 12
-    permissions:
-      contents: "read"
-      id-token: "write"
-    services:
-      postgres:
-        image: pgvector/pgvector:0.8.2-pg18-trixie
-        # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
-        env:
-          POSTGRES_PASSWORD: "temppassword"
-          POSTGRES_USER: "tempuser"
-          POSTGRES_DB: "tempdb"
-        ports:
-          - 5432:5432
-      valkey:
-        image: valkey/valkey:9.0-alpine
-        ports:
-          - 6379:6379
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup
+        id: setup
+        uses: ./.github/actions/setup
         with:
-          node-version-file: package.json
+          services: true
 
-      - name: Setup environment variables
-        run: |
-          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
-          echo ACTION_VERSION=$ACTION_VERSION >> $GITHUB_ENV
-          echo ACTION_VERSION=$ACTION_VERSION
-
-          NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
-          echo NODE_VERSION=$NODE_VERSION >> $GITHUB_ENV
-          echo NODE_VERSION=$NODE_VERSION
-
-      - name: Get cached node modules
-        id: cache
-        uses: actions/cache@v4
+      # master builds a fresh webpack cache for branches to restore, so stale modules never pile up in it
+      - name: Restore webpack cache
+        if: github.ref_name != 'master'
+        uses: actions/cache/restore@v4
         with:
-          path: |
-            **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Install node_modules
-        if: steps.cache.outputs.cache-hit != 'true'
-        # pnpm has a bug that resolves git+https to ssh
-        run: |
-          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
-          pnpm install --frozen-lockfile
-
-      - name: Build the DBs
-        run: |
-          cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          pnpm kysely migrate:latest
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ steps.setup.outputs.node-version }}-${{ github.sha }}
+          restore-keys: webpack-${{ runner.arch }}-${{ steps.setup.outputs.node-version }}-
 
       - name: Build for testing
-        run: pnpm build
+        run: |
+          .github/scripts/migrate.sh &
+          migrate=$!
+          pnpm build --skip-types
+          wait $migrate
+        env:
+          WEBPACK_PERSISTENT_CACHE: true
+
+      - name: Save webpack cache
+        if: github.ref_name == 'master'
+        uses: actions/cache/save@v4
+        with:
+          path: .webpackCache
+          key: webpack-${{ runner.arch }}-${{ steps.setup.outputs.node-version }}-${{ github.sha }}
 
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
@@ -80,29 +60,12 @@ jobs:
         run: pnpm predeploy
 
       - name: Start testing server in background
-        uses: JarvusInnovations/background-action@v1
-        with:
-          run: |
-            pnpm start &
-          wait-on: |
-            http://localhost:3000/graphql
+        run: |
+          pnpm start > "$RUNNER_TEMP/server.log" 2>&1 &
+          timeout 60 bash -c 'until curl --silent --output /dev/null http://localhost:3000/graphql; do sleep 0.1; done'
 
-      - name: Kysely Codegen
-        run: pnpm pg:generate
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Run server tests
-        run: pnpm test:server --reporters=default --reporters=jest-junit
-        env:
-          NODE_TLS_REJECT_UNAUTHORIZED: 0
-          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
-
-      - name: Run client tests
-        run: pnpm test:client --reporters=default --reporters=jest-junit
-        env:
-          JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
+      - name: Run server integration tests
+        run: pnpm test:server packages/server/__tests__/
       # - name: Set Playwright Version
       #   run: |
       #     PLAYWRIGHT_VERSION=$(pnpm --filter integration-tests list @playwright/test | grep @playwright | sed -n 's/^[^ ]* //p' | tr -d '\n')
@@ -132,17 +95,77 @@ jobs:
           path: packages/integration-tests/test-results/
           retention-days: 7
 
+      - name: Print server logs
+        if: always()
+        run: cat "$RUNNER_TEMP/server.log" 2> /dev/null || true
+
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+        with:
+          services: true
+
+      # No embedder starts here to make its tables, and the toolbox is the only build that the script that makes them needs
+      - name: Build the DBs
+        run: |
+          .github/scripts/migrate.sh &
+          migrate=$!
+          pnpm webpack --config scripts/webpack/toolbox.config.js
+          wait $migrate
+          node scripts/toolbox/createEmbeddingsTables.js
+
+      - name: Run server unit tests
+        run: pnpm test:server --testPathIgnorePatterns /node_modules/ packages/server/__tests__/
+
       - name: Run new down migrations
         run: |
           git fetch --depth=1 origin master
           LAST_COMMON_MIGRATION=$(comm -12 <(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | xargs basename -s.ts) <(ls packages/server/postgres/migrations/ | xargs basename -s.ts) | tail -n1)
           pnpm kysely migrate:down $LAST_COMMON_MIGRATION
 
-      - name: Report Status
-        if: ${{ failure() && github.ref_name == 'master' }}
-        uses: ravsamhq/notify-slack-action@v2
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
         with:
-          status: ${{ job.status }}
-          notify_when: "failure"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
+          services: true
+
+      # pg:generate reads the tables from a migrated database, including the ones the embedder would make
+      - name: Generate types
+        run: |
+          .github/scripts/migrate.sh &
+          migrate=$!
+          pnpm relay:build
+          wait $migrate
+          node scripts/toolbox/createEmbeddingsTables.js
+          pnpm pg:generate
+
+      - name: Verify source is clean
+        run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Compile Relay artifacts
+        run: pnpm relay:build --skip-types
+
+      - name: Run client tests
+        run: pnpm test:client

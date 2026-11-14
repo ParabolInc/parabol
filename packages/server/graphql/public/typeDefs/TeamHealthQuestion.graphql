@@ -1,0 +1,48 @@
+"""
+A single team health question, e.g. "It is safe to take a risk on this team."
+"""
+type TeamHealthQuestion {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The question or statement presented to the team member
+  """
+  question: String!
+
+  """
+  Additional context for the question
+  """
+  description: String
+
+  """
+  The way the question is answered
+  """
+  questionType: TeamHealthQuestionType!
+
+  """
+  The pack this question belongs to
+  """
+  pack: TeamHealthQuestionPack!
+
+  """
+  The category this question maps to
+  """
+  category: TeamHealthCategory!
+
+  """
+  *Foreign key. The user who authored this question. Null for built-in/system questions. Only the
+  author may edit the question or change its category
+  """
+  createdBy: ID
+
+  """
+  The user who authored this question. Null for built-in/system questions
+  """
+  createdByUser: User
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

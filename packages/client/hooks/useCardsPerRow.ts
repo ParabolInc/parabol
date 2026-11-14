@@ -2,7 +2,7 @@ import {type RefObject, useLayoutEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 
-const useCardsPerRow = (wrapperRef: RefObject<HTMLDivElement>) => {
+const useCardsPerRow = (wrapperRef: RefObject<HTMLDivElement | null>) => {
   const [cardsPerRow, setCardsPerRow] = useState<null | number>(null)
 
   const getCardsPerRow = () => {

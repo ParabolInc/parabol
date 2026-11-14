@@ -1,11 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import StyledLink from './StyledLink'
 import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'
@@ -14,14 +11,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventTeamPromptComplete_timelineEvent$key
 }
-
-const CountItem = styled('span')({
-  fontWeight: 600
-})
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventTeamPromptComplete = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -54,8 +43,6 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     timelineEventRef
   )
 
-  const atmosphere = useAtmosphere()
-
   const {meeting, team} = timelineEvent
   if (!meeting) {
     return null
@@ -77,13 +64,6 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   const summaryURL = summaryPageId
     ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
-  const onUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'timelineHistoryLock',
-      upgradeTier: 'team',
-      meetingId
-    })
-  }
 
   return (
     <TimelineEventCard
@@ -93,35 +73,39 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     >
       <TimelineEventBody>
         {'Your team shared '}
-        <CountItem>
+        <span className='font-semibold'>
           {responseCount} {plural(responseCount, 'response', 'responses')}
-        </CountItem>
+        </span>
         {'.'}
         <br />
         {'You all wrote '}
-        <CountItem>
+        <span className='font-semibold'>
           {commentCount} {plural(commentCount, 'comment', 'comments')}
-        </CountItem>
+        </span>
         {' and assigned '}
-        <CountItem>
+        <span className='font-semibold'>
           {taskCount} {plural(taskCount, 'task', 'tasks')}
-        </CountItem>
+        </span>
         {'.'}
         <br />
         {locked ? (
           canUpgrade && (
             <>
-              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
                 Upgrade now
-              </Link>{' '}
+              </StyledLink>{' '}
               to see responses and discussion or review a summary
             </>
           )
         ) : (
           <>
-            <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
+            <StyledLink className='font-semibold' to={`/meet/${meetingId}/responses`}>
+              See responses and discussions
+            </StyledLink>
             {' or '}
-            <Link to={summaryURL}>review a summary</Link>
+            <StyledLink className='font-semibold' to={summaryURL}>
+              review a summary
+            </StyledLink>
           </>
         )}
       </TimelineEventBody>

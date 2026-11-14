@@ -57,3 +57,34 @@ export async function dragReflectionCard(
     await expect(cardToDrag).toHaveCount(1)
   }
 }
+
+const PROMPTS = ['Start', 'Stop', 'Continue'] as const
+type Prompt = (typeof PROMPTS)[number]
+
+// A column has no accessible name, so it is the outermost block that shows its own prompt and no other prompt
+export function promptColumn(page: Page, prompt: Prompt) {
+  return PROMPTS.filter((otherPrompt) => otherPrompt !== prompt)
+    .reduce(
+      (column, otherPrompt) => column.filter({hasNot: page.getByText(otherPrompt, {exact: true})}),
+      page.locator('div').filter({has: page.getByText(prompt, {exact: true})})
+    )
+    .first()
+}
+
+export function reflectionEditor(page: Page, prompt: Prompt) {
+  // the editor comes before the reflections already added to its column
+  return promptColumn(page, prompt).getByRole('textbox').first()
+}
+
+export function voteControls(page: Page, prompt: Prompt, groupIdx: number) {
+  const column = promptColumn(page, prompt)
+  const addVote = column.getByRole('button', {name: 'Add vote'}).nth(groupIdx)
+  const removeVote = column.getByRole('button', {name: 'Remove vote'}).nth(groupIdx)
+  // the vote buttons are icons, so the count is the only text in the row that holds them
+  const voteCount = addVote.locator('..')
+  return {addVote, removeVote, voteCount}
+}
+
+export function meetingNav(page: Page) {
+  return page.getByRole('list').filter({has: page.getByText('Reflect', {exact: true})})
+}

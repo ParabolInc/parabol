@@ -2,6 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import type {useUpdateTeamSortOrderMutation as TuseUpdateTeamSortOrderMutation} from '../__generated__/useUpdateTeamSortOrderMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation useUpdateTeamSortOrderMutation($teamId: ID!, $sortOrder: String!) {
@@ -26,8 +28,10 @@ const handleUpdateSortOrder = (store: RecordSourceSelectorProxy) => {
 
 export const useUpdateTeamSortOrderMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdateTeamSortOrderMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TuseUpdateTeamSortOrderMutation>) => {
     return commit({
+      onError: snackOnError(atmosphere),
       ...config,
       updater(store) {
         handleUpdateSortOrder(store)

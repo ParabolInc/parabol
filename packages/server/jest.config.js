@@ -1,5 +1,3 @@
-const tsJestPresets = require('ts-jest/presets')
-
 module.exports = {
   testEnvironment: 'node',
   transform: {
@@ -22,11 +20,17 @@ module.exports = {
   transformIgnorePatterns: ['/marked\.esm\.js/'],
   modulePaths: ['<rootDir>/packages/'],
   moduleNameMapper: {
-    'server/(.*)': ['<rootDir>/$1'],
+    '^server/(.*)': ['<rootDir>/$1'],
     'parabol-client/(.*)': ['<rootDir>/../client/$1'],
     '~/(.*)': ['<rootDir>/../client/$1']
   },
   testRegex: '/__tests__/.*.test\\.ts?$',
+  globals: {
+    __PRODUCTION__: false,
+    __NESTED_USAGE__: null,
+    __NESTED_TYPE_DEFS__: null
+  },
+  setupFiles: ['./__tests__/setWorkerServerId.ts'],
   setupFilesAfterEnv: ['./__tests__/setup.ts'],
   globalSetup: './__tests__/globalSetup.ts',
   globalTeardown: './__tests__/globalTeardown.ts',

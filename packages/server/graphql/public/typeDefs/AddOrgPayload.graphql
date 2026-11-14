@@ -23,4 +23,9 @@ type AddOrgPayload {
   The ID of the 'Create a New Team' suggested action that was removed from the caller's dashboard as a result of this mutation. Null if no such suggestion existed.
   """
   removedSuggestedActionId: ID
+
+  """
+  What happened to each address invited along with the first team, in the order given. Null when no one was invited
+  """
+  invitees: [TeamInvitee!]
 }

@@ -1,30 +1,18 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {InvitationLinkErrorExpired_massInvitation$key} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {Button} from '../ui/Button/Button'
 import hasToken from '../utils/hasToken'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import FlatPrimaryButton from './FlatPrimaryButton'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
 
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation$key
 }
-
-const TeamName = styled('span')({
-  fontWeight: 600,
-  whiteSpace: 'nowrap'
-})
-
-const DialogActions = styled('div')({
-  marginTop: 20,
-  display: 'flex',
-  justifyContent: 'center'
-})
 
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation: massInvitationRef} = props
@@ -47,24 +35,35 @@ const InvitationLinkErrorExpired = (props: Props) => {
       <DialogTitle>Invitation Link Expired</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          The invitation to <TeamName>{teamName}</TeamName> has expired.
+          The invitation to <span className='whitespace-nowrap font-semibold'>{teamName}</span> has
+          expired.
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           Reach out to the team administrator to request a new invitation
         </InvitationDialogCopy>
-        <DialogActions>
+        <div className='mt-5 flex justify-center'>
           {hasToken() ? (
             <>
-              <FlatPrimaryButton onClick={() => navigate('/meetings')} size='medium'>
+              <Button
+                variant='primary'
+                size='md'
+                className='h-10 text-[15px]'
+                onClick={() => navigate('/meetings')}
+              >
                 Go to Dashboard
-              </FlatPrimaryButton>
+              </Button>
             </>
           ) : (
-            <FlatPrimaryButton onClick={() => navigate('/')} size='medium'>
+            <Button
+              variant='primary'
+              size='md'
+              className='h-10 text-[15px]'
+              onClick={() => navigate('/')}
+            >
               Sign In
-            </FlatPrimaryButton>
+            </Button>
           )}
-        </DialogActions>
+        </div>
       </DialogContent>
     </InviteDialog>
   )

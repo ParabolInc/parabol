@@ -1,86 +1,117 @@
 import type {Node as PMNode} from '@tiptap/pm/model'
-import type {EditorState, Transaction} from '@tiptap/pm/state'
+import {type EditorState, Plugin, PluginKey} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
+import type {TrackedRange} from '../blockMove/trackRange'
 
 const LIST_NODE_NAMES = new Set(['taskList', 'bulletList', 'orderedList'])
 const ITEM_NODE_NAMES = new Set(['listItem', 'taskItem'])
 
-export const isListNode = (node: PMNode): boolean => LIST_NODE_NAMES.has(node.type.name)
+// px the cursor must sit right of a list's left edge to nest into one of its items
+const NEST_INDENT_PX = 24
 
-const isItemNode = (node: PMNode): boolean => ITEM_NODE_NAMES.has(node.type.name)
+export const isListNode = (node: PMNode) => LIST_NODE_NAMES.has(node.type.name)
+const isItemNode = (node: PMNode) => ITEM_NODE_NAMES.has(node.type.name)
 
-/**
- * Move the whole list node at `sourceListPos` so it becomes the last block
- * child of the item (listItem/taskItem) at `targetItemPos`. The source node is
- * relocated intact, so its type (e.g. taskList) is preserved. Order of
- * delete/insert is chosen by relative position to avoid coordinate drift.
- */
 export const moveListIntoItem = (
   state: EditorState,
   sourceListPos: number,
   targetItemPos: number
-): Transaction => {
+) => {
   const {doc, tr} = state
   const sourceNode = doc.nodeAt(sourceListPos)
-  if (!sourceNode) throw new Error('nestListDrop: no source node at position')
   const targetItem = doc.nodeAt(targetItemPos)
-  if (!targetItem) throw new Error('nestListDrop: no target item at position')
-
-  const sourceFrom = sourceListPos
-  const sourceTo = sourceListPos + sourceNode.nodeSize
+  if (!sourceNode || !targetItem) return null
   const insertPos = targetItemPos + 1 + targetItem.content.size
-
-  if (insertPos <= sourceFrom) {
-    tr.insert(insertPos, sourceNode)
-    const shift = sourceNode.nodeSize
-    tr.delete(sourceFrom + shift, sourceTo + shift)
-  } else {
-    tr.delete(sourceFrom, sourceTo)
-    const shift = sourceNode.nodeSize
-    tr.insert(insertPos - shift, sourceNode)
-  }
+  tr.delete(sourceListPos, sourceListPos + sourceNode.nodeSize)
+  tr.insert(tr.mapping.map(insertPos), sourceNode)
   return tr
 }
 
-export interface NestDropTarget {
-  targetItemPos: number
-}
-
-/**
- * Given a drop event, decide whether the gesture is a "nest" and, if so, which
- * item to nest into. Returns null to fall back to ProseMirror's default
- * (sibling) placement.
- *
- * The reference edge is the candidate item's *containing list* left edge — i.e.
- * the column where a top-level sibling sits. Nesting requires pushing the cursor
- * `indentPx` to the right of that column. Measuring against the item's own left
- * edge would over-trigger, since list text is already indented from the list by
- * the marker/padding width.
- *
- * NOTE: DOM-coordinate logic — verified in the browser, not unit tests.
- */
-export const findNestDropTarget = (
-  view: EditorView,
-  event: DragEvent,
-  indentPx: number
-): NestDropTarget | null => {
+// Measured from the item's list, not the item: list text already sits a marker's width in
+export const findNestDropTarget = (view: EditorView, event: DragEvent) => {
   const coords = view.posAtCoords({left: event.clientX, top: event.clientY})
   if (!coords) return null
   const $pos = view.state.doc.resolve(coords.pos)
-
   for (let depth = $pos.depth; depth >= 1; depth--) {
-    const node = $pos.node(depth)
-    if (isItemNode(node)) {
-      const itemPos = $pos.before(depth)
-      // The item's parent is its list (depth - 1); use the list's left edge as
-      // the sibling-indent reference.
-      const listPos = $pos.before(depth - 1)
-      const listDom = view.nodeDOM(listPos)
-      if (!(listDom instanceof HTMLElement)) return null
-      const listLeft = listDom.getBoundingClientRect().left
-      if (event.clientX - listLeft > indentPx) return {targetItemPos: itemPos}
-      return null
-    }
+    if (!isItemNode($pos.node(depth))) continue
+    const listDom = view.nodeDOM($pos.before(depth - 1))
+    if (!(listDom instanceof HTMLElement)) return null
+    const listLeft = listDom.getBoundingClientRect().left
+    return event.clientX - listLeft > NEST_INDENT_PX ? $pos.before(depth) : null
   }
   return null
+}
+
+const isPageDropTarget = (event: DragEvent) =>
+  event.target instanceof Element && !!event.target.closest('[data-drop-in], [data-drop-refused]')
+
+const getNestDrop = (view: EditorView, event: DragEvent, draggedList: TrackedRange | null) => {
+  const range = draggedList?.current()
+  if (!range || isPageDropTarget(event)) return null
+  const sourceNode = view.state.doc.nodeAt(range.from)
+  if (!sourceNode || !isListNode(sourceNode) || range.from + sourceNode.nodeSize !== range.to) {
+    return null
+  }
+  const targetItemPos = findNestDropTarget(view, event)
+  if (targetItemPos === null) return null
+  if (targetItemPos > range.from && targetItemPos < range.to) return null
+  return {sourcePos: range.from, targetItemPos}
+}
+
+export const listNestDropPlugin = (getDraggedList: () => TrackedRange | null) => {
+  let indicator: HTMLDivElement | null = null
+  const hideIndicator = () => {
+    if (indicator) indicator.style.display = 'none'
+  }
+  const showIndicator = (rect: DOMRect) => {
+    if (!indicator) {
+      indicator = document.createElement('div')
+      indicator.className = 'pointer-events-none fixed z-50 h-0.5 rounded-full bg-accent'
+      document.body.appendChild(indicator)
+    }
+    indicator.style.display = 'block'
+    indicator.style.left = `${rect.left + NEST_INDENT_PX}px`
+    indicator.style.top = `${rect.bottom}px`
+    indicator.style.width = `${Math.max(rect.width - NEST_INDENT_PX, 0)}px`
+  }
+  return new Plugin({
+    key: new PluginKey('listNestDrop'),
+    view: () => {
+      document.addEventListener('dragend', hideIndicator)
+      return {
+        destroy: () => {
+          document.removeEventListener('dragend', hideIndicator)
+          indicator?.remove()
+          indicator = null
+        }
+      }
+    },
+    props: {
+      handleDrop: (view, event, _slice, moved) => {
+        hideIndicator()
+        if (!moved) return false
+        const nestDrop = getNestDrop(view, event, getDraggedList())
+        const tr =
+          nestDrop && moveListIntoItem(view.state, nestDrop.sourcePos, nestDrop.targetItemPos)
+        if (!tr) return false
+        view.dispatch(tr)
+        event.preventDefault()
+        return true
+      },
+      handleDOMEvents: {
+        dragover: (view, event) => {
+          const nestDrop = getNestDrop(view, event, getDraggedList())
+          const dom = nestDrop && view.nodeDOM(nestDrop.targetItemPos)
+          if (dom instanceof HTMLElement) showIndicator(dom.getBoundingClientRect())
+          else hideIndicator()
+          return false
+        },
+        dragleave: (view, event) => {
+          const next = event.relatedTarget
+          if (!(next instanceof Node) || !view.dom.contains(next)) hideIndicator()
+          return false
+        }
+      }
+    }
+  })
 }

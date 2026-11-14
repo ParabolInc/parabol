@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -11,22 +10,10 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import BaseTag from '../../../../components/Tag/BaseTag'
+import {cn} from '../../../../ui/cn'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
-
-const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
-  padding: '12px 16px',
-  display: 'flex',
-  alignItems: 'center',
-  border: isFirstRow ? 'none' : undefined
-}))
-
-const ActionsBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
 
 const OrgAdminActionMenu = lazyPreload(
   () =>
@@ -79,7 +66,7 @@ const BillingLeader = (props: Props) => {
   const {id: userId, preferredName, picture} = billingLeaderUser
   const canEdit = isViewerOrgAdmin || (isViewerBillingLeader && role === 'BILLING_LEADER')
   return (
-    <StyledRow isFirstRow={isFirstRow}>
+    <Row className={cn('flex items-center px-4 py-3', isFirstRow && 'border-none')}>
       <Avatar picture={picture} className='h-11 w-11' />
       <RowInfo>
         <RowInfoHeader>
@@ -90,7 +77,7 @@ const BillingLeader = (props: Props) => {
         <BaseTag className='bg-gold-500 text-white'>Org Admin</BaseTag>
       )}
       <RowActions>
-        <ActionsBlock>
+        <div className='flex items-center justify-end'>
           {canEdit && (
             <OrgAdminActionMenu
               organization={organization}
@@ -99,7 +86,7 @@ const BillingLeader = (props: Props) => {
               toggleRemove={() => setIsRemoveOpen(true)}
             />
           )}
-        </ActionsBlock>
+        </div>
       </RowActions>
       <LeaveOrgModal isOpen={isLeaveOpen} orgId={orgId} closePortal={() => setIsLeaveOpen(false)} />
       <RemoveFromOrgModal
@@ -109,7 +96,7 @@ const BillingLeader = (props: Props) => {
         organizationUsers={[billingLeader]}
         closePortal={() => setIsRemoveOpen(false)}
       />
-    </StyledRow>
+    </Row>
   )
 }
 

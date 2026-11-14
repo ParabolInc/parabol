@@ -1,5 +1,6 @@
 import {TextSelection} from '@tiptap/pm/state'
-import {ReactNodeViewRenderer} from '@tiptap/react'
+import {type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
+import ms from 'ms'
 import type {MeetingTypeEnum} from '../../../__generated__/ExportToCSVQuery.graphql'
 import {InsightsBlockBase} from '../../../shared/tiptap/extensions/InsightsBlockBase'
 import {InsightsBlockView} from './InsightsBlockView'
@@ -34,7 +35,12 @@ export const InsightsBlock = InsightsBlockBase.extend<any, {}>({
         ({editor, commands}) => {
           const {to} = editor.state.selection
           const size = editor.state.doc.content.size
-          const content = [{type: 'insightsBlock'}]
+          const attrs = {
+            id: crypto.randomUUID(),
+            after: new Date(Date.now() - ms('12w')).toISOString(),
+            before: new Date().toISOString()
+          }
+          const content: JSONContent[] = [{type: 'insightsBlock', attrs}]
           if (size - to <= 1) {
             content.push({type: 'paragraph'})
           }

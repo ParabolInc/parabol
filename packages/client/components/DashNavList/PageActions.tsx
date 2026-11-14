@@ -1,16 +1,17 @@
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type * as Y from 'yjs'
+import {Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {snackOnError} from '../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {createPageLinkElement} from '../../shared/tiptap/createPageLinkElement'
 import {providerManager} from '../../tiptap/providerManager'
+import {cn} from '../../ui/cn'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -44,9 +45,11 @@ export const PageActions = (props: Props) => {
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const canEdit = hasMinPageRole('editor', viewerAccess)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const archivePage = () => {
     executeArchive({
       variables: {pageId, action: 'archive'},
+      onError: snackOnError(atmosphere, 'PageActionsArchive'),
       onCompleted(_res, errors) {
         const firstError = errors?.[0]?.message
         if (firstError) {
@@ -103,15 +106,26 @@ export const PageActions = (props: Props) => {
   }
 
   return (
-    <LeftNavItemButtons>
+    <LeftNavItemButtons isMenuOpen={isMenuOpen}>
       {viewerAccess === 'owner' && (
-        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
+        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
           <Menu
+            open={isMenuOpen}
+            onOpenChange={setIsMenuOpen}
             trigger={
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MoreVertIcon className='hidden size-5 group-hover:block' />
+                    <button
+                      type='button'
+                      aria-label={'More page actions'}
+                      className={cn(
+                        'hidden size-5 cursor-pointer items-center justify-center group-hover:flex',
+                        isMenuOpen && 'flex'
+                      )}
+                    >
+                      <MoreVertIcon className='size-5' />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
                 </Tooltip>
@@ -126,7 +140,7 @@ export const PageActions = (props: Props) => {
                   e.stopPropagation()
                 }}
               >
-                <DeleteIcon className='text-slate-600' />
+                <DeleteIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Delete page'}</span>
               </MenuItem>
             </MenuContent>

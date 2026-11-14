@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import type {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
@@ -11,6 +11,8 @@ const useSlackChannels = (
   slackAuth: {botAccessToken: string | null | undefined; slackUserId: string} | null | undefined
 ) => {
   const [channels, setChannels] = useState<SlackChannelDropdownChannels>([])
+  const [fetchCount, setFetchCount] = useState(0)
+  const refetch = useCallback(() => setFetchCount((count) => count + 1), [])
   useEffect(() => {
     if (!slackAuth || !slackAuth.botAccessToken) return
     let isMounted = true
@@ -47,8 +49,8 @@ const useSlackChannels = (
     return () => {
       isMounted = false
     }
-  }, [slackAuth])
-  return channels
+  }, [slackAuth, fetchCount])
+  return {channels, refetch}
 }
 
 export default useSlackChannels

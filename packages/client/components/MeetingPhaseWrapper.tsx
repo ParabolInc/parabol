@@ -1,13 +1,19 @@
-import styled from '@emotion/styled'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const MeetingPhaseWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-around',
-  // https://github.com/ParabolInc/parabol/issues/3525
-  overflow: 'hidden',
-  height: '100%',
-  margin: '0 auto',
-  width: '100%'
-})
+const MeetingPhaseWrapper = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        ref={ref}
+        className={cn('mx-auto flex h-full w-full justify-around overflow-hidden', className)}
+        {...rest}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 
 export default MeetingPhaseWrapper

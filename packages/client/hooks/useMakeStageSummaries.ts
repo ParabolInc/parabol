@@ -26,18 +26,18 @@ graphql`
       integration {
         ... on AzureDevOpsWorkItem {
           __typename
-          id
           title
+          workItemKey: issueKey
         }
         ... on JiraIssue {
           __typename
+          title
           issueKey
-          summary
         }
         ... on JiraServerIssue {
           __typename
+          title
           issueKey
-          summary
         }
         ... on _xGitHubIssue {
           __typename
@@ -54,12 +54,21 @@ graphql`
           title
           identifier
         }
+        ... on ClickUpTask {
+          __typename
+          title
+          taskId
+          customId
+        }
       }
     }
   }
 `
 
-const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
+const useMakeStageSummaries = (
+  phaseRef: useMakeStageSummaries_phase$key | null | undefined,
+  localStageId: string
+) => {
   const estimatePhase = readInlineData(
     graphql`
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
@@ -72,8 +81,9 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
     phaseRef
   )
   return useMemo(() => {
-    const {stages} = estimatePhase
     const summaries = [] as StageSummary[]
+    if (!estimatePhase) return summaries
+    const {stages} = estimatePhase
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]!
       const {taskId, task} = stage
@@ -98,39 +108,43 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
             subtitle: ''
           }
         }
-        if (
-          integration.__typename === 'JiraIssue' ||
-          integration.__typename === 'JiraServerIssue'
-        ) {
-          // jira-integration parabol card
-          return {
-            title: integration.summary,
-            subtitle: integration.issueKey
-          }
-        } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.id}`
-          }
-        } else if (integration.__typename === '_xGitHubIssue') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.number}`
-          }
-        } else if (integration.__typename === '_xGitLabIssue') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.iid}`
-          }
-        } else if (integration.__typename === '_xLinearIssue') {
-          return {
-            title: integration.title,
-            subtitle: `${integration.identifier}`
-          }
-        }
-        return {
-          title: '<Unknown Story>',
-          subtitle: ''
+        switch (integration.__typename) {
+          case 'JiraIssue':
+          case 'JiraServerIssue':
+            return {
+              title: integration.title,
+              subtitle: integration.issueKey
+            }
+          case 'AzureDevOpsWorkItem':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.workItemKey}`
+            }
+          case '_xGitHubIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.number}`
+            }
+          case '_xGitLabIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.iid}`
+            }
+          case '_xLinearIssue':
+            return {
+              title: integration.title,
+              subtitle: `${integration.identifier}`
+            }
+          case 'ClickUpTask':
+            return {
+              title: integration.title,
+              subtitle: integration.customId ?? integration.taskId
+            }
+          default:
+            return {
+              title: '<Unknown Story>',
+              subtitle: ''
+            }
         }
       }
       summaries.push({

@@ -5,10 +5,10 @@ import makeAppURL from '../../../../utils/makeAppURL'
 import {CopyServiceProviderURL} from './CopyServiceProviderURL'
 
 interface Props {
-  samlRef: OrgAuthenticationSignOnUrl_saml$key | null
+  samlRef: OrgAuthenticationSignOnUrl_saml$key
 }
 
-const OrgAuthenticationSignOutUrl = (props: Props) => {
+const OrgAuthenticationSignOnUrl = (props: Props) => {
   const {samlRef} = props
   const saml = useFragment(
     graphql`
@@ -18,17 +18,17 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
     `,
     samlRef
   )
-  const domain = saml?.id ?? 'XXXX-XXXX'
+  const {id: domain} = saml
   const startURL = window.location.origin
   const acsURL = makeAppURL(startURL, `/saml/${domain}`)
   const entityId = makeAppURL(startURL, `/saml-metadata/${domain}`)
   return (
     <>
       <div className='px-6 pb-3'>
-        <div className='flex font-semibold text-base text-slate-700 leading-6'>
+        <div className='flex font-semibold text-base text-fg-primary leading-6'>
           Set up your Identity Provider
         </div>
-        <div className={'flex items-center text-slate-700 text-sm'}>
+        <div className={'flex items-center text-fg-primary text-sm'}>
           Paste the following URLs into your Identity Provider’s SAML configuration
         </div>
       </div>
@@ -41,4 +41,4 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   )
 }
 
-export default OrgAuthenticationSignOutUrl
+export default OrgAuthenticationSignOnUrl

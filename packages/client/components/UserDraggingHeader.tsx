@@ -1,51 +1,7 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
-import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '@mui/icons-material'
 import type * as React from 'react'
+import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
 import BaseTag from './Tag/BaseTag'
-
-const keyframesOpacity = keyframes`
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.33;
-  }
-}`
-
-const Header = styled('div')({
-  bottom: '100%',
-  color: PALETTE.TOMATO_600,
-  fontSize: 11,
-  position: 'absolute',
-  right: 0,
-  textAlign: 'end'
-})
-
-const ArrowIcon = styled('div')({
-  animationDuration: '800ms',
-  animationIterationCount: 'infinite',
-  animationName: keyframesOpacity.toString(),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  //added little margin to separate from username
-  margin: 3,
-  svg: {
-    strokeWidth: 2,
-    stroke: 'white',
-    fill: 'white',
-    fontSize: 11
-  }
-})
-
-const StyledTag = styled(BaseTag)({
-  backgroundColor: PALETTE.GRAPE_500,
-  display: 'flex',
-  color: '#FFFFFF'
-})
 
 export type RemoteReflectionArrow =
   | 'arrow_downward'
@@ -66,7 +22,7 @@ const UserDraggingHeader = (props: Props) => {
   const {viewerId} = atmosphere
   const label = userId === viewerId ? 'Your ghost 👻' : name
   const arrowEl = (
-    <ArrowIcon>
+    <div className='m-0.75 flex animate-[drag-pulse_800ms_infinite] items-center justify-center [&_svg]:fill-white [&_svg]:stroke-2 [&_svg]:stroke-white [&_svg]:text-[11px]'>
       {
         {
           arrow_downward: <ArrowDownward />,
@@ -75,16 +31,19 @@ const UserDraggingHeader = (props: Props) => {
           arrow_forward: <ArrowForward />
         }[arrow!]
       }
-    </ArrowIcon>
+    </div>
   )
   return (
-    <Header style={style}>
-      <StyledTag>
+    <div
+      className='absolute right-0 bottom-full text-end text-[11px] text-tomato-600'
+      style={style}
+    >
+      <BaseTag className='flex bg-grape-500 text-white'>
         {(arrow === 'arrow_downward' || arrow === 'arrow_upward') && arrowEl}
         {label}
         {arrow && arrowEl}
-      </StyledTag>
-    </Header>
+      </BaseTag>
+    </div>
   )
 }
 

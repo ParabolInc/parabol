@@ -1,21 +1,13 @@
 import {useEffect, useState} from 'react'
+import getServiceWorkerBuild from '../utils/getServiceWorkerBuild'
 
 const useSWVersion = () => {
   const [swVersion, setSWVersion] = useState<string>()
 
   useEffect(() => {
-    const messageChannel = new MessageChannel()
-
-    messageChannel.port1.onmessage = (event) => {
-      if (event.data?.type === 'version') {
-        setSWVersion(event.data?.payload)
-        messageChannel.port1.close()
-      }
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.controller?.postMessage({type: 'getVersion'}, [messageChannel.port2])
-    }
+    const controller = 'serviceWorker' in navigator ? navigator.serviceWorker.controller : null
+    if (!controller) return
+    getServiceWorkerBuild(controller).then(({version}) => setSWVersion(version))
   }, [])
 
   return swVersion

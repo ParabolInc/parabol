@@ -2,7 +2,13 @@ import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import type {MeetingTemplateResolvers} from '../resolverTypes'
 
-const RECOMMENDED_TEMPLATES = ['startStopContinueTemplate', 'estimatedEffortTemplate']
+const RECOMMENDED_TEMPLATES = [
+  'startStopContinueTemplate',
+  'estimatedEffortTemplate',
+  'everythingBagelTemplate',
+  'teamPrompt',
+  'enterpriseDailyStandupTemplate'
+]
 
 const MeetingTemplate: MeetingTemplateResolvers = {
   category: ({mainCategory}, _args, _context) => mainCategory,

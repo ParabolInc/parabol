@@ -15,6 +15,7 @@ import {
   Network,
   type NormalizationLinkedField,
   Observable,
+  type ObservableFromValue,
   type OperationType,
   type PayloadError,
   RecordSource,
@@ -26,15 +27,21 @@ import {
 } from 'relay-runtime'
 import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
-import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
-import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
 import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
+import {addBreadcrumb} from './utils/clientBreadcrumbs'
 import {createWSClient} from './utils/createWSClient'
+import deletePageDatabases from './utils/deletePageDatabases'
+import getTabSessionId from './utils/getTabSessionId'
+import makeTraceparent from './utils/makeTraceparent'
+import {logRelayEvent} from './utils/navigationTimings'
+import GraphQLServerError from './utils/relay/GraphQLServerError'
 import handlerProvider from './utils/relay/handlerProvider'
+import {reportClientWarning, reportUnexpectedGraphQLErrors} from './utils/reportClientError'
 import sleep from './utils/sleep'
+import {rememberServerErrors} from './utils/staleClientNote'
 
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
@@ -51,14 +58,54 @@ const refreshSessionMutation = graphql`
   }
 `
 
-interface QuerySubscription {
-  subKey: string
-  queryKey: string
-  disposable?: {unsubscribe: () => void}
+// a query that never settles must not keep a busy subscription's messages forever
+const MAX_SUBSCRIPTION_HOLD = 30_000
+
+// uWebSockets closes an idle keep-alive connection after about 10 seconds, but Google's load balancer reuses one for up
+// to 10 minutes, so now and then it sends a request down a connection the server is closing and answers 502 (classic) or
+// 503 (Envoy). A query is safe to send again
+const DROPPED_CONNECTION_STATUSES = new Set([502, 503])
+
+interface ResponsePayload {
+  data?: Record<string, unknown> | null
+  errors?: readonly PayloadError[]
 }
 
-interface Subscriptions {
-  [subKey: string]: {unsubscribe: () => void}
+// Relay hides errors that come without data inside an error of its own, and completes a mutation
+// whose nullable field failed as if it had succeeded
+const toServerError = (
+  {data, errors}: ResponsePayload,
+  isMutationResult: boolean,
+  traceId: string | undefined
+) => {
+  if (!errors?.length) return undefined
+  const isFailure =
+    !data || (isMutationResult && Object.values(data).every((value) => value === null))
+  return isFailure ? new GraphQLServerError(errors, traceId) : undefined
+}
+
+// Relay finishes a query or mutation whose response stops early as if it had succeeded, and renders the fields that never came
+const failIfEndedEarly = (name: string, response: ObservableFromValue<GraphQLResponse>) =>
+  Observable.create<GraphQLResponse>((sink) => {
+    let isFinal = false
+    const subscription = Observable.from(response).subscribe({
+      next: (payload) => {
+        isFinal = !('hasNext' in payload && payload.hasNext)
+        sink.next(payload)
+      },
+      error: sink.error,
+      complete: () => {
+        if (isFinal) sink.complete()
+        else sink.error(new Error(`${name} ended before its last payload`))
+      }
+    })
+    return () => subscription.unsubscribe()
+  })
+
+interface RetainedSubscription {
+  disposable: Disposable
+  retainCount: number
+  releaseTimer?: number
 }
 
 export type SubscriptionRequestor = {
@@ -101,9 +148,6 @@ export interface AtmosphereEvents {
   addSnackbar: (snack: Snack) => void
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
   focusAgendaInput: () => void
-  inviteToTeam: (
-    notification: NonNullable<InviteToTeamMutation_notification$data['teamInvitationNotification']>
-  ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
   authChanged: () => void
@@ -112,10 +156,13 @@ export interface AtmosphereEvents {
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
 
 export default class Atmosphere extends Environment {
+  // yjs only loads once a page or a meeting is open, so its provider manager finds the session & registers its teardown here
+  // If the session imported the provider manager instead, yjs would be part of the entry bundle
+  static current?: Atmosphere
+  static closeHandlers = new Set<() => Promise<unknown>>()
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
   }
-  _network: typeof Network
   _authObj: AuthToken | null = null
   get authObj() {
     return this._authObj
@@ -125,30 +172,42 @@ export default class Atmosphere extends Environment {
     this.eventEmitter.emit('authChanged')
   }
 
-  querySubscriptions: QuerySubscription[] = []
-  queryTimeouts: {
-    [queryKey: string]: number
-  } = {}
   retries = new Set<() => void>()
-  subscriptions: Subscriptions = {}
+  // by subKey, every subscription a component or the app is holding open
+  private retainedSubscriptions = new Map<string, RetainedSubscription>()
+  // by subKey, called each time the server acknowledges that a subscription is listening, including after a reconnect
+  subscriptionAckHandlers = new Map<string, () => void>()
+  // by subKey, messages kept from relay until the query that holds them has been written to the store
+  private heldSubscriptionMessages = new Map<string, (() => void)[]>()
   // Our server only sends a single field per subscription, but relay requires every requested field
   // This object makes the server response whole without increasing the payload size
   subscriptionInterfaces = {} as Record<string, Record<string, null>>
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
-  queryCache = {} as {[key: string]: GraphQLResponse}
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   tabCheckChannel?: BroadcastChannel
-  subscriptionClient!: Awaited<ReturnType<typeof createWSClient>>
-  connectWebsocketPromise: Promise<Client> | null = null
+  subscriptionClient?: Client
+  // while the socket is down, queries and mutations go over HTTP instead of waiting for it to reconnect
+  isSocketConnected = false
   constructor() {
+    // Relay only logs network events for the network it is given here, but the fetch functions exist once super returns
+    let atmosphere: Atmosphere | undefined
     super({
       store,
       handlerProvider,
-      network: Network.create(noop)
+      network: Network.create(
+        (request, variables, cacheConfig, uploadables) =>
+          failIfEndedEarly(
+            request.name,
+            atmosphere!.fetchFunction(request, variables, cacheConfig, uploadables)
+          ),
+        (operation, variables, cacheConfig) =>
+          atmosphere!.fetchOrSubscribe(operation, variables, cacheConfig)
+      ),
+      log: logRelayEvent
     })
-    this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
-    providerManager.setAtmosphere(this)
+    atmosphere = this
+    Atmosphere.current = this
     this.initAuthFromCookie()
   }
 
@@ -170,49 +229,69 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  private async connectWebsocket() {
-    // wait until the first and only upgrade has completed
-    if (!this.connectWebsocketPromise) {
-      this.connectWebsocketPromise = createWSClient(this)
-    }
-    return this.connectWebsocketPromise
+  // the client holds what it is given until its socket connects, and sends it again after a reconnect
+  getSubscriptionClient() {
+    this.subscriptionClient ??= createWSClient(this)
+    return this.subscriptionClient
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    // DeleteUserMutation is required to unset the cookie
+    // useDeleteUserMutation is required to unset the cookie
     // ReAuth mutations are required to set a new auth cookie
     const isAuth =
       request.name.startsWith('Atmosphere') ||
-      request.name === 'DeleteUserMutation' ||
+      request.name === 'useDeleteUserMutation' ||
       request.name === 'ReAuthWithGoogleMutation' ||
       request.name === 'ReAuthWithMicrosoftMutation' ||
       request.name === 'ReAuthWithPasswordMutation'
-    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
+    const useHTTP = !!uploadables || !this.authObj || !this.isSocketConnected || isAuth
     if (useHTTP) {
-      const response = fetch('/graphql', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
-          ...(!uploadables && {['content-type']: 'application/json'})
-        },
-        body: uploadables
-          ? toFormData(request, variables, uploadables)
-          : JSON.stringify({
-              docId: request.id,
-              variables
-            })
-      })
+      const traceparent = makeTraceparent()
+      const traceId = traceparent.split('-')[1]
+      addBreadcrumb('operation', `${request.operationKind} ${request.name}`, traceId)
+      const abortController = new AbortController()
+      const postOperation = () =>
+        fetch('/graphql', {
+          method: 'POST',
+          signal: abortController.signal,
+          headers: {
+            accept: 'multipart/mixed, application/json',
+            traceparent,
+            'x-parabol-session-id': getTabSessionId(),
+            ...(!uploadables && {['content-type']: 'application/json'})
+          },
+          body: uploadables
+            ? toFormData(request, variables, uploadables)
+            : JSON.stringify({
+                docId: request.id,
+                variables
+              })
+        })
+      const isQuery = request.operationKind === 'query'
+      const isMutation = request.operationKind === 'mutation'
+      const postRetryingDroppedQuery = async () => {
+        const res = await postOperation()
+        if (isQuery && DROPPED_CONNECTION_STATUSES.has(res.status)) return postOperation()
+        return res
+      }
+      const response = postRetryingDroppedQuery()
       return Observable.create<GraphQLResponse>((sink) => {
         response
           .then(async (res) => {
             if (!res.ok) {
+              reportClientWarning(
+                'GraphQLHttpError',
+                `${request.name} got HTTP ${res.status}`,
+                traceId
+              )
               sink.error(new Error(`HTTP ${res.status}: ${res.statusText}`))
               return
             }
             const contentType = res.headers.get('content-type') ?? ''
             if (contentType.includes('multipart/mixed')) {
               const boundary = contentType.match(/boundary="?([^";]+)"?/)?.[1] ?? '-'
-              const delimiter = `--${boundary}`
+              // a delimiter starts its own line, and JSON escapes line breaks, so a boundary inside a payload's text can't end the part
+              const delimiter = `\r\n--${boundary}`
               const reader = res.body!.getReader()
               const decoder = new TextDecoder()
               let buffer = ''
@@ -229,21 +308,38 @@ export default class Atmosphere extends Environment {
                     if (sepIdx === -1) continue
                     const body = part.slice(sepIdx + 4).trim()
                     if (!body) continue
+                    let parsed
                     try {
-                      const parsed = JSON.parse(body)
-                      if (Array.isArray(parsed.incremental)) {
-                        for (const item of parsed.incremental) {
-                          sink.next({...item, hasNext: parsed.hasNext})
-                        }
-                      } else {
-                        sink.next(parsed)
-                      }
-                      if (!parsed.hasNext) {
-                        sink.complete()
+                      parsed = JSON.parse(body)
+                    } catch {
+                      // a dropped part would finish the query with its data missing, and the page would crash wherever it read it
+                      sink.error(new Error(`${request.name} got a multipart part that is not JSON`))
+                      return
+                    }
+                    const isIncremental = Array.isArray(parsed.incremental)
+                    const payloads = isIncremental
+                      ? parsed.incremental.map((item: object) => ({
+                          ...item,
+                          hasNext: parsed.hasNext
+                        }))
+                      : [parsed]
+                    for (const payload of payloads) {
+                      reportUnexpectedGraphQLErrors(payload.errors, request.name, traceId)
+                      rememberServerErrors(payload.errors)
+                      const serverError = toServerError(
+                        payload,
+                        isMutation && !isIncremental,
+                        traceId
+                      )
+                      if (serverError) {
+                        sink.error(serverError)
                         return
                       }
-                    } catch {
-                      // skip malformed parts
+                      sink.next(payload)
+                    }
+                    if (!parsed.hasNext) {
+                      sink.complete()
+                      return
                     }
                   }
                 }
@@ -253,7 +349,15 @@ export default class Atmosphere extends Environment {
               sink.complete()
             } else {
               try {
-                sink.next(await res.json())
+                const result = await res.json()
+                reportUnexpectedGraphQLErrors(result.errors, request.name, traceId)
+                rememberServerErrors(result.errors)
+                const serverError = toServerError(result, isMutation, traceId)
+                if (serverError) {
+                  sink.error(serverError)
+                  return
+                }
+                sink.next(result)
                 sink.complete()
               } catch (e) {
                 sink.error(e instanceof Error ? e : new Error('Invalid JSON response'))
@@ -263,6 +367,8 @@ export default class Atmosphere extends Environment {
           .catch((e: unknown) => {
             sink.error(e instanceof Error ? e : new Error(String(e)))
           })
+        // relay unsubscribes once nothing needs the result, like a query whose component went away
+        return () => abortController.abort()
       })
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
@@ -273,6 +379,11 @@ export default class Atmosphere extends Environment {
     _cacheConfig: CacheConfig
   ) => {
     return Observable.create<GraphQLResponse>((sink) => {
+      const traceparent = makeTraceparent()
+      const traceId = traceparent.split('-')[1]
+      addBreadcrumb('operation', `${operation.operationKind} ${operation.name}`, traceId)
+      const isSubscription = operation.operationKind === 'subscription'
+      const subKey = Atmosphere.getKey(operation.name, variables)
       const _next = sink.next
       const _error = sink.error
       sink.error = (error: Error | Error[] | CloseEvent | PayloadError) => {
@@ -283,7 +394,9 @@ export default class Atmosphere extends Environment {
           if (invalidSessionError) {
             this.invalidateSession(invalidSessionError.message)
           } else {
-            _error(new Error(error[0]?.message ?? 'Unknown Error'))
+            reportUnexpectedGraphQLErrors(error, operation.name, traceId)
+            rememberServerErrors(error)
+            _error(new GraphQLServerError(error, traceId))
           }
         } else if (error instanceof CloseEvent) {
           // convert to an error so subscribers only have to worry about handling Error types
@@ -293,15 +406,27 @@ export default class Atmosphere extends Environment {
         }
       }
       sink.next = (value: any) => {
-        const {data, errors} = value
-        if (!data) {
-          if (errors) {
-            console.warn('GraphQL errors:', errors)
+        if (Array.isArray(value.incremental)) {
+          for (const item of value.incremental) {
+            reportUnexpectedGraphQLErrors(item.errors, operation.name, traceId)
+            rememberServerErrors(item.errors)
+            const serverError = toServerError(item, false, traceId)
+            if (serverError) {
+              _error(serverError)
+              return
+            }
+            _next({...item, hasNext: value.hasNext})
           }
-          // if a mutation throws a GraphQLError, this will result in
-          // `Warning: RelayResponseNormalizer: Payload did not contain a value for field`
-          // but without it, it's a hard error
-          _next({...value, data: {}})
+          return
+        }
+        const {data, errors} = value
+        reportUnexpectedGraphQLErrors(errors, operation.name, traceId)
+        rememberServerErrors(errors)
+        // Relay ends an operation that gets no data, so a subscription skips the event and keeps listening
+        if (!data && isSubscription) return
+        const serverError = toServerError(value, operation.operationKind === 'mutation', traceId)
+        if (serverError) {
+          _error(serverError)
           return
         }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
@@ -319,31 +444,23 @@ export default class Atmosphere extends Environment {
                 }
               }
             : value
-        _next(nextObj)
-      }
-      ;(async () => {
-        // waiting a tick prevents `client.subscribe` from creating 2 websocket instances
-        try {
-          await this.connectWebsocket()
-        } catch {
-          // errors are handled in the closed handler
+        const heldMessages = isSubscription ? this.heldSubscriptionMessages.get(subKey) : undefined
+        if (heldMessages) {
+          heldMessages.push(() => _next(nextObj))
           return
         }
-
-        const unsubscribe = this.subscriptionClient.subscribe(
-          {
-            operationName: operation.name,
-            query: '',
-            docId: operation.id,
-            variables
-          } as any,
-          sink as any
-        )
-        if (operation.operationKind === 'subscription') {
-          const subKey = Atmosphere.getKey(operation.name, variables)
-          this.subscriptions[subKey] = {unsubscribe}
-        }
-      })()
+        _next(nextObj)
+      }
+      return this.getSubscriptionClient().subscribe(
+        {
+          operationName: operation.name,
+          query: '',
+          docId: operation.id,
+          variables,
+          extensions: isSubscription ? {traceparent, ackId: subKey} : {traceparent}
+        } as any,
+        sink as any
+      )
     })
   }
 
@@ -429,23 +546,59 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  registerQuery = async (
-    queryKey: string,
+  /*
+   * Starts the subscription when the first caller retains it, and stops it once every caller has released it and
+   * keepWarmMs has passed with nobody retaining it again, so a page that remounts keeps listening without a gap
+   */
+  retainSubscription(
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {navigate: NavigateFn}
-  ) => {
-    window.clearTimeout(this.queryTimeouts[queryKey])
-    delete this.queryTimeouts[queryKey]
-    const {key} = subscription
-    // runtime error in case relay changes
-    if (!key) throw new Error(`Missing name for sub`)
-    const subKey = Atmosphere.getKey(key, variables)
-    const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
-    if (!isRequested) {
-      subscription(this, variables, router)
+    router: {navigate: NavigateFn},
+    keepWarmMs = 0
+  ) {
+    const subKey = Atmosphere.getKey(subscription.key, variables)
+    let retained = this.retainedSubscriptions.get(subKey)
+    if (retained) {
+      window.clearTimeout(retained.releaseTimer)
+      retained.retainCount++
+    } else {
+      retained = {disposable: subscription(this, variables, router), retainCount: 1}
+      this.retainedSubscriptions.set(subKey, retained)
     }
-    this.querySubscriptions.push({queryKey, subKey})
+    const thisRetain = retained
+    let isReleased = false
+    return () => {
+      if (isReleased) return
+      isReleased = true
+      thisRetain.retainCount--
+      if (thisRetain.retainCount > 0) return
+      thisRetain.releaseTimer = window.setTimeout(() => {
+        if (this.retainedSubscriptions.get(subKey) !== thisRetain) return
+        this.retainedSubscriptions.delete(subKey)
+        thisRetain.disposable.dispose()
+      }, keepWarmMs)
+    }
+  }
+
+  isSubscribed(subKey: string) {
+    return this.retainedSubscriptions.has(subKey)
+  }
+
+  /*
+   * keeps the subscription's messages from relay until the returned release is called, or MAX_SUBSCRIPTION_HOLD passes,
+   * which then hands them over in the order they arrived. A newer hold on the same subscription drops this one's messages
+   */
+  holdSubscription(subKey: string) {
+    const heldMessages: (() => void)[] = []
+    this.heldSubscriptionMessages.set(subKey, heldMessages)
+    const release = () => {
+      window.clearTimeout(releaseTimeout)
+      if (this.heldSubscriptionMessages.get(subKey) !== heldMessages) return
+      this.heldSubscriptionMessages.delete(subKey)
+      heldMessages.forEach((deliver) => deliver())
+    }
+    const releaseTimeout = window.setTimeout(release, MAX_SUBSCRIPTION_HOLD)
+    return release
   }
 
   /*
@@ -461,61 +614,9 @@ export default class Atmosphere extends Environment {
     this.subscriptionInterfaces[name] = nullObj
     return name
   }
-  /*
-   * When a subscription encounters an error, it affects the subscription itself,
-   * the queries that depend on that subscription to stay valid,
-   * and the peer subscriptions that also keep that component valid.
-   *
-   * For example, in my app component A subscribes to 1,2,3, component B subscribes to 1, component C subscribes to 2,4.
-   * If subscription 1 fails, then the data for component A and B get removed from the queryCache, since it might be invalid now
-   * Subscription 1 gets unsubscribed,
-   * Subscription 2 does not because it is used by component C.
-   * Subscription 3 does because no other component depends on it.
-   * Subscription 4 does not because there is no overlap
-   */
-  scheduleUnregisterQuery(queryKey: string, delay: number) {
-    if (this.queryTimeouts[queryKey]) return
-    this.queryTimeouts[queryKey] = window.setTimeout(() => {
-      this.unregisterQuery(queryKey)
-    }, delay)
-  }
-
-  /*
-   * removes the query & if the subscription is no longer needed, unsubscribes from it
-   */
-  unregisterQuery(queryKey: string) {
-    window.clearTimeout(this.queryTimeouts[queryKey])
-    delete this.queryTimeouts[queryKey]
-    // for each query that is no longer 100% supported, find the subs that power them
-    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.queryKey === queryKey)
-    // rowsToRemove.forEach((qsToRemove) => {
-    // the query is no longer valid, nuke it
-    // delete this.queryCache[qsToRemove.queryKey]
-    // })
-    const subsToRemove = Array.from(new Set<string>(rowsToRemove.map(({subKey}) => subKey)))
-    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.queryKey !== queryKey)
-    subsToRemove.forEach((subKey) => {
-      const unaffectedSub = this.querySubscriptions.find((qs) => qs.subKey === subKey)
-      if (!unaffectedSub) {
-        this.subscriptions[subKey]?.unsubscribe()
-      }
-    })
-  }
-
-  /* When the server wants to end the subscription, it sends a GQL_COMPLETE payload
-   * GQL_Trebuchet cleans itself up & calls the onCompleted observer
-   * unregisterSub should therefore be called in each subs onCompleted callback
-   */
+  // the server ended the subscription, so the next caller to retain it must start it again
   unregisterSub(name: string, variables: Variables) {
-    const subKey = Atmosphere.getKey(name, variables)
-    delete this.subscriptions[subKey]
-    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.subKey === subKey)
-    rowsToRemove.forEach((qsToRemove) => {
-      // the query is no longer valid, nuke it
-      delete this.queryCache[qsToRemove.queryKey]
-    })
-    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.subKey !== subKey)
-    // does not remove other subs because they may still do interesting things like pop toasts
+    this.retainedSubscriptions.delete(Atmosphere.getKey(name, variables))
   }
   invalidateSession(reason: string) {
     commitMutation<AtmosphereSignOutMutation>(this, {
@@ -543,16 +644,22 @@ export default class Atmosphere extends Environment {
     })
   }
   close() {
-    this.querySubscriptions.forEach((querySub) => {
-      this.unregisterQuery(querySub.queryKey)
+    this.retainedSubscriptions.forEach(({disposable, releaseTimer}) => {
+      window.clearTimeout(releaseTimer)
+      disposable.dispose()
     })
+    this.retainedSubscriptions.clear()
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
-    this.querySubscriptions = []
-    this.subscriptions = {}
     this.viewerId = null!
-    this.connectWebsocketPromise = null
-    providerManager.close()
+    // disposing a socket that never finished connecting rejects, and it is closing either way
+    Promise.resolve(this.subscriptionClient?.dispose()).catch(noop)
+    this.subscriptionClient = undefined
+    this.isSocketConnected = false
+    // fire-and-forget: clearing the local page data is best-effort before the page redirects
+    void Promise.all([...Atmosphere.closeHandlers].map((closeHandler) => closeHandler())).then(
+      deletePageDatabases
+    )
   }
 }

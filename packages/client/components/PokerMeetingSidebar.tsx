@@ -111,7 +111,11 @@ const PokerMeetingSidebar = (props: Props) => {
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}
-                isActive={phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType}
+                isActive={
+                  phaseType === 'ESTIMATE' || phaseType === 'checkin'
+                    ? false
+                    : localPhaseType === phaseType
+                }
                 isCollapsible={collapsiblePhases.includes(phaseType)}
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={

@@ -1,6 +1,4 @@
-import {forwardRef} from 'react'
 import type {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -15,15 +13,15 @@ const linkLookup = {
 } as Record<MeetingTypeEnum, string>
 
 interface Props {
+  onClose: () => void
   meetingType: MeetingTypeEnum
 }
 
-const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {
-  const {closePortal} = ref
+const CheckInHelpMenu = (props: Props) => {
+  const {onClose} = props
   const {meetingType} = props
-  useClientSideTrack('Help Menu Open', {phase: 'checkin'})
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.checkin}</HelpMenuHeader>
       <HelpMenuCopy>
         {'The Icebreaker is an opportunity to quickly share some personal context with your team.'}
@@ -34,6 +32,6 @@ const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {
       <HelpMenuLink copy='Learn More' href={linkLookup[meetingType]} />
     </HelpMenuContent>
   )
-})
+}
 
 export default CheckInHelpMenu

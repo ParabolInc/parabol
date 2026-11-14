@@ -1,5 +1,5 @@
 import type {RecordProxy} from 'relay-runtime'
-import type {Primitive} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {Primitive} from 'relay-runtime/store/RelayStoreTypes'
 
 const updateProxyRecord = (proxyRecord: RecordProxy, updatedRecord: Record<string, Primitive>) => {
   const keys = Object.keys(updatedRecord)

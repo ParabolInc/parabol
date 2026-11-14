@@ -37,10 +37,10 @@ const ensureCovering = (
 
 export const useCoverable = (
   id: string,
-  ref: RefObject<HTMLDivElement>,
+  ref: RefObject<HTMLDivElement | null>,
   height: number,
-  parentRef?: RefObject<HTMLDivElement>,
-  columnsRef?: RefObject<HTMLDivElement>,
+  parentRef?: RefObject<HTMLDivElement | null>,
+  columnsRef?: RefObject<HTMLDivElement | null>,
   isDrawer?: boolean,
   buffer?: number
 ) => {
@@ -101,7 +101,7 @@ export const cacheCoveringBBox = (isLeftSidebarOpen?: boolean, isRightDrawerOpen
   return covering
 }
 
-export const useCovering = (ref: RefObject<HTMLDivElement>) => {
+export const useCovering = (ref: RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
     const el = ref.current
     if (!el) return

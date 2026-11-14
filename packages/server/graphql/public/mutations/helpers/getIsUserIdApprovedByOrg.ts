@@ -19,7 +19,8 @@ export const getIsUserIdApprovedByOrg = async (
   const {email, identities} = user
   const maybeError = await getIsEmailApprovedByOrg(email, orgId, dataLoader)
   if (maybeError) {
-    const message = `Your email is not on your company's approved list of users. Please reach out to your account admin or support@parabol.co for more information`
+    const {name: orgName} = await dataLoader.get('organizations').loadNonNull(orgId)
+    const message = `${email} is not on ${orgName}'s approved list of users. Please reach out to your account admin or support@parabol.co for more information`
     return new Error(message)
   }
   const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)

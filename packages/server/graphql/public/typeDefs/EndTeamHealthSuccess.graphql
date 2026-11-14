@@ -1,0 +1,26 @@
+"""
+The payload returned when a Team Health meeting is successfully ended.
+Contains the updated meeting, its ID, the team it belongs to, and the
+timeline event created to record the meeting's completion.
+"""
+type EndTeamHealthSuccess {
+  """
+  The Team Health meeting that was ended, with its final state.
+  """
+  meeting: TeamHealthMeeting!
+
+  """
+  The ID of the Team Health meeting that was ended.
+  """
+  meetingId: ID!
+
+  """
+  The team that owns the ended meeting.
+  """
+  team: Team!
+
+  """
+  An event that is important to the viewer, e.g. an ended meeting
+  """
+  timelineEvent: TimelineEvent!
+}

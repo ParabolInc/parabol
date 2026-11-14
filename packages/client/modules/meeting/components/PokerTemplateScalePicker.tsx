@@ -1,7 +1,7 @@
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {ExpandMore} from '~/ui/icons'
 import type {PokerTemplateScalePicker_dimension$key} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
 import {Menu} from '../../../ui/Menu/Menu'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
@@ -43,12 +43,12 @@ const PokerTemplateScalePicker = (props: Props) => {
   const trigger = (
     <div
       onMouseEnter={SelectScaleDropdown.preload}
-      className={`flex min-w-36 select-none rounded-full text-[13px] leading-5 ${
+      className={`flex min-w-36 select-none rounded-md text-[13px] leading-5 ${
         readOnly
-          ? 'bg-white'
+          ? 'bg-surface-input'
           : !isOwner
-            ? 'cursor-not-allowed border border-slate-400 bg-slate-200'
-            : 'cursor-pointer border border-slate-400 bg-white'
+            ? 'cursor-not-allowed border border-hairline-strong bg-surface-well'
+            : 'cursor-pointer border border-hairline-strong bg-surface-input'
       }`}
     >
       <div className='ml-4 flex min-w-0 flex-1 flex-wrap items-center'>
@@ -57,7 +57,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         </div>
       </div>
       {!readOnly && (
-        <ExpandMore className='mt-[7px] mr-4 mb-[5px] h-[18px] w-[18px] text-slate-700' />
+        <ExpandMore className='mt-[7px] mr-4 mb-[5px] h-[18px] w-[18px] text-fg-primary' />
       )}
     </div>
   )

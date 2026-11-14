@@ -1,0 +1,82 @@
+import {githubIntegrationMeta} from 'parabol-client/integrations/github/shared/githubIntegrationMeta'
+import {Providers} from 'parabol-client/types/constEnums'
+import type {GitHubSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import {
+  type EstimatePushCapability,
+  type IntegrationCtx,
+  type IssueCreateCapability,
+  type IssueListCapability,
+  type IssueReadCapability,
+  type IssueSearchCapability,
+  type RepoListCapability,
+  ServerIntegrationDefinition
+} from '../platform/ServerIntegrationDefinition'
+import buildGitHubSearchQuery from './buildGitHubSearchQuery'
+import describeGitHubDimensionField from './describeGitHubDimensionField'
+import fetchGitHubRepos, {type GitHubRepo} from './fetchGitHubRepos'
+import GitHubServerManager from './GitHubServerManager'
+import listGitHubDimensionFields from './listGitHubDimensionFields'
+import listGitHubIssues from './listGitHubIssues'
+import parseGitHubIntegrationHash from './parseGitHubIntegrationHash'
+import pushEstimateToGitHub from './pushEstimateToGitHub'
+import resolveGitHubDimensionFieldKey from './resolveGitHubDimensionFieldKey'
+import resolveGitHubTaskIntegration from './resolveGitHubTaskIntegration'
+
+export class GitHubServerIntegration extends ServerIntegrationDefinition {
+  readonly service = githubIntegrationMeta.service
+  readonly title = githubIntegrationMeta.title
+  readonly authStrategy = 'oauth2' as const
+
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader.get('githubAuth').load({teamId, userId})
+    return auth?.accessToken ? auth : null
+  }
+
+  async isAvailable(ctx: IntegrationCtx) {
+    return !!(await this.getGlobalProvider(ctx))
+  }
+
+  async getAuthRow(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const auth = await super.getAuthRow(ctx)
+    if (!auth?.scopes) return null
+    const grantedScopes = new Set(auth.scopes.split(/[\s,]+/).filter(Boolean))
+    const requiredScopes = Providers.GITHUB_SCOPE.split(',')
+    return requiredScopes.every((scope) => grantedScopes.has(scope)) ? auth : null
+  }
+
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<GitHubSearchQueryJson>
+    repoList: RepoListCapability<GitHubRepo>
+    estimatePush: EstimatePushCapability
+    issueList: IssueListCapability
+  } = {
+    issueCreate: {
+      initManager: async ({dataLoader, teamId, userId, context, info}) => {
+        const auth = await dataLoader.get('githubAuth').load({teamId, userId})
+        return auth ? new GitHubServerManager(auth, context, info) : null
+      }
+    },
+    issueRead: {
+      getIssue: resolveGitHubTaskIntegration,
+      parseIntegrationHash: parseGitHubIntegrationHash
+    },
+    issueSearch: {buildQuery: buildGitHubSearchQuery},
+    repoList: {
+      fetchRepos: ({dataLoader, teamId, userId, context, info}) =>
+        fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+      integrationRepoId: ({nameWithOwner}) => nameWithOwner,
+      name: ({nameWithOwner}) => nameWithOwner
+    },
+    estimatePush: {
+      targets: ['comment', 'label'],
+      pushEstimate: pushEstimateToGitHub,
+      resolveDimensionFieldKey: resolveGitHubDimensionFieldKey,
+      describeDimensionField: describeGitHubDimensionField,
+      listDimensionFields: listGitHubDimensionFields
+    },
+    issueList: {listIssues: listGitHubIssues}
+  }
+}

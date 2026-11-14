@@ -11,22 +11,28 @@ import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
 import EndTeamPromptMutation from '../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../mutations/UpdateRecurrenceSettingsMutation'
+import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import type {
   CompletedHandler,
   NavigateMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
-import {cn} from '../../ui/cn'
+import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
+import getMutationError from '../../utils/relay/getMutationError'
 
 export const EndMeetingMutationLookup = {
   teamPrompt: EndTeamPromptMutation,
   action: EndCheckInMutation,
   retrospective: EndRetrospectiveMutation,
-  poker: EndSprintPokerMutation
-} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler>>
+  poker: EndSprintPokerMutation,
+  // team health uses the useEndTeamHealthMutation hook, handled separately in onConfirm
+  teamHealth: null
+} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler> | null>
 
 interface RadioToggleProps {
   checked: boolean
@@ -55,15 +61,21 @@ const RadioToggle = (props: RadioToggleProps) => {
 interface Props {
   isOpen: boolean
   meetingRef: EndRecurringMeetingModal_meeting$key
+  hasSeries: boolean
   nextMeetingDate?: string | null
+  hasUnsharedDraft?: boolean
   closeModal: () => void
 }
 
-const ACTION_BUTTON_CLASSES =
-  'font-sans text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
-
 export const EndRecurringMeetingModal = (props: Props) => {
-  const {isOpen, meetingRef, nextMeetingDate, closeModal} = props
+  const {
+    isOpen,
+    meetingRef,
+    hasSeries,
+    nextMeetingDate,
+    hasUnsharedDraft = false,
+    closeModal
+  } = props
 
   const meeting = useFragment(
     graphql`
@@ -76,12 +88,17 @@ export const EndRecurringMeetingModal = (props: Props) => {
   )
   const {meetingType, id: meetingId} = meeting
 
-  const {onCompleted, onError} = useMutationProps()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const navigate = useNavigate()
   const atmosphere = useAtmosphere()
+  const [endTeamHealth] = useEndTeamHealthMutation()
   const [isMeetingOnly, setIsMeetingOnly] = useState(true)
 
-  const handleCompleted: CompletedHandler = () => {
+  const handleCompleted: CompletedHandler = (res, errors) => {
+    if (getMutationError(res, errors)) {
+      onCompleted(res, errors)
+      return
+    }
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
@@ -95,6 +112,12 @@ export const EndRecurringMeetingModal = (props: Props) => {
   }
 
   const onConfirm = () => {
+    if (submitting) return
+    submitMutation()
+    if (meetingType === 'teamHealth') {
+      endTeamHealth({variables: {meetingId}, onCompleted: handleCompleted, onError})
+      return
+    }
     EndMeetingMutationLookup[meetingType]?.(
       atmosphere,
       {meetingId},
@@ -110,38 +133,36 @@ export const EndRecurringMeetingModal = (props: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
-        <div className='mb-4 font-semibold text-xl'>End Meeting</div>
-        <div className='mb-4 flex flex-col gap-2'>
-          <RadioToggle
-            checked={isMeetingOnly}
-            value={true}
-            setChecked={setIsMeetingOnly}
-            label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
-          />
-          <RadioToggle
-            checked={!isMeetingOnly}
-            value={false}
-            setChecked={setIsMeetingOnly}
-            label={"End this meeting and don't restart"}
-          />
-        </div>
-        <div className='flex justify-end gap-2.5'>
-          <button
-            className={cn(
-              'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-100',
-              ACTION_BUTTON_CLASSES
-            )}
-            onClick={closeModal}
-          >
+        <DialogTitle className='mb-4'>{hasSeries ? 'End Meeting' : 'End this meeting'}</DialogTitle>
+        {hasSeries && (
+          <div className='mb-4 flex flex-col gap-2'>
+            <RadioToggle
+              checked={isMeetingOnly}
+              value={true}
+              setChecked={setIsMeetingOnly}
+              label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
+            />
+            <RadioToggle
+              checked={!isMeetingOnly}
+              value={false}
+              setChecked={setIsMeetingOnly}
+              label={"End this meeting and don't restart"}
+            />
+          </div>
+        )}
+        {hasUnsharedDraft && (
+          <p className='mb-4 text-fg-primary text-sm'>
+            You have an unshared draft. Drafts are not included in the summary.
+          </p>
+        )}
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
             Cancel
-          </button>
-          <button
-            className={cn('bg-sky-500 text-white hover:bg-sky-600', ACTION_BUTTON_CLASSES)}
-            onClick={onConfirm}
-          >
+          </Button>
+          <Button variant='primary' size='md' onClick={onConfirm} disabled={submitting}>
             Confirm
-          </button>
-        </div>
+          </Button>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

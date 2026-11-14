@@ -1,0 +1,33 @@
+"""
+All the meeting specifics for a user in a standalone Team Health meeting
+"""
+type TeamHealthMeetingMember implements MeetingMember {
+  """
+  A composite of userId::meetingId
+  """
+  id: ID!
+
+  """
+  true if present, false if absent, else null
+  """
+  isCheckedIn: Boolean
+    @deprecated(
+      reason: "Members are checked in when they enter the meeting now & not created beforehand"
+    )
+  """
+  true if this member is sitting the questions out, excluded from the response set and from the
+  "N of M" total. The meeting owner defaults to true, everyone else to false
+  """
+  isSpectating: Boolean!
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """
+  The last time a meeting was updated (stage completed, finished, etc)
+  """
+  updatedAt: DateTime!
+}

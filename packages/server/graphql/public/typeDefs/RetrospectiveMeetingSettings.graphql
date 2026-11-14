@@ -47,17 +47,17 @@ type RetrospectiveMeetingSettings implements TeamMeetingSettings {
   """
   The template that will be used to start the retrospective
   """
-  selectedTemplate: ReflectTemplate!
+  selectedTemplate: PromptTemplate!
 
   """
   The list of templates used to start a retrospective
   """
-  reflectTemplates: [ReflectTemplate!]!
+  reflectTemplates: [PromptTemplate!]!
 
   """
   The list of templates used to start a retrospective
   """
-  teamTemplates: [ReflectTemplate!]!
+  teamTemplates: [PromptTemplate!]!
 
   """
   The list of templates shared across the organization to start a retrospective

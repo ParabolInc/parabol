@@ -1,23 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import {Polls, PollsAriaLabels} from '~/types/constEnums'
 import type {EditablePollTitle_poll$key} from '../../__generated__/EditablePollTitle_poll.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {updateLocalPoll} from './local/newPoll'
-
-const PollTitleInput = styled('input')({
-  padding: `10px 12px`,
-  fontSize: '14px',
-  border: 'none',
-  color: PALETTE.SLATE_900,
-  borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-  ':hover, :focus, :active': {
-    outline: 'none'
-  }
-})
 
 interface Props {
   pollRef: EditablePollTitle_poll$key
@@ -42,7 +29,8 @@ const EditablePollTitle = (props: Props) => {
   }
 
   return (
-    <PollTitleInput
+    <input
+      className='border-0 border-hairline-strong border-b border-solid px-3 py-[10px] text-[14px] text-fg-primary hover:outline-none focus:outline-none active:outline-none'
       aria-label={PollsAriaLabels.POLL_TITLE_EDITOR}
       autoFocus
       value={poll.title}

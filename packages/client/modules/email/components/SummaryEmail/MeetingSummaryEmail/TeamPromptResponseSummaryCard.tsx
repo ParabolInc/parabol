@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {TeamPromptResponseSummaryCard_stage$key} from 'parabol-client/__generated__/TeamPromptResponseSummaryCard_stage.graphql'
 import type * as React from 'react'
@@ -28,58 +27,12 @@ const avatarStyles: React.CSSProperties = {
   minWidth: 48
 }
 
-// Note: Emotion doesn't work in email, so these styles will only be present in the app.
-const StyledEditor = styled('div')`
-  min-height: 40px;
-  line-height: 1.25;
-
-  ul,
-  ol {
-    list-style-position: outside;
-    padding-inline-start: 16px;
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  ol {
-    margin-inline-start: 4px;
-  }
-
-  p.is-editor-empty:first-of-type::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
-
-  p:empty::after {
-    content: '\\00A0';
-  }
-
-  p {
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  hr {
-    border-top: 1px solid ${PALETTE.SLATE_300};
-  }
-
-  [data-type='mention'] {
-    background-color: ${PALETTE.GOLD_100};
-    border-radius: 2;
-    font-weight: 600;
-  }
-
-  a {
-    text-decoration: underline;
-    color: ${PALETTE.SLATE_600};
-    :hover {
-      cursor: pointer;
-    }
-  }
-`
+// Note: stylesheets don't work in email, so the descendant rules for this
+// generated HTML live in global.css under `.summary-response-editor`.
+const responseEditorStyles: React.CSSProperties = {
+  minHeight: '40px',
+  lineHeight: 1.25
+}
 
 interface Props {
   stageRef: TeamPromptResponseSummaryCard_stage$key
@@ -98,21 +51,26 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
             preferredName
           }
         }
-        response {
-          plaintextContent
+        responses {
+          id
+          sharedAt
           content
-          createdAt
+          prompt {
+            question
+            sortOrder
+          }
         }
       }
     `,
     stageRef
   )
-  const {teamMember, response} = stage
+  const {teamMember, responses} = stage
   const {user} = teamMember
   const {rasterPicture, preferredName} = user
-  const contentJSON = response ? JSON.parse(response.content) : null
   const {generateHTML} = useTipTapContext()
-  const html = generateHTML(contentJSON)
+  const sharedResponses = responses
+    .filter(({sharedAt}) => !!sharedAt)
+    .sort((a, b) => (a.prompt.sortOrder < b.prompt.sortOrder ? -1 : 1))
 
   return (
     <div style={responseSummaryCardStyles}>
@@ -121,7 +79,18 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
         <h3 style={{padding: '0 8px', margin: 'auto auto auto 0'}}>{preferredName}</h3>
       </div>
       <div style={promptResponseStyles}>
-        <StyledEditor dangerouslySetInnerHTML={{__html: html}} />
+        {sharedResponses.map(({id, content, prompt}) => (
+          <div key={id}>
+            {sharedResponses.length > 1 && (
+              <div style={{fontWeight: 600, padding: '8px 0 4px'}}>{prompt.question}</div>
+            )}
+            <div
+              className='summary-response-editor'
+              style={responseEditorStyles}
+              dangerouslySetInnerHTML={{__html: generateHTML(JSON.parse(content))}}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )

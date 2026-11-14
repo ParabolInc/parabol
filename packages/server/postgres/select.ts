@@ -2,10 +2,12 @@ import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration'
-import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
+import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
-  GitHubSearchQuery,
+  AutogroupReflectionGroupType,
+  IntegrationAuthMetaByService,
+  IntegrationSearchQueryJsonByService,
   JiraSearchQuery,
   ReactjiDB,
   TaskTag,
@@ -14,7 +16,7 @@ import type {
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
-import type {DB} from './types/pg'
+import type {DB, Integrationproviderserviceenum, Newmeetingphasetypeenum} from './types/pg'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
@@ -27,7 +29,12 @@ type AssertedQuery<Q, K> = Q extends SelectQueryBuilder<infer T1, infer T2, infe
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
-        type: 'actionComplete' | 'POKER_COMPLETE' | 'TEAM_PROMPT_COMPLETE' | 'retroComplete'
+        type:
+          | 'actionComplete'
+          | 'POKER_COMPLETE'
+          | 'TEAM_PROMPT_COMPLETE'
+          | 'TEAM_HEALTH_COMPLETE'
+          | 'retroComplete'
         teamId: NotNull
         orgId: NotNull
         meetingId: NotNull
@@ -40,8 +47,58 @@ export const selectDiscussion = () => {
   return getKysely().selectFrom('Discussion').selectAll()
 }
 
+type TeamMemberIntegrationAuthByService = {
+  [S in Integrationproviderserviceenum]: {
+    service: S
+    meta: S extends keyof IntegrationAuthMetaByService ? IntegrationAuthMetaByService[S] : null
+  }
+}[Integrationproviderserviceenum]
+
 export const selectTeamMemberIntegrationAuth = () => {
-  return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .$narrowType<TeamMemberIntegrationAuthByService>()
+}
+
+export const selectAtlassianAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select([
+      sql<string>`coalesce("scopes", '')`.as('scope'),
+      sql<string[]>`coalesce("meta" -> 'cloudIds', '[]'::jsonb)`.as('cloudIds')
+    ])
+    .where('service', '=', 'jira')
+    .where('accessToken', 'is not', null)
+    .where('refreshToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'jira'
+      meta: IntegrationAuthMetaByService['jira']
+      accessToken: NotNull
+      refreshToken: NotNull
+      providerUserId: NotNull
+    }>()
+}
+
+export const selectGitHubAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select(({ref}) => [
+      ref('providerUserId').as('login'),
+      sql<string>`coalesce("scopes", '')`.as('scope')
+    ])
+    .where('service', '=', 'github')
+    .where('accessToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'github'
+      meta: null
+      accessToken: NotNull
+      login: NotNull
+    }>()
 }
 
 export const selectTemplateRef = () => {
@@ -85,6 +142,30 @@ export const selectTemplateScale = () => {
 
 export const selectTemplateDimension = () => {
   return getKysely().selectFrom('TemplateDimension').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthCategories = () => {
+  return getKysely().selectFrom('TeamHealthCategory').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthQuestionPacks = () => {
+  return getKysely().selectFrom('TeamHealthQuestionPack').selectAll()
+}
+
+export const selectTeamHealthQuestions = () => {
+  return getKysely().selectFrom('TeamHealthQuestion').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthTemplateQuestions = () => {
+  return getKysely().selectFrom('TeamHealthTemplateQuestion').selectAll()
+}
+
+export const selectTeamHealthResponses = () => {
+  return getKysely().selectFrom('TeamHealthResponse').selectAll()
+}
+
+export const selectTeamHealthCategorySummaries = () => {
+  return getKysely().selectFrom('TeamHealthCategorySummary').selectAll()
 }
 
 export const selectSuggestedAction = () => {
@@ -170,7 +251,9 @@ export const selectTeamPromptResponses = () => {
       'userId',
       'sortOrder',
       'content',
-      'plaintextContent'
+      'plaintextContent',
+      'promptId',
+      'sharedAt'
     ])
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
   return query as AssertedQuery<typeof query, {content: JSONContent}>
@@ -181,7 +264,7 @@ export const selectMeetingSettings = () => {
     .selectAll()
     .select(({fn}) => [
       fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
-      fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
+      fn<Newmeetingphasetypeenum[]>('to_json', ['phaseTypes']).as('phaseTypes')
     ])
     .$narrowType<
       | {meetingType: 'action' | 'poker' | 'teamPrompt'}
@@ -194,7 +277,7 @@ export const selectMeetingSettings = () => {
     >()
   return query as AssertedQuery<
     typeof query,
-    {jiraSearchQueries: JiraSearchQuery[]; phaseTypes: NewMeetingPhaseTypeEnum[]}
+    {jiraSearchQueries: JiraSearchQuery[]; phaseTypes: Newmeetingphasetypeenum[]}
   >
 }
 export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()
@@ -213,7 +296,7 @@ export const selectComments = () => {
   return query as AssertedQuery<typeof query, {reactjis: ReactjiDB[]}>
 }
 
-export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()
+export const selectTemplatePrompts = () => getKysely().selectFrom('TemplatePrompt').selectAll()
 
 export const selectNewMeetings = () => {
   const query = getKysely()
@@ -237,7 +320,6 @@ export const selectNewMeetings = () => {
       'scheduledEndTime',
       'summary',
       'sentimentScore',
-      'slackTs',
       'engagement',
       'totalVotes',
       'maxVotesPerGroup',
@@ -261,6 +343,14 @@ export const selectNewMeetings = () => {
       fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
     ])
   return query as AssertedQuery<typeof query, AnyMeeting>
+}
+
+export const selectRetroSuggestedGrouping = () => {
+  const query = getKysely()
+    .selectFrom('RetroSuggestedGrouping')
+    .selectAll()
+    .select(({fn}) => [fn<AutogroupReflectionGroupType[]>('to_json', ['groups']).as('groups')])
+  return query as AssertedQuery<typeof query, {groups: AutogroupReflectionGroupType[]}>
 }
 
 export const selectMeetingMembers = () =>
@@ -319,11 +409,21 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'deletedAt',
     'deletedBy',
     'isDatabase',
-    'isMeetingTOC'
+    'isSyncedBlock',
+    'isMeetingTOC',
+    'summaryMeetingId'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
+
+export const selectPageExports = () => {
+  const query = getKysely().selectFrom('PageExport').selectAll()
+  return query as AssertedQuery<
+    typeof query,
+    {pagesJson: PageExportPageState[]; degradedJson: DegradedItem[]}
+  >
+}
 
 export const selectDescendantPages = (
   db: ControlledTransaction<DB, []> | Kysely<DB>,
@@ -334,7 +434,7 @@ export const selectDescendantPages = (
       .selectFrom('Page')
       .select(['id', 'parentPageId'])
       .where('id', '=', pageId)
-      .unionAll(
+      .union(
         qc
           .selectFrom('Page as p')
           .innerJoin('descendants as d', 'd.id', 'p.parentPageId')
@@ -343,40 +443,8 @@ export const selectDescendantPages = (
       )
   )
 
-export const selectGitHubAuth = () => {
-  const query = getKysely()
-    .selectFrom('GitHubAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<GitHubSearchQuery[]>('to_json', ['githubSearchQueries']).as('githubSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {githubSearchQueries: GitHubSearchQuery[]}>
-}
-
-export const selectAtlassianAuth = () => {
-  const query = getKysely()
-    .selectFrom('AtlassianAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
-}
-
-export const selectGitHubDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()
-}
-
-export const selectGitLabDimensionFieldMap = () => {
-  return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
-}
-
-export const selectJiraDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraDimensionFieldMap').selectAll()
-}
-
-export const selectJiraServerDimensionFieldMap = () => {
-  return getKysely().selectFrom('JiraServerDimensionFieldMap').selectAll()
+export const selectIntegrationDimensionFieldMap = () => {
+  return getKysely().selectFrom('IntegrationDimensionFieldMap').selectAll()
 }
 
 export const selectIntegrationProvider = () => {
@@ -386,8 +454,18 @@ export const selectIntegrationProvider = () => {
     .$narrowType<TIntegrationProvider>()
 }
 
+type IntegrationSearchQueryByService = {
+  [S in keyof IntegrationSearchQueryJsonByService]: {
+    service: S
+    query: IntegrationSearchQueryJsonByService[S]
+  }
+}[keyof IntegrationSearchQueryJsonByService]
+
 export const selectIntegrationSearchQuery = () => {
-  return getKysely().selectFrom('IntegrationSearchQuery').selectAll()
+  return getKysely()
+    .selectFrom('IntegrationSearchQuery')
+    .selectAll()
+    .$narrowType<IntegrationSearchQueryByService>()
 }
 
 export const selectMeetingSeries = () => {
@@ -442,6 +520,10 @@ export const selectOAuthAPICode = () => {
 
 export const selectUserDetails = () => {
   return getKysely().selectFrom('UserDetail').selectAll()
+}
+
+export const selectTeamDetails = () => {
+  return getKysely().selectFrom('TeamDetail').selectAll()
 }
 
 export const selectPersonalAccessToken = () => {

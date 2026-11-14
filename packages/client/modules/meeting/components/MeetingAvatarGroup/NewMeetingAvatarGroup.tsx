@@ -1,17 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence, motion} from 'motion/react'
-import {forwardRef, useMemo, useRef} from 'react'
+import {forwardRef, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingAvatarGroup_meeting$key} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import useThrottledValue from '../../../../hooks/useThrottledValue'
+import {cn} from '../../../../ui/cn'
+import {isNotNull} from '../../../../utils/predicates'
 import MeetingOverflowMenu from './MeetingOverflowMenu'
 import NewMeetingAvatar from './NewMeetingAvatar'
-import {useAvatarOverflowThreshold} from './useAvatarOverflowThreshold'
 
 const MOTION_TRANSITION = {duration: 0.3, ease: [0, 0, 0.2, 1]} as const
+// Longer than an avatar's entrance, so a burst of arrivals and departures never cuts one short
+const PRESENCE_THROTTLE_MS = 500
+const MAX_VISIBLE_AVATARS = 8
+// More than this wraps the row under the phase title on a 360px phone
+const MAX_VISIBLE_AVATARS_ON_PHONE = 3
 
-const overlappingBlockCls = 'relative -ml-3 rounded-full bg-slate-200 p-[1px] first:ml-0'
+const overlappingBlockCls = 'relative -ml-3 rounded-full bg-surface-app p-[1px] first:ml-0'
 
 const AvatarSlot = forwardRef<HTMLDivElement, {children: React.ReactNode}>(({children}, ref) => (
   <motion.div
@@ -35,8 +43,8 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meetingRef} = props
-  const containerRef = useRef<HTMLDivElement>(null)
-  const overflowThreshold = useAvatarOverflowThreshold(containerRef)
+  const isWiderThanPhone = useBreakpoint(600)
+  const maxVisibleAvatars = isWiderThanPhone ? MAX_VISIBLE_AVATARS : MAX_VISIBLE_AVATARS_ON_PHONE
 
   const meeting = useFragment(
     graphql`
@@ -66,25 +74,34 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {id: meetingId, team, meetingMembers} = meeting
   const {id: teamId, teamMembers} = team
 
-  const connectedMeetingMembers = useMemo(() => {
+  const connectedMeetingMemberIds = useMemo(() => {
     return meetingMembers
       .filter((meetingMember) => meetingMember.isConnectedAt || meetingMember.userId === viewerId)
       .sort((a, b) => (a.userId === viewerId ? -1 : a.isConnectedAt! < b.isConnectedAt! ? -1 : 1))
+      .map(({id}) => id)
+      .join(',')
   }, [meetingMembers, viewerId])
+  const shownMeetingMemberIds = useThrottledValue(connectedMeetingMemberIds, PRESENCE_THROTTLE_MS)
+  const connectedMeetingMembers = useMemo(() => {
+    const meetingMembersById = new Map(
+      meetingMembers.map((meetingMember) => [meetingMember.id, meetingMember])
+    )
+    return shownMeetingMemberIds
+      .split(',')
+      .map((id) => meetingMembersById.get(id))
+      .filter(isNotNull)
+  }, [meetingMembers, shownMeetingMemberIds])
 
-  const rawHidden = connectedMeetingMembers.slice(overflowThreshold)
-  // Never show a "+1" — if only one would be hidden, just show it
-  const visibleConnectedMeetingMembers =
-    rawHidden.length === 1
-      ? connectedMeetingMembers
-      : connectedMeetingMembers.slice(0, overflowThreshold)
-  const hiddenMeetingMembers = rawHidden.length === 1 ? [] : rawHidden
+  // Never show a "+1": the one person it would hide fits in its place
+  const visibleCount =
+    connectedMeetingMembers.length > maxVisibleAvatars + 1
+      ? maxVisibleAvatars
+      : connectedMeetingMembers.length
+  const visibleConnectedMeetingMembers = connectedMeetingMembers.slice(0, visibleCount)
+  const hiddenMeetingMembers = connectedMeetingMembers.slice(visibleCount)
 
   return (
-    <div
-      ref={containerRef}
-      className='relative flex flex-1 flex-row items-center justify-center text-center'
-    >
+    <div className='relative flex flex-1 flex-row items-center justify-center text-center'>
       <AnimatePresence initial={false} mode='popLayout'>
         {visibleConnectedMeetingMembers.map((meetingMember) => (
           <AvatarSlot key={meetingMember.id}>
@@ -97,7 +114,8 @@ const NewMeetingAvatarGroup = (props: Props) => {
           </AvatarSlot>
         )}
       </AnimatePresence>
-      <div className={overlappingBlockCls}>
+      {/* keeps the +N count uncovered */}
+      <div className={cn(overlappingBlockCls, hiddenMeetingMembers.length > 0 && 'ml-1')}>
         <AddTeamMemberAvatarButton
           meetingId={meetingId}
           teamId={teamId}

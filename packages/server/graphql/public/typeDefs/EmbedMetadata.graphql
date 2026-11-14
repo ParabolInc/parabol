@@ -1,0 +1,45 @@
+"""
+Metadata resolved from an external URL, used to render an embed block
+"""
+type EmbedMetadata {
+  """
+  The normalized URL this metadata describes
+  """
+  url: String!
+  """
+  The https iframe source, or null when the provider cannot be framed
+  """
+  embedSrc: String
+  """
+  The title of the resource
+  """
+  title: String
+  """
+  A short summary of the resource
+  """
+  description: String
+  """
+  A preview image for the resource
+  """
+  thumbnailUrl: String
+  """
+  The site icon for the resource
+  """
+  faviconUrl: String
+  """
+  The human readable name of the provider, e.g. YouTube
+  """
+  providerName: String
+  """
+  The author or owner of the resource
+  """
+  authorName: String
+  """
+  The suggested aspect ratio for the frame: 16:9, 4:3, 1:1, or tall
+  """
+  aspectRatio: String
+  """
+  When this metadata was resolved
+  """
+  fetchedAt: DateTime
+}

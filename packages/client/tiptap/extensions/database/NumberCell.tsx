@@ -1,6 +1,8 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
 import {useRef} from 'react'
+import {cn} from '../../../ui/cn'
 import {Input} from '../../../ui/Input/Input'
+import {cellClassName, cellInputClassName} from './cellClassName'
 import {ColumnId, RowId} from './data'
 import {useCell} from './hooks'
 import {useFocus} from './useFocus'
@@ -39,15 +41,13 @@ export const NumberCell = ({
   const value = convertToNumber(rawValue)
 
   return (
-    <div
-      {...focusProps}
-      className='h-full w-full border-none focus-within:outline-3 focus-within:outline-sky-500 focus:outline-2 focus:outline-sky-400'
-    >
+    <div {...focusProps} className={cellClassName}>
       <Input
         ref={ref}
         type='text'
+        inputMode='numeric'
         value={value}
-        className='w-full border-none text-right'
+        className={cn(cellInputClassName, 'text-right tabular-nums')}
         onChange={(e) => {
           const rawValue = e.target.value
           const value = convertToNumber(rawValue)

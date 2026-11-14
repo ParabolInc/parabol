@@ -1,7 +1,6 @@
 import type {AcceptTeamInvitationMutationReply$data} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
 import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface OnNextMeetingId extends OnNextNavigateContext {
   meetingId?: string | null
@@ -13,16 +12,17 @@ const handleAuthenticationRedirect: OnNextHandler<
   OnNextMeetingId
 > = (
   acceptTeamInvitation,
-  {meetingId: locallyRequestedMeetingId, navigate, atmosphere, redirectPath = '/meetings'}
+  {meetingId: locallyRequestedMeetingId, navigate, redirectPath = '/meetings'}
 ) => {
-  SendClientSideEvent(atmosphere, 'User Login')
+  // replace a used invitation page, or Back lands on it and it redirects again
+  const isOnInvitationPage = /^\/(team-invitation|invitation-link)\//.test(window.location.pathname)
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
-    navigate(redirectTo)
+    navigate(redirectTo, {replace: isOnInvitationPage})
     return
   }
   if (!acceptTeamInvitation?.team) {
-    navigate(redirectPath)
+    navigate(redirectPath, {replace: isOnInvitationPage})
     return
   }
   const {meetingId: invitedMeetingId, team} = acceptTeamInvitation
@@ -31,9 +31,9 @@ const handleAuthenticationRedirect: OnNextHandler<
   const activeMeeting =
     (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) || activeMeetings[0]
   if (activeMeeting) {
-    navigate(`/meet/${activeMeeting.id}`)
+    navigate(`/meet/${activeMeeting.id}`, {replace: isOnInvitationPage})
   } else {
-    navigate(`/team/${teamId}`)
+    navigate(`/team/${teamId}`, {replace: isOnInvitationPage})
   }
 }
 export default handleAuthenticationRedirect

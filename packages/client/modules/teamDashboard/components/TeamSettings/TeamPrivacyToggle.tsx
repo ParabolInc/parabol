@@ -11,7 +11,6 @@ import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMu
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import TeamPrivacyConfirmModal from './TeamPrivacyConfirmModal'
 
 interface Props {
@@ -67,17 +66,13 @@ const TeamPrivacyToggle = (props: Props) => {
 
   const handleUpgradeClick = () => {
     navigate(`/me/organizations/${orgId}`)
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'publicTeams',
-      orgId
-    })
   }
 
   return (
     <>
       <div className='flex w-full items-start justify-between'>
-        <div className='text-slate-700 text-sm'>
-          <div className='text-slate-700 text-sm'>
+        <div className='text-fg-primary text-sm'>
+          <div className='text-fg-primary text-sm'>
             {isPublic ? (
               <>
                 <div>
@@ -85,8 +80,8 @@ const TeamPrivacyToggle = (props: Props) => {
                   team.
                 </div>
                 {isStarterTier && (
-                  <div className='mt-1 font-medium text-slate-600 text-xs'>
-                    <a className='cursor-pointer text-sky-500' onClick={handleUpgradeClick}>
+                  <div className='mt-1 font-medium text-fg-secondary text-xs'>
+                    <a className='cursor-pointer text-accent' onClick={handleUpgradeClick}>
                       Upgrade
                     </a>{' '}
                     to make it private.

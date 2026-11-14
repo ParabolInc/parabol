@@ -7,9 +7,11 @@ import type {
 } from '../__generated__/useUpdatePageMutation.graphql'
 
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
+import useAtmosphere from '../hooks/useAtmosphere'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useUpdatePageMutation_notification on UpdatePagePayload {
@@ -110,10 +112,10 @@ export const handleUpdatePage = (
       id: string
       teamId: string | null | undefined
       parentPageId: string | null | undefined
-      sortOrder: string
-      userSortOrder: string
+      sortOrder: string | null | undefined
+      userSortOrder: string | null | undefined
     }
-    pageSection: PageSectionEnum
+    pageSection: PageSectionEnum | null | undefined
   }>,
   {store}: {store: RecordSourceSelectorProxy}
 ) => {
@@ -130,12 +132,13 @@ export const handleUpdatePage = (
     isPrivate: sourceIsPrivate
   } = oldRecord || {}
   const sourceConns = getSourceConns(connParent, sourceParentPageId, sourceTeamId, sourceIsPrivate)
-  const targetTeamId = page.getValue('teamId')
-  const targetParentPageId = page.getValue('parentPageId')
-  const targetConn = getTargetConn(connParent, section, targetParentPageId, targetTeamId)
   sourceConns.forEach((conn) => {
     safeRemoveNodeFromConn(pageId, conn)
   })
+  if (!section) return
+  const targetTeamId = page.getValue('teamId')
+  const targetParentPageId = page.getValue('parentPageId')
+  const targetConn = getTargetConn(connParent, section, targetParentPageId, targetTeamId)
   const sortOrder = section === 'shared' ? 'userSortOrder' : 'sortOrder'
   safePutNodeInConn(targetConn, page, store, sortOrder, true)
 }
@@ -147,6 +150,7 @@ export const isPrivatePageConnectionLookup = {
 
 export const useUpdatePageMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdatePageMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (
     config: UseMutationConfig<TuseUpdatePageMutation> & {
       sourceConnectionKey: PageConnectionKey
@@ -170,6 +174,7 @@ export const useUpdatePageMutation = () => {
         handleUpdatePage(payload, {store})
       },
       variables,
+      onError: snackOnError(atmosphere),
       ...rest
     })
   }

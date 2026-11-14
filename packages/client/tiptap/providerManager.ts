@@ -1,39 +1,41 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
-import type Atmosphere from '../Atmosphere'
+import Atmosphere from '../Atmosphere'
+import getTabSessionId from '../utils/getTabSessionId'
 
 class ProviderManager {
   socket: HocuspocusProviderWebsocket | undefined = undefined
   providers: Record<
     string,
-    {count: number; provider: HocuspocusProvider; persistence?: IndexeddbPersistence}
+    {
+      count: number
+      provider: HocuspocusProvider
+      persistence?: IndexeddbPersistence
+      isNestedOnly: boolean
+    }
   > = {}
-  atmosphere?: Atmosphere
-  setAtmosphere(atmosphere: Atmosphere) {
-    this.atmosphere = atmosphere
+  authenticationFailures = new Map<string, string>()
+  getAuthenticationFailure(documentName: string) {
+    return this.authenticationFailures.get(documentName)
   }
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
-      const url = `${wsProtocol}//${window.location.host}/yjs`
+      const url = `${wsProtocol}//${window.location.host}/yjs?sessionId=${getTabSessionId()}`
       this.socket = new HocuspocusProviderWebsocket({
         url
       })
     }
     return this.socket
   }
-  use(documentName: string) {
+  get(documentName: string, options: {nested?: boolean} = {}) {
+    const isNested = !!options.nested
     const existing = this.providers[documentName]
     if (existing) {
-      existing.count++
+      if (!isNested) existing.isNestedOnly = false
       return existing.provider
     }
-    return null
-  }
-  register(documentName: string) {
-    const existing = this.use(documentName)
-    if (existing) return existing
     const doc = new Y.Doc()
     // update the URL to match the title
     const provider = new HocuspocusProvider({
@@ -44,27 +46,35 @@ class ProviderManager {
       token: window.document.cookie,
       onAuthenticationFailed: ({reason}) => {
         console.log('fail', reason)
+        this.authenticationFailures.set(documentName, reason)
         if (reason === 'Unauthorized') {
           const entry = this.providers[documentName]
           if (entry) {
             entry.persistence?.destroy()
             entry.persistence = undefined
           }
+          // A denied meeting would retry on every reconnect, and Hocuspocus queues its awareness renewals until the socket resets
+          if (documentName.startsWith('meeting:')) provider.detach()
         }
         if (reason === 'InvalidDocument') {
           // The documentName they passed in cannot exist (DBID out of bounds)
           window.indexedDB.deleteDatabase(documentName)
-          window.location.href = '/'
+          if (!this.providers[documentName]?.isNestedOnly) window.location.href = '/'
         }
         if (reason === 'Unauthenticated') {
-          this.atmosphere?.invalidateSession(reason)
+          Atmosphere.current?.invalidateSession(reason)
         }
       }
     })
     provider.attach()
-    this.providers[documentName] = {count: 1, provider}
+    this.providers[documentName] = {count: 0, provider, isNestedOnly: isNested}
+    // a render React throws away never registers, so collect the provider unless something does
+    setTimeout(() => {
+      this.destroy(documentName)
+    }, 10000)
     if (documentName.startsWith('page:')) {
       provider.on('authenticated', ({scope}: {scope: string}) => {
+        this.authenticationFailures.delete(documentName)
         const entry = this.providers[documentName]
         if (!entry) return
         if (scope === 'readonly') {
@@ -75,6 +85,11 @@ class ProviderManager {
         }
       })
     }
+    return provider
+  }
+  register(documentName: string, options: {nested?: boolean} = {}) {
+    const provider = this.get(documentName, options)
+    this.providers[documentName]!.count++
     return provider
   }
   unregister(documentName: string | undefined, delay = 10000) {
@@ -92,15 +107,51 @@ class ProviderManager {
     callbackFn: (provider: HocuspocusProvider) => void | Promise<void>
   ) {
     const provider = this.register(documentName)
+    const stopWaiting = () => {
+      provider.off('synced', callAndComplete)
+      provider.off('authenticationFailed', giveUp)
+    }
+    // synced fires again after every reconnect
     const callAndComplete = async () => {
-      await callbackFn(provider)
+      stopWaiting()
+      try {
+        await callbackFn(provider)
+      } finally {
+        this.unregister(documentName)
+      }
+    }
+    const giveUp = () => {
+      stopWaiting()
       this.unregister(documentName)
     }
     if (provider.synced) {
       callAndComplete()
     } else {
       provider.on('synced', callAndComplete)
+      provider.on('authenticationFailed', giveUp)
     }
+  }
+
+  openSynced(documentName: string, timeoutMs: number) {
+    return new Promise<HocuspocusProvider | null>((resolve) => {
+      const provider = this.register(documentName)
+      if (provider.synced) {
+        resolve(provider)
+        return
+      }
+      const settle = (result: HocuspocusProvider | null) => {
+        clearTimeout(timer)
+        provider.off('synced', onSynced)
+        provider.off('authenticationFailed', onFailed)
+        if (!result) this.unregister(documentName)
+        resolve(result)
+      }
+      const onSynced = () => settle(provider)
+      const onFailed = () => settle(null)
+      const timer = setTimeout(() => settle(null), timeoutMs)
+      provider.on('synced', onSynced)
+      provider.on('authenticationFailed', onFailed)
+    })
   }
 
   destroy(documentName: string) {
@@ -109,22 +160,18 @@ class ProviderManager {
     if (prevProviderEntry.count === 0) {
       prevProviderEntry.provider.destroy()
       delete this.providers[documentName!]
+      this.authenticationFailures.delete(documentName)
     }
   }
 
   close() {
     const entries = Object.values(this.providers)
     this.providers = {}
+    this.authenticationFailures.clear()
     entries.forEach((e) => e.provider.destroy())
-    // fire-and-forget: clearData is best-effort before the page redirects
-    void Promise.all(entries.map((e) => e.persistence?.clearData())).then(() => {
-      void indexedDB.databases().then((dbs) => {
-        dbs.forEach(({name}) => {
-          if (name?.startsWith('page:')) indexedDB.deleteDatabase(name)
-        })
-      })
-    })
+    return Promise.all(entries.map((e) => e.persistence?.clearData()))
   }
 }
 
 export const providerManager = new ProviderManager()
+Atmosphere.closeHandlers.add(() => providerManager.close())

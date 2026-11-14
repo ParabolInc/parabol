@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import type {mapRequestToJoinOrgToToast_notification$data} from '../../__generated__/mapRequestToJoinOrgToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import type {UnmaskedNotification} from './mapNotificationToToast'
 
 graphql`
   fragment mapRequestToJoinOrgToToast_notification on NotifyRequestToJoinOrg {
@@ -16,8 +16,8 @@ graphql`
 `
 
 const mapRequestToJoinOrgToToast = (
-  notification: mapRequestToJoinOrgToToast_notification$data,
-  {atmosphere, navigate}: OnNextNavigateContext
+  notification: UnmaskedNotification<mapRequestToJoinOrgToToast_notification$data>,
+  {navigate}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, email, domainJoinRequestId} = notification
 
@@ -26,11 +26,6 @@ const mapRequestToJoinOrgToToast = (
     showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
     message: `${email} is requesting to join your organization`,
-    onShow: () => {
-      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
-        snackbarType: 'requestToJoinOrg'
-      })
-    },
     action: {
       label: 'Review',
       callback: () => {
@@ -42,11 +37,7 @@ const mapRequestToJoinOrgToToast = (
     },
     secondaryAction: {
       label: 'Deny',
-      callback: () => {
-        SendClientSideEvent(atmosphere, 'Join Request Reviewed', {
-          action: 'deny'
-        })
-      }
+      callback: () => {}
     }
   }
 }

@@ -4,10 +4,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
+import {chatNotificationsSent} from '../../../../metricsHandler'
 import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {IntegrationProviderMattermost} from '../../../../postgres/types/IntegrationProvider'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import logError from '../../../../utils/logError'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
@@ -15,6 +15,7 @@ import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import type {SlackNotificationEventEnum} from '../../../public/resolverTypes'
 import getSummaryText from './getSummaryText'
+import {getTeamHealthQuestionCount} from './getTeamHealthQuestionCount'
 import {
   type Field,
   makeFieldsAttachment,
@@ -54,7 +55,7 @@ const notifyMattermost = async (
       error: result
     }
   }
-  analytics.mattermostNotificationSent(user, teamId, event)
+  chatNotificationsSent.inc({service: 'mattermost', event})
 
   return 'success'
 }
@@ -100,6 +101,14 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
         link: teamPromptUrl
       }
       return makeHackedButtonPairFields(responseButton, summaryButton)
+    }
+    case 'teamHealth': {
+      const resultsUrl = makeAppURL(appOrigin, `meet/${meetingId}/result/1`)
+      const resultsButton = {
+        label: 'See results',
+        link: resultsUrl
+      }
+      return makeHackedButtonPairFields(resultsButton, summaryButton)
     }
     default:
       throw new Error('Invalid meeting type')
@@ -180,6 +189,56 @@ const makeGenericStartMeetingNotification = (
   ]
 }
 
+// Mattermost has no per-reader date token, so the close time is rendered in the server's zone
+const formatCloseTime = (date: Date) => {
+  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
+  return `${formatWeekday(date)} at ${formatTime(date)} (${zone})`
+}
+
+const makeTeamHealthRespondField = (meetingUrl: string): Field => ({
+  short: false,
+  value: makeHackedFieldButtonValue({
+    label: 'Share your responses',
+    link: meetingUrl
+  })
+})
+
+const makeTeamHealthStartMeetingNotification = (
+  team: Team,
+  meeting: AnyMeeting,
+  meetingUrl: string
+) => {
+  const {scheduledEndTime} = meeting
+  const questionCount = getTeamHealthQuestionCount(meeting)
+  const fields: Field[] = [
+    {
+      short: true,
+      title: 'Team',
+      value: team.name
+    },
+    {
+      short: true,
+      title: 'Questions',
+      value: `${questionCount} · about 2 minutes · anonymous`
+    }
+  ]
+  if (scheduledEndTime) {
+    fields.push({
+      short: false,
+      title: 'Open until',
+      value: `${formatCloseTime(scheduledEndTime)} · results reveal at close`
+    })
+  }
+  fields.push(makeTeamHealthRespondField(meetingUrl))
+  return [
+    makeFieldsAttachment(fields, {
+      fallback: `${meeting.name} is open, share your responses: ${meetingUrl}`,
+      title: `${meeting.name} is open 💓`,
+      title_link: meetingUrl
+    })
+  ]
+}
+
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
   (team: Team, meeting: AnyMeeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
@@ -187,7 +246,8 @@ const makeStartMeetingNotificationLookup: Record<
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
   retrospective: makeGenericStartMeetingNotification,
-  poker: makeGenericStartMeetingNotification
+  poker: makeGenericStartMeetingNotification,
+  teamHealth: makeTeamHealthStartMeetingNotification
 }
 
 const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNotificationAuth> = (
@@ -345,6 +405,51 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
 
     return notifyMattermost(
       'MEETING_STAGE_TIME_LIMIT_END',
+      notificationChannel,
+      user,
+      team.id,
+      attachments
+    )
+  },
+  async teamHealthResponseReminder(meeting, team, user, progress) {
+    const {scheduledEndTime} = meeting
+    if (!scheduledEndTime) return 'success'
+    const {respondentCount, eligibleCount, stragglerNames} = progress
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}/respond`, {
+      searchParams: {
+        utm_source: 'mattermost team health reminder',
+        utm_medium: 'product',
+        utm_campaign: 'notifications'
+      }
+    })
+    const closeTime = formatCloseTime(scheduledEndTime)
+    const attachments = [
+      makeFieldsAttachment(
+        [
+          {
+            short: true,
+            title: 'Team',
+            value: team.name
+          },
+          {
+            short: true,
+            title: 'Responses',
+            value: `${respondentCount} of ${eligibleCount} teammates`
+          },
+          ...(stragglerNames.length > 0
+            ? [{short: false, title: 'Still waiting on', value: stragglerNames.join(', ')}]
+            : []),
+          makeTeamHealthRespondField(meetingUrl)
+        ],
+        {
+          fallback: `${meeting.name} closes ${closeTime}, share your responses: ${meetingUrl}`,
+          title: `${meeting.name} closes ${closeTime} ⏳`,
+          title_link: meetingUrl
+        }
+      )
+    ]
+    return notifyMattermost(
+      'TEAM_HEALTH_RESPONSE_DUE',
       notificationChannel,
       user,
       team.id,

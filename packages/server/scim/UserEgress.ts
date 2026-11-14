@@ -3,6 +3,7 @@ import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
 import {DB} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
+import {getSiblingSAMLs} from './getSiblingSAMLs'
 import {mapUserToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 import {getUserCategory} from './UserCategory'
@@ -57,6 +58,21 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
 
   const orgMembers = orgId ? await dataLoader.get('organizationUsersByOrgId').load(orgId) : []
   const orgUsers = orgMembers.map(({userId}) => userId)
+  const siblingSAMLs = await getSiblingSAMLs(saml, dataLoader)
+  const siblingIds = siblingSAMLs.map((sibling) => sibling.id)
+  const siblingDomains = siblingSAMLs.flatMap((sibling) => sibling.domains)
+  const isExternalMember = (eb: ExpressionBuilder<DB, 'User'>) =>
+    eb.and([
+      eb('id', '=', eb.fn.any(eb.val(orgUsers))),
+      eb(
+        eb.or([
+          eb('scimId', '=', eb.fn.any(eb.val(siblingIds))),
+          eb('domain', '=', eb.fn.any(eb.val(siblingDomains)))
+        ]),
+        'is not',
+        true
+      )
+    ])
 
   const pg = getKysely()
   let userQuery = pg
@@ -66,7 +82,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
       eb.or([
         eb.and([eb('scimId', '=', scimId), eb('scimUserName', 'is not', null)]),
         eb('domain', '=', eb.fn.any(eb.val(domains))),
-        eb('id', '=', eb.fn.any(eb.val(orgUsers)))
+        isExternalMember(eb)
       ])
     )
 
@@ -78,7 +94,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
       eb.or([
         eb('scimId', '=', scimId),
         eb('domain', '=', eb.fn.any(eb.val(domains))),
-        eb('id', '=', eb.fn.any(eb.val(orgUsers)))
+        isExternalMember(eb)
       ])
     )
 

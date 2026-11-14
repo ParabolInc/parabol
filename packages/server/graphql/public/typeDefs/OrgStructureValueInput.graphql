@@ -1,0 +1,7 @@
+"""
+An org structure value as it should be. A value without an id is new
+"""
+input OrgStructureValueInput {
+  id: ID
+  name: String!
+}

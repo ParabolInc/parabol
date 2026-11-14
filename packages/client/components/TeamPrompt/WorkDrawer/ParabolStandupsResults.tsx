@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {ParabolStandupsResultsQuery} from '../../../__generated__/ParabolStandupsResultsQuery.graphql'
@@ -19,14 +20,16 @@ const isContentEmpty = (node: JSONContent): boolean => {
 interface Props {
   queryRef: PreloadedQuery<ParabolStandupsResultsQuery>
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const ParabolStandupsResults = (props: Props) => {
-  const {queryRef, teamId} = props
+  const {queryRef, teamId, searchQuery, onResultCount} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<ParabolStandupsResultsQuery>(
     graphql`
       query ParabolStandupsResultsQuery($teamId: ID!, $after: DateTime, $before: DateTime!) {
         viewer {
@@ -81,6 +84,11 @@ const ParabolStandupsResults = (props: Props) => {
     }))
     .filter((group) => group.responses.length > 0)
 
+  const resultCount = groups.reduce((total, group) => total + group.responses.length, 0)
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
+
   if (groups.length === 0) {
     return (
       <div className='flex flex-col items-center px-4 pt-12'>
@@ -99,13 +107,16 @@ const ParabolStandupsResults = (props: Props) => {
       {groups.map((group) => (
         <div key={group.id} className='flex flex-col gap-y-2'>
           <div className='flex items-baseline justify-between'>
-            <span className='truncate font-semibold text-slate-700 text-sm'>{group.name}</span>
-            <span className='shrink-0 text-slate-500 text-xs'>
+            <span className='truncate font-semibold text-fg-primary text-sm'>{group.name}</span>
+            <span className='shrink-0 text-fg-muted text-xs'>
               {dayjs(group.createdAt).format('MMM D')}
             </span>
           </div>
           {group.responses.map((response) => (
-            <div key={response.id} className='rounded-card bg-white p-3 shadow-card'>
+            <div
+              key={response.id}
+              className='rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'
+            >
               <PromptResponseEditor teamId={teamId} content={response.content} readOnly />
             </div>
           ))}

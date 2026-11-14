@@ -1,6 +1,7 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
-import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import {searchFiltersByKey} from '../../integrations/platform/IntegrationSearchFilter'
+import readScopingSearchStateFromRelayStore from '../../utils/relay/readScopingSearchStateFromRelayStore'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getAzureWorkItemsConn from '../connections/getAzureWorkItemsConn'
 
@@ -19,18 +20,18 @@ const handleAzureCreateIssue = (
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const azureDevOps = integrations?.getLinkedRecord('azureDevOps')
-  const azureSearchQueryId = SearchQueryId.join('azureDevOps', meetingId)
-  const azureSearchQuery = store.get(azureSearchQueryId)
-  const queryString = azureSearchQuery?.getValue('queryString') as string | undefined
-  const isWIQL = azureSearchQuery?.getValue('isWIQL') as boolean | undefined
-  const projectKeyFilters = azureSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+  const {queryString, isAdvancedQuery, filters} = readScopingSearchStateFromRelayStore(
+    store,
+    meetingId,
+    'azureDevOps'
+  )
   const typename = integration.getType()
   if (typename === 'AzureDevOpsWorkItem') {
     const azureWorkItemsConn = getAzureWorkItemsConn(
       azureDevOps,
-      isWIQL,
-      queryString,
-      projectKeyFilters
+      isAdvancedQuery,
+      queryString.trim(),
+      searchFiltersByKey(filters, 'project')
     )
     if (!azureWorkItemsConn) return
     const now = new Date().toISOString()

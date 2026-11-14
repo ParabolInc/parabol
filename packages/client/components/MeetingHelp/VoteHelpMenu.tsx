@@ -1,8 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {VoteHelpMenu_meeting$key} from '~/__generated__/VoteHelpMenu_meeting.graphql'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {VOTE} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -12,13 +10,12 @@ import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
 interface Props {
+  onClose: () => void
   meetingRef: VoteHelpMenu_meeting$key
 }
 
-const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {meetingRef} = _props
-  const {closePortal} = ref
-  useClientSideTrack('Help Menu Open', {phase: 'vote'})
+const VoteHelpMenu = (props: Props) => {
+  const {meetingRef, onClose} = props
   const votes = useFragment(
     graphql`
       fragment VoteHelpMenu_meeting on RetrospectiveMeeting {
@@ -32,7 +29,7 @@ const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
   const totalVotes = votes?.totalVotes ?? 5
   const maxVotesPerGroup = votes?.maxVotesPerGroup ?? 3
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>
       <HelpMenuCopy>
         The goal of this phase is to find signal on what topics are the most important to the team.
@@ -47,6 +44,6 @@ const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#vote`} />
     </HelpMenuContent>
   )
-})
+}
 
 export default VoteHelpMenu

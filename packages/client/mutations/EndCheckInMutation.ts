@@ -13,10 +13,12 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import {GQLID} from '../utils/GQLID'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -34,15 +36,12 @@ graphql`
     removedTaskIds
     team {
       id
-      activeMeetings {
-        id
-      }
       agendaItems {
         id
       }
     }
     timelineEvent {
-      ...TimelineEventCompletedActionMeeting_timelineEvent @relay(mask: false)
+      ...TimelineEventCompletedActionMeeting_timelineEvent @relay(mask: false) @alias
     }
     updatedTasks {
       id
@@ -71,8 +70,8 @@ const mutation = graphql`
           message
         }
       }
-      ...EndCheckInMutation_notification @relay(mask: false)
-      ...EndCheckInMutation_team @relay(mask: false)
+      ...EndCheckInMutation_notification @relay(mask: false) @alias
+      ...EndCheckInMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -112,6 +111,7 @@ export const endCheckInTeamUpdater: SharedUpdater<EndCheckInMutation_team$data> 
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  safeRemoveNodeFromArray(meeting?.getDataID(), payload.getLinkedRecord('team'), 'activeMeetings')
   handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)
 }
@@ -135,9 +135,11 @@ const EndCheckInMutation: StandardMutation<TEndCheckInMutation, NavigateMaybeLoc
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endCheckInTeamOnNext(res.endCheckIn as any, {atmosphere, navigate})
+      const payload = res.endCheckIn.EndCheckInMutation_team
+      if (!payload) return
+      endCheckInTeamOnNext(payload, {atmosphere, navigate})
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

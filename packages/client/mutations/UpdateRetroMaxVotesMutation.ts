@@ -32,7 +32,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
+      ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false) @alias
     }
   }
 `

@@ -1,8 +1,13 @@
 import {memo} from 'react'
 
-const GitLabSVG = memo(() => {
+interface Props {
+  className?: string
+}
+
+const GitLabSVG = memo(({className}: Props) => {
   return (
     <svg
+      className={className}
       version='1.1'
       width='24'
       height='24'

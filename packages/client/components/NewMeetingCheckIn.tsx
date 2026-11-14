@@ -1,14 +1,12 @@
-import styled from '@emotion/styled'
-import {RecordVoiceOver} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingCheckIn_meeting$key} from '~/__generated__/NewMeetingCheckIn_meeting.graphql'
 import type useGotoStageId from '~/hooks/useGotoStageId'
+import {RecordVoiceOver} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
-import {PALETTE} from '../styles/paletteV3'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
@@ -16,24 +14,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-
-const CheckIn = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  minHeight: 98,
-  padding: 16,
-  width: '100%'
-})
-
-const Hint = styled('div')({
-  marginTop: 16
-})
-
-const StyledIcon = styled(RecordVoiceOver)({
-  color: PALETTE.SLATE_600,
-  display: 'block',
-  margin: '0 auto 4px'
-})
 
 interface Props {
   avatarGroup: ReactElement
@@ -53,12 +33,12 @@ const NewMeetingCheckIn = (props: Props) => {
         facilitatorStageId
         localStage {
           id
-          ...NewMeetingCheckInLocalStage @relay(mask: false)
+          ...NewMeetingCheckInLocalStage @relay(mask: false) @alias
         }
         phases {
           stages {
             id
-            ...NewMeetingCheckInLocalStage @relay(mask: false)
+            ...NewMeetingCheckInLocalStage @relay(mask: false) @alias
           }
         }
         teamId
@@ -69,10 +49,10 @@ const NewMeetingCheckIn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
-  const user = localStage.teamMember?.user
+  const user = localStage.NewMeetingCheckInLocalStage?.teamMember.user
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
-  if (!nextStageRes) return null
+  if (!nextStageRes || !user) return null
   const {viewerId} = atmosphere
   const isViewerMeetingSection = user?.id === viewerId
   return (
@@ -86,17 +66,17 @@ const NewMeetingCheckIn = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user!} />
-          <CheckIn>
+          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user} />
+          <div className='flex min-h-[98px] w-full justify-center p-4'>
             {isViewerMeetingSection && (
-              <Hint>
-                <StyledIcon />
+              <div className='mt-4'>
+                <RecordVoiceOver className='mx-auto mb-1 block text-fg-secondary' />
                 <MeetingFacilitationHint>
                   {'Verbally share your response with the team'}
                 </MeetingFacilitationHint>
-              </Hint>
+              </div>
             )}
-          </CheckIn>
+          </div>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>

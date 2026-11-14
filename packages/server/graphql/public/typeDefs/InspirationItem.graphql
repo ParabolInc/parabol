@@ -1,5 +1,5 @@
 """
-An AI-generated draft, grounded in a user's recent work items, that answers the
+An AI-generated draft, grounded in a user's recent issues, that answers the
 meeting prompt. The text is editable and can be moved into a meeting response.
 """
 type InspirationItem {
@@ -19,13 +19,13 @@ type InspirationItem {
   title: String
 
   """
-  The integration service the source work items came from, e.g. github
+  The integration service the source issues came from, e.g. github
   """
   service: String!
 
   """
-  For retrospective meetings, the id of the ReflectPrompt (column) the item should be added to.
-  Null for team prompt meetings, which have no reflect prompts.
+  The id of the TemplatePrompt the item should be added to: the retro column, or the stand-up
+  prompt.
   """
   promptId: ID
 

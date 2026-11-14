@@ -65,5 +65,12 @@ export const FileBlockBase = Node.create({
 
   renderHTML({HTMLAttributes}) {
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
+  },
+
+  renderMarkdown(node) {
+    const {name, src} = node.attrs as FileBlockAttrs
+    if (!src) return ''
+    const label = (name || src).replace(/[[\]\\]/g, '\\$&')
+    return `[${label}](${src})`
   }
 })

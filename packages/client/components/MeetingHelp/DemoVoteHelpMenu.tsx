@@ -1,4 +1,3 @@
-import {forwardRef} from 'react'
 import useInterval from '../../hooks/useInterval'
 import DelayedCopy from './DelayedCopy'
 import HelpMenuContent from './HelpMenuContent'
@@ -6,14 +5,16 @@ import HelpMenuHeader from './HelpMenuHeader'
 
 let permShow = 0
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const DemoVoteHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
+const DemoVoteHelpMenu = (props: Props) => {
+  const {onClose} = props
   const staggerShow = useInterval(2000, 2)
   if (staggerShow > permShow) permShow = staggerShow
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>To the Ballots!</HelpMenuHeader>
       <DelayedCopy show={permShow} thresh={1}>
         Anonymously vote for the topics you’d like to discuss.
@@ -24,6 +25,6 @@ const DemoVoteHelpMenu = forwardRef((_props: Props, ref: any) => {
       </DelayedCopy>
     </HelpMenuContent>
   )
-})
+}
 
 export default DemoVoteHelpMenu

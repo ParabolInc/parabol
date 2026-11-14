@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {SetTaskHighlightMutation as TSetTaskHighlightMutation} from '../__generated__/SetTaskHighlightMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {SimpleMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment SetTaskHighlightMutation_meeting on SetTaskHighlightSuccess {
@@ -15,9 +16,9 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation SetTaskHighlightMutation($taskId: ID!, $meetingId: ID!, $isHighlighted: Boolean!) {
+  mutation SetTaskHighlightMutation($taskId: ID!, $meetingId: ID!, $isHighlighted: Boolean!) @raw_response_type {
     setTaskHighlight(taskId: $taskId, meetingId: $meetingId, isHighlighted: $isHighlighted) {
-      ...SetTaskHighlightMutation_meeting @relay(mask: false)
+      ...SetTaskHighlightMutation_meeting @relay(mask: false) @alias
     }
   }
 `
@@ -28,7 +29,8 @@ const SetTaskHighlightMutation: SimpleMutation<TSetTaskHighlightMutation> = (
 ) =>
   commitMutation<TSetTaskHighlightMutation>(atmosphere, {
     mutation,
-    variables
+    variables,
+    onError: snackOnError(atmosphere)
   })
 
 export default SetTaskHighlightMutation

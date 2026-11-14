@@ -1,29 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
+import {Menu} from '../ui/Menu/Menu'
 import Avatar from './Avatar/Avatar'
-
-const AvatarWrapper = styled('button')({
-  background: 'transparent',
-  border: 'none',
-  borderRadius: 100,
-  marginLeft: 8,
-  padding: 4,
-  ':focus-visible': {
-    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
-    cursor: 'pointer',
-    outline: 'none'
-  },
-  ':active': {
-    boxShadow: '0 0 0 2px transparent'
-  }
-})
 
 const StandardHubUserMenu = lazyPreload(
   () => import(/* webpackChunkName: 'StandardHubUserMenu' */ './StandardHubUserMenu')
@@ -45,21 +27,24 @@ const TopBarAvatar = (props: Props) => {
     viewerRef
   )
   const userAvatar = viewer?.picture ?? defaultUserAvatar
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT
-  )
   return (
-    <>
-      <AvatarWrapper onClick={togglePortal}>
-        <Avatar
+    <Menu
+      trigger={
+        <button
+          type='button'
           onMouseEnter={StandardHubUserMenu.preload}
-          ref={originRef}
-          picture={userAvatar}
-          className='h-10 w-10 cursor-pointer'
-        />
-        {viewer && menuPortal(<StandardHubUserMenu menuProps={menuProps} viewerRef={viewer} />)}
-      </AvatarWrapper>
-    </>
+          className='ml-2 rounded-full border-none bg-transparent p-1 focus-visible:cursor-pointer focus-visible:shadow-[0_0_0_2px_var(--color-sky-400)] focus-visible:outline-none active:shadow-[0_0_0_2px_transparent]'
+        >
+          <Avatar picture={userAvatar} className='h-10 w-10 cursor-pointer' />
+        </button>
+      }
+    >
+      {viewer && (
+        <Suspense fallback={null}>
+          <StandardHubUserMenu viewerRef={viewer} />
+        </Suspense>
+      )}
+    </Menu>
   )
 }
 

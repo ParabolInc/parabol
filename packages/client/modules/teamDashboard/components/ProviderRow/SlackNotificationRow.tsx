@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {
@@ -25,20 +24,9 @@ const labelLookup = {
   MEETING_STAGE_TIME_LIMIT_END: `Meeting ${MeetingLabels.TIME_LIMIT} Ended`,
   MEETING_STAGE_TIME_LIMIT_START: `Meeting ${MeetingLabels.TIME_LIMIT} Started`,
   TOPIC_SHARED: `Topic Shared`,
-  STANDUP_RESPONSE_SUBMITTED: 'Standup Response Submitted'
+  STANDUP_RESPONSE_SUBMITTED: 'Standup Response Submitted',
+  TEAM_HEALTH_RESPONSE_DUE: 'Team Health Reminder'
 } as Record<SlackNotificationEventEnum, string>
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const Label = styled('span')({
-  fontSize: 14,
-  marginRight: 16,
-  width: '100%'
-})
 
 const SlackNotificationRow = (props: Props) => {
   const {event, localChannelId, teamId, viewer: viewerRef} = props
@@ -67,7 +55,9 @@ const SlackNotificationRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const existingNotification = notifications.find((notification) => notification.event === event)
   const active = !!(existingNotification && existingNotification.channelId)
-  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
+  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const onClick = () => {
     if (submitting) return
     submitMutation()
@@ -85,10 +75,10 @@ const SlackNotificationRow = (props: Props) => {
   // does not show disabled when submitting because the temporary disabled mouse icon is ugly
   return (
     <>
-      <Row>
-        <Label>{label}</Label>
+      <div className='flex items-center py-2'>
+        <span className='mr-4 w-full text-[14px]'>{label}</span>
         <Toggle active={active} disabled={!localChannelId} onClick={onClick} />
-      </Row>
+      </div>
       {error && <StyledError>{error.message}</StyledError>}
     </>
   )

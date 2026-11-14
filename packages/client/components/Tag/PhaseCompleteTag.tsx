@@ -1,20 +1,3 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  background: PALETTE.SLATE_600,
-  borderRadius: 4,
-  color: '#fff',
-  display: 'flex',
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '20px',
-  marginBottom: 8,
-  maxHeight: 28,
-  padding: '4px 16px'
-})
-
 interface Props {
   isComplete: boolean
 }
@@ -22,7 +5,11 @@ interface Props {
 const PhaseCompleteTag = (props: Props) => {
   const {isComplete} = props
   if (!isComplete) return null
-  return <Wrapper>Phase Completed</Wrapper>
+  return (
+    <div className='mb-2 flex max-h-7 items-center rounded bg-slate-600 px-4 py-1 font-semibold text-sm text-white'>
+      Phase Completed
+    </div>
+  )
 }
 
 export default PhaseCompleteTag

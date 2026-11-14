@@ -1,6 +1,8 @@
+import {sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import type {JobType} from '../../../../embedder/custom'
 import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
+import {getInactiveModelJobs} from '../../../../embedder/getInactiveModelJobs'
 import getKysely from '../../../postgres/getKysely'
 import {embeddingResponder} from '../../../utils/embeddingResponder'
 import getRedis from '../../../utils/getRedis'
@@ -21,6 +23,7 @@ interface MessageToEmbedderUserQuery extends BaseMessageToEmbedder {
     query: string
     requestId: number
     channelName: string
+    expiresAt: number
   }
 }
 
@@ -47,6 +50,9 @@ interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   data: RelatedDiscussionsJobData
 }
 
+const PAGE_EMBED_IDLE_DELAY_SECONDS = 20
+const PAGE_EMBED_MAX_DELAY_SECONDS = 120
+
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 
 const jobTypeToKind = {
@@ -56,12 +62,12 @@ const jobTypeToKind = {
   'embedPage:start': 'corpusUpdate'
 } satisfies Record<JobType, JobKind>
 
-let nextRequestId = 0
-export const getUserQueryJobData = (query: string) => {
+export const getUserQueryJobData = (query: string, timeoutMs = 10_000) => {
   return {
     query,
-    requestId: ++nextRequestId,
-    channelName: embeddingResponder.channelName
+    requestId: embeddingResponder.nextRequestId(),
+    channelName: embeddingResponder.channelName,
+    expiresAt: Date.now() + timeoutMs
   }
 }
 
@@ -70,12 +76,12 @@ export async function publishToEmbedder(
 ): Promise<undefined>
 export async function publishToEmbedder(
   payload: MessageToEmbedderUserQuery
-): Promise<Float32Array | Error>
+): Promise<Float32Array | Error | undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbed): Promise<undefined>
 export async function publishToEmbedder(
   payload: MessageToEmbedderEmbedWithResponse
-): Promise<Float32Array | Error>
+): Promise<Float32Array | Error | undefined>
 export async function publishToEmbedder(
   payload:
     | MessageToEmbedderUserQuery
@@ -90,16 +96,26 @@ export async function publishToEmbedder(
   const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
   const pageId = (payload as MessageToEmbedderEmbedPage).pageId
   const embeddingsMetadataId = (payload as MessageToEmbedderEmbed).embeddingsMetadataId
+  const job = {jobType, pageId, embeddingsMetadataId}
+  const runAfter = pageId
+    ? sql<Date>`now() + ${sql.lit(PAGE_EMBED_IDLE_DELAY_SECONDS)} * interval '1 second'`
+    : undefined
+  const inactiveModelJobs =
+    jobType === 'embed:start' || jobType === 'embedPage:start'
+      ? await getInactiveModelJobs(job, userId, dataLoader)
+      : []
   await getKysely()
     .insertInto('EmbeddingsJobQueueV2')
-    .values({
-      jobType,
-      priority,
-      modelId: activeEmbeddingModelId,
-      pageId,
-      embeddingsMetadataId,
-      jobData: JSON.stringify(data || {})
-    })
+    .values([
+      {
+        ...job,
+        priority,
+        modelId: activeEmbeddingModelId,
+        jobData: JSON.stringify(data || {}),
+        runAfter
+      },
+      ...inactiveModelJobs.map((inactiveModelJob) => ({...inactiveModelJob, runAfter}))
+    ])
     .$if(!!pageId, (qb) =>
       qb.onConflict((oc) =>
         oc
@@ -107,8 +123,9 @@ export async function publishToEmbedder(
           // necessary to use the unique constraint idx we created
           .where('pageId', 'is not', null)
           .doUpdateSet((eb) => ({
-            // wait until they stop updating the document to process the embeddings
-            priority: eb.ref('excluded.priority')
+            priority: eb.ref('excluded.priority'),
+            // each save pushes the job back, but no further than 2 minutes after it was queued or last claimed
+            runAfter: sql<Date>`least(${eb.ref('excluded.runAfter')}, ${eb.ref('EmbeddingsJobQueueV2.updatedAt')} + ${sql.lit(PAGE_EMBED_MAX_DELAY_SECONDS)} * interval '1 second')`
           }))
       )
     )
@@ -116,8 +133,13 @@ export async function publishToEmbedder(
   await getRedis().publish('embeddingsJobAdded', '')
   if (data && 'requestId' in data) {
     const {requestId} = data
+    const timeoutMs = 'expiresAt' in data ? Math.max(0, data.expiresAt - Date.now()) : undefined
     try {
-      return await embeddingResponder.waitForResponse(requestId)
+      const vector = await embeddingResponder.waitForResponse(requestId, timeoutMs)
+      if (vector.length === 0) {
+        return new Error(`Embedder returned an empty vector for request: ${requestId}`)
+      }
+      return vector
     } catch (e) {
       return e
     }

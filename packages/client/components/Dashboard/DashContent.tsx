@@ -1,17 +1,24 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
+import {forwardRef, type HTMLAttributes} from 'react'
 import {Filter} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 
-const DashContent = styled('div')<{hasOverlay?: boolean}>(({hasOverlay}) => ({
-  backgroundColor: PALETTE.SLATE_200,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  minHeight: 0,
-  // overflow: 'auto', removed because @hello-pangea/dnd only supports 1 scrolling parent
-  width: '100%',
-  height: '100%',
-  filter: hasOverlay ? Filter.BENEATH_DIALOG : undefined
-}))
+interface Props extends HTMLAttributes<HTMLDivElement> {
+  hasOverlay?: boolean
+}
+
+const DashContent = forwardRef<HTMLDivElement, Props>((props, ref) => {
+  const {hasOverlay, className, style, children, ...rest} = props
+  return (
+    <div
+      ref={ref}
+      // overflow-auto omitted because @hello-pangea/dnd only supports 1 scrolling parent
+      className={cn('flex h-full min-h-0 w-full flex-1 flex-col bg-surface-app', className)}
+      style={{filter: hasOverlay ? Filter.BENEATH_DIALOG : undefined, ...style}}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+})
 
 export default DashContent

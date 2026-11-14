@@ -21,7 +21,7 @@ module.exports = {
   },
   entry: {
     assignSURole: [DOTENV, path.join(TOOLBOX_SRC, 'assignSURole.ts')],
-    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
+    createEmbeddingsTables: [DOTENV, path.join(TOOLBOX_SRC, 'createEmbeddingsTables.ts')],
     setIsEnterprise: [DOTENV, path.join(TOOLBOX_SRC, 'setIsEnterprise.ts')],
     updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
   },
@@ -41,20 +41,12 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
+      allowlist: [/parabol-client/, /parabol-server/]
     })
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: true
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^exiftool-vendored$/,
-      contextRegExp: /@dicebear/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^@resvg\/resvg-js$/,
-      contextRegExp: /@dicebear/
     })
     // new CircularDependencyPlugin({
     //   // `onStart` is called before the cycle detection starts
@@ -79,7 +71,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT, true),
+      ...transformRules(PROJECT_ROOT, {isProd: true}),
       {
         test: /\.js$/,
         include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],

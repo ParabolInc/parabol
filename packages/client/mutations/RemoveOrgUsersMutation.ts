@@ -86,10 +86,10 @@ const mutation = graphql`
           message
         }
       }
-      ...RemoveOrgUsersMutation_organization @relay(mask: false)
-      ...RemoveOrgUsersMutation_team @relay(mask: false)
-      ...RemoveOrgUsersMutation_task @relay(mask: false)
-      ...RemoveOrgUsersMutation_notification @relay(mask: false)
+      ...RemoveOrgUsersMutation_organization @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_team @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_task @relay(mask: false) @alias
+      ...RemoveOrgUsersMutation_notification @relay(mask: false) @alias
     }
   }
 `
@@ -245,7 +245,7 @@ const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, Navigate
     updater: (store) => {
       const payload = store.getRootField('removeOrgUsers')
       if (!payload) return
-      if (payload.getValue('error')) return
+      if (payload.getLinkedRecord('error')) return
 
       removeOrgUsersOrganizationUpdater(payload as any, {atmosphere, store})
       removeOrgUsersTeamUpdater(payload as any, {atmosphere, store})
@@ -256,15 +256,19 @@ const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, Navigate
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res.removeOrgUsers
-      if (!payload || payload.error) return
+      const {
+        RemoveOrgUsersMutation_organization: organizationPayload,
+        RemoveOrgUsersMutation_team: teamPayload,
+        RemoveOrgUsersMutation_notification: notificationPayload
+      } = res.removeOrgUsers
+      if (!organizationPayload || !teamPayload || !notificationPayload) return
 
-      removeOrgUsersOrganizationOnNext(payload as any, {
+      removeOrgUsersOrganizationOnNext(organizationPayload, {
         navigate,
         atmosphere
       })
-      removeOrgUsersTeamOnNext(payload as any, {atmosphere})
-      removeOrgUsersNotificationOnNext(payload as any, {atmosphere, navigate})
+      removeOrgUsersTeamOnNext(teamPayload, {atmosphere})
+      removeOrgUsersNotificationOnNext(notificationPayload, {atmosphere, navigate})
     },
     onError
   })

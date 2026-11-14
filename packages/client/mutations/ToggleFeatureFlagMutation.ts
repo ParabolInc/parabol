@@ -20,7 +20,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ToggleFeatureFlagMutation_notification @relay(mask: false)
+      ...ToggleFeatureFlagMutation_notification @relay(mask: false) @alias
     }
   }
 `

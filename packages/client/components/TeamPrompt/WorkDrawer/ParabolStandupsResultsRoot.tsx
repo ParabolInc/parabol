@@ -12,10 +12,12 @@ import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 interface Props {
   teamId: string
   dateRange: WorkDrawerDateRange | undefined
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const ParabolStandupsResultsRoot = (props: Props) => {
-  const {teamId, dateRange} = props
+  const {teamId, dateRange, searchQuery, onResultCount} = props
   const queryRef = useQueryLoaderNow<ParabolStandupsResultsQuery>(parabolStandupsResultsQuery, {
     teamId,
     after: dateRange?.startAt ?? null,
@@ -24,7 +26,14 @@ const ParabolStandupsResultsRoot = (props: Props) => {
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
-        {queryRef && <ParabolStandupsResults queryRef={queryRef} teamId={teamId} />}
+        {queryRef && (
+          <ParabolStandupsResults
+            queryRef={queryRef}
+            teamId={teamId}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
+          />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

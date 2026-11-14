@@ -1,7 +1,7 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {Node} from '@tiptap/core'
 import {type NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
-import {lazy} from 'react'
+import {lazy, Suspense} from 'react'
+import {DatabaseBase} from '../../../shared/tiptap/extensions/DatabaseBase'
 import {appendColumn, appendRow, getColumns, getRows} from './data'
 
 const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
@@ -17,22 +17,25 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative'>
-      <DatabaseView
-        provider={extension.options.provider}
-        editor={editor}
-        userId={extension.options.userId}
-      />
+      {/* without a boundary of its own, the suspending chunk hides the editor, which tears down & recreates this node view in a loop */}
+      <Suspense
+        fallback={<div className='h-28 rounded-lg border border-hairline bg-surface-card' />}
+      >
+        <DatabaseView
+          provider={extension.options.provider}
+          editor={editor}
+          userId={extension.options.userId}
+        />
+      </Suspense>
     </NodeViewWrapper>
   )
 }
 
 export interface DatabaseOptions {
-  // provider doesn't exist on the server, but we still want to use this extension for parsing there
   provider?: HocuspocusProvider
   userId?: string
 }
-export const Database = Node.create<DatabaseOptions>({
-  name: 'database',
+export const Database = DatabaseBase.extend<DatabaseOptions>({
   onCreate() {
     // Add some initial content to make the first use easier
     const {provider, userId} = this.options
@@ -47,13 +50,11 @@ export const Database = Node.create<DatabaseOptions>({
       appendRow(document, userId)
     }
   },
-  renderHTML() {
-    return ['div']
-  },
-  parseHTML() {
-    return [{tag: 'database'}]
-  },
   addNodeView() {
-    return ReactNodeViewRenderer(Component, {contentDOMElementTag: 'div'})
+    return ReactNodeViewRenderer(Component, {
+      contentDOMElementTag: 'div',
+      // the grid handles its own input. Left to ProseMirror, a click on an icon or label selects the node & pulls focus back to the editor, closing the menu that click just opened
+      stopEvent: () => true
+    })
   }
 })

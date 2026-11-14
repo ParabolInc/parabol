@@ -67,7 +67,12 @@ async function refresh<TRaw extends object, TTransformed>(
     return
   }
   const transformedPayload = await transform(raw)
-  redis.set(key, pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}), 'PX', ttl)
+  await redis.set(
+    key,
+    pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}),
+    'PX',
+    ttl
+  )
   if (onUpdate) await onUpdate(transformedPayload)
 }
 

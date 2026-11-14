@@ -1,10 +1,11 @@
-import styled from '@emotion/styled'
+import {forwardRef, type ImgHTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const MenuAvatar = styled('img')({
-  borderRadius: '100%',
-  height: 24,
-  marginRight: 8,
-  width: 24
-})
+const MenuAvatar = forwardRef(
+  (props: ImgHTMLAttributes<HTMLImageElement>, ref: Ref<HTMLImageElement>) => {
+    const {className, ...rest} = props
+    return <img ref={ref} className={cn('mr-2 h-6 w-6 rounded-full', className)} {...rest} />
+  }
+)
 
 export default MenuAvatar

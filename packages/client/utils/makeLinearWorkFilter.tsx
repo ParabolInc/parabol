@@ -1,5 +1,6 @@
-import type {_xLinearIssueFilter} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
+import type {_xLinearIssueFilter} from '../__generated__/LinearScopingResultsAdapterQuery.graphql'
 import type {WorkDrawerDateRange} from '../components/TeamPrompt/WorkDrawer/WorkDrawerDateFilter'
+import toLinearSearchFilters from '../integrations/linear/toLinearSearchFilters'
 import {makeLinearIssueFilter} from './makeLinearIssueFilter'
 
 // Builds the Linear issue filter for the Your Work drawer: issues the viewer is involved in,
@@ -17,7 +18,7 @@ export const makeLinearWorkFilter = (
     {subscribers: {isMe: {eq: true}}}
   ]
   const and: _xLinearIssueFilter[] = [{or: involvesLinearViewerConds}]
-  const projectsAndTeamsFilter = makeLinearIssueFilter('', selectedLinearIds)
+  const projectsAndTeamsFilter = makeLinearIssueFilter('', toLinearSearchFilters(selectedLinearIds))
   if (projectsAndTeamsFilter) {
     and.push(projectsAndTeamsFilter)
   }

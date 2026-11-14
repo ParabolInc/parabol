@@ -1,13 +1,3 @@
-// The analytics module pulls in Amplitude which references a webpack-injected
-// `__PRODUCTION__` global at import time. Stub it out so we can import the
-// mutation file purely for the pure helper we're testing.
-jest.mock('../../../../utils/analytics/analytics', () => ({
-  analytics: {
-    recurrenceStarted: jest.fn(),
-    recurrenceStopped: jest.fn()
-  }
-}))
-
 import dayjs from 'dayjs'
 import {RRuleSet} from 'rrule-rust'
 import {updateGCalRecurrenceRule} from '../updateRecurrenceSettings'

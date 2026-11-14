@@ -1,0 +1,15 @@
+"""
+The single phase of a standalone Team Health meeting, one stage per template question
+"""
+type TeamHealthResponsePhase implements NewMeetingPhase {
+  "Unique identifier"
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """
+  The type of phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [TeamHealthResponseStage!]!
+}

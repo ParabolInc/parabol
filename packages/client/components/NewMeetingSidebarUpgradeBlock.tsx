@@ -1,81 +1,19 @@
-import styled from '@emotion/styled'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {useNavigate} from 'react-router'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
-import FlatPrimaryButton from './FlatPrimaryButton'
+import {Button} from '../ui/Button/Button'
 import IconButton from './IconButton'
-
-const RootBlock = styled('div')({
-  padding: '16px 8px'
-})
-
-const Container = styled('div')({
-  background: PALETTE.SLATE_200,
-  border: `2px solid ${PALETTE.GRAPE_500}`,
-  padding: 12,
-  borderRadius: 4,
-  position: 'relative'
-})
-
-const Heading = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: '14px',
-  lineHeight: '16px',
-  fontWeight: 600
-})
-
-const Description = styled('div')({
-  color: PALETTE.SLATE_900,
-  fontSize: '12px',
-  lineHeight: '16px',
-  marginTop: 8
-})
-
-const Action = styled('div')({
-  marginTop: 8
-})
-
-const MEDIA_QUERY_SMALL_HEIGHT = `@media screen and (min-height: 650px)`
-
-const CloseButtonWrapper = styled('div')({
-  marginBottom: '6px',
-  [MEDIA_QUERY_SMALL_HEIGHT]: {
-    display: 'none'
-  }
-})
-
-const CloseButton = styled(IconButton)({
-  opacity: 0.75,
-  padding: 0,
-  position: 'absolute',
-  right: 2,
-  top: 2
-})
-
-const UpgradeButton = styled(FlatPrimaryButton)({
-  width: '100%'
-})
 
 interface Props {
   onClick?: () => void
   orgId: string
-  meetingId: string
 }
 
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
-  const {onClick, orgId, meetingId} = props
+  const {onClick, orgId} = props
   const navigate = useNavigate()
   const [closed, setClosed] = useState(false)
-  const atmosphere = useAtmosphere()
 
   const handleUpgradeClick = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'meetingSidebar',
-      orgId,
-      meetingId
-    })
     onClick?.()
     navigate(`/me/organizations/${orgId}`)
   }
@@ -84,39 +22,41 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
     setClosed(true)
   }
 
-  useEffect(() => {
-    if (!closed) {
-      SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-        upgradeCTALocation: 'meetingSidebar',
-        orgId,
-        meetingId
-      })
-    }
-  }, [closed])
-
   if (closed) {
     return null
   }
 
   return (
-    <RootBlock>
-      <Container>
-        <CloseButtonWrapper>
-          <CloseButton icon='close' palette='midGray' onClick={handleClose} />
-        </CloseButtonWrapper>
-        <Heading>🎉 We’re glad you love Parabol!</Heading>
-        <Description>
+    <div className='px-2 py-4'>
+      <div className='relative rounded border-2 border-grape-500 border-solid bg-surface-well p-3'>
+        <div className='mb-[6px] [@media_screen_and_(min-height:650px)]:hidden'>
+          <IconButton
+            icon='close'
+            palette='midGray'
+            onClick={handleClose}
+            className='absolute top-0.5 right-0.5 p-0 opacity-75'
+          />
+        </div>
+        <div className='font-semibold text-[14px] text-fg-primary leading-4'>
+          🎉 We’re glad you love Parabol!
+        </div>
+        <div className='mt-2 text-fg-primary text-xs'>
           You've exceeded the two-team limit. To make sure you don't lose access, upgrade to the
           Team plan so you can have as many teams as you need.
-        </Description>
+        </div>
 
-        <Action>
-          <UpgradeButton onClick={handleUpgradeClick} size='small'>
+        <div className='mt-2'>
+          <Button
+            variant='primary'
+            size='sm'
+            onClick={handleUpgradeClick}
+            className='w-full text-sm'
+          >
             Upgrade
-          </UpgradeButton>
-        </Action>
-      </Container>
-    </RootBlock>
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
 

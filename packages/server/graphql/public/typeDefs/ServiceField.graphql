@@ -1,14 +1,21 @@
 """
-A field that exists on a 3rd party service
+A field on a task's service that an estimate can be pushed to. EstimateStage.serviceField is the selected one; EstimateStage.serviceFieldListing.options are the candidates
 """
 type ServiceField {
   """
-  The name of the field as provided by the service
+  The id updateIntegrationDimensionField takes. The two sentinels ("" = do not update, "__comment" = comment) and a label template are their own id
   """
-  name: String!
+  fieldId: ID!
+
+  """
+  The service's human-readable name for the field, the sentinel's display name, or the template itself for a label template
+  """
+  label: String!
 
   """
   The field type, to be used for validation and analytics
   """
   type: String!
+
+  name: String! @deprecated(reason: "Use fieldId, or label for display")
 }

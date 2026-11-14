@@ -1,29 +1,32 @@
-import {createAvatar} from '@dicebear/core'
-import * as initials from '@dicebear/initials'
-import sharp from 'sharp'
-import {themeBackgroundColors} from '../../../../../client/shared/themeBackgroundColors'
+import {initials as getInitials} from '../../../../../client/shared/initials'
+import {selectThemeBackgroundColor} from '../../../../../client/shared/selectThemeBackgroundColor'
 import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
-export const generateIdenticon = async (userId: string, name: string) => {
-  const letters = 'abcdefghijklmnopqrstuvwxyz'
-  // 500 color value from our theme
+import loadSharp from '../../../../utils/loadSharp'
+import identiconGlyphs from './identiconGlyphs'
 
-  const seed =
-    name
-      .toLowerCase()
-      .split('')
-      .filter((letter) => letters.includes(letter))
-      .slice(0, 2)
-      .join('') || 'pa'
-  const avatar = createAvatar(initials, {
-    seed,
-    backgroundColor: themeBackgroundColors,
-    fontFamily: ['IBM Plex Sans']
-  })
-  const svgBuffer = await avatar.toArrayBuffer()
-  const pngBuffer = await sharp(svgBuffer as ArrayBuffer)
-    .png()
-    .toBuffer()
-  const manager = getFileStoreManager()
+const {unitsPerEm, glyphs, kerning} = identiconGlyphs
+const FONT_SCALE = 50 / unitsPerEm
+const BASELINE = 67.8
+
+export const generateIdenticon = async (userId: string, name: string) => {
+  const initials = getInitials(name, 'pa')
+  const backgroundColor = selectThemeBackgroundColor(initials)
+  let width = 0
+  let paths = ''
+  let previousChar = ''
+  for (const char of initials) {
+    const glyph = glyphs[char]
+    if (!glyph) continue
+    width += kerning[previousChar + char] ?? 0
+    paths += `<path transform="translate(${width})" d="${glyph.path}"/>`
+    width += glyph.advance
+    previousChar = char
+  }
+  const left = 50 - (width * FONT_SCALE) / 2
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#${backgroundColor}"/><g fill="#fff" transform="translate(${left} ${BASELINE}) scale(${FONT_SCALE} -${FONT_SCALE})">${paths}</g></svg>`
+  const sharp = await loadSharp()
+  const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer()
+  const manager = await getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(pngBuffer, userId, 'png')
   return publicLocation
 }

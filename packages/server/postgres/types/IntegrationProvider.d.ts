@@ -52,8 +52,8 @@ export type IntegrationProviderMattermost =
 export interface IntegrationProviderGcalOAuth2 extends IntegrationProviderOAuth2 {
   service: 'gcal'
 }
-export interface IntegrationProviderGdriveOAuth2 extends IntegrationProviderOAuth2 {
-  service: 'gdrive'
+export interface IntegrationProviderGmeetOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'gmeet'
 }
 export interface IntegrationProviderGitLabOAuth2 extends IntegrationProviderOAuth2 {
   service: 'gitlab'
@@ -82,6 +82,18 @@ export interface IntegrationProviderZoomOAuth2 extends IntegrationProviderOAuth2
   service: 'zoom'
 }
 
+export interface IntegrationProviderJiraOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'jira'
+}
+
+export interface IntegrationProviderGitHubOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'github'
+}
+
+export interface IntegrationProviderClickUpOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'clickup'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
@@ -90,6 +102,9 @@ export type TIntegrationProvider =
   | IntegrationProviderAzureDevOps
   | IntegrationProviderMSTeams
   | IntegrationProviderGcalOAuth2
-  | IntegrationProviderGdriveOAuth2
+  | IntegrationProviderGmeetOAuth2
   | IntegrationProviderLinear
   | IntegrationProviderZoomOAuth2
+  | IntegrationProviderJiraOAuth2
+  | IntegrationProviderGitHubOAuth2
+  | IntegrationProviderClickUpOAuth2

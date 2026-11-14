@@ -19,9 +19,7 @@ const LinearIntegration: LinearIntegrationResolvers = {
     return globalProvider!
   },
 
-  id: ({teamId, userId}) => `linear:${teamId}:${userId}`,
-
-  linearSearchQueries: async () => []
+  id: ({teamId, userId}) => `linear:${teamId}:${userId}`
 }
 
 export default LinearIntegration

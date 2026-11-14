@@ -36,7 +36,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AddIntegrationProviderMutation_organization @relay(mask: false)
+      ...AddIntegrationProviderMutation_organization @relay(mask: false) @alias
     }
   }
 `

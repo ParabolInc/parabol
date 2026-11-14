@@ -1,42 +1,24 @@
-ARG _NODE_VERSION=${_NODE_VERSION}
-FROM node:${_NODE_VERSION}-trixie-slim as base
+ARG _NODE_MAJOR=${_NODE_MAJOR}
+FROM gcr.io/distroless/nodejs${_NODE_MAJOR}-debian13
 
-ARG DD_GIT_REPOSITORY_URL
-ARG DD_GIT_COMMIT_SHA
-
-# Install Fontconfig for SVG rendering
-RUN apt-get update && apt-get install -y fontconfig
-
+# node is only the entrypoint in distroless, add it to PATH so it also works as a command
 ENV HOME=/home/node \
-    USER=node \
-    FONTCONFIG_PATH=/etc/fonts \
-    NPM_CONFIG_PREFIX=/home/node/.npm-global \
-    PORT=3000
+    PATH=/nodejs/bin:${PATH} \
+    PORT=3000 \
+    NODE_COMPILE_CACHE=/home/node/parabol/dist/compile-cache
 
-COPY --chown=node --chmod=755 docker/images/parabol-ubi/entrypoints/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY --chown=node docker/images/parabol-ubi/tools/ip-to-server_id ${HOME}/tools/ip-to-server_id
+USER 1000:1000
 
 # Required for pushToCDN to work with FILE_STORE_PROVIDER set to 'local'
-RUN mkdir -p ${HOME}/parabol/self-hosted && \
-    chown node:node ${HOME}/parabol/self-hosted
-
-# Create a directory to store fonts
-RUN mkdir -p /usr/share/fonts
-COPY --chown=node static/fonts /usr/share/fonts
-
-COPY --chown=node .env.example ${HOME}/parabol/.env.example
+WORKDIR ${HOME}/parabol/self-hosted
+WORKDIR ${HOME}/parabol
 
 # The application requires a pnpm-lock.yaml file on the root folder to identify it
-COPY --chown=node pnpm-lock.yaml ${HOME}/parabol/pnpm-lock.yaml
-COPY --chown=node build ${HOME}/parabol/build
-COPY --chown=node dist ${HOME}/parabol/dist
+COPY --chown=1000:1000 .env.example pnpm-lock.yaml ./
+COPY --chown=1000:1000 build ./build
+COPY --chown=1000:1000 dist ./dist
+RUN --mount=type=bind,source=docker/images/parabol-ubi/compileBundles.js,target=/tmp/compileBundles.js ["node", "/tmp/compileBundles.js"]
 
-WORKDIR ${HOME}/parabol/
-
-USER node
 EXPOSE ${PORT}
 
-ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} \
-    DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
-
-ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["dist/web.js"]

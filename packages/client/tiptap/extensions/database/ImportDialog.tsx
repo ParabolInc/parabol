@@ -1,16 +1,15 @@
-import {CircularProgress} from '@mui/material'
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
-import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
-import SecondaryButton from '../../../components/SecondaryButton'
 import {UploadDatabaseImport} from '../../../components/UploadDatabaseImport'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
+import {Spinner} from '../../../ui/Spinner/Spinner'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
 import {getColumnMeta, getColumns, getData, getDataEntries, getRows, type RowDataMap} from './data'
@@ -149,8 +148,8 @@ export const ImportDialog = (props: Props) => {
       <DialogContent className='absolute z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
-          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-white/50'>
-            <CircularProgress />
+          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
+            <Spinner />
           </div>
         )}
         {!records ? (
@@ -160,10 +159,10 @@ export const ImportDialog = (props: Props) => {
             onError={onError}
           />
         ) : (
-          <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
-            Import settings
+          <div className='mb-3 text-left text-sm'>
+            <div className='font-semibold text-fg-secondary'>Import settings</div>
             <div
-              className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+              className='flex cursor-pointer items-center gap-2 py-1'
               onClick={() => setFirstRowIsHeader(!firstRowIsHeader)}
             >
               <Checkbox checked={firstRowIsHeader} />
@@ -171,35 +170,33 @@ export const ImportDialog = (props: Props) => {
             </div>
             {!dataIsEmpty && (
               <div
-                className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+                className='flex cursor-pointer items-center gap-2 py-1'
                 onClick={() => setDiscardExistingData(!discardExistingData)}
               >
                 <Checkbox checked={discardExistingData} disabled={dataIsEmpty} />
                 Discard existing data ({yRows.length} {plural(yRows.length, 'row')})
               </div>
             )}
-            <div className={'mt-4 text-sm'}>
+            <div className='mt-4 mb-2 text-fg-secondary'>
               Previewing {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
               {recordCount} {plural(recordCount, 'record')}...
             </div>
-            <div
-              className={
-                'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-slate-400 text-slate-500'
-              }
-            >
-              <table className={'relative min-w-full border-collapse bg-white'}>
+            <div className='mb-4 flex max-h-50 w-full flex-col overflow-auto rounded-lg border border-hairline bg-surface-card'>
+              <table className='relative min-w-full border-collapse [&_tbody_tr:last-child_td]:border-b-0'>
                 <thead>
-                  <tr className='text-slate-600'>
+                  <tr className='bg-surface-raised text-fg-secondary'>
                     {headers.map((name, index) => (
                       <th
                         key={index}
-                        className='w-24 min-w-24 truncate border-slate-400 border-b-1 p-2 text-left'
+                        className='w-24 min-w-24 truncate border-hairline border-b border-l px-3 py-2 text-left font-medium first:border-l-0'
                       >
                         {name}
                       </th>
                     ))}
                     {moreExistingHeaders && (
-                      <th className='w-4 max-w-4 border-slate-400 border-b-1 p-2'>...</th>
+                      <th className='w-4 max-w-4 border-hairline border-b border-l px-3 py-2 font-medium'>
+                        ...
+                      </th>
                     )}
                   </tr>
                 </thead>
@@ -209,8 +206,8 @@ export const ImportDialog = (props: Props) => {
                       <td
                         colSpan={headers.length + (moreExistingHeaders ? 1 : 0)}
                         className={cn(
-                          'h-8 border-slate-400 border-b-1 border-dashed px-2',
-                          discardExistingData && 'text-tomato-600'
+                          'h-8 border-hairline border-b border-dashed px-3 text-fg-muted',
+                          discardExistingData && 'text-fg-error'
                         )}
                       >
                         <div className='-translate-x-1/2 sticky left-1/2 w-fit'>
@@ -228,13 +225,13 @@ export const ImportDialog = (props: Props) => {
                         {record.map((cell, cellIndex) => (
                           <td
                             key={cellIndex}
-                            className='border-slate-400 border-b-1 border-l-1 p-2 text-left align-top first:border-l-0'
+                            className='border-hairline border-b border-l px-3 py-2 text-left align-top first:border-l-0'
                           >
                             {cell}
                           </td>
                         ))}
                         {moreExistingHeaders && (
-                          <td className='border-slate-400 border-b-1 border-l-1'></td>
+                          <td className='border-hairline border-b border-l' />
                         )}
                       </tr>
                     ))}
@@ -244,25 +241,25 @@ export const ImportDialog = (props: Props) => {
           </div>
         )}
         {error && (
-          <div className='mb-4 rounded-md bg-red-50 p-3 text-sm text-tomato-700'>
+          <div className='mb-4 rounded-md bg-tomato-100 p-3 text-sm text-tomato-800'>
             Error importing: {error.message}
           </div>
         )}
 
-        <DialogActions className='mt-0 flex w-full gap-4'>
+        <DialogActions>
           {records ? (
             <>
-              <SecondaryButton size='medium' onClick={onBack}>
+              <Button variant='outline' size='md' onClick={onBack}>
                 Back
-              </SecondaryButton>
-              <FlatPrimaryButton size='medium' onClick={onImport}>
+              </Button>
+              <Button variant='primary' size='md' onClick={onImport}>
                 {discardExistingData ? 'Replace' : 'Append'}
-              </FlatPrimaryButton>
+              </Button>
             </>
           ) : (
-            <SecondaryButton size='medium' onClick={onCancel}>
+            <Button variant='outline' size='md' onClick={onCancel}>
               Cancel
-            </SecondaryButton>
+            </Button>
           )}
         </DialogActions>
       </DialogContent>

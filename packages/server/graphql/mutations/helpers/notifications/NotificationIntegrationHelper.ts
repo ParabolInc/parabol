@@ -1,5 +1,6 @@
 import type {Team, TeamPromptResponse, User} from '../../../../postgres/types'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
+import type {TeamPromptMemberResponse} from '../groupTeamPromptResponsesByUser'
 export type NotifyResponse =
   | 'success'
   | {
@@ -8,6 +9,13 @@ export type NotifyResponse =
       retry?: boolean
     }
 
+export type TeamHealthProgress = {
+  respondentCount: number
+  eligibleCount: number
+  // who still owes a response. Empty while too few have answered to name anyone
+  stragglerNames: string[]
+}
+
 export type NotificationIntegration = {
   startMeeting(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
   updateMeeting?(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
@@ -15,7 +23,7 @@ export type NotificationIntegration = {
     meeting: AnyMeeting,
     team: Team,
     user: User,
-    standupResponses: {user: User; response: TeamPromptResponse}[] | null
+    standupResponses: {user: User; response: TeamPromptMemberResponse}[] | null
   ): Promise<NotifyResponse>
   startTimeLimit(
     scheduledEndTime: Date,
@@ -24,6 +32,12 @@ export type NotificationIntegration = {
     user: User
   ): Promise<NotifyResponse>
   endTimeLimit(meeting: AnyMeeting, team: Team, user: User): Promise<NotifyResponse>
+  teamHealthResponseReminder(
+    meeting: AnyMeeting,
+    team: Team,
+    user: User,
+    progress: TeamHealthProgress
+  ): Promise<NotifyResponse>
   integrationUpdated(user: User): Promise<NotifyResponse>
   standupResponseSubmitted(
     meeting: AnyMeeting,

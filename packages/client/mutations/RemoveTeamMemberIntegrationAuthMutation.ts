@@ -6,19 +6,50 @@ import type {StandardMutation} from '../types/relayMutations'
 graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
     teamMember {
-      ...GitLabProviderRowTeamMember
-      ...JiraServerProviderRowTeamMember
-      ...AzureDevOpsProviderRowTeamMember
-      ...GcalProviderRowTeamMember
+      ...useIsIntegrated_teamMember
+      services {
+        ...IntegrationServiceProviderRow_service
+      }
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
-        ...LinearProviderRowTeamMemberIntegrations
-        gdrive {
+        gcal {
+          auth {
+            id
+            providerId
+          }
+        }
+        gitlab {
+          auth {
+            isActive
+            provider {
+              id
+            }
+          }
+        }
+        linear {
+          auth {
+            isActive
+          }
+        }
+        jiraServer {
+          auth {
+            isActive
+          }
+        }
+        gmeet {
           isActive
         }
         zoom {
           isActive
+        }
+        atlassian {
+          accessToken
+          scope
+        }
+        github {
+          accessToken
+          login
         }
       }
     }
@@ -37,7 +68,7 @@ const mutation = graphql`
         }
       }
 
-      ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false)
+      ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false) @alias
     }
   }
 `

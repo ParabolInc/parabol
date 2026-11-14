@@ -5,7 +5,7 @@ import {hardDeleteUser as hardDeleteUserHelper} from './helpers/hardDeleteUser'
 
 const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   _source,
-  {userId, email, reasonText},
+  {userId, email},
   {dataLoader}
 ) => {
   // VALIDATION
@@ -21,7 +21,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     return {error: {message: 'User not found'}}
   }
 
-  await hardDeleteUserHelper(user, reasonText ?? '', dataLoader)
+  await hardDeleteUserHelper(user, dataLoader)
   return {}
 }
 

@@ -1,4 +1,0 @@
-"""
-Return value for updateGitHubDimensionField mutation
-"""
-union UpdateGitHubDimensionFieldPayload = ErrorPayload | UpdateGitHubDimensionFieldSuccess

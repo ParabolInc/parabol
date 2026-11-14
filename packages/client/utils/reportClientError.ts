@@ -1,0 +1,170 @@
+import {addBreadcrumb, type Breadcrumb, getBreadcrumbs, getLastTraceId} from './clientBreadcrumbs'
+import {isExtensionError, isIgnoredError} from './errorFilters'
+import getReportedRoute from './getReportedRoute'
+import getTabSessionId from './getTabSessionId'
+
+type ClientErrorLevel = 'error' | 'warn'
+
+interface ReportOptions {
+  level?: ClientErrorLevel
+  componentStack?: string | null
+  eventId?: string
+  traceId?: string
+}
+
+interface ClientErrorCause {
+  name: string
+  message: string
+  stack?: string
+}
+
+interface ClientErrorReport {
+  level: ClientErrorLevel
+  name: string
+  message: string
+  stack?: string
+  causes?: ClientErrorCause[]
+  componentStack?: string
+  eventId?: string
+  traceId?: string
+  sessionId: string
+  release: string
+  route: string
+  userAgent: string
+  breadcrumbs: Breadcrumb[]
+  count: number
+}
+
+const CLIENT_ERRORS_URL = '/client-errors'
+const MAX_REPORTS_PER_BATCH = 3
+const MAX_REPORTS_PER_MINUTE = 20
+const FLUSH_DELAY_MS = 1000
+const MAX_MESSAGE_LENGTH = 1000
+const MAX_STACK_LENGTH = 6000
+const MAX_COMPONENT_STACK_LENGTH = 3000
+const MAX_CAUSES = 3
+const MAX_CAUSE_STACK_LENGTH = 2000
+const RELEASE = __APP_VERSION__
+
+let queue: ClientErrorReport[] = []
+const reportedErrors = new WeakSet<Error>()
+let flushTimer: ReturnType<typeof setTimeout> | undefined
+const recentReportTimes: number[] = []
+
+export const describeReason = (reason: unknown) => {
+  try {
+    return JSON.stringify(reason) ?? String(reason)
+  } catch {
+    return String(reason)
+  }
+}
+
+// an error fails instanceof Error when it comes from another realm or the page's Error was replaced, but keeps its tag
+export const isError = (reason: unknown): reason is Error =>
+  reason instanceof Error || Object.prototype.toString.call(reason) === '[object Error]'
+
+const toError = (reason: unknown) => {
+  if (isError(reason)) return reason
+  return new Error(typeof reason === 'string' ? reason : describeReason(reason))
+}
+
+// React wraps an error it recovered from by rendering again, so the error that broke the render is only in its cause
+const describeCauses = (error: Error) => {
+  const causes: ClientErrorCause[] = []
+  const seen = new Set<unknown>([error])
+  let {cause} = error
+  while (isError(cause) && !seen.has(cause) && causes.length < MAX_CAUSES) {
+    seen.add(cause)
+    causes.push({
+      name: cause.name,
+      message: cause.message.slice(0, MAX_MESSAGE_LENGTH),
+      stack: cause.stack?.slice(0, MAX_CAUSE_STACK_LENGTH)
+    })
+    cause = cause.cause
+  }
+  return causes
+}
+
+const isOverRateLimit = (now: number) => {
+  while (recentReportTimes.length > 0 && recentReportTimes[0]! <= now - 60_000) {
+    recentReportTimes.shift()
+  }
+  if (recentReportTimes.length >= MAX_REPORTS_PER_MINUTE) return true
+  recentReportTimes.push(now)
+  return false
+}
+
+export const flushClientErrors = () => {
+  clearTimeout(flushTimer)
+  flushTimer = undefined
+  if (queue.length === 0) return
+  const body = JSON.stringify({reports: queue})
+  queue = []
+  const blob = new Blob([body], {type: 'text/plain;charset=UTF-8'})
+  if (!navigator.sendBeacon(CLIENT_ERRORS_URL, blob)) {
+    fetch(CLIENT_ERRORS_URL, {method: 'POST', body, keepalive: true}).catch(() => {})
+  }
+}
+
+export const isReportedError = (error: Error) => reportedErrors.has(error)
+
+const reportClientError = (reason: unknown, options: ReportOptions = {}) => {
+  const error = toError(reason)
+  if (isExtensionError(error)) return
+  reportedErrors.add(error)
+  const message = error.message.slice(0, MAX_MESSAGE_LENGTH)
+  const stack = error.stack?.slice(0, MAX_STACK_LENGTH)
+  const repeat = queue.find(
+    (report) => report.name === error.name && report.message === message && report.stack === stack
+  )
+  if (repeat) {
+    repeat.count++
+    return
+  }
+  if (isOverRateLimit(Date.now())) return
+  const {componentStack, eventId} = options
+  const causes = describeCauses(error)
+  queue.push({
+    level: isIgnoredError(error) ? 'warn' : (options.level ?? 'error'),
+    name: error.name,
+    message,
+    stack,
+    ...(causes.length > 0 && {causes}),
+    componentStack: componentStack?.slice(0, MAX_COMPONENT_STACK_LENGTH),
+    eventId,
+    traceId: options.traceId ?? getLastTraceId(),
+    sessionId: getTabSessionId(),
+    release: RELEASE,
+    route: getReportedRoute(window.location.pathname),
+    userAgent: navigator.userAgent,
+    breadcrumbs: getBreadcrumbs(),
+    count: 1
+  })
+  addBreadcrumb('error', `${error.name}: ${message}`)
+  if (queue.length >= MAX_REPORTS_PER_BATCH) {
+    flushClientErrors()
+  } else {
+    flushTimer ??= setTimeout(flushClientErrors, FLUSH_DELAY_MS)
+  }
+}
+
+// The server already logged the cause with this trace id, so a warning is enough to join the browser's side to it
+export const reportClientWarning = (name: string, message: string, traceId?: string) => {
+  const warning = new Error(message)
+  warning.name = name
+  warning.stack = undefined
+  reportClientError(warning, {level: 'warn', traceId})
+}
+
+// yoga gives every error it masks this code, and the server gives it to the bugs it catches itself
+export const reportUnexpectedGraphQLErrors = (
+  errors: readonly {message: string; extensions?: {code?: string}}[] | undefined,
+  operationName: string,
+  traceId?: string
+) => {
+  if (errors?.some((error) => error.extensions?.code === 'INTERNAL_SERVER_ERROR')) {
+    reportClientWarning('UnexpectedGraphQLError', `${operationName} failed on the server`, traceId)
+  }
+}
+
+export default reportClientError

@@ -1,16 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {usePaginationFragment} from 'react-relay'
 import type {OrgBillingInvoices_query$key} from '~/__generated__/OrgBillingInvoices_query.graphql'
 import type {OrgBillingInvoicesPaginationQuery} from '../../../../__generated__/OrgBillingInvoicesPaginationQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import {ElementWidth} from '../../../../types/constEnums'
 import {Button} from '../../../../ui/Button/Button'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
-
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
 
 interface Props {
   queryRef: OrgBillingInvoices_query$key
@@ -53,20 +47,20 @@ const OrgBillingInvoices = (props: Props) => {
   if (!edges.length) return null
   const portalUrl = edges[0]?.node.payUrl ?? ''
   return (
-    <StyledPanel label='Invoices' isWide={!!isWide}>
+    <Panel label='Invoices' className={isWide ? 'max-w-[976px]' : 'max-w-[inherit]'}>
       <div>
         {edges.map(({node: invoice}) => (
           <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
         ))}
-        <div className='flex justify-center pb-4'>
-          <Button variant={'outline'} shape={'pill'}>
+        <div className='flex justify-center border-hairline border-t py-3'>
+          <Button variant={'outline'} asChild>
             <a href={portalUrl} rel='noopener noreferrer'>
               {'See All Invoices'}
             </a>
           </Button>
         </div>
       </div>
-    </StyledPanel>
+    </Panel>
   )
 }
 

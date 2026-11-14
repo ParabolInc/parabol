@@ -35,13 +35,13 @@ const RetroReflectPhase = (props: Props) => {
         endedAt
         rightDrawerOpen
         localPhase {
-          ...RetroReflectPhase_phase @relay(mask: false)
+          ...RetroReflectPhase_phase @relay(mask: false) @alias
         }
         localStage {
           isComplete
         }
         phases {
-          ...RetroReflectPhase_phase @relay(mask: false)
+          ...RetroReflectPhase_phase @relay(mask: false) @alias
         }
         showSidebar
         disableAnonymity
@@ -53,11 +53,16 @@ const RetroReflectPhase = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {disableAnonymity, localPhase, endedAt, showSidebar, rightDrawerOpen} = meeting
-  const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', false)
-  if (!localPhase || !localPhase.reflectPrompts) return null
-  const reflectPrompts = localPhase!.reflectPrompts
-  const focusedPromptId = localPhase!.focusedPromptId
+  // autoToggle: open the inspiration drawer by default when the reflect phase mounts (desktop)
+  const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', true)
+  const reflectPhase = localPhase?.RetroReflectPhase_phase
+  if (!reflectPhase || !reflectPhase.reflectPrompts) return null
+  const reflectPrompts = reflectPhase.reflectPrompts
+  const focusedPromptId = reflectPhase.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
+  const focusedIdx = reflectPrompts.findIndex(({id}) => id === focusedPromptId)
+  // a focusedPromptId from another phase (or none at all) falls back to the first column
+  const autoFocusIdx = focusedIdx === -1 ? 0 : focusedIdx
 
   return (
     <MeetingContent ref={callbackRef}>
@@ -78,11 +83,7 @@ const RetroReflectPhase = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} />
-          <ColumnWrapper
-            setActiveIdx={setActiveIdx}
-            activeIdx={activeIdx}
-            focusedIdx={reflectPrompts.findIndex(({id}) => id === focusedPromptId)}
-          >
+          <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} focusedIdx={focusedIdx}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
@@ -91,6 +92,7 @@ const RetroReflectPhase = (props: Props) => {
                 idx={idx}
                 phaseRef={phaseRef}
                 isDesktop={isDesktop}
+                autoFocus={idx === autoFocusIdx}
               />
             ))}
           </ColumnWrapper>

@@ -12,24 +12,31 @@ import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePre
 import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types/index.d'
 import type {Notification} from '../../../postgres/types/pg'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
-import createTaskInService from '../../mutations/helpers/createTaskInService'
+import createIntegrationIssue from '../../mutations/helpers/createIntegrationIssue'
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {MutationResolvers} from '../resolverTypes'
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
   viewerId: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | undefined
 ) => {
   if (!meetingId) return undefined
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!meetingMember) return 'Viewer is not in meeting'
+  if (resourceGrants) {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (!meeting || !(await resourceGrants.hasTeam(meeting.teamId))) {
+      return 'Access token does not grant access to this meeting'
+    }
+  }
   return undefined
 }
 
@@ -136,7 +143,7 @@ const createTask: MutationResolvers['createTask'] = async (
   context,
   info
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {authToken, dataLoader, socketId: mutatorId, resourceGrants} = context
   const pg = getKysely()
   const operationId = dataLoader.share()
   const viewerId = getUserId(authToken)
@@ -151,10 +158,9 @@ const createTask: MutationResolvers['createTask'] = async (
     teamId,
     userId
   } = newTask
-  const [viewer, ...errors] = await Promise.all([
-    dataLoader.get('users').loadNonNull(viewerId),
+  const errors = await Promise.all([
     validateTaskDiscussionId(discussionId, teamId, meetingId, dataLoader),
-    validateTaskMeetingId(meetingId, viewerId, dataLoader),
+    validateTaskMeetingId(meetingId, viewerId, dataLoader, resourceGrants),
     validateTaskUserIsTeamMember(userId, teamId, dataLoader)
   ])
   const firstError = errors.find(Boolean)
@@ -166,7 +172,7 @@ const createTask: MutationResolvers['createTask'] = async (
   const plaintextContent = generateText(content, serverTipTapExtensions)
 
   // see if the task already exists
-  const integrationRes = await createTaskInService(
+  const integrationRes = await createIntegrationIssue(
     newTask.integration,
     content,
     viewerId,
@@ -179,9 +185,15 @@ const createTask: MutationResolvers['createTask'] = async (
   }
 
   // RESOLUTION
-  const {integrationHash, integration, integrationRepoId} = integrationRes
-  if (integrationRepoId) {
-    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
+  const {integrationHash, integration, integrationRepoId, service} = integrationRes
+  if (integrationRepoId && service) {
+    updatePrevUsedRepoIntegrationsCache(service, integrationRepoId, {
+      dataLoader,
+      teamId,
+      userId: viewerId,
+      context,
+      info
+    })
   }
   const task = {
     id: generateUID(),
@@ -215,19 +227,6 @@ const createTask: MutationResolvers['createTask'] = async (
       mutatorId
     }
   ).catch(() => [] as string[])
-
-  const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
-  const taskProperties = {
-    taskId,
-    teamId,
-    meetingId: meeting?.id,
-    meetingType: meeting?.meetingType,
-    inMeeting: !!meetingId
-  }
-  analytics.taskCreated(viewer, taskProperties)
-  if (integration?.service) {
-    analytics.taskPublished(viewer, taskProperties, integration.service)
-  }
 
   return {taskId, notificationIds}
 }

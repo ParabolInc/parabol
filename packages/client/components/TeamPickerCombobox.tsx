@@ -4,14 +4,14 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {TeamPickerComboboxQuery} from '../__generated__/TeamPickerComboboxQuery.graphql'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'
-import {MenuContent} from '../ui/Menu/MenuContent'
-import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'
 import {MenuLabelTrigger} from '../ui/Menu/MenuLabelTrigger'
+import TeamPickerMenuContent from './TeamPicker/TeamPickerMenuContent'
 
 const query = graphql`
   query TeamPickerComboboxQuery {
     viewer {
       teams {
+        ...TeamPickerMenuContent_teams
         id
         name
       }
@@ -45,22 +45,13 @@ export const TeamPickerCombobox = (props: Props) => {
       .join(', ') || 'Select your teams...'
   return (
     <Menu trigger={<MenuLabelTrigger>{label}</MenuLabelTrigger>}>
-      <MenuContent align='end' sideOffset={4}>
-        {teams.map((team) => {
-          const checked = teamIds.includes(team.id)
-          return (
-            <MenuItemCheckbox
-              key={team.id}
-              checked={checked}
-              onClick={() => {
-                toggleSelectedTeamId(team.id)
-              }}
-            >
-              {team.name}
-            </MenuItemCheckbox>
-          )
-        })}
-      </MenuContent>
+      <TeamPickerMenuContent
+        isMultiple
+        align='end'
+        teamsRef={teams}
+        selectedTeamIds={teamIds}
+        onSelectTeam={toggleSelectedTeamId}
+      />
     </Menu>
   )
 }

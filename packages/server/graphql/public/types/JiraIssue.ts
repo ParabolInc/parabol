@@ -1,6 +1,6 @@
-import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
-import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import {generateJiraExtraFields} from '../../../utils/generateJiraExtraFields'
+import JiraIssueId from '../../../../client/integrations/jira/shared/JiraIssueId'
+import JiraProjectKeyId from '../../../../client/integrations/jira/shared/JiraProjectKeyId'
+import {generateJiraExtraFields} from '../../../integrations/jira/generateJiraExtraFields'
 import type {JiraIssueResolvers} from '../resolverTypes'
 
 export type JiraIssueSource = {
@@ -8,6 +8,7 @@ export type JiraIssueSource = {
   issueKey: string
   teamId: string
   userId: string
+  summary: string
   description?: string
   issuetype: {
     iconUrl: string
@@ -46,6 +47,7 @@ const JiraIssue: JiraIssueResolvers = {
         }
       : null
   },
+  title: ({summary}) => summary,
   description: ({description}) => (description ? JSON.stringify(description) : ''),
   extraFields: async ({extraFields}) => extraFields || []
 }

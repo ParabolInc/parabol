@@ -1,11 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventTitle from './TImelineEventTitle'
@@ -15,14 +12,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventPokerComplete_timelineEvent$key
 }
-
-const CountItem = styled('span')({
-  fontWeight: 600
-})
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -76,14 +65,6 @@ const TimelineEventPokerComplete = (props: Props) => {
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
 
-  const atmosphere = useAtmosphere()
-  const onUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'timelineHistoryLock',
-      upgradeTier: 'team',
-      meetingId
-    })
-  }
   const summaryURL = summaryPageId
     ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
@@ -96,29 +77,33 @@ const TimelineEventPokerComplete = (props: Props) => {
     >
       <TimelineEventBody>
         {'You voted on '}
-        <CountItem>
+        <span className='font-semibold'>
           {storyCount} {plural(storyCount, 'story', 'stories')}
-        </CountItem>
+        </span>
         {' and added '}
-        <CountItem>
+        <span className='font-semibold'>
           {commentCount} {plural(commentCount, 'comment')}
-        </CountItem>
+        </span>
         {'.'}
         <br />
         {locked ? (
           canUpgrade && (
             <>
-              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
                 Upgrade now
-              </Link>{' '}
+              </StyledLink>{' '}
               to get access to the estimates and summary
             </>
           )
         ) : (
           <>
-            <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
+            <StyledLink className='font-semibold' to={`/meet/${meetingId}/estimate/1`}>
+              See the estimates
+            </StyledLink>
             {' in your meeting or '}
-            <Link to={summaryURL}>review a summary</Link>
+            <StyledLink className='font-semibold' to={summaryURL}>
+              review a summary
+            </StyledLink>
           </>
         )}
       </TimelineEventBody>

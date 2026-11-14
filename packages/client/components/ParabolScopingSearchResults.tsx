@@ -50,7 +50,7 @@ const ParabolScopingSearchResults = (props: Props) => {
         id
         phases {
           phaseType
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
         }
         teamId
       }
@@ -110,7 +110,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   }, [incomingEdges])
   const {id: meetingId, phases, teamId} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
 

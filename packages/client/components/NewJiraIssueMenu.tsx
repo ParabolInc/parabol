@@ -1,26 +1,24 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import type {
   NewJiraIssueMenu_JiraRemoteProjects$data,
   NewJiraIssueMenu_JiraRemoteProjects$key
 } from '../__generated__/NewJiraIssueMenu_JiraRemoteProjects.graphql'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectProjectKey: (key: string) => void
-  menuProps: MenuProps
   projectsRef: NewJiraIssueMenu_JiraRemoteProjects$key
 }
 
 const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects$data[0]) => project.name
 
 const NewJiraIssueMenu = (props: Props) => {
-  const {handleSelectProjectKey, menuProps, projectsRef} = props
+  const {handleSelectProjectKey, projectsRef} = props
 
   const projects = useFragment(
     graphql`
@@ -39,13 +37,8 @@ const NewJiraIssueMenu = (props: Props) => {
   } = useSearchFilter(projects ?? [], getValue)
 
   return (
-    <Menu
-      ariaLabel='Select Jira project'
-      keepParentFocus
-      {...menuProps}
-      resetActiveOnChanges={[projects]}
-    >
-      <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+    <MenuContent align='start' className='min-w-[300px]'>
+      <MenuSearch placeholder='Search Jira' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
@@ -65,7 +58,7 @@ const NewJiraIssueMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </MenuContent>
   )
 }
 

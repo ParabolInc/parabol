@@ -27,7 +27,11 @@ const OverflowAvatar = (props: Props) => {
       <div
         ref={ref}
         className='flex select-none items-center justify-center overflow-hidden rounded-full bg-sky-400 font-semibold text-sm text-white'
-        style={{width, height: width, border: `2px solid ${borderColor ?? '#fff'}`}}
+        style={{
+          width,
+          height: width,
+          border: `2px solid ${borderColor ?? 'var(--color-surface-card)'}`
+        }}
       >
         {label}
       </div>

@@ -1,35 +1,50 @@
 import DataLoader from 'dataloader'
+import stringify from 'fast-json-stable-stringify'
 import {type SqlBool, sql} from 'kysely'
+import type {AnyTaskIntegration} from 'parabol-client/shared/types/TaskIntegration'
+import {Threshold} from 'parabol-client/types/constEnums'
+import {canShowTeamHealthScore} from '../../client/shared/utils/teamHealthAnonymity'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import {activeEmbeddingModelId} from '../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../embedder/getEmbeddingsTableName'
 import type MeetingTemplate from '../database/types/MeetingTemplate'
 import isValid from '../graphql/isValid'
+import groupTeamPromptResponsesByUser, {
+  type TeamPromptMemberResponse
+} from '../graphql/mutations/helpers/groupTeamPromptResponsesByUser'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import selectOrgUserActivitySpans, {
+  isOrgUserActiveAt
+} from '../postgres/queries/selectOrgUserActivitySpans'
 import {
-  selectGitLabDimensionFieldMap,
   selectInspirationItems,
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
+  selectRetroSuggestedGrouping,
   selectTaskEstimate,
   selectTasks,
+  selectTeamPromptResponses,
   selectTeams
 } from '../postgres/select'
+import {hasEnoughMembers, isCountedMeetingInWindow} from '../postgres/teamActivityCriteria'
 import type {
-  GitLabDimensionFieldMap,
   InspirationItem,
   MassInvitation,
   MeetingSettings,
   OrganizationUser,
+  RetroSuggestedGrouping,
   Task,
   TaskEstimate,
-  Team
+  Team,
+  TeamPromptResponse,
+  TemplatePrompt
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
+import averageTeamHealthScore from '../utils/averageTeamHealthScore'
 import {
   type FeatureFlagName,
   type FeatureFlagRecord,
@@ -37,6 +52,8 @@ import {
   getFeatureFlagsByScope
 } from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
+import getTeamHealthDisplayComment from '../utils/getTeamHealthDisplayComment'
+import groupTeamHealthScores from '../utils/groupTeamHealthScores'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
@@ -247,39 +264,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
   )
 }
 
-export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {
-      teamId: string
-      dimensionName: string
-      projectId: number
-      providerId: number
-    },
-    GitLabDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
-          selectGitLabDimensionFieldMap()
-            .where('teamId', '=', teamId)
-            .where('dimensionName', '=', dimensionName)
-            .where('projectId', '=', projectId)
-            .where('providerId', '=', providerId)
-            .executeTakeFirstOrThrow()
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
-        `${teamId}:${dimensionName}:${projectId}:${providerId}`
-    }
-  )
-}
-
 export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingSettings')
   return new NullableDataLoader<MeetingSettingsKey, MeetingSettings, string>(
@@ -467,6 +451,96 @@ type MeetingStat = {
   createdAt: Date
 }
 
+export const activeUserCountsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<{orgId: string; times: Date[]}, number[], string>(
+    async (keys) => {
+      const pg = getKysely()
+      return Promise.all(
+        keys.map(async ({orgId, times}) => {
+          if (times.length === 0) return []
+          const rows = await pg
+            .with('AuditEvent', () => selectOrgUserActivitySpans(orgId))
+            .with('Time', (qb) =>
+              qb.selectNoFrom(({eb, fn}) =>
+                fn<Date>('unnest', [eb.cast(eb.val(times), sql`timestamptz[]`)]).as('at')
+              )
+            )
+            .selectFrom('Time')
+            .leftJoin('AuditEvent', (join) =>
+              join.on(({ref}) =>
+                isOrgUserActiveAt(
+                  {
+                    eventType: ref('AuditEvent.eventType'),
+                    eventDate: ref('AuditEvent.eventDate'),
+                    nextEventDate: ref('AuditEvent.nextEventDate')
+                  },
+                  ref('Time.at')
+                )
+              )
+            )
+            .select(({fn}) => [
+              'Time.at',
+              fn.count<string>('AuditEvent.userId').distinct().as('activeUserCount')
+            ])
+            .groupBy('Time.at')
+            .execute()
+          const countByTime = new Map(
+            rows.map(({at, activeUserCount}) => [at.getTime(), Number(activeUserCount)])
+          )
+          return times.map((time) => countByTime.get(time.getTime()) ?? 0)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({orgId, times}) => `${orgId}:${times.map((time) => time.getTime()).join(',')}`
+    }
+  )
+}
+
+export const activeTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('teams')
+  dependsOn('teamMembers')
+  dependsOn('newMeetings')
+  return new DataLoader<string, {id: string; orgId: string}[], string>(
+    async (orgIds) => {
+      const now = new Date()
+      const meetingWindowStart = new Date(
+        now.getTime() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME
+      )
+      const activeTeams = await getKysely()
+        .selectFrom('Team')
+        .select(['Team.id', 'Team.orgId'])
+        .where('Team.orgId', 'in', orgIds)
+        .where('Team.isArchived', '=', false)
+        .where(({ref}) => hasEnoughMembers(ref('Team.id')))
+        .where(({exists, selectFrom}) =>
+          exists(
+            selectFrom('NewMeeting')
+              .select('NewMeeting.id')
+              .whereRef('NewMeeting.teamId', '=', 'Team.id')
+              .where(({ref}) =>
+                isCountedMeetingInWindow(
+                  {
+                    id: ref('NewMeeting.id'),
+                    createdAt: ref('NewMeeting.createdAt'),
+                    endedAt: ref('NewMeeting.endedAt')
+                  },
+                  meetingWindowStart,
+                  now
+                )
+              )
+          )
+        )
+        .execute()
+      return orgIds.map((orgId) => activeTeams.filter((team) => team.orgId === orgId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('newMeetings')
   return new DataLoader<string, MeetingStat[], string>(
@@ -497,31 +571,33 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
   )
 }
 
-export const taskIdsByTeamAndGitHubRepo = (
+/** The team's tasks whose stored integration has every given part, e.g. a service and the repo its issues live in */
+export const taskIdsByTeamAndIntegration = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
 ) => {
   dependsOn('tasks')
-  return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
+  return new DataLoader<
+    {teamId: string; integration: Partial<AnyTaskIntegration>},
+    string[],
+    string
+  >(
     async (keys) => {
-      const res = await Promise.all(
-        keys.map(async (key) => {
-          const {teamId, nameWithOwner} = key
-          const res = await getKysely()
+      return Promise.all(
+        keys.map(async ({teamId, integration}) => {
+          const tasks = await getKysely()
             .selectFrom('Task')
             .select('id')
             .where('teamId', '=', teamId)
-            .where('integration', 'is not', null)
-            .where(sql<boolean>`"integration"->>'nameWithOwner' = ${nameWithOwner}`)
+            .where(sql<boolean>`"integration" @> ${JSON.stringify(integration)}::jsonb`)
             .execute()
-          return res.map(({id}) => id)
+          return tasks.map(({id}) => id)
         })
       )
-      return res
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+      cacheKeyFn: ({teamId, integration}) => `${teamId}:${stringify(integration)}`
     }
   )
 }
@@ -644,21 +720,21 @@ export const samlByDomain = (parent: RootDataLoader, dependsOn: RegisterDependsO
     }
   )
 }
-export const samlByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+export const samlsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('saml')
-  return new NullableDataLoader<string, SAMLSource | null, string>(
+  return new DataLoader<string, SAMLSource[], string>(
     async (orgIds) => {
-      const pg = getKysely()
-      const res = await pg
+      const res = await getKysely()
         .selectFrom('SAMLDomain')
         .innerJoin('SAML', 'SAML.id', 'SAMLDomain.samlId')
         .where('SAML.orgId', 'in', orgIds)
         .groupBy('SAML.id')
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
+        .orderBy('SAML.createdAt')
+        .orderBy('SAML.id')
         .execute()
-      // not the same as normalizeResults
-      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
+      return orgIds.map((orgId) => res.filter((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions
@@ -687,8 +763,8 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
             (user) => isUserVerified(user) && user.domain === organization.activeDomain
           )
           if (isALeaderVerifiedAtOrgDomain) return true
-          const isOrgSAML = await parent.get('samlByOrgId').load(orgId)
-          return !!isOrgSAML
+          const samls = await parent.get('samlsByOrgId').load(orgId)
+          return samls.length > 0
         })
       )
     },
@@ -1042,6 +1118,236 @@ export const retroReflectionEmbeddingByReflectionId = (parent: RootDataLoader) =
           .map((r) => [r.refId, r.embedding!.slice(1, -1).split(',').map(Number)])
       )
       return reflectionIds.map((id) => vectorByReflectionId.get(id) ?? null)
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// A retro has at most one active set of suggested groups, so meetingId is the primary key.
+// Null means nothing has been suggested for the meeting yet.
+export const retroSuggestedGroupingByMeetingId = (parent: RootDataLoader) => {
+  return new DataLoader<string, RetroSuggestedGrouping | null, string>(
+    async (meetingIds) => {
+      const rows = await selectRetroSuggestedGrouping()
+        .where('meetingId', 'in', meetingIds as string[])
+        .execute()
+      const rowByMeetingId = new Map(rows.map((row) => [row.meetingId, row]))
+      return meetingIds.map((meetingId) => rowByMeetingId.get(meetingId) ?? null)
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// how many checks back to look for prior team health scores. A check too few people answered is not a
+// data point, so it is skipped rather than treated as a reset, but the search still has to stop
+const MAX_TEAM_HEALTH_CYCLE_LOOKBACK = 15
+
+// how many answered prior cycles a category's trend is drawn from
+export const TEAM_HEALTH_HISTORY_LENGTH = 5
+
+export interface PriorTeamHealthCycle {
+  meetingId: string
+  endedAt: Date
+  // the average Likert score each category earned that cycle, keyed by categoryId
+  scoreByCategoryId: Map<number, number>
+  // the comments the team could read that cycle for each category, keyed by categoryId. Anonymous
+  // comments only ever appear here in their paraphrased form (see getTeamHealthDisplayComment)
+  commentsByCategoryId: Map<number, string[]>
+  // the question each category was measured by that cycle, keyed by categoryId
+  questionByCategoryId: Map<number, string>
+}
+
+// A meeting's prompts are frozen at the moment its template was chosen (meeting creation, or a
+// later switch): it sees prompts active then, plus any removed afterward, so prompts don't
+// retroactively vanish from a meeting already in progress.
+export const templatePromptsByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('templatePrompts')
+  return new DataLoader<string, TemplatePrompt[], string>(
+    async (meetingIds) => {
+      const frozenAt = sql<Date>`coalesce(m."templateChosenAt", m."createdAt")`
+      const rows = await getKysely()
+        .selectFrom('NewMeeting as m')
+        .innerJoin('TemplatePrompt as p', 'p.templateId', 'm.templateId')
+        .where('m.id', 'in', meetingIds)
+        .where('p.createdAt', '<', frozenAt)
+        .where(({eb, or, ref}) =>
+          or([eb('p.removedAt', 'is', null), eb(frozenAt, '<', ref('p.removedAt'))])
+        )
+        .selectAll('p')
+        .select('m.id as meetingId')
+        .orderBy('p.sortOrder')
+        .execute()
+      return meetingIds.map((meetingId) =>
+        rows.filter((row) => row.meetingId === meetingId).map(({meetingId: _, ...prompt}) => prompt)
+      )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+export const teamPromptResponsesByMeetingIdAndUserId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  return new DataLoader<{meetingId: string; userId: string}, TeamPromptResponse[], string>(
+    async (keys) => {
+      const rows = await selectTeamPromptResponses()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('meetingId', 'userId'),
+            'in',
+            keys.map(({meetingId, userId}) => tuple(meetingId, userId))
+          )
+        )
+        .orderBy('id')
+        .execute()
+      return keys.map(({meetingId, userId}) =>
+        rows.filter((row) => row.meetingId === meetingId && row.userId === userId)
+      )
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: ({meetingId, userId}) => `${meetingId}:${userId}`}
+  )
+}
+
+export const teamPromptResponsesByMeetingIdForViewer = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  return new DataLoader<{meetingId: string; viewerId: string}, TeamPromptResponse[], string>(
+    async (keys) => {
+      const rows = await selectTeamPromptResponses()
+        .where(
+          'meetingId',
+          'in',
+          keys.map(({meetingId}) => meetingId)
+        )
+        .where(({eb, or}) =>
+          or([
+            eb('sharedAt', 'is not', null),
+            eb(
+              'userId',
+              'in',
+              keys.map(({viewerId}) => viewerId)
+            )
+          ])
+        )
+        .orderBy('id')
+        .execute()
+      return keys.map(({meetingId, viewerId}) =>
+        rows.filter(
+          (row) => row.meetingId === meetingId && (!!row.sharedAt || row.userId === viewerId)
+        )
+      )
+    },
+    {...parent.dataLoaderOptions, cacheKeyFn: ({meetingId, viewerId}) => `${meetingId}:${viewerId}`}
+  )
+}
+
+export const teamPromptMemberResponsesByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamPromptResponses')
+  dependsOn('templatePrompts')
+  return new DataLoader<string, TeamPromptMemberResponse[], string>(
+    async (meetingIds) => {
+      return Promise.all(
+        meetingIds.map(async (meetingId) => {
+          const [prompts, responses] = await Promise.all([
+            parent.get('templatePromptsByMeetingId').load(meetingId),
+            parent.get('teamPromptResponsesByMeetingId').load(meetingId)
+          ])
+          return groupTeamPromptResponsesByUser(prompts, responses)
+        })
+      )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// The last few checks the team revealed before this one, newest first, with each category's score and
+// readable comments. Every check of the team counts, whatever meeting series it was in, since a series
+// can end by accident. Empty if this is the team's first check. Categories are the unit of comparison
+// because the question asked within a category rotates from one check to the next
+export const priorTeamHealthCyclesByMeetingId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn(['newMeetings', 'teamHealthResponses'])
+  return new DataLoader<string, PriorTeamHealthCycle[], string>(
+    async (meetingIds) => {
+      return Promise.all(
+        meetingIds.map(async (meetingId) => {
+          const meeting = await parent.get('newMeetings').load(meetingId)
+          if (meeting?.meetingType !== 'teamHealth') return []
+          const {endedAt} = meeting
+          const teamChecks = await parent.get('teamHealthChecksByTeamId').load(meeting.teamId)
+          const priorChecks = teamChecks
+            .filter((check) => check.id !== meetingId && (!endedAt || check.endedAt < endedAt))
+            .slice(0, MAX_TEAM_HEALTH_CYCLE_LOOKBACK)
+          const priorResponses = await Promise.all(
+            priorChecks.map((check) => parent.get('teamHealthResponsesByMeetingId').load(check.id))
+          )
+          const answeredCycles = priorChecks
+            .map((check, idx) => ({check, responses: priorResponses[idx]!}))
+            .filter(({responses}) => {
+              const respondentIds = responses.flatMap(({userId, score}) =>
+                score === null ? [] : [userId]
+              )
+              return canShowTeamHealthScore(new Set(respondentIds).size)
+            })
+            .slice(0, TEAM_HEALTH_HISTORY_LENGTH)
+          const questionIds = [
+            ...new Set(
+              answeredCycles.flatMap(({responses}) => responses.map(({questionId}) => questionId))
+            )
+          ]
+          const questions = (await parent.get('teamHealthQuestions').loadMany(questionIds)).filter(
+            isValid
+          )
+          const questionById = new Map(questions.map((question) => [question.id, question]))
+          const categoryIdByQuestionId = new Map(
+            questions.map((question) => [question.id, question.categoryId])
+          )
+          return answeredCycles.map(({check, responses}) => {
+            const commentsByCategoryId = new Map<number, string[]>()
+            const questionByCategoryId = new Map<number, string>()
+            for (const response of responses) {
+              const question = questionById.get(response.questionId)
+              if (!question) continue
+              const {categoryId} = question
+              questionByCategoryId.set(categoryId, question.question)
+              const comment = getTeamHealthDisplayComment(response)
+              if (comment) {
+                const comments = commentsByCategoryId.get(categoryId) ?? []
+                comments.push(comment)
+                commentsByCategoryId.set(categoryId, comments)
+              }
+            }
+            const scoresByCategoryId = groupTeamHealthScores(responses, categoryIdByQuestionId)
+            const scoreByCategoryId = new Map(
+              [...scoresByCategoryId].flatMap(([categoryId, scores]) => {
+                const score = averageTeamHealthScore(scores)
+                return score === null || !canShowTeamHealthScore(scores.length)
+                  ? []
+                  : [[categoryId, score] as [number, number]]
+              })
+            )
+            return {
+              meetingId: check.id,
+              endedAt: check.endedAt,
+              scoreByCategoryId,
+              commentsByCategoryId,
+              questionByCategoryId
+            }
+          })
+        })
+      )
     },
     {...parent.dataLoaderOptions}
   )

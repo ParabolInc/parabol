@@ -1,6 +1,5 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo, useRef} from 'react'
+import {Suspense, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {
@@ -8,22 +7,16 @@ import type {
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
-import LinkButton from '~/components/LinkButton'
-import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import {Breakpoint, FilterLabels} from '~/types/constEnums'
+import {FilterLabels} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
+import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
-
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const TeamFilterMenu = lazyPreload(
   () =>
@@ -40,41 +33,6 @@ const UserDashTeamMemberMenu = lazyPreload(
       '../../../../components/UserDashTeamMemberMenu'
     )
 )
-
-const StyledDashFilterToggle = styled(DashFilterToggle)({
-  margin: '4px 16px 4px 0',
-  [desktopBreakpoint]: {
-    margin: '0 24px 0 0'
-  }
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
-  flexShrink: 0,
-  fontWeight: 600,
-  margin: '4px 0',
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  },
-  [desktopBreakpoint]: {
-    margin: 0
-  }
-})
-
-const StyledCheckbox = styled(Checkbox)({
-  fontSize: ICON_SIZE.MD24,
-  marginRight: 8,
-  textAlign: 'center',
-  userSelect: 'none',
-  width: ICON_SIZE.MD24
-})
-
-const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
-  justifyContent: 'flex-start',
-  flexWrap: 'wrap',
-  width: '100%',
-  overflow: 'initial'
-})
 
 interface Props {
   viewerRef: UserTasksHeader_viewer$key | null
@@ -98,7 +56,6 @@ const UserTasksHeader = (props: Props) => {
             user {
               id
               preferredName
-              tms
             }
           }
         }
@@ -106,22 +63,6 @@ const UserTasksHeader = (props: Props) => {
     `,
     viewerRef
   )
-  const {
-    menuPortal: teamFilterMenuPortal,
-    togglePortal: teamFilterTogglePortal,
-    originRef: teamFilterOriginRef,
-    menuProps: teamFilterMenuProps
-  } = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
-  const {
-    menuPortal: teamMemberFilterMenuPortal,
-    togglePortal: teamMemberFilterTogglePortal,
-    originRef: teamMemberFilterOriginRef,
-    menuProps: teamMemberFilterMenuProps
-  } = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
   const oldTeamsRef = useRef<UserTasksHeader_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
@@ -144,7 +85,6 @@ const UserTasksHeader = (props: Props) => {
     const dedupedUsers = [] as {
       id: string
       preferredName: string
-      tms: ReadonlyArray<string>
     }[]
     users.forEach((user) => {
       const userKey = user.id
@@ -157,48 +97,57 @@ const UserTasksHeader = (props: Props) => {
       ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
       : undefined
     return teamFilter && teamMemberFilter
-      ? teamMemberFilter.tms.includes(teamFilter.id)
+      ? teamFilter.teamMembers.some(({user}) => user.id === teamMemberFilter.id)
         ? teamMemberFilter.preferredName
         : FilterLabels.ALL_TEAM_MEMBERS
       : (teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS)
-  }, [teamIds, userIds, teams])
+  }, [teamFilter, userIds, teams])
 
   return (
     <DashSectionHeader>
-      <UserTasksHeaderDashSectionControls>
-        <StyledDashFilterToggle
-          label='Team'
-          onClick={teamFilterTogglePortal}
-          onMouseEnter={TeamFilterMenu.preload}
-          ref={teamFilterOriginRef}
-          value={teamFilterName}
-          iconText='group'
-          dataCy='team-filter'
-        />
-        {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+      <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
+        <Menu
+          trigger={
+            <DashFilterToggle
+              className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
+              label='Team'
+              onMouseEnter={TeamFilterMenu.preload}
+              value={teamFilterName}
+              iconText='group'
+            />
+          }
+        >
+          <Suspense fallback={null}>
+            <TeamFilterMenu viewer={viewer} />
+          </Suspense>
+        </Menu>
 
         {/* Filter by Owner */}
-        <StyledDashFilterToggle
-          label='Team Member'
-          onClick={teamMemberFilterTogglePortal}
-          onMouseEnter={UserDashTeamMemberMenu.preload}
-          ref={teamMemberFilterOriginRef}
-          value={teamMemberFilterName}
-          iconText='person'
-          dataCy='team-member-filter'
-        />
-        {teamMemberFilterMenuPortal(
-          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
-        )}
-
-        <StyledLinkButton
-          onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
-          dataCy='archived-checkbox'
+        <Menu
+          trigger={
+            <DashFilterToggle
+              className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
+              label='Team Member'
+              onMouseEnter={UserDashTeamMemberMenu.preload}
+              value={teamMemberFilterName}
+              iconText='person'
+            />
+          }
         >
-          <StyledCheckbox active={showArchived} />
+          <Suspense fallback={null}>
+            <UserDashTeamMemberMenu viewer={viewer} />
+          </Suspense>
+        </Menu>
+
+        <Button
+          size='default'
+          className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+          onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
+        >
+          <Checkbox className='mr-2 w-6 text-center text-[24px]' active={showArchived} />
           {'Archived'}
-        </StyledLinkButton>
-      </UserTasksHeaderDashSectionControls>
+        </Button>
+      </DashSectionControls>
     </DashSectionHeader>
   )
 }

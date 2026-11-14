@@ -1,12 +1,10 @@
-import type {GraphQLSchema} from 'graphql'
 import type {IntegrationProviderLinear} from '../../postgres/types/IntegrationProvider'
 import type {GQLContext} from '../graphql'
 import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
 import nestLinearEndpoint from '../nestedSchema/nestLinearEndpoint'
 
-export const nestLinear = (parentSchema: GraphQLSchema) =>
+export const nestLinear = () =>
   nestLinearEndpoint({
-    parentSchema,
     parentType: 'LinearIntegration',
     fieldName: 'api',
     resolveEndpointContext: async (
@@ -14,7 +12,7 @@ export const nestLinear = (parentSchema: GraphQLSchema) =>
       _args,
       {dataLoader}: GQLContext
     ) => {
-      const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
+      const auth = await dataLoader.get('freshAuth').load({service: 'linear', teamId, userId})
       if (!auth?.accessToken) throw new Error('No Linear token found')
       if (!auth?.providerId) throw new Error('No Linear provider found')
       const {accessToken, providerId} = auth

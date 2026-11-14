@@ -34,8 +34,9 @@ const SearchResultEdge: ReqResolvers<'SearchResultEdge'> = {
       const meetingTypeToTemplateType = {
         action: 'FixedActivity',
         poker: 'PokerTemplate',
-        retrospective: 'ReflectTemplate',
-        teamPrompt: 'FixedActivity'
+        retrospective: 'PromptTemplate',
+        teamPrompt: 'PromptTemplate',
+        teamHealth: 'TeamHealthTemplate'
       } as const
       return {
         ...templateData,
@@ -43,7 +44,9 @@ const SearchResultEdge: ReqResolvers<'SearchResultEdge'> = {
       }
     }
 
-    throw new GraphQLError(`Invalid nodeTypeName: ${nodeTypeName}`)
+    throw new GraphQLError(`Invalid nodeTypeName: ${nodeTypeName}`, {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
 }
 

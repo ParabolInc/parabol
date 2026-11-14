@@ -1,3 +1,4 @@
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -16,23 +17,17 @@ export const CancelSeriesConfirmationModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='md:max-w-sm'>
         <DialogTitle>Cancel scheduled meeting?</DialogTitle>
-        <p className='mt-2 mb-4 text-slate-700 text-sm'>
+        <p className='mt-2 mb-4 text-fg-primary text-sm'>
           "{seriesTitle}" will not recur and the first meeting will not start automatically. You can
           re-schedule it later.
         </p>
         <DialogActions>
-          <button
-            className='cursor-pointer rounded-full border border-slate-400 border-solid bg-white px-4 py-2 font-medium font-sans text-base text-slate-700 hover:bg-slate-100'
-            onClick={onClose}
-          >
+          <Button variant='outline' size='md' onClick={onClose}>
             Keep series
-          </button>
-          <button
-            className='cursor-pointer rounded-full bg-tomato-500 px-4 py-2 font-medium font-sans text-base text-white hover:bg-tomato-600'
-            onClick={onConfirm}
-          >
+          </Button>
+          <Button variant='primary' size='md' onClick={onConfirm}>
             Cancel series
-          </button>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

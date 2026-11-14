@@ -1,5 +1,5 @@
-import {Forum, Transcribe} from '@mui/icons-material'
 import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
+import {Forum, Transcribe} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -73,9 +73,7 @@ const MeetingTopBar = (props: Props) => {
           !isMeetingSidebarCollapsed && 'pl-2'
         )}
       >
-        {isMeetingSidebarCollapsed && (
-          <SidebarToggle className='mr-4' dataCy='topbar' onClick={toggleSidebar} />
-        )}
+        {isMeetingSidebarCollapsed && <SidebarToggle className='mr-4' onClick={toggleSidebar} />}
         <div className='w-full'>{children}</div>
       </div>
       <IconGroupBlock>
@@ -96,11 +94,14 @@ const MeetingTopBar = (props: Props) => {
               />
             </div>
             <button
-              className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-sky-500 text-sm hover:text-sky-600'
+              className='group flex h-max w-max cursor-pointer select-none flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm hover:text-sky-600'
               onClick={toggleDrawer}
+              aria-label={drawerButton.label}
             >
               <IconLabel icon={drawerButton.icon} iconLarge />
-              <div className='text-slate-700 group-hover:text-slate-900'>{drawerButton.label}</div>
+              <div className='hidden text-fg-primary group-hover:text-fg-primary min-[600px]:block'>
+                {drawerButton.label}
+              </div>
             </button>
           </div>
         )}

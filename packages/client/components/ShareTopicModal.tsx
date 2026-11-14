@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useSlackChannels from '../hooks/useSlackChannels'
 import useShareTopicMutation from '../mutations/useShareTopicMutation'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -19,9 +20,8 @@ import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
 import findStageById from '../utils/meetings/findStageById'
+import getMutationError from '../utils/relay/getMutationError'
 import SlackClientManager from '../utils/SlackClientManager'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   isOpen: boolean
@@ -93,7 +93,7 @@ const ShareTopicModal = (props: Props) => {
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
-  const slackChannels = useSlackChannels(slack)
+  const {channels: slackChannels} = useSlackChannels(slack)
   const channelsLoading = slackChannels.length === 0 && isSlackConnected
   const isLoading = slackOAuthSubmitting || shareTopicSubmitting
 
@@ -118,9 +118,9 @@ const ShareTopicModal = (props: Props) => {
           submitting: slackOAuthSubmitting,
           submitMutation,
           onError,
-          onCompleted: () => {
-            onCompleted()
-            setSelectedIntegration('slack')
+          onCompleted: (res, errors) => {
+            onCompleted(res, errors)
+            if (!getMutationError(res, errors)) setSelectedIntegration('slack')
           }
         })
       }
@@ -164,14 +164,14 @@ const ShareTopicModal = (props: Props) => {
   }
 
   const comingSoonBadge = (
-    <div className='flex items-center justify-center rounded-full bg-slate-300 px-3 py-1'>
-      <div className='text-center font-semibold text-slate-600 text-xs'>coming soon</div>
+    <div className='flex items-center justify-center rounded-full bg-surface-well px-3 py-1'>
+      <div className='text-center font-semibold text-fg-secondary text-xs'>coming soon</div>
     </div>
   )
 
   const connectButton = (
-    <div className='flex cursor-pointer items-center justify-center rounded-full border bg-white px-3 py-1'>
-      <div className='text-center font-semibold text-slate-700 text-xs'>connect</div>
+    <div className='flex cursor-pointer items-center justify-center rounded-md border bg-surface-card px-3 py-1'>
+      <div className='text-center font-semibold text-fg-primary text-xs'>connect</div>
     </div>
   )
 
@@ -197,10 +197,11 @@ const ShareTopicModal = (props: Props) => {
               {selectedIntegration !== '' ? (
                 <SelectValue />
               ) : (
-                <span className='text-slate-600'>Select Integration</span>
+                <span className='text-fg-muted'>Select Integration</span>
               )}
             </SelectTrigger>
-            <SelectContent>
+            {/* popper: there is no selection to anchor item-aligned positioning to */}
+            <SelectContent position='popper'>
               <SelectGroup>
                 <SelectItem value='slack' endAdornment={!isSlackConnected ? connectButton : null}>
                   Slack
@@ -236,7 +237,7 @@ const ShareTopicModal = (props: Props) => {
             <SelectTrigger isLoading={channelsLoading}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent position='item-aligned'>
+            <SelectContent>
               <SelectGroup>
                 {selectedIntegration === 'slack' &&
                   slackChannels.map((channel) => (
@@ -249,12 +250,17 @@ const ShareTopicModal = (props: Props) => {
           </Select>
         </fieldset>
         <DialogActions>
-          <SecondaryButton onClick={onClose} size='small'>
+          <Button variant='outline' size='md' onClick={onClose}>
             Cancel
-          </SecondaryButton>
-          <PrimaryButton size='small' onClick={onShare} disabled={isLoading || channelsLoading}>
+          </Button>
+          <Button
+            variant='primary'
+            size='md'
+            onClick={onShare}
+            disabled={isLoading || channelsLoading}
+          >
             Share
-          </PrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

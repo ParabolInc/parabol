@@ -1,20 +1,14 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {RefObject} from 'react'
 import {useFragment} from 'react-relay'
 import type {SpotlightSourceGroup_meeting$key} from '../__generated__/SpotlightSourceGroup_meeting.graphql'
-import {ElementHeight} from '../types/constEnums'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-
-const Source = styled('div')({
-  minHeight: ElementHeight.REFLECTION_CARD
-})
 
 interface Props {
   meetingRef: SpotlightSourceGroup_meeting$key
-  sourceRef: RefObject<HTMLDivElement>
-  modalRef: RefObject<HTMLDivElement>
-  reflectionIdsToHideRef: RefObject<string[]>
+  sourceRef: RefObject<HTMLDivElement | null>
+  modalRef: RefObject<HTMLDivElement | null>
+  reflectionIdsToHideRef: RefObject<string[] | null>
 }
 
 const SpotlightSourceGroup = (props: Props) => {
@@ -33,7 +27,7 @@ const SpotlightSourceGroup = (props: Props) => {
   const {spotlightGroup} = meeting
 
   return (
-    <Source ref={sourceRef}>
+    <div className='min-h-11' ref={sourceRef}>
       {spotlightGroup && (
         <ReflectionGroup
           phaseRef={modalRef}
@@ -42,7 +36,7 @@ const SpotlightSourceGroup = (props: Props) => {
           reflectionIdsToHide={reflectionIdsToHideRef.current}
         />
       )}
-    </Source>
+    </div>
   )
 }
 

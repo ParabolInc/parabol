@@ -1,7 +1,8 @@
 import {sql} from 'kysely'
 import {pack} from 'msgpackr'
-import getKysely from 'parabol-server/postgres/getKysely'
-import getRedis from 'parabol-server/utils/getRedis'
+import getKysely from '../../server/postgres/getKysely'
+import getRedis from '../../server/utils/getRedis'
+import {activeEmbeddingModelId} from '../activeEmbeddingModel'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
@@ -26,6 +27,10 @@ export const embedMetadata: JobQueueStepRun<
   const {embeddingsMetadataId, modelId, forceBuildText, requestId, channelName} = data
   const modelManager = getModelManager()
 
+  const embeddingModel = modelManager.getEmbedder(modelId)
+  if (!embeddingModel) {
+    return new JobQueueError(`embedding model ${modelId} not available`)
+  }
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
 
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
@@ -38,14 +43,18 @@ export const embedMetadata: JobQueueStepRun<
 
   if (updateFullText) {
     try {
-      const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader)
+      const {body: fullText, language} = await createEmbeddingTextFrom(metadata, dataLoader, {
+        discussionText: embeddingModel.discussionText
+      })
       metadata.fullText = fullText
       metadata.language = language!
-      await pg
-        .updateTable('EmbeddingsMetadata')
-        .set({fullText, language})
-        .where('id', '=', embeddingsMetadataId)
-        .execute()
+      if (modelId === activeEmbeddingModelId) {
+        await pg
+          .updateTable('EmbeddingsMetadata')
+          .set({fullText, language})
+          .where('id', '=', embeddingsMetadataId)
+          .execute()
+      }
     } catch (e) {
       return new JobQueueError(e as Error, true, {
         forceBuildText: true
@@ -54,10 +63,6 @@ export const embedMetadata: JobQueueStepRun<
   }
   const {fullText, language} = metadata
 
-  const embeddingModel = modelManager.getEmbedder(modelId)
-  if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${modelId} not available`)
-  }
   // Exit successfully, we don't want to fail the job because the language is not supported
   const tsvLanguage = getTSV(language)
   if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
@@ -76,7 +81,11 @@ export const embedMetadata: JobQueueStepRun<
   let firstChunkVector: number[] | undefined
   const errors = await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {
-      const embeddingVector = await embeddingModel.getEmbedding(chunk)
+      const embeddingVector = await embeddingModel.getEmbedding(
+        metadata.objectType === 'retroReflection'
+          ? `${embeddingModel.reflectionPrompt}${chunk}`
+          : chunk
+      )
       if (embeddingVector instanceof Error) {
         return new JobQueueError(`unable to get embeddings: ${embeddingVector.message}`, true, {
           forceBuildText: true

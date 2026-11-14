@@ -6,6 +6,7 @@ import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import isTempId from '../utils/relay/isTempId'
 import handleEditTask from './handlers/handleEditTask'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EditTaskMutation_task on EditTaskPayload {
@@ -21,7 +22,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation EditTaskMutation($taskId: ID!, $isEditing: Boolean!) {
+  mutation EditTaskMutation($taskId: ID!, $isEditing: Boolean!) @raw_response_type {
     editTask(taskId: $taskId, isEditing: $isEditing) {
       error {
         message
@@ -43,6 +44,7 @@ const EditTaskMutation: SimpleMutation<TEditTaskMutation> = (atmosphere, {taskId
   return commitMutation<TEditTaskMutation>(atmosphere, {
     mutation,
     variables: {taskId, isEditing},
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('editTask')
       if (!payload) return

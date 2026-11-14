@@ -4,22 +4,21 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import type {GQLContext} from '../../graphql'
 import type {MutationResolvers, ReactableEnum} from '../resolverTypes'
 import {getReactableType} from '../types/Reactable'
 
-export const getReactable = (
+export const getReactable = async (
   reactableDBId: string | number,
   reactableType: ReactableEnum,
   dataLoader: DataLoaderInstance
 ) => {
   if (reactableType === 'RESPONSE') {
-    return dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+    const response = await dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+    return response?.sharedAt ? response : undefined
   }
   if (reactableType === 'COMMENT') {
     return dataLoader.get('comments').load(reactableDBId as string)
@@ -56,9 +55,10 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   if (verifiedType !== reactableType) {
     return {error: {message: `Unknown item`}}
   }
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // VALIDATION
+  // the emoji data is megabytes of heap once parsed, so the first reactji evaluates it instead of every server's startup
+  const {default: emojiIds} = await import(/* webpackMode: "eager" */ '../../../utils/emojiIds')
   if (!emojiIds.includes(reactji)) {
     return {error: {message: `invalid emoji`}}
   }
@@ -97,25 +97,11 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     }
   }
 
-  const [meeting] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId),
-    updatePG(tableName)
-  ])
+  await updatePG(tableName)
   dataLoader.clearAll(['comments', 'teamPromptResponses', 'retroReflections'])
-
-  const {meetingType} = meeting
 
   const data = {reactableId: reactableDBId as any, reactableType}
 
-  analytics.reactjiInteracted(
-    viewer,
-    meetingId,
-    meetingType,
-    {...reactable, id: reactableId},
-    reactableType,
-    reactji,
-    !!isRemove
-  )
   if (meetingId) {
     publish(
       SubscriptionChannel.MEETING,

@@ -1,10 +1,9 @@
-import styled from '@emotion/styled'
-import {Event} from '@mui/icons-material'
 import ms from 'ms'
+import {useState} from 'react'
 import {type DayModifiers, DayPicker} from 'react-day-picker'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
+import {Event} from '~/ui/icons'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import {shortDays, shortMonths} from '../utils/makeDateString'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
 import DropdownMenuToggle from './DropdownMenuToggle'
@@ -13,16 +12,6 @@ interface Props {
   endTime: Date
   setEndTime: (date: Date) => void
 }
-
-const Toggle = styled(DropdownMenuToggle)({
-  fontSize: 14,
-  padding: '4px 0 4px 8px',
-  minWidth: 160
-})
-
-const StyledIcon = styled(Event)({
-  color: PALETTE.SLATE_600
-})
 
 const NEXT_YEAR = new Date(Date.now() + ms('1y'))
 
@@ -39,15 +28,7 @@ const StageTimerModalEndTimeDate = (props: Props) => {
   const dayStr = formatDay(endTime)
 
   const now = new Date()
-  const {
-    menuPortal,
-    togglePortal,
-    menuProps: endTimeMenuProps,
-    originRef
-  } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
-    id: 'StageTimerEndTimePicker',
-    isDropdown: true
-  })
+  const [isOpen, setIsOpen] = useState(false)
   const handleDayClick = (day: Date, {disabled, selected}: DayModifiers) => {
     if (disabled || selected) return
     const nextDate = new Date(endTime)
@@ -58,23 +39,35 @@ const StageTimerModalEndTimeDate = (props: Props) => {
       nextDate.setHours(roundedDate.getHours() + 1, roundedDate.getMinutes())
     }
     setEndTime(nextDate)
-    endTimeMenuProps.closePortal()
+    setIsOpen(false)
   }
 
   return (
     <>
-      <StyledIcon />
-      <Toggle defaultText={dayStr} onClick={togglePortal} ref={originRef} flat size='small' />
-      {menuPortal(
-        <DayPicker
-          disabled={{before: now}}
-          fromMonth={now}
-          defaultMonth={endTime}
-          onDayClick={handleDayClick}
-          selected={endTime}
-          toMonth={NEXT_YEAR}
-        />
-      )}
+      <Event className='text-fg-secondary' />
+      <Menu
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        trigger={
+          <DropdownMenuToggle
+            className='min-w-[160px] py-1 pr-0 pl-2 text-[14px]'
+            defaultText={dayStr}
+            flat
+            size='small'
+          />
+        }
+      >
+        <MenuContent align='start' className='max-h-none w-auto max-w-none p-2'>
+          <DayPicker
+            disabled={{before: now}}
+            fromMonth={now}
+            defaultMonth={endTime}
+            onDayClick={handleDayClick}
+            selected={endTime}
+            toMonth={NEXT_YEAR}
+          />
+        </MenuContent>
+      </Menu>
     </>
   )
 }

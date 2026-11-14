@@ -24,7 +24,7 @@ const mutation = graphql`
     $reactji: String!
     $isRemove: Boolean
     $meetingId: ID!
-  ) {
+  ) @raw_response_type {
     addReactjiToReactable(
       reactableId: $reactableId
       reactableType: $reactableType
@@ -37,13 +37,15 @@ const mutation = graphql`
           message
         }
       }
-      ...AddReactjiToReactableMutation_meeting @relay(mask: false)
+      ...AddReactjiToReactableMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Reactable = NonNullable<
-  TAddReactjiToReactableMutation['response']['addReactjiToReactable']['reactable']
+  NonNullable<
+    TAddReactjiToReactableMutation['response']['addReactjiToReactable']['AddReactjiToReactableMutation_meeting']
+  >['reactable']
 >
 
 const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMutation> = (

@@ -1,19 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
-import DialogTitle from '../../../../components/DialogTitle'
+import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import Panel from '../../../../components/Panel/Panel'
-import {ElementWidth} from '../../../../types/constEnums'
 import OAuthProviderList from '../OrgIntegrations/OAuthProviderList'
-import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
-import OrgAuthenticationSCIM from './OrgAuthenticationSCIM'
-import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
+import OrgAuthenticationIdP from './OrgAuthenticationIdP'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
-})
 
 interface Props {
   queryRef: PreloadedQuery<OrgAuthenticationQuery>
@@ -25,12 +18,10 @@ const OrgAuthentication = (props: Props) => {
       query OrgAuthenticationQuery($orgId: ID!) {
         viewer {
           organization(orgId: $orgId) {
-            saml {
-              ...OrgAuthenticationSSOFrame_saml
-              ...OrgAuthenticationSignOnUrl_saml
-              ...OrgAuthenticationSCIM_saml
-              ...OrgAuthenticationMetadata_saml
+            samls {
               id
+              ...OrgAuthenticationSSOFrame_samls
+              ...OrgAuthenticationIdP_saml
             }
             ...OAuthProviderList_organization
             isOrgAdmin
@@ -42,41 +33,46 @@ const OrgAuthentication = (props: Props) => {
     `,
     queryRef
   )
-  const {viewer} = data
-  const {organization} = viewer
+  const {organization} = data.viewer
+  const samls = organization?.samls ?? []
+  const [openSAMLId, setOpenSAMLId] = useState(samls.length === 1 ? samls[0]?.id : undefined)
   if (!organization) {
     return null
   }
-  const {saml = null, isOrgAdmin, showOAuthProvider, scimEnabled} = organization
-  const disabled = !saml
+  const {isOrgAdmin, showOAuthProvider, scimEnabled} = organization
 
   return (
     <div className='space-y-6'>
-      <StyledPanel>
-        <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
-        <OrgAuthenticationSSOFrame samlRef={saml} />
-        <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
-          <OrgAuthenticationSignOnUrl samlRef={saml} />
-          <OrgAuthenticationMetadata samlRef={saml} isOrgAdmin={isOrgAdmin} />
+      <Panel className='max-w-[976px]'>
+        <LabelHeading className='px-6 pt-4 pb-2'>SAML Single Sign-On</LabelHeading>
+        <div className='border-hairline border-t pt-6'>
+          <OrgAuthenticationSSOFrame samlsRef={samls} />
+          <div className='border-hairline border-t empty:hidden'>
+            {samls.map((saml) => (
+              <OrgAuthenticationIdP
+                key={saml.id}
+                samlRef={saml}
+                isOrgAdmin={isOrgAdmin}
+                scimEnabled={!!scimEnabled}
+                isOpen={openSAMLId === saml.id}
+                onToggle={() => setOpenSAMLId(openSAMLId === saml.id ? undefined : saml.id)}
+              />
+            ))}
+          </div>
         </div>
-      </StyledPanel>
-
-      <StyledPanel>
-        <DialogTitle className='px-6 pt-5 pb-6'>SCIM Provisioning</DialogTitle>
-        <OrgAuthenticationSCIM samlRef={saml} scimEnabled={!!scimEnabled} isOrgAdmin={isOrgAdmin} />
-      </StyledPanel>
+      </Panel>
 
       {showOAuthProvider && (
-        <StyledPanel>
-          <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 API</DialogTitle>
-          <div className='px-6 pb-6'>
-            <div className='mb-6 text-base text-slate-700'>
+        <Panel className='max-w-[976px]'>
+          <LabelHeading className='px-6 pt-4 pb-2'>OAuth 2.0 API</LabelHeading>
+          <div className='border-hairline border-t px-6 pt-6 pb-6'>
+            <div className='mb-6 text-base text-fg-primary'>
               Configure your organization as an OAuth 2.0 provider to allow external applications to
               authenticate with your Parabol organization.
             </div>
             <OAuthProviderList organizationRef={organization} />
           </div>
-        </StyledPanel>
+        </Panel>
       )}
     </div>
   )

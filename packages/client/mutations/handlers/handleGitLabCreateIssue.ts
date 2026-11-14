@@ -1,7 +1,8 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
-import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
-import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
+import {gitLabIssueArgs} from '~/integrations/gitlab/gitLabIssueArgs'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import {searchFiltersByKey} from '../../integrations/platform/IntegrationSearchFilter'
+import readScopingSearchStateFromRelayStore from '../../utils/relay/readScopingSearchStateFromRelayStore'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getGitLabProjectsIssuesConn from '../connections/getGitLabProjectsIssuesConn'
 
@@ -16,10 +17,7 @@ const handleGitLabCreateIssue = (
   const meetingId = task.getValue('meetingId')
   if (!viewerId || !meetingId || !integration) return
 
-  const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
-  const gitlabSearchQuery = store.get(gitlabSearchQueryId)
-  const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
-  const searchQuery = queryString?.trim() ?? ''
+  const {queryString, filters} = readScopingSearchStateFromRelayStore(store, meetingId, 'gitlab')
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = store.get(teamMemberId)
@@ -27,14 +25,12 @@ const handleGitLabCreateIssue = (
   const gitlab = integrations?.getLinkedRecord('gitlab')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const selectedProjectsIds = gitlabSearchQuery?.getValue('selectedProjectsIds') as
-    | string[]
-    | undefined
-  const formattedProjectsIds = selectedProjectsIds?.length ? selectedProjectsIds : null
+  const selectedProjectsIds = searchFiltersByKey(filters, 'project')
+  const formattedProjectsIds = selectedProjectsIds.length ? selectedProjectsIds : null
   const gitlabProjectsIssuesConn = getGitLabProjectsIssuesConn(gitlab, {
-    searchQuery,
+    searchQuery: queryString.trim(),
     projectsIds: formattedProjectsIds,
-    ...gitlabIssueArgs
+    ...gitLabIssueArgs
   })
   if (!gitlabProjectsIssuesConn) return
   const now = new Date().toISOString()

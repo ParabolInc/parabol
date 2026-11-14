@@ -1,19 +1,17 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import RemoveSlackAuthMutation from '../mutations/RemoveSlackAuthMutation'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import SlackClientManager from '../utils/SlackClientManager'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
 }
 
 const SlackConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -26,10 +24,10 @@ const SlackConfigMenu = (props: Props) => {
     RemoveSlackAuthMutation(atmosphere, {teamId}, {onCompleted, onError})
   }
   return (
-    <Menu ariaLabel={'Configure your Slack integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Slack' onClick={removeSlack} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={openOAuth}>Refresh token</MenuItem>
+      <MenuItem onClick={removeSlack}>Remove Slack</MenuItem>
+    </MenuContent>
   )
 }
 

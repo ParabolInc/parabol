@@ -1,6 +1,9 @@
-import {type GraphQLSchema, print} from 'graphql'
-import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
-import type {EndpointExecutionResult, Executor} from 'nest-graphql-endpoint/lib/types'
+import {print} from 'graphql'
+import nestGraphQLEndpoint, {
+  type EndpointExecutionResult,
+  type Executor
+} from 'nest-graphql-endpoint'
+import {PROVIDER_UNAVAILABLE} from '../integrations/platform/toNestedRequestError'
 import githubSchema from './githubSchema.graphql'
 
 // Resolvers from SDL first definitions
@@ -51,7 +54,7 @@ const executor: Executor<{accessToken: string; headers?: Record<string, string>}
     return {
       errors: [
         {
-          type: 'GitHub is down',
+          type: PROVIDER_UNAVAILABLE,
           message: String((e as any).message)
         }
       ],
@@ -60,16 +63,16 @@ const executor: Executor<{accessToken: string; headers?: Record<string, string>}
   }
 }
 
-export const nestGitHub = (parentSchema: GraphQLSchema) =>
-  nestGitHubEndpoint({
-    parentSchema,
+export const nestGitHub = () =>
+  nestGraphQLEndpoint({
     parentType: 'GitHubIntegration',
     fieldName: 'api',
     executor,
-    resolveEndpointContext: ({accessToken}) => ({
+    resolveEndpointContext: ({accessToken}: {accessToken: string}) => ({
       accessToken,
       headers: {Accept: 'application/vnd.github.bane-preview+json'}
     }),
     prefix: '_xGitHub',
-    schemaIDL: githubSchema
+    schemaIDL: githubSchema,
+    endpointTimeout: 8000
   })

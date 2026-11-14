@@ -98,9 +98,11 @@ const ActionMeetingSidebar = (props: Props) => {
                 <NewMeetingSidebarPhaseListItem
                   handleClick={canNavigate ? handleClick : undefined}
                   isActive={
-                    phaseType === 'agendaitems'
-                      ? localPhaseType !== '' && blackList.includes(localPhaseType)
-                      : localPhaseType === phaseType
+                    phaseType === 'checkin' || phaseType === 'updates'
+                      ? false
+                      : phaseType === 'agendaitems'
+                        ? localPhaseType !== '' && blackList.includes(localPhaseType)
+                        : localPhaseType === phaseType
                   }
                   isCollapsible={collapsiblePhases.includes(phaseType)}
                   isFacilitatorPhase={phaseType === facilitatorPhaseType}

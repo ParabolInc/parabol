@@ -1,14 +1,19 @@
-import styled from '@emotion/styled'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const MeetingContent = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'row',
-  height: '100%',
-  // important! don't let the phase area (eg reflection columns) overflow.
-  // instead, put sub components in overflow containers
-  overflow: 'hidden',
-  width: '100%'
-})
+const MeetingContent = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        className={cn('flex h-full w-full flex-1 flex-row overflow-hidden', className)}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 
 export default MeetingContent

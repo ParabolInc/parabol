@@ -5,6 +5,7 @@ import appOrigin from '../appOrigin'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import traceHttpRoute from '../tracing/traceHttpRoute'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {SCIMContext} from './SCIMContext'
 import './UserEgress'
@@ -16,7 +17,9 @@ import './GroupDegress'
 import {decode} from 'jsonwebtoken'
 import makeAppURL from '../../client/utils/makeAppURL'
 import {Logger} from '../utils/Logger'
+import {annotateLogContext} from '../utils/requestLogContext'
 import uwsGetIP from '../utils/uwsGetIP'
+import {omitUndeclaredExtensionPaths} from './omitUndeclaredExtensionPaths'
 
 SCIMMY.Config.set({
   //documentationUri: "https://example.com/docs/scim.html",
@@ -90,22 +93,24 @@ const scimHandler = (handler: Handler) =>
       }
       // Verify the signature if it's not a bearer token
       if (saml.scimAuthenticationType === 'oauthClientCredentials') {
-        const authToken = getVerifiedAuthToken(token)
+        const authToken = getVerifiedAuthToken(token, true, 'action-scim')
         if (!authToken?.sub) {
           throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
         }
       }
 
+      if (saml.orgId) {
+        annotateLogContext({orgId: saml.orgId})
+      }
       await handler(res, {query, id, body}, {ip, authToken: unverifiedToken, dataLoader})
     } catch (err) {
       const response = new SCIMMY.Messages.Error(err as any)
+      // written first, so the error record carries the status the IdP gets
+      res.writeStatus(`${response.status}`).writeHeader('Content-Type', 'application/scim+json')
       if (response.status >= 400) {
         Logger.error(err)
       }
-      res
-        .writeStatus(`${response.status}`)
-        .writeHeader('Content-Type', 'application/scim+json')
-        .end(JSON.stringify(response))
+      res.end(JSON.stringify(response))
     } finally {
       dataLoader.dispose()
     }
@@ -125,7 +130,8 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
     method: 'get' | 'post' | 'put' | 'patch' | 'del',
     handler: Handler
   ) => {
-    app[method](`${pathPrefix}${path}`, scimHandler(handler))
+    const pattern = `${pathPrefix}${path}`
+    app[method](pattern, traceHttpRoute(pattern, scimHandler(handler)))
   }
 
   addHandler('/ServiceProviderConfig', 'get', async (res, _, ctx) => {
@@ -197,7 +203,17 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
         return
       }
       const resource = new Resource(id, query)
-      const updatedResource = await resource.patch(body as any, ctx)
+      const patchOp = new SCIMMY.Messages.PatchOp(
+        body as ConstructorParameters<typeof SCIMMY.Messages.PatchOp>[0]
+      )
+      const operations = omitUndeclaredExtensionPaths(
+        patchOp.Operations,
+        Resource.schema.definition
+      )
+      const updatedResource =
+        operations.length > 0
+          ? await resource.patch({schemas: patchOp.schemas, Operations: operations}, ctx)
+          : undefined
       if (updatedResource) {
         res
           .writeHeader('Content-Type', 'application/scim+json')

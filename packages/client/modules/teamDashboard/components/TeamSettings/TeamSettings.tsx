@@ -1,38 +1,14 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, TierLabel} from '../../../../types/constEnums'
+import {TierLabel} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 import TeamPrivacyToggle from './TeamPrivacyToggle'
-
-const TeamSettingsLayout = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const PanelsLayout = styled('div')({
-  margin: '0 auto',
-  maxWidth: Layout.SETTINGS_MAX_WIDTH,
-  width: '100%'
-})
-
-const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER
-})
-
-const StyledRow = styled(Row)({
-  borderTop: 0
-})
 
 interface Props {
   queryRef: PreloadedQuery<TeamSettingsQuery>
@@ -84,52 +60,57 @@ const TeamSettings = (props: Props) => {
     preferredName: 'Parabol Support'
   }
   return (
-    <TeamSettingsLayout>
-      <PanelsLayout>
+    <div className='flex w-full flex-1 flex-col'>
+      <div className='mx-auto w-full max-w-[768px]'>
         {billingTier === 'starter' && (
           <Panel>
-            <StyledRow>
+            <Row className='border-t-0'>
               <div>
                 {tier !== 'starter'
                   ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>
-              <PrimaryButton onClick={() => navigate(`/me/organizations/${orgId}`)}>
+              <Button
+                variant='primary'
+                size='sm'
+                className='text-sm'
+                onClick={() => navigate(`/me/organizations/${orgId}`)}
+              >
                 {`Upgrade to ${TierLabel.TEAM} Plan`}
-              </PrimaryButton>
-            </StyledRow>
+              </Button>
+            </Row>
           </Panel>
         )}
         {viewerIsLead || viewerIsOrgAdmin ? (
           <>
             <Panel label='Team Privacy'>
-              <PanelRow>
+              <div className='border-hairline border-t p-4'>
                 <TeamPrivacyToggle teamRef={team!} />
-              </PanelRow>
+              </div>
             </Panel>
             <Panel label='Danger Zone'>
-              <PanelRow>
+              <div className='border-hairline border-t p-4'>
                 <ArchiveTeam team={team!} />
-              </PanelRow>
+              </div>
             </Panel>
           </>
         ) : (
           <Panel className='mt-8'>
-            <StyledRow>
+            <Row className='border-t-0'>
               <div>
                 This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
                 Team Leads can <b>delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
-                <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
+                <a href={`mailto:${contact.email}`} className='text-accent underline'>
                   {contact.preferredName}
                 </a>
                 .
               </div>
-            </StyledRow>
+            </Row>
           </Panel>
         )}
-      </PanelsLayout>
-    </TeamSettingsLayout>
+      </div>
+    </div>
   )
 }
 

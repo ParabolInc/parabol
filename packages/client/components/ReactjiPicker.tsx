@@ -10,11 +10,12 @@ const ReactjiPicker = (props: Props) => {
   const onEmojiSelect = (emoji: data.Emoji) => {
     onClick(emoji.id)
   }
+  const theme = document.documentElement.classList.contains('theme-dark') ? 'dark' : 'light'
   return (
     <Picker
       data={data}
       onEmojiSelect={onEmojiSelect}
-      theme='light'
+      theme={theme}
       skinTonePosition='none'
       previewPosition='none'
       autoFocus

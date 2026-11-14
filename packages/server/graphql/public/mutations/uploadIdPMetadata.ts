@@ -1,23 +1,31 @@
+import {GraphQLError} from 'graphql'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import type {MutationResolvers} from '../resolverTypes'
 
-const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (_, {file, orgId}) => {
+const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (
+  _,
+  {file, samlId},
+  {dataLoader}
+) => {
   // VALIDATION
   const contentType = file.type
   const buffer = Buffer.from(await file.arrayBuffer())
   if (!contentType || !contentType.includes('xml')) {
-    return {error: {message: 'file must be XML'}}
+    throw new GraphQLError('file must be XML', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (buffer.byteLength > 1000000) {
-    return {error: {message: 'file must be less than 1MB'}}
+    throw new GraphQLError('file must be less than 1MB', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (buffer.byteLength <= 1) {
-    return {error: {message: 'file must be larger than 1 byte'}}
+    throw new GraphQLError('file must be larger than 1 byte', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
-  const manager = getFileStoreManager()
-  const url = await manager.putUserFile(buffer, `Organization/${orgId}/idpMetadata.xml`)
+  const {orgId} = await dataLoader.get('saml').loadNonNull(samlId)
+  const manager = await getFileStoreManager()
+  const url = await manager.putUserFile(buffer, `Organization/${orgId}/idpMetadata/${samlId}.xml`)
   return {url}
 }
 

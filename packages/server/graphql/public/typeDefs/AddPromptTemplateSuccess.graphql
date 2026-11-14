@@ -1,0 +1,16 @@
+"""
+Returned when addPromptTemplate succeeds. Either a blank template with one default prompt was created
+for the team, or an existing template of the same type was cloned (named "<original> Copy") with all
+of its active prompts. The viewer's free custom template counter for that type is decremented.
+"""
+type AddPromptTemplateSuccess {
+  """
+  The newly created or cloned template
+  """
+  template: PromptTemplate!
+
+  """
+  The viewer, so the client can refresh its free custom template counters
+  """
+  user: User!
+}

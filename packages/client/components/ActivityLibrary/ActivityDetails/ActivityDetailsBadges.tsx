@@ -34,7 +34,7 @@ const ActivityDetailsBadges = (props: Props) => {
         </ActivityDetailsBadge>
       )}
       {isCustom && (
-        <ActivityDetailsBadge className='select-none bg-grape-700 text-white'>
+        <ActivityDetailsBadge className='select-none bg-grape-700 text-white dark:bg-grape-600'>
           Custom
         </ActivityDetailsBadge>
       )}

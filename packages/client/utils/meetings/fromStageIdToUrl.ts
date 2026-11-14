@@ -4,6 +4,7 @@ import type {
   fromStageIdToUrl_meeting$key,
   NewMeetingPhaseTypeEnum
 } from '~/__generated__/fromStageIdToUrl_meeting.graphql'
+import {TeamHealthDemo} from '../../modules/demo/teamHealthDemoIds'
 import {RetroDemo} from '../../types/constEnums'
 import findBestNavigableStage from './findBestNavigableStage'
 import findStageById from './findStageById'
@@ -21,7 +22,11 @@ const phaseIsMultiStage = {
   agendaitems: true,
   lastcall: false,
   SCOPE: false,
-  ESTIMATE: true
+  ESTIMATE: true,
+  TEAM_HEALTH_INTRO: false,
+  TEAM_HEALTH_RESPONSE: true,
+  TEAM_HEALTH_SUBMITTED: false,
+  TEAM_HEALTH_RESULT: true
 } as Record<NewMeetingPhaseTypeEnum, boolean>
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
@@ -56,6 +61,9 @@ const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$
   const maybeStage = isPhaseMultiStage ? `/${stageIdx + 1}` : ''
   if (meetingId === RetroDemo.MEETING_ID) {
     return `/retrospective-demo/${phaseSlug}${maybeStage}`
+  }
+  if (meetingId === TeamHealthDemo.MEETING_ID) {
+    return `${TeamHealthDemo.ROUTE}/${phaseSlug}${maybeStage}`
   }
   return `/meet/${meetingId}/${phaseSlug}${maybeStage}`
 }

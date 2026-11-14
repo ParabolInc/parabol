@@ -119,6 +119,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
               ... on ProcessRecurrenceSuccess {
                 meetingsStarted
                 meetingsEnded
+                remindersSent
               }
             }
           }

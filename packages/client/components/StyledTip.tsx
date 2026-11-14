@@ -1,10 +1,11 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const StyledTip = styled('div')({
-  color: PALETTE.JADE_400,
-  fontWeight: 600,
-  textAlign: 'center'
+const StyledTip = forwardRef((props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+  const {className, ...rest} = props
+  return (
+    <div {...rest} ref={ref} className={cn('text-center font-semibold text-jade-400', className)} />
+  )
 })
 
 export default StyledTip

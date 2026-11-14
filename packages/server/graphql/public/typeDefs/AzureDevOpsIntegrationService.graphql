@@ -1,0 +1,51 @@
+type AzureDevOpsIntegrationService implements IntegrationService {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+  """
+  The viewer's auth for this service on this team. Null when not connected or when the team member is not the viewer
+  """
+  auth: TeamMemberIntegrationAuth
+  """
+  The global provider for this service. Null when this instance has no credentials for it
+  """
+  cloudProvider: IntegrationProvider
+  """
+  The team- and org-scoped providers for this service on this team. Connect flows prefer these over cloudProvider
+  """
+  sharedProviders: [IntegrationProvider!]!
+  """
+  The scopes on the viewer's active grant for this service, whether or not they are enough to count as connected (a Jira grant may hold only Confluence scopes). Empty without a grant
+  """
+  grantedScopes: [String!]!
+  """
+  When the viewer's grant for this service stopped working because the service rejected its token, so it needs reconnecting.
+  Null while connected, if never connected, or after disconnecting on purpose
+  """
+  expiredAt: DateTime
+  """
+  The projects the viewer's connection shares with this team, which is everywhere the team can search, read, and create work items.
+  [] when not connected or nothing is shared yet; null when the live fetch failed
+  """
+  repos: [AzureDevOpsRemoteProject!]
+
+  """
+  Whether the connection shares every project the viewer can see, or only the ones in repos
+  """
+  repoAccess: IntegrationRepoAccessEnum!
+
+  """
+  Every project the viewer's Azure DevOps account can see, shared or not, fetched live for the access picker.
+  [] when the team member is not the viewer; null when the fetch failed
+  """
+  availableRepos: [AzureDevOpsRemoteProject!]
+
+  """
+  The viewer's saved searches on this service, most recently used first.
+  [] when the service does not save searches or the viewer is not connected
+  """
+  searchQueries: [IntegrationSearchQuery!]!
+}

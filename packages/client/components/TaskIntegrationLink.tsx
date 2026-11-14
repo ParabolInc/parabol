@@ -4,69 +4,89 @@ import {useFragment} from 'react-relay'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import getClickUpTaskLinkTitle from '../integrations/clickup/getClickUpTaskLinkTitle'
+import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import isTempId from '../utils/relay/isTempId'
+import Ellipsis from './Ellipsis/Ellipsis'
 import JiraIssueLink from './JiraIssueLink'
 
 interface Props {
   integration: TaskIntegrationLink_integration$key | null
   className?: string
   children?: ReactNode
-  showJiraLabelPrefix?: boolean
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration: integrationRef, className, children, showJiraLabelPrefix} = props
+  const {integration: integrationRef, className, children} = props
   const integration = useFragment(
     graphql`
       fragment TaskIntegrationLink_integration on TaskIntegration {
         __typename
-        ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
-        ...TaskIntegrationLinkIntegrationLinear @relay(mask: false)
+        id
+        ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationJira @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationAzure @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationLinear @relay(mask: false) @alias
+        ...TaskIntegrationLinkIntegrationClickUp @relay(mask: false) @alias
       }
     `,
     integrationRef
   )
   if (!integration) return null
-  if (integration.__typename === 'JiraIssue') {
-    const {issueKey, projectKey, cloudName} = integration
+  if (isTempId(integration.id)) {
+    return (
+      <div
+        className={cn('block px-4 text-[14px] text-fg-primary leading-5', className)}
+        aria-live='polite'
+      >
+        Issue #<Ellipsis />
+      </div>
+    )
+  }
+  const linkClassName = cn(
+    'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
+    className
+  )
+  const jira = integration.TaskIntegrationLinkIntegrationJira
+  if (jira) {
+    const {issueKey, projectKey, cloudName} = jira
     return (
       <JiraIssueLink
         issueKey={issueKey}
         projectKey={projectKey}
         cloudName={cloudName}
         className={className}
-        showLabelPrefix={showJiraLabelPrefix}
       >
         {children}
       </JiraIssueLink>
     )
-  } else if (integration.__typename === 'JiraServerIssue') {
-    const {url, issueKey, projectKey} = integration
+  }
+  const jiraServer = integration.TaskIntegrationLinkIntegrationJiraServer
+  if (jiraServer) {
+    const {url, issueKey, projectKey} = jiraServer
     return (
       <a
         href={url}
         rel='noopener noreferrer'
         target='_blank'
         title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
-        className={cn(
-          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${issueKey}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xGitHubIssue') {
-    const {repository, number} = integration
+  }
+  const github = integration.TaskIntegrationLinkIntegrationGitHub
+  if (github) {
+    const {repository, number} = github
     const {nameWithOwner} = repository
     const href =
-      nameWithOwner === 'ParabolInc/ParabolDemo'
-        ? 'https://github.com/ParabolInc/parabol'
+      nameWithOwner === DemoIntegration.GITHUB_REPO
+        ? DemoIntegration.GITHUB_ISSUE_URL
         : `https://www.github.com/${nameWithOwner}/issues/${number}`
     return (
       <a
@@ -74,17 +94,16 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${number} on ${nameWithOwner}`}
-        className={cn(
-          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${number}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xGitLabIssue') {
-    const {webPath, iid, webUrl} = integration
+  }
+  const gitlab = integration.TaskIntegrationLinkIntegrationGitLab
+  if (gitlab) {
+    const {webPath, iid, webUrl} = gitlab
     const {fullPath} = parseWebPath(webPath)
     return (
       <a
@@ -92,40 +111,40 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
-        className={cn(
-          'focus:underline, block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${iid}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-    const {id, teamProject, url, type} = integration
+  }
+  const azure = integration.TaskIntegrationLinkIntegrationAzure
+  if (azure) {
+    const {workItemKey, azureProject, url, type} = azure
+    const {organization, name: projectName} = azureProject
     const integrationType = type.includes('Issue') ? 'Issue' : type
+    const workItemLabel = `${organization}:${workItemKey}`
     return (
       <a
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Azure Item #${id} on ${teamProject}`}
-        className={cn(
-          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        title={`Azure Item #${workItemLabel} on ${projectName}`}
+        className={linkClassName}
       >
-        {`${integrationType} #${id}`}
+        {`${integrationType} #${workItemLabel}`}
         {children}
       </a>
     )
-  } else if (integration.__typename === '_xLinearIssue') {
+  }
+  const linear = integration.TaskIntegrationLinkIntegrationLinear
+  if (linear) {
     const {
       identifier,
       team: {name: teamName},
       linearProject,
       url
-    } = integration
+    } = linear
     const nameWithTeam = getLinearRepoName(linearProject, teamName)
     return (
       <a
@@ -133,12 +152,26 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Linear Issue #${identifier} on ${nameWithTeam}`}
-        className={cn(
-          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
-          className
-        )}
+        className={linkClassName}
       >
         {`Issue #${identifier}`}
+        {children}
+      </a>
+    )
+  }
+  const clickUp = integration.TaskIntegrationLinkIntegrationClickUp
+  if (clickUp) {
+    const {clickUpUrl} = clickUp
+    const taskKey = clickUp.customId ?? clickUp.taskId
+    return (
+      <a
+        href={clickUpUrl}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={getClickUpTaskLinkTitle(clickUp)}
+        className={linkClassName}
+      >
+        {`Task ${taskKey}`}
         {children}
       </a>
     )
@@ -183,7 +216,11 @@ graphql`
 graphql`
   fragment TaskIntegrationLinkIntegrationAzure on AzureDevOpsWorkItem {
     id
-    teamProject
+    workItemKey: issueKey
+    azureProject: project {
+      organization
+      name
+    }
     type
     url
   }
@@ -200,6 +237,17 @@ graphql`
       name
     }
     url
+  }
+`
+
+graphql`
+  fragment TaskIntegrationLinkIntegrationClickUp on ClickUpTask {
+    id
+    taskId
+    customId
+    listName
+    folderName
+    clickUpUrl: url
   }
 `
 

@@ -1,4 +1,3 @@
-import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {
   generateBearerToken,
@@ -10,16 +9,13 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const updateSCIM: MutationResolvers['updateSCIM'] = async (
   _source,
-  {orgId, authenticationType},
+  {samlId, authenticationType},
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
-  const saml = await dataLoader.get('samlByOrgId').load(orgId)
-  if (!saml) {
-    throw new GraphQLError('SAML must be enabled first to use SCIM')
-  }
+  const saml = await dataLoader.get('saml').loadNonNull(samlId)
   const {id} = saml
 
   const scimAuthenticationType = authenticationType ?? null

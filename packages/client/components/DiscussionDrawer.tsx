@@ -1,5 +1,5 @@
-import {Close} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Close} from '~/ui/icons'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
 import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
@@ -30,6 +30,10 @@ interface Props {
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
   onChangeTab?: (tabId: string) => void
+  // false where the discussion changes as a side effect of navigating the meeting. See
+  // DiscussionThreadInput
+  autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionDrawer = ({
@@ -42,7 +46,9 @@ const DiscussionDrawer = ({
   workContent,
   activeTab,
   onChangeTab,
-  hideDiscussion
+  hideDiscussion,
+  autoFocus,
+  showLastTopicLine
 }: Props) => {
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
@@ -74,10 +80,11 @@ const DiscussionDrawer = ({
 
   return (
     <div
-      className='flex h-full w-[360px] flex-col justify-start overflow-hidden bg-white'
+      // One surface for every tab, so the tab bar reads the same whichever panel is showing
+      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-drawer'
       style={drawerStyle}
     >
-      <div className='flex w-full select-none items-center border-slate-300 border-b'>
+      <div className='flex w-full select-none items-center border-hairline border-b'>
         <Tabs activeIdx={activeIdx} className='flex-1'>
           {tabs.map((tab) => (
             <Tab
@@ -89,7 +96,7 @@ const DiscussionDrawer = ({
           ))}
         </Tabs>
         <PlainButton onClick={onToggle} className='h-6 shrink-0 px-2'>
-          <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
+          <Close className='cursor-pointer text-fg-secondary hover:opacity-50' />
         </PlainButton>
       </div>
       {activeTabId === 'inspiration' ? (
@@ -101,6 +108,8 @@ const DiscussionDrawer = ({
           discussionId={discussionId}
           allowedThreadables={allowedThreadables}
           header={threadHeader}
+          autoFocus={autoFocus}
+          showLastTopicLine={showLastTopicLine}
         />
       ) : null}
     </div>

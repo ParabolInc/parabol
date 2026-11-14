@@ -1,0 +1,24 @@
+"""
+What happened to one address invited to a team
+"""
+type TeamInvitee {
+  """
+  The invited address
+  """
+  email: Email!
+
+  """
+  Whether an invitation went out, and if not, why
+  """
+  status: TeamInviteeStatusEnum!
+
+  """
+  Why no invitation went out, written for the inviter. Null when status is sent
+  """
+  message: String
+
+  """
+  The address the inviter probably meant, when the given one looks like a typo
+  """
+  suggestedEmail: Email
+}

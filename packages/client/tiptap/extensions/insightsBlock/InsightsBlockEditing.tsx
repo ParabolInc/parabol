@@ -2,6 +2,7 @@ import type {NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {GraphQLError} from 'graphql'
 import {marked} from 'marked'
+import {useState} from 'react'
 import {getRequest} from 'relay-runtime'
 import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import {useIsAuthenticated} from '../../../components/IsAuthenticatedProvider'
@@ -51,18 +52,23 @@ const queryNode = graphql`
 `
 
 export const InsightsBlockEditing = (props: NodeViewProps) => {
-  const {editor, node, updateAttributes} = props
+  const {editor, getPos, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id: blockId, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
+  const {after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
   const atmosphere = useAtmosphere()
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
-  const disabled = submitting || meetingIds.length < 1
+  // meetingIds live in the shared doc, so only send the ones this viewer's picker lists and shows checked
+  const [listedMeetingIds, setListedMeetingIds] = useState<string[]>([])
+  const selectedMeetingIds = canQueryMeetings
+    ? meetingIds.filter((id) => listedMeetingIds.includes(id))
+    : []
+  const disabled = submitting || selectedMeetingIds.length < 1
   const isLoggedIn = useIsAuthenticated()
 
   const generateInsights = async () => {
     if (disabled) return
-    const resultsHash = await quickHash([...meetingIds, prompt])
+    const resultsHash = await quickHash([...selectedMeetingIds, prompt])
     if (resultsHash === hash) {
       updateAttributes({editing: false})
       return
@@ -92,18 +98,18 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
             }
             return
           }
-          const freshInsightsNode = editor.$node('insightsBlock', {
-            id: blockId
-          })
-          if (!freshInsightsNode) return
+          buffer += chunk
+          const pos = getPos()
+          if (pos === undefined) return
+          const freshNode = editor.state.doc.nodeAt(pos)
+          if (freshNode?.type.name !== 'insightsBlock') return
           if (first) {
             first = false
             updateAttributes({editing: false, hash: resultsHash})
           }
-          buffer += chunk
           const bufferFragment = marked.parse(buffer)
           editor.commands.insertContentAt(
-            {from: freshInsightsNode.from, to: freshInsightsNode.to - 1},
+            {from: pos + 1, to: pos + freshNode.nodeSize - 1},
             bufferFragment
           )
         } catch (e) {
@@ -115,13 +121,13 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       }
     }
 
-    atmosphere.subscriptionClient.subscribe(
+    atmosphere.getSubscriptionClient().subscribe(
       {
         operationName: name,
         docId: id,
         query: '',
         variables: {
-          meetingIds,
+          meetingIds: selectedMeetingIds,
           prompt
         }
       } as any,
@@ -130,7 +136,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   }
   if (!isLoggedIn) {
     return (
-      <div className='font-semibold text-slate-700 text-sm'>Please login to generate insights</div>
+      <div className='font-semibold text-fg-primary text-sm'>Please login to generate insights</div>
     )
   }
   return (
@@ -154,17 +160,15 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         <MeetingDatePicker updateAttributes={updateAttributes} attrs={attrs} />
       </div>
       {canQueryMeetings && (
-        <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
+        <SpecificMeetingPickerRoot
+          updateAttributes={updateAttributes}
+          attrs={attrs}
+          onListedMeetingIds={setListedMeetingIds}
+        />
       )}
       <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
       <div className='flex select-none justify-end p-4'>
-        <Button
-          variant='secondary'
-          shape='pill'
-          size='md'
-          onClick={generateInsights}
-          disabled={disabled}
-        >
+        <Button variant='secondary' size='md' onClick={generateInsights} disabled={disabled}>
           Generate Insights
           {submitting ? <Ellipsis /> : undefined}
         </Button>

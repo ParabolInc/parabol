@@ -1,12 +1,13 @@
-import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
+import type {PayloadError} from 'relay-runtime'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
+import {ContentCopy} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
@@ -17,16 +18,17 @@ import TemplateDimensionList from '../../../modules/meeting/components/TemplateD
 import TemplatePromptList from '../../../modules/meeting/components/TemplatePromptList'
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemovePromptTemplateMutation from '../../../mutations/RemovePromptTemplateMutation'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
-import FlatButton from '../../FlatButton'
 import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
+import TeamHealthTemplateQuestionEditor from '../TeamHealth/TeamHealthTemplateQuestionEditor'
 import TeamPickerModal from '../TeamPickerModal'
 import ActivityDetailsBadges from './ActivityDetailsBadges'
 import {IntegrationsTip} from './components/IntegrationsTip'
@@ -73,6 +75,23 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
       </>
     ),
     integrationsTip: <>push takeaway tasks to your backlog</>
+  },
+  teamHealth: {
+    description: (
+      <div className='space-y-1'>
+        <div>
+          <b>Pick</b> research-backed questions across categories like psychological safety and
+          impact
+        </div>
+        <div>
+          <b>Answer</b> one new question per category each round
+        </div>
+        <div>
+          <b>Track</b> health trends over time
+        </div>
+      </div>
+    ),
+    integrationsTip: <>push takeaway tasks to your backlog</>
   }
 }
 
@@ -105,11 +124,14 @@ export const TemplateDetails = (props: Props) => {
             ...TemplateDimensionList_dimensions
           }
         }
-        ... on ReflectTemplate {
+        ... on PromptTemplate {
           prompts {
             ...AddTemplatePrompt_prompts
             ...TemplatePromptList_prompts
           }
+        }
+        ... on TeamHealthTemplate {
+          ...TeamHealthTemplateQuestionEditor_template @alias
         }
         ...ActivityDetailsBadges_template
         ...TemplateSharing_template
@@ -151,25 +173,31 @@ export const TemplateDetails = (props: Props) => {
   const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps({
+    errorDisplay: 'inline'
+  })
+  const [errorActivityId, setErrorActivityId] = useState<string | null>(null)
 
   const removeTemplate = useCallback(() => {
     if (submitting) return
     const removeTemplateMutationLookup = {
-      retrospective: RemoveReflectTemplateMutation,
+      retrospective: RemovePromptTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null
+      teamPrompt: RemovePromptTemplateMutation,
+      teamHealth: null
     } as const
 
     const removeTemplateMutation = removeTemplateMutationLookup[type]
     if (!removeTemplateMutation) return
 
+    setErrorActivityId(activityId)
     submitMutation()
     const mutationArgs = {
       onError,
-      onCompleted: () => {
-        onCompleted()
+      onCompleted: (res: unknown, errors?: readonly PayloadError[] | null) => {
+        onCompleted(res, errors)
+        if (errors?.length) return
         navigate(
           `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
           {replace: true}
@@ -181,7 +209,6 @@ export const TemplateDetails = (props: Props) => {
 
   const [teamPickerOpen, setTeamPickerOpen] = useState(false)
   const [isScaleDetailsOpen, setIsScaleDetailsOpen] = useState(false)
-
   useEffect(() => {
     if (editingScaleId) {
       setIsScaleDetailsOpen(true)
@@ -196,24 +223,33 @@ export const TemplateDetails = (props: Props) => {
 
   useEffect(() => {
     setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, setIsEditing])
+  }, [location.state?.edit, activityId, setIsEditing])
 
-  useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
+  useEffect(() => {
+    setErrorActivityId(null)
+  }, [activityId])
+
+  useEffect(
+    () => setActiveTemplate(atmosphere, teamId, activityId, type),
+    [atmosphere, teamId, activityId, type]
+  )
 
   return (
     <div className='space-y-6'>
       <ActivityDetailsBadges isEditing={isEditing} templateRef={activity} />
       <div className='max-w-[480px]'>
-        <div className='mb-6'>
+        <div className={type === 'teamHealth' ? 'mb-3' : 'mb-6'}>
           {__typename === 'FixedActivity' && (
-            <div className='font-semibold text-base text-slate-600'>Created by Parabol</div>
+            <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {isOwner && (
             <div className='flex items-center justify-between'>
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-full border border-slate-400 border-solid pl-3'
+                  isEditing &&
+                    type !== 'teamHealth' &&
+                    'rounded-md border border-hairline-strong border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -224,7 +260,7 @@ export const TemplateDetails = (props: Props) => {
               </div>
               <div className='flex gap-2'>
                 {isEditing ? (
-                  <div className='rounded-full border border-slate-400 border-solid'>
+                  <div className='rounded-md border border-hairline-strong border-solid'>
                     <DetailAction
                       icon={'delete'}
                       tooltip={'Delete template'}
@@ -233,14 +269,14 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div className='rounded-full border border-slate-400 border-solid'>
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
                         onClick={() => setIsEditing(true)}
                       />
                     </div>
-                    <div className='rounded-full border border-slate-400 border-solid'>
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
                     </div>
                   </>
@@ -248,24 +284,29 @@ export const TemplateDetails = (props: Props) => {
               </div>
             </div>
           )}
+          {isOwner && error && errorActivityId === activityId && (
+            <div className='text-fg-error text-sm'>{error.message}</div>
+          )}
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
-              <div className='py-2 font-semibold text-slate-600 text-sm'>{description}</div>
+              <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
               <div className='flex items-center gap-2'>
                 <ActivityCardFavorite
                   templateId={activityId}
                   viewerRef={viewer}
-                  className='rounded-full border border-slate-400 border-solid hover:bg-slate-200'
+                  className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div className='rounded-full border border-slate-400 border-solid'>
-                  <FlatButton
+                <div className='rounded-md border border-hairline-strong border-solid'>
+                  <Button
+                    variant='flat'
+                    size='sm'
                     style={{padding: '8px 12px', border: '0'}}
-                    className='flex cursor-pointer gap-1 px-12'
+                    className='flex cursor-pointer gap-1 px-12 text-sm'
                     onClick={() => setTeamPickerOpen(true)}
                   >
-                    <ContentCopy className='text-slate-600' />
-                    <div className='font-semibold text-slate-700'>Clone & Edit</div>
-                  </FlatButton>
+                    <ContentCopy className='text-fg-secondary' />
+                    <div className='font-semibold text-fg-primary'>Clone & Edit</div>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -273,41 +314,53 @@ export const TemplateDetails = (props: Props) => {
         </div>
         {activityDescription}
       </div>
-      <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
+      {type !== 'teamHealth' && (
+        <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
+      )}
 
-      <div className='sm:-ml-14 pt-4'>
-        {prompts && (
-          <>
-            <TemplatePromptList
-              isOwner={isOwner && isEditing}
-              prompts={prompts}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddTemplatePrompt templateId={activityId} prompts={prompts} />
-            )}
-          </>
-        )}
-        {dimensions && (
-          <>
-            <TemplateDimensionList
-              isOwner={isOwner}
-              readOnly={!isEditing}
-              dimensions={dimensions}
-              templateId={activityId}
-            />
-            {isOwner && isEditing && (
-              <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
-            )}
-          </>
-        )}
-      </div>
+      {type === 'teamHealth' && activity.TeamHealthTemplateQuestionEditor_template && (
+        <TeamHealthTemplateQuestionEditor
+          templateRef={activity.TeamHealthTemplateQuestionEditor_template}
+          isEditing={isEditing}
+          onEdit={isOwner ? () => setIsEditing(true) : undefined}
+        />
+      )}
+
+      {(prompts || dimensions) && (
+        <div className='sm:-ml-14 pt-4'>
+          {prompts && (
+            <>
+              <TemplatePromptList
+                isOwner={isOwner && isEditing}
+                prompts={prompts}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddTemplatePrompt templateId={activityId} templateType={type} prompts={prompts} />
+              )}
+            </>
+          )}
+          {dimensions && (
+            <>
+              <TemplateDimensionList
+                isOwner={isOwner}
+                readOnly={!isEditing}
+                dimensions={dimensions}
+                templateId={activityId}
+              />
+              {isOwner && isEditing && (
+                <AddPokerTemplateDimension templateId={activityId} dimensions={dimensions} />
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {isEditing && (
-        <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-slate-200'>
+        <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-surface-well'>
           <button
             onClick={() => setIsEditing(false)}
-            className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans font-semibold text-lg text-white hover:bg-sky-600'
+            className='w-max cursor-pointer rounded-md bg-sky-500 px-10 py-3 text-center font-sans font-semibold text-lg text-white hover:bg-sky-600'
           >
             Done Editing
           </button>

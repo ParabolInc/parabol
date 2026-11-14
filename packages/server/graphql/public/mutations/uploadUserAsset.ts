@@ -16,6 +16,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
+import getUserDetail from '../../../utils/getUserDetail'
 import type {DataLoaderWorker} from '../../graphql'
 import type {ResourceGrants} from '../ResourceGrants'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
@@ -87,13 +88,13 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   const {authToken, dataLoader, resourceGrants} = context
   // VALIDATION
   const viewerId = getUserId(authToken)
-  const [scopeCode, userDetails, viewerTier] = await Promise.all([
+  const [scopeCode, bytesUploaded, viewerTier] = await Promise.all([
     validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants),
-    dataLoader.get('userDetails').load(viewerId),
+    getUserDetail(viewerId, 'bytesUploaded', dataLoader),
     dataLoader.get('highestTierForUserId').load(viewerId)
   ])
   const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
-  if (BigInt(userDetails?.bytesUploaded || 0) > BigInt(maxSize)) {
+  if (BigInt(bytesUploaded) > BigInt(maxSize)) {
     return {error: {message: `Upload limit reached. Please contact sales`}}
   }
   if (typeof scopeCode !== 'string') return scopeCode
@@ -107,7 +108,7 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     }
   }
   const mimeError = checkFileMimeType(new Uint8Array(buffer), contentType)
-  if (mimeError) throw new GraphQLError(mimeError)
+  if (mimeError) throw new GraphQLError(mimeError, {extensions: {code: 'BAD_USER_INPUT'}})
   const isImage = file.type.includes('image')
   let fileBuffer = buffer
   let fileExtension = ext
@@ -126,7 +127,7 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const [url] = await Promise.all([
     manager.putUserFile(fileBuffer, `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`),
     incrementUserBytesUploaded(viewerId, fileBuffer.byteLength)

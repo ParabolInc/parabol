@@ -8,7 +8,7 @@ meeting. The payload is broadcast over the MEETING subscription channel so all
 participants see the new card in real time.
 
 Failure cases surfaced via error:
-- promptId does not match a known ReflectPrompt ("Category not found")
+- promptId does not match a known TemplatePrompt ("Category not found")
 - meetingId does not match a known meeting ("Meeting not found")
 - The meeting has already ended ("Meeting already ended")
 - The group phase of the meeting is already complete ("Meeting phase already completed")

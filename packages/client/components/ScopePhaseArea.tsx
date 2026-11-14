@@ -4,25 +4,22 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import AtlassianClientManager from '../utils/AtlassianClientManager'
-import GitHubClientManager from '../utils/GitHubClientManager'
-import AzureDevOpsSVG from './AzureDevOpsSVG'
-import GitHubSVG from './GitHubSVG'
-import GitLabSVG from './GitLabSVG'
-import JiraServerSVG from './JiraServerSVG'
-import JiraSVG from './JiraSVG'
-import LinearSVG from './LinearSVG'
+import {
+  isTaskClientIntegration,
+  listClientIntegrationServices
+} from '../integrations/platform/registry'
+import setStorageItem from '../utils/setStorageItem'
+import IntegrationScopingPanel from './IntegrationScopingPanel'
 import ParabolLogoSVG from './ParabolLogoSVG'
-import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
-import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
-import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
-import ScopePhaseAreaJira from './ScopePhaseAreaJira'
-import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
-import ScopePhaseAreaLinear from './ScopePhaseAreaLinear'
+import ScopePhaseAreaConnect from './ScopePhaseAreaConnect'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
+import type ScopePhaseTab from './ScopePhaseTab'
+import ScopePhaseTabBar from './ScopePhaseTabBar'
 import SwipeablePanel from './SwipeablePanel'
-import Tab from './Tab/Tab'
-import Tabs from './Tabs/Tabs'
+import useScopePhaseTabLayout from './useScopePhaseTabLayout'
+
+const PARABOL_TAB_KEY = 'parabol'
+const FAVORITE_SERVICE_STORAGE_KEY = 'favoriteService'
 
 interface Props {
   meeting: ScopePhaseArea_meeting$key
@@ -33,50 +30,22 @@ const ScopePhaseArea = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ScopePhaseArea_meeting on PokerMeeting {
-        ...StageTimerDisplay_meeting
-        ...StageTimerControl_meeting
-        ...ScopePhaseAreaGitHub_meeting
-        ...ScopePhaseAreaGitLab_meeting
-        ...ScopePhaseAreaJira_meeting
-        ...ScopePhaseAreaJiraServer_meeting
         ...ScopePhaseAreaParabolScoping_meeting
-        ...ScopePhaseAreaAzureDevOps_meeting
-        ...ScopePhaseAreaLinear_meeting
-        endedAt
-        localPhase {
-          ...ScopePhaseArea_phase @relay(mask: false)
+        ...IntegrationScopingPanel_meeting
+        teamId
+        team {
+          recentOrgTaskCounts {
+            service
+            taskCount
+          }
         }
-        localStage {
-          isComplete
-        }
-        phases {
-          ...ScopePhaseArea_phase @relay(mask: false)
-        }
-        showSidebar
         viewerMeetingMember {
           teamMember {
-            integrations {
-              gitlab {
-                cloudProvider {
-                  clientId
-                }
-                sharedProviders {
-                  clientId
-                }
-              }
-              azureDevOps {
-                cloudProvider {
-                  id
-                }
-                sharedProviders {
-                  id
-                }
-              }
-              linear {
-                cloudProvider {
-                  clientId
-                }
-              }
+            services {
+              service
+              isAvailable
+              isConnected
+              ...ScopePhaseAreaConnect_service
             }
           }
         }
@@ -85,130 +54,102 @@ const ScopePhaseArea = (props: Props) => {
     meetingRef
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {viewerMeetingMember} = meeting
-  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
-  const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
-  const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
-  const allowAzureDevOps =
-    !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
-  const isGitLabProviderAvailable = !!(
-    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
+  const {teamId, team, viewerMeetingMember} = meeting
+  const orgTaskCounts = new Map(
+    team.recentOrgTaskCounts.map(({service, taskCount}) => [service, taskCount])
   )
-  const allowJiraServer = true // always show this for advertising
-  const isLinearProviderAvailable = !!linearIntegration?.cloudProvider?.clientId
+  const services = viewerMeetingMember?.teamMember.services ?? []
+  const [savedActiveKey, setSavedActiveKey] = useState(() =>
+    window.localStorage.getItem(FAVORITE_SERVICE_STORAGE_KEY)
+  )
+  const [heldPickKey, setHeldPickKey] = useState(savedActiveKey)
+  const gotoParabol = () => setSavedActiveKey(PARABOL_TAB_KEY)
 
-  const baseTabs = [
-    {
-      icon: <GitHubSVG />,
-      label: 'GitHub',
-      allow: GitHubClientManager.isAvailable,
-      Component: ScopePhaseAreaGitHub
-    },
-    {
-      icon: <JiraSVG />,
-      label: 'Jira',
-      allow: AtlassianClientManager.isAvailable,
-      Component: ScopePhaseAreaJira
-    },
-    {
-      icon: <JiraServerSVG />,
-      label: 'Jira Data Center',
-      allow: allowJiraServer,
-      Component: ScopePhaseAreaJiraServer
-    },
-    {
-      icon: <ParabolLogoSVG />,
-      label: 'Parabol',
-      allow: true,
-      Component: ScopePhaseAreaParabolScoping
-    },
-    {
-      icon: <GitLabSVG />,
-      label: 'GitLab',
-      allow: isGitLabProviderAvailable,
-      Component: ScopePhaseAreaGitLab
-    },
-    {
-      icon: <AzureDevOpsSVG />,
-      label: 'Azure DevOps',
-      allow: allowAzureDevOps,
-      Component: ScopePhaseAreaAzureDevOps
-    },
-    {
-      icon: <LinearSVG />,
-      label: 'Linear',
-      allow: isLinearProviderAvailable,
-      Component: ScopePhaseAreaLinear
+  const integrations: ScopePhaseTab[] = listClientIntegrationServices(services).flatMap(
+    ({integrationService, definition}) => {
+      const {service, isAvailable, isConnected} = integrationService
+      const {scoping} = definition.capabilities
+      if (!isTaskClientIntegration(service) || !scoping) return []
+      if (!isAvailable && !definition.contactUs) return []
+      const contactStatus = isAvailable ? null : ('contactUs' as const)
+      return [
+        {
+          key: service,
+          title: definition.title,
+          isConnected,
+          orgTaskCount: orgTaskCounts.get(service) ?? 0,
+          icon: <definition.Icon className={definition.iconClassName} />,
+          keywords: definition.searchKeywords ?? [],
+          menuStatus: isConnected ? ('connected' as const) : contactStatus,
+          renderPanel: () =>
+            isConnected ? (
+              <IntegrationScopingPanel service={service} meetingRef={meeting} />
+            ) : (
+              <ScopePhaseAreaConnect
+                teamId={teamId}
+                definition={definition}
+                serviceRef={integrationService}
+                gotoParabol={gotoParabol}
+              />
+            )
+        }
+      ]
     }
-  ] as const
-
-  const tabs = baseTabs.filter(({allow}) => allow)
-  const [activeIdx, setActiveIdx] = useState(() => {
-    const favoriteService = window.localStorage.getItem('favoriteService') || 'Jira'
-    const idx = tabs.findIndex((tab) => tab.label === favoriteService)
-    return idx === -1 ? 1 : idx
+  )
+  const parabol: ScopePhaseTab = {
+    key: PARABOL_TAB_KEY,
+    title: 'Parabol',
+    isConnected: true,
+    orgTaskCount: 0,
+    icon: <ParabolLogoSVG />,
+    keywords: [],
+    menuStatus: null,
+    renderPanel: () => <ScopePhaseAreaParabolScoping isActive meetingRef={meeting} />
+  }
+  const panelTabs = [...integrations, parabol]
+  const {barRef, measureRef, layout} = useScopePhaseTabLayout({
+    integrations,
+    parabol,
+    heldPickKey,
+    savedActiveKey
   })
+  const activeIdx = panelTabs.findIndex(({key}) => key === layout?.activeKey)
 
-  const isTabActive = (label: (typeof baseTabs)[number]['label']) => {
-    return activeIdx === tabs.findIndex((tab) => tab.label === label)
+  const selectTab = (key: string) => {
+    setSavedActiveKey(key)
+    setStorageItem('localStorage', FAVORITE_SERVICE_STORAGE_KEY, key)
   }
-
-  const selectIdx = (idx: number) => {
-    setActiveIdx(idx)
-    const service = tabs[idx]?.label ?? 'Jira'
-    window.localStorage.setItem('favoriteService', service)
-  }
-
-  const gotoParabol = () => {
-    setActiveIdx(2)
+  const pickFromMenu = (key: string) => {
+    setHeldPickKey(key)
+    selectTab(key)
   }
 
   return (
     <div
-      className={`flex flex-col rounded-lg bg-white ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-md`}
+      className={`flex flex-col rounded-lg bg-surface-card ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-[var(--shadow-card)]`}
     >
-      <div className='max-w-full'>
-        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-slate-300 border-b border-solid'>
-          <Tabs activeIdx={activeIdx} className='max-w-sm'>
-            {tabs.map((tab, idx) => (
-              <Tab
-                key={tab.label}
-                label={
-                  <div className='flex min-w-20 items-center justify-center whitespace-nowrap'>
-                    <div className='mx-1 h-6 w-6'>{tab.icon}</div>
-                    {tab.label}
-                  </div>
-                }
-                onClick={() => selectIdx(idx)}
-              />
-            ))}
-          </Tabs>
-        </div>
-      </div>
+      <ScopePhaseTabBar
+        allTabs={panelTabs}
+        barRef={barRef}
+        layout={layout}
+        measureRef={measureRef}
+        onPick={pickFromMenu}
+        onSelect={selectTab}
+      />
       <SwipeablePanel
         disabled
-        index={activeIdx}
-        onChangeIndex={selectIdx}
+        index={Math.max(activeIdx, 0)}
+        onChangeIndex={(idx) => selectTab(panelTabs[idx]?.key ?? PARABOL_TAB_KEY)}
         style={{width: '100%', flex: 1, minHeight: 0}}
       >
-        {tabs.map(({label, Component}) => (
-          <div className='relative flex h-full flex-col overflow-hidden' key={label}>
-            <Component
-              meetingRef={meeting}
-              isActive={isTabActive(label)}
-              gotoParabol={gotoParabol}
-            />
+        {panelTabs.map((tab, idx) => (
+          <div className='relative flex h-full flex-col overflow-hidden' key={tab.key}>
+            {idx === activeIdx ? tab.renderPanel() : null}
           </div>
         ))}
       </SwipeablePanel>
     </div>
   )
 }
-
-graphql`
-  fragment ScopePhaseArea_phase on GenericMeetingPhase {
-    id
-  }
-`
 
 export default ScopePhaseArea

@@ -1,13 +1,14 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import defaultJiraProjectAvatar from '../../../integrations/jiraServer/defaultJiraProjectAvatar'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
-import defaultJiraProjectAvatar from '../../../utils/defaultJiraProjectAvatar'
 import type {JiraServerRemoteProjectResolvers} from '../resolverTypes'
 
 const JiraServerRemoteProject: JiraServerRemoteProjectResolvers = {
   __isTypeOf: ({service}) => service === 'jiraServer',
   id: (item) => IntegrationRepoId.join(item),
   service: () => 'jiraServer',
+  integrationRepoId: (item) => IntegrationRepoId.join(item),
 
   avatar: async ({avatarUrls, teamId, userId}, _args, {dataLoader}) => {
     const url = avatarUrls['48x48']

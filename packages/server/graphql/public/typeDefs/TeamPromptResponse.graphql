@@ -23,6 +23,16 @@ type TeamPromptResponse implements Reactable {
   user: User!
 
   """
+  The id of the prompt this response answers
+  """
+  promptId: ID!
+
+  """
+  The prompt this response answers
+  """
+  prompt: TemplatePrompt!
+
+  """
   the content of the response
   """
   content: String!
@@ -46,4 +56,9 @@ type TeamPromptResponse implements Reactable {
   the shared sort order for reponses
   """
   sortOrder: Float!
+
+  """
+  The time the response was shared with the team. Null while it is still a private draft
+  """
+  sharedAt: DateTime
 }

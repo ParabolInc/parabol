@@ -1,7 +1,7 @@
-import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {Add} from '~/ui/icons'
 import type {SelectScaleDropdown_dimension$key} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -67,7 +67,7 @@ const SelectScaleDropdown = (props: Props) => {
           UpdatePokerTemplateDimensionScaleMutation(
             atmosphere,
             {dimensionId, scaleId: newScaleId},
-            {onError, onCompleted: () => {}}
+            {onError, onCompleted}
           )
           requestAnimationFrame(() => {
             menuRef.current
@@ -94,10 +94,10 @@ const SelectScaleDropdown = (props: Props) => {
           closePortal={onClose}
         />
       ))}
-      <hr className='my-2 border-0 border-slate-400 border-t' />
+      <hr className='my-2 border-0 border-hairline-strong border-t' />
       {sortedScales.length < Threshold.MAX_POKER_TEMPLATE_SCALES && (
         <button
-          className='flex w-full cursor-pointer items-center px-4 py-3 font-semibold text-base text-sky-500 hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
+          className='flex w-full cursor-pointer items-center px-4 py-3 font-semibold text-accent text-base hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
           onClick={addScale}
           disabled={submitting}
         >

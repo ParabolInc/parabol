@@ -1,75 +1,111 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
-import {PALETTE} from '~/styles/paletteV3'
-import type {MenuProps} from '../hooks/useMenu'
+import type {TaskFooterIntegrateMenuSignup_teamMember$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_teamMember.graphql'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import AddToAzureMenuItem from './AddToAzureMenuItem'
-import AddToGitHubMenuItem from './AddToGitHubMenuItem'
-import AddToGitLabMenuItem from './AddToGitLabMenuItem'
-import AddToJiraMenuItem from './AddToJiraMenuItem'
+import {listServiceProviders} from '../integrations/platform/integrationServiceProviders'
+import {
+  isTaskClientIntegration,
+  listClientIntegrationServices,
+  type TaskClientIntegration
+} from '../integrations/platform/registry'
+import type {BeginConnect, ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
+import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
+import ConnectIntegrationMenuItem from './ConnectIntegrationMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
-import Menu from './Menu'
-import MenuItemHR from './MenuItemHR'
+import TaskFooterIntegrateMenuConnectFailed from './TaskFooterIntegrateMenuConnectFailed'
+import TaskFooterIntegrateMenuNeedsReconnect from './TaskFooterIntegrateMenuNeedsReconnect'
 
 interface Props {
-  menuProps: MenuProps
+  failure?: Extract<ConnectInMenuState, {phase: 'failed'}>
+  onConnect?: BeginConnect
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
-  integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
+  orgServices?: readonly TaskClientIntegration[]
+  teamMemberRef: TaskFooterIntegrateMenuSignup_teamMember$key
 }
 
-const NarrowMenu = styled(Menu)({
-  width: 250
-})
-
-const Label = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  padding: '8px 16px 0'
-})
-
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {menuProps, mutationProps, teamId, label, integrationsRef} = props
+  const {failure, onConnect, mutationProps, teamId, label, orgServices = [], teamMemberRef} = props
   const {submitting} = mutationProps
-  const integrations = useFragment(
+  const teamMember = useFragment(
     graphql`
-      fragment TaskFooterIntegrateMenuSignup_TeamMemberIntegrations on TeamMemberIntegrations {
-        gitlab {
-          ...AddToGitLabMenuItem_GitLabIntegration
-        }
-        azureDevOps {
-          ...AddToAzureMenuItem_AzureIntegration
+      fragment TaskFooterIntegrateMenuSignup_teamMember on TeamMember {
+        ...TaskFooterIntegrateMenuNeedsReconnect_teamMember
+        services {
+          service
+          title
+          isConnected
+          expiredAt
+          grantedScopes
+          ...integrationServiceProviders_service @relay(mask: false)
         }
       }
     `,
-    integrationsRef
+    teamMemberRef
   )
+  const {services} = teamMember
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
+  const connectable = listClientIntegrationServices(services).flatMap(({integrationService}) => {
+    const {service, isConnected, expiredAt} = integrationService
+    if (isConnected || expiredAt || !isTaskClientIntegration(service)) return []
+    const [provider] = listServiceProviders(integrationService)
+    return provider ? [{integrationService, service, provider}] : []
+  })
+  const retryItem = connectable.find(({service}) => service === failure?.service)
+  const orgItems = orgServices.flatMap(
+    (orgService) =>
+      connectable.find(({service}) => service === orgService && service !== retryItem?.service) ??
+      []
+  )
+  const otherItems = connectable.filter((item) => !orgItems.includes(item) && item !== retryItem)
+  const hasExpired = services.some(
+    ({service, isConnected, expiredAt}) =>
+      !isConnected && !!expiredAt && isTaskClientIntegration(service)
+  )
+  const shownLabel = hasExpired ? 'Reconnect a tool to send this task.' : label
+  const renderItem = (
+    {integrationService, service, provider}: (typeof connectable)[number],
+    itemLabel?: string
+  ) => (
+    <ConnectIntegrationMenuItem
+      key={service}
+      label={itemLabel}
+      onConnect={onConnect}
+      teamId={teamId}
+      mutationProps={mutationProps}
+      service={service}
+      title={integrationService.title}
+      provider={provider}
+      heldScopes={integrationService.grantedScopes}
+    />
+  )
   return (
-    <NarrowMenu ariaLabel={'Integrate with a Service'} {...menuProps}>
-      {label && (
+    <>
+      {failure && <TaskFooterIntegrateMenuConnectFailed failure={failure} />}
+      {retryItem && renderItem(retryItem, `Try ${retryItem.integrationService.title} again`)}
+      {!failure && shownLabel && (
         <>
-          <Label>{label}</Label>
-          <MenuItemHR />
+          <div className='px-4 pt-2 pb-0 text-[14px] text-fg-secondary'>{shownLabel}</div>
+          <MenuSeparator />
         </>
       )}
-      <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
-      <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
-      <AddToAzureMenuItem
+      <TaskFooterIntegrateMenuNeedsReconnect
+        onConnect={onConnect}
         mutationProps={mutationProps}
-        teamId={teamId}
-        azureRef={integrations.azureDevOps}
+        teamMemberRef={teamMember}
       />
-      <AddToGitLabMenuItem
-        mutationProps={mutationProps}
-        teamId={teamId}
-        gitlabRef={integrations.gitlab}
-      />
-    </NarrowMenu>
+      {orgItems.length > 0 && (
+        <div className={menuSectionTitleClass}>Used by your organization</div>
+      )}
+      {orgItems.map((item) => renderItem(item))}
+      {(orgItems.length > 0 || hasExpired || !!retryItem) && otherItems.length > 0 && (
+        <div className={menuSectionTitleClass}>Other tools</div>
+      )}
+      {otherItems.map((item) => renderItem(item))}
+    </>
   )
 }
 

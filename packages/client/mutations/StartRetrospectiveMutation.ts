@@ -47,7 +47,15 @@ const mutation = graphql`
           message
         }
       }
-      ...StartRetrospectiveMutation_team @relay(mask: false)
+      ... on StartRetrospectiveSuccess {
+        meeting {
+          # lets useJoinedMeetingQuery subscribe while the starter joins
+          viewerMeetingMember {
+            id
+          }
+        }
+      }
+      ...StartRetrospectiveMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -64,7 +72,8 @@ const StartRetrospectiveMutation: StandardMutation<
       onCompleted(res, errors)
       const startRetrospective = res?.startRetrospective
       if (!startRetrospective) return
-      const {meeting, meetingSeries, hasGcalError} = startRetrospective
+      const {meeting, meetingSeries, hasGcalError} =
+        startRetrospective.StartRetrospectiveMutation_team ?? {}
       if (!meeting) {
         if (meetingSeries) {
           atmosphere.eventEmitter.emit('addSnackbar', {

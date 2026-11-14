@@ -1,0 +1,51 @@
+import {
+  Autorenew as AutorenewIcon,
+  CheckCircle as CheckCircleIcon,
+  ErrorOutline as ErrorOutlineIcon,
+  RemoveCircleOutline as RemoveCircleOutlineIcon,
+  Schedule as ScheduleIcon
+} from '../../ui/icons'
+
+export type ExportPage = {
+  readonly pageId: string
+  readonly title: string
+  readonly depth: number
+  readonly status: string
+  readonly targetUrl: string | null | undefined
+  readonly error: string | null | undefined
+}
+
+interface Props {
+  page: ExportPage
+}
+
+const STATUS_ICONS = {
+  pending: <ScheduleIcon className='size-4 text-fg-muted' />,
+  exporting: <AutorenewIcon className='size-4 animate-spin text-accent' />,
+  success: <CheckCircleIcon className='size-4 text-jade-500' />,
+  error: <ErrorOutlineIcon className='size-4 text-tomato-500' />,
+  skipped: <RemoveCircleOutlineIcon className='size-4 text-fg-muted' />
+} as Record<string, React.ReactNode>
+
+export const PageExportRow = (props: Props) => {
+  const {page} = props
+  const {title, depth, status, targetUrl, error} = page
+  return (
+    <div className='flex items-center gap-2 py-1 text-sm' style={{paddingLeft: `${depth * 16}px`}}>
+      {STATUS_ICONS[status] ?? STATUS_ICONS['pending']}
+      {status === 'success' && targetUrl ? (
+        <a
+          href={targetUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='truncate text-fg-primary hover:text-accent'
+        >
+          {title}
+        </a>
+      ) : (
+        <span className='truncate text-fg-primary'>{title}</span>
+      )}
+      {error && <span className='truncate text-fg-muted text-xs'>{error}</span>}
+    </div>
+  )
+}

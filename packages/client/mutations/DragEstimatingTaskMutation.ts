@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {DragEstimatingTaskMutation as IDragEstimatingTaskMutation} from '../__generated__/DragEstimatingTaskMutation.graphql'
 import type {SimpleMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment DragEstimatingTaskMutation_meeting on DragEstimatingTaskSuccess {
@@ -22,7 +23,7 @@ const mutation = graphql`
       taskId: $taskId
       newPositionIndex: $newPositionIndex
     ) {
-      ...DragEstimatingTaskMutation_meeting @relay(mask: false)
+      ...DragEstimatingTaskMutation_meeting @relay(mask: false) @alias
     }
   }
 `
@@ -34,6 +35,7 @@ const DragEstimatingTaskMutation: SimpleMutation<IDragEstimatingTaskMutation> = 
   return commitMutation<IDragEstimatingTaskMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     optimisticUpdater: (store) => {
       const {meetingId, taskId, newPositionIndex} = variables
       const meeting = store.get(meetingId)

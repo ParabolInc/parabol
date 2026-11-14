@@ -1,0 +1,7 @@
+"""
+Success result for updateUserTheme mutation
+"""
+type UpdateUserThemeSuccess {
+  "The user whose theme preference was updated"
+  user: User!
+}

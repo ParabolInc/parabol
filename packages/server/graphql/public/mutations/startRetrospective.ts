@@ -1,18 +1,22 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import getValidPromptTemplateId from '../../mutations/helpers/getValidPromptTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextFacilitatorUserId from './helpers/getNextFacilitatorUserId'
+import setFacilitatorRotation from './helpers/setFacilitatorRotation'
 import {createMeetingMember} from './joinMeeting'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -30,12 +34,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
 
   // RESOLUTION
   const meetingType = 'retrospective' as const
-  const [unpaidError, viewer, meetingSettings, meetingCount] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
-    dataLoader.get('meetingCount').load({teamId, meetingType})
-  ])
+  const [unpaidError, meetingSettings, meetingCount, {facilitatorUserId, rotation}, teamMember] =
+    await Promise.all([
+      isStartMeetingLocked(teamId, dataLoader),
+      dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
+      dataLoader.get('meetingCount').load({teamId, meetingType}),
+      getNextFacilitatorUserId(teamId, viewerId, dataLoader),
+      dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
+    ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
   const {
     id: meetingSettingsId,
@@ -46,7 +52,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   } = meetingSettings as typeof meetingSettings & {
     meetingType: 'retrospective'
   }
-  const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
+  const selectedTemplateId = await getValidPromptTemplateId(
+    meetingSettings.selectedTemplateId,
+    meetingType,
+    dataLoader
+  )
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
 
@@ -64,7 +74,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       teamId,
       facilitatorId: viewerId
     })
-    analytics.recurrenceStarted(viewer, meetingSeries)
     const {error: gcalError, gcalSeriesId} = await createGcalEvent({
       name: meetingSeriesName,
       gcalInput,
@@ -95,7 +104,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meeting = await safeCreateRetrospective(
     {
       teamId,
-      facilitatorUserId: viewerId,
+      facilitatorUserId,
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
@@ -109,16 +118,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return {error: {message: 'Meeting already started'}}
   }
   const meetingId = meeting.id
-  const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-  await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
-
-  const meetingMember = createMeetingMember(meeting, {
-    userId: viewerId,
-    teamId,
-    isSpectatingPoker: false
-  })
+  const meetingMember = createMeetingMember(meeting, teamMember)
   const [meetingSeries] = await Promise.all([
-    rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
+    rrule &&
+      startNewMeetingSeries(meeting, rrule, meetingSeriesName, {templateId: meeting.templateId}),
     pg
       .with('TeamUpdates', (qb) =>
         qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
@@ -131,16 +134,17 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
         .updateTable('MeetingSettings')
         .set({videoMeetingURL: null})
         .where('id', '=', meetingSettingsId)
-        .execute()
+        .execute(),
+    rotation && setFacilitatorRotation(teamId, rotation, dataLoader),
+    updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
     dataLoader.get('activeMeetingsByTeamId').clear(teamId)
-    analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewer, meeting, template)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
   const {error, gcalSeriesId} = await createGcalEvent({
     name: meetingSeriesName,
     gcalInput,

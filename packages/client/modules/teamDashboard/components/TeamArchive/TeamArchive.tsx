@@ -144,7 +144,7 @@ const TeamArchive = (props: Props) => {
         {returnToTeamId && (
           <div className='pl-5'>
             <TeamArchiveHeader teamId={returnToTeamId} />
-            <div className='w-full border-slate-300 border-t' />
+            <div className='w-full border-hairline border-t' />
           </div>
         )}
         <div
@@ -173,14 +173,14 @@ const TeamArchive = (props: Props) => {
                 })}
               </div>
               {!hasNext && (
-                <div className='mx-auto mt-4 w-fit rounded border border-slate-400 bg-white p-4 text-sm'>
+                <div className='mx-auto mt-4 w-fit rounded border border-hairline-strong bg-surface-card p-4 text-sm'>
                   {'🎉'} That's all folks! There are no further tasks in the archive.
                 </div>
               )}
               {lastItem}
             </>
           ) : (
-            <div className='mt-4 rounded border border-slate-400 bg-white p-4 text-sm'>
+            <div className='mt-4 rounded border border-hairline-strong bg-surface-card p-4 text-sm'>
               {'🤓'}
               {' Hi there! There are zero archived tasks. '}
               {'Nothing to see here. How about a fun rally video? '}

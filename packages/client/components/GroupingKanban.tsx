@@ -1,4 +1,3 @@
-import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence} from 'motion/react'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -6,13 +5,18 @@ import {useFragment} from 'react-relay'
 import type {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
-import useHoverReflectionSimilarity from '../hooks/useHoverReflectionSimilarity'
+import useHoverSuggestedGroup from '../hooks/useHoverSuggestedGroup'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
+import useSuggestedGroupsReveal from '../hooks/useSuggestedGroupsReveal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
+import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import {Breakpoint, Times} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import reportClientError from '../utils/reportClientError'
+import {getMergeableSuggestedGroupIds} from '../utils/smartGroup/suggestionLookup'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
@@ -21,7 +25,7 @@ import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting$key
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
 }
 
 export type SwipeColumn = (offset: number) => void
@@ -58,13 +62,21 @@ const GroupingKanban = (props: Props) => {
           ...GroupingKanbanColumn_reflectionGroups
           id
           promptId
+          activeReflectionGroupSimilarity
           reflections {
             id
             isViewerDragging
             isEditing
-            embeddingVector
           }
         }
+        suggestedGrouping {
+          groups {
+            id
+            reflectionIds
+          }
+        }
+        suggestedGroupingRevealAt
+        isSuggestedGroupingHidden
         spotlightReflectionId
         spotlightGroup {
           ...ReflectionGroup_reflectionGroup
@@ -73,7 +85,6 @@ const GroupingKanban = (props: Props) => {
             id
           }
         }
-        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -86,8 +97,14 @@ const GroupingKanban = (props: Props) => {
     localPhase,
     localStage,
     meetingNumber,
-    meetingMembers
+    meetingMembers,
+    suggestedGrouping,
+    suggestedGroupingRevealAt,
+    isSuggestedGroupingHidden
   } = meeting
+  // Dismissed suggestions are treated as no suggestions at all, so the badges, the hover outlines
+  // and the reveal flash all go quiet from one flag
+  const suggestions = isSuggestedGroupingHidden ? null : suggestedGrouping?.groups
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
@@ -95,7 +112,25 @@ const GroupingKanban = (props: Props) => {
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
   const isGroupPhase = !isComplete && phaseType === 'group'
-  const rawOnHoverReflection = useHoverReflectionSimilarity(reflectionGroups, isGroupPhase)
+  const atmosphere = useAtmosphere()
+  // Driven by what was actually stored rather than this viewer's modal settings, so the outline
+  // always matches the live suggestions — including ones a teammate generated
+  const rawOnHoverReflection = useHoverSuggestedGroup(reflectionGroups, isGroupPhase, suggestions)
+  const isRevealingSuggestions = useSuggestedGroupsReveal(
+    reflectionGroups,
+    suggestions,
+    suggestedGroupingRevealAt
+  )
+
+  // Each of these groups wears a corner badge, so a suggestion is discoverable without hovering
+  // every card to find one. Recomputed as cards move: merging a suggestion retires its badges
+  const suggestedGroupIds = useMemo(
+    () =>
+      isGroupPhase
+        ? getMergeableSuggestedGroupIds(suggestions, reflectionGroups)
+        : new Set<string>(),
+    [isGroupPhase, suggestions, reflectionGroups]
+  )
 
   const draggedReflectionId = useMemo(() => {
     for (const group of reflectionGroups) {
@@ -111,21 +146,52 @@ const GroupingKanban = (props: Props) => {
     rawOnHoverRef.current = rawOnHoverReflection
   }, [rawOnHoverReflection])
 
-  // When a drag starts or ends, re-run similarity for the dragged card (or clear on end)
+  // When a drag starts or ends, re-run similarity for the dragged card (or clear on end). Card
+  // intent: a drag asks where this one card belongs, not where the stack it left would go
   useEffect(() => {
-    rawOnHoverRef.current(draggedReflectionId)
+    rawOnHoverRef.current(draggedReflectionId, 'card')
   }, [draggedReflectionId])
+
+  // Hovering the Group button arms the merge: the source and every match share one lit color so the
+  // viewer can see the whole set that is about to collapse into a single group
+  const [isGroupMatchArmed, setIsGroupMatchArmed] = useState(false)
 
   const onHoverReflection = useCallback(
     (reflectionId: string | null) => {
       if (draggedReflectionId) return
-      rawOnHoverReflection(reflectionId)
+      // Leaving the card takes the button with it, so nothing stays lit without its trigger
+      if (!reflectionId) setIsGroupMatchArmed(false)
+      rawOnHoverReflection(reflectionId, 'group')
     },
     [draggedReflectionId, rawOnHoverReflection]
   )
 
+  // The "Group" button on a hovered card: move every reflection sitting in a currently-matched
+  // group (activeReflectionGroupSimilarity === 1) into the hovered card's group. Reuses the same
+  // mutation a real drag-and-drop already calls — no new mutation needed.
+  const onGroupMatches = useCallback(
+    (sourceGroupId: string) => {
+      const matchedReflectionIds: string[] = []
+      for (const group of reflectionGroups) {
+        if (group.id === sourceGroupId) continue
+        if (group.activeReflectionGroupSimilarity === 1) {
+          for (const reflection of group.reflections) matchedReflectionIds.push(reflection.id)
+        }
+      }
+      matchedReflectionIds.forEach((reflectionId) => {
+        EndDraggingReflectionMutation(atmosphere, {
+          reflectionId,
+          dropTargetType: 'REFLECTION_GROUP',
+          dropTargetId: sourceGroupId
+        })
+      })
+      onHoverReflection(null)
+    },
+    [reflectionGroups, atmosphere, onHoverReflection]
+  )
+
   useHideBodyScroll()
-  const dragIdRef = useRef<string>()
+  const dragIdRef = useRef<string>(undefined)
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
 
   const isSpotlightOpen = !!spotlightGroup
@@ -147,7 +213,7 @@ const GroupingKanban = (props: Props) => {
     }
   }, [])
 
-  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement | null>) => {
     sourceCloneRef.current = reflectionRef.current
     onOpenSpotlight(reflectionId)
   }
@@ -162,7 +228,7 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        datadogRum.addError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
+        reportClientError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }
@@ -226,9 +292,14 @@ const GroupingKanban = (props: Props) => {
               key={prompt.id}
               meeting={meeting}
               onHoverReflection={onHoverReflection}
+              onGroupMatches={onGroupMatches}
+              onArmGroupMatches={setIsGroupMatchArmed}
+              isGroupMatchArmed={isGroupMatchArmed}
+              suggestedGroupIds={suggestedGroupIds}
               openSpotlight={openSpotlight}
               phaseRef={phaseRef}
               prompt={prompt}
+              isRevealingSuggestions={isRevealingSuggestions}
               reflectionGroups={groupsByPrompt[prompt.id] || []}
               reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}

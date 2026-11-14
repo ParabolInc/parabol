@@ -16,9 +16,4 @@ type LinearIntegration {
   Composite key in linear:teamId:userId format
   """
   id: ID!
-
-  """
-  An historical list of Linear Sprint Poker search queries
-  """
-  linearSearchQueries: [LinearSearchQuery!]!
 }

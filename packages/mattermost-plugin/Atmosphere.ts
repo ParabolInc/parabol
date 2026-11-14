@@ -9,9 +9,9 @@ import {
   RecordSource,
   RelayFeatureFlags,
   type RelayFieldLogger,
+  Store as RelayModernStore,
   type RequestParameters
 } from 'relay-runtime'
-import RelayModernStore from 'relay-runtime/lib/store/RelayModernStore'
 import {login as onLogin} from './reducers'
 import {authToken as getAuthToken} from './selectors'
 

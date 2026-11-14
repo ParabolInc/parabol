@@ -1,6 +1,8 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
+import {
+  CheckBox as CheckBoxIcon,
+  IndeterminateCheckBox as IndeterminateCheckBoxIcon
+} from '~/ui/icons'
 import {cn} from '../cn'
 import {forwardRadix} from '../forwardRadix'
 
@@ -11,14 +13,16 @@ export const Checkbox = forwardRadix<typeof CheckboxPrimitive.Root>(
       <CheckboxPrimitive.Root
         ref={ref}
         className={cn(
-          'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-slate-600 bg-white outline-none data-[state=unchecked]:border-2',
+          'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-hairline-control bg-surface-input outline-none data-[state=unchecked]:border-2',
+          // a Tooltip/Popover trigger overwrites data-state, so the border can't ride on it alone
+          checked === false && 'border-2',
           className
         )}
         checked={checked}
         {...props}
       >
-        <CheckboxPrimitive.Indicator asChild>
-          <MultiIcon className='w-5 fill-sky-500 group-disabled:fill-slate-400' />
+        <CheckboxPrimitive.Indicator className='flex'>
+          <MultiIcon className='w-5 fill-accent group-disabled:fill-fg-muted' />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     )

@@ -19,7 +19,7 @@ interface Props {
 
 const JiraIntegrationResults = (props: Props) => {
   const {queryRef, teamId, searchQuery, onResultCount} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<JiraIntegrationResultsQuery>(
     graphql`
       query JiraIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...JiraIntegrationResults_search @arguments(teamId: $teamId)
@@ -104,7 +104,7 @@ const JiraIntegrationResults = (props: Props) => {
             </div>
             <Link
               to={`/team/${teamId}/integrations`}
-              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+              className='mt-4 font-semibold text-accent hover:text-sky-400'
             >
               Review your Jira configuration
             </Link>

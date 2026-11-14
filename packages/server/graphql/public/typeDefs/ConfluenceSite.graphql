@@ -1,0 +1,22 @@
+"""
+An Atlassian Cloud site where the user's OAuth grant includes Confluence access.
+Used to pick the destination site when exporting Parabol Pages to Confluence.
+"""
+type ConfluenceSite {
+  """
+  The Atlassian cloudId for the site — used as the routing key for all Confluence
+  REST calls through the api.atlassian.com gateway.
+  """
+  cloudId: ID!
+
+  """
+  The human-readable site name (e.g. "acme"), shown in the site picker.
+  """
+  name: String!
+
+  """
+  The site's base URL (e.g. "https://acme.atlassian.net") — used to build absolute
+  links to exported pages.
+  """
+  url: String!
+}

@@ -8,11 +8,15 @@ import useMutationProps from '../hooks/useMutationProps'
 import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MAX_FREE_JIRA_EXPORTS} from '../utils/constants'
+import getMutationError from '../utils/relay/getMutationError'
+import setStorageItem from '../utils/setStorageItem'
 
 export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
 const useSetTaskEstimate = () => {
-  const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
+  const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [upgradeExportCount, setUpgradeExportCount] = useState(0)
@@ -20,7 +24,7 @@ const useSetTaskEstimate = () => {
 
   const dismissUpgradeModal = useCallback(() => {
     setShowUpgradeModal(false)
-    sessionStorage.setItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
+    setStorageItem('sessionStorage', JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
   }, [])
 
   const setTaskEstimate = (
@@ -46,7 +50,7 @@ const useSetTaskEstimate = () => {
       const {error} = setTaskEstimate
       if (!error) {
         // Check if exportCount exceeds limit (soft prompt)
-        const exportCount = (setTaskEstimate as any).exportCount ?? 0
+        const exportCount = setTaskEstimate.SetTaskEstimateMutation_meeting?.exportCount ?? 0
         if (
           exportCount > MAX_FREE_JIRA_EXPORTS &&
           !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
@@ -59,12 +63,22 @@ const useSetTaskEstimate = () => {
       }
     }
 
+    const handleError = (error: Error) => {
+      if (getMutationError(error).code === 'UPGRADE_REQUIRED') {
+        onCompleted()
+        setIsHardBlock(true)
+        setShowUpgradeModal(true)
+        return
+      }
+      onError(error)
+    }
+
     submitMutation()
 
     SetTaskEstimateMutation(
       atmosphere,
       {taskEstimate},
-      {onError, onCompleted: handleCompleted, stageId}
+      {onError: handleError, onCompleted: handleCompleted, stageId}
     )
   }
 

@@ -1,0 +1,41 @@
+"""
+A curated collection of team health questions, sourced from a team-effectiveness model
+"""
+type TeamHealthQuestionPack {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The name of the question pack
+  """
+  name: String!
+
+  """
+  A description of the pack and what it measures
+  """
+  description: String
+
+  """
+  The name of the research or model the pack is sourced from
+  """
+  source: String
+
+  """
+  A url to the source material for the pack
+  """
+  sourceUrl: String
+
+  """
+  *Foreign key. The user that owns this pack. 'aGhostUser' for the built-in packs
+  """
+  userId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  """
+  The questions that belong to this pack
+  """
+  questions: [TeamHealthQuestion!]!
+}

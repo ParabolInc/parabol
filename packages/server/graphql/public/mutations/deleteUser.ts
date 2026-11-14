@@ -3,7 +3,6 @@ import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import updateUser from '../../../postgres/queries/updateUser'
-import {analytics} from '../../../utils/analytics/analytics'
 import {unsetAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import {blacklistJWT} from '../../../utils/blacklistJWT'
@@ -67,8 +66,6 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
 
   await broadcastUserMentionUpdate(userIdToDelete, 'Deactivated User', dataLoader, pageIds)
-
-  analytics.accountRemoved(user, validReason)
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()) + 1)
 

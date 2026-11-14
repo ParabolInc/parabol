@@ -11,7 +11,7 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
   const {authObj, viewerId} = atmosphere
   const oldUserIdsRef = useRef<Set<string>>(new Set())
   const pendingRemovalsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
-  const providerRef = useRef<HocuspocusProvider>()
+  const providerRef = useRef<HocuspocusProvider>(undefined)
 
   useEffect(() => {
     if (!meetingId) return

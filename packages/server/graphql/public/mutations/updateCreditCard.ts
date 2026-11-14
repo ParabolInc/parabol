@@ -4,7 +4,6 @@ import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitOb
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {getUserId} from '../../../utils/authorization'
-import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
@@ -84,10 +83,7 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
       userId: viewerId
     })
   }
-  await Promise.all([
-    removeTeamsLimitObjects(orgId, dataLoader),
-    identifyHighestUserTierForOrgId(orgId, dataLoader)
-  ])
+  await removeTeamsLimitObjects(orgId, dataLoader)
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
@@ -99,8 +95,6 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   teamIds.forEach((teamId) => {
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)
   })
-
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateCreditCardPayload', data, subOptions)
 
   return {
     ...data,

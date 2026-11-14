@@ -1,20 +1,7 @@
-import styled from '@emotion/styled'
 import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
 import makeDateString from '../../../../utils/makeDateString'
-
-const StyledTagBlock = styled(TagBlock)({
-  display: 'block'
-})
-
-const OrgDetails = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flexShrink: 0,
-  fontSize: 13,
-  lineHeight: '20px'
-})
 
 interface Props {
   createdAt: string
@@ -25,15 +12,15 @@ interface Props {
 const OrganizationDetails = (props: Props) => {
   const {createdAt, tier, billingTier} = props
   return (
-    <OrgDetails>
+    <div className='flex shrink-0 items-start text-[13px] leading-[20px]'>
       {'Created '}
       {makeDateString(createdAt)}
       {tier !== 'starter' && (
-        <StyledTagBlock>
+        <TagBlock className='block'>
           <TierTag tier={tier} billingTier={billingTier} />
-        </StyledTagBlock>
+        </TagBlock>
       )}
-    </OrgDetails>
+    </div>
   )
 }
 

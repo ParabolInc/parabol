@@ -1,14 +1,13 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {MSTeamsPanel_viewer$key} from '~/__generated__/MSTeamsPanel_viewer.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
-import useTooltip from '~/hooks/useTooltip'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import StyledError from '../../../../components/StyledError'
@@ -17,8 +16,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import Legitity from '../../../../validation/Legitity'
 import NotificationSettings from './NotificationSettings'
 
@@ -26,43 +24,6 @@ interface Props {
   viewerRef: MSTeamsPanel_viewer$key
   teamId: string
 }
-
-const MSTeamsPanelStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER
-})
-
-const ConnectionGroup = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingBottom: 16
-})
-
-const Heading = styled(LabelHeading)({
-  width: '100%'
-})
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const Label = styled('span')({
-  fontSize: 14,
-  marginRight: 16,
-  width: '100%'
-})
-
-const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
-  fontSize: 12,
-  fontWeight: 600,
-  minWidth: 36,
-  marginLeft: '16px',
-  marginRight: '16px'
-})
 
 const MSTeamsPanel = (props: Props) => {
   const {teamId, viewerRef} = props
@@ -122,7 +83,7 @@ const MSTeamsPanel = (props: Props) => {
     error: mutationError,
     onCompleted,
     submitMutation
-  } = useMutationProps()
+  } = useMutationProps({errorDisplay: 'inline'})
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
   const isUpdateDisabled = (error?: string, value?: any) =>
@@ -152,7 +113,8 @@ const MSTeamsPanel = (props: Props) => {
     } else {
       const handleCompleted = (res: TAddIntegrationProviderMutation['response']) => {
         const {addIntegrationProvider} = res
-        const {provider} = addIntegrationProvider
+        const provider =
+          addIntegrationProvider.AddIntegrationProviderMutation_organization?.provider
         if (!provider) return
         const {id: providerId} = provider
         AddTeamMemberIntegrationAuthMutation(
@@ -180,23 +142,22 @@ const MSTeamsPanel = (props: Props) => {
     }
   }
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT
-  )
-
   return (
-    <MSTeamsPanelStyles>
-      <ConnectionGroup>
-        <Heading>Connection</Heading>
-      </ConnectionGroup>
+    <div className='border-hairline border-t p-4'>
+      <div className='flex items-center pb-4'>
+        <LabelHeading className='w-full'>Connection</LabelHeading>
+      </div>
       <form onSubmit={onSubmit}>
-        <Row>
-          <Label onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
-            Microsoft Teams Webhook
-          </Label>
-          {tooltipPortal(
-            'Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook'
-          )}
+        <div className='flex items-center py-2'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className='mr-4 w-full text-[14px]'>Microsoft Teams Webhook</span>
+            </TooltipTrigger>
+            <TooltipContent align='start'>
+              Configure in Microsoft Teams: Click ... on the team &gt; Connectors &gt; Incoming
+              Webhook
+            </TooltipContent>
+          </Tooltip>
           <BasicInput
             value={fields.webhookUrl.value}
             error=''
@@ -204,15 +165,20 @@ const MSTeamsPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='Enter your webhook URL here...'
           />
-          <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
+          <Button
+            variant='flat'
+            className='ml-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
+            size='md'
+            disabled={isUpdateDisabled(fieldError, fieldValue)}
+          >
             Update
-          </StyledButton>
-        </Row>
+          </Button>
+        </div>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
       {teamNotificationSettings && <NotificationSettings settings={teamNotificationSettings} />}
-    </MSTeamsPanelStyles>
+    </div>
   )
 }
 

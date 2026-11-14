@@ -1,7 +1,7 @@
-import {Loop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Loop} from '~/ui/icons'
 import type {
   ExportAllTasks_meeting$key,
   TaskServiceEnum
@@ -9,16 +9,17 @@ import type {
 import GitHubSVG from '../../../../../components/GitHubSVG'
 import GitLabSVG from '../../../../../components/GitLabSVG'
 import JiraSVG from '../../../../../components/JiraSVG'
-import {integrationSvgLookup} from '../../../../../components/TaskIntegrationMenuItem'
+import TaskServiceIcon from '../../../../../components/TaskServiceIcon'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../../hooks/useCoords'
-import useMenu from '../../../../../hooks/useMenu'
-import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
+import useMutationProps from '../../../../../hooks/useMutationProps'
+import {clickupIntegrationMeta} from '../../../../../integrations/clickup/shared/clickupIntegrationMeta'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {Providers} from '../../../../../types/constEnums'
 import {cn} from '../../../../../ui/cn'
+import {Menu} from '../../../../../ui/Menu/Menu'
+import {MenuContent} from '../../../../../ui/Menu/MenuContent'
 import lazyPreload from '../../../../../utils/lazyPreload'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
+import getMutationError from '../../../../../utils/relay/getMutationError'
 
 const ExportAllTasksMenuRoot = lazyPreload(
   () => import(/* webpackChunkName: 'ExportAllTasksMenuRoot' */ './ExportAllTasksMenuRoot')
@@ -33,8 +34,9 @@ const integrationToServiceName: Record<TaskServiceEnum, string> = {
   jira: 'Jira',
   jiraServer: Providers.JIRA_SERVER_NAME,
   azureDevOps: Providers.AZUREDEVOPS_NAME,
-  gitlab: Providers.GITHUB_NAME,
-  linear: Providers.LINEAR_NAME
+  gitlab: Providers.GITLAB_NAME,
+  linear: Providers.LINEAR_NAME,
+  clickup: clickupIntegrationMeta.title
 }
 
 interface Props {
@@ -56,18 +58,10 @@ const ExportAllTasks = (props: Props) => {
   const mutationProps = useMutationProps()
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = mutationProps
-  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {
-      loadingWidth: 200
-    }
-  )
   const meeting = useFragment(
     graphql`
       fragment ExportAllTasks_meeting on NewMeeting {
         id
-        meetingType
-        teamId
         ...ExportAllTasksMenuRoot_meeting
         ... on RetrospectiveMeeting {
           tasks {
@@ -92,7 +86,7 @@ const ExportAllTasks = (props: Props) => {
   // :TODO: (jmtaber129): Get this information from the tasks integration.
   const [pushedIntegrationLabel, setPushedIntegrationLabel] = useState<string | null>(null)
 
-  const {id: meetingId, meetingType, tasks, teamId} = meeting
+  const {tasks} = meeting
   if (!tasks) {
     return null
   }
@@ -101,9 +95,10 @@ const ExportAllTasks = (props: Props) => {
   const taskServices = Array.from(
     tasks.reduce(
       (serviceSet, task) => (task.taskService ? serviceSet.add(task.taskService) : serviceSet),
-      new Set<string>()
+      new Set<TaskServiceEnum>()
     )
   )
+  const firstTaskService = taskServices[0]
 
   const handlePushToIntegration = async (
     integrationRepoId: string,
@@ -122,7 +117,7 @@ const ExportAllTasks = (props: Props) => {
           CreateTaskIntegrationMutation(atmosphere, variables, {
             onError: reject,
             onCompleted: (res, errors) => {
-              const error = getOnCompletedError(res, errors)
+              const error = getMutationError(res, errors)
               if (error) {
                 reject(error)
               } else {
@@ -136,65 +131,50 @@ const ExportAllTasks = (props: Props) => {
 
     const errors = results.filter((res) => res.status === 'rejected') as PromiseRejectedResult[]
     if (errors.length > 0) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'bulkExportError',
-        message: 'Could not sync all tasks. Please try again',
-        autoDismiss: 10
-      })
       onError(errors[0]!.reason)
     } else {
-      SendClientSideEvent(atmosphere, 'Bulk Tasks Published', {
-        teamId,
-        meetingId,
-        meetingType,
-        service: integrationProviderService
-      })
       integrationLabel && setPushedIntegrationLabel(integrationLabel)
       onCompleted()
     }
   }
 
-  return (
-    <>
-      {submitting ? (
-        <button className={cn(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
-          <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
-        </button>
-      ) : filteredTasks.length === 0 ? (
-        <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
-          {taskServices.length === 1 ? (
-            <>
-              {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
-              Tasks synced to{' '}
-              {pushedIntegrationLabel ??
-                integrationToServiceName[taskServices[0] as TaskServiceEnum]}
-            </>
-          ) : (
-            'Tasks synced'
-          )}
-        </button>
+  return submitting ? (
+    <button className={cn(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
+      <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
+    </button>
+  ) : filteredTasks.length === 0 ? (
+    <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
+      {firstTaskService && taskServices.length === 1 ? (
+        <>
+          <TaskServiceIcon service={firstTaskService} />
+          Tasks synced to {pushedIntegrationLabel ?? integrationToServiceName[firstTaskService]}
+        </>
       ) : (
+        'Tasks synced'
+      )}
+    </button>
+  ) : (
+    <Menu
+      trigger={
         <button
           className={cn(BUTTON_CLASSES, 'cursor-pointer bg-white hover:bg-slate-100')}
-          onClick={togglePortal}
-          ref={originRef}
           onMouseEnter={ExportAllTasksMenuRoot.preload}
         >
           <div>Send Tasks to</div>
           <JiraSVG /> <GitHubSVG /> <GitLabSVG />
         </button>
-      )}
-      {menuPortal(
-        <ExportAllTasksMenuRoot
-          menuProps={menuProps}
-          loadingDelay={loadingDelay}
-          loadingWidth={loadingWidth}
-          mutationProps={mutationProps}
-          meetingRef={meeting}
-          handlePushToIntegration={handlePushToIntegration}
-        />
-      )}
-    </>
+      }
+    >
+      <MenuContent align='end' className='w-[250px]'>
+        <Suspense fallback={null}>
+          <ExportAllTasksMenuRoot
+            mutationProps={mutationProps}
+            meetingRef={meeting}
+            handlePushToIntegration={handlePushToIntegration}
+          />
+        </Suspense>
+      </MenuContent>
+    </Menu>
   )
 }
 

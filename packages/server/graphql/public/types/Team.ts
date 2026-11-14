@@ -5,38 +5,39 @@ import {Security, Threshold} from '../../../../client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import generateRandomString from '../../../generateRandomString'
 import getKysely from '../../../postgres/getKysely'
-import {
-  getUserId,
-  isSuperUser,
-  isTeamMember,
-  isUserBillingLeader
-} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import getRotationOrder from '../mutations/helpers/getRotationOrder'
 import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
-  activeMeetings: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+  recentOrgTaskCounts: ({orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
+  },
+  activeMeetings: async ({id: teamId}, _args, {dataLoader}) => {
     // this is by team, not by meeting member, which caused an err in dev, not sure about prod
     // we need better perms for people to view/not view a meeting that happened before they joined the team
     return dataLoader.get('activeMeetingsByTeamId').load(teamId)
   },
-  activeMeetingSeries: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+  activeMeetingSeries: async ({id: teamId}, _args, {dataLoader}) => {
     return dataLoader.get('activeMeetingSeriesByTeamId').load(teamId)
   },
-  agendaItems: ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+  agendaItems: ({id: teamId}, _args, {dataLoader}) => {
     return dataLoader.get('agendaItemsByTeamId').load(teamId)
   },
   billingTier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const {tier} = org
     return tier
+  },
+  facilitatorRotation: async ({id: teamId}, _args, {dataLoader}) => {
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const order = getRotationOrder(teamMembers)
+    return order.map((userId) => teamMembers.find((tm) => tm.userId === userId)!)
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader
@@ -109,15 +110,15 @@ const Team: TeamResolvers = {
     dataLoader.get('massInvitationsByTeamIdUserId').clearAll()
     return massInvitation
   },
-  meeting: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null
+  meeting: async ({id: teamId}, {meetingId}, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (meeting && meeting.teamId === teamId) return meeting
     return null
   },
-  meetingSettings: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null as any
-    const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+  meetingSettings: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+    const settings = await dataLoader
+      .get('meetingSettingsByType')
+      .loadNonNull({teamId, meetingType})
     return settings
   },
   organization: async ({orgId}, _args, {dataLoader}) => {
@@ -166,20 +167,14 @@ const Team: TeamResolvers = {
     })
     return connectionFromTasks(tasks)
   },
-  teamInvitations: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+  teamInvitations: async ({id: teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teamInvitationsByTeamId').load(teamId)
   },
   teamLead: async ({id: teamId}, _args, {dataLoader}) => {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
   },
-  teamMembers: async ({id: teamId, orgId}, {sortBy = 'preferredName'}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-    const canViewAllMembers =
-      isBillingLeader || isSuperUser(authToken) || isTeamMember(authToken, teamId)
-    if (!canViewAllMembers) return []
+  teamMembers: async ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) => {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamMembersWithUserFields = await Promise.all(
       teamMembers.map(async (teamMember) => {
@@ -199,6 +194,10 @@ const Team: TeamResolvers = {
     })
     return teamMembersWithUserFields
   },
+  teamMembersCount: async ({id: teamId}, _args, {dataLoader}) => {
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    return teamMembers.length
+  },
   tier: async ({orgId}, _args, {dataLoader}) => {
     const org = await dataLoader.get('organizations').loadNonNull(orgId)
     const {tier, trialStartDate} = org
@@ -208,8 +207,8 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-    return teamMember
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    return teamMember ?? null
   }
 }
 

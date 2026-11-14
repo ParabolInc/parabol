@@ -7,7 +7,6 @@
 */
 import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import type {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
-import {Threshold} from '../types/constEnums'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -162,34 +161,6 @@ export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const PARABOL_AI_USER_ID = 'parabolAIUser'
 
-export const StarterBenefits = [
-  `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
-  'Retrospectives, Sprint Poker, Standups, Check-Ins',
-  'Unlimited meeting templates',
-  'Unlimited team members'
-]
-
-export const TeamBenefits = [
-  'Unlimited teams',
-  'Unlimited custom templates',
-  'Unlimited meeting history',
-  'Priority customer support',
-  'AI Summaries',
-  'Team Health',
-  'Private Teams'
-]
-
-export const EnterpriseBenefits = [
-  'Single Sign-On (SSO)',
-  'Org Admin Role',
-  'Annual Billing',
-  'Domain Whitelisting',
-  'Uptime Service Level Agreement (SLA)',
-  'On-Premises Hosting Option',
-  'Jira Data Center Integration',
-  'Self Managed GitLab Integration'
-]
-
 export const readableReasonsToDowngrade = [
   'Parabol is too expensive',
   'Budget changes',
@@ -212,7 +183,8 @@ export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   joinedParabol: 'Joined Parabol',
   createdTeam: 'New Team Created',
   POKER_COMPLETE: 'Sprint Poker',
-  TEAM_PROMPT_COMPLETE: 'Standup'
+  TEAM_PROMPT_COMPLETE: 'Standup',
+  TEAM_HEALTH_COMPLETE: 'Team Health'
 }
 
 export const CUSTOMIZED_SVG = 'Customized SVG'
@@ -223,7 +195,8 @@ export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | unde
   joinedParabol: 'account_circle',
   createdTeam: 'group_add',
   POKER_COMPLETE: CUSTOMIZED_SVG,
-  TEAM_PROMPT_COMPLETE: 'group_work'
+  TEAM_PROMPT_COMPLETE: 'group_work',
+  TEAM_HEALTH_COMPLETE: 'health_and_safety'
 }
 
 /* OpenAI */

@@ -1,7 +1,9 @@
-import {fromGlobalId} from 'graphql-relay'
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {isRegisteredServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -14,16 +16,21 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const dbId = parseInt(fromGlobalId(id).id, 10)
-  await getKysely()
+  const [dbId, , entity] = CipherId.fromClient(id)
+  if (entity !== 'integrationSearchQuery') {
+    throw new GraphQLError('Search query not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  const removedQuery = await getKysely()
     .deleteFrom('IntegrationSearchQuery')
     .where('id', '=', dbId)
-    .where('userId', '=', viewerId)
     .where('teamId', '=', teamId)
-    .execute()
+    .returning('service')
+    .executeTakeFirst()
+  if (!removedQuery || !isRegisteredServerIntegration(removedQuery.service)) {
+    throw new GraphQLError('Search query not found', {extensions: {code: 'NOT_FOUND'}})
+  }
 
-  // RESOLUTION
-  const data = {teamId, userId: viewerId}
+  const data = {teamId, userId: viewerId, service: removedQuery.service}
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,

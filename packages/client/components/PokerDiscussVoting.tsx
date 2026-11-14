@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -15,13 +14,6 @@ import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
-
-const GroupedVotes = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  overflowY: 'auto'
-})
 
 interface Props {
   meeting: PokerDiscussVoting_meeting$key
@@ -52,8 +44,7 @@ const PokerDiscussVoting = (props: Props) => {
         id
         finalScore
         serviceField {
-          name
-          type
+          fieldId
         }
         taskId
         dimensionRef {
@@ -90,15 +81,15 @@ const PokerDiscussVoting = (props: Props) => {
   const {orgId} = team
   const {id: stageId, dimensionRef, scores, taskId, serviceField} = stage
   const finalScore = stage.finalScore || ''
-  const {name: serviceFieldName} = serviceField
+  const {fieldId: serviceFieldId} = serviceField
   const {name: dimensionName, scale} = dimensionRef
   const {values: scaleValues} = scale
-  const lastSubmittedFieldRef = useRef(serviceFieldName)
+  const lastSubmittedFieldRef = useRef(serviceFieldId)
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
 
   const isStale = (score: string) => {
-    return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
+    return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldId
   }
 
   const {rows, topLabel} = useMemo(() => {
@@ -140,7 +131,7 @@ const PokerDiscussVoting = (props: Props) => {
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
-    lastSubmittedFieldRef.current = serviceFieldName
+    lastSubmittedFieldRef.current = serviceFieldId
     isLocallyValidatedRef.current = true
   }, [finalScore])
 
@@ -155,7 +146,7 @@ const PokerDiscussVoting = (props: Props) => {
 
     const onSuccess = () => {
       // set field A to 1, change fields to B, then submit again. it should not say update
-      lastSubmittedFieldRef.current = serviceFieldName
+      lastSubmittedFieldRef.current = serviceFieldId
       forceUpdate()
     }
 
@@ -186,7 +177,7 @@ const PokerDiscussVoting = (props: Props) => {
         setCardScore={setCardScore}
         cardScore={cardScore}
       />
-      <GroupedVotes>
+      <div className='flex h-full flex-col overflow-y-auto'>
         {rows.map(({scaleValue, scores, key}) => {
           const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
@@ -211,7 +202,7 @@ const PokerDiscussVoting = (props: Props) => {
             </Fragment>
           )
         })}
-      </GroupedVotes>
+      </div>
     </>
   )
 }

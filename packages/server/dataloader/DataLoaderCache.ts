@@ -25,6 +25,8 @@ export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: 
     this.disposeId = setTimeout(() => {
       this.onDispose()
     }, ttl)
+    // cleanup must never keep the process alive (jest exits, graceful shutdowns)
+    this.disposeId.unref?.()
   }
 
   share() {

@@ -1,9 +1,5 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
-import {DECELERATE} from '../../styles/animation'
-import {switchShadow} from '../../styles/elevation'
-import {PALETTE} from '../../styles/paletteV3'
-import {Duration} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 
 interface Props {
   active: boolean
@@ -11,56 +7,26 @@ interface Props {
   onClick: (e: React.MouseEvent) => void
 }
 
-// https://material.io/design/components/selection-controls.html#switches
-const WEB_CONTROL_MIN_BOX = 24
-const TRACK_WIDTH = 34
-const TRACK_HEIGHT = 14
-const THUMB_SIZE = 20
-
-const Switch = styled('div')({
-  // adds height for minimal control size target for clicks
-  padding: `${(WEB_CONTROL_MIN_BOX - TRACK_HEIGHT) / 2}px 1px`
-})
-
-const Track = styled('div')<{active: boolean; disabled: boolean | undefined}>(
-  ({active, disabled}) => ({
-    backgroundColor: active ? PALETTE.SLATE_500 : PALETTE.SLATE_400,
-    borderRadius: TRACK_HEIGHT,
-    color: 'white',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    display: 'block',
-    height: TRACK_HEIGHT,
-    minWidth: TRACK_WIDTH,
-    opacity: disabled ? 0.38 : 1,
-    position: 'relative',
-    transition: `background-color ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
-    userSelect: 'none',
-    width: TRACK_WIDTH
-  })
-)
-
-const Thumb = styled('div')<{active: boolean}>(({active}) => ({
-  backgroundColor: active ? PALETTE.GRAPE_700 : PALETTE.WHITE,
-  borderRadius: '100%',
-  boxShadow: switchShadow,
-  display: 'block',
-  height: THUMB_SIZE,
-  position: 'absolute',
-  top: -((THUMB_SIZE - TRACK_HEIGHT) / 2),
-  transition: `transform ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
-  transform: `translateX(${active ? TRACK_WIDTH - THUMB_SIZE + 1 : -1}px)`,
-  width: THUMB_SIZE
-}))
-
 const Toggle = (props: Props) => {
   const {active, disabled, onClick} = props
 
   return (
-    <Switch onClick={disabled ? undefined : onClick}>
-      <Track active={active} disabled={disabled}>
-        <Thumb active={active} />
-      </Track>
-    </Switch>
+    <div className='px-[1px] py-[5px]' onClick={disabled ? undefined : onClick}>
+      <div
+        className={cn(
+          'relative block h-3.5 w-[34px] min-w-[34px] select-none rounded-[14px] text-white transition-[background-color] duration-100 ease-[cubic-bezier(0,0,.2,1)]',
+          active ? 'bg-slate-500' : 'bg-slate-400',
+          disabled ? 'cursor-not-allowed opacity-[.38]' : 'cursor-pointer'
+        )}
+      >
+        <div
+          className={cn(
+            '-top-[3px] absolute block h-5 w-5 rounded-full shadow-[0px_3px_1px_-2px_rgba(0,0,0,.2),0px_2px_2px_0px_rgba(0,0,0,.14),0px_1px_5px_0px_rgba(0,0,0,.12)] transition-transform duration-100 ease-[cubic-bezier(0,0,.2,1)]',
+            active ? 'translate-x-[15px] bg-grape-700' : '-translate-x-[1px] bg-white'
+          )}
+        />
+      </div>
+    </div>
   )
 }
 

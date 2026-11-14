@@ -1,14 +1,17 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
+import type {HTMLAttributes} from 'react'
+import {cn} from '../../ui/cn'
 
-const LabelHeading = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 12,
-  fontWeight: 600,
-  letterSpacing: '.03em',
-  lineHeight: '16px',
-  textTransform: 'uppercase',
-  userSelect: 'none'
-})
+const LabelHeading = (props: HTMLAttributes<HTMLDivElement>) => {
+  const {className, ...rest} = props
+  return (
+    <div
+      {...rest}
+      className={cn(
+        'select-none font-semibold text-fg-secondary text-xs uppercase leading-4 tracking-[.03em]',
+        className
+      )}
+    />
+  )
+}
 
 export default LabelHeading

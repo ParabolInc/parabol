@@ -1,5 +1,5 @@
-import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
+import {Search as SearchIcon} from '~/ui/icons'
 import LeftDashNavItem from '../../components/Dashboard/LeftDashNavItem'
 import useHotkey from '../../hooks/useHotkey'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -41,7 +41,7 @@ export const GlobalSearchDialog = () => {
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         className={
-          'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-white p-0 duration-200 focus:outline-none'
+          'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-surface-card p-0 duration-200 focus:outline-none'
         }
       >
         <VisuallyHidden asChild>

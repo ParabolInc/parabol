@@ -1,20 +1,42 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {RRuleSet} from 'rrule-rust'
 import {selectNewMeetings} from '../../../postgres/select'
+import {isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
+import canReadMeetingSeries from '../../mutations/helpers/canReadMeetingSeries'
 import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
   id: ({id}, _args, _context) => {
     return MeetingSeriesId.join(id)
   },
-  activeMeetings: async (meetingSeries, _args, {dataLoader}) => {
-    const res = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(meetingSeries.id)
-    return res || []
+  activeMeetings: async ({id}, _args, {authToken, dataLoader}) => {
+    const meetings = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(id)
+    // an owner can schedule for a team they are not on, & they cannot join that team's meetings
+    return meetings.filter((meeting) => isTeamMember(authToken, meeting.teamId))
   },
-  mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
+  team: ({teamId}, _args, {dataLoader}) => {
+    return dataLoader.get('teams').loadNonNull(teamId)
+  },
+  owner: async ({ownerUserId}, _args, {dataLoader}) => {
+    if (!ownerUserId) return null
+    return (await dataLoader.get('users').load(ownerUserId)) ?? null
+  },
+  groupSeries: async ({id, groupId}, _args, {authToken, dataLoader, resourceGrants}) => {
+    if (!groupId) return []
+    const siblings = (await dataLoader.get('meetingSeriesByGroupId').load(groupId)).filter(
+      (series) => series.id !== id
+    )
+    const isReadable = await Promise.all(
+      siblings.map((series) => canReadMeetingSeries(series, authToken, dataLoader, resourceGrants))
+    )
+    return siblings.filter((_, idx) => isReadable[idx])
+  },
+  mostRecentMeeting: async ({id: meetingSeriesId, teamId}, _args, {authToken}) => {
+    // an owner can schedule for a team they are not on, & they cannot join that team's meetings
+    if (!isTeamMember(authToken, teamId)) return null
     const meeting = await selectNewMeetings()
       .where('meetingSeriesId', '=', meetingSeriesId)
       .orderBy('endedAt', 'desc')

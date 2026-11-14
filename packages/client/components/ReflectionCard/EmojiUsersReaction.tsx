@@ -1,27 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import {useFragment} from 'react-relay'
 import type {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {PALETTE} from '../../styles/paletteV3'
-
-const EmojiUsersReactionRoot = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  maxHeight: 300,
-  maxWidth: 280,
-  overflow: 'auto',
-  wordWrap: 'break-word',
-  overflowWrap: 'break-word',
-  whiteSpace: 'normal'
-})
-
-const DarkerGrayPart = styled('span')({
-  color: PALETTE.SLATE_400
-})
 
 const LIST_FORMATTER =
   Intl.ListFormat !== undefined
@@ -54,10 +35,10 @@ const EmojiUsersReaction = ({reactjiRef, reactjiName}: Props) => {
   )
 
   return (
-    <EmojiUsersReactionRoot>
+    <div className='wrap-break-word flex max-h-75 max-w-70 flex-col items-center justify-center overflow-auto whitespace-normal'>
       {LIST_FORMATTER.format(userNames)}
-      {reactjiName && <DarkerGrayPart>reacted with {reactjiName}</DarkerGrayPart>}
-    </EmojiUsersReactionRoot>
+      {reactjiName && <span className='text-fg-muted'>reacted with {reactjiName}</span>}
+    </div>
   )
 }
 

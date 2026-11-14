@@ -1,7 +1,7 @@
 import type * as React from 'react'
 import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
-import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {RecordSource} from 'relay-runtime/store/RelayStoreTypes'
 import * as Y from 'yjs'
 import type {PageDragHandleQuery$data} from '../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../Atmosphere'
@@ -124,7 +124,8 @@ export const rawOnPointerUp =
           createPageLinkElement(
             fromNode.getAttribute('pageCode') as number,
             fromNode.getAttribute('title') as string,
-            fromNode.getAttribute('database') as boolean
+            fromNode.getAttribute('database') as boolean,
+            fromNode.getAttribute('synced') === true
           ) as Y.XmlElement
         ]
 
@@ -169,7 +170,7 @@ export const rawOnPointerUp =
           console.warn('Page not found in Relay')
           return
         }
-        const {title, isDatabase, isMeetingTOC} = pageGQLRecord
+        const {title, isDatabase, isMeetingTOC, isSyncedBlock} = pageGQLRecord
         if (isMeetingTOC) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'useDraggablePage:noDropAccess',
@@ -184,12 +185,14 @@ export const rawOnPointerUp =
         if (dropTarget) {
           const dropTargetParent = dropTarget.parent as Y.XmlElement
           dropTargetParent.insertAfter(dropTarget, [
-            createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement
+            createPageLinkElement(pageCode, title, !!isDatabase, !!isSyncedBlock) as Y.XmlElement
           ])
         } else {
           // this will be the first page link, put it at the top just below the title
           const frag = document.getXmlFragment('default')
-          frag.insert(1, [createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement])
+          frag.insert(1, [
+            createPageLinkElement(pageCode, title, !!isDatabase, !!isSyncedBlock) as Y.XmlElement
+          ])
         }
       })
     } else {

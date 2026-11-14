@@ -1,10 +1,8 @@
-import styled from '@emotion/styled'
 import {useRef} from 'react'
 import {useLocation} from 'react-router'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {
   CREATE_ACCOUNT_LABEL,
   CREATE_ACCOUNT_SLUG,
@@ -37,38 +35,9 @@ interface Props {
   invitationToken?: string
 }
 
-const color = PALETTE.SKY_500
-
-const ForgotPasswordLink = styled(PlainButton)({
-  color,
-  fontSize: 11,
-  lineHeight: '24px',
-  marginTop: 8,
-  textAlign: 'center',
-  ':hover,:focus,:active': {
-    color
-  }
-})
-
-const BrandedLink = styled(PlainButton)({
-  color: PALETTE.SKY_500,
-  ':hover,:focus': {
-    color: PALETTE.SKY_500,
-    textDecoration: 'underline'
-  }
-})
-
-const DialogSubTitle = styled('div')({
-  fontSize: 14,
-  fontWeight: 400,
-  lineHeight: 1.5,
-  paddingTop: 16,
-  paddingBottom: 8
-})
-
 const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
-  const emailRef = useRef<{email: () => string}>()
+  const emailRef = useRef<{email: () => string}>(undefined)
   const location = useLocation()
   const params = new URLSearchParams(location.search)
   const email = params.get('email')
@@ -82,8 +51,8 @@ const GenericAuthentication = (props: Props) => {
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const pageTitle = `${action} | Parabol`
   const metaCopy = isCreate
-    ? 'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
-    : 'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
+    ? 'Run better retrospectives, sprint planning and anonymous team health checks that turn engagement feedback into action. Get started in 44 seconds or less.'
+    : 'Access Parabol to run your agile meetings and team health checks. Collaborate, reflect, measure psychological safety, and grow with your team in real time.'
   useDocumentTitle(pageTitle, action)
   useMetaTagContent(metaCopy)
 
@@ -108,12 +77,15 @@ const GenericAuthentication = (props: Props) => {
   return (
     <AuthenticationDialog ref={authDialogRef}>
       <DialogTitle>{title}</DialogTitle>
-      <DialogSubTitle>
+      <div className='pt-4 pb-2 font-normal text-sm leading-normal'>
         <span>{actionCopy}</span>
-        <BrandedLink onClick={() => goToPage(counterActionSlug, location.search)}>
+        <PlainButton
+          className='text-accent hover:underline focus:underline'
+          onClick={() => goToPage(counterActionSlug, location.search)}
+        >
           {counterAction}
-        </BrandedLink>
-      </DialogSubTitle>
+        </PlainButton>
+      </div>
       {isGoogleAuthEnabled && (
         <GoogleOAuthButtonBlock
           isCreate={isCreate}
@@ -146,7 +118,12 @@ const GenericAuthentication = (props: Props) => {
         <AuthPrivacyFooter />
       ) : (
         isInternalAuthEnabled && (
-          <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
+          <PlainButton
+            className='mt-2 text-center text-[11px] text-accent leading-6'
+            onClick={onForgot}
+          >
+            {'Forgot your password?'}
+          </PlainButton>
         )
       )}
     </AuthenticationDialog>

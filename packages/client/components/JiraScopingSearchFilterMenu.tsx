@@ -1,52 +1,19 @@
-import styled from '@emotion/styled'
 import {useMemo} from 'react'
-import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
-import SearchQueryId from '../shared/gqlIds/SearchQueryId'
+import useSetScopingSearchState from '../hooks/useSetScopingSearchState'
+import {
+  searchFiltersByKey,
+  toggleSearchFilter
+} from '../integrations/platform/IntegrationSearchFilter'
+import type {ScopingSearchState} from '../integrations/platform/ScopingSearchState'
+import {cn} from '../ui/cn'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
-import MockFieldList from './MockFieldList'
-import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const StyledMenu = styled(Menu)({
-  width: 250
-})
-
-const ProjectAvatar = styled('img')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-
-const UseJQLLabel = styled('span')({
-  fontWeight: 600
-})
-
-const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDisabled}) => ({
-  opacity: isDisabled ? 0.5 : undefined
-}))
-
-const FilterLabel = styled(DropdownMenuLabel)({
-  borderBottom: 0
-})
-
-type JiraSearchQuery = {
-  readonly isJQL: boolean
-  readonly projectKeyFilters: readonly string[]
-}
 
 type Project = {
   id: string
@@ -55,10 +22,9 @@ type Project = {
 }
 
 interface Props {
-  menuProps: MenuProps
   meetingId: string
   projects: readonly Project[]
-  jiraSearchQuery: JiraSearchQuery | null
+  state: ScopingSearchState
   service: 'jira' | 'jiraServer'
 }
 
@@ -68,10 +34,10 @@ const MAX_PROJECTS = 10
 
 // Reusable for both Jira and Jira Server/Data Center.
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
-  const isLoading = meetingId === null
-  const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
-  const isJQL = jiraSearchQuery?.isJQL ?? false
+  const {projects, meetingId, state, service} = props
+  const {isAdvancedQuery, filters} = state
+  const projectIds = searchFiltersByKey(filters, 'project')
+  const setSearchState = useSetScopingSearchState(meetingId, service)
 
   const {
     query,
@@ -81,7 +47,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
 
   const showSearch = projects.length > MAX_PROJECTS
   const selectedAndFilteredProjects = useMemo(() => {
-    const selectedProjects = projects.filter((project) => projectKeyFilters.includes(project.id))
+    const selectedProjects = projects.filter((project) => projectIds.includes(project.id))
     const adjustedMax =
       selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
     return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
@@ -90,43 +56,23 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     )
   }, [queryFilteredProjects])
 
-  const atmosphere = useAtmosphere()
-  const {portalStatus, isDropdown} = menuProps
-  const toggleJQL = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = SearchQueryId.join(service, meetingId)
-      const jiraSearchQuery = store.get(searchQueryId)
-      // this might bork if the checkbox is ticked before the full query loads
-      if (!jiraSearchQuery) return
-      jiraSearchQuery.setValue(!isJQL, 'isJQL')
-      jiraSearchQuery.setValue([], 'projectKeyFilters')
-    })
+  const toggleAdvancedQuery = () => {
+    setSearchState({isAdvancedQuery: !isAdvancedQuery, filters: []})
   }
   return (
-    <StyledMenu
-      keepParentFocus
-      ariaLabel={'Define the Jira search query'}
-      portalStatus={portalStatus}
-      isDropdown={isDropdown}
-      resetActiveOnChanges={[selectedAndFilteredProjects]}
-    >
-      <MenuItem
-        key={'isJQL'}
-        label={
-          <MenuItemLabel>
-            <StyledCheckBox active={isJQL} />
-            <UseJQLLabel>{'Use JQL'}</UseJQLLabel>
-          </MenuItemLabel>
-        }
-        onClick={toggleJQL}
-      />
-      <MenuItemHR />
-      {isLoading && <MockFieldList />}
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
-      {showSearch && (
-        <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+    <>
+      <MenuItem onSelect={(e) => e.preventDefault()} onClick={toggleAdvancedQuery}>
+        <Checkbox className='-ml-2 mr-2' active={isAdvancedQuery} />
+        <span className='font-semibold'>{'Use JQL'}</span>
+      </MenuItem>
+      <MenuSeparator />
+      {selectedAndFilteredProjects.length > 0 && (
+        <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
       )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
+      {showSearch && (
+        <MenuSearch placeholder='Search Jira' onChange={onQueryChange} value={query} />
+      )}
+      {(query && selectedAndFilteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No Jira Projects found!
         </EmptyDropdownMenuItemLabel>
@@ -134,39 +80,25 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         null}
       {selectedAndFilteredProjects.map((project) => {
         const {id: globalProjectKey, avatar, name} = project
-        const toggleProjectKeyFilter = () => {
-          commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join(service, meetingId)
-            const jiraSearchQuery = store.get<JiraSearchQuery>(searchQueryId)!
-            const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
-            const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)
-            if (keyIdx !== -1) {
-              projectKeyFiltersProxy.splice(keyIdx, 1)
-            } else {
-              projectKeyFiltersProxy.push(globalProjectKey)
-            }
-            jiraSearchQuery.setValue(projectKeyFiltersProxy, 'projectKeyFilters')
-          })
+        const isSelected = projectIds.includes(globalProjectKey)
+        const toggleProjectFilter = () => {
+          setSearchState({filters: toggleSearchFilter(filters, 'project', globalProjectKey)})
         }
         return (
           <MenuItem
             key={globalProjectKey}
-            label={
-              <StyledMenuItemLabel isDisabled={isJQL}>
-                <StyledCheckBox
-                  active={projectKeyFilters.includes(globalProjectKey)}
-                  disabled={isJQL}
-                />
-                <ProjectAvatar src={avatar || undefined} />
-                <TypeAheadLabel query={query} label={name} />
-              </StyledMenuItemLabel>
-            }
-            onClick={toggleProjectKeyFilter}
-            isDisabled={isJQL}
-          />
+            className={cn(isAdvancedQuery && 'opacity-50')}
+            onSelect={(e) => e.preventDefault()}
+            onClick={isAdvancedQuery ? undefined : toggleProjectFilter}
+            isDisabled={isAdvancedQuery}
+          >
+            <Checkbox className='-ml-2 mr-2' active={isSelected} disabled={isAdvancedQuery} />
+            <img className='mr-2 h-6 w-6' src={avatar || undefined} />
+            <TypeAheadLabel query={query} label={name} />
+          </MenuItem>
         )
       })}
-    </StyledMenu>
+    </>
   )
 }
 

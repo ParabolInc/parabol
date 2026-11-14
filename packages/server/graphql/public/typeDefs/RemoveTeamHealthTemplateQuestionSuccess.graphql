@@ -1,0 +1,15 @@
+"""
+Returned when the removeTeamHealthTemplateQuestion mutation succeeds. One or more questions were
+unlinked from the template.
+"""
+type RemoveTeamHealthTemplateQuestionSuccess {
+  """
+  The template the questions were removed from
+  """
+  template: TeamHealthTemplate!
+
+  """
+  The ids of the questions that were unlinked from the template
+  """
+  questionIds: [ID!]!
+}

@@ -1,14 +1,24 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {getUserId} from '../../../utils/authorization'
 import type {TeamPromptResponseStageResolvers} from '../resolverTypes'
 
 const TeamPromptResponseStage: TeamPromptResponseStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'RESPONSES',
-  response: async ({meetingId, teamMemberId}, _args) => {
-    // TODO: implement getTeamPromptResponsesByMeetingIdAndUserId
-    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
-    const userId = TeamMemberId.split(teamMemberId).userId
-    return responses.find(({userId: responseUserId}) => responseUserId === userId)!
+  responses: async ({meetingId, teamMemberId}, _args, {authToken, dataLoader}) => {
+    const {userId} = TeamMemberId.split(teamMemberId)
+    const viewerId = getUserId(authToken)
+    const responses = await dataLoader
+      .get('teamPromptResponsesByMeetingIdForViewer')
+      .load({meetingId, viewerId})
+    return responses.filter((response) => response.userId === userId)
+  },
+  response: async ({meetingId, teamMemberId}, _args, {authToken, dataLoader}) => {
+    const {userId} = TeamMemberId.split(teamMemberId)
+    const viewerId = getUserId(authToken)
+    const responses = await dataLoader
+      .get('teamPromptResponsesByMeetingIdForViewer')
+      .load({meetingId, viewerId})
+    return responses.find((response) => response.userId === userId) ?? null
   }
 }
 

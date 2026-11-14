@@ -34,7 +34,6 @@ const DeckActivityAvatars = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   // FIXME: DEBUG ONLY!!!
-  // useMockPeekers(stageId)
   const peekingUsers = useMemo(() => {
     const scoredUserIds = new Set(scores.map(({userId}) => userId))
     return hoveringUsers
@@ -57,7 +56,7 @@ const DeckActivityAvatars = (props: Props) => {
             user={user}
             offset={(PokerCards.AVATAR_WIDTH - 10) * idx}
             isColumn
-            className='h-11.5 w-11.5 border border-slate-300'
+            className='h-11.5 w-11.5 border border-surface-well'
           />
         ))}
       </AnimatePresence>

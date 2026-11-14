@@ -53,7 +53,7 @@ describe('moveListIntoItem', () => {
       posOfType(state.doc, 'taskList'),
       posOfType(state.doc, 'listItem')
     )
-    const result = state.apply(tr)
+    const result = state.apply(tr!)
     expect(() => result.doc.check()).not.toThrow()
     expect(result.doc.childCount).toBe(1)
     const li = result.doc.child(0).child(0)
@@ -78,7 +78,7 @@ describe('moveListIntoItem', () => {
       posOfType(state.doc, 'orderedList'),
       posOfType(state.doc, 'taskItem')
     )
-    const result = state.apply(tr)
+    const result = state.apply(tr!)
     expect(() => result.doc.check()).not.toThrow()
     expect(result.doc.childCount).toBe(1)
     const ti = result.doc.child(0).child(0)

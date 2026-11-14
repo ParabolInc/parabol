@@ -29,7 +29,7 @@ graphql`
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
         stages {
-          ...ActionMeetingAgendaItemsStage @relay(mask: false)
+          ...ActionMeetingAgendaItemsStage @relay(mask: false) @alias
           isNavigableByFacilitator
         }
       }

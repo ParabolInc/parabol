@@ -1,0 +1,61 @@
+import {gitlabIntegrationMeta} from 'parabol-client/integrations/gitlab/shared/gitlabIntegrationMeta'
+import type {GitLabSearchQueryJson} from '../../postgres/types'
+import {
+  type EstimatePushCapability,
+  type IssueCreateCapability,
+  type IssueReadCapability,
+  type IssueSearchCapability,
+  type RepoListCapability,
+  ServerIntegrationDefinition
+} from '../platform/ServerIntegrationDefinition'
+import buildGitLabSearchQuery from './buildGitLabSearchQuery'
+import describeGitLabDimensionField from './describeGitLabDimensionField'
+import fetchGitLabProjects, {type GitLabProject} from './fetchGitLabProjects'
+import GitLabServerManager from './GitLabServerManager'
+import listGitLabDimensionFields from './listGitLabDimensionFields'
+import parseGitLabIntegrationHash from './parseGitLabIntegrationHash'
+import pushEstimateToGitLab from './pushEstimateToGitLab'
+import resolveGitLabDimensionFieldKey from './resolveGitLabDimensionFieldKey'
+import resolveGitLabTaskIntegration from './resolveGitLabTaskIntegration'
+
+export class GitLabServerIntegration extends ServerIntegrationDefinition {
+  readonly service = gitlabIntegrationMeta.service
+  readonly title = gitlabIntegrationMeta.title
+  readonly authStrategy = 'oauth2' as const
+
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<GitLabSearchQueryJson>
+    repoList: RepoListCapability<GitLabProject>
+    estimatePush: EstimatePushCapability
+  } = {
+    issueCreate: {
+      initManager: async (ctx) => {
+        const auth = await this.resolveAuth(ctx)
+        if (!auth) return null
+        const provider = await ctx.dataLoader.get('integrationProviders').load(auth.providerId)
+        if (!provider?.serverBaseUrl) return null
+        return new GitLabServerManager(auth, ctx.context, ctx.info, provider.serverBaseUrl)
+      }
+    },
+    issueRead: {
+      getIssue: resolveGitLabTaskIntegration,
+      parseIntegrationHash: parseGitLabIntegrationHash
+    },
+    issueSearch: {buildQuery: buildGitLabSearchQuery},
+    repoList: {
+      fetchRepos: ({teamId, userId, context, info}) =>
+        fetchGitLabProjects(teamId, userId, context, info),
+      integrationRepoId: ({fullPath}) => fullPath,
+      name: ({fullPath}) => fullPath
+    },
+    estimatePush: {
+      targets: ['comment', 'label'],
+      pushEstimate: pushEstimateToGitLab,
+      resolveDimensionFieldKey: resolveGitLabDimensionFieldKey,
+      describeDimensionField: describeGitLabDimensionField,
+      listDimensionFields: listGitLabDimensionFields
+    }
+  }
+}

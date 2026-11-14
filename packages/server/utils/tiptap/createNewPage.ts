@@ -7,7 +7,6 @@ import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {analytics} from '../../utils/analytics/analytics'
 import {publishPageNotification} from '../publishPageNotification'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 import {validateParentPage} from './validateParentPage'
@@ -15,6 +14,8 @@ import {validateParentPage} from './validateParentPage'
 type CreateNewPageOptions = {
   parentPageId?: number
   isDatabase?: boolean
+  isSyncedBlock?: boolean
+  isMeetingTOC?: boolean
   content: TipTapSerializedPageContent
   teamId?: string | null
   summaryMeetingId?: string | null
@@ -22,7 +23,16 @@ type CreateNewPageOptions = {
 }
 
 export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: string | null) => {
-  const {content, parentPageId, isDatabase, teamId, summaryMeetingId, userId} = options
+  const {
+    content,
+    parentPageId,
+    isDatabase,
+    isSyncedBlock,
+    isMeetingTOC,
+    teamId,
+    summaryMeetingId,
+    userId
+  } = options
 
   const pg = getKysely()
   const yDoc = Buffer.from(
@@ -54,6 +64,8 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
       parentPageId,
       ancestorIds,
       isDatabase,
+      isSyncedBlock,
+      isMeetingTOC,
       summaryMeetingId,
       teamId
     })
@@ -119,17 +131,15 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
   }
   const dataLoader = getNewDataLoader('createNewPage')
   const operationId = dataLoader.share()
-  const [viewer] = await Promise.all([
-    dataLoader.get('users').loadNonNull(userId),
-    ...accessInserts
-  ])
+  await Promise.all(accessInserts)
 
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-  analytics.pageCreated(viewer, pageId)
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}
-  await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
+  if (!isSyncedBlock) {
+    await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
+  }
   dataLoader.dispose()
   return page
 }

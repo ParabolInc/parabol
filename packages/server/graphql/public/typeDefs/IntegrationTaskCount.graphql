@@ -1,0 +1,7 @@
+"""
+How many tasks are linked to an external task service
+"""
+type IntegrationTaskCount {
+  service: TaskServiceEnum!
+  taskCount: Int!
+}

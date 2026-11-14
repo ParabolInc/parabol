@@ -1,5 +1,3 @@
-import {forwardRef} from 'react'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -7,13 +5,14 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const ScopeHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
-  useClientSideTrack('Help Menu Open', {phase: 'lobby'})
+const ScopeHelpMenu = (props: Props) => {
+  const {onClose} = props
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.SCOPE}</HelpMenuHeader>
       <HelpMenuCopy>The goal here is to select the tasks you‘d like to estimate.</HelpMenuCopy>
       <HelpMenuCopy>
@@ -28,6 +27,6 @@ const ScopeHelpMenu = forwardRef((_props: Props, ref: any) => {
       />
     </HelpMenuContent>
   )
-})
+}
 
 export default ScopeHelpMenu
