@@ -27,6 +27,7 @@ import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {BlockArrival} from '../tiptap/extensions/BlockArrival'
 import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
 import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
@@ -237,6 +238,7 @@ export const useTipTapPageEditor = (
           }
         }),
         BlockMoveHistory.configure({atmosphere}),
+        BlockArrival,
         InsightsBlock,
         AutoJoiner,
         Markdown,

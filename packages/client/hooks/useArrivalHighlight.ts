@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import {useEffect} from 'react'
 import {findMovedBlockPositions} from '../tiptap/blockMove/findMovedBlockPositions'
 import {peekPendingArrival, takePendingArrival} from '../tiptap/blockMove/pendingArrivals'
+import {clearBlockArrival, showBlockArrival} from '../tiptap/extensions/BlockArrival'
 
 const HIGHLIGHT_MS = 1500
 const GIVE_UP_MS = 10_000
@@ -11,23 +12,19 @@ export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
     if (!editor) return
     const moved = peekPendingArrival(pageId)
     if (!moved) return
-    let elements: HTMLElement[] = []
     let highlightTimeout: number | undefined
     let giveUpTimeout: number | undefined
+    const clear = () => {
+      if (!editor.isDestroyed) clearBlockArrival(editor.view)
+    }
     const tryApply = () => {
-      elements = findMovedBlockPositions(editor, moved).flatMap((pos) => {
-        const dom = editor.view.nodeDOM(pos)
-        return dom instanceof HTMLElement ? [dom] : []
-      })
-      if (elements.length === 0) return false
-      elements.forEach((el) => {
-        el.classList.add('block-arrived')
-      })
-      elements[0]?.scrollIntoView({block: 'center'})
+      const positions = findMovedBlockPositions(editor, moved)
+      if (positions.length === 0) return false
+      showBlockArrival(editor.view, positions)
+      const first = editor.view.nodeDOM(positions[0]!)
+      if (first instanceof HTMLElement) first.scrollIntoView({block: 'center'})
       highlightTimeout = window.setTimeout(() => {
-        elements.forEach((el) => {
-          el.classList.remove('block-arrived')
-        })
+        clear()
         takePendingArrival(pageId)
       }, HIGHLIGHT_MS)
       return true
@@ -48,9 +45,7 @@ export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
       editor.off('update', onUpdate)
       window.clearTimeout(highlightTimeout)
       window.clearTimeout(giveUpTimeout)
-      elements.forEach((el) => {
-        el.classList.remove('block-arrived')
-      })
+      clear()
     }
   }, [editor, pageId])
 }
