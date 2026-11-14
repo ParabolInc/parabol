@@ -1,4 +1,6 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isMSTeamsAppLink, {MS_TEAMS_APP_LINK_ERROR} from 'parabol-client/utils/isMSTeamsAppLink'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
@@ -110,6 +112,13 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     ].filter(isNotNull).length !== 1
   ) {
     return {error: {message: 'Exactly 1 metadata provider is expected'}}
+  }
+  if (
+    service === 'msTeams' &&
+    webhookProviderMetadataInput &&
+    isMSTeamsAppLink(webhookProviderMetadataInput.webhookUrl)
+  ) {
+    throw new GraphQLError(MS_TEAMS_APP_LINK_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION
