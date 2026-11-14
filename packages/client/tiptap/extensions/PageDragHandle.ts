@@ -20,6 +20,7 @@ const queryNode = graphql`
         title
         isDatabase
         isMeetingTOC
+        isSyncedBlock
         access {
           viewer
         }
