@@ -35,6 +35,7 @@ jest.mock('@tiptap/react', () => ({
 }))
 jest.mock('../DragHandleMenu', () => ({__esModule: true, default: () => null}))
 let mockPageViewerGrant: string | null = null
+const mockAtmosphere = {} as Atmosphere
 const mockMenuProps: Record<string, unknown>[] = []
 
 const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
@@ -57,7 +58,7 @@ const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[
           : extension
       ),
       BlockSelection,
-      PageDragHandle.configure({atmosphere: {} as Atmosphere, pageId: 'page:1', isNested})
+      PageDragHandle.configure({atmosphere: mockAtmosphere, pageId: 'page:1', isNested})
     ],
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
@@ -449,6 +450,14 @@ describe('many blocks', () => {
       hover(activeEditor, 'four')
       clickHandle(activeEditor)
       expect(menuProps()?.selection).toBeNull()
+    })
+
+    test('hands the menu the page and atmosphere so it can offer Move to…', () => {
+      const activeEditor = makeEditor(p('one'), p('two'))
+      hover(activeEditor, 'two')
+      clickHandle(activeEditor)
+      expect(menuProps()?.pageId).toBe('page:1')
+      expect(menuProps()?.atmosphere).toBe(mockAtmosphere)
     })
 
     test('on the one selected block opens the menu for that block', () => {

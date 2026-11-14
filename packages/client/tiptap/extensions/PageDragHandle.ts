@@ -257,7 +257,9 @@ export const PageDragHandle = Extension.create<Options>({
           anchorElement: dragHandleElement,
           canCreateSubPage:
             !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0]),
-          selection
+          selection,
+          atmosphere,
+          pageId
         }
       })
 

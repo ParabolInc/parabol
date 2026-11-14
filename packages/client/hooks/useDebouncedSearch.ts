@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from 'react'
 /**
  * Debounces a search string. It will wait for the user to stop typing or finishing a word before returning the debounced search string.
  */
-export const useDebouncedSearch = (search: string) => {
+export const useDebouncedSearch = (search: string, delayMs = 500) => {
   const wordEndChars = /[\s,.!?:;\-()[\]{}<>"'\\|&*+=#%@$]/
   const timer = useRef<NodeJS.Timeout>(undefined)
   const [debouncedSearch, setDebouncedSearch] = useState(search)
@@ -23,12 +23,12 @@ export const useDebouncedSearch = (search: string) => {
     timer.current = setTimeout(() => {
       setDebouncedSearch(search)
       timer.current = undefined
-    }, 500)
+    }, delayMs)
     return () => {
       clearTimeout(timer.current)
       timer.current = undefined
     }
-  }, [search])
+  }, [search, delayMs])
 
   return {
     debouncedSearch,

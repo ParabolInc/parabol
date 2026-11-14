@@ -1,13 +1,15 @@
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
-import {ContentCopy, DeleteOutlined} from '~/ui/icons'
+import {ArrowForward, ContentCopy, DeleteOutlined} from '~/ui/icons'
+import type Atmosphere from '../../Atmosphere'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
 import menuSectionTitleClass from '../../ui/Menu/menuSectionTitleClass'
 import {modKey} from '../../utils/platform'
 import plural from '../../utils/plural'
+import {openMoveToPageMenu} from '../blockMove/openMoveToPageMenu'
 import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import {deleteBlocks, duplicateBlocks} from './BlockSelection'
@@ -26,10 +28,22 @@ interface DragHandleMenuProps {
   anchorElement: HTMLElement
   canCreateSubPage: boolean
   selection?: {range: BlockRange; count: number} | null
+  atmosphere: Atmosphere
+  pageId: string
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
-  const {editor, node, pos, onClose, anchorElement, canCreateSubPage, selection} = props
+  const {
+    editor,
+    node,
+    pos,
+    onClose,
+    anchorElement,
+    canCreateSubPage,
+    selection,
+    atmosphere,
+    pageId
+  } = props
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
@@ -40,6 +54,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const isSyncedViewOnly = !editor.isEditable || (!!nested && !nested.isEditable)
   const pageCode = Number(node.attrs.pageCode)
   const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
+  const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
   const blocks = plural(selection?.count ?? 1, 'block')
 
@@ -76,6 +91,17 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       .run()
   }
 
+  const handleMoveTo = () => {
+    const range = selection?.range ?? {
+      from: pos,
+      to: pos + node.nodeSize,
+      depth: editor.state.doc.resolve(pos).depth
+    }
+    const {top, left, width, height} = anchorElement.getBoundingClientRect()
+    const anchorRect = {top, left, width, height}
+    openMoveToPageMenu({editor, range, anchorRect, pageId, atmosphere})
+  }
+
   const handleDelete = () => {
     if (selection) {
       runOnSelection(deleteBlocks)
@@ -92,13 +118,16 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const handleContentKeyDown = (e: React.KeyboardEvent) => {
     const isDeleteKey = e.key === 'Delete' || e.key === 'Backspace'
     const isDuplicateKey = e.key === 'd' && (e.metaKey || e.ctrlKey)
-    if (!isDeleteKey && !isDuplicateKey) return
+    const isMoveToKey = e.key.toLowerCase() === 'p' && e.shiftKey && (e.metaKey || e.ctrlKey)
+    if (!isDeleteKey && !isDuplicateKey && !isMoveToKey) return
     // left alone these reach the browser, which can go back a page or open a bookmark dialog
     e.preventDefault()
     // keys from the Turn into submenu bubble here through its portal
     if (!e.currentTarget.contains(e.target as HTMLElement)) return
     if (isDeleteKey && !showDelete) return
+    if (isMoveToKey && !showMoveTo) return
     if (isDeleteKey) handleDelete()
+    else if (isMoveToKey) handleMoveTo()
     else handleDuplicate()
     queueMicrotask(onClose)
   }
@@ -168,6 +197,13 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             <span className='flex-1 text-left'>Duplicate {blocks}</span>
             <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
           </MenuItem>
+          {showMoveTo && (
+            <MenuItem onSelect={handleMoveTo}>
+              <ArrowForward className={MENU_ITEM_ICON} />
+              <span className='flex-1 text-left'>Move to…</span>
+              <span className='ml-4 text-fg-muted text-xs'>{modKey}+Shift+P</span>
+            </MenuItem>
+          )}
           {showDelete && (
             <MenuItem onSelect={handleDelete}>
               <DeleteOutlined className={MENU_ITEM_ICON} />
