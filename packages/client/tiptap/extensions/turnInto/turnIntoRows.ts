@@ -1,3 +1,4 @@
+import type {Node} from '@tiptap/pm/model'
 import type {IconComponent} from '~/ui/icons'
 import {
   ArrowRight,
@@ -13,7 +14,7 @@ import {
   Notes,
   TextFields
 } from '~/ui/icons'
-import type {TurnIntoTarget} from './turnBlockInto'
+import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget} from './turnBlockInto'
 
 export const turnIntoRows: {title: string; icon: IconComponent; target: TurnIntoTarget}[] = [
   {title: 'Text', icon: TextFields, target: {type: 'paragraph'}},
@@ -29,3 +30,19 @@ export const turnIntoRows: {title: string; icon: IconComponent; target: TurnInto
   {title: 'Quote', icon: FormatQuote, target: {type: 'blockquote'}},
   {title: 'Callout', icon: Notes, target: {type: 'callout'}}
 ]
+
+export const getTurnIntoRows = (
+  doc: Node,
+  pos: number,
+  current: TurnIntoTarget,
+  canCreateSubPage: boolean
+) => {
+  const isInCallout = isInsideCallout(doc, pos)
+  return turnIntoRows.filter(({target}) => {
+    if (target.type === 'callout') return !isInCallout
+    return target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
+  })
+}
+
+export const findTurnIntoRow = (rows: typeof turnIntoRows, current: TurnIntoTarget) =>
+  rows.find(({target}) => target.type === current.type && target.level === current.level)

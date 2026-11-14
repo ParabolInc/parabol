@@ -1,4 +1,5 @@
 import {type Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import type {ReactNode} from 'react'
 import {cn} from '../../ui/cn'
 import {ImportDatabaseDialog} from './ImportDatabaseDialog'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
@@ -9,16 +10,26 @@ interface Props extends EditorContentProps {
   bubbleMenuPlacement?: 'top' | 'bottom'
   showListControls?: boolean
   useLinkEditor?: () => void
+  bubbleMenuStartContent?: ReactNode
 }
 export const TipTapEditor = (props: Props) => {
-  const {className, editor, bubbleMenuPlacement, showListControls, useLinkEditor, ref, ...rest} =
-    props
+  const {
+    className,
+    editor,
+    bubbleMenuPlacement,
+    showListControls,
+    useLinkEditor,
+    bubbleMenuStartContent,
+    ref,
+    ...rest
+  } = props
   return (
     <>
       <StandardBubbleMenu
         editor={editor}
         showListControls={showListControls}
         placement={bubbleMenuPlacement}
+        startContent={bubbleMenuStartContent}
       />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <ImportDatabaseDialog editor={editor} />

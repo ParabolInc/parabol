@@ -1,6 +1,6 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
-import type {Node, ResolvedPos} from '@tiptap/pm/model'
+import type {Node} from '@tiptap/pm/model'
 import {NodeSelection, Plugin, PluginKey, Selection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
@@ -23,6 +23,7 @@ import {
 } from '../blockSelection/blockSelectionState'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
+import {pageDragHandleNested} from './dragHandleRules'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -48,13 +49,6 @@ const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
-}
-
-function isInside($pos: ResolvedPos, depth: number, typeName: string) {
-  for (let d = depth - 1; d >= 0; d--) {
-    if ($pos.node(d).type.name === typeName) return true
-  }
-  return false
 }
 
 const setDragImage = (dataTransfer: DataTransfer, view: EditorView, positions: number[]) => {
@@ -492,33 +486,7 @@ export const PageDragHandle = Extension.create<Options>({
             contextElement: horizontalRef
           }
         },
-        nested: {
-          edgeDetection: 'none',
-          rules: [
-            {
-              id: 'detailsStructure',
-              evaluate: ({$pos, depth, node}) => {
-                // Exclude detailsSummary and detailsContent themselves
-                const name = node.type.name
-                if (name === 'detailsSummary' || name === 'detailsContent') return 1000
-                // Exclude children nested inside detailsSummary
-                if (isInside($pos, depth, 'detailsSummary')) return 1000
-                // Allow children of detailsContent (they should be independently draggable)
-                return 0
-              }
-            },
-            {
-              id: 'calloutStructure',
-              evaluate: ({node}) => (node.type.name === 'calloutTitle' ? 1000 : 0)
-            },
-            {
-              // A quote is one block. Without this the target flips between a line and the
-              // whole quote depending on how the pointer approaches the handle.
-              id: 'quoteStructure',
-              evaluate: ({$pos, depth}) => (isInside($pos, depth, 'blockquote') ? 1000 : 0)
-            }
-          ]
-        },
+        nested: pageDragHandleNested,
         render: () => {
           dragHandleElement.classList.add('drag-handle', 'hide')
           return dragHandleElement

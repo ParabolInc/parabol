@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
+import type {ReactNode} from 'react'
 import {FormatListBulleted, FormatListNumbered, Link} from '~/ui/icons'
 import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
 import {cn} from '../../ui/cn'
@@ -12,12 +13,20 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   buttonClassName?: string
   showListControls?: boolean
   placement?: 'top' | 'bottom'
+  startContent?: ReactNode
 }
 
 const shortcut = (key: string) => `${modKey === '⌘' ? '⌘' : 'Ctrl+'}${key}`
 
 export const StandardBubbleMenu = (props: Props) => {
-  const {editor, className, buttonClassName, showListControls = false, placement = 'top'} = props
+  const {
+    editor,
+    className,
+    buttonClassName,
+    showListControls = false,
+    placement = 'top',
+    startContent
+  } = props
   const openLinkEditor = () => {
     editor.emit('linkStateChange', {editor, linkState: 'edit'})
   }
@@ -27,8 +36,9 @@ export const StandardBubbleMenu = (props: Props) => {
   return (
     <BubbleMenu
       editor={editor}
-      shouldShow={({editor}) => {
-        return getShouldShow(editor)
+      shouldShow={({editor, element}) => {
+        const isFocusInside = !!startContent && element.contains(document.activeElement)
+        return isFocusInside || getShouldShow(editor)
       }}
       className={cn(className)}
       options={{
@@ -41,6 +51,7 @@ export const StandardBubbleMenu = (props: Props) => {
           'flex items-center rounded-sm border-[1px] border-hairline border-solid bg-surface-card p-[3px]'
         )}
       >
+        {startContent}
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={isBold}
