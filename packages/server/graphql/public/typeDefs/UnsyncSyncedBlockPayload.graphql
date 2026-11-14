@@ -1,0 +1,9 @@
+"""
+Return value for unsyncSyncedBlock
+"""
+type UnsyncSyncedBlockPayload {
+  """
+  The synced block's page, now in Trash
+  """
+  page: Page!
+}

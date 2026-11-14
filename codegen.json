@@ -392,6 +392,7 @@
           "UpdateMeetingSeriesSuccess": "./types/UpdateMeetingSeriesSuccess#UpdateMeetingSeriesSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",
+          "UnsyncSyncedBlockPayload": "./types/UnsyncSyncedBlockPayload#UnsyncSyncedBlockPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
           "UpdateUserThemeSuccess": "./types/UpdateUserThemeSuccess#UpdateUserThemeSuccessSource",

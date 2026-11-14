@@ -506,6 +506,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isAuthenticated,
       hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner')
     ),
+    unsyncSyncedBlock: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.unsyncSyncedBlock'>('args.pageId', 'owner')
+    ),
     updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
     updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
       'args.dimensionId',

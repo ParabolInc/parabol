@@ -1,4 +1,8 @@
+import {TiptapTransformer} from '@hocuspocus/transformer'
+import type {JSONContent} from '@tiptap/core'
+import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
+import {applyUpdate, Doc, encodeStateAsUpdate} from 'yjs'
 import getKysely from '../postgres/getKysely'
 import {updatePageAccessTable} from '../postgres/updatePageAccessTable'
 import {CipherId} from '../utils/CipherId'
@@ -11,6 +15,8 @@ jest.mock('../utils/publishPageNotification', () => ({
   publishPageNotification: jest.fn(async () => {})
 }))
 const publishPageNotification = jest.mocked(publishPageNotificationReal)
+
+jest.setTimeout(30000)
 
 const pg = getKysely()
 
@@ -597,4 +603,162 @@ test("marks a host shared by link while the block isn't", async () => {
     isPublicWithoutBlock: false
   })
   expect((await selectUnsyncOutcomes(pg, block, [])).size).toBe(0)
+})
+
+const UNSYNC = `
+  mutation UnsyncSyncedBlock($pageId: ID!) {
+    unsyncSyncedBlock(pageId: $pageId) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const unsync = (cookie: string, pageId: number) =>
+  sendPublic({query: UNSYNC, variables: {pageId: CipherId.toClient(pageId, 'page')}, cookie})
+
+const heading = (text: string) => ({
+  type: 'heading',
+  attrs: {level: 1},
+  content: [{type: 'text', text}]
+})
+const paragraph = (text: string) => ({type: 'paragraph', content: [{type: 'text', text}]})
+const syncedLink = (pageCode: number, canonical: boolean) => ({
+  type: 'pageLinkBlock',
+  attrs: {pageCode, title: 'Escalation', synced: true, canonical}
+})
+
+const seedDoc = (pageId: number, content: JSONContent[]) =>
+  pg
+    .updateTable('Page')
+    .set({
+      yDoc: Buffer.from(
+        encodeStateAsUpdate(
+          TiptapTransformer.toYdoc({type: 'doc', content}, 'default', serverTipTapExtensions)
+        )
+      )
+    })
+    .where('id', '=', pageId)
+    .execute()
+
+const readDoc = async (pageId: number) => {
+  const {yDoc} = await pg
+    .selectFrom('Page')
+    .select('yDoc')
+    .where('id', '=', pageId)
+    .executeTakeFirstOrThrow()
+  const doc = new Doc()
+  if (yDoc) applyUpdate(doc, yDoc)
+  return TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
+}
+
+const pollUntil = async <T>(
+  read: () => Promise<T>,
+  predicate: (value: T) => boolean,
+  timeoutMs = 20000
+) => {
+  const deadline = Date.now() + timeoutMs
+  while (true) {
+    const value = await read()
+    if (predicate(value)) return value
+    if (Date.now() > deadline) throw new Error(`Never settled: ${JSON.stringify(value)}`)
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
+}
+
+const waitForDoc = (pageId: number, predicate: (json: JSONContent) => boolean, timeoutMs = 20000) =>
+  pollUntil(() => readDoc(pageId), predicate, timeoutMs)
+
+const seedUnsync = async (ownerId: string) => {
+  const reader = await signUp()
+  const [originalHost, openCopy, guardedCopy, linkedCopy] = await Promise.all([
+    makePage(ownerId),
+    makePage(ownerId),
+    makePage(ownerId),
+    makePage(ownerId)
+  ])
+  const block = await makePage(ownerId, originalHost, true)
+  const pageCode = CipherId.encrypt(block)
+  await Promise.all([
+    seedDoc(block, [heading('Escalation'), paragraph('Sev 1')]),
+    seedDoc(originalHost, [heading('Original host'), syncedLink(pageCode, true)]),
+    seedDoc(openCopy, [heading('Open copy'), syncedLink(pageCode, false)]),
+    seedDoc(guardedCopy, [heading('Guarded copy'), syncedLink(pageCode, false)]),
+    seedDoc(linkedCopy, [heading('Linked copy'), syncedLink(pageCode, false)]),
+    shareWith(guardedCopy, reader.userId, 'viewer'),
+    shareByLink(linkedCopy, ownerId)
+  ])
+  const now = Date.now()
+  await pg
+    .insertInto('PageBacklink')
+    .values(
+      [originalHost, openCopy, guardedCopy, linkedCopy].map((fromPageId, idx) => ({
+        fromPageId,
+        toPageId: block,
+        createdAt: new Date(now - 4000 + idx * 1000)
+      }))
+    )
+    .execute()
+  return {block, originalHost, openCopy, guardedCopy, linkedCopy}
+}
+
+const hasText = (json: JSONContent) => JSON.stringify(json).includes('Sev 1')
+const hasLink = (json: JSONContent) => JSON.stringify(json).includes('pageLinkBlock')
+
+test('gives readable hosts the text and removes the block where a reader cannot open it', async () => {
+  const {userId, cookie} = await signUp()
+  const {block, originalHost, openCopy, guardedCopy} = await seedUnsync(userId)
+  const res = await unsync(cookie, block)
+  expect(res.errors).toBeUndefined()
+  expect(res.data.unsyncSyncedBlock.page.id).toBe(CipherId.toClient(block, 'page'))
+  await waitForDoc(originalHost, (json) => hasText(json) && !hasLink(json))
+  await waitForDoc(openCopy, (json) => hasText(json) && !hasLink(json))
+  await waitForDoc(guardedCopy, (json) => !hasText(json) && !hasLink(json))
+  expect(JSON.stringify(await readDoc(openCopy))).not.toContain('Escalation')
+  expect((await pageRow(block))?.deletedAt).not.toBeNull()
+})
+
+test("removes the block where the page is shared by link and the block isn't", async () => {
+  const {userId, cookie} = await signUp()
+  const {block, linkedCopy} = await seedUnsync(userId)
+  const res = await unsync(cookie, block)
+  expect(res.errors).toBeUndefined()
+  await waitForDoc(linkedCopy, (json) => !hasText(json) && !hasLink(json))
+})
+
+test('leaves no synced link to the block on any host and promotes nothing', async () => {
+  const {userId, cookie} = await signUp()
+  const {block, originalHost, openCopy, guardedCopy, linkedCopy} = await seedUnsync(userId)
+  const res = await unsync(cookie, block)
+  expect(res.errors).toBeUndefined()
+  for (const host of [originalHost, openCopy, guardedCopy, linkedCopy]) {
+    await waitForDoc(host, (json) => !hasLink(json))
+  }
+  await pollUntil(
+    () =>
+      pg.selectFrom('PageBacklink').select('fromPageId').where('toPageId', '=', block).execute(),
+    (rows) => rows.length === 0
+  )
+  expect(await pageRow(block)).toMatchObject({
+    parentPageId: originalHost,
+    deletedAt: expect.any(Date)
+  })
+})
+
+test("refuses an editor who doesn't own the block", async () => {
+  const [{userId}, editor] = await Promise.all([signUp(), signUp()])
+  const {block} = await seedUnsync(userId)
+  await shareWith(block, editor.userId, 'editor')
+  const res = await unsync(editor.cookie, block)
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(await pageRow(block)).toMatchObject({deletedAt: null})
+})
+
+test('refuses a page that is not a synced block', async () => {
+  const {userId, cookie} = await signUp()
+  const page = await makePage(userId)
+  const res = await unsync(cookie, page)
+  expect(res.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
+  expect(await pageRow(page)).toMatchObject({deletedAt: null})
 })
