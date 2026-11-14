@@ -11,10 +11,11 @@ import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
-import {useEditor} from '@tiptap/react'
+import {type Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
+import {useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {
@@ -23,6 +24,7 @@ import type {
 } from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {useArchivePageMutation} from '../mutations/useArchivePageMutation'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
@@ -47,6 +49,8 @@ import {
   SyncedBlockEdges,
   type SyncedBlockEdgesOptions
 } from '../tiptap/extensions/pageLinkBlock/SyncedBlockEdges'
+import {showSyncedBlockRemovalSnack} from '../tiptap/extensions/pageLinkBlock/showSyncedBlockRemovalSnack'
+import type {SyncedBlockRemoval} from '../tiptap/extensions/pageLinkBlock/syncedBlockRemovalPlugin'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
 import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
@@ -61,6 +65,7 @@ import {pagePlaceholderText, syncedBlockPlaceholderText} from '../tiptap/pagePla
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
+import useEventCallback from './useEventCallback'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 import {lookupPageViewerAccess} from './usePageViewerAccess'
 
@@ -96,6 +101,19 @@ export const useTipTapPageEditor = (
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
   const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
+  const [executeArchive] = useArchivePageMutation()
+  const onSyncedBlockRemoved = useEventCallback(
+    (removal: SyncedBlockRemoval, removedFrom: Editor) => {
+      showSyncedBlockRemovalSnack({
+        atmosphere,
+        editor: removedFrom,
+        navigate,
+        executeArchive,
+        removal
+      })
+    }
+  )
   const placeholderRef = useRef<string | undefined>(undefined)
   const editor = useEditor(
     {
@@ -253,7 +271,8 @@ export const useTipTapPageEditor = (
           preferredName,
           highestTier: nested ? nested.highestTier : user?.highestTier,
           pageId,
-          pastedLinksAreCopies: !!nested
+          pastedLinksAreCopies: !!nested,
+          onSyncedBlockRemoved
         }),
         TableOfContents,
         TaskBlock,

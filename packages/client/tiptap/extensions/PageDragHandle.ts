@@ -24,6 +24,7 @@ import {
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
 import {listItemDropPointPlugin} from './listItemDropPoint'
+import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -133,7 +134,16 @@ export const PageDragHandle = Extension.create<Options>({
   addKeyboardShortcuts() {
     return {
       'Mod-d': ({editor}) => {
-        const {$from} = editor.state.selection
+        const {selection} = editor.state
+        if (
+          isNodeSelection(selection) &&
+          selection.node.type.name === 'pageLinkBlock' &&
+          selection.node.attrs.synced
+        ) {
+          duplicateSyncedBlockAsPlain(editor, selection.from, Number(selection.node.attrs.pageCode))
+          return true
+        }
+        const {$from} = selection
         if ($from.depth < 1) return false
         // Find the innermost listItem/taskItem ancestor so we duplicate just the item
         let targetDepth = 1

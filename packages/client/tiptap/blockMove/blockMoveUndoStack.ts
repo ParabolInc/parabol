@@ -17,6 +17,7 @@ export type StackItem = Y.UndoManager['undoStack'][number]
 type Direction = 'undo' | 'redo'
 
 const BLOCK_MOVE_META_KEY = 'blockMove'
+export const BLOCK_MOVE_DELETE_META = 'blockMoveDelete'
 
 export const getUndoManager = (state: EditorState): Y.UndoManager | undefined =>
   yUndoPluginKey.getState(state)?.undoManager
@@ -33,6 +34,7 @@ export const dispatchBlockMoveDelete = (
   tr: Transaction,
   meta: BlockMoveMeta | null
 ) => {
+  tr.setMeta(BLOCK_MOVE_DELETE_META, true)
   const undoManager = getUndoManager(editor.state)
   if (!meta || !undoManager) {
     editor.view.dispatch(meta ? tr : tr.setMeta('addToHistory', false))

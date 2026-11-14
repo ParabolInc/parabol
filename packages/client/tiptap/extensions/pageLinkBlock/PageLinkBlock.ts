@@ -1,3 +1,4 @@
+import type {Editor} from '@tiptap/core'
 import {GapCursor} from '@tiptap/pm/gapcursor'
 import {Fragment, type Node, Slice} from '@tiptap/pm/model'
 import {NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
@@ -18,6 +19,7 @@ import {
   disableDropCursorInSyncedBlock
 } from './syncedBlockDropCursor'
 import {getNestedEditor, syncedBlockEntryPlugin} from './syncedBlockFocus'
+import {type SyncedBlockRemoval, syncedBlockRemovalPlugin} from './syncedBlockRemovalPlugin'
 
 declare module '@tiptap/core' {
   // interface Commands<ReturnType> {
@@ -43,6 +45,7 @@ interface PageLinkBlockOptions {
   highestTier?: TierEnum
   pageId?: string
   pastedLinksAreCopies?: boolean
+  onSyncedBlockRemoved?: (removal: SyncedBlockRemoval, editor: Editor) => void
 }
 
 const isSyncedLink = (node: Node) => node.type.name === 'pageLinkBlock' && !!node.attrs.synced
@@ -122,11 +125,14 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
     }
   },
   addProseMirrorPlugins() {
-    const {pastedLinksAreCopies} = this.options
+    const {pastedLinksAreCopies, onSyncedBlockRemoved} = this.options
     return [
       keepUnownedPageLinksPlugin(this.options.getViewerAccess),
       syncedBlockEntryPlugin(),
       clearDropCursorOverSyncedBlocks(),
+      ...(onSyncedBlockRemoved
+        ? [syncedBlockRemovalPlugin(this.editor, onSyncedBlockRemoved)]
+        : []),
       new Plugin({
         props: {
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!

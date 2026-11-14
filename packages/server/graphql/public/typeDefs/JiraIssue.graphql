@@ -90,6 +90,11 @@ type JiraIssue implements TaskIntegration {
   descriptionHTML: String!
 
   """
+  The issue's current workflow status. Null when the issue was fetched without it
+  """
+  status: JiraIssueStatus
+
+  """
   The last time this issue was updated
   """
   lastUpdated: DateTime!

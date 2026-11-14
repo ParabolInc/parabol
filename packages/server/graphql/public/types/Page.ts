@@ -2,7 +2,9 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {selectPromotionHost} from '../../../utils/tiptap/promoteSyncedBlock'
 import isValid from '../../isValid'
+import {canViewerOpenPage} from '../rules/canViewerOpenPage'
 import type {ReqResolvers} from './ReqResolvers'
 
 const Page: ReqResolvers<'Page'> = {
@@ -45,6 +47,42 @@ const Page: ReqResolvers<'Page'> = {
     const linkedPageIds = backlinks.map(({toPageId}) => toPageId)
     const pages = await dataLoader.get('pages').loadMany(linkedPageIds)
     return pages.flatMap((page) => (isValid(page) && !page.deletedAt ? [page] : []))
+  },
+  syncedBlockPlacements: async ({id, isSyncedBlock, parentPageId}, _args, context) => {
+    if (!isSyncedBlock) return null
+    const {dataLoader} = context
+    const pg = getKysely()
+    const loadIfOpenable = async (pageId: number | null) => {
+      if (pageId === null || !(await canViewerOpenPage(context, pageId))) return null
+      return (await dataLoader.get('pages').load(pageId)) ?? null
+    }
+    const [backlinks, successorId] = await Promise.all([
+      pg
+        .selectFrom('PageBacklink as b')
+        .innerJoin('Page as h', 'h.id', 'b.fromPageId')
+        .select('b.fromPageId')
+        .where('b.toPageId', '=', id)
+        .where('b.fromPageId', '<>', id)
+        .where((eb) =>
+          parentPageId === null
+            ? eb('h.deletedAt', 'is', null)
+            : eb.or([eb('h.deletedAt', 'is', null), eb('h.id', '=', parentPageId)])
+        )
+        .orderBy('b.createdAt')
+        .orderBy('b.fromPageId')
+        .execute(),
+      parentPageId === null ? null : selectPromotionHost(pg, id, [parentPageId])
+    ])
+    const [hosts, successor] = await Promise.all([
+      Promise.all(backlinks.map(({fromPageId}) => loadIfOpenable(fromPageId))),
+      loadIfOpenable(successorId)
+    ])
+    const pages = hosts.filter(isValid)
+    return {
+      pages: pages.map((page) => ({page, isOriginal: page.id === parentPageId})),
+      hiddenCount: hosts.length - pages.length,
+      successor
+    }
   },
   deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
     if (!deletedBy) return null

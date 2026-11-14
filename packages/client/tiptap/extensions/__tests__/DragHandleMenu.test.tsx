@@ -1,13 +1,33 @@
 import './installHappyDom'
 import {Editor, type JSONContent} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
+import {NodeSelection} from '@tiptap/pm/state'
+import StarterKit from '@tiptap/starter-kit'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {serverTipTapExtensions} from '../../../shared/tiptap/serverTipTapExtensions'
 import {createBlockSelection, getSelectedBlockRange} from '../../blockSelection/blockSelectionState'
 import {countBlocks} from '../../blockSelection/blockUnits'
 import DragHandleMenu from '../DragHandleMenu'
+import {
+  findLinkPositions,
+  mountNested,
+  syncedLink
+} from '../pageLinkBlock/__tests__/syncedBlockTestHarness'
+import {SYNCED_BLOCK_RENAME_EVENT} from '../pageLinkBlock/startSyncedBlockRename'
 import {happyWindow} from './installHappyDom'
+
+jest.mock('../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+jest.mock('../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
+jest.mock('../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useNavigate: () => jest.fn()
+}))
 
 const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
 const h = (level: number, text: string): JSONContent => ({
@@ -162,5 +182,164 @@ describe('the menu on a block selection', () => {
     await openMenuOnSelection([p('one'), p('two')], 1, 2)
     await pressKey(itemNamed('Duplicate blocks'), 'd', {metaKey: true})
     expect(texts()).toEqual(['one', 'two', 'one', 'two'])
+  })
+})
+
+describe('the menu on a synced block', () => {
+  const openSyncedMenu = async ({isViewOnly = false, isMounted = true} = {}) => {
+    const host = new Editor({
+      element: document.body.appendChild(document.createElement('div')),
+      extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
+      content: {type: 'doc', content: [p('Above'), syncedLink, p('Below')]}
+    })
+    editor = host
+    const pos = findLinkPositions(host)[0]!
+    const nested = isMounted ? mountNested(host, pos, ['Sev 1: page the on-call lead.']) : null
+    if (isViewOnly) nested?.setEditable(false)
+    const anchor = document.body.appendChild(document.createElement('div'))
+    const container = document.body.appendChild(document.createElement('div'))
+    const onClose = jest.fn(() => root?.render(null))
+    await act(async () => {
+      root = createRoot(container)
+      root.render(
+        <DragHandleMenu
+          editor={host}
+          node={host.state.doc.nodeAt(pos)!}
+          pos={pos}
+          onClose={onClose}
+          anchorElement={anchor}
+          canCreateSubPage
+          selection={null}
+        />
+      )
+      await tick()
+    })
+    return {host, nested, pos, onClose}
+  }
+  const hostBlocks = (host: Editor) => {
+    const all: string[] = []
+    host.state.doc.forEach((node) => {
+      all.push(node.type.name === 'paragraph' ? node.textContent : node.type.name)
+    })
+    return all
+  }
+
+  test('a synced block gets the synced menu without Turn into', async () => {
+    await openSyncedMenu()
+    expect(items()).toHaveLength(4)
+    expect(itemNamed('Copy and sync')).toBeTruthy()
+    expect(itemNamed('Rename')).toBeTruthy()
+    expect(itemNamed('Duplicate as plain blocks')).toBeTruthy()
+    expect(itemNamed('Delete from this page')).toBeTruthy()
+    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
+  })
+
+  test('Mod+D in the synced menu duplicates as plain blocks', async () => {
+    const {host, onClose} = await openSyncedMenu()
+    await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
+    await act(tick)
+    expect(hostBlocks(host)).toEqual([
+      'Above',
+      'pageLinkBlock',
+      'Sev 1: page the on-call lead.',
+      'Below'
+    ])
+    expect(findLinkPositions(host)).toHaveLength(1)
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  test('Delete in the synced menu removes the block from this page', async () => {
+    const {host} = await openSyncedMenu()
+    await pressKey(itemNamed('Copy and sync'), 'Delete')
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['Above', 'Below'])
+  })
+
+  test('a view-only block offers only Copy and sync and ignores the shortcuts', async () => {
+    const {host} = await openSyncedMenu({isViewOnly: true})
+    expect(items().map((item) => item.textContent)).toEqual(['Copy and sync'])
+    await pressKey(itemNamed('Copy and sync'), 'Delete')
+    await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
+    expect(hostBlocks(host)).toEqual(['Above', 'pageLinkBlock', 'Below'])
+  })
+
+  test('a block that is not mounted still offers Delete from this page', async () => {
+    const {host} = await openSyncedMenu({isMounted: false})
+    expect(items().map((item) => item.textContent?.replace(/Del$/, ''))).toEqual([
+      'Copy and sync',
+      'Delete from this page'
+    ])
+    await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
+    expect(hostBlocks(host)).toEqual(['Above', 'pageLinkBlock', 'Below'])
+    await click(itemNamed('Delete from this page'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['Above', 'Below'])
+  })
+
+  test('Delete in the menu of a block that is not mounted removes it', async () => {
+    const {host} = await openSyncedMenu({isMounted: false})
+    await pressKey(itemNamed('Copy and sync'), 'Backspace')
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['Above', 'Below'])
+  })
+
+  const insertAt = (host: Editor, pos: number, content: JSONContent) =>
+    act(() => {
+      host.view.dispatch(host.state.tr.insert(pos, host.schema.nodeFromJSON(content)))
+    })
+
+  test('Delete finds the block after someone edits above it while the menu is open', async () => {
+    const {host} = await openSyncedMenu()
+    insertAt(host, 0, p('New'))
+    await click(itemNamed('Delete from this page'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['New', 'Above', 'Below'])
+  })
+
+  test('Duplicate copies the block the menu opened on, not one that took its place', async () => {
+    const {host, pos} = await openSyncedMenu()
+    insertAt(host, pos, {...syncedLink, attrs: {...syncedLink.attrs, pageCode: 9}})
+    await click(itemNamed('Duplicate as plain blocks'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual([
+      'Above',
+      'pageLinkBlock',
+      'pageLinkBlock',
+      'Sev 1: page the on-call lead.',
+      'Below'
+    ])
+  })
+
+  test('Rename selects the block after someone edits above it', async () => {
+    const {host} = await openSyncedMenu()
+    insertAt(host, 0, p('New'))
+    const movedPos = findLinkPositions(host)[0]!
+    await click(itemNamed('Rename'))
+    await act(tick)
+    const {selection} = host.state
+    expect(selection instanceof NodeSelection && selection.from === movedPos).toBe(true)
+  })
+
+  test('Rename does nothing once the block is gone', async () => {
+    const {host, pos} = await openSyncedMenu()
+    act(() => {
+      host.view.dispatch(host.state.tr.delete(pos, pos + host.state.doc.nodeAt(pos)!.nodeSize))
+    })
+    await click(itemNamed('Rename'))
+    await act(tick)
+    expect(host.state.selection instanceof NodeSelection).toBe(false)
+  })
+
+  test('Rename starts only once the menu has closed', async () => {
+    const {host, pos} = await openSyncedMenu()
+    const menuOpenAtRename: boolean[] = []
+    host.view.nodeDOM(pos)!.addEventListener(SYNCED_BLOCK_RENAME_EVENT, () => {
+      menuOpenAtRename.push(!!document.querySelector('[role="menu"]'))
+    })
+    await click(itemNamed('Rename'))
+    await act(tick)
+    expect(menuOpenAtRename).toEqual([false])
+    const {selection} = host.state
+    expect(selection instanceof NodeSelection && selection.from === pos).toBe(true)
   })
 })

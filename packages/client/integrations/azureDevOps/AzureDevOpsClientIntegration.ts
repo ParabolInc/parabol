@@ -22,6 +22,7 @@ import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import AzureDevOpsClientManager from './AzureDevOpsClientManager'
 import azureDevOpsSearchMeta from './azureDevOpsSearchMeta'
+import azureDevOpsTaskLink from './azureDevOpsTaskLink'
 import {azureDevOpsIntegrationMeta} from './shared/azureDevOpsIntegrationMeta'
 
 const scoping: ScopingCapability = {
@@ -83,6 +84,7 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: azureDevOpsLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
+    taskLink: azureDevOpsTaskLink,
     settings: {
       Panel: lazy(
         () =>

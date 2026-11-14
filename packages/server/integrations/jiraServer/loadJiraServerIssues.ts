@@ -1,5 +1,6 @@
 import type {AnyTaskIntegration} from 'parabol-client/shared/types/TaskIntegration'
 import logError from '../../utils/logError'
+import type {JiraRawStatus} from '../jira/AtlassianServerManager'
 import type {RepoFetchCtx} from '../platform/ServerIntegrationDefinition'
 import JiraServerRestManager from './JiraServerRestManager'
 
@@ -14,6 +15,7 @@ export interface JiraServerIssue {
   projectId: string
   projectKey: string
   issueType: string
+  status: JiraRawStatus | null
   service: 'jiraServer'
 }
 
@@ -38,7 +40,7 @@ const loadJiraServerIssues = async (
         logError(issue, {userId, tags: {issueId, teamId}})
         return null
       }
-      const {project, issuetype, summary, description} = issue.fields
+      const {project, issuetype, summary, description, status} = issue.fields
       return {
         ...issue,
         providerId: provider.id,
@@ -49,6 +51,7 @@ const loadJiraServerIssues = async (
         issueType: issuetype.id,
         summary,
         description,
+        status: status ?? null,
         service: 'jiraServer'
       }
     })

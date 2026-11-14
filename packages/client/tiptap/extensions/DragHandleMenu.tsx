@@ -12,6 +12,9 @@ import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
+import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
+import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
+import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
@@ -31,6 +34,11 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
   const isDocumentHeading = pos === 0
+  const isSyncedLink = !selection && node.type.name === 'pageLinkBlock' && !!node.attrs.synced
+  const nested = isSyncedLink ? getNestedEditor(editor.view, pos) : null
+  const isSyncedMounted = !!nested
+  const isSyncedViewOnly = !editor.isEditable || (!!nested && !nested.isEditable)
+  const pageCode = Number(node.attrs.pageCode)
   const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
   const blocks = plural(selection?.count ?? 1, 'block')
@@ -111,44 +119,64 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         />
       }
     >
-      <MenuContent
-        align='start'
-        sideOffset={4}
-        collisionPadding={8}
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        onKeyDown={handleContentKeyDown}
-        className='z-50'
-      >
-        {selection && (
-          <div className={menuSectionTitleClass}>
-            {selection.count} {blocks}
-          </div>
-        )}
-        {turnIntoCurrent && (
-          <TurnIntoMenu
-            editor={editor}
-            node={node}
-            pos={pos}
-            current={turnIntoCurrent}
-            canCreateSubPage={canCreateSubPage}
-          />
-        )}
-        {!selection && node.type.name === 'callout' && (
-          <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
-        )}
-        <MenuItem onSelect={handleDuplicate}>
-          <ContentCopy className={MENU_ITEM_ICON} />
-          <span className='flex-1 text-left'>Duplicate {blocks}</span>
-          <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
-        </MenuItem>
-        {showDelete && (
-          <MenuItem onSelect={handleDelete}>
-            <DeleteOutlined className={MENU_ITEM_ICON} />
-            <span className='flex-1 text-left'>Delete {blocks}</span>
-            <span className='ml-4 text-fg-muted text-xs'>Del</span>
+      {isSyncedLink ? (
+        <SyncedBlockMenuContent
+          hostEditor={editor}
+          getPos={() => findSyncedLinkNear(editor.state.doc, pos, pageCode)}
+          pageCode={pageCode}
+          isOriginal={isCanonicalPageLink}
+          isViewOnly={isSyncedViewOnly}
+          isMounted={isSyncedMounted}
+          currentPageId={editor.storage.pageLinkBlock.pageId}
+          onClose={() => queueMicrotask(onClose)}
+          contentProps={{
+            align: 'start',
+            sideOffset: 4,
+            collisionPadding: 8,
+            className: 'z-50',
+            onCloseAutoFocus: (e) => e.preventDefault()
+          }}
+        />
+      ) : (
+        <MenuContent
+          align='start'
+          sideOffset={4}
+          collisionPadding={8}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          onKeyDown={handleContentKeyDown}
+          className='z-50'
+        >
+          {selection && (
+            <div className={menuSectionTitleClass}>
+              {selection.count} {blocks}
+            </div>
+          )}
+          {turnIntoCurrent && (
+            <TurnIntoMenu
+              editor={editor}
+              node={node}
+              pos={pos}
+              current={turnIntoCurrent}
+              canCreateSubPage={canCreateSubPage}
+            />
+          )}
+          {!selection && node.type.name === 'callout' && (
+            <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
+          )}
+          <MenuItem onSelect={handleDuplicate}>
+            <ContentCopy className={MENU_ITEM_ICON} />
+            <span className='flex-1 text-left'>Duplicate {blocks}</span>
+            <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
           </MenuItem>
-        )}
-      </MenuContent>
+          {showDelete && (
+            <MenuItem onSelect={handleDelete}>
+              <DeleteOutlined className={MENU_ITEM_ICON} />
+              <span className='flex-1 text-left'>Delete {blocks}</span>
+              <span className='ml-4 text-fg-muted text-xs'>Del</span>
+            </MenuItem>
+          )}
+        </MenuContent>
+      )}
     </Menu>
   )
 }

@@ -25,6 +25,7 @@ import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import JiraServerClientManager from './JiraServerClientManager'
+import jiraServerTaskLink from './jiraServerTaskLink'
 import {jiraServerIntegrationMeta} from './shared/jiraServerIntegrationMeta'
 
 const JiraServerScopingCurrentFiltersRoot = lazy(
@@ -85,7 +86,11 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly description = jiraServerIntegrationMeta.description
   readonly Icon = JiraServerSVG
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    taskLink: jiraServerTaskLink,
+    workDrawer
+  }
   readonly contactUs = {url: ExternalLinks.INTEGRATIONS_JIRASERVER}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider) return false

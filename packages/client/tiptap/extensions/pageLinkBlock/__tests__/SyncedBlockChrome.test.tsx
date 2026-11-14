@@ -1,6 +1,7 @@
 import '../../__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {Editor} from '@tiptap/core'
+import type {NodeViewProps} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
@@ -9,15 +10,60 @@ import {syncedBlockPlaceholderText} from '../../../pagePlaceholderText'
 import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
+import {SyncedBlockView} from '../SyncedBlockView'
+import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
 let mockNestedEditor: Editor | null = null
+let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
+const hostRef: {current: Editor | null} = {current: null}
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
 }))
 jest.mock('../../../../components/TipTapEditor/TipTapEditor', () => ({
   TipTapEditor: () => null
+}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useNavigate: () => jest.fn()
+}))
+jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
+jest.mock('../SyncedBlockContent', () => ({
+  SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
+    const {useEffect} = jest.requireActual<typeof import('react')>('react')
+    useEffect(() => {
+      if (mockChromeState === 'none') return
+      onChromeChange({editor: mockNestedEditor, isViewOnly: mockChromeState === 'viewOnly'})
+    }, [onChromeChange])
+    return null
+  }
+}))
+jest.mock('../SyncedBlockPlacesRoot', () => ({
+  SyncedBlockPlacesRoot: ({onOpenChange}: {onOpenChange: (open: boolean) => void}) => {
+    const {Menu} = jest.requireActual<typeof import('../../../../ui/Menu/Menu')>(
+      '../../../../ui/Menu/Menu'
+    )
+    const {MenuContent} = jest.requireActual<typeof import('../../../../ui/Menu/MenuContent')>(
+      '../../../../ui/Menu/MenuContent'
+    )
+    const {MenuItem} = jest.requireActual<typeof import('../../../../ui/Menu/MenuItem')>(
+      '../../../../ui/Menu/MenuItem'
+    )
+    return (
+      <Menu onOpenChange={onOpenChange} trigger={<button type='button'>Also on 1 page</button>}>
+        <MenuContent>
+          <MenuItem>Runbook</MenuItem>
+        </MenuContent>
+      </Menu>
+    )
+  }
 }))
 
 type Listener = (payload: {scope: string}) => void
@@ -52,6 +98,7 @@ afterEach(() => {
   act(() => root.unmount())
   container.remove()
   mockNestedEditor = null
+  mockChromeState = 'editable'
 })
 
 const text = () => container.textContent ?? ''
@@ -100,7 +147,14 @@ test('the bar shows Original only on the original', () => {
   const onCopy = jest.fn()
   act(() =>
     root.render(
-      <SyncedBlockBar name='Escalation path' isOriginal isViewOnly={false} onCopy={onCopy} />
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly={false}
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
     )
   )
   expect(text()).toContain('Escalation path')
@@ -111,7 +165,16 @@ test('the bar shows Original only on the original', () => {
   })
   expect(onCopy).toHaveBeenCalledTimes(1)
   act(() =>
-    root.render(<SyncedBlockBar name='' isOriginal={false} isViewOnly={false} onCopy={onCopy} />)
+    root.render(
+      <SyncedBlockBar
+        name=''
+        isOriginal={false}
+        isViewOnly={false}
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
+    )
   )
   expect(text()).toContain('Synced block')
   expect(text()).not.toContain('Original')
@@ -120,7 +183,16 @@ test('the bar shows Original only on the original', () => {
 test('a read-only block shows a View only bar that keeps Copy and sync', () => {
   const onCopy = jest.fn()
   act(() =>
-    root.render(<SyncedBlockBar name='Escalation path' isOriginal isViewOnly onCopy={onCopy} />)
+    root.render(
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
+    )
   )
   expect(text()).toContain('View only')
   expect(text()).not.toContain('Original')
@@ -215,4 +287,327 @@ test('a viewer sees no placeholder in an empty block', () => {
       pos: firstParagraphPos + doc.child(1).nodeSize
     })
   ).toBe('')
+})
+
+const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+
+const mountView = () => {
+  const host = new Editor({
+    element: document.createElement('div'),
+    extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
+    content: {type: 'doc', content: [{type: 'paragraph'}, syncedLink]}
+  })
+  const linkPos = findLinkPositions(host)[0]!
+  hostRef.current = host
+  mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
+  const props = {
+    node: host.state.doc.nodeAt(linkPos)!,
+    editor: host,
+    getPos: () => findLinkPositions(host)[0]
+  } as unknown as NodeViewProps
+  act(() => root.render(<SyncedBlockView {...props} />))
+  return host
+}
+
+test('keeps the bar while the places menu is open', async () => {
+  mountView()
+  const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
+  act(() => wrapper.focus())
+  expect(copyButton()).toBeDefined()
+  const placesButton = Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Also on 1 page'
+  )!
+  act(() => {
+    placesButton.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  const menu = document.body.querySelector<HTMLElement>('[role="menu"]')!
+  expect(menu.textContent).toContain('Runbook')
+  act(() => menu.focus())
+  await flushTimers()
+  expect(copyButton()).toBeDefined()
+  expect(document.body.querySelector('[role="menu"]')).not.toBeNull()
+  act(() => {
+    menu.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))
+  })
+  await flushTimers()
+  expect(document.body.querySelector('[role="menu"]')).toBeNull()
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  await flushTimers()
+  expect(copyButton()).toBeUndefined()
+  expect(text()).toContain('Escalation path')
+  outside.remove()
+})
+
+const nameButton = () =>
+  Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Escalation path'
+  )
+const nameInput = () => container.querySelector<HTMLInputElement>('input[aria-label="Block name"]')
+const typeInto = (input: HTMLInputElement, value: string) => {
+  const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')!.set!
+  act(() => {
+    setter.call(input, value)
+    input.dispatchEvent(new Event('input', {bubbles: true}))
+  })
+}
+const pressKey = (input: HTMLInputElement, key: string) =>
+  act(() => {
+    input.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles: true, cancelable: true}))
+  })
+
+const mountFocusedView = () => {
+  const host = mountView()
+  const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
+  act(() => wrapper.focus())
+  return Object.assign(wrapper, {host})
+}
+
+test('clicking the name opens the rename input with the name selected', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  const input = nameInput()!
+  expect(input.value).toBe('Escalation path')
+  expect(input.placeholder).toBe('Name this block')
+  expect(document.activeElement).toBe(input)
+  expect(input.selectionStart).toBe(0)
+  expect(input.selectionEnd).toBe('Escalation path'.length)
+})
+
+test('Enter commits and Escape cancels', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  pressKey(nameInput()!, 'Enter')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+  expect(text()).toContain('Paging policy')
+
+  act(() =>
+    Array.from(container.querySelectorAll('button'))
+      .find((button) => button.textContent === 'Paging policy')!
+      .click()
+  )
+  typeInto(nameInput()!, 'Discarded')
+  pressKey(nameInput()!, 'Escape')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+})
+
+test('Enter does not commit a second time on blur', () => {
+  mountFocusedView()
+  const spy = jest.spyOn(mockNestedEditor!.view, 'dispatch')
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  const input = nameInput()!
+  act(() => {
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true})
+    )
+    input.dispatchEvent(new Event('focusout', {bubbles: true}))
+  })
+  expect(spy).toHaveBeenCalledTimes(1)
+})
+
+test('blur commits without taking focus or selection back from where the user went', () => {
+  mountFocusedView()
+  const focusSpy = jest.spyOn(hostRef.current!.view, 'focus')
+  const selectionBefore = hostRef.current!.state.selection
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'Paging policy')
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Paging policy')
+  expect(nameInput()).toBeNull()
+  expect(focusSpy).not.toHaveBeenCalled()
+  expect(hostRef.current!.state.selection.eq(selectionBefore)).toBe(true)
+  expect(document.activeElement).toBe(outside)
+  outside.remove()
+})
+
+test('the rename event is ignored on a view-only block', async () => {
+  mockChromeState = 'viewOnly'
+  const wrapper = mountFocusedView()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  expect(nameInput()).toBeNull()
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  await flushTimers()
+  expect(text()).not.toContain('View only')
+  outside.remove()
+})
+
+test('the rename event is ignored before the block loads', () => {
+  mockChromeState = 'none'
+  const wrapper = mountFocusedView()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  mockChromeState = 'editable'
+  expect(nameInput()).toBeNull()
+})
+
+test('committing returns focus to the host with the block node-selected', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  pressKey(nameInput()!, 'Escape')
+  const selection = hostRef.current!.state.selection
+  expect(selection.constructor.name).toBe('NodeSelection')
+})
+
+test('the view-only bar name is not clickable', () => {
+  const onStartRename = jest.fn()
+  act(() =>
+    root.render(
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly
+        places={null}
+        more={null}
+        onStartRename={onStartRename}
+        onCopy={jest.fn()}
+      />
+    )
+  )
+  expect(nameButton()).toBeUndefined()
+})
+
+test('the rename event opens the input', () => {
+  const wrapper = mountFocusedView()
+  expect(nameInput()).toBeNull()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
+  })
+  expect(nameInput()).not.toBeNull()
+})
+
+test('rename from the more menu leaves the input open and focused', async () => {
+  container.classList.add('react-renderer')
+  mountFocusedView()
+  jest.spyOn(hostRef.current!.view, 'nodeDOM').mockReturnValue(container)
+  const menuOpenAtRename: boolean[] = []
+  container.addEventListener(SYNCED_BLOCK_RENAME_EVENT, () => {
+    menuOpenAtRename.push(!!document.body.querySelector('[role="menu"]'))
+  })
+  const more = container.querySelector<HTMLElement>(
+    'button[aria-label="More options for this synced block"]'
+  )!
+  act(() => more.focus())
+  act(() => {
+    more.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  const menu = document.body.querySelector<HTMLElement>('[role="menu"]')!
+  await flushTimers()
+  expect(copyButton()).toBeDefined()
+  const rename = Array.from(menu.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((item) =>
+    item.textContent?.startsWith('Rename')
+  )!
+  act(() => rename.click())
+  await flushTimers()
+  await flushTimers()
+  expect(menuOpenAtRename).toEqual([false])
+  expect(nameInput()).not.toBeNull()
+  expect(document.activeElement).toBe(nameInput())
+})
+
+test('a view-only bar has no more button', () => {
+  mockChromeState = 'viewOnly'
+  mountFocusedView()
+  expect(text()).toContain('View only')
+  expect(
+    container.querySelector('button[aria-label="More options for this synced block"]')
+  ).toBeNull()
+})
+
+const openMoreMenu = async () => {
+  const more = container.querySelector<HTMLElement>(
+    'button[aria-label="More options for this synced block"]'
+  )!
+  act(() => more.focus())
+  act(() => {
+    more.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  await flushTimers()
+  return document.body.querySelector<HTMLElement>('[role="menu"]')!
+}
+const menuItem = (menu: HTMLElement, label: string) =>
+  Array.from(menu.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((item) =>
+    item.textContent?.startsWith(label)
+  )!
+const hostBlocks = (host: Editor) => {
+  const all: string[] = []
+  host.state.doc.forEach((node) => {
+    all.push(node.type.name === 'paragraph' ? node.textContent : node.type.name)
+  })
+  return all
+}
+
+test('the more menu deletes the block where it is now, after someone edits above it', async () => {
+  const {host} = mountFocusedView()
+  const menu = await openMoreMenu()
+  act(() => {
+    host.view.dispatch(
+      host.state.tr.insert(0, host.schema.nodes.paragraph!.create(null, host.schema.text('New')))
+    )
+  })
+  act(() => menuItem(menu, 'Delete from this page').click())
+  await flushTimers()
+  await flushTimers()
+  expect(findLinkPositions(host)).toEqual([])
+  expect(hostBlocks(host)[0]).toBe('New')
+})
+
+test('the more menu handles the shortcuts its rows show', async () => {
+  const {host} = mountFocusedView()
+  const menu = await openMoreMenu()
+  const duplicateKey = new KeyboardEvent('keydown', {
+    key: 'd',
+    metaKey: true,
+    bubbles: true,
+    cancelable: true
+  })
+  act(() => {
+    menuItem(menu, 'Copy and sync').dispatchEvent(duplicateKey)
+  })
+  await flushTimers()
+  await flushTimers()
+  expect(duplicateKey.defaultPrevented).toBe(true)
+  expect(document.body.querySelector('[role="menu"]')).toBeNull()
+  expect(hostBlocks(host).slice(0, 3)).toEqual([
+    '',
+    'pageLinkBlock',
+    'Sev 1: page the on-call lead.'
+  ])
+  act(() => container.querySelector<HTMLElement>('[data-synced-block]')!.focus())
+  const reopened = await openMoreMenu()
+  const deleteKey = new KeyboardEvent('keydown', {key: 'Delete', bubbles: true, cancelable: true})
+  act(() => {
+    menuItem(reopened, 'Copy and sync').dispatchEvent(deleteKey)
+  })
+  await flushTimers()
+  await flushTimers()
+  expect(deleteKey.defaultPrevented).toBe(true)
+  expect(findLinkPositions(host)).toEqual([])
+  expect(hostBlocks(host).slice(0, 2)).toEqual(['', 'Sev 1: page the on-call lead.'])
+})
+
+test('Enter and Escape while composing text leave the rename input open', () => {
+  mountFocusedView()
+  act(() => nameButton()!.click())
+  typeInto(nameInput()!, 'ペー')
+  for (const key of ['Enter', 'Escape']) {
+    act(() => {
+      nameInput()!.dispatchEvent(
+        new KeyboardEvent('keydown', {key, isComposing: true, bubbles: true, cancelable: true})
+      )
+    })
+  }
+  expect(nameInput()?.value).toBe('ペー')
+  expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Escalation path')
 })
