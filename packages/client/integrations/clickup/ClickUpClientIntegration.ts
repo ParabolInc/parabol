@@ -23,6 +23,7 @@ import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import ClickUpClientManager from './ClickUpClientManager'
 import ClickUpIcon from './ClickUpIcon'
 import clickUpSearchMeta from './clickUpSearchMeta'
+import clickUpTaskLink from './clickUpTaskLink'
 import {clickupIntegrationMeta} from './shared/clickupIntegrationMeta'
 
 const ClickUpScopingCurrentFiltersRoot = lazy(
@@ -88,7 +89,11 @@ export class ClickUpClientIntegration extends ClientIntegrationDefinition {
   readonly description = clickupIntegrationMeta.description
   readonly Icon = ClickUpIcon
   readonly logo: ProviderLogoAsset = {src: clickupLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    taskLink: clickUpTaskLink,
+    workDrawer
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return false
     ClickUpClientManager.openOAuth(
