@@ -1,8 +1,139 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index 30371677b4e32734cd44d826b683d6affb0a368b..d348e8050ee059b83fe1e0118dfa0b7de3bf889f 100644
+index 30371677b4e32734cd44d826b683d6affb0a368b..ad43299cd372dc55f2b33c574de849a5f2981800 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -6734,6 +6734,7 @@ var Editor = class extends EventEmitter {
+@@ -985,9 +985,95 @@ const liftEmptyBlock = () => ({ state, dispatch }) => {
+ 	return (0, _tiptap_pm_commands.liftEmptyBlock)(state, dispatch);
+ };
+ //#endregion
++//#region src/helpers/changeListItemsType.ts
++const changeListItemType = (item, itemType) => {
++	if (item.type === itemType) return item;
++	const attrs = Object.fromEntries(Object.entries(item.attrs).filter(([name]) => name in itemType.attrs));
++	return itemType.create(attrs, item.content, itemType.allowedMarks(item.marks));
++};
++function changeListItemsType(items, itemType) {
++	const changed = [];
++	for (let index = 0; index < items.childCount; index += 1) {
++		const item = items.child(index);
++		if (!itemType.validContent(item.content)) return null;
++		changed.push(changeListItemType(item, itemType));
++	}
++	return _tiptap_pm_model.Fragment.from(changed);
++}
++//#endregion
++//#region src/helpers/getListItemRange.ts
++function getListItemRange(selection, itemType) {
++	const { $from, $to } = selection;
++	return $from.blockRange($to, (node) => node.childCount > 0 && node.firstChild?.type === itemType);
++}
++//#endregion
++//#region src/helpers/shiftSelection.ts
++function shiftSelection(tr, selection, offset) {
++	if (selection instanceof _tiptap_pm_state.NodeSelection) {
++		tr.setSelection(_tiptap_pm_state.NodeSelection.create(tr.doc, selection.from + offset));
++		return;
++	}
++	const $anchor = tr.doc.resolve(selection.anchor + offset);
++	const $head = tr.doc.resolve(selection.head + offset);
++	tr.setSelection(_tiptap_pm_state.TextSelection.between($anchor, $head));
++}
++//#endregion
+ //#region src/commands/liftListItem.ts
+-const liftListItem = (typeOrName) => ({ state, dispatch }) => {
++const getParentListItem = (range, itemType, extensions) => {
++	if (range.depth < 2) return null;
++	const parentItem = range.$from.node(range.depth - 1);
++	const parentList = range.$from.node(range.depth - 2);
++	if (parentItem.type === itemType || !isList(parentList.type.name, extensions)) return null;
++	return parentItem;
++};
++const nestFollowingItems = (item, list, followers) => {
++	const trailingSublist = item.lastChild;
++	if (trailingSublist?.type === list.type) {
++		const merged = trailingSublist.copy(trailingSublist.content.append(followers));
++		return item.copy(item.content.replaceChild(item.childCount - 1, merged));
++	}
++	return item.copy(item.content.addToEnd(list.copy(followers)));
++};
++const getItemsWithFollowers = (range) => {
++	const list = range.parent;
++	const listStart = range.$from.start(range.depth);
++	const items = list.content.cut(range.start - listStart, range.end - listStart);
++	const followers = list.content.cut(range.end - listStart);
++	if (followers.childCount === 0) return items;
++	const lastItem = nestFollowingItems(list.child(range.endIndex - 1), list, followers);
++	return items.replaceChild(items.childCount - 1, lastItem);
++};
++const canLiftItems = (range, items) => {
++	const { $from } = range;
++	const parentItem = $from.node(range.depth - 1);
++	const parentList = $from.node(range.depth - 2);
++	const parentItemIndex = $from.index(range.depth - 2);
++	const listIndex = $from.index(range.depth - 1);
++	if (range.startIndex === 0 && !parentItem.canReplace(listIndex, listIndex + 1)) return false;
++	return parentList.canReplace(parentItemIndex + 1, parentItemIndex + 1, items);
++};
++const liftIntoParentList = (itemType, { editor, state, tr, dispatch }) => {
++	const range = getListItemRange(state.selection, itemType);
++	const parentItem = range && getParentListItem(range, itemType, editor.extensionManager.extensions);
++	if (!range || !parentItem) return false;
++	const items = changeListItemsType(getItemsWithFollowers(range), parentItem.type);
++	if (!items || !canLiftItems(range, items)) return false;
++	if (!dispatch) return true;
++	const { $from } = range;
++	const removesList = range.startIndex === 0;
++	const deleteFrom = removesList ? $from.before(range.depth) : range.start;
++	const deleteTo = removesList ? $from.after(range.depth) : $from.end(range.depth);
++	const stepsBefore = tr.steps.length;
++	tr.delete(deleteFrom, deleteTo);
++	const insertPos = tr.mapping.slice(stepsBefore).map($from.after(range.depth - 1));
++	tr.insert(insertPos, items);
++	shiftSelection(tr, state.selection, insertPos - range.start);
++	return true;
++};
++const liftListItem = (typeOrName) => (props) => {
++	const { state, dispatch } = props;
+ 	const type = getNodeType(typeOrName, state.schema);
++	if (liftIntoParentList(type, props)) return true;
+ 	return (0, _tiptap_pm_schema_list.liftListItem)(type)(state, dispatch);
+ };
+ //#endregion
+@@ -2825,8 +2911,32 @@ const setTextSelection = (position) => ({ tr, dispatch }) => {
+ };
+ //#endregion
+ //#region src/commands/sinkListItem.ts
+-const sinkListItem = (typeOrName) => ({ state, dispatch }) => {
++const getPreviousSublist = (range, extensions) => {
++	if (range.startIndex === 0) return null;
++	const list = range.parent;
++	const sublist = list.child(range.startIndex - 1).lastChild;
++	if (!sublist || sublist.type === list.type || !isList(sublist.type.name, extensions)) return null;
++	return sublist;
++};
++const sinkIntoPreviousSublist = (itemType, { editor, state, tr, dispatch }) => {
++	const range = getListItemRange(state.selection, itemType);
++	const sublist = range && getPreviousSublist(range, editor.extensionManager.extensions);
++	if (!range || !sublist) return false;
++	const listStart = range.$from.start(range.depth);
++	const rangeItems = range.parent.content.cut(range.start - listStart, range.end - listStart);
++	const sublistItemType = sublist.type.contentMatch.defaultType;
++	const items = sublistItemType && changeListItemsType(rangeItems, sublistItemType);
++	if (!items || !sublist.canReplace(sublist.childCount, sublist.childCount, items)) return false;
++	if (!dispatch) return true;
++	const insertPos = range.start - 2;
++	tr.delete(range.start, range.end).insert(insertPos, items);
++	shiftSelection(tr, state.selection, insertPos - range.start);
++	return true;
++};
++const sinkListItem = (typeOrName) => (props) => {
++	const { state, dispatch } = props;
+ 	const type = getNodeType(typeOrName, state.schema);
++	if (sinkIntoPreviousSublist(type, props)) return true;
+ 	return (0, _tiptap_pm_schema_list.sinkListItem)(type)(state, dispatch);
+ };
+ //#endregion
+@@ -6734,6 +6844,7 @@ var Editor = class extends EventEmitter {
  	* An object of all registered commands.
  	*/
  	get commands() {
@@ -10,7 +141,7 @@ index 30371677b4e32734cd44d826b683d6affb0a368b..d348e8050ee059b83fe1e0118dfa0b7d
  		return this.commandManager.commands;
  	}
  	/**
-@@ -7070,12 +7071,14 @@ var Editor = class extends EventEmitter {
+@@ -7070,12 +7181,14 @@ var Editor = class extends EventEmitter {
  	* Get the document as HTML.
  	*/
  	getHTML() {
@@ -26,10 +157,141 @@ index 30371677b4e32734cd44d826b683d6affb0a368b..d348e8050ee059b83fe1e0118dfa0b7d
  		return getText(this.state.doc, {
  			blockSeparator,
 diff --git a/dist/index.js b/dist/index.js
-index 158d419e30c111209ff390b864013124767636e0..1a3af3c1c31599bb4bf32295128fbd371b5e2498 100644
+index 158d419e30c111209ff390b864013124767636e0..019b5c5b1347c4166b868c55d7e834a470eae2d6 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -6722,6 +6722,7 @@ var Editor = class extends EventEmitter {
+@@ -973,9 +973,95 @@ const liftEmptyBlock$1 = () => ({ state, dispatch }) => {
+ 	return liftEmptyBlock(state, dispatch);
+ };
+ //#endregion
++//#region src/helpers/changeListItemsType.ts
++const changeListItemType = (item, itemType) => {
++	if (item.type === itemType) return item;
++	const attrs = Object.fromEntries(Object.entries(item.attrs).filter(([name]) => name in itemType.attrs));
++	return itemType.create(attrs, item.content, itemType.allowedMarks(item.marks));
++};
++function changeListItemsType(items, itemType) {
++	const changed = [];
++	for (let index = 0; index < items.childCount; index += 1) {
++		const item = items.child(index);
++		if (!itemType.validContent(item.content)) return null;
++		changed.push(changeListItemType(item, itemType));
++	}
++	return Fragment$1.from(changed);
++}
++//#endregion
++//#region src/helpers/getListItemRange.ts
++function getListItemRange(selection, itemType) {
++	const { $from, $to } = selection;
++	return $from.blockRange($to, (node) => node.childCount > 0 && node.firstChild?.type === itemType);
++}
++//#endregion
++//#region src/helpers/shiftSelection.ts
++function shiftSelection(tr, selection, offset) {
++	if (selection instanceof NodeSelection) {
++		tr.setSelection(NodeSelection.create(tr.doc, selection.from + offset));
++		return;
++	}
++	const $anchor = tr.doc.resolve(selection.anchor + offset);
++	const $head = tr.doc.resolve(selection.head + offset);
++	tr.setSelection(TextSelection.between($anchor, $head));
++}
++//#endregion
+ //#region src/commands/liftListItem.ts
+-const liftListItem$1 = (typeOrName) => ({ state, dispatch }) => {
++const getParentListItem = (range, itemType, extensions) => {
++	if (range.depth < 2) return null;
++	const parentItem = range.$from.node(range.depth - 1);
++	const parentList = range.$from.node(range.depth - 2);
++	if (parentItem.type === itemType || !isList(parentList.type.name, extensions)) return null;
++	return parentItem;
++};
++const nestFollowingItems = (item, list, followers) => {
++	const trailingSublist = item.lastChild;
++	if (trailingSublist?.type === list.type) {
++		const merged = trailingSublist.copy(trailingSublist.content.append(followers));
++		return item.copy(item.content.replaceChild(item.childCount - 1, merged));
++	}
++	return item.copy(item.content.addToEnd(list.copy(followers)));
++};
++const getItemsWithFollowers = (range) => {
++	const list = range.parent;
++	const listStart = range.$from.start(range.depth);
++	const items = list.content.cut(range.start - listStart, range.end - listStart);
++	const followers = list.content.cut(range.end - listStart);
++	if (followers.childCount === 0) return items;
++	const lastItem = nestFollowingItems(list.child(range.endIndex - 1), list, followers);
++	return items.replaceChild(items.childCount - 1, lastItem);
++};
++const canLiftItems = (range, items) => {
++	const { $from } = range;
++	const parentItem = $from.node(range.depth - 1);
++	const parentList = $from.node(range.depth - 2);
++	const parentItemIndex = $from.index(range.depth - 2);
++	const listIndex = $from.index(range.depth - 1);
++	if (range.startIndex === 0 && !parentItem.canReplace(listIndex, listIndex + 1)) return false;
++	return parentList.canReplace(parentItemIndex + 1, parentItemIndex + 1, items);
++};
++const liftIntoParentList = (itemType, { editor, state, tr, dispatch }) => {
++	const range = getListItemRange(state.selection, itemType);
++	const parentItem = range && getParentListItem(range, itemType, editor.extensionManager.extensions);
++	if (!range || !parentItem) return false;
++	const items = changeListItemsType(getItemsWithFollowers(range), parentItem.type);
++	if (!items || !canLiftItems(range, items)) return false;
++	if (!dispatch) return true;
++	const { $from } = range;
++	const removesList = range.startIndex === 0;
++	const deleteFrom = removesList ? $from.before(range.depth) : range.start;
++	const deleteTo = removesList ? $from.after(range.depth) : $from.end(range.depth);
++	const stepsBefore = tr.steps.length;
++	tr.delete(deleteFrom, deleteTo);
++	const insertPos = tr.mapping.slice(stepsBefore).map($from.after(range.depth - 1));
++	tr.insert(insertPos, items);
++	shiftSelection(tr, state.selection, insertPos - range.start);
++	return true;
++};
++const liftListItem$1 = (typeOrName) => (props) => {
++	const { state, dispatch } = props;
+ 	const type = getNodeType(typeOrName, state.schema);
++	if (liftIntoParentList(type, props)) return true;
+ 	return liftListItem(type)(state, dispatch);
+ };
+ //#endregion
+@@ -2813,8 +2899,32 @@ const setTextSelection = (position) => ({ tr, dispatch }) => {
+ };
+ //#endregion
+ //#region src/commands/sinkListItem.ts
+-const sinkListItem$1 = (typeOrName) => ({ state, dispatch }) => {
++const getPreviousSublist = (range, extensions) => {
++	if (range.startIndex === 0) return null;
++	const list = range.parent;
++	const sublist = list.child(range.startIndex - 1).lastChild;
++	if (!sublist || sublist.type === list.type || !isList(sublist.type.name, extensions)) return null;
++	return sublist;
++};
++const sinkIntoPreviousSublist = (itemType, { editor, state, tr, dispatch }) => {
++	const range = getListItemRange(state.selection, itemType);
++	const sublist = range && getPreviousSublist(range, editor.extensionManager.extensions);
++	if (!range || !sublist) return false;
++	const listStart = range.$from.start(range.depth);
++	const rangeItems = range.parent.content.cut(range.start - listStart, range.end - listStart);
++	const sublistItemType = sublist.type.contentMatch.defaultType;
++	const items = sublistItemType && changeListItemsType(rangeItems, sublistItemType);
++	if (!items || !sublist.canReplace(sublist.childCount, sublist.childCount, items)) return false;
++	if (!dispatch) return true;
++	const insertPos = range.start - 2;
++	tr.delete(range.start, range.end).insert(insertPos, items);
++	shiftSelection(tr, state.selection, insertPos - range.start);
++	return true;
++};
++const sinkListItem$1 = (typeOrName) => (props) => {
++	const { state, dispatch } = props;
+ 	const type = getNodeType(typeOrName, state.schema);
++	if (sinkIntoPreviousSublist(type, props)) return true;
+ 	return sinkListItem(type)(state, dispatch);
+ };
+ //#endregion
+@@ -6722,6 +6832,7 @@ var Editor = class extends EventEmitter {
  	* An object of all registered commands.
  	*/
  	get commands() {
@@ -37,7 +299,7 @@ index 158d419e30c111209ff390b864013124767636e0..1a3af3c1c31599bb4bf32295128fbd37
  		return this.commandManager.commands;
  	}
  	/**
-@@ -7058,12 +7059,14 @@ var Editor = class extends EventEmitter {
+@@ -7058,12 +7169,14 @@ var Editor = class extends EventEmitter {
  	* Get the document as HTML.
  	*/
  	getHTML() {

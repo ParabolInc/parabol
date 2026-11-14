@@ -14,6 +14,8 @@ const ctx: StorageConversionCtx = {
       : null
 }
 
+const para = (text: string) => ({type: 'paragraph', content: [{type: 'text', text}]})
+
 describe('convertTipTapToConfluenceStorage', () => {
   it('matches the golden storage-format output byte-for-byte', () => {
     const {title, xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
@@ -57,6 +59,71 @@ describe('convertTipTapToConfluenceStorage', () => {
     expect(xhtml).toContain('<ac:task-status>complete</ac:task-status>')
     expect(xhtml).toContain('<ac:task-status>incomplete</ac:task-status>')
     expect(xhtml).toContain('nested todo')
+  })
+
+  it('exports a task list holding a bullet or numbered list as checkbox bullets', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {type: 'taskItem', attrs: {checked: true}, content: [para('done')]},
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('parent'),
+                {type: 'orderedList', content: [{type: 'listItem', content: [para('sub one')]}]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain(
+      '<ul><li><p>☑ done</p></li><li><p>☐ parent</p><ol><li><p>sub one</p></li></ol></li></ul>'
+    )
+  })
+
+  it('looks through nested task lists for a bullet list', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('outer'),
+                {
+                  type: 'taskList',
+                  content: [
+                    {
+                      type: 'taskItem',
+                      attrs: {checked: false},
+                      content: [
+                        para('inner'),
+                        {type: 'bulletList', content: [{type: 'listItem', content: [para('leaf')]}]}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain('<p>☐ outer</p><ul><li><p>☐ inner</p><ul><li><p>leaf</p>')
   })
 
   it('links exported children as ri:page and everything else back to Parabol', () => {

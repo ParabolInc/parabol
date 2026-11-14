@@ -23,6 +23,7 @@ import {
 } from '../blockSelection/blockSelectionState'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
+import {listItemDropPointPlugin} from './listItemDropPoint'
 import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
 
 const queryNode = graphql`
@@ -188,7 +189,8 @@ export const PageDragHandle = Extension.create<Options>({
             event.target instanceof Element &&
             !!event.target.closest('[data-drop-in], [data-drop-refused]')
         }
-      })
+      }),
+      listItemDropPointPlugin()
     ]
   },
 

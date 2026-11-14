@@ -262,7 +262,7 @@ export const useTipTapPageEditor = (
         BlockMoveHistory.configure({atmosphere}),
         BlockArrival,
         InsightsBlock,
-        AutoJoiner,
+        AutoJoiner.configure({elementsToJoin: ['taskList']}),
         Markdown,
         PageLinkPicker.configure({
           atmosphere
