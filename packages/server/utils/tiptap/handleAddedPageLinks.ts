@@ -37,7 +37,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         const childPageId = CipherId.decrypt(childPageCode)
         updateBacklinks(parentPageId, childPageId).catch(Logger.log)
       }
-      if (node.getAttribute('canonical') !== true) return
+      if (node.getAttribute('canonical') !== true || !userId) return
       if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
         // mint a fresh page and assign it a real pageCode
         const isDatabase = node.getAttribute('database') || false
@@ -52,7 +52,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         }
         const newPage = await createNewPage({
           parentPageId,
-          userId: userId!,
+          userId,
           isDatabase,
           isSyncedBlock,
           content: {
@@ -71,7 +71,6 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         await updateBacklinks(parentPageId, newPage.id)
       } else {
-        if (!userId) return
         // check for duplicates on the same page
         const existingNode = getPageLinks(e.target.doc, true).find(
           (child) => child !== node && child.getAttribute('pageCode') === childPageCode
