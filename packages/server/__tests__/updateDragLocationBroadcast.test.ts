@@ -3,20 +3,20 @@ import path from 'node:path'
 import {addResolversToSchema} from '@graphql-tools/schema'
 import {buildSchema, execute, parse} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AuthToken from '../../../../database/types/AuthToken'
-import publish from '../../../../utils/publish'
-import composeResolvers from '../../../composeResolvers'
-import permissions from '../../permissions'
-import updateDragLocation from '../updateDragLocation'
+import AuthToken from '../database/types/AuthToken'
+import composeResolvers from '../graphql/composeResolvers'
+import updateDragLocation from '../graphql/public/mutations/updateDragLocation'
+import permissions from '../graphql/public/permissions'
+import publish from '../utils/publish'
 
 // A drag update must stay a broadcast, so a Postgres query or any use of the dataloader fails the test
-jest.mock('../../../../postgres/getKysely', () => ({
+jest.mock('../postgres/getKysely', () => ({
   __esModule: true,
   default: () => {
     throw new Error('a drag update queried Postgres')
   }
 }))
-jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
+jest.mock('../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 
 const dataLoader = new Proxy(
   {},
@@ -28,7 +28,9 @@ const dataLoader = new Proxy(
 )
 
 // rootSchema loads its resolvers with webpack's require.context, so compose the parts this test needs onto the built SDL
-const typeDefs = buildSchema(readFileSync(path.join(__dirname, '../../schema.graphql'), 'utf8'))
+const typeDefs = buildSchema(
+  readFileSync(path.join(__dirname, '../graphql/public/schema.graphql'), 'utf8')
+)
 const schema = addResolversToSchema({
   schema: typeDefs,
   resolvers: composeResolvers({Mutation: {updateDragLocation}}, permissions, typeDefs),
