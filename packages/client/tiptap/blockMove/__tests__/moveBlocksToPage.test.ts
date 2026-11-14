@@ -5,9 +5,9 @@ import Collaboration from '@tiptap/extension-collaboration'
 import type {Transaction} from '@tiptap/pm/state'
 import * as Y from 'yjs'
 import {happyWindow} from '../../extensions/__tests__/installHappyDom'
-import {type BlockMoveMeta, dispatchBlockMoveDelete} from '../../extensions/BlockMoveHistory'
 import {providerManager} from '../../providerManager'
 import type {BlockDragSession} from '../blockDragSession'
+import {type BlockMoveMeta, dispatchBlockMoveDelete} from '../blockMoveUndoStack'
 import {getMovableBlocks} from '../getMovableBlocks'
 import {moveBlocksToPage} from '../moveBlocksToPage'
 import {trackRange} from '../trackRange'
@@ -26,13 +26,12 @@ import {
 } from './blockMoveTestHelpers'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
-jest.mock('../../extensions/BlockMoveHistory', () => ({
+jest.mock('../blockMoveUndoStack', () => ({
   dispatchBlockMoveDelete: jest.fn(
     (editor: Editor, tr: Transaction, _meta: BlockMoveMeta | null) => {
       editor.view.dispatch(tr)
     }
-  ),
-  undoBlockMove: jest.fn()
+  )
 }))
 jest.mock('../../providerManager', () => ({
   providerManager: {openSynced: jest.fn(), unregister: jest.fn()}

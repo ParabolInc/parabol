@@ -1,14 +1,15 @@
 import type {Editor} from '@tiptap/core'
 import type Atmosphere from '../../../Atmosphere'
 import type {Snack, SnackbarRemoveFn} from '../../../components/Snackbar'
-import {type BlockMoveMeta, undoBlockMove} from '../../extensions/BlockMoveHistory'
 import type {MovedBlock} from '../appendBlocksToFragment'
+import type {BlockMoveMeta} from '../blockMoveUndoStack'
 import type {BlockMoveOutcome} from '../moveBlocksToPage'
 import {takePendingArrival} from '../pendingArrivals'
 import {showBlockMoveSnack} from '../showBlockMoveSnack'
 import type {TrackedRange} from '../trackRange'
+import {undoBlockMove} from '../undoBlockMove'
 
-jest.mock('../../extensions/BlockMoveHistory', () => ({undoBlockMove: jest.fn()}))
+jest.mock('../undoBlockMove', () => ({undoBlockMove: jest.fn()}))
 
 const emit = jest.fn()
 const atmosphere = {eventEmitter: {emit}} as unknown as Atmosphere

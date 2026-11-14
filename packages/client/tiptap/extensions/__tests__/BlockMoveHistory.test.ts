@@ -18,16 +18,13 @@ import {
   seed
 } from '../../blockMove/__tests__/blockMoveTestHelpers'
 import {appendBlocksToFragment} from '../../blockMove/appendBlocksToFragment'
+import {type BlockMoveMeta, dispatchBlockMoveDelete} from '../../blockMove/blockMoveUndoStack'
 import {getMovableBlocks} from '../../blockMove/getMovableBlocks'
 import {trackRange} from '../../blockMove/trackRange'
+import {undoBlockMove} from '../../blockMove/undoBlockMove'
 import {waitForSaved} from '../../blockMove/waitForSaved'
 import {providerManager} from '../../providerManager'
-import {
-  BlockMoveHistory,
-  type BlockMoveMeta,
-  dispatchBlockMoveDelete,
-  undoBlockMove
-} from '../BlockMoveHistory'
+import {BlockMoveHistory} from '../BlockMoveHistory'
 import {happyWindow} from './installHappyDom'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))

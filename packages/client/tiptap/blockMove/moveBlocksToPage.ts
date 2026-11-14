@@ -1,15 +1,15 @@
 import type {Editor} from '@tiptap/core'
 import {Selection} from '@tiptap/pm/state'
-import {type BlockMoveMeta, dispatchBlockMoveDelete} from '../extensions/BlockMoveHistory'
-import {providerManager} from '../providerManager'
 import {appendBlocksToFragment, type MovedBlock} from './appendBlocksToFragment'
 import type {BlockDragSession} from './blockDragSession'
+import {type BlockMoveMeta, dispatchBlockMoveDelete} from './blockMoveUndoStack'
 import {fingerprintBlocks} from './fingerprintBlocks'
 import {getMovableBlocks} from './getMovableBlocks'
 import {removeMovedBlocks} from './removeMovedBlocks'
 import {type TrackedRange, trackRange} from './trackRange'
 import {waitForChildLinksRemoved} from './waitForChildLinksRemoved'
 import {BLOCK_MOVE_TIMEOUT_MS, waitForSaved} from './waitForSaved'
+import {writeToTargetPage} from './writeToTargetPage'
 
 export type BlockMoveResult =
   | 'moved'
@@ -54,36 +54,33 @@ const moveTrackedBlocks = async ({
   const childPageCodes = movable.childPages.map(({pageCode}) => pageCode)
   const ignoredPageCodes = new Set(childPageCodes)
   const snapshot = fingerprintBlocks(movable.blocks, ignoredPageCodes)
-  const provider = await providerManager.openSynced(targetPageId, BLOCK_MOVE_TIMEOUT_MS)
-  if (!provider) return resultOnly('offline')
-  try {
-    if (provider.authorizedScope === 'readonly') return resultOnly('readonly')
-    const frag = provider.document.getXmlFragment('default')
-    if (frag.querySelector('thinkingBlock')) return resultOnly('streaming')
-    if (!range.current()) return resultOnly('gone')
-    const moved = appendBlocksToFragment(frag, movable.blocks, editor.schema)
-    const copied: BlockMoveOutcome = {result: 'copied', meta: null, gap: null, moved}
-    if (!(await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS))) {
-      if (childPageCodes.length > 0) return copied
-      removeMovedBlocks(frag, moved)
-      return resultOnly('unsaved')
+  const outcome = await writeToTargetPage(
+    targetPageId,
+    async (frag, provider): Promise<BlockMoveOutcome> => {
+      if (!range.current()) return resultOnly('gone')
+      const moved = appendBlocksToFragment(frag, movable.blocks, editor.schema)
+      const copied: BlockMoveOutcome = {result: 'copied', meta: null, gap: null, moved}
+      if (!(await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS))) {
+        if (childPageCodes.length > 0) return copied
+        removeMovedBlocks(frag, moved)
+        return resultOnly('unsaved')
+      }
+      const linksRemoved =
+        childPageCodes.length === 0 ||
+        (await waitForChildLinksRemoved(editor, childPageCodes, BLOCK_MOVE_TIMEOUT_MS))
+      const current = range.current()
+      if (!linksRemoved || !current || editor.isDestroyed) return copied
+      const now = getMovableBlocks(editor.state.doc, current.from, current.to).blocks
+      if (fingerprintBlocks(now, ignoredPageCodes) !== snapshot) return copied
+      const meta =
+        childPageCodes.length === 0
+          ? {targetPageId, targetTitle, moved, blocks: movable.blocks}
+          : null
+      const gap = deleteFromSource(editor, current.from, current.to, meta)
+      return {result: 'moved', meta, gap, moved}
     }
-    const linksRemoved =
-      childPageCodes.length === 0 ||
-      (await waitForChildLinksRemoved(editor, childPageCodes, BLOCK_MOVE_TIMEOUT_MS))
-    const current = range.current()
-    if (!linksRemoved || !current || editor.isDestroyed) return copied
-    const now = getMovableBlocks(editor.state.doc, current.from, current.to).blocks
-    if (fingerprintBlocks(now, ignoredPageCodes) !== snapshot) return copied
-    const meta =
-      childPageCodes.length === 0
-        ? {targetPageId, targetTitle, moved, blocks: movable.blocks}
-        : null
-    const gap = deleteFromSource(editor, current.from, current.to, meta)
-    return {result: 'moved', meta, gap, moved}
-  } finally {
-    providerManager.unregister(targetPageId)
-  }
+  )
+  return typeof outcome === 'string' ? resultOnly(outcome) : outcome
 }
 
 export const moveBlocksToPage = async (params: Params) => {

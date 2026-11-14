@@ -2,13 +2,12 @@ import type {Editor} from '@tiptap/core'
 import type Atmosphere from '../../Atmosphere'
 import type {SnackAction} from '../../components/Snackbar'
 import {GQLID} from '../../utils/GQLID'
-import {undoBlockMove} from '../extensions/BlockMoveHistory'
 import {getPageSlug} from '../getPageSlug'
 import {getBlockMoveMessage} from './getBlockMoveMessage'
 import type {BlockMoveOutcome} from './moveBlocksToPage'
 import {setPendingArrival} from './pendingArrivals'
-
-const BLOCK_MOVE_SNACK_KEY = 'blockMove'
+import {BLOCK_MOVE_SNACK_KEY} from './showBlockMoveNotice'
+import {undoBlockMove} from './undoBlockMove'
 
 type Params = {
   atmosphere: Atmosphere

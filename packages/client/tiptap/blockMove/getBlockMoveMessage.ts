@@ -21,3 +21,25 @@ export const getBlockMoveMessage = (result: BlockMoveResult, count: number, titl
       return null
   }
 }
+
+export const getBlockMoveUndoMessage = (removed: number, kept: number, title: string) => {
+  const total = removed + kept
+  if (removed === 0) {
+    return total === 1
+      ? `That block was edited on ${title}, so it stayed there.`
+      : `Those blocks were edited on ${title}, so they stayed there.`
+  }
+  const keptClause =
+    kept === 1
+      ? `One was edited on ${title}, so it stayed there.`
+      : `${kept} were edited on ${title}, so they stayed there.`
+  return `Moved back ${removed} of ${total} blocks. ${keptClause}`
+}
+
+export const getBlockMoveUnreachableUndoMessage = (title: string) =>
+  `Moved back here. ${title} couldn’t be reached, so the copy there stayed.`
+
+export const getBlockMoveUnrestorableMessage = (count: number, title: string) =>
+  count === 1
+    ? `Couldn’t move it back here, so it stayed on ${title}.`
+    : `Couldn’t move them back here, so they stayed on ${title}.`
