@@ -17,6 +17,7 @@ import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBl
 import {Menu} from '../../../../ui/Menu/Menu'
 import {happyWindow} from '../../__tests__/installHappyDom'
 import {SyncedBlockMenuContent} from '../SyncedBlockMenuContent'
+import {SyncedBlockMenuRoot} from '../SyncedBlockMenuRoot'
 import {SyncedBlockPlacesRoot} from '../SyncedBlockPlacesRoot'
 import {findLinkPositions, syncedLink} from './syncedBlockTestHarness'
 
@@ -35,7 +36,11 @@ jest.mock('../../../../hooks/useAtmosphere', () => {
   const atmosphere = {retries: new Set(), eventEmitter: new EventEmitter()}
   return {__esModule: true, default: () => atmosphere}
 })
-jest.mock('../../../../utils/reportClientError', () => ({__esModule: true, default: () => {}}))
+const mockReportClientError = jest.fn()
+jest.mock('../../../../utils/reportClientError', () => ({
+  __esModule: true,
+  default: (...args: unknown[]) => mockReportClientError(...args)
+}))
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: () => jest.fn()
@@ -201,6 +206,28 @@ test('a refused places request leaves the bar with the loading label when it has
   const {environment} = makeEnvironment(() => tooManyRequests)
   await renderIn(environment, placesRoot(9004))
   expect(placesButton()?.textContent).toBe('Also on …')
+})
+
+test('a refused places request is not retried inside the minute', async () => {
+  const pageCode = 9006
+  const {environment, fetchPlaces} = makeEnvironment(() => tooManyRequests)
+  await renderIn(environment, placesRoot(pageCode))
+  await renderIn(environment, null)
+  expect(fetchPlaces).toHaveBeenCalledTimes(1)
+  const reportsAfterRefusal = mockReportClientError.mock.calls.length
+  jest.setSystemTime(Date.now() + 30_000)
+  await renderIn(environment, placesRoot(pageCode))
+  expect(placesButton()?.textContent).toBe('Also on …')
+  await renderIn(
+    environment,
+    <SyncedBlockMenuRoot pageCode={pageCode} currentPageId='page:1' onOriginal={() => {}} />
+  )
+  expect(fetchPlaces).toHaveBeenCalledTimes(1)
+  expect(mockReportClientError).toHaveBeenCalledTimes(reportsAfterRefusal)
+  await renderIn(environment, null)
+  jest.setSystemTime(Date.now() + 31_000)
+  await renderIn(environment, placesRoot(pageCode))
+  expect(fetchPlaces).toHaveBeenCalledTimes(2)
 })
 
 test('a refused places request leaves the menu rows that do not need the original', async () => {

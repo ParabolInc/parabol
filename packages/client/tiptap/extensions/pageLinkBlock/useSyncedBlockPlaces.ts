@@ -20,7 +20,7 @@ export const useSyncedBlockPlaces = (
     `,
     queryRef
   )
-  const pageRef = data.public.page
+  const pageRef = data.public?.page
   const page = pageRef
     ? readInlineData<SyncedBlockPlaces_page$key>(
         graphql`
