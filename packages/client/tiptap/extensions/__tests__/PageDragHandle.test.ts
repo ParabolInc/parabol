@@ -11,8 +11,21 @@ import {happyWindow} from './installHappyDom'
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('../../../hooks/usePageViewerAccess', () => ({
   __esModule: true,
-  lookupPageViewerGrant: () => null
+  lookupPageViewerGrant: () => mockPageViewerGrant
 }))
+jest.mock('../DragHandleMenu', () => ({__esModule: true, default: () => null}))
+jest.mock('@tiptap/react', () => ({
+  ...jest.requireActual('@tiptap/react'),
+  ReactRenderer: class {
+    element = document.createElement('div')
+    constructor(_component: unknown, {props}: {props: Record<string, unknown>}) {
+      mockMenuProps.push(props)
+    }
+    destroy() {}
+  }
+}))
+let mockPageViewerGrant: string | null = null
+const mockMenuProps: Record<string, unknown>[] = []
 
 const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
 const h = (level: number, text: string): JSONContent => ({
@@ -22,7 +35,8 @@ const h = (level: number, text: string): JSONContent => ({
 })
 
 let editor: Editor | undefined
-const makeEditor = (...blocks: JSONContent[]) => {
+const makeEditor = (...blocks: JSONContent[]) => makeEditorWith({isNested: false}, ...blocks)
+const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[]) => {
   const activeEditor = new Editor({
     element: document.createElement('div'),
     extensions: [
@@ -32,7 +46,7 @@ const makeEditor = (...blocks: JSONContent[]) => {
           ? extension.configure({document: false, trailingNode: {node: 'paragraph'}})
           : extension
       ),
-      PageDragHandle.configure({atmosphere: {} as Atmosphere, pageId: 'page:1'})
+      PageDragHandle.configure({atmosphere: {} as Atmosphere, pageId: 'page:1', isNested})
     ],
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
@@ -111,6 +125,28 @@ describe('the handle', () => {
     const node = activeEditor.state.doc.nodeAt(pos)
     dragHandle?.options.onNodeChange({editor: activeEditor, node, pos})
     expect(dragHandle?.options.getReferencedVirtualElement()).toBeNull()
+  })
+
+  test.each([
+    ['on a page', false, true],
+    ['inside a synced block', true, false]
+  ])('the menu offers Turn into Page %s', (_where, isNested, canCreateSubPage) => {
+    mockPageViewerGrant = 'owner'
+    const activeEditor = makeEditorWith({isNested}, p('word'))
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    const pos = activeEditor.state.doc.child(0).nodeSize
+    dragHandle?.options.onNodeChange({
+      editor: activeEditor,
+      node: activeEditor.state.doc.nodeAt(pos),
+      pos
+    })
+    const handle = activeEditor.view.dom.parentElement!.querySelector('.drag-handle')!
+    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+    expect(mockMenuProps.at(-1)).toMatchObject({canCreateSubPage})
+    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+    mockPageViewerGrant = null
   })
 
   test('hides on the meta Turn into sends', () => {

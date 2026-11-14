@@ -60,7 +60,7 @@ export const Page = (props: Props) => {
   // The editor is conditionally loaded only after syncing so the forced schema is not injected before
   // The yjs document loads
   return (
-    <div className='relative flex flex-col items-center bg-surface-document'>
+    <div className='@container/page relative flex flex-col items-center bg-surface-document'>
       {isPublic ? (
         <PageHeaderPublic />
       ) : (

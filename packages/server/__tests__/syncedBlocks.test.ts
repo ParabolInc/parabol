@@ -1,7 +1,15 @@
+import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import getKysely from '../postgres/getKysely'
 import {updatePageAccessTable} from '../postgres/updatePageAccessTable'
 import {CipherId} from '../utils/CipherId'
+import {publishPageNotification as publishPageNotificationReal} from '../utils/publishPageNotification'
+import {createNewPage} from '../utils/tiptap/createNewPage'
 import {sendPublic, signUp} from './common'
+
+jest.mock('../utils/publishPageNotification', () => ({
+  publishPageNotification: jest.fn(async () => {})
+}))
+const publishPageNotification = jest.mocked(publishPageNotificationReal)
 
 const pg = getKysely()
 
@@ -250,4 +258,22 @@ test('trash still lists a trashed synced block page', async () => {
   const {block} = await seedSyncedBlock(userId)
   await archive(cookie, block, 'archive')
   expect(await pageIds(cookie, {isArchived: true})).toContain(CipherId.toClient(block, 'page'))
+})
+
+test('creating a synced block page sends no CreatePagePayload, an ordinary child page does', async () => {
+  const {userId} = await signUp()
+  const host = await makePage(userId)
+  const content = {
+    type: 'doc',
+    content: [
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Block'}]},
+      {type: 'paragraph'}
+    ]
+  } as TipTapSerializedPageContent
+  publishPageNotification.mockClear()
+  await createNewPage({content, parentPageId: host, userId, isSyncedBlock: true})
+  expect(publishPageNotification).not.toHaveBeenCalled()
+  await createNewPage({content, parentPageId: host, userId})
+  expect(publishPageNotification).toHaveBeenCalledTimes(1)
+  expect(publishPageNotification.mock.calls[0]![1]).toBe('CreatePagePayload')
 })
