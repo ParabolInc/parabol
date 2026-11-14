@@ -3,6 +3,7 @@ import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {Editor} from '@tiptap/core'
 import type {NodeViewProps} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {MotionGlobalConfig} from 'motion/react'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
@@ -15,6 +16,8 @@ import {SyncedBlockView} from '../SyncedBlockView'
 import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
+
+MotionGlobalConfig.skipAnimations = true
 
 jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
   __esModule: true,
@@ -712,4 +715,21 @@ test('Delete all says every page while the rows load, and Cancel closes it', () 
   expect((dialogButton('Delete all') as HTMLButtonElement).disabled).toBe(true)
   act(() => dialogButton('Cancel')!.click())
   expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+})
+
+test('the bar stays up while a dialog is open and gives way to the caption after it closes', async () => {
+  openAllDialog('unsyncAll')
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  await flushTimers()
+  expect(copyButton()).toBeDefined()
+  act(() => dialogButton('Cancel')!.click())
+  await flushTimers()
+  act(() => outside.focus())
+  await flushTimers()
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+  expect(copyButton()).toBeUndefined()
+  expect(text()).toContain('Escalation path')
+  outside.remove()
 })
