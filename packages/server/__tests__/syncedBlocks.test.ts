@@ -605,6 +605,26 @@ test("marks a host shared by link while the block isn't", async () => {
   expect((await selectUnsyncOutcomes(pg, block, [])).size).toBe(0)
 })
 
+test('counts a pending email invite on a host as a hidden reader', async () => {
+  const {userId} = await signUp()
+  const {block, copyB} = await seedPlacements(userId)
+  const invite = (pageId: number) =>
+    pg
+      .insertInto('PageExternalAccess')
+      .values({pageId, email: 'invitee@example.com', role: 'viewer', invitedBy: userId})
+      .execute()
+  await invite(copyB)
+  expect((await selectUnsyncOutcomes(pg, block, [copyB])).get(copyB)).toEqual({
+    hiddenReaderCount: 1,
+    isPublicWithoutBlock: false
+  })
+  await invite(block)
+  expect((await selectUnsyncOutcomes(pg, block, [copyB])).get(copyB)).toEqual({
+    hiddenReaderCount: 0,
+    isPublicWithoutBlock: false
+  })
+})
+
 const UNSYNC = `
   mutation UnsyncSyncedBlock($pageId: ID!) {
     unsyncSyncedBlock(pageId: $pageId) {

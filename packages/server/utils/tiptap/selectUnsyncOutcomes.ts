@@ -6,7 +6,7 @@ type UnsyncOutcome = {hiddenReaderCount: number; isPublicWithoutBlock: boolean}
 export const selectUnsyncOutcomes = async (db: Kysely<DB>, blockId: number, hostIds: number[]) => {
   const outcomes = new Map<number, UnsyncOutcome>()
   if (hostIds.length === 0) return outcomes
-  const [hiddenReaderCounts, publicRows] = await Promise.all([
+  const [hiddenReaderCounts, externalRows] = await Promise.all([
     db
       .selectFrom('PageAccess as hostAccess')
       .leftJoin('PageAccess as blockAccess', (join) =>
@@ -21,22 +21,28 @@ export const selectUnsyncOutcomes = async (db: Kysely<DB>, blockId: number, host
       .execute(),
     db
       .selectFrom('PageExternalAccess')
-      .select('pageId')
+      .select(['pageId', 'email'])
       .where('pageId', 'in', [blockId, ...hostIds])
-      .where('email', '=', '*')
       .execute()
   ])
-  const publicPageIds = new Set(publicRows.map(({pageId}) => pageId))
-  const isBlockPublic = publicPageIds.has(blockId)
-  hostIds.forEach((hostId) => {
-    if (isBlockPublic) {
+  const blockEmails = new Set(
+    externalRows.filter(({pageId}) => pageId === blockId).map(({email}) => email)
+  )
+  if (blockEmails.has('*')) {
+    hostIds.forEach((hostId) => {
       outcomes.set(hostId, {hiddenReaderCount: 0, isPublicWithoutBlock: false})
-      return
-    }
+    })
+    return outcomes
+  }
+  hostIds.forEach((hostId) => {
+    const hostEmails = externalRows.filter(({pageId}) => pageId === hostId).map(({email}) => email)
+    const hiddenInviteCount = hostEmails.filter(
+      (email) => email !== '*' && !blockEmails.has(email)
+    ).length
     const row = hiddenReaderCounts.find(({pageId}) => pageId === hostId)
     outcomes.set(hostId, {
-      hiddenReaderCount: Number(row?.hiddenReaderCount ?? 0),
-      isPublicWithoutBlock: publicPageIds.has(hostId)
+      hiddenReaderCount: Number(row?.hiddenReaderCount ?? 0) + hiddenInviteCount,
+      isPublicWithoutBlock: hostEmails.includes('*')
     })
   })
   return outcomes
