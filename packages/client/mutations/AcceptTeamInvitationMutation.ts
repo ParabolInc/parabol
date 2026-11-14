@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AcceptTeamInvitationMutation_notification$data} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
-import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
 import type {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
 import type {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import type Atmosphere from '../Atmosphere'
@@ -92,7 +91,8 @@ graphql`
 
 graphql`
   fragment AcceptTeamInvitationMutationReply on AcceptTeamInvitationPayload {
-    error {
+    userErrors {
+      code
       message
     }
     meetingId
@@ -189,21 +189,20 @@ interface LocalHandler extends NavigateMaybeLocalHandler {
 
 export const handleAcceptTeamInvitationErrors = (
   atmosphere: Atmosphere,
-  acceptTeamInvitation: null | undefined | {error?: {message: string} | null}
+  acceptTeamInvitation:
+    | null
+    | undefined
+    | {readonly userErrors: ReadonlyArray<{readonly code: string; readonly message: string}>}
 ) => {
-  if (acceptTeamInvitation?.error) {
-    const {message} = acceptTeamInvitation.error
-    if (
-      message === InvitationTokenError.ALREADY_ACCEPTED ||
-      message === InvitationTokenError.NOT_SIGNED_IN
-    )
-      return
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      autoDismiss: 0,
-      key: `acceptTeamInvitation:${message}`,
-      message
-    })
-  }
+  const userError = acceptTeamInvitation?.userErrors[0]
+  if (!userError) return
+  const {code, message} = userError
+  if (code === 'TOKEN_ALREADY_USED' || code === 'NOT_SIGNED_IN') return
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 0,
+    key: `acceptTeamInvitation:${message}`,
+    message
+  })
 }
 
 const AcceptTeamInvitationMutation: StandardMutation<
@@ -228,14 +227,15 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
-      const {team} = acceptTeamInvitation
+      const {team, userErrors} = acceptTeamInvitation
+      const userErrorCode = userErrors[0]?.code
       const serverError = getMutationError(data, errors)
       if (serverError) {
         const message = serverError.message
-        if (message === InvitationTokenError.NOT_SIGNED_IN) {
+        if (userErrorCode === 'NOT_SIGNED_IN') {
           // if the user follows an invitation link with an invalid auth token, invalidate it
           // TODO what to do here?
-        } else if (message === InvitationTokenError.ALREADY_ACCEPTED) {
+        } else if (userErrorCode === 'TOKEN_ALREADY_USED') {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
             navigate,
@@ -247,7 +247,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
             key: `acceptTeamInvitation:${message}`,
             message,
             action:
-              message === LOCKED_MESSAGE.TEAM_INVITE
+              userErrorCode === 'ORGANIZATION_LOCKED'
                 ? {
                     label: 'Contact Sales',
                     callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')

@@ -1,8 +1,13 @@
 """
-Return value for acceptTeamInvitation mutation. On success, contains a new auth token and the team the user joined. On failure, contains a StandardMutationError.
+Return value for acceptTeamInvitation mutation. On success, contains a new auth token and the team the user joined. On failure, userErrors says why.
 """
 type AcceptTeamInvitationPayload {
-  error: StandardMutationError
+  error: StandardMutationError @deprecated(reason: "Read userErrors")
+
+  """
+  Why the invitation wasn't accepted, if the user can do something about it. Empty on success. TOKEN_ALREADY_USED comes with the team and meeting the viewer already joined
+  """
+  userErrors: [UserError!]!
 
   """
   A new JWT auth token issued after joining the team; the client should replace its current token with this one

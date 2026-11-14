@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import PokerTemplate from '../../../database/types/PokerTemplate'
@@ -7,7 +8,6 @@ import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrement
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -27,7 +27,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   ])
 
   if (!viewerTeam) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
   const freeTemplatesRemaining = await getUserDetail(
@@ -36,24 +36,20 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     dataLoader
   )
   if (getFeatureTier(org) === 'starter' && freeTemplatesRemaining === 0) {
-    return standardError(new Error('You have reached the limit of free custom templates.'), {
-      userId: viewerId
+    throw new GraphQLError('You have reached the limit of free custom templates.', {
+      extensions: {code: 'UPGRADE_REQUIRED'}
     })
   }
   let data
   if (parentTemplateId) {
     const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
     if (!parentTemplate) {
-      return standardError(new Error('Parent template not found'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('Parent template not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {name, scope} = parentTemplate
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, parentTemplate.teamId))
-        return standardError(new Error('Template is scoped to team'), {
-          userId: viewerId
-        })
+        throw new GraphQLError('Template is scoped to team', {extensions: {code: 'FORBIDDEN'}})
     } else if (scope === 'ORGANIZATION') {
       const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
       const isInOrg =
@@ -61,8 +57,8 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
         (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader)) &&
         (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
       if (!isInOrg) {
-        return standardError(new Error('Template is scoped to organization'), {
-          userId: viewerId
+        throw new GraphQLError('Template is scoped to organization', {
+          extensions: {code: 'FORBIDDEN'}
         })
       }
     }

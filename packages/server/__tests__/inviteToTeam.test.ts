@@ -31,6 +31,9 @@ const ACCEPT_TEAM_INVITATION_MUTATION = `
       error {
         message
       }
+      userErrors {
+        code
+      }
       team {
         id
       }
@@ -476,6 +479,7 @@ test('Existing user cannot accept a team invitation sent to a different email', 
         error: {
           message: 'notFound'
         },
+        userErrors: [{code: 'TOKEN_INVALID'}],
         team: null
       }
     }
@@ -572,6 +576,7 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
         error: {
           message: 'accepted'
         },
+        userErrors: [{code: 'TOKEN_ALREADY_USED'}],
         team: null
       }
     }
@@ -639,6 +644,7 @@ test('Pending invites are invalidated when user is removed from org', async () =
     data: {
       acceptTeamInvitation: {
         error: {message: 'expired'},
+        userErrors: [{code: 'TOKEN_EXPIRED'}],
         team: null
       }
     }

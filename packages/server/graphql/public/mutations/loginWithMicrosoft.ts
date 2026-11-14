@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import AuthIdentityMicrosoft from '../../../database/types/AuthIdentityMicrosoft'
 import AuthToken from '../../../database/types/AuthToken'
@@ -10,10 +11,10 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import MicrosoftServerManager from '../../../utils/MicrosoftServerManager'
-import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
 import type {MutationResolvers} from '../resolverTypes'
+import userErrorResult from './helpers/userErrorResult'
 
 const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   _source,
@@ -24,12 +25,12 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   const manager = await MicrosoftServerManager.init(code)
   const {id} = manager
   if (!id) {
-    return standardError(new Error('Invalid login code'))
+    throw new GraphQLError('Invalid login code', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {name, sub, tid} = id
   const email = id.email.toLowerCase()
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
-    return {error: {message: 'Email is too long'}}
+    return userErrorResult('EMAIL_INVALID', 'Email is too long')
   }
 
   const [existingUser, samlURL] = await Promise.all([
@@ -38,12 +39,10 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
   ])
 
   if (samlURL) {
-    return {
-      error: {
-        message:
-          'Your organization requires you to login with SSO. Reach out to support@parabol.co for more help!'
-      }
-    }
+    return userErrorResult(
+      'SIGN_IN_WITH_SSO',
+      'Your organization requires you to login with SSO. Reach out to support@parabol.co for more help!'
+    )
   }
   if (existingUser) {
     const {id: viewerId, identities, rol} = existingUser
@@ -59,11 +58,14 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
         // if it's not, they need to reset the password
         if (!isEmailVerified) {
           if (type === AuthIdentityTypeEnum.LOCAL) {
-            return {
-              error: {message: 'Try logging in with email and password'}
-            }
+            return userErrorResult(
+              'SIGN_IN_WITH_PASSWORD',
+              'Try logging in with email and password'
+            )
           }
-          throw new Error(`Unknown identity type: ${type}`)
+          throw new GraphQLError(`Unknown identity type: ${type}`, {
+            extensions: {code: 'INTERNAL_SERVER_ERROR'}
+          })
         }
       }
       // they don't have any identity, so a former SSO user, now abandoned, let them have their OAuth identity and move on

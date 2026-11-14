@@ -1,6 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {createHash} from 'crypto'
+import {GraphQLError} from 'graphql'
 import mime from 'mime-types'
 import {
   MAX_FILE_SIZE_FREE,
@@ -42,7 +43,9 @@ export const hostUserAsset = async (
   ])
   const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
   if (BigInt(bytesUploaded) > BigInt(maxSize)) {
-    return {error: {message: `Upload limit reached. Please contact sales`}}
+    throw new GraphQLError('Upload limit reached. Please contact sales', {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
   const isParabolHostedAsset =
     parsedUrl.origin === appOrigin && parsedUrl.pathname.startsWith('/assets/')
@@ -62,11 +65,11 @@ export const hostUserAsset = async (
       !filename ||
       filename.includes('..')
     ) {
-      return {error: {message: 'Invalid asset URL'}}
+      throw new GraphQLError('Invalid asset URL', {extensions: {code: 'BAD_USER_INPUT'}})
     }
     const canAccessSource = await checkAccess(authToken, sourceScope, sourceScopeCode, assetType)
     if (!canAccessSource) {
-      return {error: {message: 'Access denied to source asset'}}
+      throw new GraphQLError('Access denied to source asset', {extensions: {code: 'FORBIDDEN'}})
     }
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
@@ -91,20 +94,22 @@ export const hostUserAsset = async (
       }
     } catch (e) {
       Logger.warn(e)
-      return {error: {message: 'Could not copy parabol asset'}}
+      throw new GraphQLError('Could not copy parabol asset', {
+        extensions: {code: 'SERVICE_UNAVAILABLE'}
+      })
     }
   }
   const maxFileSize = viewerTier === 'starter' ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
   const asset = await fetchUntrusted(url, maxFileSize)
   if (!asset) {
-    return {error: {message: 'Unable to fetch asset'}}
+    throw new GraphQLError('Unable to fetch asset', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {contentType, buffer} = asset
   const ext = mime.extension(contentType)
   if (!ext) {
-    return {
-      error: {message: `Unable to determine extension for ${contentType}`}
-    }
+    throw new GraphQLError(`Unable to determine extension for ${contentType}`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   let fileBuffer = buffer
   let fileExtension = ext
@@ -113,7 +118,9 @@ export const hostUserAsset = async (
     fileBuffer = compressionRes.buffer
     fileExtension = compressionRes.extension
     if (fileBuffer.byteLength > 2 ** 23) {
-      return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
+      throw new GraphQLError(`Max asset size is ${2 ** 23} bytes`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))

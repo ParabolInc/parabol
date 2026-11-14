@@ -6,13 +6,16 @@ export interface MutationError {
   code?: GraphQLErrorCode
 }
 
-// a legacy payload, or the ErrorPayload arm of a union, puts the error on the mutation's field
+// a payload's userErrors, a legacy payload's error, or the ErrorPayload arm of a union sits on the mutation's field
 const getPayloadErrorMessage = (response: unknown): string | undefined => {
   if (!response || typeof response !== 'object') return undefined
-  const payload = Object.values(response).find(
-    (fieldValue) => typeof fieldValue?.error?.message === 'string'
-  )
-  return payload?.error.message
+  for (const fieldValue of Object.values(response)) {
+    const userErrorMessage = fieldValue?.userErrors?.[0]?.message
+    if (typeof userErrorMessage === 'string') return userErrorMessage
+    const errorMessage = fieldValue?.error?.message
+    if (typeof errorMessage === 'string') return errorMessage
+  }
+  return undefined
 }
 
 function getMutationError(error: Error): MutationError

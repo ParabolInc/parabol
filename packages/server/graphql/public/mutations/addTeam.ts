@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../../database/types/AuthToken'
@@ -6,7 +7,6 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import addTeamValidation from '../../mutations/helpers/addTeamValidation'
 import createTeamAndLeader from '../../mutations/helpers/createTeamAndLeader'
 import {assertInviteeCount, inviteToNewTeam} from '../../mutations/helpers/inviteToTeamHelper'
@@ -24,9 +24,7 @@ const addTeam: MutationResolvers['addTeam'] = async (_source, args, context) => 
   const viewerId = getUserId(authToken)
 
   if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Organization not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
@@ -42,29 +40,17 @@ const addTeam: MutationResolvers['addTeam'] = async (_source, args, context) => 
     errors
   } = addTeamValidation(orgTeamNames)(args) as any
   if (Object.keys(errors).length) {
-    if (errors.newTeam && errors.newTeam.name) {
-      return {
-        error: {
-          message: errors.newTeam.name
-        }
-      }
-    }
-    return standardError(new Error('Failed input validation'), {
-      userId: viewerId
-    })
+    const message = errors.newTeam?.name || 'Failed input validation'
+    throw new GraphQLError(message, {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
     if (getFeatureTier(organization) === 'starter') {
-      return standardError(new Error('Max free teams reached'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('Max free teams reached', {extensions: {code: 'UPGRADE_REQUIRED'}})
     }
   }
   if (organization.lockedAt) {
-    return standardError(new Error('Organization is locked'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Organization is locked', {extensions: {code: 'FORBIDDEN'}})
   }
 
   // RESOLUTION
