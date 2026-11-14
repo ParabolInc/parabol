@@ -65,9 +65,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       edges: [],
       pageInfo: {hasNextPage: false, hasPreviousPage: false}
     }
-    const auth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'gitlab', teamId, userId})
+    const auth = await dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
     if (!auth?.accessToken) return emptyConnection
     const {providerId} = auth
     const provider = await dataLoader.get('integrationProviders').load(providerId)
