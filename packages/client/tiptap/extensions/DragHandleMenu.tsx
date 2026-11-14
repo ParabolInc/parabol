@@ -14,6 +14,7 @@ import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {deleteSyncedBlockFromPage} from './pageLinkBlock/deleteSyncedBlockFromPage'
 import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
+import {getSyncedBlockMenuRows} from './pageLinkBlock/getSyncedBlockMenuRows'
 import {SyncedBlockMenuRoot} from './pageLinkBlock/SyncedBlockMenuRoot'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {useRunAfterMenuClose} from './pageLinkBlock/useRunAfterMenuClose'
@@ -38,7 +39,17 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
   const isDocumentHeading = pos === 0
   const isSyncedLink = !selection && node.type.name === 'pageLinkBlock' && !!node.attrs.synced
-  const isSyncedViewOnly = isSyncedLink && !getNestedEditor(editor.view, pos)?.isEditable
+  const nested = isSyncedLink ? getNestedEditor(editor.view, pos) : null
+  const isSyncedMounted = !!nested
+  const isSyncedViewOnly = !editor.isEditable || (!!nested && !nested.isEditable)
+  const syncedRows = isSyncedLink
+    ? getSyncedBlockMenuRows({
+        isOriginal: isCanonicalPageLink,
+        isViewOnly: isSyncedViewOnly,
+        canGoToOriginal: false,
+        isMounted: isSyncedMounted
+      })
+    : []
   const pageCode = Number(node.attrs.pageCode)
   const showDelete = !!selection || isSyncedLink || (!isCanonicalPageLink && !isDocumentHeading)
   const turnIntoCurrent =
@@ -109,7 +120,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     e.preventDefault()
     // keys from the Turn into submenu bubble here through its portal
     if (!e.currentTarget.contains(e.target as HTMLElement)) return
-    if (isSyncedViewOnly || (isDeleteKey && !showDelete)) return
+    if (isDeleteKey && !showDelete) return
+    if (isSyncedLink && !syncedRows.includes(isDeleteKey ? 'deleteFromPage' : 'duplicatePlain')) {
+      return
+    }
     if (isDeleteKey) handleDelete()
     else handleDuplicate()
     queueMicrotask(onClose)
@@ -166,6 +180,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             pageCode={pageCode}
             isOriginal={isCanonicalPageLink}
             isViewOnly={isSyncedViewOnly}
+            isMounted={isSyncedMounted}
             currentPageId={editor.storage.pageLinkBlock.pageId}
             runAfterClose={runAfterClose}
           />

@@ -21,6 +21,7 @@ export interface SyncedBlockMenuItemsProps {
   pageCode: number
   isOriginal: boolean
   isViewOnly: boolean
+  isMounted: boolean
   original: {pageId: string; title: string} | null
   currentPageId: string | undefined
   runAfterClose: (action: () => void) => void
@@ -34,12 +35,12 @@ interface RowItem {
 }
 
 export const SyncedBlockMenuItems = (props: SyncedBlockMenuItemsProps) => {
-  const {hostEditor, pos, pageCode, isOriginal, isViewOnly, original, currentPageId} = props
-  const {runAfterClose} = props
+  const {hostEditor, pos, pageCode, isOriginal, isViewOnly, isMounted, original} = props
+  const {currentPageId, runAfterClose} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const canGoToOriginal = !!original && original.pageId !== currentPageId
-  const rows = getSyncedBlockMenuRows({isOriginal, isViewOnly, canGoToOriginal})
+  const rows = getSyncedBlockMenuRows({isOriginal, isViewOnly, canGoToOriginal, isMounted})
   const thenFocusHost = (action: () => void) =>
     runAfterClose(() => {
       action()

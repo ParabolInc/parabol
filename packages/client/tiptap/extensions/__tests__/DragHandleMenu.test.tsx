@@ -182,7 +182,7 @@ describe('the menu on a block selection', () => {
 })
 
 describe('the menu on a synced block', () => {
-  const openSyncedMenu = async ({isViewOnly = false} = {}) => {
+  const openSyncedMenu = async ({isViewOnly = false, isMounted = true} = {}) => {
     const host = new Editor({
       element: document.body.appendChild(document.createElement('div')),
       extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
@@ -190,8 +190,8 @@ describe('the menu on a synced block', () => {
     })
     editor = host
     const pos = findLinkPositions(host)[0]!
-    const nested = mountNested(host, pos, ['Sev 1: page the on-call lead.'])
-    if (isViewOnly) nested.setEditable(false)
+    const nested = isMounted ? mountNested(host, pos, ['Sev 1: page the on-call lead.']) : null
+    if (isViewOnly) nested?.setEditable(false)
     const anchor = document.body.appendChild(document.createElement('div'))
     const container = document.body.appendChild(document.createElement('div'))
     const onClose = jest.fn(() => root?.render(null))
@@ -255,6 +255,25 @@ describe('the menu on a synced block', () => {
     await pressKey(itemNamed('Copy and sync'), 'Delete')
     await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
     expect(hostBlocks(host)).toEqual(['Above', 'pageLinkBlock', 'Below'])
+  })
+
+  test('a block that is not mounted still offers Delete from this page', async () => {
+    const {host} = await openSyncedMenu({isMounted: false})
+    expect(items().map((item) => item.textContent?.replace(/Del$/, ''))).toEqual([
+      'Copy and sync',
+      'Delete from this page'
+    ])
+    await pressKey(itemNamed('Copy and sync'), 'd', {metaKey: true})
+    expect(hostBlocks(host)).toEqual(['Above', 'pageLinkBlock', 'Below'])
+    await click(itemNamed('Delete from this page'))
+    await act(tick)
+    expect(hostBlocks(host)).toEqual(['Above', 'Below'])
+  })
+
+  test('Delete in the menu of a block that is not mounted removes it', async () => {
+    const {host} = await openSyncedMenu({isMounted: false})
+    await pressKey(itemNamed('Copy and sync'), 'Backspace')
+    expect(hostBlocks(host)).toEqual(['Above', 'Below'])
   })
 
   test('Rename starts only once the menu has closed', async () => {

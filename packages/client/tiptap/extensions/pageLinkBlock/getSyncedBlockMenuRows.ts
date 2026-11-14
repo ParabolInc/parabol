@@ -9,11 +9,15 @@ interface Options {
   isOriginal: boolean
   isViewOnly: boolean
   canGoToOriginal: boolean
+  isMounted: boolean
 }
 
-export const getSyncedBlockMenuRows = ({isOriginal, isViewOnly, canGoToOriginal}: Options) => {
+export const getSyncedBlockMenuRows = (options: Options) => {
+  const {isOriginal, isViewOnly, canGoToOriginal, isMounted} = options
   const rows: SyncedBlockMenuRow[] = ['copyAndSync']
   if (canGoToOriginal && !isOriginal) rows.push('goToOriginal')
-  if (!isViewOnly) rows.push('rename', 'duplicatePlain', 'deleteFromPage')
+  if (isViewOnly) return rows
+  if (isMounted) rows.push('rename', 'duplicatePlain')
+  rows.push('deleteFromPage')
   return rows
 }

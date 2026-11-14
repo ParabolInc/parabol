@@ -43,6 +43,7 @@ export const SyncedBlockMoreMenu = (props: Props) => {
             pageCode={pageCode}
             isOriginal={isOriginal}
             isViewOnly={false}
+            isMounted
             currentPageId={currentPageId}
             runAfterClose={runAfterClose}
           />
