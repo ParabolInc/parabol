@@ -59,7 +59,7 @@ describe('DialogContent', () => {
     const {DialogContent} = await import('../DialogContent')
     const {dialogName, titleWarnings} = await renderOpen(
       <Dialog isOpen>
-        <DialogContent title='Formatting Text'>
+        <DialogContent hiddenTitle='Formatting Text'>
           <Suspense fallback=''>
             <NeverLoads />
           </Suspense>
