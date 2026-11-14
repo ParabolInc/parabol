@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.32.1](https://github.com/ParabolInc/parabol/compare/v15.32.0...v15.32.1) (2026-11-14)
+
+
+### Fixed
+
+* **client:** title the dialogs that opened without one for screen readers ([#14181](https://github.com/ParabolInc/parabol/issues/14181)) ([14b14e9](https://github.com/ParabolInc/parabol/commit/14b14e960244b31b5cd869c5a1ce4dbca76ee660))
+* **server:** broadcast drag updates without Postgres or a shared dataloader ([#14211](https://github.com/ParabolInc/parabol/issues/14211)) ([6aa5f98](https://github.com/ParabolInc/parabol/commit/6aa5f982e3e4f57a7efe85d38d9fd369fa72c2cc))
+
 ## [15.32.0](https://github.com/ParabolInc/parabol/compare/v15.31.1...v15.32.0) (2026-11-13)
 
 
