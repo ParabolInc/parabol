@@ -6,14 +6,14 @@ import type {MutationResolvers} from '../resolverTypes'
 const updateDragLocation: MutationResolvers['updateDragLocation'] = async (
   _source,
   {input},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, socketId: mutatorId}
 ) => {
-  const operationId = dataLoader.share()
-  const subOptions = {operationId, mutatorId}
   const {teamId: _teamId, meetingId, ...inputData} = input
   const viewerId = getUserId(authToken)
   const data = {remoteDrag: inputData, userId: viewerId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, subOptions)
+  // A broadcast with no Postgres reads and no dataloader. Without an operationId, publish stores
+  // nothing in Redis and receivers fetch nothing: they get only coordinates and need no data.
+  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, {mutatorId})
   return true
 }
 
