@@ -8,6 +8,7 @@ import {deleteSyncedBlockFromPage} from './deleteSyncedBlockFromPage'
 import {duplicateSyncedBlockAsPlain} from './duplicateSyncedBlockAsPlain'
 import type {SyncedBlockMenuRow} from './getSyncedBlockMenuRows'
 import {getSyncedLinkAt} from './getSyncedLinkAt'
+import {openSyncedBlockDialog, type SyncedBlockDialogKind} from './openSyncedBlockDialog'
 import {startSyncedBlockRename} from './startSyncedBlockRename'
 import {getNestedEditor} from './syncedBlockFocus'
 
@@ -37,6 +38,10 @@ export const useSyncedBlockMenuActions = (params: Params) => {
       withPos(action)
       hostEditor.commands.focus()
     })
+  const openDialog = (kind: SyncedBlockDialogKind) => () =>
+    runAfterClose(() =>
+      withPos((pos) => openSyncedBlockDialog(hostEditor.view, pos, pageCode, kind))
+    )
   const actions: Record<SyncedBlockMenuRow, () => void> = {
     copyAndSync: () =>
       withPos((pos) => {
@@ -53,7 +58,10 @@ export const useSyncedBlockMenuActions = (params: Params) => {
     rename: () =>
       runAfterClose(() => withPos((pos) => startSyncedBlockRename(hostEditor.view, pos, pageCode))),
     duplicatePlain: afterClose((pos) => duplicateSyncedBlockAsPlain(hostEditor, pos, pageCode)),
-    deleteFromPage: afterClose((pos) => deleteSyncedBlockFromPage(hostEditor, pos, pageCode))
+    unsyncCopy: openDialog('unsyncCopy'),
+    unsyncAll: openDialog('unsyncAll'),
+    deleteFromPage: afterClose((pos) => deleteSyncedBlockFromPage(hostEditor, pos, pageCode)),
+    deleteAll: openDialog('deleteAll')
   }
   return actions
 }

@@ -33,6 +33,13 @@ jest.mock('react-router', () => ({
 jest.mock('../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
 
 const atmosphere = {} as Atmosphere
+let mockPlaces: {original: null; otherCount: number; isOwner: boolean} | null = null
+jest.mock('../pageLinkBlock/useSyncedBlockPlacesQuery', () => ({
+  useSyncedBlockPlacesQuery: () => (mockPlaces ? {} : null)
+}))
+jest.mock('../pageLinkBlock/useSyncedBlockPlaces', () => ({
+  useSyncedBlockPlaces: () => mockPlaces
+}))
 
 const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
 const h = (level: number, text: string): JSONContent => ({
@@ -143,6 +150,7 @@ afterEach(async () => {
   })
   editor?.destroy()
   editor = undefined
+  mockPlaces = null
   document.body.replaceChildren()
 })
 
@@ -195,11 +203,12 @@ describe('the menu on a block selection', () => {
 })
 
 describe('the menu on a synced block', () => {
-  const openSyncedMenu = async ({isViewOnly = false, isMounted = true} = {}) => {
+  const openSyncedMenu = async ({isViewOnly = false, isMounted = true, isOriginal = true} = {}) => {
+    const link = {...syncedLink, attrs: {...syncedLink.attrs, canonical: isOriginal}}
     const host = new Editor({
       element: document.body.appendChild(document.createElement('div')),
       extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
-      content: {type: 'doc', content: [p('Above'), syncedLink, p('Below')]}
+      content: {type: 'doc', content: [p('Above'), link, p('Below')]}
     })
     editor = host
     const pos = findLinkPositions(host)[0]!
@@ -352,6 +361,52 @@ describe('the menu on a synced block', () => {
     expect(menuOpenAtRename).toEqual([false])
     const {selection} = host.state
     expect(selection instanceof NodeSelection && selection.from === pos).toBe(true)
+  })
+
+  const menuRows = () =>
+    Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"], [role="separator"]')).map(
+      (element) =>
+        element.getAttribute('role') === 'separator'
+          ? '---'
+          : element.textContent?.replace(/(Del|(⌘|ctrl)\+D)$/, '')
+    )
+
+  test('the synced copy menu shows Unsync this copy after a separator', async () => {
+    await openSyncedMenu({isOriginal: false})
+    expect(menuRows()).toEqual([
+      'Copy and sync',
+      'Rename',
+      'Duplicate as plain blocks',
+      '---',
+      'Unsync this copy',
+      'Delete from this page'
+    ])
+  })
+
+  test("the original's menu hides Unsync all while the block is on one page", async () => {
+    mockPlaces = {original: null, otherCount: 0, isOwner: true}
+    await openSyncedMenu()
+    expect(menuRows()).toEqual([
+      'Copy and sync',
+      'Rename',
+      'Duplicate as plain blocks',
+      '---',
+      'Delete from this page'
+    ])
+  })
+
+  test("the owner's original on other pages offers Unsync all and Delete all", async () => {
+    mockPlaces = {original: null, otherCount: 2, isOwner: true}
+    await openSyncedMenu()
+    expect(menuRows()).toEqual([
+      'Copy and sync',
+      'Rename',
+      'Duplicate as plain blocks',
+      '---',
+      'Unsync all',
+      'Delete from this page',
+      'Delete all'
+    ])
   })
 })
 

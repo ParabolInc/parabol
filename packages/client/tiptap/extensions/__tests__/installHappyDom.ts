@@ -20,6 +20,7 @@ for (const key of [
   'NodeFilter',
   'Element',
   'HTMLElement',
+  'HTMLInputElement',
   'SVGElement',
   'MutationObserver',
   'ResizeObserver',

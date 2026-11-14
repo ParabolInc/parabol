@@ -7,6 +7,7 @@ import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {syncedBlockPlaceholderText} from '../../../pagePlaceholderText'
+import {SYNCED_BLOCK_DIALOG_EVENT} from '../openSyncedBlockDialog'
 import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
@@ -28,7 +29,15 @@ jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
 jest.mock('../../../../components/TipTapEditor/TipTapEditor', () => ({
   TipTapEditor: () => null
 }))
-jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({
+  __esModule: true,
+  default: () => ({eventEmitter: {emit: jest.fn()}})
+}))
+const mockRequestUnsyncCopy = jest.fn()
+jest.mock('../requestSyncedBlockUnsyncCopy', () => ({
+  ...jest.requireActual('../requestSyncedBlockUnsyncCopy'),
+  requestSyncedBlockUnsyncCopy: (params: unknown) => mockRequestUnsyncCopy(params)
+}))
 jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -291,11 +300,11 @@ test('a viewer sees no placeholder in an empty block', () => {
 
 const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 
-const mountView = () => {
+const mountView = (link = syncedLink) => {
   const host = new Editor({
     element: document.createElement('div'),
     extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
-    content: {type: 'doc', content: [{type: 'paragraph'}, syncedLink]}
+    content: {type: 'doc', content: [{type: 'paragraph'}, link]}
   })
   const linkPos = findLinkPositions(host)[0]!
   hostRef.current = host
@@ -357,8 +366,8 @@ const pressKey = (input: HTMLInputElement, key: string) =>
     input.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles: true, cancelable: true}))
   })
 
-const mountFocusedView = () => {
-  const host = mountView()
+const mountFocusedView = (link = syncedLink) => {
+  const host = mountView(link)
   const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
   act(() => wrapper.focus())
   return Object.assign(wrapper, {host})
@@ -610,4 +619,66 @@ test('Enter and Escape while composing text leave the rename input open', () => 
   }
   expect(nameInput()?.value).toBe('ペー')
   expect(mockNestedEditor!.state.doc.firstChild?.textContent).toBe('Escalation path')
+})
+
+const syncedCopy = {...syncedLink, attrs: {...syncedLink.attrs, canonical: false}}
+const confirm = {
+  title: 'Show this text to 8 more people?',
+  body: "8 people on Q3 Planning can't see this block today. Unsyncing puts its text on the page, where they can read it."
+}
+const dialogButton = (label: string) =>
+  Array.from(document.body.querySelectorAll<HTMLElement>('[role="dialog"] button')).find(
+    (button) => button.textContent === label
+  )
+const openUnsyncCopyConfirm = () => {
+  mockRequestUnsyncCopy.mockImplementationOnce(
+    ({onConfirmNeeded}: {onConfirmNeeded: (c: typeof confirm) => void}) => onConfirmNeeded(confirm)
+  )
+  const wrapper = mountFocusedView(syncedCopy)
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_DIALOG_EVENT, {detail: 'unsyncCopy'}))
+  })
+  return wrapper.host
+}
+
+test('the dialog event for unsyncCopy opens the confirm when the check says to ask', () => {
+  const host = openUnsyncCopyConfirm()
+  expect(mockRequestUnsyncCopy).toHaveBeenCalledWith(
+    expect.objectContaining({hostEditor: host, pageCode: 7})
+  )
+  const dialog = document.body.querySelector<HTMLElement>('[role="dialog"]')!
+  expect(dialog.textContent).toContain(confirm.title)
+  expect(dialog.textContent).toContain(confirm.body)
+  expect(dialogButton('Keep synced')).toBeDefined()
+  expect(dialogButton('Unsync and show')).toBeDefined()
+  expect(copyButton()).toBeDefined()
+})
+
+test('Keep synced closes the confirm and leaves the block', () => {
+  const host = openUnsyncCopyConfirm()
+  act(() => dialogButton('Keep synced')!.click())
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+  expect(findLinkPositions(host)).toHaveLength(1)
+})
+
+test('Unsync and show unsyncs the copy', () => {
+  const host = openUnsyncCopyConfirm()
+  act(() => dialogButton('Unsync and show')!.click())
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+  expect(findLinkPositions(host)).toEqual([])
+  expect(hostBlocks(host).slice(0, 2)).toEqual(['', 'Sev 1: page the on-call lead.'])
+})
+
+test('confirming after the copy was removed does nothing', () => {
+  const host = openUnsyncCopyConfirm()
+  const linkPos = findLinkPositions(host)[0]!
+  act(() => {
+    host.view.dispatch(
+      host.state.tr.delete(linkPos, linkPos + host.state.doc.nodeAt(linkPos)!.nodeSize)
+    )
+  })
+  const before = host.state.doc
+  act(() => dialogButton('Unsync and show')!.click())
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+  expect(host.state.doc.eq(before)).toBe(true)
 })

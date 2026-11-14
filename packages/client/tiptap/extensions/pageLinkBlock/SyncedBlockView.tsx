@@ -4,9 +4,12 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
 import {isValidPageCode} from './isValidPageCode'
+import {SYNCED_BLOCK_DIALOG_EVENT, type SyncedBlockDialogKind} from './openSyncedBlockDialog'
+import {requestSyncedBlockUnsyncCopy} from './requestSyncedBlockUnsyncCopy'
 import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
+import {type SyncedBlockDialog, SyncedBlockDialogs} from './SyncedBlockDialogs'
 import type {SyncedBlockChrome} from './SyncedBlockEditor'
 import {SyncedBlockMoreMenu} from './SyncedBlockMoreMenu'
 import {SyncedBlockNameInput} from './SyncedBlockNameInput'
@@ -36,6 +39,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
   const [placesLabel, setPlacesLabel] = useState<string | null>(null)
+  const [dialog, setDialog] = useState<SyncedBlockDialog | null>(null)
   const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
@@ -68,6 +72,33 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     target.addEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
     return () => target.removeEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
   }, [])
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const target = wrapper.closest('.react-renderer') ?? wrapper
+    const handleDialog = (event: Event) => {
+      const kind = (event as CustomEvent<SyncedBlockDialogKind>).detail
+      if (kind !== 'unsyncCopy') {
+        setDialog({kind})
+        return
+      }
+      requestSyncedBlockUnsyncCopy({
+        atmosphere,
+        hostEditor: editor,
+        getPos,
+        pageCode,
+        onConfirmNeeded: (confirm) => setDialog({kind, ...confirm})
+      })
+    }
+    target.addEventListener(SYNCED_BLOCK_DIALOG_EVENT, handleDialog)
+    return () => target.removeEventListener(SYNCED_BLOCK_DIALOG_EVENT, handleDialog)
+  }, [atmosphere, editor, getPos, pageCode])
+  const isDialogOpen = dialog !== null
+  useEffect(() => {
+    if (!isDialogOpen) return
+    handleMenuOpenChange(true)
+    return () => handleMenuOpenChange(false)
+  }, [isDialogOpen, handleMenuOpenChange])
   useEffect(() => {
     if (openMenus > 0 || isRenaming) return
     const timer = setTimeout(() => {
@@ -161,6 +192,13 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           This synced block can't be shown inside itself.
         </div>
       )}
+      <SyncedBlockDialogs
+        dialog={dialog}
+        hostEditor={editor}
+        getPos={getPos}
+        pageCode={pageCode}
+        onClose={() => setDialog(null)}
+      />
     </NodeViewWrapper>
   )
 }
