@@ -1,6 +1,7 @@
 import '../../__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {Editor} from '@tiptap/core'
+import type {NodeViewProps} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
@@ -9,6 +10,7 @@ import {syncedBlockPlaceholderText} from '../../../pagePlaceholderText'
 import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
+import {SyncedBlockView} from '../SyncedBlockView'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
@@ -18,6 +20,37 @@ jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
 }))
 jest.mock('../../../../components/TipTapEditor/TipTapEditor', () => ({
   TipTapEditor: () => null
+}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
+jest.mock('../SyncedBlockContent', () => ({
+  SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
+    const {useEffect} = jest.requireActual<typeof import('react')>('react')
+    useEffect(() => {
+      onChromeChange({editor: mockNestedEditor, isViewOnly: false})
+    }, [onChromeChange])
+    return null
+  }
+}))
+jest.mock('../SyncedBlockPlacesRoot', () => ({
+  SyncedBlockPlacesRoot: ({onOpenChange}: {onOpenChange: (open: boolean) => void}) => {
+    const {Menu} = jest.requireActual<typeof import('../../../../ui/Menu/Menu')>(
+      '../../../../ui/Menu/Menu'
+    )
+    const {MenuContent} = jest.requireActual<typeof import('../../../../ui/Menu/MenuContent')>(
+      '../../../../ui/Menu/MenuContent'
+    )
+    const {MenuItem} = jest.requireActual<typeof import('../../../../ui/Menu/MenuItem')>(
+      '../../../../ui/Menu/MenuItem'
+    )
+    return (
+      <Menu onOpenChange={onOpenChange} trigger={<button type='button'>Also on 1 page</button>}>
+        <MenuContent>
+          <MenuItem>Runbook</MenuItem>
+        </MenuContent>
+      </Menu>
+    )
+  }
 }))
 
 type Listener = (payload: {scope: string}) => void
@@ -100,7 +133,14 @@ test('the bar shows Original only on the original', () => {
   const onCopy = jest.fn()
   act(() =>
     root.render(
-      <SyncedBlockBar name='Escalation path' isOriginal isViewOnly={false} onCopy={onCopy} />
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly={false}
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
     )
   )
   expect(text()).toContain('Escalation path')
@@ -111,7 +151,16 @@ test('the bar shows Original only on the original', () => {
   })
   expect(onCopy).toHaveBeenCalledTimes(1)
   act(() =>
-    root.render(<SyncedBlockBar name='' isOriginal={false} isViewOnly={false} onCopy={onCopy} />)
+    root.render(
+      <SyncedBlockBar
+        name=''
+        isOriginal={false}
+        isViewOnly={false}
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
+    )
   )
   expect(text()).toContain('Synced block')
   expect(text()).not.toContain('Original')
@@ -120,7 +169,16 @@ test('the bar shows Original only on the original', () => {
 test('a read-only block shows a View only bar that keeps Copy and sync', () => {
   const onCopy = jest.fn()
   act(() =>
-    root.render(<SyncedBlockBar name='Escalation path' isOriginal isViewOnly onCopy={onCopy} />)
+    root.render(
+      <SyncedBlockBar
+        name='Escalation path'
+        isOriginal
+        isViewOnly
+        places={null}
+        more={null}
+        onCopy={onCopy}
+      />
+    )
   )
   expect(text()).toContain('View only')
   expect(text()).not.toContain('Original')
@@ -215,4 +273,53 @@ test('a viewer sees no placeholder in an empty block', () => {
       pos: firstParagraphPos + doc.child(1).nodeSize
     })
   ).toBe('')
+})
+
+const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+
+const mountView = () => {
+  const host = new Editor({
+    element: document.createElement('div'),
+    extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
+    content: {type: 'doc', content: [{type: 'paragraph'}, syncedLink]}
+  })
+  const linkPos = findLinkPositions(host)[0]!
+  mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
+  const props = {
+    node: host.state.doc.nodeAt(linkPos)!,
+    editor: host,
+    getPos: () => linkPos
+  } as unknown as NodeViewProps
+  act(() => root.render(<SyncedBlockView {...props} />))
+}
+
+test('keeps the bar while the places menu is open', async () => {
+  mountView()
+  const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
+  act(() => wrapper.focus())
+  expect(copyButton()).toBeDefined()
+  const placesButton = Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Also on 1 page'
+  )!
+  act(() => {
+    placesButton.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  const menu = document.body.querySelector<HTMLElement>('[role="menu"]')!
+  expect(menu.textContent).toContain('Runbook')
+  act(() => menu.focus())
+  await flushTimers()
+  expect(copyButton()).toBeDefined()
+  expect(document.body.querySelector('[role="menu"]')).not.toBeNull()
+  act(() => {
+    menu.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))
+  })
+  await flushTimers()
+  expect(document.body.querySelector('[role="menu"]')).toBeNull()
+  const outside = document.createElement('button')
+  document.body.appendChild(outside)
+  act(() => outside.focus())
+  await flushTimers()
+  expect(copyButton()).toBeUndefined()
+  expect(text()).toContain('Escalation path')
+  outside.remove()
 })
