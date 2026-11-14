@@ -5,8 +5,10 @@ import {NodeSelection} from '@tiptap/pm/state'
 import StarterKit from '@tiptap/starter-kit'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import type Atmosphere from '../../../Atmosphere'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {serverTipTapExtensions} from '../../../shared/tiptap/serverTipTapExtensions'
+import {openMoveToPageMenu} from '../../blockMove/openMoveToPageMenu'
 import {createBlockSelection, getSelectedBlockRange} from '../../blockSelection/blockSelectionState'
 import {countBlocks} from '../../blockSelection/blockUnits'
 import DragHandleMenu from '../DragHandleMenu'
@@ -28,6 +30,9 @@ jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: () => jest.fn()
 }))
+jest.mock('../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
+
+const atmosphere = {} as Atmosphere
 
 const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
 const h = (level: number, text: string): JSONContent => ({
@@ -86,6 +91,8 @@ const openMenuOnSelection = async (blocks: JSONContent[], first: number, last: n
         anchorElement={anchor}
         canCreateSubPage
         selection={{range, count: countBlocks(doc, range)}}
+        atmosphere={atmosphere}
+        pageId='page:1'
       />
     )
     await tick()
@@ -128,6 +135,7 @@ const texts = () => {
 }
 
 afterEach(async () => {
+  jest.clearAllMocks()
   await act(async () => {
     root?.unmount()
     root = undefined
@@ -143,11 +151,12 @@ afterAll(async () => {
 })
 
 describe('the menu on a block selection', () => {
-  test('counts the blocks and offers only Duplicate and Delete', async () => {
+  test('counts the blocks and offers only Duplicate, Move to… and Delete', async () => {
     await openMenuOnSelection([callout('one'), p('two'), p('three'), p('four')], 1, 3)
     expect(header()).toBe('3 blocks')
     expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
       'Duplicate',
+      'Move',
       'Delete'
     ])
     expect(itemNamed('Duplicate blocks')).toBeTruthy()
@@ -210,6 +219,8 @@ describe('the menu on a synced block', () => {
           anchorElement={anchor}
           canCreateSubPage
           selection={null}
+          atmosphere={atmosphere}
+          pageId='page:1'
         />
       )
       await tick()
@@ -342,4 +353,83 @@ describe('the menu on a synced block', () => {
     const {selection} = host.state
     expect(selection instanceof NodeSelection && selection.from === pos).toBe(true)
   })
+})
+
+const openMenuOnBlock = async (blocks: JSONContent[], index: number, editable = true) => {
+  const activeEditor = new Editor({
+    element: document.body.appendChild(document.createElement('div')),
+    extensions,
+    editable,
+    content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
+  })
+  editor = activeEditor
+  const {doc} = activeEditor.state
+  let pos = 0
+  for (let i = 0; i < index; i++) pos += doc.child(i).nodeSize
+  const node = doc.child(index)
+  const host = document.body.appendChild(document.createElement('div'))
+  const anchor = document.body.appendChild(document.createElement('div'))
+  jest
+    .spyOn(anchor, 'getBoundingClientRect')
+    .mockReturnValue({top: 10, left: 20, width: 24, height: 24} as DOMRect)
+  await act(async () => {
+    root = createRoot(host)
+    root.render(
+      <DragHandleMenu
+        editor={activeEditor}
+        node={node}
+        pos={pos}
+        onClose={jest.fn()}
+        anchorElement={anchor}
+        canCreateSubPage
+        selection={null}
+        atmosphere={atmosphere}
+        pageId='page:1'
+      />
+    )
+    await tick()
+  })
+  return {activeEditor, pos, node}
+}
+const moveToItem = () => items().find((element) => element.textContent?.startsWith('Move to…'))
+
+describe('Move to…', () => {
+  test('on a block opens the picker for that block at the handle', async () => {
+    const {activeEditor, pos, node} = await openMenuOnBlock([p('one'), p('two')], 2)
+    const item = moveToItem()!
+    expect(item.textContent).toMatch(/\+Shift\+P$/)
+    await click(item)
+    expect(openMoveToPageMenu).toHaveBeenCalledWith({
+      editor: activeEditor,
+      range: {from: pos, to: pos + node.nodeSize, depth: 0},
+      anchorRect: {top: 10, left: 20, width: 24, height: 24},
+      pageId: 'page:1',
+      atmosphere
+    })
+  })
+
+  test('on a selection opens the picker for the whole selection', async () => {
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2)
+    const range = getSelectedBlockRange(editor!.state)
+    await click(moveToItem()!)
+    expect(openMoveToPageMenu).toHaveBeenCalledWith(expect.objectContaining({range}))
+  })
+
+  test('is not offered on the title', async () => {
+    await openMenuOnBlock([p('one')], 0)
+    expect(items().length).toBeGreaterThan(0)
+    expect(moveToItem()).toBeUndefined()
+  })
+
+  test('is not offered in a read-only editor', async () => {
+    await openMenuOnBlock([p('one')], 1, false)
+    expect(items().length).toBeGreaterThan(0)
+    expect(moveToItem()).toBeUndefined()
+  })
+})
+
+test('mod-shift-P opens the picker from the handle menu', async () => {
+  await openMenuOnBlock([p('one')], 1)
+  await pressKey(itemNamed('Duplicate'), 'P', {metaKey: true, shiftKey: true})
+  expect(openMoveToPageMenu).toHaveBeenCalledTimes(1)
 })

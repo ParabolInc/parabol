@@ -27,6 +27,7 @@ import {keepUnownedPageLinksPlugin} from '../pageLinkBlock/keepUnownedPageLinksP
 import {happyWindow} from './installHappyDom'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
 jest.mock('../../blockMove/blockDragSession', () => ({
   endBlockDrag: jest.fn(),
   startBlockDrag: jest.fn()

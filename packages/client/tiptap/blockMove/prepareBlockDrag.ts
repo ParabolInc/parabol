@@ -1,12 +1,10 @@
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import type Atmosphere from '../../Atmosphere'
-import {lookupPageViewerAccess} from '../../hooks/usePageViewerAccess'
 import {getBlockSelectionAround} from '../blockSelection/blockSelectionState'
-import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
+import type {BlockRange} from '../blockSelection/blockUnits'
 import type {BlockDragSession} from './blockDragSession'
-import {getMovableBlocks} from './getMovableBlocks'
-import {trackRange} from './trackRange'
+import {prepareBlockMove} from './prepareBlockMove'
 
 export type BlockDragPlan =
   | {kind: 'refuse'}
@@ -39,28 +37,11 @@ export const prepareBlockDrag = ({
   const isSelectedAlone = around?.from === pos && around.to === pos + node.nodeSize
   const isCanonicalLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical
   if (isCanonicalLink && (!around || isSelectedAlone)) return {kind: 'page'}
-  const from = around?.from ?? pos
-  const to = around?.to ?? pos + node.nodeSize
-  const movable = getMovableBlocks(doc, from, to)
-  const unownedChild = movable.childPages.find(({pageCode}) => {
-    const role = lookupPageViewerAccess(atmosphere, pageCode)
-    return role !== undefined && role !== 'owner'
-  })
-  const refusal = movable.hasUpload
-    ? 'Wait for the upload to finish'
-    : unownedChild
-      ? `Only its owner can move ${unownedChild.title}`
-      : null
-  return {
-    kind: 'blocks',
-    session: {
-      editor,
-      range: trackRange(editor, from, to),
-      sourcePageId: pageId,
-      movable,
-      count: around ? countBlocks(doc, around) : 1
-    },
-    refusal,
-    selection: around
+  const range: BlockRange = around ?? {
+    from: pos,
+    to: pos + node.nodeSize,
+    depth: doc.resolve(pos).depth
   }
+  const {session, refusal} = prepareBlockMove({editor, range, pageId, atmosphere})
+  return {kind: 'blocks', session, refusal, selection: around}
 }

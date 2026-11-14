@@ -31,6 +31,7 @@ import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
 import {BlockArrival} from '../tiptap/extensions/BlockArrival'
 import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
+import {BlockMoveKeys} from '../tiptap/extensions/BlockMoveKeys'
 import {BlockSelection} from '../tiptap/extensions/BlockSelection'
 import {Callout} from '../tiptap/extensions/callout/Callout'
 import {EmbedBlock} from '../tiptap/extensions/embedBlock/EmbedBlock'
@@ -172,6 +173,7 @@ export const useTipTapPageEditor = (
         LoomExtension,
         PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
         BlockSelection,
+        BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
