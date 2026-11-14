@@ -5,6 +5,7 @@ import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetin
 import useAtmosphere from '../hooks/useAtmosphere'
 import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import getUpdatesEmptyState from '../utils/getUpdatesEmptyState'
+import isSeedTask from '../utils/isSeedTask'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import LastRetroEndedAtContext from './LastRetroEndedAtContext'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
@@ -43,6 +44,7 @@ const RetroMeetingUpdates = (props: Props) => {
               node {
                 ...TaskColumns_tasks @arguments(meetingId: $meetingId)
                 id
+                plaintextContent
                 status
                 sortOrder
                 tags
@@ -67,6 +69,7 @@ const RetroMeetingUpdates = (props: Props) => {
     () => getTeamMemberTasks(teamTasks, stageOwnerUserId),
     [teamTasks, stageOwnerUserId]
   )
+  const isTeamWithoutTasks = !endedAt && teamTasks.every(isSeedTask)
   const emptyState = getUpdatesEmptyState(
     teamTasks,
     teamMemberTasks.length,
@@ -80,6 +83,7 @@ const RetroMeetingUpdates = (props: Props) => {
         avatarGroup={avatarGroup}
         emptyState={emptyState}
         endedAt={endedAt}
+        exampleTeamId={isTeamWithoutTasks ? teamId : null}
         headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
         isViewerStageOwner={isViewerStageOwner}
         meetingId={meetingId}

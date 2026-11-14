@@ -1,3 +1,7 @@
+import {
+  SEED_INTEGRATIONS_TASK_TEXT as INTEGRATIONS_TASK_STRING,
+  SEED_TASK_TEXT as NORMAL_TASK_STRING
+} from 'parabol-client/utils/isSeedTask'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
@@ -5,9 +9,6 @@ import appOrigin from '../../../appOrigin'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import loadHTMLConverters from '../../../utils/tiptap/loadHTMLConverters'
-
-const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a meeting, or via an integration`
-const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in Settings > Integrations.`
 
 async function getSeedTasks(teamId: string) {
   const {generateJSON} = await loadHTMLConverters()
