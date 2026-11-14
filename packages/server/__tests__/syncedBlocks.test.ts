@@ -690,8 +690,14 @@ const pollUntil = async <T>(
 const waitForDoc = (pageId: number, predicate: (json: JSONContent) => boolean, timeoutMs = 20000) =>
   pollUntil(() => readDoc(pageId), predicate, timeoutMs)
 
+let unsyncReader: ReturnType<typeof signUp> | undefined
+const getUnsyncReader = () => {
+  unsyncReader ??= signUp()
+  return unsyncReader
+}
+
 const seedUnsync = async (ownerId: string) => {
-  const reader = await signUp()
+  const reader = await getUnsyncReader()
   const [originalHost, openCopy, guardedCopy, linkedCopy] = await Promise.all([
     makePage(ownerId),
     makePage(ownerId),

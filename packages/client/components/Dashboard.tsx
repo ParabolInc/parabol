@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {lazy, useEffect, useRef} from 'react'
+import {lazy, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route, Routes, useParams} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -8,7 +8,7 @@ import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
+import {useOpenSidebarForPagesTrash} from '../hooks/useOpenSidebarForPagesTrash'
 import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
 import DashSidebar from './Dashboard/DashSidebar'
@@ -115,14 +115,7 @@ const Dashboard = (props: Props) => {
   const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
-  const atmosphere = useAtmosphere()
-  useEffect(() => {
-    if (isOpen) return
-    atmosphere.eventEmitter.on('openPagesTrash', toggle)
-    return () => {
-      atmosphere.eventEmitter.off('openPagesTrash', toggle)
-    }
-  }, [atmosphere, isOpen, toggle])
+  useOpenSidebarForPagesTrash(isOpen, toggle)
   const reportsGlow = useReportsLaunchGlow(viewer.lastMetAt ?? null)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
