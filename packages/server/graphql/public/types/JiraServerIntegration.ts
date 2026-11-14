@@ -117,7 +117,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     const {issues} = issueRes
 
     const mappedIssues = issues.map((issue) => {
-      const {project, issuetype, summary, description, updated} = issue.fields
+      const {project, issuetype, summary, description, updated, status} = issue.fields
       return {
         ...issue,
         userId,
@@ -131,6 +131,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
         projectName: project.name,
         issueType: issuetype.id,
         summary,
+        status: status ?? null,
         service: 'jiraServer' as const,
         updatedAt: new Date(updated)
       }

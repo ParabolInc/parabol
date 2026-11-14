@@ -1,15 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import {getLinearRepoName} from '~/utils/getLinearRepoName'
-import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
-import getClickUpTaskLinkTitle from '../integrations/clickup/getClickUpTaskLinkTitle'
-import {DemoIntegration} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import getTaskIntegrationLinkDetails from '../utils/getTaskIntegrationLinkDetails'
 import isTempId from '../utils/relay/isTempId'
 import Ellipsis from './Ellipsis/Ellipsis'
-import JiraIssueLink from './JiraIssueLink'
+import TaskIntegrationStatusPopover from './TaskIntegrationStatusPopover'
 
 interface Props {
   integration: TaskIntegrationLink_integration$key | null
@@ -46,137 +43,30 @@ const TaskIntegrationLink = (props: Props) => {
       </div>
     )
   }
-  const linkClassName = cn(
-    'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
-    className
+  const details = getTaskIntegrationLinkDetails(integration)
+  if (!details) return null
+  const {href, label, title, service, status} = details
+  const link = (
+    <a
+      href={href}
+      rel='noopener noreferrer'
+      target='_blank'
+      title={status ? undefined : title}
+      className={cn(
+        'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
+        className
+      )}
+    >
+      {label}
+      {children}
+    </a>
   )
-  const jira = integration.TaskIntegrationLinkIntegrationJira
-  if (jira) {
-    const {issueKey, projectKey, cloudName} = jira
-    return (
-      <JiraIssueLink
-        issueKey={issueKey}
-        projectKey={projectKey}
-        cloudName={cloudName}
-        className={className}
-      >
-        {children}
-      </JiraIssueLink>
-    )
-  }
-  const jiraServer = integration.TaskIntegrationLinkIntegrationJiraServer
-  if (jiraServer) {
-    const {url, issueKey, projectKey} = jiraServer
-    return (
-      <a
-        href={url}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
-        className={linkClassName}
-      >
-        {`Issue #${issueKey}`}
-        {children}
-      </a>
-    )
-  }
-  const github = integration.TaskIntegrationLinkIntegrationGitHub
-  if (github) {
-    const {repository, number} = github
-    const {nameWithOwner} = repository
-    const href =
-      nameWithOwner === DemoIntegration.GITHUB_REPO
-        ? DemoIntegration.GITHUB_ISSUE_URL
-        : `https://www.github.com/${nameWithOwner}/issues/${number}`
-    return (
-      <a
-        href={href}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`GitHub Issue #${number} on ${nameWithOwner}`}
-        className={linkClassName}
-      >
-        {`Issue #${number}`}
-        {children}
-      </a>
-    )
-  }
-  const gitlab = integration.TaskIntegrationLinkIntegrationGitLab
-  if (gitlab) {
-    const {webPath, iid, webUrl} = gitlab
-    const {fullPath} = parseWebPath(webPath)
-    return (
-      <a
-        href={webUrl}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`GitLab Issue #${iid} on ${fullPath}`}
-        className={linkClassName}
-      >
-        {`Issue #${iid}`}
-        {children}
-      </a>
-    )
-  }
-  const azure = integration.TaskIntegrationLinkIntegrationAzure
-  if (azure) {
-    const {workItemKey, azureProject, url, type} = azure
-    const {organization, name: projectName} = azureProject
-    const integrationType = type.includes('Issue') ? 'Issue' : type
-    const workItemLabel = `${organization}:${workItemKey}`
-    return (
-      <a
-        href={url}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`Azure Item #${workItemLabel} on ${projectName}`}
-        className={linkClassName}
-      >
-        {`${integrationType} #${workItemLabel}`}
-        {children}
-      </a>
-    )
-  }
-  const linear = integration.TaskIntegrationLinkIntegrationLinear
-  if (linear) {
-    const {
-      identifier,
-      team: {name: teamName},
-      linearProject,
-      url
-    } = linear
-    const nameWithTeam = getLinearRepoName(linearProject, teamName)
-    return (
-      <a
-        href={url}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`Linear Issue #${identifier} on ${nameWithTeam}`}
-        className={linkClassName}
-      >
-        {`Issue #${identifier}`}
-        {children}
-      </a>
-    )
-  }
-  const clickUp = integration.TaskIntegrationLinkIntegrationClickUp
-  if (clickUp) {
-    const {clickUpUrl} = clickUp
-    const taskKey = clickUp.customId ?? clickUp.taskId
-    return (
-      <a
-        href={clickUpUrl}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={getClickUpTaskLinkTitle(clickUp)}
-        className={linkClassName}
-      >
-        {`Task ${taskKey}`}
-        {children}
-      </a>
-    )
-  }
-  return null
+  if (!status) return link
+  return (
+    <TaskIntegrationStatusPopover service={service} href={href} label={label} status={status}>
+      {link}
+    </TaskIntegrationStatusPopover>
+  )
 }
 
 graphql`
@@ -184,12 +74,16 @@ graphql`
     issueKey
     projectKey
     cloudName
+    jiraStatus: status {
+      name
+    }
   }
 `
 
 graphql`
   fragment TaskIntegrationLinkIntegrationGitHub on _xGitHubIssue {
     number
+    githubState: state
     repository {
       nameWithOwner
     }
@@ -199,6 +93,7 @@ graphql`
 graphql`
   fragment TaskIntegrationLinkIntegrationGitLab on _xGitLabIssue {
     iid
+    gitlabState: state
     webPath
     webUrl
   }
@@ -210,6 +105,9 @@ graphql`
     issueKey
     projectKey
     url
+    jiraServerStatus: status {
+      name
+    }
   }
 `
 
@@ -222,6 +120,7 @@ graphql`
       name
     }
     type
+    azureState: state
     url
   }
 `
@@ -236,6 +135,9 @@ graphql`
     team {
       name
     }
+    linearState: state {
+      name
+    }
     url
   }
 `
@@ -248,6 +150,9 @@ graphql`
     listName
     folderName
     clickUpUrl: url
+    clickUpStatus: status {
+      name
+    }
   }
 `
 
