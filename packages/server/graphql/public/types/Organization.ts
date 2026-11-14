@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import {getUsageReportLevel} from '../../../license/instanceLicense'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
@@ -57,6 +58,12 @@ const Organization: OrganizationResolvers = {
   isOrgAdmin: async ({id: orgId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     return isUserOrgAdmin(viewerId, orgId, dataLoader)
+  },
+
+  canSignUsageReport: async ({id: orgId}, _args, {authToken, dataLoader}) => {
+    if (!getUsageReportLevel()) return false
+    if (isSuperUser(authToken)) return true
+    return isUserBillingLeader(getUserId(authToken), orgId, dataLoader)
   },
 
   activeTeamCount: async ({id: orgId}, _args, {dataLoader}) => {

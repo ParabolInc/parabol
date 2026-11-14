@@ -16,6 +16,7 @@ import ReportsOrgPicker from './ReportsOrgPicker'
 import ReportsStarterBanner from './ReportsStarterBanner'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
+import SignedUsageReportButton from './SignedUsageReportButton'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsHomeQuery>
@@ -36,6 +37,7 @@ const query = graphql`
       organization(orgId: $orgId) {
         createdAt
         isBillingLeader
+        canSignUsageReport
         ...ReportsStarterBanner_organization
         ...ReportsHeadline_organization
         ...ReportAskBox_organization
@@ -58,6 +60,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
           <h1 className='m-0 font-semibold text-xl'>Reports</h1>
           <ReportsOrgPicker viewerRef={viewer} orgId={orgId} period={period} />
           <span className='flex-1' />
+          {organization?.canSignUsageReport && <SignedUsageReportButton orgId={orgId} />}
           {organization && (
             <ReportPeriodMenu
               period={period}

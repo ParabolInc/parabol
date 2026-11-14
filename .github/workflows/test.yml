@@ -60,6 +60,8 @@ jobs:
         run: pnpm predeploy
 
       - name: Start testing server in background
+        env:
+          PRIVATE_LICENSE_KEY: ${{ secrets.CI_PRIVATE_LICENSE_KEY }}
         run: |
           pnpm start > "$RUNNER_TEMP/server.log" 2>&1 &
           timeout 60 bash -c 'until curl --silent --output /dev/null http://localhost:3000/graphql; do sleep 0.1; done'
