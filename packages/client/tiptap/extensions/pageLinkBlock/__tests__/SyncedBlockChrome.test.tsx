@@ -39,6 +39,12 @@ jest.mock('../requestSyncedBlockUnsyncCopy', () => ({
   requestSyncedBlockUnsyncCopy: (params: unknown) => mockRequestUnsyncCopy(params)
 }))
 jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
+jest.mock('../../../../mutations/useArchivePageMutation', () => ({
+  useArchivePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
+  useUnsyncSyncedBlockMutation: () => [jest.fn(), false]
+}))
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: () => jest.fn()
@@ -681,4 +687,29 @@ test('confirming after the copy was removed does nothing', () => {
   act(() => dialogButton('Unsync and show')!.click())
   expect(document.body.querySelector('[role="dialog"]')).toBeNull()
   expect(host.state.doc.eq(before)).toBe(true)
+})
+
+const openAllDialog = (kind: 'unsyncAll' | 'deleteAll') => {
+  const wrapper = mountFocusedView()
+  act(() => {
+    wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_DIALOG_EVENT, {detail: kind}))
+  })
+  return document.body.querySelector<HTMLElement>('[role="dialog"]')
+}
+
+test('Unsync all opens its dialog while the rows load, and Cancel closes it', () => {
+  const dialog = openAllDialog('unsyncAll')!
+  expect(dialog.querySelector('h2')?.textContent).toBe('Unsync this block everywhere?')
+  expect((dialogButton('Unsync all') as HTMLButtonElement).disabled).toBe(true)
+  act(() => dialogButton('Cancel')!.click())
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
+})
+
+test('Delete all says every page while the rows load, and Cancel closes it', () => {
+  const dialog = openAllDialog('deleteAll')!
+  expect(dialog.querySelector('h2')?.textContent).toBe('Delete this block from every page?')
+  expect(dialog.textContent).toContain('Restoring it puts it back on <Untitled> only.')
+  expect((dialogButton('Delete all') as HTMLButtonElement).disabled).toBe(true)
+  act(() => dialogButton('Cancel')!.click())
+  expect(document.body.querySelector('[role="dialog"]')).toBeNull()
 })

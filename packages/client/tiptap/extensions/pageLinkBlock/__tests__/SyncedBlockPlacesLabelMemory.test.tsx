@@ -30,6 +30,12 @@ jest.mock('../useSyncedBlockPlaces', () => ({
   useSyncedBlockPlaces: () => ({label: 'Also on 2 pages'})
 }))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
+jest.mock('../../../../mutations/useArchivePageMutation', () => ({
+  useArchivePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
+  useUnsyncSyncedBlockMutation: () => [jest.fn(), false]
+}))
 jest.mock('../SyncedBlockContent', () => ({
   SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
     const {useEffect} = jest.requireActual<typeof import('react')>('react')

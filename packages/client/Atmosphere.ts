@@ -151,6 +151,7 @@ export interface AtmosphereEvents {
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
   authChanged: () => void
+  openPagesTrash: () => void
 }
 
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
