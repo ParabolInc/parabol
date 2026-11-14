@@ -1,30 +1,16 @@
 import type {Editor} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
 import {TextSelection} from '@tiptap/pm/state'
-import {indentItem, outdentItem} from './listNestingCommands'
-import {isListNode} from './nestListDrop'
 
-const ITEM_TYPES = new Set(['listItem', 'taskItem'])
+const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList'])
 
-interface ListContext {
-  itemType: 'listItem' | 'taskItem'
-  itemPos: number
-}
-
-// Resolve, from the current selection, the innermost list item and its position.
-// Innermost matters: in a mixed nest both isActive checks are true, but only the
-// deepest item should drive Tab/Shift-Tab.
-const getListContext = (editor: Editor): ListContext | null => {
+// In a mixed nest both isActive checks are true; only the innermost item drives Tab/Shift-Tab
+const getInnermostListItemType = (editor: Editor): 'listItem' | 'taskItem' | null => {
   const {$from} = editor.state.selection
   for (let d = $from.depth; d >= 1; d--) {
-    const node = $from.node(d)
-    if (ITEM_TYPES.has(node.type.name)) {
-      const listNode = $from.node(d - 1)
-      if (!isListNode(listNode)) return null
-      return {
-        itemType: node.type.name === 'taskItem' ? 'taskItem' : 'listItem',
-        itemPos: $from.before(d)
-      }
+    const name = $from.node(d).type.name
+    if (name === 'listItem' || name === 'taskItem') {
+      return LIST_TYPES.has($from.node(d - 1).type.name) ? name : null
     }
   }
   return null
@@ -139,16 +125,9 @@ export const IndentHandler = Extension.create({
   addKeyboardShortcuts() {
     return {
       Tab: ({editor}) => {
-        const ctx = getListContext(editor)
-        if (ctx) {
-          // Adopt the previous item's sublist type if one exists…
-          const tr = indentItem(editor.state, ctx.itemPos)
-          if (tr) {
-            editor.view.dispatch(tr)
-            return true
-          }
-          // …otherwise stock sink (creates a same-type sublist)
-          editor.chain().sinkListItem(ctx.itemType).run()
+        const itemType = getInnermostListItemType(editor)
+        if (itemType) {
+          editor.chain().sinkListItem(itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {
@@ -157,16 +136,9 @@ export const IndentHandler = Extension.create({
         return true
       },
       'Shift-Tab': ({editor}) => {
-        const ctx = getListContext(editor)
-        if (ctx) {
-          // Lift into the ancestor list, adopting its type…
-          const tr = outdentItem(editor.state, ctx.itemPos)
-          if (tr) {
-            editor.view.dispatch(tr)
-            return true
-          }
-          // …otherwise stock lift (top-level list / same-type)
-          editor.chain().liftListItem(ctx.itemType).run()
+        const itemType = getInnermostListItemType(editor)
+        if (itemType) {
+          editor.chain().liftListItem(itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {

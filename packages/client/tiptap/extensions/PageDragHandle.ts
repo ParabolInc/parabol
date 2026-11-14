@@ -23,7 +23,6 @@ import {
 } from '../blockSelection/blockSelectionState'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
-import {isListNode, listNestDropPlugin} from './nestListDrop'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -194,7 +193,6 @@ export const PageDragHandle = Extension.create<Options>({
     let didStartDrag = false
     let isDraggingSelection = false
     let draggedRange: TrackedRange | null = null
-    let draggedList: TrackedRange | null = null
     const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
@@ -319,7 +317,6 @@ export const PageDragHandle = Extension.create<Options>({
       view.dispatch(tr)
 
       if (plan.kind === 'blocks') {
-        draggedList = isListNode(dragHandleNode) ? plan.session.range : null
         e.dataTransfer.setData('text/plain', '__dummy__')
         e.dataTransfer.effectAllowed = 'copyMove'
         startBlockDrag(atmosphere, plan.session, plan.refusal)
@@ -361,7 +358,6 @@ export const PageDragHandle = Extension.create<Options>({
       didStartDrag = false
       isDraggingSelection = false
       draggedRange = null
-      draggedList = null
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
@@ -411,14 +407,8 @@ export const PageDragHandle = Extension.create<Options>({
       ]
     })
 
-    const listNestDrop = Extension.create({
-      name: 'listNestDrop',
-      addProseMirrorPlugins: () => [listNestDropPlugin(() => draggedList)]
-    })
-
     return [
       selectionDrag,
-      listNestDrop,
       DragHandle.configure({
         computePositionConfig: {
           placement: 'left'

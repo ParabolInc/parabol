@@ -153,7 +153,11 @@ const emitTaskItem = (node: JSONContent, state: EmitState): string => {
   children.forEach((child) => {
     if (child.type === 'paragraph') {
       inlineParts.push(emitInlineContent(child.content, state))
-    } else if (child.type === 'taskList') {
+    } else if (
+      child.type === 'taskList' ||
+      child.type === 'bulletList' ||
+      child.type === 'orderedList'
+    ) {
       nestedLists.push(emitBlock(child, state))
     } else {
       inlineParts.push(escapeHtml(getNodeText(child)))

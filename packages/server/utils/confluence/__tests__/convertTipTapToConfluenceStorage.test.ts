@@ -59,6 +59,38 @@ describe('convertTipTapToConfluenceStorage', () => {
     expect(xhtml).toContain('nested todo')
   })
 
+  it('nests bullet/ordered lists inside a task item as real lists', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                {type: 'paragraph', content: [{type: 'text', text: 'parent'}]},
+                {
+                  type: 'orderedList',
+                  content: [
+                    {
+                      type: 'listItem',
+                      content: [{type: 'paragraph', content: [{type: 'text', text: 'sub one'}]}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).toContain('<ac:task-body>parent<ol><li><p>sub one</p></li></ol></ac:task-body>')
+  })
+
   it('links exported children as ri:page and everything else back to Parabol', () => {
     const {xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
     expect(xhtml).toContain('<ri:page ri:content-title="Child page"')

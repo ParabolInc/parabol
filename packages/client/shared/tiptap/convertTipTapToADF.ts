@@ -108,15 +108,25 @@ function convertInlineContent(nodes?: TipTapTextNode[]): AdfNode[] {
 }
 
 // ---------------------------------------------------------------------------
-// List content (recursive — supports mixed nesting)
+// List content
 // ---------------------------------------------------------------------------
 
 const CHECKBOX_PREFIX = (checked: boolean) => (checked ? '☑ ' : '☐ ')
 
-// Convert the children of a bullet/ordered listItem into ADF-legal content.
-// Recurses into nested lists; degrades nested taskLists (illegal in an ADF
-// listItem) to a bulletList. When `checkboxState` is set, the first paragraph
-// is prefixed with a ☑/☐ glyph (used when a taskItem is rendered as a listItem).
+const ADF_LIST_ITEM_BLOCKS = new Set(['bulletList', 'orderedList', 'codeBlock'])
+
+const getInlineTextContent = (node: TipTapContentNode): AdfNode[] => {
+  if (!('content' in node) || !Array.isArray(node.content)) return []
+  const children: unknown[] = node.content
+  return children
+    .filter(
+      (c): c is TipTapTextNode =>
+        typeof c === 'object' && c !== null && 'type' in c && c.type === 'text'
+    )
+    .map(convertTextNode)
+}
+
+// ADF listItems hold only paragraphs, lists and code; a nested taskList becomes a ☑/☐ bulletList
 function convertListItemChildren(
   children: TipTapContentNode[],
   checkboxState?: boolean
@@ -130,15 +140,17 @@ function convertListItemChildren(
       return [{type: 'paragraph', ...(content.length > 0 ? {content} : {})}]
     }
     if (child.type === 'taskList') return [convertTaskList(child, true)]
-    const result = convertNode(child)
-    if (!result) return []
-    return Array.isArray(result) ? result : [result]
+    if (ADF_LIST_ITEM_BLOCKS.has(child.type)) {
+      const result = convertNode(child)
+      if (!result) return []
+      return Array.isArray(result) ? result : [result]
+    }
+    const inline = getInlineTextContent(child)
+    return [{type: 'paragraph', ...(inline.length > 0 ? {content: inline} : {})}]
   })
 }
 
-// Native ADF taskList when every item is inline-only; otherwise degrade to a
-// bulletList with ☑/☐ prefixes (ADF taskItems can't hold blocks, and ADF
-// listItems can't hold taskLists).
+// ADF taskItems hold only inline content
 function convertTaskList(node: TipTapTaskListNode, forceBullet: boolean): AdfNode {
   const needsBullet =
     forceBullet || node.content.some((item) => item.content.some((c) => c.type !== 'paragraph'))
