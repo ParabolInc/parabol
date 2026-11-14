@@ -8,6 +8,7 @@ interface Placements {
     }
   }>
   readonly hiddenCount: number
+  readonly successor: {readonly id: string} | null | undefined
 }
 
 export interface SyncedBlockPlaceRow {
@@ -29,11 +30,17 @@ export interface SyncedBlockPlaces {
 
 const pluralPages = (count: number) => `${count} ${count === 1 ? 'page' : 'pages'}`
 
-const getFooter = (otherCount: number, originalRow: SyncedBlockPlaceRow | undefined) => {
+const getFooter = (
+  otherCount: number,
+  originalRow: SyncedBlockPlaceRow | undefined,
+  isSuccessorHere: boolean
+) => {
   if (otherCount === 0) return 'Use Copy and sync, then paste on another page to share it.'
   if (!originalRow) return ''
   if (originalRow.isInTrash && !originalRow.isThisPage) {
-    return 'Copies keep working. If that page is deleted for good, the copy on this page becomes the original.'
+    return isSuccessorHere
+      ? 'Copies keep working. If that page is deleted for good, the copy on this page becomes the original.'
+      : 'Copies keep working.'
   }
   return `Access comes from ${originalRow.title}.`
 }
@@ -49,7 +56,7 @@ export const getSyncedBlockPlaces = (
     isThisPage: page.id === currentPageId,
     isInTrash: !!page.deletedAt
   }))
-  const {hiddenCount} = placements
+  const {hiddenCount, successor} = placements
   const otherCount = rows.filter((row) => !row.isThisPage).length + hiddenCount
   const originalRow = rows.find((row) => row.isOriginal)
   return {
@@ -57,7 +64,7 @@ export const getSyncedBlockPlaces = (
     otherCount,
     rows,
     hiddenLabel: hiddenCount === 0 ? null : `${pluralPages(hiddenCount)} you can't open`,
-    footer: getFooter(otherCount, originalRow),
+    footer: getFooter(otherCount, originalRow, !!successor && successor.id === currentPageId),
     original: originalRow ? {pageId: originalRow.pageId, title: originalRow.title} : null
   }
 }

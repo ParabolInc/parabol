@@ -419,6 +419,40 @@ test('names the successor the server would promote', async () => {
   expect(successor).toEqual({id: CipherId.toClient(copyC, 'page')})
 })
 
+test("names no successor when the host the server would promote is one the viewer can't open", async () => {
+  const [{userId, cookie}, foreigner] = await Promise.all([signUp(), signUp()])
+  const originalHost = await makePage(userId)
+  const foreignHost = await makePage(foreigner.userId)
+  const copyB = await makePage(userId)
+  const block = await makePage(userId, originalHost, true)
+  await Promise.all([
+    setTitle(originalHost, 'Original host'),
+    setTitle(foreignHost, 'Foreign host'),
+    setTitle(copyB, 'Copy B')
+  ])
+  await pg
+    .insertInto('PageUserAccess')
+    .values({pageId: block, userId: foreigner.userId, role: 'editor'})
+    .execute()
+  await updatePageAccessTable(pg, block, {skipDeleteOld: true})
+  const now = Date.now()
+  await pg
+    .insertInto('PageBacklink')
+    .values([
+      {fromPageId: originalHost, toPageId: block, createdAt: new Date(now - 3000)},
+      {fromPageId: foreignHost, toPageId: block, createdAt: new Date(now - 2000)},
+      {fromPageId: copyB, toPageId: block, createdAt: new Date(now - 1000)}
+    ])
+    .execute()
+  const res = await placements(cookie, block)
+  expect(res.errors).toBeUndefined()
+  const {successor, hiddenCount} = res.data.public.page.syncedBlockPlacements
+  expect(successor).toBeNull()
+  expect(hiddenCount).toBe(1)
+  expect(JSON.stringify(res)).not.toContain(CipherId.toClient(foreignHost, 'page'))
+  expect(JSON.stringify(res)).not.toContain('Foreign host')
+})
+
 test('is null for a viewer without access to the block', async () => {
   const [{userId}, stranger] = await Promise.all([signUp(), signUp()])
   const {block} = await seedPlacements(userId)

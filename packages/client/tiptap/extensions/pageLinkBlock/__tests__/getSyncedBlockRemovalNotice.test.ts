@@ -27,7 +27,7 @@ const notice = ({
     ...others
   ]
   const places = {
-    ...getSyncedBlockPlaces({pages, hiddenCount: hidden}, CURRENT_PAGE_ID),
+    ...getSyncedBlockPlaces({pages, hiddenCount: hidden, successor}, CURRENT_PAGE_ID),
     successor
   }
   const removal = {
