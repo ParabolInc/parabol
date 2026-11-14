@@ -15,7 +15,7 @@ import {type TrackedRange, trackRange} from '../../blockMove/trackRange'
 import {getPageSlug} from '../../getPageSlug'
 import {getSyncedBlockPlaces} from './getSyncedBlockPlaces'
 import {getSyncedBlockRemovalNotice} from './getSyncedBlockRemovalNotice'
-import type {SyncedBlockRemoval} from './syncedBlockRemovalPlugin'
+import {countSyncedLinks, type SyncedBlockRemoval} from './syncedBlockRemovalPlugin'
 
 const SYNCED_BLOCK_REMOVED_SNACK_KEY = 'SyncedBlockRemoved'
 
@@ -44,8 +44,11 @@ const readSyncedBlockPage = async (atmosphere: Atmosphere, pageId: string) => {
     : null
 }
 
+const isBackOnPage = (editor: Editor, pageCode: number) =>
+  countSyncedLinks(editor.state.doc, pageCode) > 0
+
 const reinsertCopy = (editor: Editor, attrs: PageLinkBlockAttrs, gap: TrackedRange) => {
-  if (editor.isDestroyed) return
+  if (editor.isDestroyed || isBackOnPage(editor, Number(attrs.pageCode))) return
   const {state, view} = editor
   const at = gap.current()?.from ?? state.doc.content.size
   const copy = state.schema.nodes.pageLinkBlock!.create({...attrs, canonical: false})
@@ -64,18 +67,23 @@ export const showSyncedBlockRemovalSnack = async ({
   const pageId = GQLID.toKey(pageCode, 'page')
   const page = await readSyncedBlockPage(atmosphere, pageId)
   const placements = page?.syncedBlockPlacements
+  const currentPageId = editor.storage.pageLinkBlock.pageId
+  const promotedHost = placements?.pages.find(
+    ({isOriginal, page}) => isOriginal && page.id !== currentPageId
+  )?.page
   const notice = placements
     ? getSyncedBlockRemovalNotice({
         removal,
         places: {
-          ...getSyncedBlockPlaces(placements, editor.storage.pageLinkBlock.pageId),
-          successor: placements.successor
+          ...getSyncedBlockPlaces(placements, currentPageId),
+          successor: promotedHost ?? placements.successor
         },
         viewerIsOwner: page.access.viewer === 'owner'
       })
     : null
   const isUndoLost = notice?.kind !== 'trash' && editor.isDestroyed
-  if (!notice || notice.kind === 'none' || isUndoLost) {
+  const isBack = !editor.isDestroyed && isBackOnPage(editor, pageCode)
+  if (!notice || notice.kind === 'none' || isUndoLost || isBack) {
     gap.stop()
     return
   }
@@ -84,13 +92,18 @@ export const showSyncedBlockRemovalSnack = async ({
   const release = () => {
     gap.stop()
     editor.off('destroy', removeSnack)
+    editor.off('transaction', removeSnackWhenBack)
     if (releaseShown === release) releaseShown = null
   }
   const removeSnack = () => {
     atmosphere.eventEmitter.emit('removeSnackbar', ({onDismiss}) => onDismiss === release)
     release()
   }
+  const removeSnackWhenBack = () => {
+    if (isBackOnPage(editor, pageCode)) removeSnack()
+  }
   releaseShown = release
+  editor.on('transaction', removeSnackWhenBack)
   if (notice.kind === 'trash') {
     gap.stop()
   } else {

@@ -1,5 +1,6 @@
 import '../../__tests__/installHappyDom'
 import {Editor, type JSONContent} from '@tiptap/core'
+import {NodeSelection} from '@tiptap/pm/state'
 import StarterKit from '@tiptap/starter-kit'
 import {ySyncPluginKey} from '@tiptap/y-tiptap'
 import {
@@ -15,6 +16,8 @@ import syncedBlockPlacesQuery from '../../../../__generated__/SyncedBlockPlacesQ
 import type Atmosphere from '../../../../Atmosphere'
 import type {Snack} from '../../../../components/Snackbar'
 import {dispatchBlockMoveDelete} from '../../../blockMove/blockMoveUndoStack'
+import {deleteBlocks} from '../../BlockSelection'
+import {deleteSyncedBlockFromPage} from '../deleteSyncedBlockFromPage'
 import {PageLinkBlock} from '../PageLinkBlock'
 import {showSyncedBlockRemovalSnack} from '../showSyncedBlockRemovalSnack'
 import type {SyncedBlockRemoval} from '../syncedBlockRemovalPlugin'
@@ -130,6 +133,44 @@ test('ignores a removal of two synced blocks at once', () => {
   expect(removals).toEqual([])
 })
 
+test('ignores a cut, which keeps the block on the clipboard', () => {
+  const {page, removals} = recordRemovals([paragraph('Above'), syncedCopy, paragraph('Below')])
+  page.view.dispatch(deleteLinkAt(page, firstLinkPos(page)).setMeta('uiEvent', 'cut'))
+  expect(linksIn(page)).toEqual([])
+  expect(removals).toEqual([])
+})
+
+test('ignores a delete that takes other blocks with the synced block', () => {
+  const {page, removals} = recordRemovals([
+    paragraph('Above'),
+    paragraph('One'),
+    syncedCopy,
+    paragraph('Two'),
+    paragraph('Below')
+  ])
+  const {doc} = page.state
+  const from = doc.child(0).nodeSize
+  const to = from + doc.child(1).nodeSize + doc.child(2).nodeSize + doc.child(3).nodeSize
+  deleteBlocks({editor: page, range: {from, to, depth: 0}})
+  expect(linksIn(page)).toEqual([])
+  expect(removals).toEqual([])
+})
+
+test('reports a node-selected synced block removed with Delete', () => {
+  const {page, removals} = recordRemovals([paragraph('Above'), syncedCopy, paragraph('Below')])
+  const pos = firstLinkPos(page)
+  page.view.dispatch(page.state.tr.setSelection(NodeSelection.create(page.state.doc, pos)))
+  page.commands.deleteSelection()
+  expect(removals).toMatchObject([{pageCode: 7, pos}])
+})
+
+test('reports a synced block removed from its menu', () => {
+  const {page, removals} = recordRemovals([paragraph('Above'), syncedCopy, paragraph('Below')])
+  const pos = firstLinkPos(page)
+  deleteSyncedBlockFromPage(page, pos, 7)
+  expect(removals).toMatchObject([{pageCode: 7, pos}])
+})
+
 describe('the removal snack', () => {
   const placesData = {
     public: {
@@ -148,7 +189,11 @@ describe('the removal snack', () => {
     }
   }
 
-  const mountWithSnack = (fetchFromNetwork: jest.Mock, isStoreLoaded: boolean) => {
+  const mountWithSnack = (
+    fetchFromNetwork: jest.Mock,
+    isStoreLoaded: boolean,
+    storeData: typeof placesData = placesData
+  ) => {
     const environment = new Environment({
       network: Network.create(fetchFromNetwork),
       store: new Store(new RecordSource())
@@ -157,7 +202,7 @@ describe('the removal snack', () => {
       const operation = createOperationDescriptor(getRequest(syncedBlockPlacesQuery), {
         pageId: 'page:7'
       })
-      environment.commitPayload(operation, placesData)
+      environment.commitPayload(operation, storeData)
     }
     const emit = jest.fn()
     const atmosphere = Object.assign(environment, {eventEmitter: {emit}}) as unknown as Atmosphere
@@ -174,7 +219,16 @@ describe('the removal snack', () => {
     )
     const lastSnack = () =>
       emit.mock.calls.findLast(([event]) => event === 'addSnackbar')?.[1] as Snack | undefined
-    return {page, shown, lastSnack, navigate, executeArchive}
+    const isRemoved = (snack: Snack) => {
+      const shownAt = emit.mock.calls.findIndex(([, payload]) => payload === snack)
+      return emit.mock.calls
+        .slice(shownAt + 1)
+        .some(
+          ([event, filter]) =>
+            event === 'removeSnackbar' && (filter as (s: Snack) => boolean)(snack)
+        )
+    }
+    return {page, shown, lastSnack, isRemoved, navigate, executeArchive}
   }
 
   test('undo re-inserts a removed original as a copy', async () => {
@@ -217,5 +271,42 @@ describe('the removal snack', () => {
     const snack = lastSnack()!
     page.destroy()
     expect(() => snack.action!.callback()).not.toThrow()
+  })
+
+  test('the snack goes away when the block comes back, and its Undo adds no second copy', async () => {
+    const {page, shown, lastSnack, isRemoved} = mountWithSnack(jest.fn(), true)
+    const [original] = linksIn(page)
+    page.view.dispatch(deleteLinkAt(page, original!.pos))
+    await Promise.all(shown)
+    const snack = lastSnack()!
+    expect(isRemoved(snack)).toBe(false)
+    page.commands.undo()
+    expect(linksIn(page)).toHaveLength(1)
+    expect(isRemoved(snack)).toBe(true)
+    snack.action!.callback()
+    expect(linksIn(page)).toHaveLength(1)
+  })
+
+  test('names the page that already holds the original when the store has caught up', async () => {
+    const promoted = {
+      public: {
+        page: {
+          ...placesData.public.page,
+          syncedBlockPlacements: {
+            pages: [
+              {isOriginal: true, page: {id: 'page:9', title: 'Handbook', deletedAt: null}},
+              {isOriginal: false, page: {id: 'page:5', title: 'Wiki', deletedAt: null}}
+            ],
+            hiddenCount: 0,
+            successor: {id: 'page:5', title: 'Wiki'}
+          }
+        }
+      }
+    }
+    const {page, shown, lastSnack} = mountWithSnack(jest.fn(), true, promoted)
+    const [original] = linksIn(page)
+    page.view.dispatch(deleteLinkAt(page, original!.pos))
+    await Promise.all(shown)
+    expect(lastSnack()).toMatchObject({link: {label: 'Handbook'}})
   })
 })

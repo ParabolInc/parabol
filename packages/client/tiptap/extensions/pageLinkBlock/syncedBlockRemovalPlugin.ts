@@ -16,7 +16,7 @@ type OnSyncedBlockRemoved = (removal: SyncedBlockRemoval, editor: Editor) => voi
 
 const isSyncedLink = (node: Node) => node.type.name === 'pageLinkBlock' && !!node.attrs.synced
 
-const countSyncedLinks = (doc: Node, pageCode: number) => {
+export const countSyncedLinks = (doc: Node, pageCode: number) => {
   let count = 0
   doc.descendants((node) => {
     if (isSyncedLink(node) && Number(node.attrs.pageCode) === pageCode) count++
@@ -25,30 +25,29 @@ const countSyncedLinks = (doc: Node, pageCode: number) => {
 }
 
 const isLocalEdit = (tr: Transaction) =>
-  tr.docChanged && !tr.getMeta(ySyncPluginKey) && !tr.getMeta(BLOCK_MOVE_DELETE_META)
+  tr.docChanged &&
+  !tr.getMeta(ySyncPluginKey) &&
+  !tr.getMeta(BLOCK_MOVE_DELETE_META) &&
+  tr.getMeta('uiEvent') !== 'cut'
 
 const findRemoval = (tr: Transaction): SyncedBlockRemoval | null => {
-  const removedByCode = new Map<number, {node: Node; pos: number}[]>()
-  tr.steps.forEach((step, index) => {
+  let removed: {node: Node; pos: number} | null = null
+  for (let index = 0; index < tr.steps.length; index++) {
     const stepDoc = tr.docs[index]!
-    const mapToEnd = tr.mapping.slice(index)
-    step.getMap().forEach((from, to) => {
-      stepDoc.nodesBetween(from, to, (node, pos) => {
-        if (!isSyncedLink(node)) return true
-        if (pos >= from && pos + node.nodeSize <= to) {
-          const pageCode = Number(node.attrs.pageCode)
-          const removed = removedByCode.get(pageCode) ?? []
-          removedByCode.set(pageCode, [...removed, {node, pos: mapToEnd.map(pos, -1)}])
-        }
-        return false
-      })
+    const ranges: [number, number][] = []
+    tr.steps[index]!.getMap().forEach((from, to) => {
+      if (to > from) ranges.push([from, to])
     })
-  })
-  const gone = [...removedByCode].filter(([pageCode]) => countSyncedLinks(tr.doc, pageCode) === 0)
-  if (gone.length !== 1) return null
-  const [pageCode, removed] = gone[0]!
-  if (removed.length !== 1) return null
-  const {node, pos} = removed[0]!
+    for (const [from, to] of ranges) {
+      const node = stepDoc.nodeAt(from)
+      if (removed || !node || !isSyncedLink(node) || from + node.nodeSize !== to) return null
+      removed = {node, pos: tr.mapping.slice(index).map(from, -1)}
+    }
+  }
+  if (!removed) return null
+  const {node, pos} = removed
+  const pageCode = Number(node.attrs.pageCode)
+  if (countSyncedLinks(tr.doc, pageCode) > 0) return null
   return {
     pageCode,
     isOriginal: !!node.attrs.canonical,

@@ -39,8 +39,8 @@ export const keepUnownedPageLinksPlugin = (getViewerAccess: GetPageViewerAccess)
         getCanonicalLinks(newState.doc).map(({node}) => node.attrs.pageCode)
       )
       const linksToKeep = getCanonicalLinks(oldState.doc).filter(({node}) => {
-        const {pageCode} = node.attrs
-        if (remainingCodes.has(pageCode)) return false
+        const {pageCode, synced} = node.attrs
+        if (synced || remainingCodes.has(pageCode)) return false
         const viewerAccess = getViewerAccess(pageCode)
         return viewerAccess !== undefined && viewerAccess !== 'owner'
       })
