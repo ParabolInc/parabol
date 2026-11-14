@@ -13,6 +13,10 @@ import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnowne
 import {PageLinkNodeView} from './PageLinkNodeView'
 import {serializeSyncedBlock} from './serializeSyncedBlock'
 import {stopPageLinkBlockEvent} from './stopPageLinkBlockEvent'
+import {
+  clearDropCursorOverSyncedBlocks,
+  disableDropCursorInSyncedBlock
+} from './syncedBlockDropCursor'
 import {getNestedEditor, syncedBlockEntryPlugin} from './syncedBlockFocus'
 
 declare module '@tiptap/core' {
@@ -94,6 +98,9 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
         }
     }
   },
+  extendNodeSchema(extension) {
+    return extension.name === this.name ? {disableDropCursor: disableDropCursorInSyncedBlock} : {}
+  },
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
     const renderer = ReactNodeViewRenderer(PageLinkNodeView, {
@@ -119,6 +126,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
     return [
       keepUnownedPageLinksPlugin(this.options.getViewerAccess),
       syncedBlockEntryPlugin(),
+      clearDropCursorOverSyncedBlocks(),
       new Plugin({
         props: {
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!
