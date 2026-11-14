@@ -40,26 +40,26 @@ export const reviewTasksExampleQuery = graphql`
 `
 
 interface Props {
-  board: ReactNode
+  render: (example: ReactNode | null) => ReactNode
   queryRef: PreloadedQuery<ReviewTasksExampleQuery>
   teamId: string
 }
 
 const ReviewTasksExample = (props: Props) => {
-  const {board, queryRef, teamId} = props
+  const {queryRef, render, teamId} = props
   const {viewer} = usePreloadedQuery<ReviewTasksExampleQuery>(reviewTasksExampleQuery, queryRef)
   const {archivedTasksCount, teamMember, team} = viewer
   const services = getSendServices(teamMember?.services ?? [])
   const [servicesAtStart] = useState(services)
   const [ownerUserId, setOwnerUserId] = useState<string | null>(null)
   const [isSent, setIsSent] = useState(false)
-  if (archivedTasksCount !== 0 || !teamMember || !team) return board
+  if (archivedTasksCount !== 0 || !teamMember || !team) return render(null)
   const teamMembers = team.teamMembers.map(({userId, user}) => ({userId, ...user}))
   const owner =
     teamMembers.find(({userId}) => userId === (ownerUserId ?? teamMember.userId)) ?? teamMembers[0]
   const newService = services.find((service) => !servicesAtStart.includes(service))
   const orgServices = getOrgSendServices(team.recentOrgTaskCounts)
-  return (
+  return render(
     <section className='flex w-full flex-col items-center overflow-auto px-4 sidebar-left:px-6 pt-8 sidebar-left:pt-[88px] pb-32 text-center'>
       <h2 className='font-semibold sidebar-left:text-xl text-fg-primary text-lg leading-6 sidebar-left:leading-7'>
         No tasks yet — go ahead, poke this one

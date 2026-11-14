@@ -5,6 +5,8 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
+import PhaseHeaderDescription from './PhaseHeaderDescription'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReviewTasksExampleRoot from './ReviewTasksExampleRoot'
 import StageTimerDisplay from './StageTimerDisplay'
@@ -60,7 +62,7 @@ const MeetingUpdatesContent = (props: Props) => {
       )}
     </>
   )
-  return (
+  const layout = (header: ReactNode, body: ReactNode) => (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
@@ -68,7 +70,7 @@ const MeetingUpdatesContent = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          {headerPrompt}
+          {header}
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meetingRef} />
@@ -76,17 +78,25 @@ const MeetingUpdatesContent = (props: Props) => {
               keeps task columns from shifting layout when a horizontal scrollbar appears in
               small viewports. */}
           <MeetingPhaseWrapper className='relative'>
-            <div className='absolute inset-0 flex overflow-auto'>
-              {exampleTeamId ? (
-                <ReviewTasksExampleRoot board={board} teamId={exampleTeamId} />
-              ) : (
-                board
-              )}
-            </div>
+            <div className='absolute inset-0 flex overflow-auto'>{body}</div>
           </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
+  )
+  if (!exampleTeamId) return layout(headerPrompt, board)
+  const teamHeader = (
+    <>
+      <PhaseHeaderTitle>Review Tasks</PhaseHeaderTitle>
+      <PhaseHeaderDescription>Check on your team’s open tasks</PhaseHeaderDescription>
+    </>
+  )
+  return (
+    <ReviewTasksExampleRoot
+      fallback={layout(null, null)}
+      teamId={exampleTeamId}
+      render={(example) => (example ? layout(teamHeader, example) : layout(headerPrompt, board))}
+    />
   )
 }
 
