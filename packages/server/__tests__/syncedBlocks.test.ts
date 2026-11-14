@@ -4,6 +4,7 @@ import {updatePageAccessTable} from '../postgres/updatePageAccessTable'
 import {CipherId} from '../utils/CipherId'
 import {publishPageNotification as publishPageNotificationReal} from '../utils/publishPageNotification'
 import {createNewPage} from '../utils/tiptap/createNewPage'
+import {selectUnsyncOutcomes} from '../utils/tiptap/selectUnsyncOutcomes'
 import {sendPublic, signUp} from './common'
 
 jest.mock('../utils/publishPageNotification', () => ({
@@ -496,4 +497,104 @@ test("counts hosts a token doesn't grant as hidden", async () => {
   const {pages, hiddenCount} = res.data.public.page.syncedBlockPlacements
   expect(pages.map((p: Placement) => p.page.id)).toEqual(toClientIds([originalHost, copyC]))
   expect(hiddenCount).toBe(2)
+})
+
+const READER_PLACEMENTS = `
+  query ReaderPlacements($pageId: ID!) {
+    public {
+      page(pageId: $pageId) {
+        syncedBlockPlacements {
+          pages {
+            hiddenReaderCount
+            page {
+              id
+              access {
+                public
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+type ReaderPlacement = {
+  hiddenReaderCount: number
+  page: {id: string; access: {public: string | null}}
+}
+
+const readerPlacements = async (cookie: string, pageId: number) => {
+  const res = await sendPublic({
+    query: READER_PLACEMENTS,
+    variables: {pageId: CipherId.toClient(pageId, 'page')},
+    cookie
+  })
+  expect(res.errors).toBeUndefined()
+  const {pages} = res.data.public.page.syncedBlockPlacements as {pages: ReaderPlacement[]}
+  return (id: number) => pages.find((p) => p.page.id === CipherId.toClient(id, 'page'))!
+}
+
+const shareWith = async (pageId: number, userId: string, role: 'viewer' | 'editor') => {
+  await pg.insertInto('PageUserAccess').values({pageId, userId, role}).execute()
+  await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
+}
+
+const shareByLink = async (pageId: number, invitedBy: string) => {
+  await pg
+    .insertInto('PageExternalAccess')
+    .values({pageId, email: '*', role: 'viewer', invitedBy})
+    .execute()
+}
+
+test('counts readers of a host who cannot open the block', async () => {
+  const {userId, cookie} = await signUp()
+  const {block, originalHost, copyB} = await seedPlacements(userId)
+  const reader = await signUp()
+  await shareWith(copyB, reader.userId, 'viewer')
+  const placementFor = await readerPlacements(cookie, block)
+  expect(placementFor(originalHost).hiddenReaderCount).toBe(0)
+  expect(placementFor(copyB).hiddenReaderCount).toBe(1)
+})
+
+test('counts nobody when the block itself is shared by link', async () => {
+  const {userId, cookie} = await signUp()
+  const {block, originalHost, copyB, copyC} = await seedPlacements(userId)
+  const reader = await signUp()
+  await shareByLink(block, userId)
+  await shareWith(copyB, reader.userId, 'viewer')
+  const placementFor = await readerPlacements(cookie, block)
+  expect([originalHost, copyB, copyC].map((id) => placementFor(id).hiddenReaderCount)).toEqual([
+    0, 0, 0
+  ])
+})
+
+test('a host shared by link reports it through access.public, not the count', async () => {
+  const {userId, cookie} = await signUp()
+  const {block, copyB} = await seedPlacements(userId)
+  await shareByLink(copyB, userId)
+  const placementFor = await readerPlacements(cookie, block)
+  expect(placementFor(copyB).hiddenReaderCount).toBe(0)
+  expect(placementFor(copyB).page.access.public).toBe('viewer')
+})
+
+test("marks a host shared by link while the block isn't", async () => {
+  const {userId} = await signUp()
+  const {block, originalHost, copyB, foreignHost} = await seedPlacements(userId)
+  const reader = await signUp()
+  await shareWith(copyB, reader.userId, 'editor')
+  await shareByLink(copyB, userId)
+  const outcomes = await selectUnsyncOutcomes(pg, block, [originalHost, copyB, foreignHost])
+  expect(Object.fromEntries(outcomes)).toEqual({
+    [originalHost]: {hiddenReaderCount: 0, isPublicWithoutBlock: false},
+    [copyB]: {hiddenReaderCount: 1, isPublicWithoutBlock: true},
+    [foreignHost]: {hiddenReaderCount: 1, isPublicWithoutBlock: false}
+  })
+  await shareByLink(block, userId)
+  const outcomesWhenBlockIsPublic = await selectUnsyncOutcomes(pg, block, [copyB])
+  expect(outcomesWhenBlockIsPublic.get(copyB)).toEqual({
+    hiddenReaderCount: 0,
+    isPublicWithoutBlock: false
+  })
+  expect((await selectUnsyncOutcomes(pg, block, [])).size).toBe(0)
 })

@@ -22,4 +22,8 @@ type SyncedBlockPlacement {
   true if this page holds the original
   """
   isOriginal: Boolean!
+  """
+  How many people who can read this page can't open the block. Zero when the block is shared by link
+  """
+  hiddenReaderCount: Int!
 }
