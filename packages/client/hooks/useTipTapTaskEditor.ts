@@ -10,6 +10,7 @@ import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
@@ -42,6 +43,7 @@ const TASK_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Embed: false,
   'Link to page': false,
   'Create page': false,
+  'Synced block': false,
   Database: false,
   Insights: false,
   Image: true,
@@ -85,6 +87,7 @@ export const useTipTapTaskEditor = (
         StarterKit.configure({link: false}),
         SafeTextStyleKit,
         Highlight,
+        SubscriptSuperscriptKit,
         FileBlock,
         FileUpload.configure({
           scopeKey: teamId,

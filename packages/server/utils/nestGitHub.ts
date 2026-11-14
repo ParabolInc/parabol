@@ -3,6 +3,7 @@ import nestGraphQLEndpoint, {
   type EndpointExecutionResult,
   type Executor
 } from 'nest-graphql-endpoint'
+import {PROVIDER_UNAVAILABLE} from '../integrations/platform/toNestedRequestError'
 import githubSchema from './githubSchema.graphql'
 
 // Resolvers from SDL first definitions
@@ -53,7 +54,7 @@ const executor: Executor<{accessToken: string; headers?: Record<string, string>}
     return {
       errors: [
         {
-          type: 'GitHub is down',
+          type: PROVIDER_UNAVAILABLE,
           message: String((e as any).message)
         }
       ],

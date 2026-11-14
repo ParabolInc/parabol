@@ -2,7 +2,7 @@ import type {meet_v2} from 'googleapis/build/src/apis/meet'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {escapeHtml} from '../../utils/escapeHtml'
-import {generateJSON} from '../../utils/tiptap/generateJSON'
+import loadHTMLConverters from '../../utils/tiptap/loadHTMLConverters'
 
 // Offsets from the start of transcription read better than wall-clock times, which would need a
 // timezone to mean anything to the reader
@@ -54,7 +54,7 @@ const entriesToHtml = (
   return parts.join('')
 }
 
-export const processMeetTranscript = (
+export const processMeetTranscript = async (
   entries: meet_v2.Schema$TranscriptEntry[],
   speakerByParticipant: Map<string, string>,
   transcriptStart: string | null | undefined,
@@ -64,6 +64,7 @@ export const processMeetTranscript = (
   const baseMs = base ? new Date(base).getTime() : Number.NaN
   const html = entriesToHtml(entries, speakerByParticipant, baseMs)
   if (!html) return null
+  const {generateJSON} = await loadHTMLConverters()
   return generateJSON(
     `<h1>${escapeHtml(title)}</h1>${html}`,
     serverTipTapExtensions

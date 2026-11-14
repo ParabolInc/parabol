@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type Editor, useEditorState} from '@tiptap/react'
 import {ExpandMore} from '~/ui/icons'
-import {getSelectionTurnIntoPos} from '../../tiptap/extensions/dragHandleRules'
+import {getSelectionBlockPos} from '../../tiptap/extensions/dragHandleRules'
 import {dispatchTurnInto} from '../../tiptap/extensions/turnInto/dispatchTurnInto'
 import {getTurnIntoTarget, turnBlockInto} from '../../tiptap/extensions/turnInto/turnBlockInto'
 import {findTurnIntoRow, getTurnIntoRows} from '../../tiptap/extensions/turnInto/turnIntoRows'
@@ -20,7 +20,7 @@ export const BubbleTurnIntoMenu = (props: Props) => {
   const selected = useEditorState({
     editor,
     selector: ({editor}) => {
-      const pos = getSelectionTurnIntoPos(editor.view)
+      const pos = getSelectionBlockPos(editor.view)
       const current = pos === null ? null : getTurnIntoTarget(editor.state.doc, pos)
       return pos === null || !current ? null : {pos, current}
     }

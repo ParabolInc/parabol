@@ -2,7 +2,7 @@ import type {DimensionFieldCtx} from '../../platform/ServerIntegrationDefinition
 import listJiraServerDimensionFields from '../listJiraServerDimensionFields'
 
 const loaders: Record<string, {load: jest.Mock}> = {
-  jiraServerIssue: {load: jest.fn()},
+  integrationIssue: {load: jest.fn()},
   jiraServerFieldTypes: {load: jest.fn()}
 }
 const buildCtx = () =>
@@ -26,7 +26,11 @@ describe('listJiraServerDimensionFields', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('lists settable numeric/string fields by name, excluding the vote blacklist', async () => {
-    loaders.jiraServerIssue!.load.mockResolvedValue({issueType: '10001', projectId: '10001'})
+    loaders.integrationIssue!.load.mockResolvedValue({
+      service: 'jiraServer',
+      issueType: '10001',
+      projectId: '10001'
+    })
     loaders.jiraServerFieldTypes!.load.mockResolvedValue([
       {
         fieldId: 'customfield_1',
@@ -50,7 +54,7 @@ describe('listJiraServerDimensionFields', () => {
   })
 
   it('returns no options when the issue is missing', async () => {
-    loaders.jiraServerIssue!.load.mockResolvedValue(null)
+    loaders.integrationIssue!.load.mockResolvedValue(null)
     await expect(listJiraServerDimensionFields(buildCtx())).resolves.toEqual({options: []})
   })
 })

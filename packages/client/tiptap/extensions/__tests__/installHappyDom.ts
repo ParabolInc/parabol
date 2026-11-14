@@ -23,6 +23,7 @@ for (const key of [
   'ResizeObserver',
   'DOMParser',
   'MouseEvent',
+  'ClipboardEvent',
   'PointerEvent',
   'KeyboardEvent',
   'Event',

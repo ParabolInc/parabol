@@ -19,6 +19,12 @@ const OPERATING_SYSTEMS: [name: string, pattern: RegExp][] = [
   ['Linux', /Linux/]
 ]
 
+// A crawler calls itself a bot, crawler or spider with its version or another field right after, or links to a page
+// about itself, as in "bingbot/2.0; +http://www.bing.com/bingbot.htm". No browser does either
+const CRAWLER = /(?:bot|crawler|spider)[/;]|\+https?:\/\//i
+
+export const isCrawler = (userAgent: string | undefined) => !!userAgent && CRAWLER.test(userAgent)
+
 const describeUserAgent = (userAgent: string | undefined) => {
   if (!userAgent) return {}
   const browser = BROWSERS.map(([name, pattern]) => {

@@ -48,11 +48,10 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
         viewerId
       })
     } else if (integration?.service === 'azureDevOps') {
-      const {accessUserId, instanceId, issueKey} = integration
-      const workItem = await dataLoader
-        .get('azureDevOpsWorkItem')
-        .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
-      if (workItem) await refreshAzureDevOpsEstimates(dataLoader, taskId, workItem)
+      const issue = await dataLoader.get('integrationIssue').load({teamId, integration})
+      if (issue?.service === 'azureDevOps') {
+        await refreshAzureDevOpsEstimates(dataLoader, taskId, issue)
+      }
     } else if (integration?.service === 'github') {
       const {accessUserId, nameWithOwner, issueNumber} = integration
       const [githubAuth, estimates] = await Promise.all([
@@ -92,8 +91,8 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           if (previousLabelName && ghIssueLabels.includes(previousLabelName)) return
           // VERY EXPENSIVE. We do this only if we're darn sure we need to
           const taskIds = await dataLoader
-            .get('taskIdsByTeamAndGitHubRepo')
-            .load({teamId, nameWithOwner})
+            .get('taskIdsByTeamAndIntegration')
+            .load({teamId, integration: {service: 'github', nameWithOwner}})
           if (taskIds.length === 0) return
           const similarEstimate = await selectTaskEstimate()
             .where('taskId', 'in', taskIds)

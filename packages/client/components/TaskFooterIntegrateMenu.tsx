@@ -1,22 +1,24 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import type {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import useConnectInMenu from '../integrations/platform/useConnectInMenu'
-import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {getOrgSendServices} from '../utils/getSendServices'
 import TaskFooterIntegrateMenuConnecting from './TaskFooterIntegrateMenuConnecting'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
+  listLabel?: string
   mutationProps: MenuMutationProps
-  task: TaskFooterIntegrateMenu_task$key
   queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
+  teamId: string
+  onPushToIntegration: (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum
+  ) => void
 }
 
 const query = graphql`
@@ -38,43 +40,21 @@ const query = graphql`
 `
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {mutationProps, task: taskRef, queryRef} = props
+  const {
+    listLabel = 'Send with your credentials',
+    mutationProps,
+    queryRef,
+    teamId,
+    onPushToIntegration
+  } = props
   const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef)
   const {viewer} = data
-  const task = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenu_task on Task {
-        id
-        teamId
-      }
-    `,
-    taskRef
-  )
-  const atmosphere = useAtmosphere()
   const connectInMenu = useConnectInMenu(mutationProps)
   const {state: connectState} = connectInMenu
 
   const {viewerTeamMember} = viewer
   const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
   if (!viewerTeamMember) return null
-  const {teamId, id: taskId} = task
-  const {submitMutation, onError, onCompleted} = mutationProps
-
-  const handlePushToIntegration = (
-    integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum
-  ) => {
-    const variables = {
-      integrationRepoId,
-      taskId: taskId,
-      integrationProviderService: integrationProviderService
-    }
-    submitMutation()
-    CreateTaskIntegrationMutation(atmosphere, variables, {
-      onError,
-      onCompleted
-    })
-  }
 
   if (connectState.phase === 'waiting') {
     return (
@@ -88,7 +68,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
-    const label = 'Send with your credentials'
     return (
       <TaskFooterIntegrateMenuList
         failure={failure}
@@ -96,8 +75,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         mutationProps={mutationProps}
         placeholder={placeholder}
         teamMemberRef={viewerTeamMember}
-        onPushToIntegration={handlePushToIntegration}
-        label={label}
+        onPushToIntegration={onPushToIntegration}
+        label={listLabel}
       />
     )
   }

@@ -1,5 +1,4 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import {Window} from 'happy-dom'
 import mime from 'mime-types'
 
 const validateAvatarUpload = async (
@@ -14,6 +13,8 @@ const validateAvatarUpload = async (
     throw new Error(`unable to determine extension for ${contentType}`)
   }
   if (ext === 'svg') {
+    // happy-dom is megabytes of code, so the first SVG evaluates it instead of every server's startup
+    const {Window} = await import(/* webpackMode: "eager" */ 'happy-dom')
     const localWindow = new Window()
     try {
       const safeBuffer = await sanitizeSVG(buffer, localWindow as any)

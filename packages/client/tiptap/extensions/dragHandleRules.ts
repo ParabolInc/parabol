@@ -1,7 +1,10 @@
-import {type DragHandleRule, defaultRules} from '@tiptap/extension-drag-handle'
+import {
+  type DragHandleRule,
+  defaultRules,
+  normalizeNestedOptions
+} from '@tiptap/extension-drag-handle'
 import type {ResolvedPos} from '@tiptap/pm/model'
 import type {EditorView} from '@tiptap/pm/view'
-import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
 function isInside($pos: ResolvedPos, depth: number, typeName: string) {
   for (let d = depth - 1; d >= 0; d--) {
@@ -24,6 +27,10 @@ export const pageDragHandleRules: DragHandleRule[] = [
     }
   },
   {
+    id: 'calloutStructure',
+    evaluate: ({node}) => (node.type.name === 'calloutTitle' ? 1000 : 0)
+  },
+  {
     // A quote is one block. Without this the target flips between a line and the
     // whole quote depending on how the pointer approaches the handle.
     id: 'quoteStructure',
@@ -31,11 +38,18 @@ export const pageDragHandleRules: DragHandleRule[] = [
   }
 ]
 
-const DRAG_HANDLE_BASE_SCORE = 1000
-const rules = [...defaultRules, ...pageDragHandleRules]
+export const pageDragHandleNested = {
+  edgeDetection: 'none',
+  rules: pageDragHandleRules
+} as const
 
-export const getSelectionTurnIntoPos = (view: EditorView): number | null => {
-  const {doc, selection} = view.state
+const DRAG_HANDLE_BASE_SCORE = 1000
+const {rules: customRules, defaultRules: withDefaults} =
+  normalizeNestedOptions(pageDragHandleNested)
+const blockRules = withDefaults ? [...defaultRules, ...customRules] : customRules
+
+export const getSelectionBlockPos = (view: EditorView): number | null => {
+  const {selection} = view.state
   const {$from, $to} = selection
   if (!$from.parent.isTextblock || !$from.sameParent($to)) return null
   for (let depth = $from.depth; depth > 0; depth--) {
@@ -53,9 +67,8 @@ export const getSelectionTurnIntoPos = (view: EditorView): number | null => {
       $pos: $from,
       view
     }
-    const deduction = rules.reduce((sum, rule) => sum + rule.evaluate(context), 0)
-    if (deduction >= DRAG_HANDLE_BASE_SCORE) continue
-    return getTurnIntoTarget(doc, pos) ? pos : null
+    const deduction = blockRules.reduce((sum, rule) => sum + rule.evaluate(context), 0)
+    if (deduction < DRAG_HANDLE_BASE_SCORE) return pos
   }
   return null
 }

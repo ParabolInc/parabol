@@ -4,7 +4,7 @@ import listAzureDevOpsDimensionFields from '../listAzureDevOpsDimensionFields'
 const PROJECT_ID = '11111111-1111-4111-8111-111111111111'
 
 const loaders: Record<string, {load: jest.Mock}> = {
-  azureDevOpsWorkItem: {load: jest.fn()},
+  integrationIssue: {load: jest.fn()},
   azureDevOpsEstimateFields: {load: jest.fn()}
 }
 
@@ -33,7 +33,8 @@ const tShirtSize = {fieldId: 'Custom.TShirtSize', label: 'T-Shirt Size', type: '
 
 describe('listAzureDevOpsDimensionFields', () => {
   it('lists the estimate fields of the loaded work item’s own project and type', async () => {
-    loaders.azureDevOpsWorkItem!.load.mockResolvedValue({
+    loaders.integrationIssue!.load.mockResolvedValue({
+      service: 'azureDevOps',
       teamProject: PROJECT_ID,
       type: 'Product Backlog Item'
     })
@@ -42,11 +43,9 @@ describe('listAzureDevOpsDimensionFields', () => {
     await expect(listAzureDevOpsDimensionFields(buildCtx())).resolves.toEqual({
       options: [storyPoints, tShirtSize]
     })
-    expect(loaders.azureDevOpsWorkItem!.load).toHaveBeenCalledWith({
+    expect(loaders.integrationIssue!.load).toHaveBeenCalledWith({
       teamId: 'team1',
-      userId: 'user1',
-      instanceId: 'dev.azure.com/acme',
-      workItemId: '42'
+      integration: azureDevOpsIntegration
     })
     expect(loaders.azureDevOpsEstimateFields!.load).toHaveBeenCalledWith({
       teamId: 'team1',
@@ -58,13 +57,17 @@ describe('listAzureDevOpsDimensionFields', () => {
   })
 
   it('offers nothing when the work item type has no estimate fields', async () => {
-    loaders.azureDevOpsWorkItem!.load.mockResolvedValue({teamProject: PROJECT_ID, type: 'Epic'})
+    loaders.integrationIssue!.load.mockResolvedValue({
+      service: 'azureDevOps',
+      teamProject: PROJECT_ID,
+      type: 'Epic'
+    })
     loaders.azureDevOpsEstimateFields!.load.mockResolvedValue([])
     await expect(listAzureDevOpsDimensionFields(buildCtx())).resolves.toEqual({options: []})
   })
 
   it('offers nothing, without listing fields, when the work item cannot be loaded', async () => {
-    loaders.azureDevOpsWorkItem!.load.mockResolvedValue(null)
+    loaders.integrationIssue!.load.mockResolvedValue(null)
     await expect(listAzureDevOpsDimensionFields(buildCtx())).resolves.toEqual({options: []})
     expect(loaders.azureDevOpsEstimateFields!.load).not.toHaveBeenCalled()
   })
@@ -76,6 +79,6 @@ describe('listAzureDevOpsDimensionFields', () => {
     await expect(listAzureDevOpsDimensionFields(buildCtx(integration))).resolves.toEqual({
       options: []
     })
-    expect(loaders.azureDevOpsWorkItem!.load).not.toHaveBeenCalled()
+    expect(loaders.integrationIssue!.load).not.toHaveBeenCalled()
   })
 })

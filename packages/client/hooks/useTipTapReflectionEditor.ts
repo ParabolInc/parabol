@@ -11,6 +11,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
@@ -40,6 +41,7 @@ const REFLECTION_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Embed: false,
   'Link to page': false,
   'Create page': false,
+  'Synced block': false,
   Database: false,
   Insights: false,
   Image: true,
@@ -125,6 +127,7 @@ export const useTipTapReflectionEditor = (
         }),
         SafeTextStyleKit,
         Highlight,
+        SubscriptSuperscriptKit,
         TiptapLinkExtension.configure({
           openOnClick: false
         })

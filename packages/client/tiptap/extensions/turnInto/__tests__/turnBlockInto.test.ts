@@ -2,9 +2,10 @@ import {Editor, getSchema} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import {Node, type Schema} from '@tiptap/pm/model'
 import {EditorState, TextSelection} from '@tiptap/pm/state'
+import type {EditorView} from '@tiptap/pm/view'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
-import {getSelectionTurnIntoPos} from '../../dragHandleRules'
+import {getSelectionBlockPos} from '../../dragHandleRules'
 import {isLocalEmbedSource, localEmbedSourcesPlugin} from '../../fileBlock/localEmbedSources'
 import {
   canTurnIntoPage,
@@ -497,6 +498,11 @@ describe('what cannot convert', () => {
 })
 
 describe('the block a text selection turns', () => {
+  const getSelectionTurnIntoPos = (view: EditorView) => {
+    const pos = getSelectionBlockPos(view)
+    return pos !== null && getTurnIntoTarget(view.state.doc, pos) ? pos : null
+  }
+
   const findText = (doc: Node, label: string) => {
     let found = -1
     doc.descendants((node, pos) => {

@@ -216,7 +216,7 @@ const inviteToTeamHelper = async (
     return {refusal: {code: 'UNACCEPTED_INVITATION_LIMIT', message}}
   }
 
-  const mailManager = getMailManager()
+  const mailManager = await getMailManager()
   const validations = await Promise.all(candidates.map((email) => mailManager.validateEmail(email)))
   const deliverableEmails = candidates.filter((email, idx) => {
     const {result, didYouMean} = validations[idx]!

@@ -1,9 +1,14 @@
+import {isNodeRangeSelection} from '@tiptap/extension-node-range'
 import {type Editor, useEditorState} from '@tiptap/react'
 import isTextSelected from '../components/TipTapEditor/isTextSelected'
 import {isCustomNodeSelected} from '../tiptap/isCustomNodeSelected'
 
 export const getShouldShow = (editor: Editor) => {
-  if (editor.view.dragging || isCustomNodeSelected(editor)) {
+  if (
+    editor.view.dragging ||
+    isNodeRangeSelection(editor.state.selection) ||
+    isCustomNodeSelected(editor)
+  ) {
     return false
   }
 

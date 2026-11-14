@@ -1,7 +1,8 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
-import {NodeSelection} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, PluginKey, Selection} from '@tiptap/pm/state'
+import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -10,8 +11,19 @@ import type Atmosphere from '../../Atmosphere'
 import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
+import {endBlockDrag, startBlockDrag} from '../blockMove/blockDragSession'
+import {prepareBlockDrag} from '../blockMove/prepareBlockDrag'
+import type {TrackedRange} from '../blockMove/trackRange'
+import {
+  createBlockSelection,
+  getBlockSelectionAround,
+  getDroppedBlockRange,
+  isBlockRun,
+  selectBlocksThrough
+} from '../blockSelection/blockSelectionState'
+import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
-import {pageDragHandleRules} from './dragHandleRules'
+import {pageDragHandleNested} from './dragHandleRules'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -21,6 +33,7 @@ const queryNode = graphql`
         title
         isDatabase
         isMeetingTOC
+        isSyncedBlock
         access {
           viewer
         }
@@ -31,9 +44,58 @@ const queryNode = graphql`
 
 // Approximates a text line so the handle sits at the top of a media block
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
+const SYNCED_BLOCK_HANDLE_OFFSET = 26
+const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
+}
+
+const setDragImage = (dataTransfer: DataTransfer, view: EditorView, positions: number[]) => {
+  const imageWrapper = document.createElement('div')
+  positions.forEach((pos) => {
+    const domNode = view.nodeDOM(pos)
+    if (domNode instanceof HTMLElement) {
+      imageWrapper.appendChild(domNode.cloneNode(true))
+    }
+  })
+  imageWrapper.style.position = 'absolute'
+  imageWrapper.style.top = '-10000px'
+  document.body.appendChild(imageWrapper)
+  dataTransfer.clearData()
+  dataTransfer.setDragImage(imageWrapper, 0, 0)
+  const removeImage = () => {
+    imageWrapper.remove()
+    document.removeEventListener('drop', removeImage)
+    document.removeEventListener('dragend', removeImage)
+  }
+  document.addEventListener('drop', removeImage)
+  document.addEventListener('dragend', removeImage)
+}
+
+const prepareSelectionDrop = (view: EditorView, draggedRange: TrackedRange | null) => {
+  const {doc, selection} = view.state
+  const current = draggedRange?.current()
+  const range = current && {...current, depth: doc.resolve(current.from).depth}
+  if (range && isBlockRun(doc, range)) {
+    const run = createBlockSelection(doc, range)
+    if (!run.eq(selection)) view.dispatch(view.state.tr.setSelection(run))
+    view.dragging = {slice: doc.slice(range.from, range.to), move: true}
+    return
+  }
+  const $pos = doc.resolve(selection.from)
+  const caret = Selection.findFrom($pos, 1, true) ?? Selection.findFrom($pos, -1, true)
+  if (caret) view.dispatch(view.state.tr.setSelection(caret))
+}
+
+const getChildPositions = (view: EditorView, range: BlockRange) => {
+  const $from = view.state.doc.resolve(range.from)
+  const positions: number[] = []
+  for (let pos = range.from, index = $from.index(); pos < range.to; index++) {
+    positions.push(pos)
+    pos += $from.parent.child(index).nodeSize
+  }
+  return positions
 }
 
 interface NodeChangeData {
@@ -45,6 +107,7 @@ interface NodeChangeData {
 type Options = {
   atmosphere: Atmosphere
   pageId: string
+  isNested?: boolean
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',
@@ -100,14 +163,31 @@ export const PageDragHandle = Extension.create<Options>({
     }
   },
 
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('pageTargetDrop'),
+        props: {
+          handleDrop: (_view, event) =>
+            event.target instanceof Element &&
+            !!event.target.closest('[data-drop-in], [data-drop-refused]')
+        }
+      })
+    ]
+  },
+
   addExtensions() {
     const dragHandleElement = document.createElement('div')
     this.storage.dragHandleElement = dragHandleElement
+    if (!this.options.isNested) dragHandleElement.dataset.hostHandle = ''
     let dragHandleNode: Node | null = null
     let dragHandleNodePos: number = -1
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
-    const {atmosphere, pageId} = this.options
+    let didStartDrag = false
+    let isDraggingSelection = false
+    let draggedRange: TrackedRange | null = null
+    const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
       if (!menuRenderer) return
@@ -130,10 +210,26 @@ export const PageDragHandle = Extension.create<Options>({
 
       if (!dragHandleNode || dragHandleNodePos < 0 || !editorRef) return
 
-      editorRef.commands.lockDragHandle()
-
       const node = dragHandleNode
       const pos = dragHandleNodePos
+      const {state, view} = editorRef
+
+      if (e.shiftKey) {
+        const extended = selectBlocksThrough(state, {from: pos, to: pos + node.nodeSize})
+        if (!extended) return
+        view.dispatch(state.tr.setSelection(extended))
+        view.dom.focus({preventScroll: true})
+        return
+      }
+
+      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
+      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
+      const selection =
+        selected && !isSelectedAlone
+          ? {range: selected, count: countBlocks(state.doc, selected)}
+          : null
+
+      editorRef.commands.lockDragHandle()
 
       menuRenderer = new ReactRenderer(DragHandleMenu, {
         editor: editorRef,
@@ -143,7 +239,9 @@ export const PageDragHandle = Extension.create<Options>({
           pos,
           onClose: closeMenu,
           anchorElement: dragHandleElement,
-          canCreateSubPage: !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+          canCreateSubPage:
+            !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0]),
+          selection
         }
       })
 
@@ -162,28 +260,49 @@ export const PageDragHandle = Extension.create<Options>({
     // resolution), persists across plugin rebuilds because it's on the element itself,
     // not managed by any plugin view lifecycle.
     dragHandleElement.addEventListener('dragstart', (e) => {
+      endBlockDrag(atmosphere)
       if (!editorRef || !dragHandleNode || dragHandleNodePos < 0) return
       if (!e.dataTransfer) return
       const {view} = editorRef
       if (view.dragging) return
+      const plan = prepareBlockDrag({
+        editor: editorRef,
+        node: dragHandleNode,
+        pos: dragHandleNodePos,
+        pageId,
+        atmosphere
+      })
+      if (plan.kind === 'refuse') {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        return
+      }
       const {doc} = view.state
+      if (plan.kind === 'blocks' && plan.selection) {
+        // the drag handle's own listener re-selects a nested run at depth 0
+        e.stopImmediatePropagation()
+        const {from, to} = plan.selection
+        setDragImage(e.dataTransfer, view, getChildPositions(view, plan.selection))
+        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.effectAllowed = 'copyMove'
+        didStartDrag = true
+        isDraggingSelection = true
+        draggedRange = plan.session.range
+        view.dragging = {slice: doc.slice(from, to), move: true}
+        setTimeout(() => {
+          dragHandleElement.style.pointerEvents = 'none'
+        })
+        startBlockDrag(atmosphere, plan.session, plan.refusal)
+        return
+      }
       const from = dragHandleNodePos
       const to = dragHandleNodePos + dragHandleNode.nodeSize
       const slice = doc.slice(from, to)
 
-      const imageWrapper = document.createElement('div')
-      const domNode = view.nodeDOM(from)
-      if (domNode instanceof HTMLElement) {
-        imageWrapper.appendChild(domNode.cloneNode(true))
-      }
-      imageWrapper.style.position = 'absolute'
-      imageWrapper.style.top = '-10000px'
-      document.body.appendChild(imageWrapper)
-
-      e.dataTransfer.clearData()
-      e.dataTransfer.setDragImage(imageWrapper, 0, 0)
+      setDragImage(e.dataTransfer, view, [from])
 
       // Tells ProseMirror this is an internal drag-move so drop deletes the source
+      didStartDrag = true
       view.dragging = {slice, move: true}
 
       const selection = NodeSelection.create(doc, from)
@@ -191,7 +310,12 @@ export const PageDragHandle = Extension.create<Options>({
       tr.setSelection(selection)
       view.dispatch(tr)
 
-      document.addEventListener('drop', () => imageWrapper.remove(), {once: true})
+      if (plan.kind === 'blocks') {
+        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.effectAllowed = 'copyMove'
+        startBlockDrag(atmosphere, plan.session, plan.refusal)
+        return
+      }
 
       // pageLinkBlock: update Relay store so sidebar drop targets can respond
       if (dragHandleNode.type.name === 'pageLinkBlock') {
@@ -222,6 +346,12 @@ export const PageDragHandle = Extension.create<Options>({
     })
 
     dragHandleElement.addEventListener('dragend', () => {
+      endBlockDrag(atmosphere)
+      if (editorRef && didStartDrag) editorRef.view.dragging = null
+      dragHandleElement.style.pointerEvents = 'auto'
+      didStartDrag = false
+      isDraggingSelection = false
+      draggedRange = null
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
@@ -235,7 +365,44 @@ export const PageDragHandle = Extension.create<Options>({
       })
     })
 
+    const preventShiftClickSelection = (e: MouseEvent) => {
+      if (e.shiftKey) e.preventDefault()
+    }
+
+    const selectionDrag = Extension.create({
+      name: 'selectionDrag',
+      addProseMirrorPlugins: () => [
+        new Plugin({
+          key: new PluginKey('selectionDrag'),
+          view: () => {
+            dragHandleElement.addEventListener('mousedown', preventShiftClickSelection)
+            return {
+              destroy: () => {
+                dragHandleElement.removeEventListener('mousedown', preventShiftClickSelection)
+              }
+            }
+          },
+          props: {
+            handleDOMEvents: {
+              drop: (view) => {
+                if (isDraggingSelection && view.dragging) prepareSelectionDrop(view, draggedRange)
+                return false
+              }
+            }
+          },
+          appendTransaction: (transactions, _oldState, newState) => {
+            if (!isDraggingSelection) return null
+            const range = getDroppedBlockRange(transactions)
+            if (!range) return null
+            isDraggingSelection = false
+            return newState.tr.setSelection(createBlockSelection(newState.doc, range))
+          }
+        })
+      ]
+    })
+
     return [
+      selectionDrag,
       DragHandle.configure({
         computePositionConfig: {
           placement: 'left'
@@ -255,24 +422,41 @@ export const PageDragHandle = Extension.create<Options>({
           if (horizontalRef.tagName === 'LI' && horizontalRef.parentElement) {
             horizontalRef = horizontalRef.parentElement
           }
-          const horizontalRect = horizontalRef.getBoundingClientRect()
+          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
+          const syncedBlock = isNested
+            ? editorRef.view.dom.closest<HTMLElement>('[data-synced-block]')
+            : handleNode?.type.name === 'pageLinkBlock' && handleNode.attrs.synced
+              ? dom.querySelector<HTMLElement>('[data-synced-block]')
+              : null
+          const {right} = horizontalRef.getBoundingClientRect()
+          const handleWidth = dragHandleElement.offsetWidth
+          const blockLeft = syncedBlock?.getBoundingClientRect().left
+          const fitsInsideBlock =
+            !!syncedBlock &&
+            parseFloat(getComputedStyle(syncedBlock).paddingLeft) >=
+              SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
+          const left =
+            blockLeft === undefined
+              ? horizontalRef.getBoundingClientRect().left
+              : isNested && fitsInsideBlock
+                ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
+                : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
           // Media blocks carry no text to anchor to. Without this the walker below finds
           // nothing and the handle never renders for an iframe embed, and anchors to the
           // title line rather than the block top for a card.
-          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
           if (handleNode?.type.name === 'embedBlock') {
             const blockRect = dom.getBoundingClientRect()
             const anchorHeight = Math.min(blockRect.height, DRAG_HANDLE_ANCHOR_HEIGHT)
             return {
               getBoundingClientRect: () => ({
-                x: horizontalRect.x,
+                x: left,
                 y: blockRect.y,
-                width: horizontalRect.width,
+                width: right - left,
                 height: anchorHeight,
                 top: blockRect.top,
-                right: horizontalRect.right,
+                right,
                 bottom: blockRect.top + anchorHeight,
-                left: horizontalRect.left
+                left
               }),
               contextElement: horizontalRef
             }
@@ -290,22 +474,19 @@ export const PageDragHandle = Extension.create<Options>({
           if (!lineRect.height) return null
           return {
             getBoundingClientRect: () => ({
-              x: horizontalRect.x,
+              x: left,
               y: lineRect.y,
-              width: horizontalRect.width,
+              width: right - left,
               height: lineRect.height,
               top: lineRect.top,
-              right: horizontalRect.right,
+              right,
               bottom: lineRect.bottom,
-              left: horizontalRect.left
+              left
             }),
             contextElement: horizontalRef
           }
         },
-        nested: {
-          edgeDetection: 'none',
-          rules: pageDragHandleRules
-        },
+        nested: pageDragHandleNested,
         render: () => {
           dragHandleElement.classList.add('drag-handle', 'hide')
           return dragHandleElement

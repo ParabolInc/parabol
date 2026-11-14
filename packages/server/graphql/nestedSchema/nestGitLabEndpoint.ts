@@ -5,6 +5,7 @@ import nestGraphQLEndpoint, {
   type Executor,
   type NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint'
+import {PROVIDER_UNAVAILABLE} from '../../integrations/platform/toNestedRequestError'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -51,7 +52,7 @@ const defaultExecutor: Executor<{
     return {
       errors: [
         {
-          type: 'GitLab is down',
+          type: PROVIDER_UNAVAILABLE,
           message: String((e as any).message)
         }
       ],

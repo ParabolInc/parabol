@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import type {IconComponent} from '~/ui/icons'
 import {
   AttachFile as AttachFileIcon,
+  Autorenew as AutorenewIcon,
   Checklist as ChecklistIcon,
   Code as CodeIcon,
   ArrowRight as DetailsIcon,
@@ -202,6 +203,34 @@ export const slashCommands = [
             pageCode: -1,
             title: undefined,
             canonical: true
+          })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, pageLinkNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
+        }
+      },
+      {
+        title: 'Synced block',
+        description: 'Content that stays the same on every page',
+        searchTerms: ['sync', 'synced', 'shared', 'reuse'],
+        icon: AutorenewIcon,
+        action: (editor: Editor) => {
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          const pageLinkNode = schema.nodes.pageLinkBlock!.create({
+            pageCode: -1,
+            title: undefined,
+            canonical: true,
+            synced: true
           })
 
           editor

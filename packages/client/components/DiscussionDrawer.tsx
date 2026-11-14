@@ -33,6 +33,7 @@ interface Props {
   // false where the discussion changes as a side effect of navigating the meeting. See
   // DiscussionThreadInput
   autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionDrawer = ({
@@ -46,7 +47,8 @@ const DiscussionDrawer = ({
   activeTab,
   onChangeTab,
   hideDiscussion,
-  autoFocus
+  autoFocus,
+  showLastTopicLine
 }: Props) => {
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
@@ -107,6 +109,7 @@ const DiscussionDrawer = ({
           allowedThreadables={allowedThreadables}
           header={threadHeader}
           autoFocus={autoFocus}
+          showLastTopicLine={showLastTopicLine}
         />
       ) : null}
     </div>

@@ -1,3 +1,4 @@
+import setStorageItem from '../../utils/setStorageItem'
 import {
   CONFLUENCE_EXPORT_BADGE_SUNSET,
   CONFLUENCE_EXPORT_SEEN_KEY
@@ -8,7 +9,7 @@ export const showConfluenceBadge = () =>
   !window.localStorage.getItem(CONFLUENCE_EXPORT_SEEN_KEY)
 
 export const dismissConfluenceBadge = () =>
-  window.localStorage.setItem(CONFLUENCE_EXPORT_SEEN_KEY, '1')
+  setStorageItem('localStorage', CONFLUENCE_EXPORT_SEEN_KEY, '1')
 
 export const ConfluenceNewBadge = () => {
   if (!showConfluenceBadge()) return null

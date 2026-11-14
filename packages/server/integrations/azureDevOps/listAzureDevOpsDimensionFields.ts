@@ -1,6 +1,6 @@
 import type {DimensionFieldCtx, ServiceFieldListing} from '../platform/ServerIntegrationDefinition'
 
-/** Read from the work item's own type, so custom types and inherited processes list what they really have */
+/** Read from the issue's own type, so custom types and inherited processes list what they really have */
 const listAzureDevOpsDimensionFields = async ({
   task,
   dataLoader,
@@ -8,17 +8,15 @@ const listAzureDevOpsDimensionFields = async ({
 }: DimensionFieldCtx): Promise<ServiceFieldListing> => {
   const {integration} = task
   if (integration?.service !== 'azureDevOps') return {options: []}
-  const {accessUserId, instanceId, issueKey} = integration
-  const workItem = await dataLoader
-    .get('azureDevOpsWorkItem')
-    .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
-  if (!workItem) return {options: []}
+  const {accessUserId, instanceId} = integration
+  const issue = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (issue?.service !== 'azureDevOps') return {options: []}
   const options = await dataLoader.get('azureDevOpsEstimateFields').load({
     teamId,
     userId: accessUserId,
     instanceId,
-    projectId: workItem.teamProject,
-    workItemType: workItem.type
+    projectId: issue.teamProject,
+    workItemType: issue.type
   })
   return {options}
 }
