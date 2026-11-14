@@ -1,10 +1,11 @@
-import {type ReactNode, useEffect, useState} from 'react'
+import type {ReactNode} from 'react'
 import {ArrowDropDown} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import menuSectionTitleClass from '../../../ui/Menu/menuSectionTitleClass'
 import {syncedBlockBarButtonClass} from './syncedBlockBarButtonClass'
+import {useReportMenuOpen} from './useReportMenuOpen'
 
 interface Props {
   label: ReactNode
@@ -15,16 +16,11 @@ interface Props {
 
 export const SyncedBlockPlacesMenu = (props: Props) => {
   const {label, isViewOnly, onOpenChange, children} = props
-  const [isOpen, setIsOpen] = useState(false)
-  useEffect(() => {
-    if (!isOpen) return
-    onOpenChange(true)
-    return () => onOpenChange(false)
-  }, [isOpen, onOpenChange])
+  const [isOpen, handleOpenChange] = useReportMenuOpen(onOpenChange)
   return (
     <Menu
       open={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={handleOpenChange}
       trigger={
         <Button className={syncedBlockBarButtonClass(isViewOnly)}>
           <span>{label}</span>

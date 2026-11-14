@@ -25,6 +25,11 @@ jest.mock('../../../../components/TipTapEditor/TipTapEditor', () => ({
   TipTapEditor: () => null
 }))
 jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../SyncedBlockContent', () => ({
   SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
@@ -475,4 +480,42 @@ test('the rename event opens the input', () => {
     wrapper.dispatchEvent(new CustomEvent(SYNCED_BLOCK_RENAME_EVENT))
   })
   expect(nameInput()).not.toBeNull()
+})
+
+test('rename from the more menu leaves the input open and focused', async () => {
+  container.classList.add('react-renderer')
+  mountFocusedView()
+  jest.spyOn(hostRef.current!.view, 'nodeDOM').mockReturnValue(container)
+  const menuOpenAtRename: boolean[] = []
+  container.addEventListener(SYNCED_BLOCK_RENAME_EVENT, () => {
+    menuOpenAtRename.push(!!document.body.querySelector('[role="menu"]'))
+  })
+  const more = container.querySelector<HTMLElement>(
+    'button[aria-label="More options for this synced block"]'
+  )!
+  act(() => more.focus())
+  act(() => {
+    more.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  const menu = document.body.querySelector<HTMLElement>('[role="menu"]')!
+  await flushTimers()
+  expect(copyButton()).toBeDefined()
+  const rename = Array.from(menu.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((item) =>
+    item.textContent?.startsWith('Rename')
+  )!
+  act(() => rename.click())
+  await flushTimers()
+  await flushTimers()
+  expect(menuOpenAtRename).toEqual([false])
+  expect(nameInput()).not.toBeNull()
+  expect(document.activeElement).toBe(nameInput())
+})
+
+test('a view-only bar has no more button', () => {
+  mockChromeState = 'viewOnly'
+  mountFocusedView()
+  expect(text()).toContain('View only')
+  expect(
+    container.querySelector('button[aria-label="More options for this synced block"]')
+  ).toBeNull()
 })

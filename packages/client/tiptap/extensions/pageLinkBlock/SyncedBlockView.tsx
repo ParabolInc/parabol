@@ -8,6 +8,7 @@ import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
 import {SyncedBlockContent} from './SyncedBlockContent'
 import type {SyncedBlockChrome} from './SyncedBlockEditor'
+import {SyncedBlockMoreMenu} from './SyncedBlockMoreMenu'
 import {SyncedBlockNameInput} from './SyncedBlockNameInput'
 import {SyncedBlockPlacesRoot} from './SyncedBlockPlacesRoot'
 import {SyncedBlockState} from './SyncedBlockState'
@@ -103,7 +104,18 @@ export const SyncedBlockView = (props: NodeViewProps) => {
               onOpenChange={handleMenuOpenChange}
             />
           }
-          more={null}
+          more={
+            isViewOnly ? null : (
+              <SyncedBlockMoreMenu
+                hostEditor={editor}
+                getPos={getPos}
+                pageCode={pageCode}
+                isOriginal={node.attrs.canonical === true}
+                currentPageId={editor.storage.pageLinkBlock.pageId}
+                onOpenChange={handleMenuOpenChange}
+              />
+            )
+          }
           renameInput={
             isRenaming && chrome && !isViewOnly ? (
               <SyncedBlockNameInput
