@@ -21,7 +21,8 @@ import {deleteSyncedBlockFromPage} from '../deleteSyncedBlockFromPage'
 import {PageLinkBlock} from '../PageLinkBlock'
 import {showSyncedBlockRemovalSnack} from '../showSyncedBlockRemovalSnack'
 import type {SyncedBlockRemoval} from '../syncedBlockRemovalPlugin'
-import {syncedLink} from './syncedBlockTestHarness'
+import {unsyncSyncedCopy} from '../unsyncSyncedCopy'
+import {mountNested, syncedLink} from './syncedBlockTestHarness'
 
 jest.mock('../PageLinkNodeView', () => ({__esModule: true, PageLinkNodeView: () => null}))
 
@@ -169,6 +170,15 @@ test('reports a synced block removed from its menu', () => {
   const pos = firstLinkPos(page)
   deleteSyncedBlockFromPage(page, pos, 7)
   expect(removals).toMatchObject([{pageCode: 7, pos}])
+})
+
+test('the removal plugin ignores an unsync', () => {
+  const {page, removals} = recordRemovals([paragraph('Above'), syncedCopy, paragraph('Below')])
+  const pos = firstLinkPos(page)
+  mountNested(page, pos, ['Sev 1'])
+  expect(unsyncSyncedCopy(page, pos, 7)).toBe(true)
+  expect(linksIn(page)).toEqual([])
+  expect(removals).toEqual([])
 })
 
 describe('the removal snack', () => {

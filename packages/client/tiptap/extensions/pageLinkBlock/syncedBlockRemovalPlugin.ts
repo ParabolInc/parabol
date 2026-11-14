@@ -4,6 +4,7 @@ import {Plugin, PluginKey, type Transaction} from '@tiptap/pm/state'
 import {ySyncPluginKey} from '@tiptap/y-tiptap'
 import type {PageLinkBlockAttrs} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {BLOCK_MOVE_DELETE_META} from '../../blockMove/blockMoveUndoStack'
+import {SYNCED_BLOCK_UNSYNC_META} from './unsyncSyncedCopy'
 
 export type SyncedBlockRemoval = {
   pageCode: number
@@ -28,6 +29,7 @@ const isLocalEdit = (tr: Transaction) =>
   tr.docChanged &&
   !tr.getMeta(ySyncPluginKey) &&
   !tr.getMeta(BLOCK_MOVE_DELETE_META) &&
+  !tr.getMeta(SYNCED_BLOCK_UNSYNC_META) &&
   tr.getMeta('uiEvent') !== 'cut'
 
 const findRemoval = (tr: Transaction): SyncedBlockRemoval | null => {

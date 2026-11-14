@@ -65,6 +65,13 @@ test('a block that holds only its name duplicates as one empty paragraph', () =>
   expect(getSelectedBlockRange(host.state)?.from).toBe(blockEnd)
 })
 
+test("keeps a first line that isn't a heading", () => {
+  const {host, linkPos} = mountBlock()
+  mountNested(host, linkPos, ['When to escalate', 'Sev 1'], [], {named: false})
+  expect(duplicateSyncedBlockAsPlain(host, linkPos, 7)).toBe(true)
+  expect(children(host)).toEqual(['Above', 'pageLinkBlock', 'When to escalate', 'Sev 1', 'Below'])
+})
+
 test('returns false when the block is not mounted', () => {
   const {host, linkPos} = mountBlock()
   const before = host.state.doc
