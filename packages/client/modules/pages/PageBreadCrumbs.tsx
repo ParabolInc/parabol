@@ -8,7 +8,9 @@ import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {getStrongestRole} from '../../hooks/usePageViewerAccess'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
+import {getBlockDropRefusal} from '../../tiptap/blockMove/getBlockDropRefusal'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -55,6 +57,8 @@ export const PageBreadCrumbs = (props: Props) => {
         ancestors {
           id
           title
+          isDatabase
+          isMeetingTOC
           access {
             viewer
             public
@@ -71,7 +75,13 @@ export const PageBreadCrumbs = (props: Props) => {
   )
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageViewerAccess} = viewer
+  const {
+    draggingPageId,
+    draggingPageViewerAccess,
+    draggingBlocksSourcePageId,
+    draggingBlocksChildPageIds,
+    draggingBlocksRefusal
+  } = viewer
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const {ancestors, id, title, team} = page
   const self = {id, title}
@@ -108,6 +118,34 @@ export const PageBreadCrumbs = (props: Props) => {
       </>
     )
   }
+  const getBlockDropProps = (crumb: (typeof ancestors)[number], canDropPage: boolean) => {
+    const viewerRole = getStrongestRole(crumb.access)
+    if (!draggingBlocksSourcePageId || !viewerRole) {
+      return {
+        'data-drop-in': canDropPage ? crumb.id : undefined,
+        'data-drop-title': crumb.title || '<Untitled>'
+      }
+    }
+    const blockRefusal = getBlockDropRefusal(
+      {
+        pageId: crumb.id,
+        viewerRole,
+        isDatabase: crumb.isDatabase,
+        isMeetingTOC: crumb.isMeetingTOC
+      },
+      {
+        sourcePageId: draggingBlocksSourcePageId,
+        childPageIds: draggingBlocksChildPageIds ?? [],
+        refusal: draggingBlocksRefusal ?? null
+      }
+    )
+    const canDropBlocks = !blockRefusal
+    return {
+      'data-drop-in': canDropPage || canDropBlocks ? crumb.id : undefined,
+      'data-drop-refused': blockRefusal ?? undefined,
+      'data-drop-title': crumb.title || '<Untitled>'
+    }
+  }
   const nextPageAncestors = ancestors.map(({id}) => id)
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
@@ -116,10 +154,7 @@ export const PageBreadCrumbs = (props: Props) => {
     const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && canOpen && hasDragAccess
     return (
       <React.Fragment key={page.id}>
-        <PageDropTarget
-          className='inline rounded-sm'
-          data-drop-in={canDropIn ? page.id : undefined}
-        >
+        <PageDropTarget className='inline rounded-sm' {...getBlockDropProps(page, !!canDropIn)}>
           {page.team && renderTeamCrumb(page.team)}
           <Link
             draggable={false}
@@ -153,7 +188,7 @@ export const PageBreadCrumbs = (props: Props) => {
                 className='cursor-pointer rounded-md bg-surface-document px-1 hover:bg-surface-hover'
                 aria-label='Open ancestor menu'
                 onDragEnter={() => {
-                  if (draggingPageId) {
+                  if (draggingPageId || draggingBlocksSourcePageId) {
                     setIsAncestorsOpen(true)
                   }
                 }}
@@ -173,7 +208,7 @@ export const PageBreadCrumbs = (props: Props) => {
                   <MenuItem key={page.id} className='p-0'>
                     <PageDropTarget
                       className='rounded p-1 hover:bg-surface-hover'
-                      data-drop-in={canDropIn ? page.id : undefined}
+                      {...getBlockDropProps(page, !!canDropIn)}
                     >
                       <Link
                         draggable={false}

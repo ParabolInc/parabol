@@ -1,7 +1,7 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node, ResolvedPos} from '@tiptap/pm/model'
-import {NodeSelection} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, PluginKey} from '@tiptap/pm/state'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -10,6 +10,8 @@ import type Atmosphere from '../../Atmosphere'
 import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
+import {endBlockDrag, startBlockDrag} from '../blockMove/blockDragSession'
+import {prepareBlockDrag} from '../blockMove/prepareBlockDrag'
 import DragHandleMenu from './DragHandleMenu'
 
 const queryNode = graphql`
@@ -110,6 +112,19 @@ export const PageDragHandle = Extension.create<Options>({
     }
   },
 
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('pageTargetDrop'),
+        props: {
+          handleDrop: (_view, event) =>
+            event.target instanceof Element &&
+            !!event.target.closest('[data-drop-in], [data-drop-refused]')
+        }
+      })
+    ]
+  },
+
   addExtensions() {
     const dragHandleElement = document.createElement('div')
     this.storage.dragHandleElement = dragHandleElement
@@ -118,6 +133,7 @@ export const PageDragHandle = Extension.create<Options>({
     let dragHandleNodePos: number = -1
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
+    let didStartDrag = false
     const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
@@ -174,10 +190,23 @@ export const PageDragHandle = Extension.create<Options>({
     // resolution), persists across plugin rebuilds because it's on the element itself,
     // not managed by any plugin view lifecycle.
     dragHandleElement.addEventListener('dragstart', (e) => {
+      endBlockDrag(atmosphere)
       if (!editorRef || !dragHandleNode || dragHandleNodePos < 0) return
       if (!e.dataTransfer) return
       const {view} = editorRef
       if (view.dragging) return
+      const plan = prepareBlockDrag({
+        editor: editorRef,
+        node: dragHandleNode,
+        pos: dragHandleNodePos,
+        pageId,
+        atmosphere
+      })
+      if (plan.kind === 'refuse') {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        return
+      }
       const {doc} = view.state
       const from = dragHandleNodePos
       const to = dragHandleNodePos + dragHandleNode.nodeSize
@@ -196,6 +225,7 @@ export const PageDragHandle = Extension.create<Options>({
       e.dataTransfer.setDragImage(imageWrapper, 0, 0)
 
       // Tells ProseMirror this is an internal drag-move so drop deletes the source
+      didStartDrag = true
       view.dragging = {slice, move: true}
 
       const selection = NodeSelection.create(doc, from)
@@ -204,6 +234,13 @@ export const PageDragHandle = Extension.create<Options>({
       view.dispatch(tr)
 
       document.addEventListener('drop', () => imageWrapper.remove(), {once: true})
+
+      if (plan.kind === 'blocks') {
+        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.effectAllowed = 'copyMove'
+        startBlockDrag(atmosphere, plan.session, plan.refusal)
+        return
+      }
 
       // pageLinkBlock: update Relay store so sidebar drop targets can respond
       if (dragHandleNode.type.name === 'pageLinkBlock') {
@@ -234,6 +271,9 @@ export const PageDragHandle = Extension.create<Options>({
     })
 
     dragHandleElement.addEventListener('dragend', () => {
+      endBlockDrag(atmosphere)
+      if (editorRef && didStartDrag) editorRef.view.dragging = null
+      didStartDrag = false
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
@@ -345,6 +385,10 @@ export const PageDragHandle = Extension.create<Options>({
                 // Allow children of detailsContent (they should be independently draggable)
                 return 0
               }
+            },
+            {
+              id: 'calloutStructure',
+              evaluate: ({node}) => (node.type.name === 'calloutTitle' ? 1000 : 0)
             },
             {
               // A quote is one block. Without this the target flips between a line and the

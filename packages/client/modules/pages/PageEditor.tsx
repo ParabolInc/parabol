@@ -1,8 +1,10 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
+import {useArrivalHighlight} from '../../hooks/useArrivalHighlight'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
+import {BlockDropHint} from './BlockDropHint'
 import {StarterActions} from './StarterActions'
 import {useEditablePage} from './useEditablePage'
 
@@ -16,6 +18,7 @@ export const PageEditor = (props: Props) => {
   const {provider, viewerRef, pageId} = props
   const {editor} = useTipTapPageEditor(provider, {viewerRef, pageId})
   const isEditable = useEditablePage(provider, editor)
+  useArrivalHighlight(editor, pageId)
   if (!editor) return <div>No editor</div>
   return (
     <div className='flex w-full flex-col'>
@@ -23,6 +26,7 @@ export const PageEditor = (props: Props) => {
         editor={editor}
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
+      <BlockDropHint />
       {isEditable && <StarterActions editor={editor} />}
     </div>
   )

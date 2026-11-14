@@ -132,6 +132,28 @@ class ProviderManager {
     }
   }
 
+  openSynced(documentName: string, timeoutMs: number) {
+    return new Promise<HocuspocusProvider | null>((resolve) => {
+      const provider = this.register(documentName)
+      if (provider.synced) {
+        resolve(provider)
+        return
+      }
+      const settle = (result: HocuspocusProvider | null) => {
+        clearTimeout(timer)
+        provider.off('synced', onSynced)
+        provider.off('authenticationFailed', onFailed)
+        if (!result) this.unregister(documentName)
+        resolve(result)
+      }
+      const onSynced = () => settle(provider)
+      const onFailed = () => settle(null)
+      const timer = setTimeout(() => settle(null), timeoutMs)
+      provider.on('synced', onSynced)
+      provider.on('authenticationFailed', onFailed)
+    })
+  }
+
   destroy(documentName: string) {
     const prevProviderEntry = this.providers[documentName!]
     if (!prevProviderEntry) return

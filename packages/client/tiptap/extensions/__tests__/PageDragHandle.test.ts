@@ -2,13 +2,19 @@ import './installHappyDom'
 import {Editor, type JSONContent} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import type {DragHandleRule} from '@tiptap/extension-drag-handle'
+import {Slice} from '@tiptap/pm/model'
 import {NodeSelection} from '@tiptap/pm/state'
 import type Atmosphere from '../../../Atmosphere'
 import {serverTipTapExtensions} from '../../../shared/tiptap/serverTipTapExtensions'
+import {endBlockDrag} from '../../blockMove/blockDragSession'
 import {PageDragHandle} from '../PageDragHandle'
 import {happyWindow} from './installHappyDom'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../blockMove/blockDragSession', () => ({
+  endBlockDrag: jest.fn(),
+  startBlockDrag: jest.fn()
+}))
 jest.mock('../../../hooks/usePageViewerAccess', () => ({
   __esModule: true,
   lookupPageViewerGrant: () => mockPageViewerGrant
@@ -60,6 +66,7 @@ const pressDeleteWithNodeSelected = (activeEditor: Editor, pos: number) => {
 }
 
 afterEach(() => {
+  jest.clearAllMocks()
   editor?.destroy()
   editor = undefined
 })
@@ -117,6 +124,35 @@ describe('the handle', () => {
     expect(scoreAt(4)).toBe(1000)
   })
 
+  test('keeps a callout title with its callout', () => {
+    const {state, extensionManager} = makeEditor({
+      type: 'callout',
+      content: [{type: 'calloutTitle', content: [{type: 'text', text: 'Heads up'}]}, p('body')]
+    })
+    const dragHandle = extensionManager.extensions.find(({name}) => name === 'dragHandle')
+    const rules: DragHandleRule[] = dragHandle?.options.nested.rules
+    const resolveText = (text: string) => {
+      let textPos = -1
+      state.doc.descendants((node, pos) => {
+        if (node.text === text) textPos = pos
+      })
+      return state.doc.resolve(textPos)
+    }
+    const scoreAt = (text: string, depth: number) => {
+      const $pos = resolveText(text)
+      const node = $pos.node(depth)
+      return Math.max(
+        ...rules.map(({evaluate}) =>
+          evaluate({$pos, depth, node} as Parameters<DragHandleRule['evaluate']>[0])
+        )
+      )
+    }
+    expect(resolveText('Heads up').node(2).type.name).toBe('calloutTitle')
+    expect(scoreAt('Heads up', 1)).toBe(0)
+    expect(scoreAt('Heads up', 2)).toBe(1000)
+    expect(scoreAt('body', 2)).toBe(0)
+  })
+
   test('falls back to the block when its text is not laid out', () => {
     const activeEditor = makeEditor(p('word'))
     const {extensions} = activeEditor.extensionManager
@@ -149,11 +185,88 @@ describe('the handle', () => {
     mockPageViewerGrant = null
   })
 
+  test('a refused title drag reaches no later dragstart listener', () => {
+    const activeEditor = makeEditor(p('word'))
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    dragHandle?.options.onNodeChange({
+      editor: activeEditor,
+      node: activeEditor.state.doc.nodeAt(0),
+      pos: 0
+    })
+    const handle = activeEditor.view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')!
+    const laterListener = jest.fn()
+    handle.addEventListener('dragstart', laterListener)
+    const event = new Event('dragstart', {cancelable: true})
+    Object.assign(event, {dataTransfer: {}})
+    handle.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(endBlockDrag).toHaveBeenCalledTimes(1)
+    expect(laterListener).not.toHaveBeenCalled()
+    expect(activeEditor.view.dragging).toBeNull()
+  })
+
+  test('dragend on the handle clears the drag so a second block can be dragged', () => {
+    const activeEditor = makeEditor(p('one'), p('two'))
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    const handle = activeEditor.view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')!
+    const startDrag = (pos: number) => {
+      dragHandle?.options.onNodeChange({
+        editor: activeEditor,
+        node: activeEditor.state.doc.nodeAt(pos),
+        pos
+      })
+      const event = new Event('dragstart', {cancelable: true})
+      const dataTransfer = {clearData: jest.fn(), setDragImage: jest.fn(), setData: jest.fn()}
+      Object.assign(event, {dataTransfer})
+      handle.dispatchEvent(event)
+    }
+    const firstPos = activeEditor.state.doc.child(0).nodeSize
+    startDrag(firstPos)
+    expect(activeEditor.view.dragging).toBeTruthy()
+    handle.dispatchEvent(new Event('dragend'))
+    expect(activeEditor.view.dragging).toBeNull()
+    startDrag(firstPos + activeEditor.state.doc.child(1).nodeSize)
+    expect(activeEditor.view.dragging).toBeTruthy()
+  })
+
   test('hides on the meta Turn into sends', () => {
     const activeEditor = makeEditor(p('word'))
     const handle = activeEditor.view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')
     expect(handle?.style.visibility).toBe('')
     activeEditor.commands.setMeta('hideDragHandle', true)
     expect(handle?.style.visibility).toBe('hidden')
+  })
+})
+
+describe('drops on page targets', () => {
+  const dropOn = (activeEditor: Editor, attribute: string) => {
+    const target = document.createElement('div')
+    target.setAttribute(attribute, 'page:2')
+    const inner = target.appendChild(document.createElement('span'))
+    const event = {target: inner} as unknown as DragEvent
+    return activeEditor.view.someProp('handleDrop', (handleDrop) =>
+      handleDrop(activeEditor.view, event, Slice.empty, true)
+    )
+  }
+
+  test('inside the editor are left to the target', () => {
+    expect(dropOn(makeEditor(p('a')), 'data-drop-in')).toBe(true)
+  })
+
+  test('on a refused target are swallowed too', () => {
+    expect(dropOn(makeEditor(p('a')), 'data-drop-refused')).toBe(true)
+  })
+
+  test('elsewhere are left to ProseMirror', () => {
+    const activeEditor = makeEditor(p('a'))
+    const event = {target: document.createElement('div')} as unknown as DragEvent
+    const claimed = activeEditor.view.someProp('handleDrop', (handleDrop) =>
+      handleDrop(activeEditor.view, event, Slice.empty, true)
+    )
+    expect(claimed).toBeFalsy()
   })
 })

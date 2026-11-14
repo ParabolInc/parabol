@@ -1346,6 +1346,15 @@
   background-color: var(--color-surface-card);
 }
 
+.page-editor .block-arrived {
+  background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+  border-radius: 0.25rem;
+  transition:
+    background-color 300ms,
+    box-shadow 300ms;
+}
+
 /* If a page title is empty, always show it */
 /* If a top-level page block is empty, show when focused */
 /* For other editors, only show placeholder when the whole thing is empty */

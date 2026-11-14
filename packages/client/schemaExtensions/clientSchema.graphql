@@ -134,6 +134,12 @@ extend type User {
   draggingPageParentSection: String
   # The level of access the viewer has on the dragging page
   draggingPageViewerAccess: PageRoleEnum
+  # The page a block drag started from
+  draggingBlocksSourcePageId: ID
+  # Child pages inside the blocks being dragged, as page keys
+  draggingBlocksChildPageIds: [ID!]
+  # Why the dragged blocks cannot be dropped anywhere, if they cannot
+  draggingBlocksRefusal: String
 }
 
 extend type Page {
