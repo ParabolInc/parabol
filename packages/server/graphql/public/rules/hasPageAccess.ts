@@ -1,7 +1,7 @@
 import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
@@ -23,7 +23,7 @@ export const hasPageAccess = <T>(
       return true
     }
     const {authToken, dataLoader} = context
-    const viewerId = getUserId(authToken)
+    const viewerId = getRuleViewerId(authToken)
     const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
     const loaderName = ignorePublicLink ? 'pageGrantByPageIdUserId' : 'pageAccessByPageIdUserId'
     const userRole = await dataLoader.get(loaderName).load({pageId: dbPageId, userId: viewerId})

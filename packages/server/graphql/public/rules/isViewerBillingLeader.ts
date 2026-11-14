@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -13,7 +13,7 @@ export const isViewerBillingLeader = <T>(
     cache: cacheByDotPath(orgIdDotPath)
   })(async (source, args, context: RuleContext) => {
     const {authToken, dataLoader} = context
-    const viewerId = getUserId(authToken)
+    const viewerId = getRuleViewerId(authToken)
     const argVar = getResolverDotPath(orgIdDotPath, source, args)
     // the path may resolve to a single id or an array of ids
     const argVars = (Array.isArray(argVar) ? argVar : [argVar]) as string[]

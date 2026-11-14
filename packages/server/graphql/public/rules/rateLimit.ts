@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 
 interface RateLimitOptions {
@@ -13,7 +13,7 @@ const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
     (_source, _args, context: RuleContext, info) => {
       const {authToken, rateLimiter, ip} = context
       const {fieldName} = info
-      const userId = getUserId(authToken) || ip
+      const userId = getRuleViewerId(authToken) || ip
       const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
       if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {
         return new GraphQLError('Too Many Requests. Contact support to increase rate limit', {

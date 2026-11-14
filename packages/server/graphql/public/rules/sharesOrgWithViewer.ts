@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -8,7 +8,7 @@ export const sharesOrgWithViewer = <T>(userIdDotPath: ResolverDotPath<T>) =>
   rule('sharesOrgWithViewer', {cache: cacheByDotPath(userIdDotPath)})(
     async (source, args, {authToken, dataLoader}: RuleContext) => {
       const userId = getResolverDotPath(userIdDotPath, source, args)
-      const viewerId = getUserId(authToken)
+      const viewerId = getRuleViewerId(authToken)
       if (!viewerId)
         return new GraphQLError('Viewer does not share an organization with user', {
           extensions: {code: 'FORBIDDEN'}

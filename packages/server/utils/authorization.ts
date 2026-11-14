@@ -16,6 +16,9 @@ export const getUserId = (authToken: any) => {
   return userId
 }
 
+// `or` runs every rule, so rules see the server's own token even after isSuperUser passes it
+export const getRuleViewerId = (authToken: AuthToken | null) => getUserIdInternal(authToken)
+
 export const isAuthenticated = (authToken: any): authToken is AuthToken => {
   return typeof authToken?.sub === 'string'
 }

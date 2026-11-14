@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
@@ -28,7 +28,7 @@ export const isUserViewer = <T>(
           })
         userId = ownerId
       }
-      const viewerId = getUserId(authToken)
+      const viewerId = getRuleViewerId(authToken)
       if (userId !== viewerId)
         return new GraphQLError('Viewer is incorrect user', {extensions: {code: 'FORBIDDEN'}})
       return true

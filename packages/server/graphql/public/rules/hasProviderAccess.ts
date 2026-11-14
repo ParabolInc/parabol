@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {getRuleViewerId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
@@ -13,7 +13,7 @@ export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>
     }
 
     const {authToken, dataLoader} = context
-    const viewerId = getUserId(authToken)
+    const viewerId = getRuleViewerId(authToken)
     const [providerId] = CipherId.fromClient(providerIdArg)
     const provider = await dataLoader.get('oAuthProviders').load(providerId)
 

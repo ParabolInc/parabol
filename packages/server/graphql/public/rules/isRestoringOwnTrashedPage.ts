@@ -1,5 +1,5 @@
 import {rule} from 'graphql-shield'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'
 import type {MutationArchivePageArgs} from '../resolverTypes'
@@ -14,6 +14,6 @@ export const isRestoringOwnTrashedPage = rule(`isRestoringOwnTrashedPage`, {cach
     if (action !== 'restore') return false
     if (resourceGrants && !resourceGrants.isUnrestricted()) return false
     const page = await dataLoader.get('pages').load(CipherId.fromClient(pageId)[0])
-    return !!page?.deletedAt && page.deletedBy === getUserId(authToken)
+    return !!page?.deletedAt && page.deletedBy === getRuleViewerId(authToken)
   }
 )

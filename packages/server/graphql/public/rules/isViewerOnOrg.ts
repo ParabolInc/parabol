@@ -1,7 +1,7 @@
 import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
-import {getUserId} from '../../../utils/authorization'
+import {getRuleViewerId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {cacheByDotPath, getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -25,7 +25,7 @@ export const isViewerOnOrg = <T>(
       // Special case for ghost org so users can view meeting template meta
       if (info.operation.operation !== 'mutation' && orgId === 'aGhostOrg') return true
 
-      const viewerId = getUserId(authToken)
+      const viewerId = getRuleViewerId(authToken)
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
