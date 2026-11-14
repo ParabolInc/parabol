@@ -1,14 +1,13 @@
 import dayjs from 'dayjs'
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {getUserId} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
@@ -250,7 +249,6 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const rrule = rruleString ? RRuleSet.parse(rruleString) : null
@@ -258,9 +256,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
-    return standardError(new Error('Meeting not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId, meetingType, meetingSeriesId} = meeting
 
@@ -269,14 +265,16 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     meetingType !== 'retrospective' &&
     meetingType !== 'teamHealth'
   ) {
-    return standardError(new Error('Recurring meeting type is not implemented'), {userId: viewerId})
+    throw new GraphQLError('Recurring meeting type is not implemented', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   if (meetingSeriesId) {
     const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
     if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
-      return standardError(new Error('Only the owner of this meeting series can change it'), {
-        userId: viewerId
+      throw new GraphQLError('Only the owner of this meeting series can change it', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
     const wasCancelled = !!meetingSeries.cancelledAt
@@ -291,10 +289,9 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     }
   } else {
     if (!rrule) {
-      return standardError(
-        new Error('When meeting is not recurring, recurrence rule has to be provided'),
-        {userId: viewerId}
-      )
+      throw new GraphQLError('When meeting is not recurring, recurrence rule has to be provided', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
 
     await startNewMeetingSeries(meeting, rrule, name, {

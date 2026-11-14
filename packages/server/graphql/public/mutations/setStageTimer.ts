@@ -1,10 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import removeScheduledJobs from '../../mutations/helpers/removeScheduledJobs'
 import type {MutationResolvers} from '../resolverTypes'
@@ -15,29 +14,28 @@ const AVG_PING = 150
 const setStageTimer: MutationResolvers['setStageTimer'] = async (
   _source,
   {meetingId, scheduledEndTime: newScheduledEndTime, timeRemaining},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
   const now = new Date()
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // VALIDATION
   if (newScheduledEndTime && newScheduledEndTime.getTime() < now.getTime()) {
-    return standardError(new Error('Time must be in the future'), {userId: viewerId})
+    throw new GraphQLError('Time must be in the future', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const stageRes = findStageById(phases, facilitatorStageId)!
   const {stage} = stageRes
   const {scheduledEndTime, isComplete} = stage
   if (isComplete) {
-    return standardError(new Error('Stage is already complete'), {userId: viewerId})
+    throw new GraphQLError('Stage is already complete', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
@@ -17,7 +18,7 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     .get('sharedIntegrationProviders')
     .load({service: 'mattermost', orgIds: [], teamIds: []})
   if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') {
-    return {error: {message: 'Mattermost integration not found'}}
+    throw new GraphQLError('Mattermost integration not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {id: providerId} = mattermostProvider
 
@@ -45,7 +46,7 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     logError(new Error('Linking Mattermost Channel failed'), {
       tags: {teamId, channelId}
     })
-    return {error: {message: 'Linking failed'}}
+    throw new GraphQLError('Linking failed', {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
 
   const settings = await dataLoader

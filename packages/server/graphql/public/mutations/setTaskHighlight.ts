@@ -1,8 +1,8 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {isTeamMember} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const HIGHLIGHT_TIMEOUT_SECONDS = 300
@@ -16,12 +16,12 @@ const setTaskHighlight: MutationResolvers['setTaskHighlight'] = async (
   const subOptions = {operationId, mutatorId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const [meeting] = await Promise.all([dataLoader.get('newMeetings').load(meetingId)])
 
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) return {error: {message: 'Not on team'}}
+  if (!isTeamMember(authToken, teamId))
+    throw new GraphQLError('Not on team', {extensions: {code: 'FORBIDDEN'}})
 
   const redis = getRedis()
   if (isHighlighted) {

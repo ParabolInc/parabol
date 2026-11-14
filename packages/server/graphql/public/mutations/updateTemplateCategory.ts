@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   type CategoryID,
@@ -20,12 +21,16 @@ const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = asyn
 
   // VALIDATION
   if (!MAIN_CATEGORIES.includes(mainCategory)) {
-    return {error: {message: 'Custom categories not available'}}
+    throw new GraphQLError('Custom categories not available', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const template = await dataLoader.get('meetingTemplates').loadNonNull(templateId)
   if (template.type === 'teamPrompt' && mainCategory !== 'standup') {
-    return {error: {message: 'Standup templates stay in the standup category'}}
+    throw new GraphQLError('Standup templates stay in the standup category', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

@@ -1,25 +1,23 @@
+import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removePokerTemplate: MutationResolvers['removePokerTemplate'] = async (
   _source,
   {templateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const now = new Date()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const template = await dataLoader.get('meetingTemplates').load(templateId)
-  const viewerId = getUserId(authToken)
 
   // AUTH
   if (!template || !template.isActive) {
-    return standardError(new Error('Template not found'), {userId: viewerId})
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION

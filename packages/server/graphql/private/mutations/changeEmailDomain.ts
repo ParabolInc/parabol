@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
@@ -12,13 +13,15 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   const normalizedNewDomain = normalizeDomain(newDomain)
   const normalizedOldDomain = normalizeDomain(oldDomain)
   if (normalizedOldDomain === normalizedNewDomain) {
-    return {error: {message: 'New domain is the same as the old one'}}
+    throw new GraphQLError('New domain is the same as the old one', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   if (normalizedOldDomain.includes('@') || normalizedNewDomain.includes('@')) {
-    return {
-      error: {message: 'Domains should include everything after the @'}
-    }
+    throw new GraphQLError('Domains should include everything after the @', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const [oldDomainUsers, newDomainUsers] = await Promise.all([
@@ -27,9 +30,9 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   ])
 
   if (!oldDomainUsers.length) {
-    return {
-      error: {message: `No users found with oldDomain: ${oldDomain}`}
-    }
+    throw new GraphQLError(`No users found with oldDomain: ${oldDomain}`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
 
   const newDomainUserEmails = newDomainUsers.map(({email}) => email)

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 import normalizeSlugName from './helpers/normalizeSlugName'
@@ -11,13 +12,14 @@ const updateSAML: MutationResolvers['updateSAML'] = async (
 
   // VALIDATION
   const slugName = normalizeSlugName(slug)
-  if (slugName instanceof Error) return {error: {message: slugName.message}}
+  if (slugName instanceof Error)
+    throw new GraphQLError(slugName.message, {extensions: {code: 'BAD_USER_INPUT'}})
 
   const normalizedSamlOrgAttribute = samlOrgAttribute?.trim()
   if (normalizedSamlOrgAttribute === '') {
-    return {
-      error: {message: 'The attribute name cannot be an empty string'}
-    }
+    throw new GraphQLError('The attribute name cannot be an empty string', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const saml = await pg
@@ -29,11 +31,7 @@ const updateSAML: MutationResolvers['updateSAML'] = async (
     .returningAll()
     .executeTakeFirst()
   if (!saml) {
-    return {
-      error: {
-        message: `No SAML found for ${slugName}`
-      }
-    }
+    throw new GraphQLError(`No SAML found for ${slugName}`, {extensions: {code: 'NOT_FOUND'}})
   }
   const samlWithDomains = await dataLoader.get('saml').loadNonNull(slugName)
   return {saml: samlWithDomains}

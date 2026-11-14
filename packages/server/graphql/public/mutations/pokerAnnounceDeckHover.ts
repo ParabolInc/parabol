@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
@@ -19,17 +20,17 @@ const pokerAnnounceDeckHover: MutationResolvers['pokerAnnounceDeckHover'] = asyn
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, phases} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
   if (isPhaseComplete('ESTIMATE', phases)) {
-    return {error: {message: 'Estimate phase is already complete'}}
+    throw new GraphQLError('Estimate phase is already complete', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -37,7 +38,7 @@ const pokerAnnounceDeckHover: MutationResolvers['pokerAnnounceDeckHover'] = asyn
   const {stages} = estimatePhase
   const stage = stages.find((stage) => stage.id === stageId)
   if (!stage) {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION
@@ -51,12 +52,12 @@ const pokerAnnounceDeckHover: MutationResolvers['pokerAnnounceDeckHover'] = asyn
       .exec()) as [RedisPipelineResponse<1 | 0>]
     const numAdded = numAddedRes[1]
     if (numAdded !== 1) {
-      return {error: {message: 'Already hovering'}}
+      throw new GraphQLError('Already hovering', {extensions: {code: 'CONFLICT'}})
     }
   } else {
     const numRemoved = await redis.srem(key, viewerId)
     if (numRemoved !== 1) {
-      return {error: {message: 'Not hovering'}}
+      throw new GraphQLError('Not hovering', {extensions: {code: 'CONFLICT'}})
     }
   }
 

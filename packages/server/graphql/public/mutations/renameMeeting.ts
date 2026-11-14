@@ -1,16 +1,15 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 
 const renameMeeting: MutationResolvers['renameMeeting'] = async (
   _source,
   {name, meetingId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -18,19 +17,18 @@ const renameMeeting: MutationResolvers['renameMeeting'] = async (
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = meeting
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   if (name.length < 2 || name.length > 50) {
-    return {error: {message: 'Invalid meeting name'}}
+    throw new GraphQLError('Invalid meeting name', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const links = linkify.match(name)
   if (links) {
-    return standardError(new Error('Name cannot be a hyperlink'), {userId: viewerId})
+    throw new GraphQLError('Name cannot be a hyperlink', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

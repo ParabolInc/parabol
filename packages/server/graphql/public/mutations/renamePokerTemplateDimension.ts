@@ -1,24 +1,22 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const renamePokerTemplateDimension: MutationResolvers['renamePokerTemplateDimension'] = async (
   _source,
   {dimensionId, name},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-  const viewerId = getUserId(authToken)
 
   // AUTH
   if (!dimension || dimension.removedAt) {
-    return standardError(new Error('Dimension not found'), {userId: viewerId})
+    throw new GraphQLError('Dimension not found', {extensions: {code: 'NOT_FOUND'}})
   }
   // VALIDATION
   const {teamId} = dimension
@@ -32,11 +30,14 @@ const renamePokerTemplateDimension: MutationResolvers['renamePokerTemplateDimens
       .where('id', '=', dimensionId)
       .execute()
   } catch (e) {
-    const error =
-      (e as any).constraint === 'TemplateDimension_teamId_name_removedAt_key'
-        ? 'Duplicate name dimension'
-        : (e as any).message
-    return {error: {message: error}}
+    if (
+      e instanceof Error &&
+      'constraint' in e &&
+      e.constraint === 'TemplateDimension_teamId_name_removedAt_key'
+    ) {
+      throw new GraphQLError('Duplicate name dimension', {extensions: {code: 'CONFLICT'}})
+    }
+    throw e
   }
   dataLoader.clearAll('templateDimensions')
   const data = {dimensionId}

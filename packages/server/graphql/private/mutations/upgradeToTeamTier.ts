@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import type {MutationResolvers} from '../resolverTypes'
@@ -26,13 +26,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const customer = await manager.retrieveCustomer(stripeId)
 
   if (customer.deleted) {
-    return standardError(new Error('Customer has been deleted'), {userId})
+    throw new GraphQLError('Customer has been deleted', {extensions: {code: 'CONFLICT'}})
   }
   const orgId = customer.metadata.orgId
   if (!orgId) {
-    return standardError(new Error('Customer does not have an orgId'), {
-      userId
-    })
+    throw new GraphQLError('Customer does not have an orgId', {extensions: {code: 'CONFLICT'}})
   }
 
   const pg = getKysely()
@@ -44,8 +42,8 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const {tier: oldTier} = organization
 
   if (oldTier === 'enterprise') {
-    return standardError(new Error("Can not change an org's plan from enterprise to team"), {
-      userId
+    throw new GraphQLError("Can not change an org's plan from enterprise to team", {
+      extensions: {code: 'CONFLICT'}
     })
   }
 
@@ -82,9 +80,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       .execute()
   }
   if (oldTier === 'team') {
-    return standardError(new Error('Org is already on team tier'), {
-      userId
-    })
+    throw new GraphQLError('Org is already on team tier', {extensions: {code: 'CONFLICT'}})
   }
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)

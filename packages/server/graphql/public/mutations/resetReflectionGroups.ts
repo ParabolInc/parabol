@@ -1,10 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import type {ResetReflectionGroupType} from '../../../postgres/types'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {GQLContext} from '../../graphql'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -29,22 +28,21 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   {meetingId}: {meetingId: string},
   context: GQLContext
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
-  const viewerId = getUserId(authToken)
+  const {dataLoader, socketId: mutatorId} = context
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   if (!meeting) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (meeting.meetingType !== 'retrospective') {
-    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
+    throw new GraphQLError('Incorrect meeting type', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (meeting.endedAt || getPhase(meeting.phases, 'group')?.stages[0]?.isComplete) {
-    return standardError(new Error('Groups are locked once voting starts'), {userId: viewerId})
+    throw new GraphQLError('Groups are locked once voting starts', {extensions: {code: 'CONFLICT'}})
   }
   const {resetReflectionGroups: snapshot} = meeting
   if (!snapshot) {
-    return standardError(new Error('There is nothing to undo'), {userId: viewerId})
+    throw new GraphQLError('There is nothing to undo', {extensions: {code: 'CONFLICT'}})
   }
 
   const entries = snapshot.filter(isExactSnapshotEntry)

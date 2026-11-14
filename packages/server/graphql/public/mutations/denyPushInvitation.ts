@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const denyPushInvitation: MutationResolvers['denyPushInvitation'] = async (
@@ -12,11 +12,10 @@ const denyPushInvitation: MutationResolvers['denyPushInvitation'] = async (
   {authToken, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
 
   // AUTH
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
@@ -29,7 +28,7 @@ const denyPushInvitation: MutationResolvers['denyPushInvitation'] = async (
     .executeTakeFirst()
 
   if (!teamBlacklist) {
-    return standardError(new Error('User did not request push invitation'), {userId: viewerId})
+    throw new GraphQLError('User did not request push invitation', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION

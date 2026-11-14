@@ -1,32 +1,30 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const promoteToTeamLead: MutationResolvers['promoteToTeamLead'] = async (
   _source,
   {teamId, userId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const oldLead = teamMembers.find(({isLead}) => isLead)
   if (!oldLead) {
-    return standardError(new Error('Team has no team lead'), {userId: viewerId})
+    throw new GraphQLError('Team has no team lead', {extensions: {code: 'CONFLICT'}})
   }
   const {id: oldLeadTeamMemberId} = oldLead
 
   // VALIDATION
   const promoteeOnTeam = teamMembers.find((teamMember) => teamMember.userId === userId)
   if (!promoteeOnTeam) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

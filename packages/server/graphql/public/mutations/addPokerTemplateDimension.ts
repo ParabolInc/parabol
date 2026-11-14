@@ -1,16 +1,15 @@
+import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const addPokerTemplateDimension: MutationResolvers['addPokerTemplateDimension'] = async (
   _source,
   {templateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -19,19 +18,14 @@ const addPokerTemplateDimension: MutationResolvers['addPokerTemplateDimension'] 
     dataLoader.get('meetingTemplates').load(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   if (!template || !template.isActive) {
-    return standardError(new Error('Template not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = template
   if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLATE_DIMENSIONS) {
-    return standardError(new Error('Too many dimensions'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Too many dimensions', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] = async (
@@ -19,31 +19,42 @@ const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] 
   // AUTH
   const providerDbId = IntegrationProviderId.split(providerId)
   if (!Number.isInteger(providerDbId)) {
-    return standardError(new Error('Integration Provider not found'))
+    throw new GraphQLError('Integration Provider not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const provider = await dataLoader.get('integrationProviders').load(providerDbId)
-  if (!provider) return standardError(new Error('Integration Provider not found'))
+  if (!provider)
+    throw new GraphQLError('Integration Provider not found', {extensions: {code: 'NOT_FOUND'}})
   const {teamId, orgId, scope} = provider
 
   if (!isSuperUser(authToken)) {
     if (scope === 'global') {
-      return {error: {message: 'Must be a super user to remove a global provider'}}
+      throw new GraphQLError('Must be a super user to remove a global provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
-      return {error: {message: 'Must be a member of the organization that created the provider'}}
+      throw new GraphQLError('Must be a member of the organization that created the provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
       const team = await dataLoader.get('teams').load(teamId!)
       if (!team || !(await isUserOrgAdmin(viewerId, team.orgId, dataLoader))) {
-        return {error: {message: 'Must be on the team that created the provider'}}
+        throw new GraphQLError('Must be on the team that created the provider', {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
     }
   }
   if (context.resourceGrants) {
     if (scope === 'org' && !(await context.resourceGrants.hasOrg(orgId!))) {
-      return {error: {message: 'PAT does not grant access to this organization'}}
+      throw new GraphQLError('PAT does not grant access to this organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     } else if (scope === 'team' && !(await context.resourceGrants.hasTeam(teamId!))) {
-      return {error: {message: 'PAT does not grant access to this team'}}
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 

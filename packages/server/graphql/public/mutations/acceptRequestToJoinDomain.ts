@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -8,7 +9,6 @@ import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -34,7 +34,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     .executeTakeFirst()
 
   if (!request) {
-    return standardError(new Error('Request expired'))
+    throw new GraphQLError('Request expired', {extensions: {code: 'CONFLICT'}})
   }
 
   const {createdBy, domain} = request
@@ -46,7 +46,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   )
 
   if (!validTeamMembers.length) {
-    return standardError(new Error('Not a team leader'))
+    throw new GraphQLError('Not a team leader', {extensions: {code: 'FORBIDDEN'}})
   }
 
   const validTeamIds = validTeamMembers.map(({teamId}) => teamId)
@@ -56,7 +56,9 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       validTeamIds.map((id) => context.resourceGrants!.hasTeam(id))
     )
     if (hasAccess.some((v) => !v)) {
-      return standardError(new Error('PAT does not grant access to this team'))
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
@@ -68,13 +70,13 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 
   if (!validOrgIds.length) {
-    return standardError(new Error('Invalid organizations'))
+    throw new GraphQLError('Invalid organizations', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const validTeams = leadTeams.filter((team) => validOrgIds.includes(team.orgId))
 
   if (!validTeams.length) {
-    return standardError(new Error('Invalid teams'))
+    throw new GraphQLError('Invalid teams', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // Avoid race conditions: we make changes based on the data fetched first, see insertNewTeamMember
@@ -82,14 +84,14 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const redisLock = new RedisLock(`acceptRequestToJoinDomain:${request.id}`, ttl)
   const lockTTL = await redisLock.checkLock()
   if (lockTTL > 0) {
-    return {
-      error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
-    }
+    throw new GraphQLError(`You already called this ${ttl - lockTTL}ms ago!`, {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
 
   const user = await getUserById(createdBy)
   if (!user) {
-    return standardError(new Error('User not found'))
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {id: userId} = user

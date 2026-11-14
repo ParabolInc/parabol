@@ -1,4 +1,5 @@
 import {generateText, type JSONContent} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
@@ -51,13 +52,13 @@ const addComment: MutationResolvers['addComment'] = async (
   const {discussionId, threadSortOrder, isAnonymous, threadParentId} = comment
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
-    return {error: {message: 'Invalid discussion thread'}}
+    throw new GraphQLError('Invalid discussion thread', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {meetingId} = discussion
   if (!meetingId) {
-    return {
-      error: {message: 'Discussion does not take place in a meeting'}
-    }
+    throw new GraphQLError('Discussion does not take place in a meeting', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   // VALIDATION
   const content = convertToTipTap(comment.content)

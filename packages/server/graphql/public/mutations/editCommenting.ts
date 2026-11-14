@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId} from '../../../utils/authorization'
@@ -16,7 +17,7 @@ const editCommenting: MutationResolvers['editCommenting'] = async (
 
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
-    return {error: {message: 'Discussion not found'}}
+    throw new GraphQLError('Discussion not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {meetingId} = discussion
 
@@ -31,12 +32,12 @@ const editCommenting: MutationResolvers['editCommenting'] = async (
       .exec()) as [RedisPipelineResponse<number>, RedisPipelineResponse<number>]
     const numAdded = numAddedRes![1]
     if (numAdded !== 1) {
-      return {error: {message: 'Already commenting'}}
+      throw new GraphQLError('Already commenting', {extensions: {code: 'CONFLICT'}})
     }
   } else {
     const numRemoved = await redis.srem(key, viewerId)
     if (numRemoved !== 1) {
-      return {error: {message: 'Not commenting'}}
+      throw new GraphQLError('Not commenting', {extensions: {code: 'CONFLICT'}})
     }
   }
 

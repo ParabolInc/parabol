@@ -1,25 +1,19 @@
 import {GraphQLError} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import JiraServerOAuth1Manager from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
-import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createOAuth1AuthorizeUrl: MutationResolvers['createOAuth1AuthorizeUrl'] = async (
   _source,
   {providerId, teamId},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  const viewerId = getUserId(authToken)
   const providerDbId = IntegrationProviderId.split(providerId)
   const provider = Number.isInteger(providerDbId)
     ? await dataLoader.get('integrationProviders').load(providerDbId)
     : undefined
   if (!provider || provider.authStrategy !== 'oauth1') {
-    return standardError(new Error('Integration provider not found'), {
-      userId: viewerId,
-      tags: {providerId}
-    })
+    throw new GraphQLError('Integration provider not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const teamProviders = await dataLoader
@@ -40,15 +34,13 @@ const createOAuth1AuthorizeUrl: MutationResolvers['createOAuth1AuthorizeUrl'] = 
     const url = await manager.requestToken()
 
     if (url instanceof Error) {
-      return standardError(url)
+      throw new GraphQLError(url.message, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
     }
     return {
       url
     }
   }
-  return standardError(new Error('Service not supported'), {
-    tags: {service: (provider as any).service}
-  })
+  throw new GraphQLError('Service not supported', {extensions: {code: 'BAD_USER_INPUT'}})
 }
 
 export default createOAuth1AuthorizeUrl

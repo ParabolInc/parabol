@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingAction from '../../../database/types/MeetingAction'
@@ -8,7 +9,6 @@ import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meet
 import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import insertNewMeeting from '../../mutations/helpers/insertNewMeeting'
@@ -37,7 +37,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     getNextFacilitatorUserId(teamId, viewerId, dataLoader),
     dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
   ])
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
 
   // RESOLUTION
   const meetingId = generateUID()
@@ -62,7 +62,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   try {
     await insertNewMeeting(meeting, inserts)
   } catch {
-    return {error: {message: 'Meeting already started'}}
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   dataLoader.clearAll('newMeetings')
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)

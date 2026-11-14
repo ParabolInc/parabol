@@ -1,10 +1,10 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {getEligibleOrgIdsByDomain} from '../../../utils/isRequestToJoinDomainAllowed'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
@@ -27,7 +27,9 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const orgIds = await getEligibleOrgIdsByDomain(domain, viewerId, dataLoader)
 
   if (!orgIds.length) {
-    return standardError(new Error('No relevant organizations in the domain were found'))
+    throw new GraphQLError('No relevant organizations in the domain were found', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
 
   const insertResult = await pg

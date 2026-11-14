@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
@@ -18,17 +19,17 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, phases} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
   if (isPhaseComplete('ESTIMATE', phases)) {
-    return {error: {message: 'Estimate phase is already complete'}}
+    throw new GraphQLError('Estimate phase is already complete', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -38,7 +39,7 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   const stageIdx = stages.findIndex((stage) => stage.id === stageId)
   const stage = stages[stageIdx]
   if (!stage) {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

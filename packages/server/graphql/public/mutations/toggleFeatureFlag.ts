@@ -1,10 +1,10 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {getFeatureFlag} from '../../../utils/featureFlags'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
@@ -17,53 +17,61 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   const pg = getKysely()
 
   if (!orgId && !teamId && !userId) {
-    return standardError(new Error('Must provide one an orgId, teamId, or userId'))
+    throw new GraphQLError('Must provide one an orgId, teamId, or userId', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const ownerId = (orgId || teamId || userId) as string
 
   if (orgId && !(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Not organization admin'))
+    throw new GraphQLError('Not organization admin', {extensions: {code: 'FORBIDDEN'}})
   }
   if (orgId && context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
-    return standardError(new Error('PAT does not grant access to this organization'))
+    throw new GraphQLError('PAT does not grant access to this organization', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   if (teamId) {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     if (!teamMember?.isNotRemoved) {
-      return standardError(new Error('Not a member of the team anymore'))
+      throw new GraphQLError('Not a member of the team anymore', {extensions: {code: 'FORBIDDEN'}})
     }
     if (!teamMember) {
-      return standardError(new Error('Not a member of the team'))
+      throw new GraphQLError('Not a member of the team', {extensions: {code: 'FORBIDDEN'}})
     }
     if (!teamMember.isLead) {
-      return standardError(new Error('Not team lead'))
+      throw new GraphQLError('Not team lead', {extensions: {code: 'FORBIDDEN'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-      return standardError(new Error('PAT does not grant access to this team'))
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
   if (userId && userId !== viewerId) {
-    return standardError(new Error('Not the user'))
+    throw new GraphQLError('Not the user', {extensions: {code: 'FORBIDDEN'}})
   }
 
   const featureFlag = getFeatureFlag(featureName)
 
   if (!featureFlag || featureFlag.expiresAt <= new Date()) {
-    return standardError(new Error('Feature flag not found or expired'))
+    throw new GraphQLError('Feature flag not found or expired', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!featureFlag.isPublic) {
-    return standardError(new Error('Contact love@parabol.co to enable this feature flag'))
+    throw new GraphQLError('Contact love@parabol.co to enable this feature flag', {
+      extensions: {code: 'FORBIDDEN'}
+    })
   }
 
   const scope = orgId ? 'Organization' : teamId ? 'Team' : 'User'
   if (featureFlag.scope !== scope) {
-    return standardError(
-      new Error(`Feature flag is ${featureFlag.scope}-scoped, not ${scope}-scoped`)
-    )
+    throw new GraphQLError(`Feature flag is ${featureFlag.scope}-scoped, not ${scope}-scoped`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const existingOwner = await pg

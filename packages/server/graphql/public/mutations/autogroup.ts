@@ -1,8 +1,7 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {legacyAutogroups} from '../../../metricsHandler'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {GQLContext} from '../../graphql'
 import applySuggestedGroupsToMeeting from '../../mutations/helpers/applySuggestedGroupsToMeeting'
 import type {MutationResolvers} from '../resolverTypes'
@@ -17,26 +16,23 @@ const autogroup: MutationResolvers['autogroup'] = async (
   {meetingId}: {meetingId: string},
   context: GQLContext
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
-  const viewerId = getUserId(authToken)
+  const {dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   if (!meeting) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (meeting.meetingType !== 'retrospective') {
-    return standardError(new Error('Incorrect meeting type'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Incorrect meeting type', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const {autogroupReflectionGroups} = meeting
   if (!autogroupReflectionGroups) {
-    return standardError(new Error('No autogroup reflection groups found'), {
-      userId: viewerId
+    throw new GraphQLError('No autogroup reflection groups found', {
+      extensions: {code: 'NOT_FOUND'}
     })
   }
 

@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 import {getIsUserIdApprovedByOrg} from './helpers/getIsUserIdApprovedByOrg'
 
@@ -23,18 +23,19 @@ const pushInvitation: MutationResolvers['pushInvitation'] = async (
   const thresh = new Date(Date.now() - GLOBAL_DENIAL_TIME)
 
   // AUTH
-  if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
+  if (!isAuthenticated(authToken))
+    throw new GraphQLError('Not authenticated', {extensions: {code: 'UNAUTHENTICATED'}})
 
   // VALIDATION
   const team = await dataLoader.get('teams').load(teamId)
   if (!team) {
-    return {error: {message: 'Invalid teamId'}}
+    throw new GraphQLError('Invalid teamId', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const {orgId} = team
   const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
   if (approvalError instanceof Error) {
-    return {error: {message: approvalError.message}}
+    throw new GraphQLError(approvalError.message, {extensions: {code: 'FORBIDDEN'}})
   }
   const pushInvitations = await pg
     .selectFrom('PushInvitation')
@@ -46,8 +47,8 @@ const pushInvitation: MutationResolvers['pushInvitation'] = async (
   if (teamPushInvitation) {
     const {denialCount, lastDenialAt} = teamPushInvitation
     if (denialCount >= MAX_TEAM_DENIALS && lastDenialAt && lastDenialAt >= thresh) {
-      return standardError(new Error('Previously denied. Must wait for an invitation'), {
-        userId: viewerId
+      throw new GraphQLError('Previously denied. Must wait for an invitation', {
+        extensions: {code: 'CONFLICT'}
       })
     }
   }
@@ -56,8 +57,8 @@ const pushInvitation: MutationResolvers['pushInvitation'] = async (
     ({lastDenialAt}) => lastDenialAt && lastDenialAt >= thresh
   )
   if (globalBlacklist.length >= MAX_GLOBAL_DENIALS) {
-    return standardError(new Error('Denied from other teams. Must wait for an invitation'), {
-      userId: viewerId
+    throw new GraphQLError('Denied from other teams. Must wait for an invitation', {
+      extensions: {code: 'CONFLICT'}
     })
   }
 

@@ -1,34 +1,32 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const dragDiscussionTopic: MutationResolvers['dragDiscussionTopic'] = async (
   _source,
   {meetingId, stageId, sortOrder},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {endedAt, phases} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   const discussPhase = getPhase(phases, 'discuss')
   if (!discussPhase) {
-    return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting stage not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {stages} = discussPhase
   const draggedStage = stages.find((stage) => stage.id === stageId)
   if (!draggedStage) {
-    return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting stage not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

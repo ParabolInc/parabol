@@ -1,28 +1,26 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updatePokerTemplateDimensionScale: MutationResolvers['updatePokerTemplateDimensionScale'] =
-  async (_source, {dimensionId, scaleId}, {authToken, dataLoader, socketId: mutatorId}) => {
+  async (_source, {dimensionId, scaleId}, {dataLoader, socketId: mutatorId}) => {
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    const viewerId = getUserId(authToken)
 
     // VALIDATION
     if (!dimension || dimension.removedAt) {
-      return standardError(new Error('Dimension not found'), {userId: viewerId})
+      throw new GraphQLError('Dimension not found', {extensions: {code: 'NOT_FOUND'}})
     }
 
     // VALIDATION
     const {teamId} = dimension
     const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
-      return standardError(new Error('Scale not found'), {userId: viewerId})
+      throw new GraphQLError('Scale not found', {extensions: {code: 'NOT_FOUND'}})
     }
 
     await pg.updateTable('TemplateDimension').set({scaleId}).where('id', '=', dimensionId).execute()

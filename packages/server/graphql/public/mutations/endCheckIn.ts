@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, LAST_CALL} from 'parabol-client/utils/constants'
@@ -16,11 +17,9 @@ import type {AgendaItem, Task} from '../../../postgres/types'
 import type {CheckInMeeting} from '../../../postgres/types/Meeting'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import gatherInsights from '../../mutations/helpers/gatherInsights'
@@ -130,23 +129,22 @@ const resetTeamAfterCheckIn = async (
 }
 
 const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId}, context, info) => {
-  const {authToken, socketId: mutatorId, dataLoader} = context
+  const {socketId: mutatorId, dataLoader} = context
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = new Date()
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   if (meeting.meetingType !== 'action') {
-    return standardError(new Error('Not a check-in meeting'), {userId: viewerId})
+    throw new GraphQLError('Not a check-in meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
   // VALIDATION
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // RESOLUTION
   const currentStageRes = findStageById(phases, facilitatorStageId)

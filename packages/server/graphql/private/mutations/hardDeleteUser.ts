@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import type {MutationResolvers} from '../resolverTypes'
@@ -10,15 +11,15 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
 ) => {
   // VALIDATION
   if (userId && email) {
-    return {error: {message: 'Provide userId XOR email'}}
+    throw new GraphQLError('Provide userId XOR email', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (!userId && !email) {
-    return {error: {message: 'Provide a userId or email'}}
+    throw new GraphQLError('Provide a userId or email', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
   if (!user) {
-    return {error: {message: 'User not found'}}
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   await hardDeleteUserHelper(user, dataLoader)

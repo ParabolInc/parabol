@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type TeamHealthVote from '../../../database/types/TeamHealthVote'
 import getKysely from '../../../postgres/getKysely'
@@ -50,7 +51,7 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -58,15 +59,15 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   const {stages} = teamHealthPhase
   const stage = stages.find((stage) => stage.id === stageId)
   if (!stage || stage.phaseType !== 'TEAM_HEALTH') {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (stage.isRevealed) {
-    return {error: {message: 'Votes are already revealed'}}
+    throw new GraphQLError('Votes are already revealed', {extensions: {code: 'CONFLICT'}})
   }
 
   const vote = stage.labels.indexOf(label)
   if (vote === -1) {
-    return {error: {message: 'Invalid label provided'}}
+    throw new GraphQLError('Invalid label provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   await upsertVote(meetingId, {userId: viewerId, vote})
   // update dataloader

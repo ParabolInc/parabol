@@ -359,8 +359,15 @@ test('a template scoped to another org cannot be selected or started', async () 
     cookie: owner.cookie
   })
   const {id: templateId} = created.data.addPromptTemplate.template
-  const selected = await selectTemplate({cookie: attacker.cookie}, attacker.teamId, templateId)
-  expect(selected.error.message).toBe('Template is scoped to organization')
+  const selected = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {teamId: attacker.teamId, selectedTemplateId: templateId},
+    cookie: attacker.cookie
+  })
+  expect(selected.errors?.[0]).toMatchObject({
+    message: 'Template is scoped to organization',
+    extensions: {code: 'FORBIDDEN'}
+  })
   const {meeting} = await startStandup({cookie: attacker.cookie}, attacker.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
@@ -1166,8 +1173,15 @@ test('a template downscoped to another team cannot be selected or started', asyn
   })
   expect(downscoped.data.updateTemplateScope.template.scope).toBe('TEAM')
 
-  const selected = await selectTemplate({cookie: outsider.cookie}, outsider.teamId, templateId)
-  expect(selected.error.message).toBe('Template is scoped to team')
+  const selected = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {teamId: outsider.teamId, selectedTemplateId: templateId},
+    cookie: outsider.cookie
+  })
+  expect(selected.errors?.[0]).toMatchObject({
+    message: 'Template is scoped to team',
+    extensions: {code: 'FORBIDDEN'}
+  })
   const {meeting} = await startStandup({cookie: outsider.cookie}, outsider.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })

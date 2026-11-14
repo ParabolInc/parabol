@@ -1,8 +1,8 @@
+import {GraphQLError} from 'graphql'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
-import standardError from '../../../utils/standardError'
 import joinSlackChannel from '../../mutations/helpers/joinSlackChannel'
 import type {MutationResolvers} from '../resolverTypes'
 import {slackNotificationEventTypeLookup} from '../types/SlackNotification'
@@ -93,7 +93,7 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
     manager.getUserInfo(slackUserId)
   ])
   if (!userInfoRes.ok) {
-    return standardError(new Error(userInfoRes.error), {userId: viewerId})
+    throw new GraphQLError(userInfoRes.error, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
 
   // If the bot can't post to the chosen channel (e.g. a private channel it wasn't invited to), DM the user from @Parabol instead

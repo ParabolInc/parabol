@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
@@ -18,7 +19,7 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -29,10 +30,10 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   const stage = stages[stageIdx]
 
   if (!stage || stage.phaseType !== 'TEAM_HEALTH' || stageIdx < 0 || phaseIdx < 0) {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (stage.isRevealed) {
-    return {error: {message: 'Votes are already revealed'}}
+    throw new GraphQLError('Votes are already revealed', {extensions: {code: 'CONFLICT'}})
   }
 
   await pg

@@ -29,14 +29,14 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   ])
 
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -46,7 +46,7 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   const stageIdx = stages.findIndex((stage) => stage.id === stageId)
   const stage = stages[stageIdx]
   if (!stage) {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
