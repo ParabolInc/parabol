@@ -24,6 +24,7 @@ import makeScopingResults from '../platform/makeScopingResults'
 import GitLabClientManager from './GitLabClientManager'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
 import gitLabSearchMeta from './gitLabSearchMeta'
+import gitLabTaskLink from './gitLabTaskLink'
 import {gitlabIntegrationMeta} from './shared/gitlabIntegrationMeta'
 
 const GitLabScopingCurrentFiltersRoot = lazy(
@@ -92,7 +93,11 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly description = gitlabIntegrationMeta.description
   readonly Icon = GitLabSVG
   readonly logo: ProviderLogoAsset = {src: gitlabLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    taskLink: gitLabTaskLink,
+    workDrawer
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId || !provider.serverBaseUrl) return false
     GitLabClientManager.openOAuth(

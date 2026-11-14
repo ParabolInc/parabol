@@ -1,6 +1,7 @@
 import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
 import type {PreloadedQuery} from 'react-relay'
 import type {OperationType} from 'relay-runtime'
+import type {TaskIntegrationLink_integration$data} from '../../__generated__/TaskIntegrationLink_integration.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
 import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
@@ -108,10 +109,27 @@ export interface SettingsCapability {
   Panel?: ComponentType<SettingsPanelProps>
 }
 
+/** What a task card shows for the issue its task links to */
+export interface TaskLinkDetails {
+  href: string
+  label: string
+  /** The link's native tooltip, used only when there is no status to show */
+  title: string
+  /** The issue's status as the service words it; null when the issue came back without one */
+  status: string | null
+}
+
+/** The issue link on a task card; the service owns an @inline fragment that TaskIntegrationLink spreads with @alias */
+export interface TaskLinkCapability {
+  /** Null when the linked issue belongs to another service */
+  getDetails(integration: TaskIntegrationLink_integration$data): TaskLinkDetails | null
+}
+
 /** Behavior a single surface owns; a service fact that several surfaces read stays flat on the definition */
 export interface ClientIntegrationCapabilities {
   scoping?: ScopingCapability
   settings?: SettingsCapability
+  taskLink?: TaskLinkCapability
   workDrawer?: WorkDrawerCapability
 }
 

@@ -22,6 +22,7 @@ import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import LinearClientManager from './LinearClientManager'
 import linearSearchMeta from './linearSearchMeta'
+import linearTaskLink from './linearTaskLink'
 import {linearIntegrationMeta} from './shared/linearIntegrationMeta'
 
 const scoping: ScopingCapability = {
@@ -75,7 +76,11 @@ export class LinearClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = LinearSVG
   readonly logo: ProviderLogoAsset = {src: linearLogo}
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    taskLink: linearTaskLink,
+    workDrawer
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId || !provider.serverBaseUrl) return false
     void LinearClientManager.openOAuth(

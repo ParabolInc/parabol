@@ -180,9 +180,15 @@ export type JiraIssueRaw = JiraIssueBean<
     issuetype: {id: string; iconUrl: string}
     created: string
     project?: {simplified: boolean}
+    status?: JiraRawStatus
   },
   Record<JiraFieldId, string>
 >
+
+export interface JiraRawStatus {
+  name: string
+  statusCategory: {key: string}
+}
 
 interface JiraAuthor {
   self: string

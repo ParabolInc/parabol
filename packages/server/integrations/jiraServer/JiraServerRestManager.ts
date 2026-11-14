@@ -10,6 +10,7 @@ import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
+import type {JiraRawStatus} from '../jira/AtlassianServerManager'
 import type {
   CreateTaskParams,
   CreateTaskResponse,
@@ -66,6 +67,7 @@ export interface JiraServerIssue {
       name: string
       self: string
     }
+    status: JiraRawStatus
     updated: string
   }
   renderedFields: {

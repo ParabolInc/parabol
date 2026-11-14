@@ -135,13 +135,7 @@ graphql`
           folderName
           clickUpUrl: url
         }
-        ...TaskIntegrationLinkIntegrationGitHub @alias
-        ...TaskIntegrationLinkIntegrationJira @alias
-        ...TaskIntegrationLinkIntegrationJiraServer @alias
-        ...TaskIntegrationLinkIntegrationGitLab @alias
-        ...TaskIntegrationLinkIntegrationAzure @alias
-        ...TaskIntegrationLinkIntegrationLinear @alias
-        ...TaskIntegrationLinkIntegrationClickUp @alias
+        ...TaskIntegrationLink_integration
       }
       updatedAt
       teamId

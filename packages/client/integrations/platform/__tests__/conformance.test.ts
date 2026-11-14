@@ -41,6 +41,12 @@ describe.each(entries)('%s conformance', (key, definition) => {
     )
   })
 
+  it('ships a task card link exactly when it is a task service', () => {
+    expect(definition.capabilities.taskLink !== undefined).toBe(
+      isTaskClientIntegration(definition.service)
+    )
+  })
+
   it('ships a retro work drawer tab', () => {
     expect(definition.capabilities.workDrawer?.Panel).toBeTruthy()
   })
