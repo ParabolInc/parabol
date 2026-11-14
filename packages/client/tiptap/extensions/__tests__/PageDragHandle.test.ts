@@ -2,11 +2,15 @@ import './installHappyDom'
 import {Editor, type JSONContent} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import type {DragHandleRule} from '@tiptap/extension-drag-handle'
+import {isNodeRangeSelection} from '@tiptap/extension-node-range'
 import {Slice} from '@tiptap/pm/model'
-import {NodeSelection} from '@tiptap/pm/state'
+import {NodeSelection, TextSelection} from '@tiptap/pm/state'
+import {ReactRenderer} from '@tiptap/react'
 import type Atmosphere from '../../../Atmosphere'
 import {serverTipTapExtensions} from '../../../shared/tiptap/serverTipTapExtensions'
-import {endBlockDrag} from '../../blockMove/blockDragSession'
+import {endBlockDrag, startBlockDrag} from '../../blockMove/blockDragSession'
+import {createBlockSelection, getSelectedBlockRange} from '../../blockSelection/blockSelectionState'
+import {BlockSelection} from '../BlockSelection'
 import {PageDragHandle} from '../PageDragHandle'
 import {happyWindow} from './installHappyDom'
 
@@ -17,19 +21,14 @@ jest.mock('../../blockMove/blockDragSession', () => ({
 }))
 jest.mock('../../../hooks/usePageViewerAccess', () => ({
   __esModule: true,
-  lookupPageViewerGrant: () => mockPageViewerGrant
+  lookupPageViewerGrant: () => mockPageViewerGrant,
+  lookupPageViewerAccess: () => 'owner'
 }))
-jest.mock('../DragHandleMenu', () => ({__esModule: true, default: () => null}))
 jest.mock('@tiptap/react', () => ({
   ...jest.requireActual('@tiptap/react'),
-  ReactRenderer: class {
-    element = document.createElement('div')
-    constructor(_component: unknown, {props}: {props: Record<string, unknown>}) {
-      mockMenuProps.push(props)
-    }
-    destroy() {}
-  }
+  ReactRenderer: jest.fn()
 }))
+jest.mock('../DragHandleMenu', () => ({__esModule: true, default: () => null}))
 let mockPageViewerGrant: string | null = null
 const mockMenuProps: Record<string, unknown>[] = []
 
@@ -52,6 +51,7 @@ const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[
           ? extension.configure({document: false, trailingNode: {node: 'paragraph'}})
           : extension
       ),
+      BlockSelection,
       PageDragHandle.configure({atmosphere: {} as Atmosphere, pageId: 'page:1', isNested})
     ],
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
@@ -64,6 +64,13 @@ const pressDeleteWithNodeSelected = (activeEditor: Editor, pos: number) => {
   activeEditor.view.dispatch(tr.setSelection(NodeSelection.create(doc, pos)))
   activeEditor.commands.keyboardShortcut('Delete')
 }
+
+beforeEach(() => {
+  jest.mocked(ReactRenderer).mockImplementation((_component, {props}) => {
+    mockMenuProps.push(props as Record<string, unknown>)
+    return {element: document.createElement('div'), destroy: jest.fn()} as unknown as ReactRenderer
+  })
+})
 
 afterEach(() => {
   jest.clearAllMocks()
@@ -268,5 +275,246 @@ describe('drops on page targets', () => {
       handleDrop(activeEditor.view, event, Slice.empty, true)
     )
     expect(claimed).toBeFalsy()
+  })
+})
+
+describe('many blocks', () => {
+  const li = (text: string): JSONContent => ({type: 'listItem', content: [p(text)]})
+  const blockAt = (activeEditor: Editor, text: string) => {
+    let found = {from: -1, to: -1}
+    activeEditor.state.doc.descendants((node, pos, parent) => {
+      if (found.from >= 0) return false
+      const isUnit = parent?.type.name === 'doc' || parent?.type.name === 'bulletList'
+      if (isUnit && node.textContent === text) found = {from: pos, to: pos + node.nodeSize}
+      return true
+    })
+    return found
+  }
+  const handleOf = (activeEditor: Editor) =>
+    activeEditor.view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')!
+  const hover = (activeEditor: Editor, text: string) => {
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    const {from} = blockAt(activeEditor, text)
+    dragHandle?.options.onNodeChange({
+      editor: activeEditor,
+      node: activeEditor.state.doc.nodeAt(from),
+      pos: from
+    })
+  }
+  const clickHandle = (activeEditor: Editor, shiftKey = false) => {
+    handleOf(activeEditor).dispatchEvent(
+      new MouseEvent('click', {shiftKey, bubbles: true, cancelable: true})
+    )
+  }
+  const putCaretIn = (activeEditor: Editor, text: string) => {
+    const {state, view} = activeEditor
+    const pos = blockAt(activeEditor, text).from
+    view.dispatch(state.tr.setSelection(TextSelection.near(state.doc.resolve(pos + 1))))
+  }
+  const selectBlocks = (activeEditor: Editor, first: string, last: string) => {
+    const {state, view} = activeEditor
+    const from = blockAt(activeEditor, first).from
+    const range = {from, to: blockAt(activeEditor, last).to, depth: state.doc.resolve(from).depth}
+    view.dispatch(state.tr.setSelection(createBlockSelection(state.doc, range)))
+    return range
+  }
+  const selectedTexts = (activeEditor: Editor) => {
+    const range = getSelectedBlockRange(activeEditor.state)
+    if (!range) return null
+    const texts: string[] = []
+    activeEditor.state.doc.nodesBetween(range.from, range.to, (node, pos) => {
+      if (pos < range.from) return true
+      texts.push(node.textContent)
+      return false
+    })
+    return texts
+  }
+  const startDrag = (activeEditor: Editor, text: string) => {
+    hover(activeEditor, text)
+    const event = new Event('dragstart', {cancelable: true})
+    const dataTransfer = {clearData: jest.fn(), setDragImage: jest.fn(), setData: jest.fn()}
+    Object.assign(event, {dataTransfer})
+    handleOf(activeEditor).dispatchEvent(event)
+  }
+  const dropAt = (activeEditor: Editor, pos: number) => {
+    jest.spyOn(activeEditor.view, 'posAtCoords').mockReturnValue({pos, inside: -1})
+    const event = new Event('drop', {bubbles: true, cancelable: true})
+    Object.assign(event, {
+      clientX: 0,
+      clientY: 0,
+      dataTransfer: {getData: () => '', files: [], types: []}
+    })
+    activeEditor.view.dom.dispatchEvent(event)
+  }
+  const texts = (activeEditor: Editor) => {
+    const all: string[] = []
+    activeEditor.state.doc.descendants((node) => {
+      if (node.type.name === 'paragraph' && node.textContent) all.push(node.textContent)
+    })
+    return all
+  }
+  const menuProps = () => jest.mocked(ReactRenderer).mock.calls.at(-1)?.[1].props
+
+  describe('shift-clicking a handle', () => {
+    test('stops the browser extending its own selection, until the editor is gone', () => {
+      const activeEditor = makeEditor(p('one'))
+      const handle = handleOf(activeEditor)
+      const press = (shiftKey: boolean) => {
+        const event = new MouseEvent('mousedown', {shiftKey, bubbles: true, cancelable: true})
+        handle.dispatchEvent(event)
+        return event.defaultPrevented
+      }
+      expect(press(true)).toBe(true)
+      expect(press(false)).toBe(false)
+      activeEditor.destroy()
+      editor = undefined
+      expect(press(true)).toBe(false)
+    })
+
+    test('selects from the block the caret is in through that block', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      putCaretIn(activeEditor, 'one')
+      hover(activeEditor, 'three')
+      clickHandle(activeEditor, true)
+      expect(selectedTexts(activeEditor)).toEqual(['one', 'two', 'three'])
+      expect(ReactRenderer).not.toHaveBeenCalled()
+    })
+
+    test('keeps the anchor block when shift-clicking again', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      putCaretIn(activeEditor, 'three')
+      hover(activeEditor, 'one')
+      clickHandle(activeEditor, true)
+      expect(selectedTexts(activeEditor)).toEqual(['one', 'two', 'three'])
+      hover(activeEditor, 'two')
+      clickHandle(activeEditor, true)
+      expect(selectedTexts(activeEditor)).toEqual(['two', 'three'])
+      hover(activeEditor, 'four')
+      clickHandle(activeEditor, true)
+      expect(selectedTexts(activeEditor)).toEqual(['three', 'four'])
+    })
+
+    test('grows to the whole list when the run leaves it', () => {
+      const activeEditor = makeEditor(p('one'), {
+        type: 'bulletList',
+        content: [li('a'), li('b')]
+      })
+      putCaretIn(activeEditor, 'one')
+      hover(activeEditor, 'b')
+      clickHandle(activeEditor, true)
+      expect(selectedTexts(activeEditor)).toEqual(['one', 'ab'])
+    })
+  })
+
+  describe('clicking a handle', () => {
+    test('on a selected block opens the menu for the whole selection', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      const range = selectBlocks(activeEditor, 'one', 'three')
+      hover(activeEditor, 'two')
+      clickHandle(activeEditor)
+      expect(menuProps()?.selection).toEqual({range, count: 3})
+    })
+
+    test('on a block outside the selection opens the menu for that block', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      selectBlocks(activeEditor, 'one', 'two')
+      hover(activeEditor, 'four')
+      clickHandle(activeEditor)
+      expect(menuProps()?.selection).toBeNull()
+    })
+
+    test('on the one selected block opens the menu for that block', () => {
+      const activeEditor = makeEditor(p('one'), p('two'))
+      selectBlocks(activeEditor, 'two', 'two')
+      hover(activeEditor, 'two')
+      clickHandle(activeEditor)
+      expect(menuProps()?.selection).toBeNull()
+    })
+  })
+
+  describe('dragging a selected block', () => {
+    test('drags the whole selection and keeps it selected', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      const range = selectBlocks(activeEditor, 'one', 'three')
+      startDrag(activeEditor, 'two')
+      const {dragging, state} = activeEditor.view
+      expect(isNodeRangeSelection(state.selection)).toBe(true)
+      expect(getSelectedBlockRange(state)).toEqual(range)
+      expect(dragging?.move).toBe(true)
+      expect(dragging?.slice.eq(state.doc.slice(range.from, range.to))).toBe(true)
+      expect(jest.mocked(startBlockDrag).mock.calls[0]?.[1]).toMatchObject({count: 3})
+    })
+
+    test('reorders within the page with each block exactly once, still selected', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'), p('five'))
+      selectBlocks(activeEditor, 'one', 'three')
+      startDrag(activeEditor, 'three')
+      dropAt(activeEditor, blockAt(activeEditor, 'four').to)
+      expect(texts(activeEditor)).toEqual(['four', 'one', 'two', 'three', 'five'])
+      expect(selectedTexts(activeEditor)).toEqual(['one', 'two', 'three'])
+    })
+
+    test('reorders list items inside their list', () => {
+      const activeEditor = makeEditor({
+        type: 'bulletList',
+        content: [li('a'), li('b'), li('c'), li('d')]
+      })
+      const range = selectBlocks(activeEditor, 'a', 'b')
+      startDrag(activeEditor, 'a')
+      expect(getSelectedBlockRange(activeEditor.state)).toEqual(range)
+      dropAt(activeEditor, blockAt(activeEditor, 'c').to)
+      const list = activeEditor.state.doc.child(1)
+      expect(list.type.name).toBe('bulletList')
+      expect(list.content.content.map((item) => item.textContent)).toEqual(['c', 'a', 'b', 'd'])
+      expect(selectedTexts(activeEditor)).toEqual(['a', 'b'])
+    })
+
+    test('dragging a block outside the selection moves only that block', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      const oldRun = selectBlocks(activeEditor, 'one', 'two')
+      startDrag(activeEditor, 'three')
+      dropAt(activeEditor, blockAt(activeEditor, 'four').to)
+      expect(texts(activeEditor)).toEqual(['one', 'two', 'four', 'three'])
+      expect(getSelectedBlockRange(activeEditor.state)).not.toEqual(oldRun)
+      expect(selectedTexts(activeEditor)).not.toEqual(['one', 'two'])
+    })
+
+    test('keeps a collaborator edit made inside the run mid-drag', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'), p('four'))
+      selectBlocks(activeEditor, 'one', 'three')
+      startDrag(activeEditor, 'two')
+      const {state, view} = activeEditor
+      view.dispatch(state.tr.insertText(' edited', blockAt(activeEditor, 'two').to - 1))
+      const between = blockAt(activeEditor, 'two edited').to
+      view.dispatch(
+        activeEditor.state.tr.insert(between, activeEditor.schema.nodeFromJSON(p('inserted')))
+      )
+      dropAt(activeEditor, blockAt(activeEditor, 'four').to)
+      expect(texts(activeEditor)).toEqual(['four', 'one', 'two edited', 'inserted', 'three'])
+    })
+
+    test('deletes no unrelated block when the run is gone by the drop', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), {type: 'horizontalRule'}, p('four'))
+      selectBlocks(activeEditor, 'one', 'two')
+      startDrag(activeEditor, 'one')
+      const {from} = blockAt(activeEditor, 'one')
+      const {to} = blockAt(activeEditor, 'two')
+      activeEditor.view.dispatch(activeEditor.state.tr.delete(from, to))
+      dropAt(activeEditor, blockAt(activeEditor, 'four').to)
+      const types: string[] = []
+      activeEditor.state.doc.forEach((node) => types.push(node.type.name))
+      expect(types).toContain('horizontalRule')
+      expect(texts(activeEditor)).toEqual(['four', 'one', 'two'])
+    })
+
+    test('a single dropped block is not turned into a block selection', () => {
+      const activeEditor = makeEditor(p('one'), p('two'), p('three'))
+      startDrag(activeEditor, 'one')
+      dropAt(activeEditor, blockAt(activeEditor, 'two').to)
+      expect(texts(activeEditor)).toEqual(['two', 'one', 'three'])
+      expect(isNodeRangeSelection(activeEditor.state.selection)).toBe(false)
+    })
   })
 })

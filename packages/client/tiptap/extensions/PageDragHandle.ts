@@ -1,7 +1,8 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node, ResolvedPos} from '@tiptap/pm/model'
-import {NodeSelection, Plugin, PluginKey} from '@tiptap/pm/state'
+import {NodeSelection, Plugin, PluginKey, Selection} from '@tiptap/pm/state'
+import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -12,6 +13,15 @@ import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBl
 import {GQLID} from '../../utils/GQLID'
 import {endBlockDrag, startBlockDrag} from '../blockMove/blockDragSession'
 import {prepareBlockDrag} from '../blockMove/prepareBlockDrag'
+import type {TrackedRange} from '../blockMove/trackRange'
+import {
+  createBlockSelection,
+  getBlockSelectionAround,
+  getDroppedBlockRange,
+  isBlockRun,
+  selectBlocksThrough
+} from '../blockSelection/blockSelectionState'
+import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
 
 const queryNode = graphql`
@@ -45,6 +55,53 @@ function isInside($pos: ResolvedPos, depth: number, typeName: string) {
     if ($pos.node(d).type.name === typeName) return true
   }
   return false
+}
+
+const setDragImage = (dataTransfer: DataTransfer, view: EditorView, positions: number[]) => {
+  const imageWrapper = document.createElement('div')
+  positions.forEach((pos) => {
+    const domNode = view.nodeDOM(pos)
+    if (domNode instanceof HTMLElement) {
+      imageWrapper.appendChild(domNode.cloneNode(true))
+    }
+  })
+  imageWrapper.style.position = 'absolute'
+  imageWrapper.style.top = '-10000px'
+  document.body.appendChild(imageWrapper)
+  dataTransfer.clearData()
+  dataTransfer.setDragImage(imageWrapper, 0, 0)
+  const removeImage = () => {
+    imageWrapper.remove()
+    document.removeEventListener('drop', removeImage)
+    document.removeEventListener('dragend', removeImage)
+  }
+  document.addEventListener('drop', removeImage)
+  document.addEventListener('dragend', removeImage)
+}
+
+const prepareSelectionDrop = (view: EditorView, draggedRange: TrackedRange | null) => {
+  const {doc, selection} = view.state
+  const current = draggedRange?.current()
+  const range = current && {...current, depth: doc.resolve(current.from).depth}
+  if (range && isBlockRun(doc, range)) {
+    const run = createBlockSelection(doc, range)
+    if (!run.eq(selection)) view.dispatch(view.state.tr.setSelection(run))
+    view.dragging = {slice: doc.slice(range.from, range.to), move: true}
+    return
+  }
+  const $pos = doc.resolve(selection.from)
+  const caret = Selection.findFrom($pos, 1, true) ?? Selection.findFrom($pos, -1, true)
+  if (caret) view.dispatch(view.state.tr.setSelection(caret))
+}
+
+const getChildPositions = (view: EditorView, range: BlockRange) => {
+  const $from = view.state.doc.resolve(range.from)
+  const positions: number[] = []
+  for (let pos = range.from, index = $from.index(); pos < range.to; index++) {
+    positions.push(pos)
+    pos += $from.parent.child(index).nodeSize
+  }
+  return positions
 }
 
 interface NodeChangeData {
@@ -134,6 +191,8 @@ export const PageDragHandle = Extension.create<Options>({
     let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
     let didStartDrag = false
+    let isDraggingSelection = false
+    let draggedRange: TrackedRange | null = null
     const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
@@ -157,10 +216,26 @@ export const PageDragHandle = Extension.create<Options>({
 
       if (!dragHandleNode || dragHandleNodePos < 0 || !editorRef) return
 
-      editorRef.commands.lockDragHandle()
-
       const node = dragHandleNode
       const pos = dragHandleNodePos
+      const {state, view} = editorRef
+
+      if (e.shiftKey) {
+        const extended = selectBlocksThrough(state, {from: pos, to: pos + node.nodeSize})
+        if (!extended) return
+        view.dispatch(state.tr.setSelection(extended))
+        view.dom.focus({preventScroll: true})
+        return
+      }
+
+      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
+      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
+      const selection =
+        selected && !isSelectedAlone
+          ? {range: selected, count: countBlocks(state.doc, selected)}
+          : null
+
+      editorRef.commands.lockDragHandle()
 
       menuRenderer = new ReactRenderer(DragHandleMenu, {
         editor: editorRef,
@@ -171,7 +246,8 @@ export const PageDragHandle = Extension.create<Options>({
           onClose: closeMenu,
           anchorElement: dragHandleElement,
           canCreateSubPage:
-            !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+            !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0]),
+          selection
         }
       })
 
@@ -208,21 +284,28 @@ export const PageDragHandle = Extension.create<Options>({
         return
       }
       const {doc} = view.state
+      if (plan.kind === 'blocks' && plan.selection) {
+        // the drag handle's own listener re-selects a nested run at depth 0
+        e.stopImmediatePropagation()
+        const {from, to} = plan.selection
+        setDragImage(e.dataTransfer, view, getChildPositions(view, plan.selection))
+        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.effectAllowed = 'copyMove'
+        didStartDrag = true
+        isDraggingSelection = true
+        draggedRange = plan.session.range
+        view.dragging = {slice: doc.slice(from, to), move: true}
+        setTimeout(() => {
+          dragHandleElement.style.pointerEvents = 'none'
+        })
+        startBlockDrag(atmosphere, plan.session, plan.refusal)
+        return
+      }
       const from = dragHandleNodePos
       const to = dragHandleNodePos + dragHandleNode.nodeSize
       const slice = doc.slice(from, to)
 
-      const imageWrapper = document.createElement('div')
-      const domNode = view.nodeDOM(from)
-      if (domNode instanceof HTMLElement) {
-        imageWrapper.appendChild(domNode.cloneNode(true))
-      }
-      imageWrapper.style.position = 'absolute'
-      imageWrapper.style.top = '-10000px'
-      document.body.appendChild(imageWrapper)
-
-      e.dataTransfer.clearData()
-      e.dataTransfer.setDragImage(imageWrapper, 0, 0)
+      setDragImage(e.dataTransfer, view, [from])
 
       // Tells ProseMirror this is an internal drag-move so drop deletes the source
       didStartDrag = true
@@ -232,8 +315,6 @@ export const PageDragHandle = Extension.create<Options>({
       const {tr} = view.state
       tr.setSelection(selection)
       view.dispatch(tr)
-
-      document.addEventListener('drop', () => imageWrapper.remove(), {once: true})
 
       if (plan.kind === 'blocks') {
         e.dataTransfer.setData('text/plain', '__dummy__')
@@ -273,7 +354,10 @@ export const PageDragHandle = Extension.create<Options>({
     dragHandleElement.addEventListener('dragend', () => {
       endBlockDrag(atmosphere)
       if (editorRef && didStartDrag) editorRef.view.dragging = null
+      dragHandleElement.style.pointerEvents = 'auto'
       didStartDrag = false
+      isDraggingSelection = false
+      draggedRange = null
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
@@ -287,7 +371,44 @@ export const PageDragHandle = Extension.create<Options>({
       })
     })
 
+    const preventShiftClickSelection = (e: MouseEvent) => {
+      if (e.shiftKey) e.preventDefault()
+    }
+
+    const selectionDrag = Extension.create({
+      name: 'selectionDrag',
+      addProseMirrorPlugins: () => [
+        new Plugin({
+          key: new PluginKey('selectionDrag'),
+          view: () => {
+            dragHandleElement.addEventListener('mousedown', preventShiftClickSelection)
+            return {
+              destroy: () => {
+                dragHandleElement.removeEventListener('mousedown', preventShiftClickSelection)
+              }
+            }
+          },
+          props: {
+            handleDOMEvents: {
+              drop: (view) => {
+                if (isDraggingSelection && view.dragging) prepareSelectionDrop(view, draggedRange)
+                return false
+              }
+            }
+          },
+          appendTransaction: (transactions, _oldState, newState) => {
+            if (!isDraggingSelection) return null
+            const range = getDroppedBlockRange(transactions)
+            if (!range) return null
+            isDraggingSelection = false
+            return newState.tr.setSelection(createBlockSelection(newState.doc, range))
+          }
+        })
+      ]
+    })
+
     return [
+      selectionDrag,
       DragHandle.configure({
         computePositionConfig: {
           placement: 'left'

@@ -26,6 +26,7 @@ graphql`
       draggingBlocksSourcePageId
       draggingBlocksChildPageIds
       draggingBlocksRefusal
+      draggingBlocksCount
     }
   }
 `
@@ -68,7 +69,7 @@ export const PageDropTarget = (props: Props) => {
       editor: session.editor,
       navigate,
       outcome,
-      count: 1,
+      count: session.count,
       targetPageId,
       targetTitle
     })

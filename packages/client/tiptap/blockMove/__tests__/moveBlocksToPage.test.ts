@@ -2,7 +2,7 @@ import '../../extensions/__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {Editor} from '@tiptap/core'
 import Collaboration from '@tiptap/extension-collaboration'
-import type {Transaction} from '@tiptap/pm/state'
+import {TextSelection, type Transaction} from '@tiptap/pm/state'
 import * as Y from 'yjs'
 import {happyWindow} from '../../extensions/__tests__/installHappyDom'
 import {providerManager} from '../../providerManager'
@@ -97,7 +97,8 @@ const sessionFor = (activeEditor: Editor, typeName: string, index: number): Bloc
     editor: activeEditor,
     range: trackRange(activeEditor, from, to),
     sourcePageId: 'page:1',
-    movable: getMovableBlocks(activeEditor.state.doc, from, to)
+    movable: getMovableBlocks(activeEditor.state.doc, from, to),
+    count: 1
   }
 }
 
@@ -175,6 +176,17 @@ test('tracks the gap the move left so undo can put the block back there', async 
   const stays = rangeOf(editor, 'paragraph', 0)
   expect(paragraphTexts(editor)[0]).toBe('stays')
   expect(outcome.gap!.current()).toEqual({from: stays.from, to: stays.from})
+})
+
+test('leaves a text caret, not a selected link, when the gap is next to a link', async () => {
+  const editor = makeEditor(p('moved me'), link(7, 'Child', false), p('stays'))
+  await moveBlocksToPage({
+    session: sessionFor(editor, 'paragraph', 0),
+    targetPageId: 'page:2',
+    targetTitle: 'Q3'
+  })
+  expect(nodeNames(editor)).toEqual(['heading', 'pageLinkBlock', 'paragraph'])
+  expect(editor.state.selection).toBeInstanceOf(TextSelection)
 })
 
 test('stops tracking the dragged range when it finishes', async () => {

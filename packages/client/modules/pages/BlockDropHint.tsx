@@ -15,7 +15,7 @@ interface Hint {
 
 export const BlockDropHint = () => {
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
-  const {draggingBlocksSourcePageId, draggingBlocksRefusal} = data.viewer ?? {}
+  const {draggingBlocksSourcePageId, draggingBlocksRefusal, draggingBlocksCount} = data.viewer ?? {}
   const isBlockDrag = !!draggingBlocksSourcePageId
   const [hint, setHint] = useState<Hint | null>(null)
   useEffect(() => {
@@ -41,7 +41,8 @@ export const BlockDropHint = () => {
         y: e.clientY,
         text: getBlockDropHintText({
           title: dropTarget.getAttribute('data-drop-title') ?? '',
-          refusal: isAllowed ? dropTarget.getAttribute('data-drop-refused') : refusal
+          refusal: isAllowed ? dropTarget.getAttribute('data-drop-refused') : refusal,
+          count: draggingBlocksCount
         }),
         isRefused: !isAllowed || !!dropTarget.getAttribute('data-drop-refused')
       }
@@ -69,7 +70,7 @@ export const BlockDropHint = () => {
       document.removeEventListener('drop', clear, true)
       document.removeEventListener('dragend', clear, true)
     }
-  }, [isBlockDrag, draggingBlocksRefusal])
+  }, [isBlockDrag, draggingBlocksRefusal, draggingBlocksCount])
   if (!hint) return null
   return (
     <div

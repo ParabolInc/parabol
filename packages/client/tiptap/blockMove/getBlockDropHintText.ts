@@ -1,7 +1,13 @@
 export const getBlockDropHintText = ({
   title,
-  refusal
+  refusal,
+  count
 }: {
   title: string
   refusal: string | null | undefined
-}) => refusal || `Move to the bottom of ${title}`
+  count: number | null | undefined
+}) =>
+  refusal ||
+  (count && count > 1
+    ? `Move ${count} blocks to the bottom of ${title}`
+    : `Move to the bottom of ${title}`)

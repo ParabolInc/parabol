@@ -5,7 +5,12 @@ import {ContentCopy, DeleteOutlined} from '~/ui/icons'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
+import menuSectionTitleClass from '../../ui/Menu/menuSectionTitleClass'
 import {modKey} from '../../utils/platform'
+import plural from '../../utils/plural'
+import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
+import type {BlockRange} from '../blockSelection/blockUnits'
+import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
@@ -17,16 +22,18 @@ interface DragHandleMenuProps {
   onClose: () => void
   anchorElement: HTMLElement
   canCreateSubPage: boolean
+  selection?: {range: BlockRange; count: number} | null
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
-  const {editor, node, pos, onClose, anchorElement, canCreateSubPage} = props
+  const {editor, node, pos, onClose, anchorElement, canCreateSubPage, selection} = props
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
   const isDocumentHeading = pos === 0
-  const showDelete = !isCanonicalPageLink && !isDocumentHeading
-  const turnIntoCurrent = getTurnIntoTarget(editor.state.doc, pos)
+  const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
+  const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
+  const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
     const trigger = triggerRef.current
@@ -39,7 +46,17 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     trigger.style.height = `${rect.height}px`
   }, [anchorElement])
 
+  const runOnSelection = (command: typeof deleteBlocks) => {
+    const range = getSelectedBlockRange(editor.state)
+    if (range) command({editor, range})
+    editor.commands.focus()
+  }
+
   const handleDuplicate = () => {
+    if (selection) {
+      runOnSelection(duplicateBlocks)
+      return
+    }
     const json = node.toJSON()
     if (json.type === 'pageLinkBlock' && json.attrs?.canonical) {
       json.attrs = {...json.attrs, canonical: false}
@@ -52,6 +69,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleDelete = () => {
+    if (selection) {
+      runOnSelection(deleteBlocks)
+      return
+    }
     const currentNode = editor.state.doc.nodeAt(pos)
     if (!currentNode || currentNode.type.name !== node.type.name) {
       return
@@ -98,6 +119,11 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         onKeyDown={handleContentKeyDown}
         className='z-50'
       >
+        {selection && (
+          <div className={menuSectionTitleClass}>
+            {selection.count} {blocks}
+          </div>
+        )}
         {turnIntoCurrent && (
           <TurnIntoMenu
             editor={editor}
@@ -107,18 +133,18 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             canCreateSubPage={canCreateSubPage}
           />
         )}
-        {node.type.name === 'callout' && (
+        {!selection && node.type.name === 'callout' && (
           <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
         )}
         <MenuItem onSelect={handleDuplicate}>
           <ContentCopy className={MENU_ITEM_ICON} />
-          <span className='flex-1 text-left'>Duplicate block</span>
+          <span className='flex-1 text-left'>Duplicate {blocks}</span>
           <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
         </MenuItem>
         {showDelete && (
           <MenuItem onSelect={handleDelete}>
             <DeleteOutlined className={MENU_ITEM_ICON} />
-            <span className='flex-1 text-left'>Delete block</span>
+            <span className='flex-1 text-left'>Delete {blocks}</span>
             <span className='ml-4 text-fg-muted text-xs'>Del</span>
           </MenuItem>
         )}

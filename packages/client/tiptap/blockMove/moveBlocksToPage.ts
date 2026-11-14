@@ -1,5 +1,5 @@
 import type {Editor} from '@tiptap/core'
-import {Selection} from '@tiptap/pm/state'
+import {getTextCaretNear} from '../blockSelection/blockSelectionState'
 import {appendBlocksToFragment, type MovedBlock} from './appendBlocksToFragment'
 import type {BlockDragSession} from './blockDragSession'
 import {type BlockMoveMeta, dispatchBlockMoveDelete} from './blockMoveUndoStack'
@@ -39,7 +39,7 @@ const resultOnly = (result: BlockMoveResult): BlockMoveOutcome => ({
 const deleteFromSource = (editor: Editor, from: number, to: number, meta: BlockMoveMeta | null) => {
   const tr = editor.state.tr.deleteRange(from, to)
   const gapPos = tr.mapping.map(from)
-  tr.setSelection(Selection.near(tr.doc.resolve(gapPos)))
+  tr.setSelection(getTextCaretNear(tr.doc.resolve(gapPos)))
   dispatchBlockMoveDelete(editor, tr, meta)
   return trackRange(editor, gapPos, gapPos)
 }

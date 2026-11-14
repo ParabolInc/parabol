@@ -10,6 +10,7 @@ export type BlockDragSession = {
   range: TrackedRange
   sourcePageId: string
   movable: MovableBlocks
+  count: number
 }
 
 let activeSession: BlockDragSession | null = null
@@ -29,6 +30,7 @@ export const startBlockDrag = (
       ?.setValue(session.sourcePageId, 'draggingBlocksSourcePageId')
       .setValue(childPageIds, 'draggingBlocksChildPageIds')
       .setValue(refusal, 'draggingBlocksRefusal')
+      .setValue(session.count, 'draggingBlocksCount')
   })
 }
 
@@ -48,5 +50,6 @@ export const endBlockDrag = (atmosphere: Atmosphere) => {
       ?.setValue(null, 'draggingBlocksSourcePageId')
       .setValue(null, 'draggingBlocksChildPageIds')
       .setValue(null, 'draggingBlocksRefusal')
+      .setValue(null, 'draggingBlocksCount')
   })
 }

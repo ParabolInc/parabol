@@ -140,6 +140,8 @@ extend type User {
   draggingBlocksChildPageIds: [ID!]
   # Why the dragged blocks cannot be dropped anywhere, if they cannot
   draggingBlocksRefusal: String
+  # How many blocks are being dragged
+  draggingBlocksCount: Int
 }
 
 extend type Page {
