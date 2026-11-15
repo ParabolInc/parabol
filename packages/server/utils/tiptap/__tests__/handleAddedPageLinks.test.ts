@@ -27,6 +27,10 @@ jest.mock('../isSyncedBlocksEnabled', () => ({
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({dispose: () => {}})
 }))
+const mockRehostSeededAssets = jest.fn()
+jest.mock('../rehostExternalAssets', () => ({
+  rehostSeededAssets: (...args: unknown[]) => mockRehostSeededAssets(...args)
+}))
 jest.mock('../movePageToNewParent', () => ({
   movePageToNewParent: async (userId: string, pageId: number) => {
     if (pageId === CHILD_PAGE_ID) return
@@ -76,6 +80,7 @@ beforeEach(() => {
   mockMovedPageIds.length = 0
   mockOwnerByPageId.clear()
   mockCreateNewPage.mockClear()
+  mockRehostSeededAssets.mockClear()
   mockFlagEnabled = false
 })
 
@@ -289,4 +294,18 @@ test('removes content even when the page cannot be made', async () => {
   const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
   await insertLink(link, asUser(EDITOR_ID))
   expect(link.getAttribute('content')).toBeUndefined()
+})
+
+test('rehosts the assets a seed carries into the new page as the inserting user', async () => {
+  mockFlagEnabled = true
+  const image = {type: 'imageBlock', attrs: {src: 'https://tracker.example/pixel.png'}}
+  await insertLink(
+    makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, image]),
+    asUser(EDITOR_ID)
+  )
+  expect(mockRehostSeededAssets).toHaveBeenCalledWith(
+    NEW_PAGE_ID,
+    [seedParagraph, image],
+    EDITOR_ID
+  )
 })

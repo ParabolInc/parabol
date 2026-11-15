@@ -11,6 +11,7 @@ import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
+import {rehostSeededAssets} from './rehostExternalAssets'
 import {sanitizeSyncedBlockSeed} from './sanitizeSyncedBlockSeed'
 import {updateBacklinks} from './updateBacklinks'
 
@@ -76,6 +77,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         if (!newPage) return
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         if (isSyncedBlock) node.setAttribute('title', '')
+        rehostSeededAssets(newPage.id, seedContent, userId)
         await updateBacklinks(parentPageId, newPage.id)
       } else {
         // check for duplicates on the same page

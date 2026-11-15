@@ -46,3 +46,19 @@ test('drops nodes that cannot sit directly under the page', () => {
     paragraph
   ])
 })
+
+test('drops thinking blocks at any depth', () => {
+  const thinkingBlock = {type: 'thinkingBlock'}
+  const seed = [
+    thinkingBlock,
+    {type: 'bulletList', content: [{type: 'listItem', content: [paragraph, thinkingBlock]}]},
+    {
+      type: 'details',
+      content: [
+        {type: 'detailsSummary'},
+        {type: 'detailsContent', content: [paragraph, thinkingBlock]}
+      ]
+    }
+  ]
+  expect(JSON.stringify(sanitizeSyncedBlockSeed(seed))).not.toContain('thinkingBlock')
+})
