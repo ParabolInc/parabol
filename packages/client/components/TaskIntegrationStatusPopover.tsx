@@ -12,15 +12,17 @@ interface Props {
   href: string
   label: string
   status: string
+  movedToDone: boolean
   children: ReactElement
 }
 
 const TaskIntegrationStatusPopover = (props: Props) => {
-  const {service, href, label, status, children} = props
+  const {service, href, label, status, movedToDone, children} = props
   const {title, Icon, iconClassName} = getClientIntegration(service)
   const [open, setOpen] = useState(false)
   const timer = useRef<number>(undefined)
   const statusId = useId()
+  const movedNote = `Closed in ${title}, so this card moved to Done.`
   const setOpenAfter = (nextOpen: boolean, delay: number) => {
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => setOpen(nextOpen), delay)
@@ -41,7 +43,10 @@ const TaskIntegrationStatusPopover = (props: Props) => {
       >
         {children}
       </Popover.Anchor>
-      <span id={statusId} className='sr-only'>{`Status in ${title}: ${status}`}</span>
+      <span id={statusId} className='sr-only'>
+        {`Status in ${title}: ${status}`}
+        {movedToDone && `. ${movedNote}`}
+      </span>
       <Popover.Portal>
         <Popover.Content
           side='bottom'
@@ -64,6 +69,7 @@ const TaskIntegrationStatusPopover = (props: Props) => {
             <span>{`Status in ${title}`}</span>
             <span className='text-right font-semibold text-fg-primary'>{status}</span>
           </div>
+          {movedToDone && <div className='mt-2 text-fg-secondary'>{movedNote}</div>}
           <a
             href={href}
             rel='noopener noreferrer'

@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import useMoveClosedTaskToDone from '../hooks/useMoveClosedTaskToDone'
 import getTaskLink from '../integrations/platform/getTaskLink'
 import {cn} from '../ui/cn'
 import isTempId from '../utils/relay/isTempId'
@@ -10,12 +11,15 @@ import TaskIntegrationStatusPopover from './TaskIntegrationStatusPopover'
 
 interface Props {
   integration: TaskIntegrationLink_integration$key | null
+  taskId: string
+  isDone: boolean
+  isArchived: boolean
   className?: string
   children?: ReactNode
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration: integrationRef, className, children} = props
+  const {integration: integrationRef, taskId, isDone, isArchived, className, children} = props
   const integration = useFragment(
     graphql`
       fragment TaskIntegrationLink_integration on TaskIntegration {
@@ -31,8 +35,11 @@ const TaskIntegrationLink = (props: Props) => {
     `,
     integrationRef
   )
+  const isPending = !integration || isTempId(integration.id)
+  const taskLink = isPending ? null : getTaskLink(integration)
+  useMoveClosedTaskToDone(taskId, !!taskLink?.closed && !isArchived, isDone)
   if (!integration) return null
-  if (isTempId(integration.id)) {
+  if (isPending) {
     return (
       <div
         className={cn('block px-4 text-[14px] text-fg-primary leading-5', className)}
@@ -42,9 +49,8 @@ const TaskIntegrationLink = (props: Props) => {
       </div>
     )
   }
-  const taskLink = getTaskLink(integration)
   if (!taskLink) return null
-  const {href, label, title, service, status} = taskLink
+  const {href, label, title, service, status, closed} = taskLink
   const link = (
     <a
       href={href}
@@ -62,7 +68,13 @@ const TaskIntegrationLink = (props: Props) => {
   )
   if (!status) return link
   return (
-    <TaskIntegrationStatusPopover service={service} href={href} label={label} status={status}>
+    <TaskIntegrationStatusPopover
+      service={service}
+      href={href}
+      label={label}
+      status={status}
+      movedToDone={closed && isDone}
+    >
       {link}
     </TaskIntegrationStatusPopover>
   )

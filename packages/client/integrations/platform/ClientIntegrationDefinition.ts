@@ -117,6 +117,8 @@ export interface TaskLinkDetails {
   title: string
   /** The issue's status as the service words it; null when the issue came back without one */
   status: string | null
+  /** Done or closed in the service, so the card belongs in Done */
+  closed: boolean
 }
 
 /** The issue link on a task card; the service owns an @inline fragment that TaskIntegrationLink spreads with @alias */

@@ -31,7 +31,7 @@ const createJiraIssue = (taskId: string, issueKey: string, summary: string): Dem
   summary,
   descriptionHTML: '',
   extraFields: [],
-  jiraStatus: {name: 'To Do'},
+  jiraStatus: {name: 'To Do', category: 'new'},
   url: DemoIntegration.JIRA_ISSUE_URL
 })
 

@@ -4,6 +4,8 @@ import type {linearTaskLink_issue$key} from '../../__generated__/linearTaskLink_
 import {getLinearRepoName} from '../../utils/getLinearRepoName'
 import type {TaskLinkCapability} from '../platform/ClientIntegrationDefinition'
 
+const CLOSED_TYPES = new Set(['completed', 'canceled'])
+
 const linearTaskLink: TaskLinkCapability = {
   getDetails: ({linearTaskLink_issue}) => {
     if (!linearTaskLink_issue) return null
@@ -20,6 +22,7 @@ const linearTaskLink: TaskLinkCapability = {
             }
             linearState: state {
               name
+              type
             }
             url
           }
@@ -30,7 +33,8 @@ const linearTaskLink: TaskLinkCapability = {
       href: url,
       label: `Issue #${identifier}`,
       title: `Linear Issue #${identifier} on ${getLinearRepoName(linearProject, team.name)}`,
-      status: linearState?.name ?? null
+      status: linearState?.name ?? null,
+      closed: CLOSED_TYPES.has(linearState?.type ?? '')
     }
   }
 }

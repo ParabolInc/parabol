@@ -15,6 +15,7 @@ const jiraServerTaskLink: TaskLinkCapability = {
             url
             jiraServerStatus: status {
               name
+              category
             }
           }
         `,
@@ -24,7 +25,8 @@ const jiraServerTaskLink: TaskLinkCapability = {
       href: url,
       label: `Issue #${issueKey}`,
       title: `Jira Data Center Issue #${issueKey} on ${projectKey}`,
-      status: jiraServerStatus?.name ?? null
+      status: jiraServerStatus?.name ?? null,
+      closed: jiraServerStatus?.category === 'done'
     }
   }
 }

@@ -17,6 +17,7 @@ const clickUpTaskLink: TaskLinkCapability = {
           clickUpUrl: url
           clickUpStatus: status {
             name
+            type
           }
         }
       `,
@@ -26,7 +27,8 @@ const clickUpTaskLink: TaskLinkCapability = {
       href: task.clickUpUrl,
       label: `Task ${task.customId ?? task.taskId}`,
       title: getClickUpTaskLinkTitle(task),
-      status: task.clickUpStatus?.name ?? null
+      status: task.clickUpStatus?.name ?? null,
+      closed: task.clickUpStatus?.type === 'closed'
     }
   }
 }

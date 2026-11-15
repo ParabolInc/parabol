@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import type {TaskCardIntegration_task$key} from '~/__generated__/TaskCardIntegration_task.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
+import isTaskArchived from '../../../../utils/isTaskArchived'
 
 interface Props {
   task: TaskCardIntegration_task$key
@@ -15,6 +16,9 @@ const TaskCardIntegration = (props: Props) => {
   const task = useFragment(
     graphql`
       fragment TaskCardIntegration_task on Task {
+        id
+        status
+        tags
         ...IntegratedTaskContent_task
         integration {
           ...TaskIntegrationLink_integration
@@ -27,7 +31,12 @@ const TaskCardIntegration = (props: Props) => {
   return (
     <>
       <IntegratedTaskContent task={task} />
-      <TaskIntegrationLink integration={task.integration} />
+      <TaskIntegrationLink
+        integration={task.integration}
+        taskId={task.id}
+        isDone={task.status === 'done'}
+        isArchived={isTaskArchived(task.tags)}
+      />
     </>
   )
 }

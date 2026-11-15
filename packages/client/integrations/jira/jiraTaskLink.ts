@@ -15,6 +15,7 @@ const jiraTaskLink: TaskLinkCapability = {
           cloudName
           jiraStatus: status {
             name
+            category
           }
         }
       `,
@@ -27,7 +28,8 @@ const jiraTaskLink: TaskLinkCapability = {
           : `https://${cloudName}.atlassian.net/browse/${issueKey}`,
       label: `Issue #${issueKey}`,
       title: `Jira Issue #${issueKey} on ${projectKey}`,
-      status: jiraStatus?.name ?? null
+      status: jiraStatus?.name ?? null,
+      closed: jiraStatus?.category === 'done'
     }
   }
 }

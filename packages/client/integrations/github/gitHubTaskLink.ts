@@ -29,7 +29,8 @@ const gitHubTaskLink: TaskLinkCapability = {
           : `https://www.github.com/${nameWithOwner}/issues/${number}`,
       label: `Issue #${number}`,
       title: `GitHub Issue #${number} on ${nameWithOwner}`,
-      status: STATES[githubState] ?? null
+      status: STATES[githubState] ?? null,
+      closed: githubState === 'CLOSED'
     }
   }
 }

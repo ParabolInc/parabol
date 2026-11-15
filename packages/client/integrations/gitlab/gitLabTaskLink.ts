@@ -25,7 +25,8 @@ const gitLabTaskLink: TaskLinkCapability = {
       href: webUrl,
       label: `Issue #${iid}`,
       title: `GitLab Issue #${iid} on ${fullPath}`,
-      status: STATES[gitlabState] ?? null
+      status: STATES[gitlabState] ?? null,
+      closed: gitlabState === 'closed'
     }
   }
 }

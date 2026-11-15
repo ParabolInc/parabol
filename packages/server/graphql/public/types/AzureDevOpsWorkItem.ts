@@ -8,6 +8,16 @@ const AzureDevOpsWorkItem: AzureDevOpsWorkItemResolvers = {
   __isTypeOf: ({service}) => service === 'azureDevOps',
   id: ({instanceId, teamProject, id}) => AzureDevOpsIssueId.join(instanceId, teamProject, id),
   issueKey: ({id}) => id,
+  stateCategory: async (
+    {instanceId, teamProject, type, state, teamId, userId},
+    _args,
+    {dataLoader}
+  ) => {
+    const states = await dataLoader
+      .get('azureDevOpsWorkItemTypeStates')
+      .load({teamId, userId, instanceId, projectId: teamProject, workItemType: type})
+    return states.find(({name}) => name === state)?.category ?? null
+  },
   project: ({instanceId, teamProject, projectName, teamId, userId}) => ({
     service: 'azureDevOps',
     instanceId,

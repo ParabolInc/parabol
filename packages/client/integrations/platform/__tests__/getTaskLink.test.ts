@@ -10,12 +10,12 @@ import getTaskLink from '../getTaskLink'
 const linked = (alias: string, data: object) =>
   ({id: 'integration', [alias]: data}) as unknown as TaskIntegrationLink_integration$data
 
-const jira = (status: string | null) =>
+const jira = (status: string | null, category = 'indeterminate') =>
   linked('jiraTaskLink_issue', {
     issueKey: 'COPPER-142',
     projectKey: 'COPPER',
     cloudName: 'copper',
-    jiraStatus: status ? {name: status} : null
+    jiraStatus: status ? {name: status, category} : null
   })
 
 const gitLab = (state: string) =>
@@ -33,7 +33,8 @@ describe('getTaskLink', () => {
       href: 'https://copper.atlassian.net/browse/COPPER-142',
       label: 'Issue #COPPER-142',
       title: 'Jira Issue #COPPER-142 on COPPER',
-      status: 'In Review'
+      status: 'In Review',
+      closed: false
     })
   })
 
@@ -72,13 +73,41 @@ describe('getTaskLink', () => {
       listName: 'Sprint 4',
       folderName: null,
       clickUpUrl: 'https://app.clickup.com/t/86abc123',
-      clickUpStatus: {name: 'in progress'}
+      clickUpStatus: {name: 'in progress', type: 'custom'}
     })
     expect(getTaskLink(clickUp)).toMatchObject({
       service: 'clickup',
       label: 'Task ENG-12',
       status: 'in progress'
     })
+  })
+
+  it('knows when the issue is closed in the tool', () => {
+    expect(getTaskLink(jira('Shipped', 'done'))?.closed).toBe(true)
+    expect(getTaskLink(gitLab('closed'))?.closed).toBe(true)
+    expect(getTaskLink(gitLab('opened'))?.closed).toBe(false)
+    const linear = (type: string) =>
+      linked('linearTaskLink_issue', {
+        identifier: 'ENG-7',
+        team: {name: 'Engineering'},
+        linearProject: null,
+        url: 'https://linear.app/copper/issue/ENG-7',
+        linearState: {name: type, type}
+      })
+    expect(getTaskLink(linear('completed'))?.closed).toBe(true)
+    expect(getTaskLink(linear('canceled'))?.closed).toBe(true)
+    expect(getTaskLink(linear('started'))?.closed).toBe(false)
+    const azure = (stateCategory: string | null) =>
+      linked('azureDevOpsTaskLink_workItem', {
+        workItemKey: '42',
+        azureProject: {organization: 'copper', name: 'Deploy'},
+        type: 'Bug',
+        azureState: 'Closed',
+        stateCategory,
+        url: 'https://dev.azure.com/copper/Deploy/_workitems/edit/42'
+      })
+    expect(getTaskLink(azure('Completed'))?.closed).toBe(true)
+    expect(getTaskLink(azure(null))?.closed).toBe(false)
   })
 
   it('is null for an issue no integration claims', () => {

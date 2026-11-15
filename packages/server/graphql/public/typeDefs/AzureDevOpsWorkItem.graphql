@@ -52,6 +52,12 @@ type AzureDevOpsWorkItem implements TaskIntegration {
   state: String!
 
   """
+  The category Azure DevOps gives the current state: Proposed, InProgress, Resolved, Completed or Removed.
+  Null when the work item type's states cannot be listed
+  """
+  stateCategory: String
+
+  """
   The work item type as defined in Azure DevOps (e.g. "Bug", "User Story", "Task", "Epic").
   The available types depend on the process template (Agile, Scrum, CMMI) configured for the project.
   Use this to display the correct icon/label or to differentiate handling between bugs and stories.

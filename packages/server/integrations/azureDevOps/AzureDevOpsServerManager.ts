@@ -62,6 +62,12 @@ export interface AzureDevOpsField {
   readOnly: boolean
 }
 
+export interface AzureDevOpsWorkItemState {
+  name: string
+  /** Proposed, InProgress, Resolved, Completed or Removed */
+  category: string
+}
+
 export interface AzureDevOpsComment {
   text: string
   createdBy?: {displayName?: string}
@@ -347,6 +353,18 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     if (url instanceof Error) return url
     const res = await this.request<ListResponse<{referenceName: string}>>(url)
     return res instanceof Error ? res : res.json.value.map(({referenceName}) => referenceName)
+  }
+
+  async listWorkItemTypeStates(instanceId: string, projectId: string, workItemType: string) {
+    if (!this.canReach(instanceId, projectId)) return new Error(NOT_SHARED_MESSAGE)
+    const url = this.projectUrl(
+      instanceId,
+      projectId,
+      `wit/workitemtypes/${encodeURIComponent(workItemType)}/states?api-version=${API_VERSION}`
+    )
+    if (url instanceof Error) return url
+    const res = await this.request<ListResponse<AzureDevOpsWorkItemState>>(url)
+    return res instanceof Error ? res : res.json.value
   }
 
   /** What the project's process calls a backlog item: User Story, Product Backlog Item, Issue or Requirement */

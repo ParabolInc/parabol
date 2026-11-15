@@ -3,10 +3,12 @@ import {readInlineData} from 'relay-runtime'
 import type {azureDevOpsTaskLink_workItem$key} from '../../__generated__/azureDevOpsTaskLink_workItem.graphql'
 import type {TaskLinkCapability} from '../platform/ClientIntegrationDefinition'
 
+const CLOSED_CATEGORIES = new Set(['Completed', 'Removed'])
+
 const azureDevOpsTaskLink: TaskLinkCapability = {
   getDetails: ({azureDevOpsTaskLink_workItem}) => {
     if (!azureDevOpsTaskLink_workItem) return null
-    const {workItemKey, azureProject, url, type, azureState} =
+    const {workItemKey, azureProject, url, type, azureState, stateCategory} =
       readInlineData<azureDevOpsTaskLink_workItem$key>(
         graphql`
           fragment azureDevOpsTaskLink_workItem on AzureDevOpsWorkItem @inline {
@@ -17,6 +19,7 @@ const azureDevOpsTaskLink: TaskLinkCapability = {
             }
             type
             azureState: state
+            stateCategory
             url
           }
         `,
@@ -28,7 +31,8 @@ const azureDevOpsTaskLink: TaskLinkCapability = {
       href: url,
       label: `${integrationType} #${workItemLabel}`,
       title: `Azure Item #${workItemLabel} on ${azureProject.name}`,
-      status: azureState || null
+      status: azureState || null,
+      closed: CLOSED_CATEGORIES.has(stateCategory ?? '')
     }
   }
 }

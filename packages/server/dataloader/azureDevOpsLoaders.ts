@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import type {AzureDevOpsWorkItemState} from '../integrations/azureDevOps/AzureDevOpsServerManager'
 import AzureDevOpsServerManager from '../integrations/azureDevOps/AzureDevOpsServerManager'
 import {listAzureDevOpsEstimateFields} from '../integrations/azureDevOps/azureDevOpsEstimateFields'
 import getAzureDevOpsManager from '../integrations/azureDevOps/getAzureDevOpsManager'
@@ -93,6 +94,30 @@ export const azureDevOpsEstimateFields = (parent: RootDataLoader) => {
           if (projectFields instanceof Error) return fail(projectFields)
           if (workItemTypeFieldNames instanceof Error) return fail(workItemTypeFieldNames)
           return listAzureDevOpsEstimateFields(projectFields, workItemTypeFieldNames)
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, userId, instanceId, projectId, workItemType}) =>
+        `${teamId}:${userId}:${instanceId.toLowerCase()}:${projectId}:${workItemType}`
+    }
+  )
+}
+
+/** The states of one work item type with their categories; [] when Azure DevOps cannot list them */
+export const azureDevOpsWorkItemTypeStates = (parent: RootDataLoader) => {
+  return new DataLoader<AzureDevOpsEstimateFieldsKey, AzureDevOpsWorkItemState[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, userId, instanceId, projectId, workItemType}) => {
+          const manager = await getAzureDevOpsManager({dataLoader: parent, teamId, userId})
+          if (!manager) return []
+          const states = await manager.listWorkItemTypeStates(instanceId, projectId, workItemType)
+          if (!(states instanceof Error)) return states
+          logError(states, {userId, tags: {teamId, instanceId, projectId}})
+          return []
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
