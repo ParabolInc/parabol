@@ -89,16 +89,19 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     })
     return () => clearTimeout(timer)
   }, [isHeldOpen])
+  const isInvalid = !isValidPageCode(pageCode)
+  const dataStatus = isInvalid || !canNest ? 'ready' : !isNearViewport ? 'loading' : status
   return (
     <NodeViewWrapper
       ref={wrapperRef}
       data-synced-block
+      data-status={dataStatus}
       tabIndex={-1}
       onFocus={() => setHasFocusWithin(true)}
       onBlur={handleBlur}
       className={cn(
-        '-mx-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent',
-        isPanel ? 'mt-3!' : 'mt-9!',
+        '-mx-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent print:outline-none',
+        isPanel ? 'mt-3!' : 'mt-9! print:mt-3!',
         'before:-top-9 before:-left-[26px] before:absolute before:bottom-0 before:w-[38px] before:content-[""]',
         !showBar && 'hover:outline-hairline-strong',
         showBar &&
@@ -153,7 +156,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       ) : (
         !isPanel && <SyncedBlockCaption name={name} />
       )}
-      {!isValidPageCode(pageCode) ? (
+      {isInvalid ? (
         <div className='h-6 rounded-sm bg-surface-hover' />
       ) : !isNearViewport ? (
         <SyncedBlockState status='loading' pageCode={pageCode} onRetry={noop} />

@@ -10,6 +10,7 @@ import {PageEditor} from './PageEditor'
 import {PageHeader} from './PageHeader'
 import {PageHeaderPublic} from './PageHeaderPublic'
 import {useIsPageStreaming} from './useEditablePage'
+import {usePrintShortcut} from './usePrintShortcut'
 
 interface Props {
   viewerRef: Page_viewer$key | null
@@ -57,6 +58,7 @@ export const Page = (props: Props) => {
   useDocumentTitle(`${documentTitle} | Parabol`, documentTitle)
   const {provider, synced} = usePageProvider(pageId)
   const isPageGenerating = useIsPageStreaming(provider)
+  usePrintShortcut()
   // The editor is conditionally loaded only after syncing so the forced schema is not injected before
   // The yjs document loads
   return (

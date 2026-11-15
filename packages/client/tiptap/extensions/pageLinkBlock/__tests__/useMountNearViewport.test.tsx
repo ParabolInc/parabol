@@ -1,6 +1,7 @@
 import '../../__tests__/installHappyDom'
 import {act, useRef} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import {releaseMountAll, requestMountAllSyncedBlocks} from '../syncedBlockPrint'
 import {useMountNearViewport} from '../useMountNearViewport'
 
 type ObserverCallback = (entries: {isIntersecting: boolean}[]) => void
@@ -53,6 +54,7 @@ describe('useMountNearViewport', () => {
     act(() => root.unmount())
     container.remove()
     globalThis.IntersectionObserver = originalObserver
+    releaseMountAll()
   })
 
   test('does not mount until the block nears the viewport', () => {
@@ -76,6 +78,19 @@ describe('useMountNearViewport', () => {
   test('mounts at once without IntersectionObserver', () => {
     // @ts-expect-error simulating a browser without the API
     delete globalThis.IntersectionObserver
+    render()
+    expect(mounted()).toBe(true)
+  })
+
+  test('mounts at once when printing asks for every block', () => {
+    render()
+    expect(mounted()).toBe(false)
+    act(() => requestMountAllSyncedBlocks())
+    expect(mounted()).toBe(true)
+  })
+
+  test('a block that renders during printing starts mounted', () => {
+    requestMountAllSyncedBlocks()
     render()
     expect(mounted()).toBe(true)
   })

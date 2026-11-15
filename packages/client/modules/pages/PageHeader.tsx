@@ -15,6 +15,8 @@ import {
   showConfluenceBadge
 } from '../../components/ExportToConfluence/ConfluenceNewBadge'
 import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {printPage} from '../../tiptap/extensions/pageLinkBlock/syncedBlockPrint'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -33,6 +35,7 @@ interface Props {
 
 export const PageHeader = (props: Props) => {
   const {pageRef, showConfluenceExport, isPageGenerating} = props
+  const atmosphere = useAtmosphere()
   const page = useFragment(
     graphql`
       fragment PageHeader_page on Page {
@@ -108,7 +111,7 @@ export const PageHeader = (props: Props) => {
             <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
               <MenuItem
                 onSelect={() => {
-                  window.print()
+                  printPage(atmosphere)
                 }}
               >
                 <PictureAsPdfIcon className='text-fg-secondary' />
