@@ -20,3 +20,23 @@ describe('pageLinkBlock plain text', () => {
     expect(text).toBe('Summaries\n\n<Untitled>')
   })
 })
+
+describe('synced pageLinkBlock plain text', () => {
+  const syncedLink = (synced: boolean) => ({
+    type: 'doc',
+    content: [
+      {
+        type: 'pageLinkBlock',
+        attrs: {pageCode: 7, title: 'Escalation', synced, canonical: true}
+      }
+    ]
+  })
+
+  it('renders no text for a synced link', () => {
+    expect(generateText(syncedLink(true), serverTipTapExtensions)).not.toContain('Escalation')
+  })
+
+  it('still renders a page link title', () => {
+    expect(generateText(syncedLink(false), serverTipTapExtensions)).toContain('Escalation')
+  })
+})

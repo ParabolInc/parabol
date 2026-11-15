@@ -762,7 +762,12 @@ const permissionMap: PermissionMap<Resolvers> = {
     id: allow,
     team: allow,
     teamId: allow,
-    title: allow
+    title: redactUnless(
+      or(
+        not(isTrue<'Page.title'>('source.isSyncedBlock')),
+        hasPageAccess<'Page.title'>('source.id', 'viewer')
+      )
+    )
   },
   // Who has access is for those granted access. Anyone with a public link only sees what the link grants
   PageAccess: {

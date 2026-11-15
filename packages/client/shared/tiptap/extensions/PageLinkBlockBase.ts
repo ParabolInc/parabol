@@ -82,7 +82,8 @@ export const PageLinkBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    return (node.attrs as PageLinkBlockAttrs).title || '<Untitled>'
+    const {synced, title} = node.attrs as PageLinkBlockAttrs
+    return synced ? '' : title || '<Untitled>'
   },
   ...createBlockMarkdownSpec({
     nodeName: 'pageLinkBlock',
