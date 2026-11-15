@@ -16,7 +16,7 @@ export const SyncedBlockPanel = (props: Props) => {
     >
       <Icon className='shrink-0 text-[20px] text-fg-muted' />
       <span className='min-w-0 flex-[1_1_220px]'>{children}</span>
-      {action}
+      {action && <div className='contents print:hidden'>{action}</div>}
     </div>
   )
 }
