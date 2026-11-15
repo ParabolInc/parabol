@@ -1,8 +1,10 @@
+import {sql} from 'kysely'
 import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
+import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import logError from '../logError'
@@ -28,6 +30,16 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
   })
   return links
 }
+
+const isRemovedFromDoc = (node: Y.XmlElement<PageLinkBlockAttrs>) =>
+  !node.doc || !!node._item?.deleted
+
+const trashPage = (pageId: number, userId: string) =>
+  getKysely()
+    .updateTable('Page')
+    .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: userId})
+    .where('id', '=', pageId)
+    .execute()
 
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
@@ -75,6 +87,10 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           }
         }).catch(Logger.error)
         if (!newPage) return
+        if (isSyncedBlock && isRemovedFromDoc(node)) {
+          await trashPage(newPage.id, userId)
+          return
+        }
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         if (isSyncedBlock) node.setAttribute('title', '')
         rehostSeededAssets(newPage.id, seedContent, userId)

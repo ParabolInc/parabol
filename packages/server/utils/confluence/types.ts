@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 
 export const MAX_CONFLUENCE_EXPORT_PAGES = 100
+export const MAX_SYNCED_BLOCK_EXPANSIONS = 100
 
 export type DegradedItem = {
   pageId: number

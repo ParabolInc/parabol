@@ -7,6 +7,7 @@ import {pageAccessByUserIdBatchFn} from '../../dataloader/pageAccessByUserIdBatc
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {selectUnsyncOutcomes} from '../tiptap/selectUnsyncOutcomes'
+import {MAX_SYNCED_BLOCK_EXPANSIONS} from './types'
 
 const collectSyncedPageCodes = (node: JSONContent, codes: Set<number>) => {
   if (node.type === 'pageLinkBlock' && node.attrs?.synced === true) {
@@ -45,7 +46,9 @@ export const loadSyncedBlockBodies = async (
   let frontier = new Set<number>()
   collectSyncedPageCodes(doc, frontier)
   for (let depth = 0; depth < MAX_SYNCED_BLOCK_DEPTH && frontier.size > 0; depth++) {
-    const codes = [...frontier].filter((code) => !seen.has(code))
+    const codes = [...frontier]
+      .filter((code) => !seen.has(code))
+      .slice(0, MAX_SYNCED_BLOCK_EXPANSIONS - seen.size)
     codes.forEach((code) => {
       seen.add(code)
     })

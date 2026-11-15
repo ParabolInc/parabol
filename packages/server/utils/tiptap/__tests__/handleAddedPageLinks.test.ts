@@ -27,6 +27,34 @@ jest.mock('../isSyncedBlocksEnabled', () => ({
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({dispose: () => {}})
 }))
+interface MockUpdate {
+  table: string
+  values: Record<string, unknown>
+  where: unknown[][]
+}
+const mockUpdates: MockUpdate[] = []
+jest.mock('../../../postgres/getKysely', () => ({
+  __esModule: true,
+  default: () => ({
+    updateTable: (table: string) => {
+      const update: MockUpdate = {table, values: {}, where: []}
+      const builder = {
+        set: (values: Record<string, unknown>) => {
+          update.values = values
+          return builder
+        },
+        where: (...args: unknown[]) => {
+          update.where.push(args)
+          return builder
+        },
+        execute: async () => {
+          mockUpdates.push(update)
+        }
+      }
+      return builder
+    }
+  })
+}))
 const mockRehostSeededAssets = jest.fn()
 jest.mock('../rehostExternalAssets', () => ({
   rehostSeededAssets: (...args: unknown[]) => mockRehostSeededAssets(...args)
@@ -76,6 +104,7 @@ const insertLink = async (link: Y.XmlElement<PageLinkBlockAttrs>, origin: object
 }
 
 beforeEach(() => {
+  mockUpdates.length = 0
   mockBacklinks.length = 0
   mockMovedPageIds.length = 0
   mockOwnerByPageId.clear()
@@ -305,7 +334,46 @@ test('rehosts the assets a seed carries into the new page as the inserting user'
   )
   expect(mockRehostSeededAssets).toHaveBeenCalledWith(
     NEW_PAGE_ID,
-    [seedParagraph, image],
+    [seedParagraph, {type: 'imageBlock', attrs: expect.objectContaining(image.attrs)}],
     EDITOR_ID
   )
+})
+
+const insertThenUndoBeforeMint = async (isSyncedBlock: boolean) => {
+  const {doc, frag} = makePage()
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
+  if (!isSyncedBlock) link.removeAttribute('synced')
+  mockCreateNewPage.mockImplementationOnce(async () => {
+    doc.transact(() => frag.delete(0, 1), asUser(EDITOR_ID))
+    return {id: NEW_PAGE_ID}
+  })
+  doc.transact(() => {
+    frag.insert(0, [link as Y.XmlElement])
+  }, asUser(EDITOR_ID))
+  const setAttribute = jest.spyOn(link, 'setAttribute')
+  await flush()
+  return {setAttribute}
+}
+
+test('sends a synced block page to Trash when its link was undone before the page was made', async () => {
+  mockFlagEnabled = true
+  const {setAttribute} = await insertThenUndoBeforeMint(true)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: true}))
+  expect(mockUpdates).toEqual([
+    {
+      table: 'Page',
+      values: {deletedAt: expect.anything(), deletedBy: EDITOR_ID},
+      where: [['id', '=', NEW_PAGE_ID]]
+    }
+  ])
+  expect(setAttribute).not.toHaveBeenCalled()
+  expect(mockRehostSeededAssets).not.toHaveBeenCalled()
+  expect(mockBacklinks).toEqual([])
+})
+
+test('leaves an ordinary page alone when its link was undone before the page was made', async () => {
+  const {setAttribute} = await insertThenUndoBeforeMint(false)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: false}))
+  expect(mockUpdates).toEqual([])
+  expect(setAttribute).toHaveBeenCalledWith('pageCode', NEW_PAGE_ID)
 })

@@ -361,7 +361,12 @@ describe('convertTipTapToConfluenceStorage', () => {
         resolveSyncedBlock: (code) => [para(`body ${code}`), linkTo(code)]
       })
       expect(xhtml).toContain('<p>body 9</p>')
-      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock:limit',
+        count: 1,
+        treatment: 'skipped — nested too deeply or repeated too often'
+      })
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
     })
 
     it('caps the total number of expansions so fan-out cannot multiply', () => {
@@ -376,8 +381,9 @@ describe('convertTipTapToConfluenceStorage', () => {
         }
       })
       expect(expansions).toBeLessThanOrEqual(100)
-      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock')
+      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock:limit')
       expect(skipped!.count).toBeGreaterThan(0)
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
     })
 
     it('stops a deep chain at the depth cap', () => {
@@ -387,7 +393,13 @@ describe('convertTipTapToConfluenceStorage', () => {
       })
       expect(xhtml).toContain('<p>level 11</p>')
       expect(xhtml).not.toContain('level 12')
-      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+      expect(degraded).toEqual([
+        {
+          blockType: 'syncedBlock:limit',
+          count: 1,
+          treatment: 'skipped — nested too deeply or repeated too often'
+        }
+      ])
     })
 
     it('leaves an ordinary page link unchanged', () => {

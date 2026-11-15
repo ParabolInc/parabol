@@ -11,6 +11,7 @@ import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
 import {createNewPage} from '../../tiptap/createNewPage'
 import {loadSyncedBlockBodies} from '../loadSyncedBlockBodies'
+import {MAX_SYNCED_BLOCK_EXPANSIONS} from '../types'
 
 const pg = getKysely()
 const userId = `syncedBodies|${generateUID()}`
@@ -172,4 +173,16 @@ describe('loadSyncedBlockBodies', () => {
     const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
     expect(bodies.has(CipherId.encrypt(block.id))).toBe(true)
   }, 30_000)
+
+  it('loads no more distinct blocks than an export can expand', async () => {
+    const host = await createNewPage({userId, content: toContent(heading('Host'))})
+    const blockIds: number[] = []
+    for (let i = 0; i <= MAX_SYNCED_BLOCK_EXPANSIONS; i++) {
+      const block = await makeBlock(host.id, heading(`Block ${i}`), para(`Body ${i}`))
+      blockIds.push(block.id)
+    }
+    const bodies = await loadSyncedBlockBodies(hostDoc(...blockIds) as JSONContent, host.id, userId)
+    expect(bodies.size).toBe(MAX_SYNCED_BLOCK_EXPANSIONS)
+    expect(bodies.has(CipherId.encrypt(blockIds.at(-1)!))).toBe(false)
+  }, 120_000)
 })

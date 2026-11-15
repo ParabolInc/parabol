@@ -5,7 +5,12 @@ import {toCalloutTone} from 'parabol-client/shared/tiptap/calloutTones'
 import {MAX_SYNCED_BLOCK_DEPTH} from 'parabol-client/shared/tiptap/syncedBlockDepth'
 import {escapeHtml} from '../escapeHtml'
 import {escapeCdata} from './escapeXhtml'
-import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
+import {
+  type ExportAsset,
+  MAX_SYNCED_BLOCK_EXPANSIONS,
+  type StorageConversionCtx,
+  type StorageConversionResult
+} from './types'
 
 type Census = Map<string, {count: number; treatment: string}>
 
@@ -19,8 +24,6 @@ type EmitState = {
   syncedExpansions: number
 }
 
-const MAX_SYNCED_BLOCK_EXPANSIONS = 100
-
 const TREATMENTS = {
   mention: 'exported as plain text',
   popoverMention: 'hover document exported as its plain-text label',
@@ -29,6 +32,7 @@ const TREATMENTS = {
   taskBlock: 'exported as static content — not a Confluence task',
   pageLinkBlock: 'linked to the Parabol page',
   syncedBlock: "skipped — the exporter can't open this synced block",
+  syncedBlockLimit: 'skipped — nested too deeply or repeated too often',
   fileUpload: 'in-progress upload skipped',
   calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',
   calloutInList: 'exported as plain paragraphs — panels cannot sit inside a list',
@@ -230,12 +234,15 @@ const emitPageLink = (node: JSONContent, state: EmitState): string => {
   const {attrs} = node
   const pageCode = Number(attrs?.pageCode)
   if (attrs?.synced === true) {
-    const canNest =
-      Number.isFinite(pageCode) &&
+    const isWithinLimits =
       !state.syncedChain.includes(pageCode) &&
       state.syncedChain.length < MAX_SYNCED_BLOCK_DEPTH &&
       state.syncedExpansions < MAX_SYNCED_BLOCK_EXPANSIONS
-    const body = canNest ? state.ctx.resolveSyncedBlock?.(pageCode) : null
+    if (!isWithinLimits) {
+      addCensus(state, 'syncedBlock:limit', TREATMENTS.syncedBlockLimit)
+      return ''
+    }
+    const body = Number.isFinite(pageCode) ? state.ctx.resolveSyncedBlock?.(pageCode) : null
     if (body) {
       state.syncedExpansions += 1
       state.syncedChain.push(pageCode)

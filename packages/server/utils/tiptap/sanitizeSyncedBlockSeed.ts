@@ -19,16 +19,22 @@ const withoutPageLinks = (nodes: unknown[]): JSONContent[] =>
       Array.isArray(node.content) ? {...node, content: withoutPageLinks(node.content)} : node
     )
 
-const canFollowHeading = (node: JSONContent) => {
+const toBlockUnderHeading = (node: JSONContent): Node | null => {
   try {
-    schema.nodes.doc!.create(null, [emptyHeading, Node.fromJSON(schema, node)]).check()
-    return true
+    const block = Node.fromJSON(schema, node)
+    schema.nodes.doc!.create(null, [emptyHeading, block]).check()
+    return block
   } catch {
-    return false
+    return null
   }
 }
 
 export const sanitizeSyncedBlockSeed = (seed: unknown): TipTapContentNode[] => {
   if (!Array.isArray(seed)) return []
-  return withoutPageLinks(seed).filter(canFollowHeading) as TipTapContentNode[]
+  const blocks: TipTapContentNode[] = []
+  withoutPageLinks(seed).forEach((node) => {
+    const block = toBlockUnderHeading(node)
+    if (block) blocks.push(block.toJSON())
+  })
+  return blocks
 }
