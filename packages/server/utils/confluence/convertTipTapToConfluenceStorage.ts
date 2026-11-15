@@ -2,6 +2,7 @@ import data from '@emoji-mart/data'
 import type {JSONContent} from '@tiptap/core'
 import {toSafeHref} from 'parabol-client/shared/embed/normalizeEmbedUrl'
 import {toCalloutTone} from 'parabol-client/shared/tiptap/calloutTones'
+import {MAX_SYNCED_BLOCK_DEPTH} from 'parabol-client/shared/tiptap/syncedBlockDepth'
 import {escapeHtml} from '../escapeHtml'
 import {escapeCdata} from './escapeXhtml'
 import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
@@ -14,6 +15,7 @@ type EmitState = {
   census: Census
   blockquoteDepth: number
   listDepth: number
+  syncedChain: number[]
 }
 
 const TREATMENTS = {
@@ -225,8 +227,17 @@ const emitPageLink = (node: JSONContent, state: EmitState): string => {
   const {attrs} = node
   const pageCode = Number(attrs?.pageCode)
   if (attrs?.synced === true) {
-    const body = Number.isFinite(pageCode) ? state.ctx.resolveSyncedBlock?.(pageCode) : null
-    if (body) return emitBlocks(body, state)
+    const canNest =
+      Number.isFinite(pageCode) &&
+      !state.syncedChain.includes(pageCode) &&
+      state.syncedChain.length < MAX_SYNCED_BLOCK_DEPTH
+    const body = canNest ? state.ctx.resolveSyncedBlock?.(pageCode) : null
+    if (body) {
+      state.syncedChain.push(pageCode)
+      const emitted = emitBlocks(body, state)
+      state.syncedChain.pop()
+      return emitted
+    }
     addCensus(state, 'syncedBlock', TREATMENTS.syncedBlock)
     return ''
   }
@@ -416,7 +427,14 @@ export const convertTipTapToConfluenceStorage = (
   doc: JSONContent,
   ctx: StorageConversionCtx
 ): StorageConversionResult => {
-  const state: EmitState = {ctx, assets: [], census: new Map(), blockquoteDepth: 0, listDepth: 0}
+  const state: EmitState = {
+    ctx,
+    assets: [],
+    census: new Map(),
+    blockquoteDepth: 0,
+    listDepth: 0,
+    syncedChain: []
+  }
   const content = doc.content ?? []
   const titleNode = content[0]
   const title = titleNode ? getNodeText(titleNode).trim() : ''

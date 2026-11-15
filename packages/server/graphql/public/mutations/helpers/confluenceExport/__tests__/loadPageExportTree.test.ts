@@ -169,4 +169,17 @@ describe('loadPageExportTree', () => {
     const tree = await loadPageExportTree(host.id, true, userId)
     expect(tree.map(({pageId}) => pageId)).toEqual([host.id])
   }, 30_000)
+
+  it('never exports a synced block page even when its link says synced is false', async () => {
+    const host = await createNewPage({userId, content: pageDoc('Host')})
+    const block = await createNewPage({
+      userId,
+      parentPageId: host.id,
+      isSyncedBlock: true,
+      content: pageDoc('Escalation path')
+    })
+    await setPageContent(host.id, pageDoc('Host', [pageLink(block.id, 'Escalation path')]))
+    const tree = await loadPageExportTree(host.id, true, userId)
+    expect(tree.map(({pageId}) => pageId)).toEqual([host.id])
+  }, 30_000)
 })

@@ -19,7 +19,7 @@ import {resolveConfluenceAuth} from './resolveConfluenceAuth'
 export const runConfluenceExport = async (
   pageExportId: string,
   dataLoader: DataLoaderWorker,
-  isTokenScoped: boolean
+  options: {isTokenScoped: boolean}
 ) => {
   const startedAt = Date.now()
   // subscribers resolve published payloads with the dataloader registered under this
@@ -101,7 +101,7 @@ export const runConfluenceExport = async (
           siteUrl,
           userId,
           pageExportId,
-          isTokenScoped
+          isTokenScoped: options.isTokenScoped
         })
         if (result.status === 'success') {
           confluenceIdByPageId.set(entry.pageId, result.confluencePageId)

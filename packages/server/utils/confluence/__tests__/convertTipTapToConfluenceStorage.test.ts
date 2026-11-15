@@ -350,6 +350,30 @@ describe('convertTipTapToConfluenceStorage', () => {
       expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
     })
 
+    const linkTo = (pageCode: number) => ({
+      type: 'pageLinkBlock',
+      attrs: {pageCode, title: 'Block', synced: true, canonical: true}
+    })
+
+    it('terminates on a self-referencing block and counts a skip', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`body ${code}`), linkTo(code)]
+      })
+      expect(xhtml).toContain('<p>body 9</p>')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+    })
+
+    it('stops a deep chain at the depth cap', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`level ${code}`), linkTo(code + 1)]
+      })
+      expect(xhtml).toContain('<p>level 11</p>')
+      expect(xhtml).not.toContain('level 12')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+    })
+
     it('leaves an ordinary page link unchanged', () => {
       const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(false), {
         ...ctx,
