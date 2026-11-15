@@ -34,6 +34,12 @@ export const updateAllBacklinkedPageLinkTitles = async ({
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
+  const page = await pg
+    .selectFrom('Page')
+    .select('isSyncedBlock')
+    .where('id', '=', pageId)
+    .executeTakeFirst()
+  const linkTitle = page?.isSyncedBlock ? '' : title
   const pageCode = CipherId.encrypt(pageId)
 
   await Promise.all(
@@ -41,7 +47,7 @@ export const updateAllBacklinkedPageLinkTitles = async ({
       const documentName = CipherId.toClient(fromPageId, 'page')
       await redisHocusPocus.handleEvent('updateBacklinkedPageLinkTitles', documentName, {
         pageCode,
-        title
+        title: linkTitle
       })
     })
   )

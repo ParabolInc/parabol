@@ -21,10 +21,10 @@ const titles = (doc: ReturnType<typeof docWithLinks>) =>
     (node: {attrs?: {title?: string}}) => node.attrs?.title
   )
 
-test('writes no block name into host links', () => {
+test('sets the title on every link to the page', () => {
   const doc = docWithLinks()
   setPageLinkTitles(doc.getXmlFragment('default'), 7, 'Escalation path')
-  expect(titles(doc).slice(0, 2)).toEqual(['', 'Escalation path'])
+  expect(titles(doc).slice(0, 2)).toEqual(['Escalation path', 'Escalation path'])
 })
 
 test('leaves links to other pages alone', () => {

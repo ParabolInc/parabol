@@ -7,7 +7,6 @@ export const setPageLinkTitles = (fragment: XmlFragment, pageCode: number, title
     return yxml.getAttribute('pageCode') === pageCode
   })
   for (const node of walker) {
-    if (!isPageLink(node)) continue
-    node.setAttribute('title', node.getAttribute('synced') === true ? '' : title)
+    if (isPageLink(node)) node.setAttribute('title', title)
   }
 }
