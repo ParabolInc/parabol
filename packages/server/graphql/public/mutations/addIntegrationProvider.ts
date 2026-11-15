@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isMSTeamsAppLink, {MS_TEAMS_APP_LINK_ERROR} from 'parabol-client/utils/isMSTeamsAppLink'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import isRSAPrivateKey from '../../../integrations/jiraServer/isRSAPrivateKey'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -109,6 +110,9 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     isMSTeamsAppLink(webhookProviderMetadataInput.webhookUrl)
   ) {
     throw new GraphQLError(MS_TEAMS_APP_LINK_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+  if (oAuth1ProviderMetadataInput && !isRSAPrivateKey(oAuth1ProviderMetadataInput.consumerSecret)) {
+    return {error: {message: 'consumerSecret must be an unencrypted PEM RSA private key'}}
   }
 
   // RESOLUTION
