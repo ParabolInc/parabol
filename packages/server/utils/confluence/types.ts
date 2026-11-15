@@ -1,3 +1,5 @@
+import type {JSONContent} from '@tiptap/core'
+
 export const MAX_CONFLUENCE_EXPORT_PAGES = 100
 
 export type DegradedItem = {
@@ -15,6 +17,7 @@ export type ExportAsset = {
 export type StorageConversionCtx = {
   parabolPageUrl: string
   appOrigin: string
+  resolveSyncedBlock?: (pageCode: number) => JSONContent[] | null
   resolvePageLink?: (pageCode: number) => {href: string; confluenceTitle?: string} | null
 }
 

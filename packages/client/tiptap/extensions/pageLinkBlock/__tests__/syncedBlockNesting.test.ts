@@ -1,11 +1,7 @@
 import '../../__tests__/installHappyDom'
+import {MAX_SYNCED_BLOCK_DEPTH} from '../../../../shared/tiptap/syncedBlockDepth'
 import {getPageFileType} from '../../../getPageFileType'
-import {
-  canNestSyncedBlock,
-  getEnclosingChain,
-  MAX_SYNCED_BLOCK_DEPTH,
-  pageCodeFromPageId
-} from '../syncedBlockNesting'
+import {canNestSyncedBlock, getEnclosingChain, pageCodeFromPageId} from '../syncedBlockNesting'
 
 const csv = new File(['a,b'], 'data.csv', {type: 'text/csv'})
 const xlsx = new File(['x'], 'data.xlsx', {

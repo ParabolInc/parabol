@@ -308,4 +308,55 @@ describe('convertTipTapToConfluenceStorage', () => {
       expect(xhtml).not.toContain('ac:adf-extension')
     })
   })
+
+  describe('synced blocks', () => {
+    const syncedLink = (synced: boolean) => ({
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Host'}]},
+        {
+          type: 'pageLinkBlock',
+          attrs: {pageCode: 9, title: 'Escalation path', synced, canonical: true}
+        }
+      ]
+    })
+
+    it('flattens a block the exporter can open', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => (code === 9 ? [para('Call on-call first')] : null)
+      })
+      expect(xhtml).toContain('<p>Call on-call first</p>')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded.find(({blockType}) => blockType === 'pageLinkBlock')).toBeUndefined()
+    })
+
+    it("skips a block the exporter can't open", () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: () => null
+      })
+      expect(xhtml).not.toContain('Call on-call first')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock',
+        count: 1,
+        treatment: "skipped — the exporter can't open this synced block"
+      })
+    })
+
+    it('skips every block when there is no resolver', () => {
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), ctx)
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+    })
+
+    it('leaves an ordinary page link unchanged', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(false), {
+        ...ctx,
+        resolveSyncedBlock: () => [para('Call on-call first')]
+      })
+      expect(xhtml).toContain('<a href="https://dev.parabol.co/pages/9">Escalation path</a>')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'pageLinkBlock'}))
+    })
+  })
 })

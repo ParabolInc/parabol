@@ -54,9 +54,9 @@ export const loadPageExportTree = async (
     const childCodes =
       page.isDatabase || !page.yDoc
         ? []
-        : getPageLinks(hydrateDoc(page.yDoc), true).map((link) =>
-            Number(link.getAttribute('pageCode'))
-          )
+        : getPageLinks(hydrateDoc(page.yDoc), true)
+            .filter((link) => link.getAttribute('synced') !== true)
+            .map((link) => Number(link.getAttribute('pageCode')))
     for (const pageCode of childCodes) {
       if (!Number.isFinite(pageCode)) continue
       const childId = CipherId.decrypt(pageCode)

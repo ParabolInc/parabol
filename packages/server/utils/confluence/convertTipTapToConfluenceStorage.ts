@@ -23,6 +23,7 @@ const TREATMENTS = {
   highlight: 'highlight exported as plain text',
   taskBlock: 'exported as static content — not a Confluence task',
   pageLinkBlock: 'linked to the Parabol page',
+  syncedBlock: "skipped — the exporter can't open this synced block",
   fileUpload: 'in-progress upload skipped',
   calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',
   calloutInList: 'exported as plain paragraphs — panels cannot sit inside a list',
@@ -223,6 +224,12 @@ const emitFile = (node: JSONContent, state: EmitState): string => {
 const emitPageLink = (node: JSONContent, state: EmitState): string => {
   const {attrs} = node
   const pageCode = Number(attrs?.pageCode)
+  if (attrs?.synced === true) {
+    const body = Number.isFinite(pageCode) ? state.ctx.resolveSyncedBlock?.(pageCode) : null
+    if (body) return emitBlocks(body, state)
+    addCensus(state, 'syncedBlock', TREATMENTS.syncedBlock)
+    return ''
+  }
   const title = String(attrs?.title ?? 'Untitled page')
   const resolved = Number.isFinite(pageCode) ? state.ctx.resolvePageLink?.(pageCode) : null
   if (resolved?.confluenceTitle) {

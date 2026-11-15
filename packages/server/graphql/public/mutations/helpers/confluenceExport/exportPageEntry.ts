@@ -11,6 +11,7 @@ import {
 } from '../../../../../utils/ConfluenceServerManager'
 import {convertDatabasePageToStorage} from '../../../../../utils/confluence/convertDatabasePageToStorage'
 import {convertTipTapToConfluenceStorage} from '../../../../../utils/confluence/convertTipTapToConfluenceStorage'
+import {loadSyncedBlockBodies} from '../../../../../utils/confluence/loadSyncedBlockBodies'
 import type {
   DegradedItem,
   PageExportPageState,
@@ -51,9 +52,19 @@ export const exportPageEntry = async (input: {
   siteUrl: string | undefined
   userId: string
   pageExportId: string
+  isTokenScoped: boolean
 }): Promise<PageEntryExportResult> => {
-  const {entry, pagesJson, parentConfluenceId, confluence, spaceId, siteUrl, userId, pageExportId} =
-    input
+  const {
+    entry,
+    pagesJson,
+    parentConfluenceId,
+    confluence,
+    spaceId,
+    siteUrl,
+    userId,
+    pageExportId,
+    isTokenScoped
+  } = input
   const pg = getKysely()
   try {
     const page = await pg
@@ -83,9 +94,15 @@ export const exportPageEntry = async (input: {
           errorClass: 'unknown'
         }
       }
+      const syncedBlockBodies = isTokenScoped
+        ? null
+        : await loadSyncedBlockBodies(tipTapDoc, userId)
       conversion = convertTipTapToConfluenceStorage(tipTapDoc, {
         parabolPageUrl,
         appOrigin,
+        resolveSyncedBlock: syncedBlockBodies
+          ? (linkPageCode) => syncedBlockBodies.get(linkPageCode) ?? null
+          : undefined,
         resolvePageLink: (linkPageCode) => {
           const childDbId = CipherId.decrypt(linkPageCode)
           const childEntry = pagesJson.find(({pageId}) => pageId === childDbId)

@@ -16,7 +16,11 @@ import {resolveConfluenceAuth} from './resolveConfluenceAuth'
  * else's. Every exit path (including lock timeout and unexpected throws) finalizes the
  * PageExport row — a row must never be left at status 'running' with no live job.
  */
-export const runConfluenceExport = async (pageExportId: string, dataLoader: DataLoaderWorker) => {
+export const runConfluenceExport = async (
+  pageExportId: string,
+  dataLoader: DataLoaderWorker,
+  isTokenScoped: boolean
+) => {
   const startedAt = Date.now()
   // subscribers resolve published payloads with the dataloader registered under this
   // operationId — publishing without it leaves them a null dataLoader
@@ -96,7 +100,8 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
           spaceId,
           siteUrl,
           userId,
-          pageExportId
+          pageExportId,
+          isTokenScoped
         })
         if (result.status === 'success') {
           confluenceIdByPageId.set(entry.pageId, result.confluencePageId)

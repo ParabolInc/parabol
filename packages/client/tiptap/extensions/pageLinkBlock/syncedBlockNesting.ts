@@ -1,6 +1,5 @@
 import {createContext} from 'react'
-
-export const MAX_SYNCED_BLOCK_DEPTH = 3
+import {MAX_SYNCED_BLOCK_DEPTH} from '../../../shared/tiptap/syncedBlockDepth'
 
 export const SyncedBlockChainContext = createContext<number[] | null>(null)
 
