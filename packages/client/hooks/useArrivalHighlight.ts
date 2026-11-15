@@ -5,10 +5,14 @@ import {findMovedBlockPositions} from '../tiptap/blockMove/findMovedBlockPositio
 import {peekPendingArrival, takePendingArrival} from '../tiptap/blockMove/pendingArrivals'
 import {clearBlockArrival, showBlockArrival} from '../tiptap/extensions/BlockArrival'
 import {findSyncedBlockPositions} from '../tiptap/extensions/pageLinkBlock/findSyncedBlockPositions'
+import {keepArrivalInView} from '../tiptap/keepArrivalInView'
 import {parseSyncedBlockHash} from '../tiptap/syncedBlockHash'
 
 const HIGHLIGHT_MS = 1500
 const GIVE_UP_MS = 10_000
+
+export const isArrivalPending = (pageId: string, hash: string) =>
+  !!peekPendingArrival(pageId) || parseSyncedBlockHash(hash) !== null
 
 export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
   const {hash} = useLocation()
@@ -27,15 +31,21 @@ export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
     }
     let highlightTimeout: number | undefined
     let giveUpTimeout: number | undefined
+    let stopKeepingInView: (() => void) | undefined
     const clear = () => {
       if (!editor.isDestroyed) clearBlockArrival(editor.view)
+    }
+    const getArrivedBlock = () => {
+      if (editor.isDestroyed) return null
+      const [first] = findPositions()
+      const dom = first === undefined ? null : editor.view.nodeDOM(first)
+      return dom instanceof HTMLElement ? dom : null
     }
     const tryApply = () => {
       const positions = findPositions()
       if (positions.length === 0) return false
       showBlockArrival(editor.view, positions)
-      const first = editor.view.nodeDOM(positions[0]!)
-      if (first instanceof HTMLElement) first.scrollIntoView({block: 'center'})
+      stopKeepingInView = keepArrivalInView(getArrivedBlock, editor.view.dom, GIVE_UP_MS)
       highlightTimeout = window.setTimeout(() => {
         clear()
         settle()
@@ -56,6 +66,7 @@ export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
     }
     return () => {
       editor.off('update', onUpdate)
+      stopKeepingInView?.()
       window.clearTimeout(highlightTimeout)
       window.clearTimeout(giveUpTimeout)
       clear()

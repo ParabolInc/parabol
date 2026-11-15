@@ -50,7 +50,7 @@ const makeEditor = () => {
   const editor = {
     isDestroyed: false,
     state: {doc: {}},
-    view: {nodeDOM: jest.fn(() => dom)},
+    view: {nodeDOM: jest.fn(() => dom), dom: document.createElement('div')},
     on: (_event: string, fn: () => void) => listeners.add(fn),
     off: (_event: string, fn: () => void) => listeners.delete(fn)
   }
