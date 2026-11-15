@@ -140,6 +140,11 @@ const archivePage: MutationResolvers['archivePage'] = async (
     if (page.parentPageId) {
       const parentPage = await dataLoader.get('pages').load(page.parentPageId)
       if (!parentPage || parentPage.deletedAt) {
+        if (page.isSyncedBlock) {
+          throw new GraphQLError('Restore the page this block came from first', {
+            extensions: {code: 'CONFLICT'}
+          })
+        }
         parentPageId = null
         const topLevelAncestorPageId = page.ancestorIds[0]
         if (topLevelAncestorPageId) {

@@ -43,6 +43,7 @@ export const selectPromotionHost = async (
           .where('blockAccess.pageId', '=', blockPageId)
       )
     )
+    .orderBy('h.isSyncedBlock')
     .orderBy('b.createdAt')
     .orderBy('b.fromPageId')
     .limit(1)
