@@ -1,7 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
-import type {Transaction} from '@tiptap/pm/state'
 import {Autorenew, SwapHoriz} from '~/ui/icons'
 import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
 import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
@@ -9,6 +8,7 @@ import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
 import {getBlockUnitAt} from '../../blockSelection/blockUnits'
+import {dispatchBlockConversion} from './dispatchBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
 import {turnRangeIntoSyncedBlock} from './turnRangeIntoSyncedBlock'
@@ -20,16 +20,6 @@ interface Props {
   current: TurnIntoTarget
   canCreateSubPage: boolean
   canCreateSyncedBlock: boolean
-}
-
-const saveScroll = (element: Element) => {
-  const scrolled: [Element, number, number][] = []
-  for (let ancestor: Element | null = element; ancestor; ancestor = ancestor.parentElement) {
-    scrolled.push([ancestor, ancestor.scrollLeft, ancestor.scrollTop])
-  }
-  return () => {
-    for (const [ancestor, left, top] of scrolled) ancestor.scrollTo(left, top)
-  }
 }
 
 export const TurnIntoMenu = (props: Props) => {
@@ -54,38 +44,17 @@ export const TurnIntoMenu = (props: Props) => {
     return !editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)
   }
 
-  const dispatchConversion = (tr: Transaction) => {
-    const caret = tr.selection.from
-    const isHandleOnAnotherBlock = tr.mapping.map(pos) !== pos
-    const {dom} = editor.view
-    // New node views start out short, and a page scrolled to its end would clamp to that height
-    dom.style.minHeight = `${dom.offsetHeight}px`
-    editor.view.dispatch(tr)
-    // Focusing before new node views render makes WebKit jump near the end of the page
-    setTimeout(() => {
-      dom.style.minHeight = ''
-      // WebKit scrolls to the caret when the editor takes focus, whatever preventScroll says
-      const restoreScroll = saveScroll(dom)
-      editor
-        .chain()
-        .setMeta('hideDragHandle', isHandleOnAnotherBlock)
-        .focus(caret, {scrollIntoView: false})
-        .run()
-      restoreScroll()
-    })
-  }
-
   const handleValueChange = (title: string) => {
     if (isStale()) return
     const target = rows.find((row) => row.title === title)?.target
     const tr = target && turnBlockInto(editor.state, pos, target)
-    if (tr) dispatchConversion(tr)
+    if (tr) dispatchBlockConversion(editor, tr, pos)
   }
 
   const handleSyncedBlock = () => {
     if (isStale()) return
     const tr = getSyncedBlockTransaction()
-    if (tr) dispatchConversion(tr)
+    if (tr) dispatchBlockConversion(editor, tr, pos)
   }
 
   return (

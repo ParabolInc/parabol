@@ -17,6 +17,7 @@ import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
+import {dispatchBlockConversion} from './turnInto/dispatchBlockConversion'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 import {turnRangeIntoSyncedBlock} from './turnInto/turnRangeIntoSyncedBlock'
@@ -99,8 +100,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const handleTurnIntoSyncedBlock = () => {
     const range = getSelectedBlockRange(editor.state)
     const tr = range && turnRangeIntoSyncedBlock(editor.state, range)
-    if (tr) editor.view.dispatch(tr)
-    editor.commands.focus()
+    if (tr) dispatchBlockConversion(editor, tr, pos)
   }
 
   const handleMoveTo = () => {

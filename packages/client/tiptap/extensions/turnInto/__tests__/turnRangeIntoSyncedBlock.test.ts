@@ -107,6 +107,26 @@ test('a list item keeps its list', () => {
   expect(tr.selection.$from.parent.textContent).toBe('c')
 })
 
+test('the last items of a list that ends the page keep the rest of the list and a line after', () => {
+  const state = makeState(p('before'), ul('a', 'b', 'c'))
+  const {doc} = state
+  const range = normalizeBlockRange(
+    doc,
+    findPos(doc, 'b', 'listItem') + 1,
+    findPos(doc, 'c', 'listItem') + 1
+  )
+  const tr = convert(state, range!)
+  expect(blocksOf(tr.doc)).toEqual([
+    'paragraph:before',
+    'bulletList:a',
+    'pageLinkBlock:',
+    'paragraph:'
+  ])
+  expect(tr.doc.child(3).attrs).toMatchObject({title: 'b', content: [toJSON(ul('b', 'c'))]})
+  expect(tr.selection).toBeInstanceOf(TextSelection)
+  expect(tr.selection.$from.parent).toBe(tr.doc.lastChild)
+})
+
 test('several selected blocks move together and the first line names them', () => {
   const state = makeState(h(2, 'Runbook'), p('Call the lead'), ul('Page', 'Wait'), p('after'))
   const {doc} = state

@@ -229,6 +229,18 @@ describe('the menu on a block selection', () => {
     expect(editor!.state.selection.$from.parent.textContent).toBe('three')
   })
 
+  test('Turn into synced block holds the editor at its height until the block has rendered', async () => {
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
+    const {dom} = editor!.view
+    jest.spyOn(dom, 'offsetHeight', 'get').mockReturnValue(500)
+    const held: string[] = []
+    editor!.on('update', () => held.push(dom.style.minHeight))
+    await click(itemNamed('Turn into synced block'))
+    expect(held).toEqual(['500px'])
+    expect(dom.style.minHeight).toBe('')
+    expect(editor!.state.selection.$from.parent.textContent).toBe('three')
+  })
+
   test('a selection holding a page link has no Turn into synced block', async () => {
     const link = {type: 'pageLinkBlock', attrs: {pageCode: 5, title: 'Other', canonical: true}}
     await openMenuOnSelection([p('one'), link, p('three')], 1, 2, true)
