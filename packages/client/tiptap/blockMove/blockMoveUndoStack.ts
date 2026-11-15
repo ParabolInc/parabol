@@ -3,6 +3,8 @@ import type {EditorState, Transaction} from '@tiptap/pm/state'
 import {yUndoPluginKey} from '@tiptap/y-tiptap'
 import type * as Y from 'yjs'
 import type {MovedBlock} from './appendBlocksToFragment'
+import type {MovableBlocks} from './getMovableBlocks'
+import type {TrackedRange} from './trackRange'
 
 export type BlockMoveMeta = {
   targetPageId: string
@@ -10,6 +12,8 @@ export type BlockMoveMeta = {
   moved: MovedBlock[]
   blocks: JSONContent[]
   restored?: MovedBlock[]
+  childPages?: MovableBlocks['childPages']
+  gap?: TrackedRange
 }
 
 export type StackItem = Y.UndoManager['undoStack'][number]
@@ -51,6 +55,34 @@ export const dispatchBlockMoveDelete = (
     undoManager.off('stack-item-added', tagStackItem)
     undoManager.stopCapturing()
   }
+}
+
+export const dropStackItem = (
+  undoManager: Y.UndoManager,
+  direction: Direction,
+  item: StackItem
+) => {
+  const key = direction === 'undo' ? 'undoStack' : 'redoStack'
+  undoManager[key] = undoManager[key].filter((stackItem) => stackItem !== item)
+}
+
+export const dispatchAsUndoStep = (
+  undoManager: Y.UndoManager,
+  dispatch: () => void
+): StackItem | undefined => {
+  let added: StackItem | undefined
+  const onAdded = ({stackItem}: {stackItem: StackItem}) => {
+    added = stackItem
+  }
+  undoManager.on('stack-item-added', onAdded)
+  undoManager.undoing = true
+  try {
+    dispatch()
+  } finally {
+    undoManager.undoing = false
+    undoManager.off('stack-item-added', onAdded)
+  }
+  return added
 }
 
 // Yjs keeps popping past a step that changes nothing, so each pop sees only the steps it may touch

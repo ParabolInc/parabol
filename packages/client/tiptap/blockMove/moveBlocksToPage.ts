@@ -72,11 +72,10 @@ const moveTrackedBlocks = async ({
       if (!linksRemoved || !current || editor.isDestroyed) return copied
       const now = getMovableBlocks(editor.state.doc, current.from, current.to).blocks
       if (fingerprintBlocks(now, ignoredPageCodes) !== snapshot) return copied
-      const meta =
-        childPageCodes.length === 0
-          ? {targetPageId, targetTitle, moved, blocks: movable.blocks}
-          : null
+      const meta: BlockMoveMeta = {targetPageId, targetTitle, moved, blocks: movable.blocks}
+      if (childPageCodes.length > 0) meta.childPages = movable.childPages
       const gap = deleteFromSource(editor, current.from, current.to, meta)
+      if (meta.childPages) meta.gap = gap
       return {result: 'moved', meta, gap, moved}
     }
   )

@@ -1,10 +1,10 @@
 import type {Editor} from '@tiptap/core'
-import type {Node} from '@tiptap/pm/model'
 import type * as Y from 'yjs'
 import type Atmosphere from '../../Atmosphere'
 import {enqueue, undoneMoves} from './blockMoveHistoryState'
 import {
   type BlockMoveMeta,
+  dropStackItem,
   getMoveMeta,
   getUndoManager,
   popIsolated,
@@ -16,15 +16,14 @@ import {
   getBlockMoveUnreachableUndoMessage,
   getBlockMoveUnrestorableMessage
 } from './getBlockMoveMessage'
+import {getGapPosition} from './getGapPosition'
 import {removeMovedBlocks} from './removeMovedBlocks'
 import {collectRestored} from './restoredBlocks'
 import {BLOCK_MOVE_UNDO_SNACK_KEY, showBlockMoveNotice} from './showBlockMoveNotice'
 import type {TrackedRange} from './trackRange'
+import {undoChildPageMove} from './undoChildPageMove'
 import {BLOCK_MOVE_TIMEOUT_MS, waitForSaved} from './waitForSaved'
 import {writeToTargetPage} from './writeToTargetPage'
-
-const isBlockBoundary = (doc: Node, pos: number) =>
-  pos >= 0 && pos <= doc.content.size && !doc.resolve(pos).parent.inlineContent
 
 const takeBackFromTarget = async (atmosphere: Atmosphere, meta: BlockMoveMeta) => {
   if (meta.moved.length === 0) return
@@ -60,12 +59,28 @@ const popMoveStep = (editor: Editor, undoManager: Y.UndoManager, item: StackItem
   return true
 }
 
+const startChildPageUndo = (
+  editor: Editor,
+  undoManager: Y.UndoManager | undefined,
+  item: StackItem | undefined,
+  meta: BlockMoveMeta,
+  gap: TrackedRange | undefined
+) => {
+  if (undoManager && item) dropStackItem(undoManager, 'undo', item)
+  undoneMoves.add(meta.blocks)
+  return enqueue(editor, () => undoChildPageMove(editor, meta, gap))
+}
+
 export const undoMoveStep = (
   editor: Editor,
   undoManager: Y.UndoManager,
   item: StackItem,
   meta: BlockMoveMeta
 ) => {
+  if (meta.childPages) {
+    startChildPageUndo(editor, undoManager, item, meta, meta.gap)
+    return
+  }
   if (popMoveStep(editor, undoManager, item)) return
   showBlockMoveNotice(
     editor.storage.blockMoveHistory.atmosphere,
@@ -80,16 +95,16 @@ export const undoBlockMove = async (editor: Editor, meta: BlockMoveMeta, gap: Tr
   const undoManager = getUndoManager(editor.state)
   const moveItem = undoManager?.undoStack.find((item) => getMoveMeta(item)?.blocks === meta.blocks)
   const latestMeta = getMoveMeta(moveItem) ?? meta
+  if (latestMeta.childPages) {
+    await startChildPageUndo(editor, undoManager, moveItem, latestMeta, latestMeta.gap ?? gap)
+    return
+  }
   if (undoManager && moveItem && popMoveStep(editor, undoManager, moveItem)) {
     await storage.queue
     return
   }
   const docBefore = editor.state.doc
-  const gapPosition = gap.current()?.from
-  const insertAt =
-    gapPosition !== undefined && isBlockBoundary(docBefore, gapPosition)
-      ? gapPosition
-      : docBefore.content.size
+  const insertAt = getGapPosition(docBefore, gap)
   editor.chain().setMeta('addToHistory', false).insertContentAt(insertAt, meta.blocks).run()
   if (editor.state.doc.eq(docBefore)) return
   undoneMoves.add(meta.blocks)

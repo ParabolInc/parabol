@@ -1,6 +1,6 @@
 import type {Editor} from '@tiptap/core'
 
-const hasChildLinks = (editor: Editor, pageCodes: ReadonlySet<number>) => {
+export const hasChildLinks = (editor: Editor, pageCodes: ReadonlySet<number>) => {
   let found = false
   editor.state.doc.descendants((node) => {
     if (found) return false
