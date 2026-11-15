@@ -7,6 +7,7 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
+import {setPageLinkTitles} from './setPageLinkTitles'
 
 const withDoc = async (
   documentName: string,
@@ -163,14 +164,7 @@ export const updateBacklinkedPageLinkTitles = async (
 ) => {
   const {pageCode, title} = payload
   await withDoc(documentName, (doc) => {
-    const frag = doc.getXmlFragment('default')
-    const walker = frag.createTreeWalker((yxml) => {
-      if (!isPageLink(yxml)) return false
-      return yxml.getAttribute('pageCode') === pageCode
-    })
-    for (const node of walker) {
-      ;(node as XmlElement).setAttribute('title', title)
-    }
+    setPageLinkTitles(doc.getXmlFragment('default'), pageCode, title)
   })
 }
 

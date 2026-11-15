@@ -10,6 +10,8 @@ const UpdatePageAccessPayload: UpdatePageAccessPayloadResolvers = {
     const userId = authToken.sub
     const role = await dataLoader.get('pageAccessByPageIdUserId').load({pageId, userId})
     if (!role) return null
+    const page = await dataLoader.get('pages').loadNonNull(pageId)
+    if (page.isSyncedBlock) return null
     return dataLoader.get('pageUserSection').load({pageId, userId})
   }
 }

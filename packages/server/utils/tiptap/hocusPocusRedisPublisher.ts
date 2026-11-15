@@ -61,7 +61,7 @@ export class RedisPublisher implements Extension {
             const isLive = !userId || (await isYjsSessionLive({userId, iat, exp, jti, connectedAt}))
             const access = isLive ? await getPageConnectionAccess(pageId, userId) : null
             if (!access || access.readOnly !== connection.readOnly) {
-              connection.webSocket.close()
+              connection.close({code: 4403, reason: 'AccessChanged'})
             }
           })
         )

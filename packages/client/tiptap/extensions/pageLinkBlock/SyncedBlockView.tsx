@@ -3,6 +3,7 @@ import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, us
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
+import {getIsSyncedBlockPanelStatus} from './getIsSyncedBlockPanelStatus'
 import {getSyncedBlockEventTarget} from './getSyncedBlockEventTarget'
 import {isValidPageCode} from './isValidPageCode'
 import {SyncedBlockBar} from './SyncedBlockBar'
@@ -19,6 +20,7 @@ import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './
 import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockDialog} from './useSyncedBlockDialog'
 import {useSyncedBlockName} from './useSyncedBlockName'
+import type {SyncedBlockStatus} from './useSyncedBlockProvider'
 
 const noop = () => {}
 
@@ -35,6 +37,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
+  const [status, setStatus] = useState<SyncedBlockStatus>('loading')
+  const isPanel = getIsSyncedBlockPanelStatus(status)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
@@ -93,7 +97,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       onFocus={() => setHasFocusWithin(true)}
       onBlur={handleBlur}
       className={cn(
-        '-mx-3 @min-[852px]/page:-ml-9 relative mt-9! mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent',
+        '-mx-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent',
+        isPanel ? 'mt-3!' : 'mt-9!',
         'before:-top-9 before:-left-[26px] before:absolute before:bottom-0 before:w-[38px] before:content-[""]',
         !showBar && 'hover:outline-hairline-strong',
         showBar &&
@@ -146,12 +151,12 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           }
         />
       ) : (
-        <SyncedBlockCaption name={name} />
+        !isPanel && <SyncedBlockCaption name={name} />
       )}
       {!isValidPageCode(pageCode) ? (
         <div className='h-6 rounded-sm bg-surface-hover' />
       ) : !isNearViewport ? (
-        <SyncedBlockState status='loading' onRetry={noop} />
+        <SyncedBlockState status='loading' pageCode={pageCode} onRetry={noop} />
       ) : canNest ? (
         <SyncedBlockChainContext.Provider value={nestedChain}>
           <SyncedBlockContent
@@ -161,6 +166,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
             getPos={getPos}
             getSize={() => sizeRef.current}
             onChromeChange={setChrome}
+            onStatusChange={setStatus}
           />
         </SyncedBlockChainContext.Provider>
       ) : (
@@ -176,6 +182,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
         hostEditor={editor}
         getPos={getPos}
         pageCode={pageCode}
+        name={name}
         onClose={closeDialog}
       />
     </NodeViewWrapper>

@@ -13,6 +13,7 @@ test('an original offers rename, duplicate and delete but not go to original', (
   expect(getSyncedBlockMenuRows({...options, isOriginal: true, otherCount: 0})).toEqual([
     'copyAndSync',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'deleteFromPage'
   ])
@@ -47,6 +48,7 @@ test("an owner's original on other pages adds Unsync all and Delete all around D
   expect(getSyncedBlockMenuRows({...options, isOriginal: true})).toEqual([
     'copyAndSync',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'unsyncAll',
     'deleteFromPage',
@@ -58,6 +60,7 @@ test('an original only on this page hides Unsync all and Delete all', () => {
   expect(getSyncedBlockMenuRows({...options, isOriginal: true, otherCount: 0})).toEqual([
     'copyAndSync',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'deleteFromPage'
   ])
@@ -67,6 +70,7 @@ test('hides Unsync all and Delete all while placements are unknown', () => {
   expect(getSyncedBlockMenuRows({...options, isOriginal: true, otherCount: null})).toEqual([
     'copyAndSync',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'deleteFromPage'
   ])
@@ -76,6 +80,7 @@ test('hides Unsync all and Delete all from a non-owner', () => {
   expect(getSyncedBlockMenuRows({...options, isOriginal: true, isOwner: false})).toEqual([
     'copyAndSync',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'deleteFromPage'
   ])
@@ -86,6 +91,7 @@ test('a copy offers Unsync this copy before Delete from this page', () => {
     'copyAndSync',
     'goToOriginal',
     'rename',
+    'whoHasAccess',
     'duplicatePlain',
     'unsyncCopy',
     'deleteFromPage'
@@ -94,4 +100,33 @@ test('a copy offers Unsync this copy before Delete from this page', () => {
 
 test("an unmounted copy can't be unsynced", () => {
   expect(getSyncedBlockMenuRows({...options, isMounted: false})).not.toContain('unsyncCopy')
+})
+
+test('the original offers Who has access after Rename', () => {
+  expect(getSyncedBlockMenuRows({...options, isOriginal: true})).toEqual([
+    'copyAndSync',
+    'rename',
+    'whoHasAccess',
+    'duplicatePlain',
+    'unsyncAll',
+    'deleteFromPage',
+    'deleteAll'
+  ])
+})
+
+test('a copy offers Who has access after Rename', () => {
+  expect(getSyncedBlockMenuRows(options)).toEqual([
+    'copyAndSync',
+    'goToOriginal',
+    'rename',
+    'whoHasAccess',
+    'duplicatePlain',
+    'unsyncCopy',
+    'deleteFromPage'
+  ])
+})
+
+test('view only and unmounted blocks never offer Who has access', () => {
+  expect(getSyncedBlockMenuRows({...options, isViewOnly: true})).not.toContain('whoHasAccess')
+  expect(getSyncedBlockMenuRows({...options, isMounted: false})).not.toContain('whoHasAccess')
 })

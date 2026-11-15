@@ -2,6 +2,7 @@ export type SyncedBlockMenuRow =
   | 'copyAndSync'
   | 'goToOriginal'
   | 'rename'
+  | 'whoHasAccess'
   | 'duplicatePlain'
   | 'unsyncCopy'
   | 'unsyncAll'
@@ -22,7 +23,7 @@ export const getSyncedBlockMenuRows = (options: Options) => {
   const rows: SyncedBlockMenuRow[] = ['copyAndSync']
   if (canGoToOriginal && !isOriginal) rows.push('goToOriginal')
   if (isViewOnly) return rows
-  if (isMounted) rows.push('rename', 'duplicatePlain')
+  if (isMounted) rows.push('rename', 'whoHasAccess', 'duplicatePlain')
   const reachesOtherPages = isOriginal && isOwner && !!otherCount
   if (isMounted && !isOriginal) rows.push('unsyncCopy')
   if (reachesOtherPages) rows.push('unsyncAll')

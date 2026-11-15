@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {providerManager} from '../../providerManager'
+import {useReauthenticateOnAccess} from './useReauthenticateOnAccess'
 
 export type SyncedBlockStatus = 'loading' | 'ready' | 'locked' | 'error'
 
@@ -22,17 +23,18 @@ export const useSyncedBlockProvider = (pageCode: number) => {
   }, [documentName, attempt])
 
   useEffect(() => {
+    const storedFailure = providerManager.getAuthenticationFailure(documentName)
+    const isLoading = !provider.synced && !storedFailure
     if (provider.synced) {
       setStatus('ready')
-      return
-    }
-    const storedFailure = providerManager.getAuthenticationFailure(documentName)
-    if (storedFailure) {
+    } else if (storedFailure) {
       setStatus(storedFailure === 'Unauthorized' ? 'locked' : 'error')
-      return
+    } else {
+      setStatus('loading')
     }
-    setStatus('loading')
-    const timeoutId = setTimeout(() => setStatus('error'), SYNCED_BLOCK_LOAD_TIMEOUT_MS)
+    const timeoutId = isLoading
+      ? setTimeout(() => setStatus('error'), SYNCED_BLOCK_LOAD_TIMEOUT_MS)
+      : undefined
     const handleSynced = () => {
       clearTimeout(timeoutId)
       setStatus('ready')
@@ -49,6 +51,8 @@ export const useSyncedBlockProvider = (pageCode: number) => {
       provider.off('authenticationFailed', handleAuthenticationFailed)
     }
   }, [provider, attempt, documentName])
+
+  useReauthenticateOnAccess(pageCode, status === 'locked')
 
   const retry = useCallback(() => setAttempt((previous) => previous + 1), [])
 

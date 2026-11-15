@@ -3,13 +3,16 @@ import type {JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {applyUpdate, Doc, encodeStateAsUpdate} from 'yjs'
+import AuthToken from '../database/types/AuthToken'
+import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
 import {updatePageAccessTable} from '../postgres/updatePageAccessTable'
 import {CipherId} from '../utils/CipherId'
+import encodeAuthToken from '../utils/encodeAuthToken'
 import {publishPageNotification as publishPageNotificationReal} from '../utils/publishPageNotification'
 import {createNewPage} from '../utils/tiptap/createNewPage'
 import {selectUnsyncOutcomes} from '../utils/tiptap/selectUnsyncOutcomes'
-import {sendPublic, signUp} from './common'
+import {getTestEmail, sendPublic, signUp} from './common'
 
 jest.mock('../utils/publishPageNotification', () => ({
   publishPageNotification: jest.fn(async () => {})
@@ -787,4 +790,135 @@ test('refuses a page that is not a synced block', async () => {
   const res = await unsync(cookie, page)
   expect(res.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
   expect(await pageRow(page)).toMatchObject({deletedAt: null})
+})
+
+const LINKED_PAGE_TITLES = `
+  query LinkedPageTitles($pageId: ID!) {
+    public {
+      page(pageId: $pageId) {
+        linkedPages {
+          id
+          title
+        }
+      }
+    }
+  }
+`
+
+const linkedPageTitles = async (bearerToken: string, pageId: number) => {
+  const res = await sendPublic({
+    query: LINKED_PAGE_TITLES,
+    variables: {pageId: CipherId.toClient(pageId, 'page')},
+    bearerToken
+  })
+  expect(res.errors).toBeUndefined()
+  const linked = res.data.public.page.linkedPages as {id: string; title: string | null}[]
+  return (id: number) => linked.find((page) => page.id === CipherId.toClient(id, 'page'))!
+}
+
+const seedHostWithBlock = async (userId: string) => {
+  const host = await makePage(userId)
+  const block = await makePage(userId, host, true)
+  await pg.insertInto('PageBacklink').values({fromPageId: host, toPageId: block}).execute()
+  return {host, block}
+}
+
+describe('linked page titles', () => {
+  let readerId: string
+  let readerToken: string
+  let ownerId: string
+  const insertUser = async (preferredName: string) => {
+    const {id} = await pg
+      .insertInto('User')
+      .values({
+        id: generateUID(),
+        email: getTestEmail(),
+        picture: '',
+        preferredName,
+        inactive: false
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    return id
+  }
+  beforeAll(async () => {
+    ownerId = await insertUser('Block owner')
+    readerId = await insertUser('Host reader')
+    readerToken = encodeAuthToken(new AuthToken({sub: readerId, tms: []}))
+  })
+
+  test("redacts a synced block's title from a host reader", async () => {
+    const {host, block} = await seedHostWithBlock(ownerId)
+    await setTitle(block, 'Escalation')
+    await shareWith(host, readerId, 'viewer')
+    expect((await linkedPageTitles(readerToken, host))(block).title).toBeNull()
+    await shareWith(block, readerId, 'viewer')
+    expect((await linkedPageTitles(readerToken, host))(block).title).toBe('Escalation')
+  })
+
+  test('keeps ordinary page titles visible in linkedPages', async () => {
+    const {host} = await seedHostWithBlock(ownerId)
+    const child = await makePage(ownerId, host)
+    await setTitle(child, 'Runbook')
+    await pg.insertInto('PageBacklink').values({fromPageId: host, toPageId: child}).execute()
+    await shareWith(host, readerId, 'viewer')
+    expect((await linkedPageTitles(readerToken, host))(child).title).toBe('Runbook')
+  })
+})
+
+const UPDATE_PAGE_ACCESS_SECTION = `
+  mutation UpdatePageAccessSection($pageId: ID!, $subjectId: ID!) {
+    updatePageAccess(pageId: $pageId, subjectType: user, subjectId: $subjectId, role: viewer) {
+      pageSection
+    }
+  }
+`
+
+describe('page section after sharing', () => {
+  let ownerId: string
+  let ownerToken: string
+  let granteeId: string
+  const insertUser = async (preferredName: string) => {
+    const {id} = await pg
+      .insertInto('User')
+      .values({
+        id: generateUID(),
+        email: getTestEmail(),
+        picture: '',
+        preferredName,
+        inactive: false
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    return id
+  }
+  beforeAll(async () => {
+    ownerId = await insertUser('Section owner')
+    granteeId = await insertUser('Section grantee')
+    ownerToken = encodeAuthToken(new AuthToken({sub: ownerId, tms: []}))
+  })
+
+  const share = async (pageId: number) => {
+    const res = await sendPublic({
+      query: UPDATE_PAGE_ACCESS_SECTION,
+      variables: {
+        pageId: CipherId.toClient(pageId, 'page'),
+        subjectId: granteeId
+      },
+      bearerToken: ownerToken
+    })
+    expect(res.errors).toBeUndefined()
+    return res.data.updatePageAccess.pageSection as string | null
+  }
+
+  test('a synced block page is placed in no sidebar section', async () => {
+    const {block} = await seedHostWithBlock(ownerId)
+    expect(await share(block)).toBeNull()
+  })
+
+  test('an ordinary child page still gets a section', async () => {
+    const host = await makePage(ownerId)
+    const child = await makePage(ownerId, host)
+    expect(await share(child)).not.toBeNull()
+  })
 })

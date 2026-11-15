@@ -1,4 +1,8 @@
-import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
+import {
+  HocuspocusProvider,
+  HocuspocusProviderWebsocket,
+  WebSocketStatus
+} from '@hocuspocus/provider'
 import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
 import Atmosphere from '../Atmosphere'
@@ -73,6 +77,9 @@ class ProviderManager {
       this.destroy(documentName)
     }, 10000)
     if (documentName.startsWith('page:')) {
+      provider.on('close', ({event}: {event: {reason: string}}) => {
+        if (event.reason === 'AccessChanged') this.reauthenticate(documentName)
+      })
       provider.on('authenticated', ({scope}: {scope: string}) => {
         this.authenticationFailures.delete(documentName)
         const entry = this.providers[documentName]
@@ -86,6 +93,14 @@ class ProviderManager {
       })
     }
     return provider
+  }
+  reauthenticate(documentName: string) {
+    const entry = this.providers[documentName]
+    if (!entry) return
+    const {provider} = entry
+    if (provider.configuration.websocketProvider.status !== WebSocketStatus.Connected) return
+    this.authenticationFailures.delete(documentName)
+    provider.sendToken().then(() => provider.startSync())
   }
   register(documentName: string, options: {nested?: boolean} = {}) {
     const provider = this.get(documentName, options)

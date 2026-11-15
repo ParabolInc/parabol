@@ -45,6 +45,9 @@ jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, defau
 jest.mock('../../../../mutations/useArchivePageMutation', () => ({
   useArchivePageMutation: () => [jest.fn(), false]
 }))
+jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
+  useRequestPageAccessMutation: () => [jest.fn(), false]
+}))
 jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
   useUnsyncSyncedBlockMutation: () => [jest.fn(), false]
 }))
@@ -52,6 +55,7 @@ jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: () => jest.fn()
 }))
+jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../SyncedBlockContent', () => ({
   SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {

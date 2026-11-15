@@ -6,10 +6,11 @@ import {PageSharing} from './PageSharing'
 
 interface Props {
   pageId: string
+  hideCopyLink?: boolean
 }
 
 export const PageSharingRoot = (props: Props) => {
-  const {pageId} = props
+  const {pageId, hideCopyLink} = props
   const queryRef = useQueryLoaderNow<PageSharingQuery>(
     pageSharingQuery,
     {
@@ -21,7 +22,7 @@ export const PageSharingRoot = (props: Props) => {
 
   return (
     <Suspense fallback={''}>
-      {queryRef && <PageSharing queryRef={queryRef} pageId={pageId} />}
+      {queryRef && <PageSharing queryRef={queryRef} pageId={pageId} hideCopyLink={hideCopyLink} />}
     </Suspense>
   )
 }

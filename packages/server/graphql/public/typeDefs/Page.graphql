@@ -1,6 +1,6 @@
 """
 A collaborative document page that can be nested, shared, and linked to teams or meetings.
-Anyone handed a page can read its id, title, teamId, team and access. Every other field is null (or empty) unless the viewer has at least the viewer role.
+Anyone handed a page can read its id, title, teamId, team and access, except that a synced block page's title is null unless the viewer can open it. Every other field is null (or empty) unless the viewer has at least the viewer role.
 """
 type Page {
   """
@@ -15,7 +15,7 @@ type Page {
 
   # yDoc is binary and not part of GraphQL. It must be requested using the y.js protocol
   """
-  The page title, null if untitled
+  The page title, null if untitled. Always null for a synced block page the viewer cannot open
   """
   title: String
 

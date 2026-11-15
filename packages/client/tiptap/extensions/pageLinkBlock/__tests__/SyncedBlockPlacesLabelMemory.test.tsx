@@ -29,9 +29,13 @@ jest.mock('../../../../hooks/useQueryLoaderNow', () => ({
 jest.mock('../useSyncedBlockPlaces', () => ({
   useSyncedBlockPlaces: () => ({label: 'Also on 2 pages'})
 }))
+jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../../../../mutations/useArchivePageMutation', () => ({
   useArchivePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
+  useRequestPageAccessMutation: () => [jest.fn(), false]
 }))
 jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
   useUnsyncSyncedBlockMutation: () => [jest.fn(), false]

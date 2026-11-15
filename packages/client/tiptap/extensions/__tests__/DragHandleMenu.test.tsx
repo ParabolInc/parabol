@@ -246,9 +246,10 @@ describe('the menu on a synced block', () => {
 
   test('a synced block gets the synced menu without Turn into', async () => {
     await openSyncedMenu()
-    expect(items()).toHaveLength(4)
+    expect(items()).toHaveLength(5)
     expect(itemNamed('Copy and sync')).toBeTruthy()
     expect(itemNamed('Rename')).toBeTruthy()
+    expect(itemNamed('Who has access')).toBeTruthy()
     expect(itemNamed('Duplicate as plain blocks')).toBeTruthy()
     expect(itemNamed('Delete from this page')).toBeTruthy()
     expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
@@ -376,6 +377,7 @@ describe('the menu on a synced block', () => {
     expect(menuRows()).toEqual([
       'Copy and sync',
       'Rename',
+      'Who has access',
       'Duplicate as plain blocks',
       '---',
       'Unsync this copy',
@@ -389,6 +391,7 @@ describe('the menu on a synced block', () => {
     expect(menuRows()).toEqual([
       'Copy and sync',
       'Rename',
+      'Who has access',
       'Duplicate as plain blocks',
       '---',
       'Delete from this page'
@@ -401,6 +404,7 @@ describe('the menu on a synced block', () => {
     expect(menuRows()).toEqual([
       'Copy and sync',
       'Rename',
+      'Who has access',
       'Duplicate as plain blocks',
       '---',
       'Unsync all',

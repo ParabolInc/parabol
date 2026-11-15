@@ -755,14 +755,19 @@ const permissionMap: PermissionMap<Resolvers> = {
     teamMember: and(isUserSelf, isTeamMember<'User.teamMember'>('args.teamId'))
   },
   // Anyone handed a Page (an ancestor in a breadcrumb, a notification) gets the fields to show and
-  // link to it, plus their own access to it
+  // link to it, plus their own access to it. A synced block page's title is withheld unless the viewer can open it
   Page: {
     '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
     access: allow,
     id: allow,
     team: allow,
     teamId: allow,
-    title: allow
+    title: redactUnless(
+      or(
+        not(isTrue<'Page.title'>('source.isSyncedBlock')),
+        hasPageAccess<'Page.title'>('source.id', 'viewer')
+      )
+    )
   },
   // Who has access is for those granted access. Anyone with a public link only sees what the link grants
   PageAccess: {
