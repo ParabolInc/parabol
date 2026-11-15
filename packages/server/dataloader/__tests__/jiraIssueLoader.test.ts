@@ -19,7 +19,8 @@ const makeLoader = () => {
   const parent = {
     dataLoaderOptions: {},
     get: (name: string) => ({
-      load: async () => (name === 'freshAtlassianAuth' ? {accessToken: 'token'} : [])
+      load: async () =>
+        name === 'atlassianAuth' || name === 'freshAtlassianAuth' ? {accessToken: 'token'} : []
     })
   } as unknown as RootDataLoader
   return jiraIssue(parent)
