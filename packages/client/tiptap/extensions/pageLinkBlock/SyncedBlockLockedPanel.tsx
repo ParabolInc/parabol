@@ -17,11 +17,11 @@ export const SyncedBlockLockedPanel = (props: Props) => {
   const [isRequested, setIsRequested] = useState(false)
 
   if (!atmosphere.authObj) {
-    return <SyncedBlockPanel icon={<Lock />}>Part of this page is private.</SyncedBlockPanel>
+    return <SyncedBlockPanel icon={Lock}>Part of this page is private.</SyncedBlockPanel>
   }
   if (isRequested) {
     return (
-      <SyncedBlockPanel icon={<Schedule />}>
+      <SyncedBlockPanel icon={Schedule}>
         Access requested. You can see this block once the owner approves.
       </SyncedBlockPanel>
     )
@@ -53,7 +53,7 @@ export const SyncedBlockLockedPanel = (props: Props) => {
 
   return (
     <SyncedBlockPanel
-      icon={<Lock />}
+      icon={Lock}
       action={
         <Button variant='outline' size='sm' disabled={submitting} onClick={requestAccess}>
           Request access

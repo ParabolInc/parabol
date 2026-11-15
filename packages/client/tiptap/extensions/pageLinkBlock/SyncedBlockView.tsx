@@ -3,6 +3,7 @@ import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, us
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
+import {getIsSyncedBlockPanelStatus} from './getIsSyncedBlockPanelStatus'
 import {getSyncedBlockEventTarget} from './getSyncedBlockEventTarget'
 import {isValidPageCode} from './isValidPageCode'
 import {SyncedBlockBar} from './SyncedBlockBar'
@@ -37,7 +38,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
-  const isLocked = status === 'locked'
+  const isPanel = getIsSyncedBlockPanelStatus(status)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
@@ -97,7 +98,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       onBlur={handleBlur}
       className={cn(
         '-mx-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent',
-        isLocked ? 'mt-3!' : 'mt-9!',
+        isPanel ? 'mt-3!' : 'mt-9!',
         'before:-top-9 before:-left-[26px] before:absolute before:bottom-0 before:w-[38px] before:content-[""]',
         !showBar && 'hover:outline-hairline-strong',
         showBar &&
@@ -150,7 +151,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           }
         />
       ) : (
-        !isLocked && <SyncedBlockCaption name={name} />
+        !isPanel && <SyncedBlockCaption name={name} />
       )}
       {!isValidPageCode(pageCode) ? (
         <div className='h-6 rounded-sm bg-surface-hover' />

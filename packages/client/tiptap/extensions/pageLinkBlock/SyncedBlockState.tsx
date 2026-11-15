@@ -30,7 +30,7 @@ export const SyncedBlockState = (props: Props) => {
   if (status === 'locked') return <SyncedBlockLockedPanel pageCode={pageCode} />
   return (
     <SyncedBlockPanel
-      icon={<ErrorOutline />}
+      icon={ErrorOutline}
       action={
         <Button variant='outline' size='sm' onClick={onRetry}>
           Try again

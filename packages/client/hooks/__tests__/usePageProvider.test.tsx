@@ -1,7 +1,8 @@
 import {Window} from 'happy-dom'
 import {Suspense} from 'react'
 import {createRoot} from 'react-dom/client'
-import {MemoryRouter} from 'react-router'
+import {MemoryRouter, useLocation} from 'react-router'
+import * as Y from 'yjs'
 import {providerManager} from '../../tiptap/providerManager'
 import {usePageProvider} from '../usePageProvider'
 
@@ -37,7 +38,10 @@ jest.mock('../../Atmosphere', () => ({
   __esModule: true,
   default: {closeHandlers: new Set(), current: null}
 }))
-jest.mock('../useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../useAtmosphere', () => ({
+  __esModule: true,
+  default: () => ({commitUpdate: jest.fn()})
+}))
 
 const happyWindow = new Window({url: 'https://parabol.test/'})
 const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
@@ -125,4 +129,39 @@ test('withDoc releases its provider when the doc is denied', async () => {
   await tick()
   expect(callback).not.toHaveBeenCalled()
   expect(getCount('page:3')).toBe(0)
+})
+
+test('the slug rewrite keeps the query string and hash', async () => {
+  happyWindow.happyDOM.setURL('https://parabol.test/pages/7?share#top')
+  Object.assign(globalThis, {location: happyWindow.location})
+  let routerLocation = {pathname: '', search: '', hash: ''}
+  const LocationProbe = () => {
+    routerLocation = useLocation()
+    return null
+  }
+  const PageProviderUser = () => {
+    usePageProvider('page:7')
+    return null
+  }
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  root.render(
+    <MemoryRouter initialEntries={['/pages/7?share#top']}>
+      <LocationProbe />
+      <PageProviderUser />
+    </MemoryRouter>
+  )
+  await waitUntil(() => !!providerManager.providers['page:7'])
+  const {provider} = providerManager.providers['page:7']!
+  const heading = new Y.XmlElement('heading')
+  const headingText = new Y.XmlText()
+  heading.insert(0, [headingText])
+  provider.document.getXmlFragment('default').insert(0, [heading])
+  headingText.insert(0, 'Roadmap')
+  await waitUntil(() => routerLocation.pathname !== '/pages/7')
+  expect(routerLocation.pathname).toBe('/pages/roadmap-7')
+  expect(routerLocation.search).toBe('?share')
+  expect(routerLocation.hash).toBe('#top')
+  root.unmount()
 })
