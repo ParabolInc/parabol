@@ -9,6 +9,7 @@ export const usePrintShortcut = () => {
       if (event.key.toLowerCase() !== 'p') return
       if (!(event.metaKey || event.ctrlKey) || event.shiftKey || event.altKey) return
       event.preventDefault()
+      if (event.repeat) return
       printPage(atmosphere)
     }
     window.addEventListener('keydown', handleKeyDown)

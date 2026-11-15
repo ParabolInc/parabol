@@ -38,7 +38,10 @@ export const waitForSyncedBlocks = (root: ParentNode, timeoutMs = 10_000) =>
     requestAnimationFrame(check)
   })
 
-export const printPage = async (atmosphere: Atmosphere) => {
+const RELEASE_FALLBACK_MS = 60_000
+let pendingPrint: Promise<void> | null = null
+
+const runPrint = async (atmosphere: Atmosphere) => {
   requestMountAllSyncedBlocks()
   let isSnackbarShown = false
   const snackbarTimer = setTimeout(() => {
@@ -54,6 +57,23 @@ export const printPage = async (atmosphere: Atmosphere) => {
   if (isSnackbarShown) {
     atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === PRINT_SNACKBAR_KEY)
   }
-  window.addEventListener('afterprint', releaseMountAll, {once: true})
+  const fallbackTimer = setTimeout(releaseMountAll, RELEASE_FALLBACK_MS)
+  window.addEventListener(
+    'afterprint',
+    () => {
+      clearTimeout(fallbackTimer)
+      releaseMountAll()
+    },
+    {once: true}
+  )
   window.print()
+}
+
+export const printPage = (atmosphere: Atmosphere) => {
+  if (!pendingPrint) {
+    pendingPrint = runPrint(atmosphere).finally(() => {
+      pendingPrint = null
+    })
+  }
+  return pendingPrint
 }

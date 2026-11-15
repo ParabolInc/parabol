@@ -57,4 +57,10 @@ describe('usePrintShortcut', () => {
     expect(event.defaultPrevented).toBe(false)
     expect(printPage).not.toHaveBeenCalled()
   })
+
+  test('a held key is swallowed without printing again', () => {
+    const event = press({key: 'p', metaKey: true, repeat: true})
+    expect(event.defaultPrevented).toBe(true)
+    expect(printPage).not.toHaveBeenCalled()
+  })
 })

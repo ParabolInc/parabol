@@ -132,4 +132,29 @@ describe('syncedBlockPrint', () => {
     expect(matches({key: 'syncedBlocksPrint'})).toBe(true)
     expect(matches({key: 'other'})).toBe(false)
   })
+
+  test('a second call during the wait prints once', async () => {
+    const atmosphere = {eventEmitter: {emit: jest.fn()}} as unknown as Atmosphere
+    const slow = addBlock('loading')
+    const first = printPage(atmosphere)
+    const second = printPage(atmosphere)
+    expect(second).toBe(first)
+    await flush(100)
+    slow.setAttribute('data-status', 'ready')
+    await flush(100)
+    await Promise.all([first, second])
+    expect(window.print).toHaveBeenCalledTimes(1)
+  })
+
+  test('releases after a fallback timer when afterprint never fires', async () => {
+    const atmosphere = {eventEmitter: {emit: jest.fn()}} as unknown as Atmosphere
+    const printing = printPage(atmosphere)
+    await flush(100)
+    await printing
+    expect(isMountAllRequested()).toBe(true)
+    await flush(59_000)
+    expect(isMountAllRequested()).toBe(true)
+    await flush(1_500)
+    expect(isMountAllRequested()).toBe(false)
+  })
 })
