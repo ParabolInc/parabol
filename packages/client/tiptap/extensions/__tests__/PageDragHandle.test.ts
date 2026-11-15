@@ -205,6 +205,57 @@ describe('the handle', () => {
     expect(dragHandle?.options.getReferencedVirtualElement()).toBeNull()
   })
 
+  describe('beside a synced block', () => {
+    const laidOutBlock = (block: HTMLElement, left: number, paddingLeft: number) => {
+      block.dataset.syncedBlock = ''
+      block.style.paddingLeft = `${paddingLeft}px`
+      block.getBoundingClientRect = () => new happyWindow.DOMRect(left, 0, 720, 40)
+    }
+    const handleLeft = (activeEditor: Editor, pos: number) => {
+      const dragHandle = activeEditor.extensionManager.extensions.find(
+        ({name}) => name === 'dragHandle'
+      )
+      dragHandle?.options.onNodeChange({
+        editor: activeEditor,
+        node: activeEditor.state.doc.nodeAt(pos),
+        pos
+      })
+      return dragHandle?.options.getReferencedVirtualElement().getBoundingClientRect().left
+    }
+    beforeEach(() => {
+      jest
+        .spyOn(happyWindow.Range.prototype, 'getBoundingClientRect')
+        .mockReturnValue(new happyWindow.DOMRect(0, 0, 8, 20))
+    })
+    afterEach(() => {
+      document.body.replaceChildren()
+    })
+
+    test.each([
+      ['sits outside the block when it has a gutter', 452, 36, 426],
+      ['sits where an ordinary block handle does when it has none', 268, 12, 280]
+    ])('for the whole block %s', (_case, blockLeft, paddingLeft, expectedLeft) => {
+      const activeEditor = makeEditor(p('Above'), syncedLink)
+      document.body.appendChild(activeEditor.view.dom.parentElement!)
+      const [linkPos] = findLinkPositions(activeEditor)
+      const block = document.createElement('div')
+      block.textContent = 'Escalation path'
+      laidOutBlock(block, blockLeft, paddingLeft)
+      ;(activeEditor.view.nodeDOM(linkPos!) as HTMLElement).appendChild(block)
+      expect(handleLeft(activeEditor, linkPos!)).toBe(expectedLeft)
+    })
+
+    test.each([
+      ['sits inside the gutter when there is one', 452, 36, 460],
+      ['sits where an ordinary block handle does when there is none', 268, 12, 280]
+    ])('for a line inside it %s', (_case, blockLeft, paddingLeft, expectedLeft) => {
+      const activeEditor = makeEditorWith({isNested: true}, p('Sev 1'))
+      document.body.appendChild(activeEditor.view.dom.parentElement!)
+      laidOutBlock(activeEditor.view.dom.parentElement!, blockLeft, paddingLeft)
+      expect(handleLeft(activeEditor, activeEditor.state.doc.child(0).nodeSize)).toBe(expectedLeft)
+    })
+  })
+
   test.each([
     ['on a page', false, false, true, false],
     ['on a page with synced blocks', false, true, true, true],

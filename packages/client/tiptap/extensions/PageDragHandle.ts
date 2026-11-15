@@ -454,16 +454,19 @@ export const PageDragHandle = Extension.create<Options>({
           const {right} = horizontalRef.getBoundingClientRect()
           const handleWidth = dragHandleElement.offsetWidth
           const blockLeft = syncedBlock?.getBoundingClientRect().left
-          const fitsInsideBlock =
-            !!syncedBlock &&
-            parseFloat(getComputedStyle(syncedBlock).paddingLeft) >=
-              SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
+          const blockPaddingLeft = syncedBlock
+            ? parseFloat(getComputedStyle(syncedBlock).paddingLeft)
+            : 0
+          const hasHandleGutter =
+            blockPaddingLeft >= SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
           const left =
             blockLeft === undefined
               ? horizontalRef.getBoundingClientRect().left
-              : isNested && fitsInsideBlock
-                ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
-                : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
+              : !hasHandleGutter
+                ? blockLeft + blockPaddingLeft
+                : isNested
+                  ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
+                  : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
           // Media blocks carry no text to anchor to. Without this the walker below finds
           // nothing and the handle never renders for an iframe embed, and anchors to the
           // title line rather than the block top for a card.
