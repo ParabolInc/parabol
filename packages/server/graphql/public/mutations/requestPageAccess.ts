@@ -93,7 +93,8 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     reason,
     pageName: page.title ?? 'Untitled',
     pageLink,
-    role
+    role,
+    isSyncedBlock: page.isSyncedBlock
   })
   const ownerUsers = await dataLoader.get('users').loadMany(owners.map(({userId}) => userId))
   const mailManager = await getMailManager()
