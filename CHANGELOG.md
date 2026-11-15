@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.33.0](https://github.com/ParabolInc/parabol/compare/v15.32.1...v15.33.0) (2026-11-15)
+
+
+### Added
+
+* **client:** show an example card to teams with no tasks yet ([#14206](https://github.com/ParabolInc/parabol/issues/14206)) ([c42af93](https://github.com/ParabolInc/parabol/commit/c42af9380e1b8bac16976791bb47ffedce480d54))
+* Mixed nested list types in Pages ([#13289](https://github.com/ParabolInc/parabol/issues/13289)) ([9edd33a](https://github.com/ParabolInc/parabol/commit/9edd33ac1de635b1ae9406236825ee3bc9d484e2))
+* **pages:** drag a block onto a page to move it there ([#14204](https://github.com/ParabolInc/parabol/issues/14204)) ([c7a3948](https://github.com/ParabolInc/parabol/commit/c7a3948f3468fa68157dc126cd951f5f670855d8))
+* **pages:** move blocks with the keyboard or a page picker ([#14218](https://github.com/ParabolInc/parabol/issues/14218)) ([0b2fbc8](https://github.com/ParabolInc/parabol/commit/0b2fbc80859320179ae6d7ad3d75bc0a3aacb409))
+* **pages:** select many blocks and move them together ([#14212](https://github.com/ParabolInc/parabol/issues/14212)) ([35129eb](https://github.com/ParabolInc/parabol/commit/35129ebcaefd3bde4ef8424e45566d1c63d9d676))
+* **pages:** synced block placements and menus ([#14217](https://github.com/ParabolInc/parabol/issues/14217)) ([d55ebfe](https://github.com/ParabolInc/parabol/commit/d55ebfe9524464f611d1f066e0795ad51ecb2b2d))
+* **pages:** synced blocks in the editor ([#14214](https://github.com/ParabolInc/parabol/issues/14214)) ([283a49c](https://github.com/ParabolInc/parabol/commit/283a49c69afa32794923751313d0963ea802dc8b))
+* **pages:** Unsync and Delete all for synced blocks ([#14220](https://github.com/ParabolInc/parabol/issues/14220)) ([6b680de](https://github.com/ParabolInc/parabol/commit/6b680dedcb17cb86d2414fb2f982538aec9df4c8))
+* show the tool's status when hovering a task's issue link ([#14216](https://github.com/ParabolInc/parabol/issues/14216)) ([c2b2076](https://github.com/ParabolInc/parabol/commit/c2b2076040412f74e067c6af0a9b5c3085d4882a))
+
+
+### Fixed
+
+* keep a recurring meeting started on its first occurrence running ([#14226](https://github.com/ParabolInc/parabol/issues/14226)) ([936b5fc](https://github.com/ParabolInc/parabol/commit/936b5fc70c85f78e6829579df37c08b12a0f2b2d))
+* **metrics:** count websocket GraphQL operations in the Prometheus metrics ([#14224](https://github.com/ParabolInc/parabol/issues/14224)) ([c893e07](https://github.com/ParabolInc/parabol/commit/c893e074872328512dbad2fbc05565bcd114a176))
+* **pages:** handle child pages inside toggles and callouts ([#14203](https://github.com/ParabolInc/parabol/issues/14203)) ([f644324](https://github.com/ParabolInc/parabol/commit/f6443241895cd2df0014c5d89638308ebb9804d5))
+* **pages:** keep synced blocks synced when dragged onto a sidebar page ([#14215](https://github.com/ParabolInc/parabol/issues/14215)) ([e8e1bec](https://github.com/ParabolInc/parabol/commit/e8e1bec293d2561b24f07e69caab425aee5b4b51))
+* **pages:** keep the caret where you click when Firefox focuses the editor ([#14221](https://github.com/ParabolInc/parabol/issues/14221)) ([63cfd94](https://github.com/ParabolInc/parabol/commit/63cfd94da37e2b0cd38c2d49c694d8067c5db482))
+
 ## [15.32.1](https://github.com/ParabolInc/parabol/compare/v15.32.0...v15.32.1) (2026-11-14)
 
 
