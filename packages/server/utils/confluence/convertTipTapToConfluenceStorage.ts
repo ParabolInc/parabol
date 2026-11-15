@@ -16,7 +16,10 @@ type EmitState = {
   blockquoteDepth: number
   listDepth: number
   syncedChain: number[]
+  syncedExpansions: number
 }
+
+const MAX_SYNCED_BLOCK_EXPANSIONS = 100
 
 const TREATMENTS = {
   mention: 'exported as plain text',
@@ -230,9 +233,11 @@ const emitPageLink = (node: JSONContent, state: EmitState): string => {
     const canNest =
       Number.isFinite(pageCode) &&
       !state.syncedChain.includes(pageCode) &&
-      state.syncedChain.length < MAX_SYNCED_BLOCK_DEPTH
+      state.syncedChain.length < MAX_SYNCED_BLOCK_DEPTH &&
+      state.syncedExpansions < MAX_SYNCED_BLOCK_EXPANSIONS
     const body = canNest ? state.ctx.resolveSyncedBlock?.(pageCode) : null
     if (body) {
+      state.syncedExpansions += 1
       state.syncedChain.push(pageCode)
       const emitted = emitBlocks(body, state)
       state.syncedChain.pop()
@@ -433,7 +438,8 @@ export const convertTipTapToConfluenceStorage = (
     census: new Map(),
     blockquoteDepth: 0,
     listDepth: 0,
-    syncedChain: []
+    syncedChain: [],
+    syncedExpansions: 0
   }
   const content = doc.content ?? []
   const titleNode = content[0]

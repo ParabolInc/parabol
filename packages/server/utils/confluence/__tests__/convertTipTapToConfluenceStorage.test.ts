@@ -364,6 +364,22 @@ describe('convertTipTapToConfluenceStorage', () => {
       expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
     })
 
+    it('caps the total number of expansions so fan-out cannot multiply', () => {
+      let expansions = 0
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => {
+          expansions += 1
+          if (code === 9) return Array.from({length: 20}, () => linkTo(10))
+          if (code === 10) return Array.from({length: 20}, () => linkTo(11))
+          return [para('leaf')]
+        }
+      })
+      expect(expansions).toBeLessThanOrEqual(100)
+      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock')
+      expect(skipped!.count).toBeGreaterThan(0)
+    })
+
     it('stops a deep chain at the depth cap', () => {
       const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
         ...ctx,
