@@ -3,9 +3,10 @@ import {type ComponentProps, type KeyboardEvent, useState} from 'react'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {getSyncedBlockMenuRows, type SyncedBlockMenuRow} from './getSyncedBlockMenuRows'
 import {SyncedBlockMenuItems} from './SyncedBlockMenuItems'
+import type {SyncedBlockMenuFacts} from './SyncedBlockMenuProbe'
 import {SyncedBlockMenuRoot} from './SyncedBlockMenuRoot'
 import {useRunAfterMenuClose} from './useRunAfterMenuClose'
-import {type SyncedBlockOriginal, useSyncedBlockMenuActions} from './useSyncedBlockMenuActions'
+import {useSyncedBlockMenuActions} from './useSyncedBlockMenuActions'
 
 type ContentProps = Pick<
   ComponentProps<typeof MenuContent>,
@@ -24,6 +25,8 @@ interface Props {
   contentProps: ContentProps
 }
 
+const unknownFacts: SyncedBlockMenuFacts = {original: null, otherCount: null, isOwner: false}
+
 const getShortcutRow = (event: KeyboardEvent): SyncedBlockMenuRow | null => {
   if (event.key === 'Delete' || event.key === 'Backspace') return 'deleteFromPage'
   if (event.key === 'd' && (event.metaKey || event.ctrlKey)) return 'duplicatePlain'
@@ -33,11 +36,18 @@ const getShortcutRow = (event: KeyboardEvent): SyncedBlockMenuRow | null => {
 export const SyncedBlockMenuContent = (props: Props) => {
   const {hostEditor, getPos, pageCode, isOriginal, isViewOnly, isMounted, currentPageId} = props
   const {onClose, contentProps} = props
-  const [original, setOriginal] = useState<SyncedBlockOriginal | null>(null)
+  const [{original, otherCount, isOwner}, setFacts] = useState(unknownFacts)
   const {runAfterClose, handleCloseAutoFocus} = useRunAfterMenuClose()
   const actions = useSyncedBlockMenuActions({hostEditor, getPos, pageCode, original, runAfterClose})
   const canGoToOriginal = !!original && original.pageId !== currentPageId
-  const rows = getSyncedBlockMenuRows({isOriginal, isViewOnly, canGoToOriginal, isMounted})
+  const rows = getSyncedBlockMenuRows({
+    isOriginal,
+    isViewOnly,
+    canGoToOriginal,
+    isMounted,
+    otherCount,
+    isOwner
+  })
   const handleKeyDown = (event: KeyboardEvent) => {
     const row = getShortcutRow(event)
     if (!row) return
@@ -56,11 +66,7 @@ export const SyncedBlockMenuContent = (props: Props) => {
       onKeyDown={handleKeyDown}
     >
       <SyncedBlockMenuItems rows={rows} actions={actions} />
-      <SyncedBlockMenuRoot
-        pageCode={pageCode}
-        currentPageId={currentPageId}
-        onOriginal={setOriginal}
-      />
+      <SyncedBlockMenuRoot pageCode={pageCode} currentPageId={currentPageId} onProbe={setFacts} />
     </MenuContent>
   )
 }

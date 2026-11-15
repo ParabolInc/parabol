@@ -2561,6 +2561,16 @@ type Mutation {
   ): ArchivePagePayload @scope(name: PAGES_WRITE)
 
   """
+  Gives every page that shows this synced block its own copy of the text, removes the block from pages where a reader can't open it, then moves the block to Trash
+  """
+  unsyncSyncedBlock(
+    """
+    The synced block's page
+    """
+    pageId: ID!
+  ): UnsyncSyncedBlockPayload! @scope(name: PAGES_WRITE)
+
+  """
   Reorder the facilitator rotation and/or toggle auto-assignment. Any team member may edit.
   """
   updateFacilitatorRotation(

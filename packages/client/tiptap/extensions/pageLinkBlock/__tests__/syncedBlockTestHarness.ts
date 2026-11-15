@@ -51,13 +51,14 @@ export const mountNested = (
   host: Editor,
   linkPos: number,
   contentLines: string[],
-  extraExtensions: AnyExtension[] = []
+  extraExtensions: AnyExtension[] = [],
+  {named = true}: {named?: boolean} = {}
 ) => {
   const link = host.state.doc.nodeAt(linkPos)!
   const nested = new Editor({
     element: document.createElement('div'),
     extensions: [
-      Document.extend({content: 'heading block*'}),
+      Document.extend({content: named ? 'heading block*' : 'block+'}),
       StarterKit.configure({document: false, undoRedo: false, trailingNode: false}),
       SyncedBlockEdges.configure({
         hostView: host.view,
@@ -68,7 +69,7 @@ export const mountNested = (
     ],
     content: {
       type: 'doc',
-      content: [heading('Escalation path'), ...contentLines.map(paragraph)]
+      content: [...(named ? [heading('Escalation path')] : []), ...contentLines.map(paragraph)]
     }
   })
   const wrapper = document.createElement('div')

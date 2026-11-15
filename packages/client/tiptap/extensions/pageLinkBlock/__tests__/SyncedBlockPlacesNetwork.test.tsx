@@ -220,7 +220,7 @@ test('a refused places request is not retried inside the minute', async () => {
   expect(placesButton()?.textContent).toBe('Also on …')
   await renderIn(
     environment,
-    <SyncedBlockMenuRoot pageCode={pageCode} currentPageId='page:1' onOriginal={() => {}} />
+    <SyncedBlockMenuRoot pageCode={pageCode} currentPageId='page:1' onProbe={() => {}} />
   )
   expect(fetchPlaces).toHaveBeenCalledTimes(1)
   expect(mockReportClientError).toHaveBeenCalledTimes(reportsAfterRefusal)

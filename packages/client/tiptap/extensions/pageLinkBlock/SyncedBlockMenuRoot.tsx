@@ -1,26 +1,21 @@
 import {Suspense} from 'react'
 import ErrorBoundary from '../../../components/ErrorBoundary'
-import {SyncedBlockOriginalProbe} from './SyncedBlockOriginalProbe'
-import type {SyncedBlockOriginal} from './useSyncedBlockMenuActions'
+import {type SyncedBlockMenuFacts, SyncedBlockMenuProbe} from './SyncedBlockMenuProbe'
 import {useSyncedBlockPlacesQuery} from './useSyncedBlockPlacesQuery'
 
 interface Props {
   pageCode: number
   currentPageId: string | undefined
-  onOriginal: (original: SyncedBlockOriginal | null) => void
+  onProbe: (facts: SyncedBlockMenuFacts) => void
 }
 
-export const SyncedBlockMenuRoot = ({pageCode, currentPageId, onOriginal}: Props) => {
+export const SyncedBlockMenuRoot = ({pageCode, currentPageId, onProbe}: Props) => {
   const queryRef = useSyncedBlockPlacesQuery(pageCode)
   if (!queryRef) return null
   return (
     <ErrorBoundary fallback={() => null}>
       <Suspense fallback={null}>
-        <SyncedBlockOriginalProbe
-          queryRef={queryRef}
-          currentPageId={currentPageId}
-          onOriginal={onOriginal}
-        />
+        <SyncedBlockMenuProbe queryRef={queryRef} currentPageId={currentPageId} onProbe={onProbe} />
       </Suspense>
     </ErrorBoundary>
   )

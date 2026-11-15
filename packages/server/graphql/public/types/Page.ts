@@ -79,7 +79,7 @@ const Page: ReqResolvers<'Page'> = {
     ])
     const pages = hosts.filter(isValid)
     return {
-      pages: pages.map((page) => ({page, isOriginal: page.id === parentPageId})),
+      pages: pages.map((page) => ({page, isOriginal: page.id === parentPageId, blockId: id})),
       hiddenCount: hosts.length - pages.length,
       successor
     }

@@ -1,5 +1,13 @@
 import {type ComponentType, Fragment} from 'react'
-import {AddToPhotos, ContentCopy, DeleteOutlined, Edit, NorthEast} from '~/ui/icons'
+import {
+  AddToPhotos,
+  CallSplit,
+  ContentCopy,
+  DeleteForever,
+  DeleteOutlined,
+  Edit,
+  NorthEast
+} from '~/ui/icons'
 import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
 import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {modKey} from '../../../utils/platform'
@@ -18,15 +26,21 @@ const rowLooks: Record<
   goToOriginal: {Icon: NorthEast, label: 'Go to original'},
   rename: {Icon: Edit, label: 'Rename'},
   duplicatePlain: {Icon: AddToPhotos, label: 'Duplicate as plain blocks', hint: `${modKey}+D`},
-  deleteFromPage: {Icon: DeleteOutlined, label: 'Delete from this page', hint: 'Del'}
+  unsyncCopy: {Icon: CallSplit, label: 'Unsync this copy'},
+  unsyncAll: {Icon: CallSplit, label: 'Unsync all'},
+  deleteFromPage: {Icon: DeleteOutlined, label: 'Delete from this page', hint: 'Del'},
+  deleteAll: {Icon: DeleteForever, label: 'Delete all'}
 }
 
-export const SyncedBlockMenuItems = ({rows, actions}: Props) =>
-  rows.map((row) => {
+const separatedRows: SyncedBlockMenuRow[] = ['unsyncCopy', 'unsyncAll', 'deleteFromPage']
+
+export const SyncedBlockMenuItems = ({rows, actions}: Props) => {
+  const firstSeparated = rows.find((row) => separatedRows.includes(row))
+  return rows.map((row) => {
     const {Icon, label, hint} = rowLooks[row]
     return (
       <Fragment key={row}>
-        {row === 'deleteFromPage' && <MenuSeparator />}
+        {row === firstSeparated && <MenuSeparator />}
         <MenuItem onSelect={actions[row]}>
           <Icon className={MENU_ITEM_ICON} />
           <span className='flex-1 text-left'>{label}</span>
@@ -35,3 +49,4 @@ export const SyncedBlockMenuItems = ({rows, actions}: Props) =>
       </Fragment>
     )
   })
+}

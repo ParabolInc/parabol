@@ -50,5 +50,9 @@ export const useSyncedBlockPlaces = (
       )
     : null
   const placements = page?.syncedBlockPlacements
-  return placements ? getSyncedBlockPlaces(placements, currentPageId) : null
+  if (!placements) return null
+  return {
+    ...getSyncedBlockPlaces(placements, currentPageId),
+    isOwner: page.access.viewer === 'owner'
+  }
 }
