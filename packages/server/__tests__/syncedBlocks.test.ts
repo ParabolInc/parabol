@@ -865,3 +865,60 @@ describe('linked page titles', () => {
     expect((await linkedPageTitles(readerToken, host))(child).title).toBe('Runbook')
   })
 })
+
+const UPDATE_PAGE_ACCESS_SECTION = `
+  mutation UpdatePageAccessSection($pageId: ID!, $subjectId: ID!) {
+    updatePageAccess(pageId: $pageId, subjectType: user, subjectId: $subjectId, role: viewer) {
+      pageSection
+    }
+  }
+`
+
+describe('page section after sharing', () => {
+  let ownerId: string
+  let ownerToken: string
+  let granteeId: string
+  const insertUser = async (preferredName: string) => {
+    const {id} = await pg
+      .insertInto('User')
+      .values({
+        id: generateUID(),
+        email: getTestEmail(),
+        picture: '',
+        preferredName,
+        inactive: false
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    return id
+  }
+  beforeAll(async () => {
+    ownerId = await insertUser('Section owner')
+    granteeId = await insertUser('Section grantee')
+    ownerToken = encodeAuthToken(new AuthToken({sub: ownerId, tms: []}))
+  })
+
+  const share = async (pageId: number) => {
+    const res = await sendPublic({
+      query: UPDATE_PAGE_ACCESS_SECTION,
+      variables: {
+        pageId: CipherId.toClient(pageId, 'page'),
+        subjectId: granteeId
+      },
+      bearerToken: ownerToken
+    })
+    expect(res.errors).toBeUndefined()
+    return res.data.updatePageAccess.pageSection as string | null
+  }
+
+  test('a synced block page is placed in no sidebar section', async () => {
+    const {block} = await seedHostWithBlock(ownerId)
+    expect(await share(block)).toBeNull()
+  })
+
+  test('an ordinary child page still gets a section', async () => {
+    const host = await makePage(ownerId)
+    const child = await makePage(ownerId, host)
+    expect(await share(child)).not.toBeNull()
+  })
+})

@@ -13,7 +13,7 @@ const plaintext = (props: Omit<PageAccessRequestProps, 'title'>) => {
   const requester = requesterName ? `${requesterName} (${requesterEmail})` : requesterEmail
   const reasonBlock = reason ? `${reason}`.replace(/^/gm, '| ') : ''
   const headline = isSyncedBlock
-    ? `${requester} wants to view the synced block ${pageName ?? 'Untitled'}.`
+    ? `${requester} wants to view the synced block ${pageName || '<Untitled>'}.`
     : `${requester} has requested to ${pageAccess} ${pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'}`
 
   return `

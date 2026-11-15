@@ -37,14 +37,14 @@ afterEach(() => {
   container.remove()
 })
 
-const render = (isSyncedBlock: boolean) => {
+const render = (isSyncedBlock: boolean, title = 'Escalation path') => {
   mockNotification = {
     id: 'notification:1',
     name: 'Ravi Menon',
     email: 'ravi@example.com',
     picture: '',
     role: 'viewer',
-    page: {id: 'page:7', title: 'Escalation path', isSyncedBlock}
+    page: {id: 'page:7', title, isSyncedBlock}
   }
   act(() => root.render(<PageAccessRequested notification={{} as never} />))
 }
@@ -57,4 +57,9 @@ test('a block request reads "wants to view the synced block"', () => {
 test('a page request keeps its wording', () => {
   render(false)
   expect(container.textContent).toContain('has requested to view the page')
+})
+
+test('an unnamed block reads <Untitled>', () => {
+  render(true, '')
+  expect(container.textContent).toBe('Ravi Menon wants to view the synced block <Untitled>.')
 })

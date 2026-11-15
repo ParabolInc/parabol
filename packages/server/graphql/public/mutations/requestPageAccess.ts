@@ -91,7 +91,7 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
       ? `${appOrigin}${viewer.picture}`
       : viewer.picture,
     reason,
-    pageName: page.title ?? 'Untitled',
+    pageName: page.isSyncedBlock ? page.title || '<Untitled>' : (page.title ?? 'Untitled'),
     pageLink,
     role,
     isSyncedBlock: page.isSyncedBlock

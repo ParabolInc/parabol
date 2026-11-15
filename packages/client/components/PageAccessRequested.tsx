@@ -55,7 +55,7 @@ const PageAccessRequested = (props: Props) => {
       message={
         isSyncedBlock ? (
           <>
-            {name} wants to view the synced block <b>{title ?? 'Untitled'}</b>.
+            {name} wants to view the synced block <b>{title || '<Untitled>'}</b>.
           </>
         ) : (
           <>
