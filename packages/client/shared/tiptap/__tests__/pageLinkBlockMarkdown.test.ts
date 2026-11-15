@@ -1,4 +1,6 @@
+import {generateHTML} from '@tiptap/html/server'
 import {markdownToTipTap} from '../markdownToTipTap'
+import {serverTipTapExtensions} from '../serverTipTapExtensions'
 import {tipTapToMarkdown} from '../tipTapToMarkdown'
 
 const roundTripPageLink = (attrs: Record<string, unknown>) => {
@@ -32,5 +34,25 @@ describe('pageLinkBlock markdown', () => {
     const link = roundTripPageLink({pageCode: 42, title: 'Runbook', canonical: true})
     expect(link?.attrs).toMatchObject({pageCode: 42, title: 'Runbook', canonical: true})
     expect(link?.attrs?.synced).toBeFalsy()
+  })
+
+  it('a seed never reaches Markdown or HTML', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {
+          type: 'pageLinkBlock',
+          attrs: {
+            pageCode: 7,
+            title: '',
+            canonical: true,
+            synced: true,
+            content: [{type: 'paragraph', content: [{type: 'text', text: 'secret'}]}]
+          }
+        }
+      ]
+    }
+    expect(tipTapToMarkdown(doc)).not.toContain('secret')
+    expect(generateHTML(doc, serverTipTapExtensions)).not.toContain('secret')
   })
 })

@@ -2,6 +2,7 @@ import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
+import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerializedContent'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -11,6 +12,7 @@ import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
+import {sanitizeSyncedBlockSeed} from './sanitizeSyncedBlockSeed'
 import {updateBacklinks} from './updateBacklinks'
 
 const getAddedPageLinks = (e: Y.YEvent<any>) => {
@@ -30,6 +32,8 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
   getAddedPageLinks(e).forEach(async (node) => {
+    const seed = node.getAttribute('content')
+    if (seed !== undefined) node.removeAttribute('content')
     const childPageCode = node.getAttribute('pageCode')!
     try {
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
@@ -50,6 +54,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           )
           if (!isSyncedBlock) node.removeAttribute('synced')
         }
+        const seedContent = sanitizeSyncedBlockSeed(seed) as TipTapContentNode[]
         const newPage = await createNewPage({
           parentPageId,
           userId,
@@ -63,12 +68,17 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
                 attrs: {level: 1},
                 content: title ? [{type: 'text', text: title}] : []
               },
-              ...(isSyncedBlock ? [{type: 'paragraph' as const}] : [])
+              ...(seedContent.length > 0
+                ? seedContent
+                : isSyncedBlock
+                  ? [{type: 'paragraph' as const}]
+                  : [])
             ]
           }
         }).catch(Logger.error)
         if (!newPage) return
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
+        if (isSyncedBlock) node.setAttribute('title', '')
         await updateBacklinks(parentPageId, newPage.id)
       } else {
         // check for duplicates on the same page
