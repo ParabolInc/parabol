@@ -237,3 +237,37 @@ test('destroying the provider clears the stored failure', () => {
   providerManager.destroy('page:11')
   expect(providerManager.getAuthenticationFailure('page:11')).toBeUndefined()
 })
+
+test('a ready block shows the locked panel when access is revoked', () => {
+  render(10)
+  act(() => providerFor(10).emit('synced'))
+  expect(statusOf()).toBe('ready')
+  act(() => providerFor(10).emit('authenticationFailed', {reason: 'Unauthorized'}))
+  expect(statusOf()).toBe('locked')
+  expect(screenText()).not.toContain(SECRET_TEXT)
+})
+
+test('a locked block shows its text once it syncs again', () => {
+  render(15)
+  act(() => providerFor(15).emit('authenticationFailed', {reason: 'Unauthorized'}))
+  expect(statusOf()).toBe('locked')
+  act(() => providerFor(15).emit('synced'))
+  expect(statusOf()).toBe('ready')
+  expect(screenText()).toContain(SECRET_TEXT)
+})
+
+test('a block that starts ready does not time out', () => {
+  providerManager.get('page:16').synced = true
+  render(16)
+  advance(SYNCED_BLOCK_LOAD_TIMEOUT_MS)
+  expect(statusOf()).toBe('ready')
+})
+
+test('a block that mounted ready locks when access is revoked', () => {
+  providerManager.get('page:17').synced = true
+  render(17)
+  expect(statusOf()).toBe('ready')
+  act(() => providerFor(17).emit('authenticationFailed', {reason: 'Unauthorized'}))
+  expect(statusOf()).toBe('locked')
+  expect(screenText()).not.toContain(SECRET_TEXT)
+})
