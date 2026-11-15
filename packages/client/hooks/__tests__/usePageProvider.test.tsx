@@ -131,8 +131,8 @@ test('withDoc releases its provider when the doc is denied', async () => {
   expect(getCount('page:3')).toBe(0)
 })
 
-test('the slug rewrite keeps the query string and hash', async () => {
-  happyWindow.happyDOM.setURL('https://parabol.test/pages/7?share#top')
+const rewriteSlugFrom = async (url: string) => {
+  happyWindow.happyDOM.setURL(`https://parabol.test${url}`)
   Object.assign(globalThis, {location: happyWindow.location})
   let routerLocation = {pathname: '', search: '', hash: ''}
   const LocationProbe = () => {
@@ -147,7 +147,7 @@ test('the slug rewrite keeps the query string and hash', async () => {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(
-    <MemoryRouter initialEntries={['/pages/7?share#top']}>
+    <MemoryRouter initialEntries={[url]}>
       <LocationProbe />
       <PageProviderUser />
     </MemoryRouter>
@@ -160,8 +160,25 @@ test('the slug rewrite keeps the query string and hash', async () => {
   provider.document.getXmlFragment('default').insert(0, [heading])
   headingText.insert(0, 'Roadmap')
   await waitUntil(() => routerLocation.pathname !== '/pages/7')
-  expect(routerLocation.pathname).toBe('/pages/roadmap-7')
-  expect(routerLocation.search).toBe('?share')
-  expect(routerLocation.hash).toBe('#top')
   root.unmount()
+  return routerLocation
+}
+
+test('the slug rewrite keeps ?share and the hash', async () => {
+  const result = await rewriteSlugFrom('/pages/7?share#top')
+  expect(result.pathname).toBe('/pages/roadmap-7')
+  expect(result.search).toBe('?share')
+  expect(result.hash).toBe('#top')
+})
+
+test('the slug rewrite drops ?export but keeps ?share', async () => {
+  const result = await rewriteSlugFrom('/pages/7?export=confluence&share')
+  expect(result.pathname).toBe('/pages/roadmap-7')
+  expect(result.search).toBe('?share')
+})
+
+test('the slug rewrite leaves an empty search when only ?export was present', async () => {
+  const result = await rewriteSlugFrom('/pages/7?export=confluence')
+  expect(result.pathname).toBe('/pages/roadmap-7')
+  expect(result.search).toBe('')
 })

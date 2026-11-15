@@ -60,7 +60,8 @@ const updateUrlWithSlug = (
   const pageCodeIdx = sluggedPageCodeIdx === -1 ? pathname.lastIndexOf('/') : sluggedPageCodeIdx
   const currentRoutePageCode = Number(pathname.slice(pageCodeIdx + 1))
   if (currentRoutePageCode === pageCode) {
-    navigate(`/pages/${pageSlug}${search}${hash}`, {replace: true})
+    const nextSearch = new URLSearchParams(search).has('share') ? '?share' : ''
+    navigate(`/pages/${pageSlug}${nextSearch}${hash}`, {replace: true})
   }
 }
 
