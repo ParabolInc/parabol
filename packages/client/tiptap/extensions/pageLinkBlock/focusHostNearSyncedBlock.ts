@@ -8,7 +8,8 @@ export const focusHostNearSyncedBlock = (
   pageCode: number
 ) => {
   const {view} = hostEditor
-  const node = pos === undefined ? null : view.state.doc.nodeAt(pos)
+  const inRange = pos !== undefined && pos >= 0 && pos <= view.state.doc.content.size
+  const node = inRange ? view.state.doc.nodeAt(pos) : null
   const isBlock =
     pos !== undefined &&
     node?.type.name === 'pageLinkBlock' &&
@@ -25,5 +26,5 @@ export const focusHostNearSyncedBlock = (
     Selection.findFrom(doc.resolve(pos), -1, true)
   keepFocusInHost(view.nodeDOM(pos))
   if (selection) view.dispatch(view.state.tr.setSelection(selection).scrollIntoView())
-  hostEditor.commands.focus()
+  view.focus()
 }

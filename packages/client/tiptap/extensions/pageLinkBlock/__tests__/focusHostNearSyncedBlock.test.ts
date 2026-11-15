@@ -68,3 +68,10 @@ test('never selects the block itself', () => {
   focusHostNearSyncedBlock(host, linkPos, 7)
   expect(host.state.selection).not.toBeInstanceOf(NodeSelection)
 })
+
+test('falls back without throwing when the position is out of range', () => {
+  const {host} = mount([paragraph('Above'), syncedLink, paragraph('Below')])
+  const before = host.state.selection.from
+  expect(() => focusHostNearSyncedBlock(host, host.state.doc.content.size + 50, 7)).not.toThrow()
+  expect(host.state.selection.from).toBe(before)
+})
