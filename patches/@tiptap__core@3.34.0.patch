@@ -1,5 +1,5 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index 30371677b4e32734cd44d826b683d6affb0a368b..ad43299cd372dc55f2b33c574de849a5f2981800 100644
+index 30371677b4e32734cd44d826b683d6affb0a368b..3960f2000c88a5b826bfb0fae067aa7eb50f81cc 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
 @@ -985,9 +985,95 @@ const liftEmptyBlock = () => ({ state, dispatch }) => {
@@ -133,7 +133,15 @@ index 30371677b4e32734cd44d826b683d6affb0a368b..ad43299cd372dc55f2b33c574de849a5
  	return (0, _tiptap_pm_schema_list.sinkListItem)(type)(state, dispatch);
  };
  //#endregion
-@@ -6734,6 +6844,7 @@ var Editor = class extends EventEmitter {
+@@ -6127,6 +6237,7 @@ const FocusEvents = Extension.create({
+ 			props: { handleDOMEvents: {
+ 				focus: (view, event) => {
+ 					editor.isFocused = true;
++					if (view.input.mouseDown) view.domObserver.flush();
+ 					const transaction = editor.state.tr.setMeta("focus", { event }).setMeta("addToHistory", false);
+ 					view.dispatch(transaction);
+ 					return false;
+@@ -6734,6 +6845,7 @@ var Editor = class extends EventEmitter {
  	* An object of all registered commands.
  	*/
  	get commands() {
@@ -141,7 +149,7 @@ index 30371677b4e32734cd44d826b683d6affb0a368b..ad43299cd372dc55f2b33c574de849a5
  		return this.commandManager.commands;
  	}
  	/**
-@@ -7070,12 +7181,14 @@ var Editor = class extends EventEmitter {
+@@ -7070,12 +7182,14 @@ var Editor = class extends EventEmitter {
  	* Get the document as HTML.
  	*/
  	getHTML() {
@@ -157,7 +165,7 @@ index 30371677b4e32734cd44d826b683d6affb0a368b..ad43299cd372dc55f2b33c574de849a5
  		return getText(this.state.doc, {
  			blockSeparator,
 diff --git a/dist/index.js b/dist/index.js
-index 158d419e30c111209ff390b864013124767636e0..019b5c5b1347c4166b868c55d7e834a470eae2d6 100644
+index 158d419e30c111209ff390b864013124767636e0..5707bceb0b8c422809da6c269e52885e6b99dbef 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -973,9 +973,95 @@ const liftEmptyBlock$1 = () => ({ state, dispatch }) => {
@@ -291,7 +299,15 @@ index 158d419e30c111209ff390b864013124767636e0..019b5c5b1347c4166b868c55d7e834a4
  	return sinkListItem(type)(state, dispatch);
  };
  //#endregion
-@@ -6722,6 +6832,7 @@ var Editor = class extends EventEmitter {
+@@ -6115,6 +6225,7 @@ const FocusEvents = Extension.create({
+ 			props: { handleDOMEvents: {
+ 				focus: (view, event) => {
+ 					editor.isFocused = true;
++					if (view.input.mouseDown) view.domObserver.flush();
+ 					const transaction = editor.state.tr.setMeta("focus", { event }).setMeta("addToHistory", false);
+ 					view.dispatch(transaction);
+ 					return false;
+@@ -6722,6 +6833,7 @@ var Editor = class extends EventEmitter {
  	* An object of all registered commands.
  	*/
  	get commands() {
@@ -299,7 +315,7 @@ index 158d419e30c111209ff390b864013124767636e0..019b5c5b1347c4166b868c55d7e834a4
  		return this.commandManager.commands;
  	}
  	/**
-@@ -7058,12 +7169,14 @@ var Editor = class extends EventEmitter {
+@@ -7058,12 +7170,14 @@ var Editor = class extends EventEmitter {
  	* Get the document as HTML.
  	*/
  	getHTML() {
