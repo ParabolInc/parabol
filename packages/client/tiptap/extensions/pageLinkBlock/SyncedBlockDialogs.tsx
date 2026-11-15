@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {focusHostNearSyncedBlock} from './focusHostNearSyncedBlock'
 import type {UnsyncCopyConfirm} from './getUnsyncCopyConfirm'
 import {unsyncCopyAt} from './requestSyncedBlockUnsyncCopy'
 import {SyncedBlockDeleteAllDialogRoot} from './SyncedBlockDeleteAllDialogRoot'
@@ -23,7 +24,7 @@ export const SyncedBlockDialogs = ({dialog, hostEditor, getPos, pageCode, onClos
   const currentPageId = hostEditor.storage.pageLinkBlock.pageId
   const returnFocusToPage = (event: Event) => {
     event.preventDefault()
-    if (!hostEditor.isDestroyed) hostEditor.commands.focus()
+    if (!hostEditor.isDestroyed) focusHostNearSyncedBlock(hostEditor, getPos(), pageCode)
   }
   switch (dialog?.kind) {
     case 'unsyncCopy':
