@@ -6,7 +6,6 @@ import {
 import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
 import Atmosphere from '../Atmosphere'
-import {YJS_ACCESS_CHANGED} from '../shared/tiptap/yjsAccessChanged'
 import getTabSessionId from '../utils/getTabSessionId'
 
 class ProviderManager {
@@ -79,7 +78,7 @@ class ProviderManager {
     }, 10000)
     if (documentName.startsWith('page:')) {
       provider.on('close', ({event}: {event: {reason: string}}) => {
-        if (event.reason === YJS_ACCESS_CHANGED) this.reauthenticate(documentName)
+        if (event.reason === 'AccessChanged') this.reauthenticate(documentName)
       })
       provider.on('authenticated', ({scope}: {scope: string}) => {
         this.authenticationFailures.delete(documentName)

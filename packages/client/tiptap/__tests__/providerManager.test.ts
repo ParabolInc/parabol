@@ -1,5 +1,4 @@
 import '../extensions/__tests__/installHappyDom'
-import {YJS_ACCESS_CHANGED} from '../../shared/tiptap/yjsAccessChanged'
 import {providerManager} from '../providerManager'
 
 jest.mock('@hocuspocus/provider', () => {
@@ -81,7 +80,7 @@ afterEach(() => {
 
 test('signs the document in again when the server closes it for an access change', async () => {
   const provider = providerManager.get('page:7') as unknown as FakeProvider
-  closeWith(provider, YJS_ACCESS_CHANGED)
+  closeWith(provider, 'AccessChanged')
   await flushPromises()
   expect(provider.sendToken).toHaveBeenCalledTimes(1)
   expect(provider.startSync).toHaveBeenCalledTimes(1)
@@ -99,7 +98,7 @@ test('ignores other closes', async () => {
 test('waits for the socket when it is not connected', async () => {
   const provider = providerManager.get('page:7') as unknown as FakeProvider
   provider.configuration.websocketProvider.status = 'disconnected'
-  closeWith(provider, YJS_ACCESS_CHANGED)
+  closeWith(provider, 'AccessChanged')
   await flushPromises()
   expect(provider.sendToken).not.toHaveBeenCalled()
 })
@@ -120,7 +119,7 @@ test('does nothing for a document it does not hold', () => {
 
 test('meetings keep their behavior on an access change', async () => {
   const provider = providerManager.get('meeting:3') as unknown as FakeProvider
-  closeWith(provider, YJS_ACCESS_CHANGED)
+  closeWith(provider, 'AccessChanged')
   await flushPromises()
   expect(provider.sendToken).not.toHaveBeenCalled()
 })

@@ -1,5 +1,4 @@
 import type {afterLoadDocumentPayload} from '@hocuspocus/server'
-import {YJS_ACCESS_CHANGED} from '../../../../client/shared/tiptap/yjsAccessChanged'
 import {CipherId} from '../../CipherId'
 import {getPageConnectionAccess} from '../getPageConnectionAccess'
 import {RedisPublisher} from '../hocusPocusRedisPublisher'
@@ -61,7 +60,7 @@ test('closes only the documents whose access changed', async () => {
   const {sharedWebSocket, hostConnection, blockConnection, revalidate} = await setup()
   mockedAccess.mockResolvedValue(null)
   await revalidate({pageIds: [blockId], userIds: []})
-  expect(blockConnection.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(blockConnection.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(hostConnection.close).not.toHaveBeenCalled()
   expect(sharedWebSocket.close).not.toHaveBeenCalled()
 })
@@ -88,7 +87,7 @@ test('closes every document of a user named in userIds', async () => {
   const {sharedWebSocket, hostConnection, blockConnection, revalidate} = await setup()
   mockedAccess.mockResolvedValue(null)
   await revalidate({pageIds: [], userIds: ['u1']})
-  expect(blockConnection.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
-  expect(hostConnection.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(blockConnection.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
+  expect(hostConnection.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(sharedWebSocket.close).not.toHaveBeenCalled()
 })

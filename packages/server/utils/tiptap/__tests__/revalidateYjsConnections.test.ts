@@ -1,5 +1,4 @@
 import type {Document} from '@hocuspocus/server'
-import {YJS_ACCESS_CHANGED} from '../../../../client/shared/tiptap/yjsAccessChanged'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
@@ -98,7 +97,7 @@ test('closes a connection whose page access was removed and keeps the others ope
   await revalidateYjsConnections({pageTreeIds: [pageId]})
   await settle()
 
-  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(collaborator.webSocket.close).not.toHaveBeenCalled()
   expect(owner.close).not.toHaveBeenCalled()
 })
@@ -111,7 +110,7 @@ test('closes a connection whose role no longer matches its read-only state', asy
   await revalidateYjsConnections({pageTreeIds: [pageId]})
   await settle()
 
-  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(collaborator.webSocket.close).not.toHaveBeenCalled()
 })
 
@@ -124,7 +123,7 @@ test('closes every connection of a user whose sessions were invalidated', async 
   await blacklistJWT(collaboratorId, toEpochSeconds(new Date()) + 1)
   await settle()
 
-  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(collaborator.webSocket.close).not.toHaveBeenCalled()
   expect(owner.close).not.toHaveBeenCalled()
 })
@@ -140,7 +139,7 @@ test('closes only the connection of the session that signed out', async () => {
   await revalidateYjsConnections({userIds: [collaboratorId]})
   await settle()
 
-  expect(signedOut.close).toHaveBeenCalledWith({code: 4403, reason: YJS_ACCESS_CHANGED})
+  expect(signedOut.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(signedOut.webSocket.close).not.toHaveBeenCalled()
   expect(otherDevice.close).not.toHaveBeenCalled()
 })

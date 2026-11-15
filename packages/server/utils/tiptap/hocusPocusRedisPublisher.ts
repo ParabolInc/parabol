@@ -5,7 +5,6 @@ import {
   type Extension
 } from '@hocuspocus/server'
 import {unpack} from 'msgpackr'
-import {YJS_ACCESS_CHANGED} from '../../../client/shared/tiptap/yjsAccessChanged'
 import {SubscriptionChannel} from '../../../client/types/constEnums'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -62,7 +61,7 @@ export class RedisPublisher implements Extension {
             const isLive = !userId || (await isYjsSessionLive({userId, iat, exp, jti, connectedAt}))
             const access = isLive ? await getPageConnectionAccess(pageId, userId) : null
             if (!access || access.readOnly !== connection.readOnly) {
-              connection.close({code: 4403, reason: YJS_ACCESS_CHANGED})
+              connection.close({code: 4403, reason: 'AccessChanged'})
             }
           })
         )
