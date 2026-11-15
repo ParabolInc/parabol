@@ -60,8 +60,23 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
   const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
+
+  const getBlockRange = (): BlockRange => ({
+    from: pos,
+    to: pos + node.nodeSize,
+    depth: editor.state.doc.resolve(pos).depth
+  })
+
+  const getSyncedBlockTransaction = () => {
+    const {doc} = editor.state
+    const isBlockInPlace = pos < doc.content.size && !!doc.nodeAt(pos)?.eq(node)
+    const range = selection
+      ? getSelectedBlockRange(editor.state)
+      : isBlockInPlace && getBlockRange()
+    return range ? turnRangeIntoSyncedBlock(editor.state, range) : null
+  }
   const showTurnIntoSyncedBlock =
-    !!selection && canCreateSyncedBlock && !!turnRangeIntoSyncedBlock(editor.state, selection.range)
+    editor.isEditable && canCreateSyncedBlock && !turnIntoCurrent && !!getSyncedBlockTransaction()
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -98,17 +113,13 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleTurnIntoSyncedBlock = () => {
-    const range = getSelectedBlockRange(editor.state)
-    const tr = range && turnRangeIntoSyncedBlock(editor.state, range)
+    if (!editor.isEditable) return
+    const tr = getSyncedBlockTransaction()
     if (tr) dispatchBlockConversion(editor, tr, pos)
   }
 
   const handleMoveTo = () => {
-    const range = selection?.range ?? {
-      from: pos,
-      to: pos + node.nodeSize,
-      depth: editor.state.doc.resolve(pos).depth
-    }
+    const range = selection?.range ?? getBlockRange()
     const {top, left, width, height} = anchorElement.getBoundingClientRect()
     const anchorRect = {top, left, width, height}
     openMoveToPageMenu({editor, range, anchorRect, pageId, atmosphere})

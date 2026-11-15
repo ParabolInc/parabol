@@ -1,20 +1,8 @@
 import type {JSONContent} from '@tiptap/core'
-import {Fragment, type Node, type Schema} from '@tiptap/pm/model'
+import {Fragment} from '@tiptap/pm/model'
 import {type EditorState, Selection, type Transaction} from '@tiptap/pm/state'
 import {type BlockRange, isUnitParent} from '../../blockSelection/blockUnits'
-import {getFirstLine, toSingleLine} from './turnBlockInto'
-
-const hasFirstLine = (node: Node): boolean => {
-  if (node.isTextblock) return true
-  const first =
-    node.type.name === 'callout'
-      ? node.children.find((child) => child.type.name !== 'calloutTitle' || child.content.size > 0)
-      : node.firstChild
-  return !!first && hasFirstLine(first)
-}
-
-const getName = (node: Node, schema: Schema) =>
-  hasFirstLine(node) ? toSingleLine(getFirstLine(node), schema).trim() : ''
+import {toSingleLine} from './turnBlockInto'
 
 const holdsPageLink = (units: Fragment) => {
   let found = false
@@ -39,14 +27,16 @@ export const turnRangeIntoSyncedBlock = (
   const firstUnit = units.firstChild
   if (!firstUnit || holdsPageLink(units)) return null
   const isList = parent.type.isInGroup('list')
-  const seed: JSONContent[] = []
-  if (isList) seed.push(parent.copy(units).toJSON())
-  else units.forEach((unit) => seed.push(unit.toJSON()))
+  const isNamed = firstUnit.type.name === 'heading'
+  const body = isNamed ? units.cut(firstUnit.nodeSize) : units
+  const seed: JSONContent[] = isList
+    ? [parent.copy(units).toJSON()]
+    : body.content.map((unit) => unit.toJSON())
   const link = schema.nodes.pageLinkBlock!.create({
     pageCode: -1,
     canonical: true,
     synced: true,
-    title: getName(firstUnit, schema),
+    title: isNamed ? toSingleLine(firstUnit.content, schema).trim() : '',
     content: seed
   })
   const startIndex = $from.index()

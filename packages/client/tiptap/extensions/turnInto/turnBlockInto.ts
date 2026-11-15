@@ -86,7 +86,7 @@ const codeToInline = (code: string, schema: Schema) => {
   return Fragment.from(inline)
 }
 
-export const getFirstLine = (node: Node): Fragment => {
+const getFirstLine = (node: Node): Fragment => {
   if (node.type.name === 'callout') return getFirstLine(getCalloutChildren(node)[0]!)
   if (node.type.name === 'calloutTitle') return toBold(node.content, node.type.schema)
   if (node.type.name === 'codeBlock') return codeToInline(node.textContent, node.type.schema)

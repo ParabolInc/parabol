@@ -63,12 +63,19 @@ const openMenu = async (
   {
     pos = TITLE_SIZE,
     canCreateSubPage = true,
-    canCreateSyncedBlock = false
-  }: {pos?: number; canCreateSubPage?: boolean; canCreateSyncedBlock?: boolean} = {}
+    canCreateSyncedBlock = false,
+    editable = true
+  }: {
+    pos?: number
+    canCreateSubPage?: boolean
+    canCreateSyncedBlock?: boolean
+    editable?: boolean
+  } = {}
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
     extensions,
+    editable,
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
   editor = activeEditor
@@ -235,6 +242,12 @@ describe('what the menu offers', () => {
     expect(submenuRows().at(-1)?.textContent).toBe('Synced block')
   })
 
+  test('a read-only editor has no Synced block row', async () => {
+    await openMenu([p('word')], {canCreateSyncedBlock: true, editable: false})
+    await openTurnInto()
+    expect(hasItem('Synced block')).toBe(false)
+  })
+
   test('a block inside a callout has no Synced block row', async () => {
     const callout: Json = {type: 'callout', attrs: {tone: 'info'}, content: [p('word')]}
     await openMenu([callout], {pos: TITLE_SIZE + 1, canCreateSyncedBlock: true})
@@ -290,7 +303,7 @@ describe('Synced block', () => {
     await click(itemNamed('Synced block'))
     const link = activeEditor.state.doc.child(1)
     expect(link.type.name).toBe('pageLinkBlock')
-    expect(link.attrs).toMatchObject({pageCode: -1, canonical: true, synced: true, title: 'word'})
+    expect(link.attrs).toMatchObject({pageCode: -1, canonical: true, synced: true, title: ''})
     expect(link.attrs.content).toEqual([p('word')])
     expect(activeEditor.state.selection.$from.parent.textContent).toBe('after')
   })

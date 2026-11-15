@@ -37,7 +37,7 @@ export const TurnIntoMenu = (props: Props) => {
     const range = getBlockUnitAt(editor.state.doc, pos + 1)
     return range && turnRangeIntoSyncedBlock(editor.state, range)
   }
-  const showSyncedBlock = canCreateSyncedBlock && !!getSyncedBlockTransaction()
+  const showSyncedBlock = editor.isEditable && canCreateSyncedBlock && !!getSyncedBlockTransaction()
 
   const isStale = () => {
     const {doc} = editor.state

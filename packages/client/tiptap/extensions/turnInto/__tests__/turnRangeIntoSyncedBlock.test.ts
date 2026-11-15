@@ -81,7 +81,7 @@ const blocksOf = (doc: Node) => {
   return blocks
 }
 
-test('a paragraph becomes a synced link that keeps its text', () => {
+test('a paragraph becomes the content of a synced block with a blank name', () => {
   const state = makeState(p('Escalation path'), p('after'))
   const tr = convert(state, unitAt(state, 'Escalation path', 'paragraph'))
   const link = tr.doc.child(1)
@@ -90,7 +90,7 @@ test('a paragraph becomes a synced link that keeps its text', () => {
     pageCode: -1,
     canonical: true,
     synced: true,
-    title: 'Escalation path',
+    title: '',
     content: [toJSON(p('Escalation path'))]
   })
   expect(blocksOf(tr.doc)).toEqual(['pageLinkBlock:', 'paragraph:after'])
@@ -103,7 +103,7 @@ test('a list item keeps its list', () => {
   const state = makeState(ul('a', 'b', 'c'))
   const tr = convert(state, unitAt(state, 'b', 'listItem'))
   expect(blocksOf(tr.doc)).toEqual(['bulletList:a', 'pageLinkBlock:', 'bulletList:c'])
-  expect(tr.doc.child(2).attrs).toMatchObject({title: 'b', content: [toJSON(ul('b'))]})
+  expect(tr.doc.child(2).attrs).toMatchObject({title: '', content: [toJSON(ul('b'))]})
   expect(tr.selection.$from.parent.textContent).toBe('c')
 })
 
@@ -122,12 +122,12 @@ test('the last items of a list that ends the page keep the rest of the list and 
     'pageLinkBlock:',
     'paragraph:'
   ])
-  expect(tr.doc.child(3).attrs).toMatchObject({title: 'b', content: [toJSON(ul('b', 'c'))]})
+  expect(tr.doc.child(3).attrs).toMatchObject({title: '', content: [toJSON(ul('b', 'c'))]})
   expect(tr.selection).toBeInstanceOf(TextSelection)
   expect(tr.selection.$from.parent).toBe(tr.doc.lastChild)
 })
 
-test('several selected blocks move together and the first line names them', () => {
+test('a leading heading names the selected blocks and stays out of their content', () => {
   const state = makeState(h(2, 'Runbook'), p('Call the lead'), ul('Page', 'Wait'), p('after'))
   const {doc} = state
   const range = normalizeBlockRange(
@@ -139,7 +139,29 @@ test('several selected blocks move together and the first line names them', () =
   expect(blocksOf(tr.doc)).toEqual(['pageLinkBlock:', 'paragraph:after'])
   expect(tr.doc.child(1).attrs).toMatchObject({
     title: 'Runbook',
-    content: [h(2, 'Runbook'), p('Call the lead'), ul('Page', 'Wait')].map(toJSON)
+    content: [p('Call the lead'), ul('Page', 'Wait')].map(toJSON)
+  })
+})
+
+test('a lone heading becomes the name of an empty synced block', () => {
+  const state = makeState(p('before'), h(3, 'Escalation path'), p('after'))
+  const tr = convert(state, unitAt(state, 'Escalation path', 'heading'))
+  expect(blocksOf(tr.doc)).toEqual(['paragraph:before', 'pageLinkBlock:', 'paragraph:after'])
+  expect(tr.doc.child(2).attrs).toMatchObject({title: 'Escalation path', content: []})
+})
+
+test('blocks led by anything but a heading become content with a blank name', () => {
+  const state = makeState(p('Call the lead'), h(2, 'Runbook'), p('after'))
+  const {doc} = state
+  const range = normalizeBlockRange(
+    doc,
+    findPos(doc, 'Call the lead', 'paragraph') + 1,
+    findPos(doc, 'Runbook', 'heading') + 1
+  )
+  const tr = convert(state, range!)
+  expect(tr.doc.child(1).attrs).toMatchObject({
+    title: '',
+    content: [p('Call the lead'), h(2, 'Runbook')].map(toJSON)
   })
 })
 
