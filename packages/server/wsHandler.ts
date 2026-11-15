@@ -222,7 +222,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       // like yoga's own context, so plugins can see the operation before it is parsed
       params: {query}
     })
-    // yoga's parse is cached, and plugins like the Prometheus metrics only count operations they saw parsed
+    // Like yoga's HTTP path: its parser cache hands back the document without parsing it again,
+    // but every plugin's onParse still runs, and the Prometheus metrics only count operations they saw there
     const document = parse(query)
 
     const rateLimiter = getRateLimiter()
