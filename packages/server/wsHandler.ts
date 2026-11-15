@@ -93,7 +93,6 @@ const dehydrateResult = (result: ExecutionResult) => {
 const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStartedAt'>) =>
   (performance.now() - upgradeStartedAt) / 1000
 
-const documentCache = new Map()
 export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
@@ -223,11 +222,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       // like yoga's own context, so plugins can see the operation before it is parsed
       params: {query}
     })
-    let document = documentCache.get(docId!)
-    if (!document) {
-      document = parse(query)
-      documentCache.set(docId, document)
-    }
+    // yoga's parse is cached, and plugins like the Prometheus metrics only count operations they saw parsed
+    const document = parse(query)
 
     const rateLimiter = getRateLimiter()
     const isSubscription = docId.startsWith('s')
@@ -260,9 +256,9 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       operationName: params.operationName,
       document,
       variableValues: params.variables,
-      // dataLoader will be null for subscriptions
-      contextValue: {
-        ...envelopeContext,
+      // the same object parse saw, because envelop plugins key what they learned while parsing on it
+      contextValue: Object.assign(envelopeContext, {
+        // dataLoader will be null for subscriptions
         dataLoader: extra.dataLoaders[id] || null,
         rateLimiter,
         ip,
@@ -274,7 +270,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
             ? params.extensions.traceparent
             : undefined,
         _wsAuthTokenAtStart: authToken
-      },
+      }),
       rootValue: {
         execute,
         subscribe
