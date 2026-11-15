@@ -5,6 +5,7 @@ import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/Tip
 import {encodeStateAsUpdate} from 'yjs'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {CipherId} from '../../CipherId'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
@@ -74,7 +75,7 @@ describe('loadSyncedBlockBodies', () => {
   it("loads a readable block's body without its name", async () => {
     const host = await createNewPage({userId, content: toContent(heading('Host'))})
     const block = await makeBlock(host.id, heading('Escalation path'), para('Call on-call first'))
-    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, userId)
+    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
     expect(bodies.get(CipherId.encrypt(block.id))).toEqual([
       expect.objectContaining({
         type: 'paragraph',
@@ -86,7 +87,11 @@ describe('loadSyncedBlockBodies', () => {
   it("leaves out a block the viewer can't open", async () => {
     const host = await createNewPage({userId, content: toContent(heading('Host'))})
     const block = await makeBlock(host.id, heading('Secret'), para('Hidden'))
-    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, strangerId)
+    const bodies = await loadSyncedBlockBodies(
+      hostDoc(block.id) as JSONContent,
+      host.id,
+      strangerId
+    )
     expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
   }, 30_000)
 
@@ -98,7 +103,7 @@ describe('loadSyncedBlockBodies', () => {
       .set({deletedAt: new Date(), deletedBy: userId})
       .where('id', '=', block.id)
       .execute()
-    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, userId)
+    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
     expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
   }, 30_000)
 
@@ -109,7 +114,7 @@ describe('loadSyncedBlockBodies', () => {
       parentPageId: host.id,
       content: toContent(heading('Ordinary'), para('Plain'))
     })
-    const bodies = await loadSyncedBlockBodies(hostDoc(ordinary.id) as JSONContent, userId)
+    const bodies = await loadSyncedBlockBodies(hostDoc(ordinary.id) as JSONContent, host.id, userId)
     expect(bodies.size).toBe(0)
   }, 30_000)
 
@@ -119,9 +124,52 @@ describe('loadSyncedBlockBodies', () => {
     const blockB = await makeBlock(host.id, heading('B'), para('B body'))
     await setContent(blockA.id, toContent(heading('A'), para('A body'), syncedLink(blockB.id)))
     await setContent(blockB.id, toContent(heading('B'), para('B body'), syncedLink(blockA.id)))
-    const bodies = await loadSyncedBlockBodies(hostDoc(blockA.id) as JSONContent, userId)
+    const bodies = await loadSyncedBlockBodies(hostDoc(blockA.id) as JSONContent, host.id, userId)
     expect([...bodies.keys()].sort()).toEqual(
       [CipherId.encrypt(blockA.id), CipherId.encrypt(blockB.id)].sort()
     )
+  }, 30_000)
+
+  const narrowBlockThenShareHost = async (hostId: number, blockId: number) => {
+    await pg.updateTable('Page').set({isParentLinked: false}).where('id', '=', blockId).execute()
+    await updatePageAccessTable(pg, blockId)
+    await pg
+      .insertInto('PageUserAccess')
+      .values({pageId: hostId, userId: strangerId, role: 'viewer'})
+      .execute()
+    await updatePageAccessTable(pg, hostId, {skipDeleteOld: true})
+  }
+
+  it("leaves out a block that a reader of the host can't open", async () => {
+    const host = await createNewPage({userId, content: toContent(heading('Host'))})
+    const block = await makeBlock(host.id, heading('Narrow'), para('Owner only'))
+    await narrowBlockThenShareHost(host.id, block.id)
+    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
+    expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
+  }, 30_000)
+
+  it("leaves out a block when the host is shared by link and the block isn't", async () => {
+    const host = await createNewPage({userId, content: toContent(heading('Host'))})
+    const block = await makeBlock(host.id, heading('Private'), para('Not public'))
+    await pg
+      .insertInto('PageExternalAccess')
+      .values({pageId: host.id, email: '*', role: 'viewer', invitedBy: userId})
+      .execute()
+    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
+    expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
+  }, 30_000)
+
+  it('loads a block that every reader of the host can open', async () => {
+    const host = await createNewPage({userId, content: toContent(heading('Host'))})
+    const block = await makeBlock(host.id, heading('Shared'), para('Everyone'))
+    await pg
+      .insertInto('PageUserAccess')
+      .values(
+        [host.id, block.id].map((pageId) => ({pageId, userId: strangerId, role: 'viewer' as const}))
+      )
+      .execute()
+    await updatePageAccessTable(pg, host.id, {skipDeleteOld: true})
+    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
+    expect(bodies.has(CipherId.encrypt(block.id))).toBe(true)
   }, 30_000)
 })

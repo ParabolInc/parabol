@@ -6,6 +6,7 @@ import {applyUpdate, Doc} from 'yjs'
 import {pageAccessByUserIdBatchFn} from '../../dataloader/pageAccessByUserIdBatchFn'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
+import {selectUnsyncOutcomes} from '../tiptap/selectUnsyncOutcomes'
 
 const collectSyncedPageCodes = (node: JSONContent, codes: Set<number>) => {
   if (node.type === 'pageLinkBlock' && node.attrs?.synced === true) {
@@ -17,7 +18,7 @@ const collectSyncedPageCodes = (node: JSONContent, codes: Set<number>) => {
   })
 }
 
-const loadBlockBody = async (pageCode: number, viewerId: string) => {
+const loadBlockBody = async (pageCode: number, hostPageId: number, viewerId: string) => {
   const pageId = CipherId.decrypt(pageCode)
   const page = await getKysely()
     .selectFrom('Page')
@@ -27,6 +28,8 @@ const loadBlockBody = async (pageCode: number, viewerId: string) => {
   if (!page?.isSyncedBlock || page.deletedAt || !page.yDoc) return null
   const [role] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
   if (!role) return null
+  const outcome = (await selectUnsyncOutcomes(getKysely(), pageId, [hostPageId])).get(hostPageId)
+  if (!outcome || outcome.hiddenReaderCount > 0 || outcome.isPublicWithoutBlock) return null
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
   return getSyncedBlockBody(TiptapTransformer.fromYdoc(yDoc, 'default') as JSONContent)
@@ -34,6 +37,7 @@ const loadBlockBody = async (pageCode: number, viewerId: string) => {
 
 export const loadSyncedBlockBodies = async (
   doc: JSONContent,
+  hostPageId: number,
   viewerId: string
 ): Promise<Map<number, JSONContent[]>> => {
   const bodies = new Map<number, JSONContent[]>()
@@ -46,7 +50,7 @@ export const loadSyncedBlockBodies = async (
       seen.add(code)
     })
     const loaded = await Promise.all(
-      codes.map(async (code) => [code, await loadBlockBody(code, viewerId)] as const)
+      codes.map(async (code) => [code, await loadBlockBody(code, hostPageId, viewerId)] as const)
     )
     frontier = new Set()
     for (const [code, body] of loaded) {

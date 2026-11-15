@@ -96,7 +96,7 @@ export const exportPageEntry = async (input: {
       }
       const syncedBlockBodies = isTokenScoped
         ? null
-        : await loadSyncedBlockBodies(tipTapDoc, userId)
+        : await loadSyncedBlockBodies(tipTapDoc, entry.pageId, userId)
       conversion = convertTipTapToConfluenceStorage(tipTapDoc, {
         parabolPageUrl,
         appOrigin,
