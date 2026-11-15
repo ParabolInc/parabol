@@ -45,6 +45,9 @@ jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, defau
 jest.mock('../../../../mutations/useArchivePageMutation', () => ({
   useArchivePageMutation: () => [jest.fn(), false]
 }))
+jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
+  useRequestPageAccessMutation: () => [jest.fn(), false]
+}))
 jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
   useUnsyncSyncedBlockMutation: () => [jest.fn(), false]
 }))

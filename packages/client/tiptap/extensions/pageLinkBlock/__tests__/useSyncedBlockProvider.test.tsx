@@ -2,6 +2,10 @@ import '../../__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import {
+  lookupPageViewerAccess,
+  subscribeToPageViewerAccess
+} from '../../../../hooks/usePageViewerAccess'
 import {providerManager} from '../../../providerManager'
 import {SyncedBlockState} from '../SyncedBlockState'
 import {SYNCED_BLOCK_LOAD_TIMEOUT_MS, useSyncedBlockProvider} from '../useSyncedBlockProvider'
@@ -51,6 +55,18 @@ jest.mock('../../../../Atmosphere', () => ({
   default: {closeHandlers: new Set(), current: null}
 }))
 
+jest.mock('../../../../hooks/useAtmosphere', () => ({
+  __esModule: true,
+  default: () => ({authObj: {sub: 'user'}, eventEmitter: {emit: jest.fn()}})
+}))
+jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
+  useRequestPageAccessMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../hooks/usePageViewerAccess', () => ({
+  subscribeToPageViewerAccess: jest.fn(),
+  lookupPageViewerAccess: jest.fn()
+}))
+
 type EmittingProvider = HocuspocusProvider & {
   emit: (eventName: string, payload?: unknown) => void
   failAuthentication: (reason: string) => void
@@ -63,7 +79,7 @@ const Harness = ({pageCode}: {pageCode: number}) => {
   if (status === 'ready') return <p data-status={status}>{SECRET_TEXT}</p>
   return (
     <div data-status={status}>
-      <SyncedBlockState status={status} onRetry={retry} />
+      <SyncedBlockState status={status} pageCode={pageCode} onRetry={retry} />
     </div>
   )
 }
@@ -119,7 +135,7 @@ test('an authentication failure shows the locked panel', () => {
   expect(statusOf()).toBe('locked')
   expect(screenText()).toContain("You don't have access to this synced block.")
   expect(screenText()).not.toContain(SECRET_TEXT)
-  expect(container.querySelector('button')).toBeNull()
+  expect(container.querySelector('button')!.textContent).toBe('Request access')
 })
 
 test('no sync within 15 seconds shows the error with Try again', () => {
@@ -270,4 +286,42 @@ test('a block that mounted ready locks when access is revoked', () => {
   act(() => providerFor(17).emit('authenticationFailed', {reason: 'Unauthorized'}))
   expect(statusOf()).toBe('locked')
   expect(screenText()).not.toContain(SECRET_TEXT)
+})
+
+describe('watching access while locked', () => {
+  let onChange: (() => void) | undefined
+  let access: string | null | undefined
+  let reauthenticate: jest.SpyInstance
+  beforeEach(() => {
+    onChange = undefined
+    access = null
+    jest.mocked(subscribeToPageViewerAccess).mockReset()
+    jest.mocked(subscribeToPageViewerAccess).mockImplementation((_environment, _pageCode, cb) => {
+      onChange = cb
+      return () => {}
+    })
+    jest.mocked(lookupPageViewerAccess).mockImplementation(() => access as never)
+    reauthenticate = jest.spyOn(providerManager, 'reauthenticate').mockImplementation(() => {})
+  })
+  afterEach(() => reauthenticate.mockRestore())
+
+  test('re-authenticates once when the viewer gains access', () => {
+    render(11)
+    act(() => providerFor(11).emit('authenticationFailed', {reason: 'Unauthorized'}))
+    expect(statusOf()).toBe('locked')
+    act(() => onChange!())
+    expect(reauthenticate).not.toHaveBeenCalled()
+    access = 'viewer'
+    act(() => onChange!())
+    act(() => onChange!())
+    expect(reauthenticate).toHaveBeenCalledTimes(1)
+    expect(reauthenticate).toHaveBeenCalledWith('page:11')
+  })
+
+  test('a block that loads never watches access', () => {
+    render(18)
+    act(() => providerFor(18).emit('synced'))
+    expect(statusOf()).toBe('ready')
+    expect(subscribeToPageViewerAccess).not.toHaveBeenCalled()
+  })
 })
