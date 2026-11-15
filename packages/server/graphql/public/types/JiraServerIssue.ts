@@ -1,9 +1,9 @@
 import JiraServerIssueId from '~/integrations/jiraServer/shared/JiraServerIssueId'
-import type {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
 import {
   VOTE_FIELD_ALLOWED_TYPES,
   VOTE_FIELD_ID_BLACKLIST
 } from '../../../integrations/jiraServer/jiraServerVoteFields'
+import type {JiraServerIssue as JiraServerRestIssue} from '../../../integrations/jiraServer/loadJiraServerIssues'
 import type {JiraServerIssueResolvers} from '../resolverTypes'
 
 export type JiraServerIssueSource = JiraServerRestIssue & {
@@ -24,6 +24,8 @@ const JiraServerIssue: JiraServerIssueResolvers = {
   },
 
   title: ({summary}) => summary,
+
+  status: ({status}) => (status ? {name: status.name, category: status.statusCategory.key} : null),
 
   possibleEstimationFieldNames: async (
     {teamId, userId, providerId, issueType, projectId},

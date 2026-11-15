@@ -12,6 +12,7 @@ import {PokerCards} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import GraphQLServerError from '../utils/relay/GraphQLServerError'
+import setStorageItem from '../utils/setStorageItem'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
 import JiraExportUpgradeModal from './JiraExportUpgradeModal'
@@ -100,7 +101,7 @@ const PokerActiveVoting = (props: Props) => {
       return true
     }
     if (code === 'UPGRADE_SUGGESTED') {
-      sessionStorage.setItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
+      setStorageItem('sessionStorage', JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
       setIsHardBlock(false)
       setShowUpgradeModal(true)
       return true

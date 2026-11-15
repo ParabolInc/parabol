@@ -143,7 +143,7 @@ export const fetchMeetTranscript = async (
   ])
   // offsets stay relative to the first session so a later one keeps counting up instead of
   // restarting the clock at 0:00
-  const content = processMeetTranscript(
+  const content = await processMeetTranscript(
     entriesBySession.flat(),
     speakerByParticipant,
     sessions[0]?.startTime,

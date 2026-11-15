@@ -1,20 +1,25 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {AnimatePresence, motion} from 'motion/react'
 import * as React from 'react'
 import {cn} from '../cn'
 import {useDialogState} from './Dialog'
 import {DialogClose} from './DialogClose'
 import {DialogOverlay} from './DialogOverlay'
+import {DialogTitle} from './DialogTitle'
 
 type BaseProps = React.ComponentPropsWithoutRef<
   React.ForwardRefExoticComponent<
-    RadixDialog.DialogContentProps & {noClose?: boolean} & React.RefAttributes<HTMLDivElement>
+    RadixDialog.DialogContentProps & {
+      noClose?: boolean
+      hiddenTitle?: string
+    } & React.RefAttributes<HTMLDivElement>
   >
 >
 
 export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
-  ({className, children, noClose, onInteractOutside, ...props}, ref) => {
+  ({className, children, noClose, onInteractOutside, hiddenTitle, ...props}, ref) => {
     const {isOpen} = useDialogState()
     return (
       <AnimatePresence>
@@ -52,6 +57,11 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               >
                 <ScrollArea.Root className='flex-1 overflow-auto'>
                   <ScrollArea.Viewport className='[&>div]:block! p-6'>
+                    {hiddenTitle && (
+                      <VisuallyHidden asChild>
+                        <DialogTitle>{hiddenTitle}</DialogTitle>
+                      </VisuallyHidden>
+                    )}
                     {children}
                   </ScrollArea.Viewport>
                   <ScrollArea.Scrollbar orientation='vertical' />

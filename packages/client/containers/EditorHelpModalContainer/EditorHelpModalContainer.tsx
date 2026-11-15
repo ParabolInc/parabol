@@ -16,7 +16,7 @@ const EditorHelpModalContainer = () => {
   useHotkey('escape', () => setIsOpen(false))
   return (
     <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <DialogContent className='w-[564px] max-w-[95vw]' noClose>
+      <DialogContent className='w-[564px] max-w-[95vw]' noClose hiddenTitle='Formatting Text'>
         <Suspense fallback=''>
           <EditorHelpModal handleCloseModal={() => setIsOpen(false)} />
         </Suspense>

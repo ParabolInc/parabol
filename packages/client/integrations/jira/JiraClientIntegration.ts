@@ -24,6 +24,7 @@ import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import AtlassianClientManager from './AtlassianClientManager'
 import jiraSearchMeta from './jiraSearchMeta'
+import jiraTaskLink from './jiraTaskLink'
 import JiraProjectId from './shared/JiraProjectId'
 import {jiraIntegrationMeta} from './shared/jiraIntegrationMeta'
 
@@ -92,6 +93,7 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: atlassianLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
+    taskLink: jiraTaskLink,
     workDrawer,
     settings: {
       getDisconnectSubline: describeAtlassianDisconnect

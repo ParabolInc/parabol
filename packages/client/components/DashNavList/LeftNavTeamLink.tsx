@@ -1,10 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {useFragment} from 'react-relay'
+import {useClientQuery, useFragment} from 'react-relay'
 import {Link, useMatch, useNavigate} from 'react-router'
 import {Add as AddIcon, Group as GroupIcon, ManageAccounts as ManageAccountsIcon} from '~/ui/icons'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../__generated__/PageDropTargetQuery.graphql'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
@@ -23,6 +26,8 @@ interface Props {
   closeMobileSidebar?: () => void
 }
 export const LeftNavTeamLink = (props: Props) => {
+  const {viewer} = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
+  const {draggingBlocksSourcePageId} = viewer ?? {}
   const {
     closeMobileSidebar,
     teamRef,
@@ -110,7 +115,7 @@ export const LeftNavTeamLink = (props: Props) => {
           <ExpandPageChildrenButton
             showChildren={showChildren}
             expandChildPages={expandChildPages}
-            draggingPageId={draggingPageId}
+            isDragging={!!draggingPageId || !!draggingBlocksSourcePageId}
             icon={GroupIcon}
           />
           <LeftNavItem>

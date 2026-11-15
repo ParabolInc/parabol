@@ -127,7 +127,7 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const [url] = await Promise.all([
     manager.putUserFile(fileBuffer, `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`),
     incrementUserBytesUploaded(viewerId, fileBuffer.byteLength)

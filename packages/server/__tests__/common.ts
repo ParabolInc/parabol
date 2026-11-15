@@ -34,6 +34,34 @@ export async function sendIntranet(req: {query: string; variables?: Record<strin
   return response.json()
 }
 
+const PROCESS_RECURRENCE = `
+  mutation {
+    processRecurrence {
+      ... on ProcessRecurrenceSuccess {
+        meetingsStarted
+        meetingsEnded
+      }
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+    }
+  }
+`
+
+// processRecurrence refuses to run while another call holds its lock, e.g. one from a suite running in parallel
+export const processRecurrence = async () => {
+  let res = await sendIntranet({query: PROCESS_RECURRENCE})
+  while (
+    res.data?.processRecurrence?.error?.message === 'Mutation processRecurrence is already running'
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    res = await sendIntranet({query: PROCESS_RECURRENCE})
+  }
+  return res
+}
+
 const persistFunction = (text: string) => {
   const hasher = crypto.createHash('md5')
   hasher.update(text)

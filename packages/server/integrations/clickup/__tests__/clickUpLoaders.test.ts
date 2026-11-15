@@ -10,7 +10,8 @@ jest.mock('../../../utils/getRedis', () => ({__esModule: true, default: jest.fn(
 jest.mock('../../../utils/logError', () => ({__esModule: true, default: jest.fn()}))
 
 import {fetch, Response} from '@whatwg-node/fetch'
-import {clickUpSpace, clickUpTask} from '../../../dataloader/clickUpLoaders'
+import {clickUpSpace} from '../../../dataloader/clickUpLoaders'
+import {integrationIssue} from '../../../dataloader/integrationIssueLoaders'
 import type RootDataLoader from '../../../dataloader/RootDataLoader'
 import getRedis from '../../../utils/getRedis'
 import logError from '../../../utils/logError'
@@ -56,7 +57,10 @@ const makeParent = () =>
     }
   }) as unknown as RootDataLoader
 
-const taskKey = (userId = 'facilitator') => ({teamId: 'team1', userId, taskId: '86abc'})
+const taskKey = (accessUserId = 'facilitator') => ({
+  teamId: 'team1',
+  integration: {service: 'clickup' as const, accessUserId, workspaceId: '1', taskId: '86abc'}
+})
 
 beforeEach(() => {
   mockFetch.mockReset().mockImplementation(async () => jsonResponse(apiTask))
@@ -64,17 +68,18 @@ beforeEach(() => {
 })
 
 test('participants loading the same task in separate requests share one ClickUp read', async () => {
-  const participants = Array.from({length: 5}, () => clickUpTask(makeParent()))
+  const participants = Array.from({length: 5}, () => integrationIssue(makeParent()))
   const tasks = await Promise.all(participants.map((loader) => loader.load(taskKey())))
-  const later = await clickUpTask(makeParent()).load(taskKey())
+  const later = await integrationIssue(makeParent()).load(taskKey())
   expect(mockFetch).toHaveBeenCalledTimes(1)
-  expect(tasks.every((task) => task?.title === 'Fix login')).toBe(true)
-  expect(later?.title).toBe('Fix login')
+  expect([...tasks, later]).toEqual(
+    Array.from({length: 6}, () => expect.objectContaining({service: 'clickup', title: 'Fix login'}))
+  )
 })
 
 test('a task read through another user is fetched with that user', async () => {
-  await clickUpTask(makeParent()).load(taskKey('facilitator'))
-  await clickUpTask(makeParent()).load(taskKey('teammate'))
+  await integrationIssue(makeParent()).load(taskKey('facilitator'))
+  await integrationIssue(makeParent()).load(taskKey('teammate'))
   expect(mockFetch).toHaveBeenCalledTimes(2)
 })
 
@@ -95,7 +100,7 @@ test.each([
   ['an unshared workspace', jsonResponse({err: 'Team not authorized', ECODE: 'OAUTH_027'}, 401)]
 ])('the task loader returns null without logging %s', async (_label, response) => {
   mockFetch.mockResolvedValue(response)
-  await expect(clickUpTask(makeParent()).load(taskKey())).resolves.toBeNull()
+  await expect(integrationIssue(makeParent()).load(taskKey())).resolves.toBeNull()
   expect(mockLogError).not.toHaveBeenCalled()
 })
 
@@ -104,6 +109,6 @@ test.each([
   ['a page that is not JSON', new Response('<html>502</html>', {status: 502})]
 ])('the task loader logs %s', async (_label, response) => {
   mockFetch.mockResolvedValue(response)
-  await expect(clickUpTask(makeParent()).load(taskKey())).resolves.toBeNull()
+  await expect(integrationIssue(makeParent()).load(taskKey())).resolves.toBeNull()
   expect(mockLogError).toHaveBeenCalledTimes(1)
 })

@@ -1,5 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
+import {useEffect, useState} from 'react'
 import {Delete as DeleteIcon} from '~/ui/icons'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {ArchivedPagesRoot} from '../../modules/pages/ArchivedPagesRoot'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -8,11 +10,20 @@ import {LeftNavHeader} from './LeftNavHeader'
 
 type Props = {}
 export const LeftNavPagesTrash = (_props: Props) => {
+  const atmosphere = useAtmosphere()
+  const [isOpen, setIsOpen] = useState(false)
+  useEffect(() => {
+    const open = () => setIsOpen(true)
+    atmosphere.eventEmitter.on('openPagesTrash', open)
+    return () => {
+      atmosphere.eventEmitter.off('openPagesTrash', open)
+    }
+  }, [atmosphere])
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div>
-          <Popover.Root>
+          <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
             <Popover.Trigger asChild>
               <div>
                 <div className='group flex flex-1 cursor-pointer rounded-md font-semibold text-xs leading-5 hover:bg-surface-nav-hover'>

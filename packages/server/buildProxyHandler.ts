@@ -12,7 +12,7 @@ export const buildProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     return
   }
 
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const expiresIn = ms('7d') / 1000
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,

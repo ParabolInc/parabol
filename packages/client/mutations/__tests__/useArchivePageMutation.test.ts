@@ -38,7 +38,7 @@ const createConnection = (key: string, filters: Record<string, unknown>, nodeIds
   return {storageKey, connId, records}
 }
 
-const createEnvironment = () => {
+const createEnvironment = (pageFields: Record<string, unknown> = {}) => {
   const sharedConn = createConnection(
     'User_sharedPages',
     {parentPageId: null, isPrivate: false},
@@ -62,7 +62,13 @@ const createEnvironment = () => {
           [archivedConn.storageKey]: {__ref: archivedConn.connId}
         },
         // the trash list only loads id & title for its pages
-        [pageId]: {__id: pageId, __typename: 'Page', id: pageId, title: 'Old notes'},
+        [pageId]: {
+          __id: pageId,
+          __typename: 'Page',
+          id: pageId,
+          title: 'Old notes',
+          ...pageFields
+        },
         ...sharedConn.records,
         ...archivedConn.records
       })
@@ -82,6 +88,38 @@ describe('handleArchivePage', () => {
     const {environment, sharedConnId, archivedConnId} = createEnvironment()
     commitLocalUpdate(environment, (store) => {
       handleArchivePage(pageId, {store, isHardDelete: true})
+    })
+    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
+    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])
+  })
+
+  const restoredPageFields = {
+    deletedAt: null,
+    sortOrder: 'a',
+    teamId: null,
+    isPrivate: false,
+    parentPageId: null
+  }
+
+  it('restoring an ordinary page adds it to the sidebar connection', () => {
+    const {environment, sharedConnId, archivedConnId} = createEnvironment({
+      ...restoredPageFields,
+      isSyncedBlock: false
+    })
+    commitLocalUpdate(environment, (store) => {
+      handleArchivePage(pageId, {store, isHardDelete: false})
+    })
+    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
+    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([pageId])
+  })
+
+  it('restoring a synced block page leaves the sidebar connection alone', () => {
+    const {environment, sharedConnId, archivedConnId} = createEnvironment({
+      ...restoredPageFields,
+      isSyncedBlock: true
+    })
+    commitLocalUpdate(environment, (store) => {
+      handleArchivePage(pageId, {store, isHardDelete: false})
     })
     expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
     expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])

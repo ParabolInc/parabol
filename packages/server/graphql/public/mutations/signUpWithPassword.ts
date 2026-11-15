@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs'
-import {passwordStrength} from 'parabol-client/shared/passwordStrength'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import createEmailVerification from '../../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
+import loadPasswordStrength from '../../../utils/loadPasswordStrength'
 import normalizeEmail from '../../../utils/normalizeEmail'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
@@ -66,6 +66,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
     return {error: {message: 'Invalid email'}}
   }
 
+  const passwordStrength = await loadPasswordStrength()
   const weakError = passwordStrength(password, email)
   if (weakError) {
     return {error: {message: weakError}}

@@ -7,7 +7,7 @@ import {keepUnownedPageLinksPlugin} from '../keepUnownedPageLinksPlugin'
 const CHILD_PAGE_CODE = 7
 const schema = getSchema([StarterKit, PageLinkBlockBase])
 
-const deleteAcrossLink = (viewerAccess: string | null | undefined) => {
+const deleteAcrossLink = (viewerAccess: string | null | undefined, synced = false) => {
   const state = EditorState.create({
     doc: schema.nodeFromJSON({
       type: 'doc',
@@ -15,7 +15,7 @@ const deleteAcrossLink = (viewerAccess: string | null | undefined) => {
         {type: 'paragraph', content: [{type: 'text', text: 'before'}]},
         {
           type: 'pageLinkBlock',
-          attrs: {pageCode: CHILD_PAGE_CODE, title: 'Child', canonical: true}
+          attrs: {pageCode: CHILD_PAGE_CODE, title: 'Child', canonical: true, synced}
         },
         {type: 'paragraph', content: [{type: 'text', text: 'after'}]}
       ]
@@ -45,4 +45,8 @@ test('keeps a sub-page link the user cannot open', () => {
 
 test('leaves the link to the server when the user access is not loaded', () => {
   expect(deleteAcrossLink(undefined)).toEqual({linkCodes: [], text: 'beer'})
+})
+
+test('lets an editor remove a synced original, which the server promotes or puts back', () => {
+  expect(deleteAcrossLink('editor', true)).toEqual({linkCodes: [], text: 'beer'})
 })

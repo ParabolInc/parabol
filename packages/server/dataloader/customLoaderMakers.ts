@@ -1,5 +1,7 @@
 import DataLoader from 'dataloader'
+import stringify from 'fast-json-stable-stringify'
 import {type SqlBool, sql} from 'kysely'
+import type {AnyTaskIntegration} from 'parabol-client/shared/types/TaskIntegration'
 import {Threshold} from 'parabol-client/types/constEnums'
 import {canShowTeamHealthScore} from '../../client/shared/utils/teamHealthAnonymity'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
@@ -569,31 +571,33 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
   )
 }
 
-export const taskIdsByTeamAndGitHubRepo = (
+/** The team's tasks whose stored integration has every given part, e.g. a service and the repo its issues live in */
+export const taskIdsByTeamAndIntegration = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
 ) => {
   dependsOn('tasks')
-  return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
+  return new DataLoader<
+    {teamId: string; integration: Partial<AnyTaskIntegration>},
+    string[],
+    string
+  >(
     async (keys) => {
-      const res = await Promise.all(
-        keys.map(async (key) => {
-          const {teamId, nameWithOwner} = key
-          const res = await getKysely()
+      return Promise.all(
+        keys.map(async ({teamId, integration}) => {
+          const tasks = await getKysely()
             .selectFrom('Task')
             .select('id')
             .where('teamId', '=', teamId)
-            .where('integration', 'is not', null)
-            .where(sql<boolean>`"integration"->>'nameWithOwner' = ${nameWithOwner}`)
+            .where(sql<boolean>`"integration" @> ${JSON.stringify(integration)}::jsonb`)
             .execute()
-          return res.map(({id}) => id)
+          return tasks.map(({id}) => id)
         })
       )
-      return res
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+      cacheKeyFn: ({teamId, integration}) => `${teamId}:${stringify(integration)}`
     }
   )
 }
@@ -642,22 +646,23 @@ export const lastMeetingByMeetingSeriesId = (
   return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) => {
       const meetingIdRes = await getKysely()
-        .with('LastMeetings', (qc) =>
-          qc
-            .selectFrom('NewMeeting')
-            .select([
-              'id',
-              'meetingSeriesId',
-              'createdAt',
-              sql`ROW_NUMBER() OVER (PARTITION BY "meetingSeriesId" ORDER BY "createdAt" DESC)`.as(
-                'rn'
-              )
-            ])
-            .where('meetingSeriesId', 'in', keys)
+        .selectFrom(
+          sql<{meetingSeriesId: number}>`unnest(${keys}::int[])`.as<'Series'>(
+            sql`${sql.id('Series')}(${sql.id('meetingSeriesId')})`
+          )
         )
-        .selectFrom('LastMeetings')
-        .select('id')
-        .where('rn', '=', 1)
+        .innerJoinLateral(
+          (eb) =>
+            eb
+              .selectFrom('NewMeeting')
+              .select('id')
+              .whereRef('NewMeeting.meetingSeriesId', '=', 'Series.meetingSeriesId')
+              .orderBy('createdAt', 'desc')
+              .limit(1)
+              .as('LastMeeting'),
+          (join) => join.onTrue()
+        )
+        .select('LastMeeting.id')
         .execute()
 
       const meetingIds = meetingIdRes.map(({id}) => id)

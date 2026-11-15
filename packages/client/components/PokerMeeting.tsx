@@ -8,6 +8,7 @@ import type {
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
+import reportMissingMeetingPhase from '../utils/meetings/reportMissingMeetingPhase'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
@@ -40,6 +41,7 @@ const PokerMeeting = (props: Props) => {
     graphql`
       fragment PokerMeeting_meeting on PokerMeeting {
         ...useMeeting_meeting
+        ...reportMissingMeetingPhase_meeting
         ...PokerMeetingSidebar_meeting
         ...NewMeetingCheckIn_meeting
         ...NewMeetingAvatarGroup_meeting
@@ -71,6 +73,7 @@ const PokerMeeting = (props: Props) => {
   if (!safeRoute) return null
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]!
+  if (!Phase) reportMissingMeetingPhase('PokerMeeting', meeting)
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

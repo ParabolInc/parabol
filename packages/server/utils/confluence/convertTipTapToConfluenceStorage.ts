@@ -162,6 +162,30 @@ const emitTaskItem = (node: JSONContent, state: EmitState): string => {
   return `<ac:task><ac:task-status>${status}</ac:task-status><ac:task-body>${inlineParts.join(' ')}${nestedLists.join('')}</ac:task-body></ac:task>`
 }
 
+const holdsBulletOrNumberedList = (taskList: JSONContent): boolean =>
+  (taskList.content ?? []).some((item) =>
+    (item.content ?? []).some(
+      (child) =>
+        child.type === 'bulletList' ||
+        child.type === 'orderedList' ||
+        (child.type === 'taskList' && holdsBulletOrNumberedList(child))
+    )
+  )
+
+// Confluence turns a list inside a task into an uneditable legacy block, so that task list becomes ☐/☑ bullets
+const toCheckboxBulletList = (taskList: JSONContent): JSONContent => ({
+  type: 'bulletList',
+  content: (taskList.content ?? []).map((item) => {
+    const box = {type: 'text', text: item.attrs?.checked ? '☑ ' : '☐ '}
+    const [first, ...rest] = item.content ?? []
+    const content =
+      first?.type === 'paragraph'
+        ? [{...first, content: [box, ...(first.content ?? [])]}, ...rest]
+        : [{type: 'paragraph', content: [box]}, ...(item.content ?? [])]
+    return {type: 'listItem', content}
+  })
+})
+
 const emitCell = (node: JSONContent, state: EmitState): string => {
   const tag = node.type === 'tableHeader' ? 'th' : 'td'
   const colspan = Number(node.attrs?.colspan ?? 1)
@@ -299,6 +323,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<li>${item}</li>`
     }
     case 'taskList':
+      if (holdsBulletOrNumberedList(node)) return emitBlock(toCheckboxBulletList(node), state)
       return `<ac:task-list>${(node.content ?? []).map((item) => emitTaskItem(item, state)).join('')}</ac:task-list>`
     case 'blockquote': {
       state.blockquoteDepth += 1

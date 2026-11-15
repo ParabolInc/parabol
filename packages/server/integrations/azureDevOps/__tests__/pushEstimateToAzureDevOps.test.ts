@@ -15,7 +15,7 @@ const STORY_POINTS = 'Microsoft.VSTS.Scheduling.StoryPoints'
 const DISCUSSION_URL = 'https://action.parabol.co/meet/meeting1/estimate/1'
 
 const manager = {addScoreComment: jest.fn(), setField: jest.fn()}
-const loadWorkItem = jest.fn()
+const loadIssue = jest.fn()
 
 const azureDevOpsIntegration = {
   service: 'azureDevOps',
@@ -29,7 +29,7 @@ const buildCtx = (value: string, integration: Record<string, unknown> = azureDev
   ({
     task: {id: 'task1', teamId: 'team1', integration},
     taskEstimate: {dimensionName: 'Story Points', value},
-    dataLoader: {get: () => ({load: loadWorkItem})},
+    dataLoader: {get: () => ({load: loadIssue})},
     context: {},
     info: {},
     stageId: 'stage1',
@@ -53,7 +53,12 @@ describe('pushEstimateToAzureDevOps', () => {
       manager as unknown as Awaited<ReturnType<typeof getAzureDevOpsManager>>
     )
     mockedLoadDimensionField.mockResolvedValue(null)
-    loadWorkItem.mockResolvedValue({id: '42', teamProject: PROJECT_ID, type: 'User Story'})
+    loadIssue.mockResolvedValue({
+      service: 'azureDevOps',
+      id: '42',
+      teamProject: PROJECT_ID,
+      type: 'User Story'
+    })
     manager.addScoreComment.mockResolvedValue('https://dev.azure.com/acme/comment/9')
     manager.setField.mockResolvedValue({id: 42})
   })
@@ -70,12 +75,7 @@ describe('pushEstimateToAzureDevOps', () => {
       discussionURL: DISCUSSION_URL
     })
     expect(manager.setField).not.toHaveBeenCalled()
-    expect(loadWorkItem).toHaveBeenCalledWith({
-      teamId: 'team1',
-      userId: 'user1',
-      instanceId: INSTANCE_ID,
-      workItemId: '42'
-    })
+    expect(loadIssue).toHaveBeenCalledWith({teamId: 'team1', integration: azureDevOpsIntegration})
   })
 
   it('comments when the dimension is mapped to the comment sentinel', async () => {
@@ -161,7 +161,7 @@ describe('pushEstimateToAzureDevOps', () => {
   })
 
   it('fails when the work item is gone or its project is no longer shared', async () => {
-    loadWorkItem.mockResolvedValue(null)
+    loadIssue.mockResolvedValue(null)
     const res = await pushEstimateToAzureDevOps(buildCtx('5'))
     expect(res).toBeInstanceOf(Error)
     expect(res).toHaveProperty(

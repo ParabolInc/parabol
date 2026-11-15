@@ -669,7 +669,7 @@ describe('the caret', () => {
 
 describe('with the real editor plugins', () => {
   const editor = new Editor({
-    extensions: [...pagesExtensions, AutoJoiner],
+    extensions: [...pagesExtensions, AutoJoiner.configure({elementsToJoin: ['taskList']})],
     content: makeDoc().toJSON()
   })
   const run = (blocks: Json[], label: string, target: TurnIntoTarget, type: string) => {

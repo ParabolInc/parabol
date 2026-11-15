@@ -1,4 +1,4 @@
-import * as AdaptiveCards from 'adaptivecards'
+import type * as AdaptiveCardsModule from 'adaptivecards'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
@@ -18,6 +18,9 @@ import type {NotificationIntegrationHelper} from './NotificationIntegrationHelpe
 import {createNotifier} from './Notifier'
 
 const WEBHOOK_INTEGRATION_DISABLED = process.env.MSTEAMS_WEBHOOK_INTEGRATION_DISABLED === 'true'
+
+// adaptivecards only builds Teams cards, so getMSTeams evaluates it for the first team that notifies Teams instead of every server's startup
+let AdaptiveCards: typeof AdaptiveCardsModule
 
 const notifyMSTeams = async (
   event: SlackNotification['event'],
@@ -77,7 +80,7 @@ const createTextColumnSet = (text: string) => {
   return columnSet
 }
 
-const createActionColumnSet = (action: AdaptiveCards.Action) => {
+const createActionColumnSet = (action: AdaptiveCardsModule.Action) => {
   const columnSet = new AdaptiveCards.ColumnSet()
   columnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
   const column = new AdaptiveCards.Column()
@@ -118,7 +121,7 @@ const createTeamHealthMeetingAction = (meetingUrl: string) => {
 
 const MeetingActionLookup: Record<
   MeetingTypeEnum,
-  (meetingUrl: string) => AdaptiveCards.OpenUrlAction
+  (meetingUrl: string) => AdaptiveCardsModule.OpenUrlAction
 > = {
   action: createGenericMeetingAction,
   poker: createGenericMeetingAction,
@@ -127,7 +130,7 @@ const MeetingActionLookup: Record<
   teamHealth: createTeamHealthMeetingAction
 }
 
-export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNotificationAuth> = (
+const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNotificationAuth> = (
   notificationChannel
 ) => ({
   async startMeeting(meeting, team, user) {
@@ -448,7 +451,9 @@ async function getMSTeams(
       })
     )
   ).filter(isValid)
+  if (providers.length === 0) return []
 
+  AdaptiveCards ??= await import(/* webpackMode: "eager" */ 'adaptivecards')
   return providers.map((provider) =>
     MSTeamsNotificationHelper({
       ...(provider as IntegrationProviderMSTeams),

@@ -14,6 +14,7 @@ import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
+import setStorageItem from '../../utils/setStorageItem'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import SubmitReflectionButton from '../ReflectionCard/SubmitReflectionButton'
@@ -199,7 +200,7 @@ const PhaseItemEditor = (props: Props) => {
       if (editor.isEmpty) {
         window.localStorage.removeItem(draftStorageKey)
       } else {
-        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
+        setStorageItem('localStorage', draftStorageKey, JSON.stringify(editor.getJSON()))
       }
     }
 

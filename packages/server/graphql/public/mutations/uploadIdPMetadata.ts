@@ -24,7 +24,7 @@ const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (
 
   // RESOLUTION
   const {orgId} = await dataLoader.get('saml').loadNonNull(samlId)
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const url = await manager.putUserFile(buffer, `Organization/${orgId}/idpMetadata/${samlId}.xml`)
   return {url}
 }

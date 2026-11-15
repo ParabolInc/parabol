@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import type {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isOpenTask from 'parabol-client/utils/isOpenTask'
+import isSeedTask from 'parabol-client/utils/isSeedTask'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
@@ -131,7 +132,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const teamHasOpenTasks = async () => {
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-    return teamTasks.some((task) => !!task.userId && isOpenTask(task))
+    return teamTasks.some((task) => !!task.userId && isOpenTask(task) && !isSeedTask(task))
   }
 
   const appendToUpdate = async () => {

@@ -22,6 +22,7 @@ import {
 import makeScopingResults from '../platform/makeScopingResults'
 import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import GitHubClientManager from './GitHubClientManager'
+import gitHubTaskLink from './gitHubTaskLink'
 import {githubIntegrationMeta} from './shared/githubIntegrationMeta'
 
 const GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
@@ -81,7 +82,11 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly Icon = GitHubSVG
   readonly logo: ProviderLogoAsset = {src: githubLogo, darkSrc: githubLogoWhite}
   readonly iconClassName = 'dark:[&_path]:fill-white'
-  readonly capabilities: ClientIntegrationCapabilities = {scoping, workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {
+    scoping,
+    taskLink: gitHubTaskLink,
+    workDrawer
+  }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return false
     GitHubClientManager.openOAuth(

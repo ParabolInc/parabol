@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
+import {commitLocalUpdate} from 'relay-runtime'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
@@ -51,7 +52,13 @@ const ViewerNotOnTeam = (props: Props) => {
   useEffect(() => {
     if (isOnTeam) {
       const redirectTo = getValidRedirectParam() || '/meetings'
-      navigate(redirectTo, {replace: true})
+      // the page that sent the viewer here checked the teams in their auth token, which can be older than their team
+      atmosphere.refreshSession(() => {
+        commitLocalUpdate(atmosphere, (store) => {
+          store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+        })
+        navigate(redirectTo, {replace: true})
+      })
     } else if (teamInvitation) {
       if (hasAccepted.current) return
       hasAccepted.current = true

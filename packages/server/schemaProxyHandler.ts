@@ -15,7 +15,7 @@ export const schemaProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req:
     return
   }
   const schemaPath = `/build/${name}` as PartialPath
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const expiresIn = ms('1h') / 1000
 
   const presignedUrl = await redisStoreOrNetwork(

@@ -21,14 +21,12 @@ const pushEstimateToAzureDevOps = async ({
   const {dimensionName, value} = taskEstimate
   const {accessUserId, instanceId, issueKey} = integration
 
-  const [manager, workItem] = await Promise.all([
+  const [manager, issue] = await Promise.all([
     getAzureDevOpsManager({dataLoader, teamId, userId: accessUserId}),
-    dataLoader
-      .get('azureDevOpsWorkItem')
-      .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
+    dataLoader.get('integrationIssue').load({teamId, integration})
   ])
   if (!manager) return new Error('User no longer has access to Azure DevOps')
-  if (!workItem) {
+  if (issue?.service !== 'azureDevOps') {
     return new Error(
       'Cannot find the work item. Its project may no longer be shared with this team'
     )
@@ -43,7 +41,7 @@ const pushEstimateToAzureDevOps = async ({
   const fieldId = dimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
   if (fieldId === SprintPokerDefaults.SERVICE_FIELD_NULL) return null
 
-  const projectId = workItem.teamProject
+  const projectId = issue.teamProject
   if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const res = await manager.addScoreComment({
       instanceId,

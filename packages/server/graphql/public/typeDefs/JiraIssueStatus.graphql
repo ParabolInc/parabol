@@ -1,0 +1,14 @@
+"""
+The workflow status of a Jira issue, as Jira names it
+"""
+type JiraIssueStatus {
+  """
+  The status name (e.g. "In Review")
+  """
+  name: String!
+
+  """
+  The key of the status category the status belongs to: "new", "indeterminate" or "done"
+  """
+  category: String!
+}

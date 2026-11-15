@@ -9,6 +9,7 @@ import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MAX_FREE_JIRA_EXPORTS} from '../utils/constants'
 import getMutationError from '../utils/relay/getMutationError'
+import setStorageItem from '../utils/setStorageItem'
 
 export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
@@ -23,7 +24,7 @@ const useSetTaskEstimate = () => {
 
   const dismissUpgradeModal = useCallback(() => {
     setShowUpgradeModal(false)
-    sessionStorage.setItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
+    setStorageItem('sessionStorage', JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
   }, [])
 
   const setTaskEstimate = (

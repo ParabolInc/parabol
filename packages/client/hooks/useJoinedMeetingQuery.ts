@@ -7,6 +7,7 @@ import meetingSelectorQuery, {
 import Atmosphere from '../Atmosphere'
 import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
+import {addBreadcrumb} from '../utils/clientBreadcrumbs'
 import useAtmosphere from './useAtmosphere'
 
 // Joins, subscribes, and fetches the meeting only once the server acknowledges that the subscription is listening.
@@ -27,10 +28,22 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
         fetchPolicy: 'network-only'
       }).subscribe({
         complete: () => {
+          addBreadcrumb(
+            'operation',
+            isMounted
+              ? 'MeetingSelectorQuery fetched, loaded from the store'
+              : 'MeetingSelectorQuery fetched after leaving'
+          )
           if (isMounted) loadQuery(variables, {fetchPolicy: 'store-only'})
           releaseSubscription?.()
         },
         error: () => {
+          addBreadcrumb(
+            'operation',
+            isMounted
+              ? 'MeetingSelectorQuery fetch failed, loading from the network'
+              : 'MeetingSelectorQuery fetch failed after leaving'
+          )
           releaseSubscription?.()
           if (isMounted) loadQuery(variables, {fetchPolicy: 'network-only'})
         }
@@ -47,6 +60,7 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
     let ackTimeout: number | undefined
     let releaseMeetingSubscription: (() => void) | undefined
     const fetchWhileHoldingSubscription = () => {
+      addBreadcrumb('websocket', 'MeetingSubscription acknowledged')
       window.clearTimeout(ackTimeout)
       fetchOnceJoined(atmosphere.holdSubscription(subKey))
     }
@@ -61,7 +75,11 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
       )
       if (isAlreadySubscribed) fetchWhileHoldingSubscription()
       // a socket server older than this client never acknowledges a subscription
-      else ackTimeout = window.setTimeout(() => fetchOnceJoined(), 5000)
+      else
+        ackTimeout = window.setTimeout(() => {
+          addBreadcrumb('websocket', 'MeetingSubscription not acknowledged within 5s')
+          fetchOnceJoined()
+        }, 5000)
     }
     const isViewerMeetingMember = Boolean(
       atmosphere.getStore().getSource().get(meetingId)?.viewerMeetingMember
@@ -72,13 +90,16 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
         if (!isMounted) return
         // not on the team, or the meeting ended before the viewer joined: nothing to subscribe to
         if (!response.joinMeeting?.JoinMeetingMutation_meeting) {
+          addBreadcrumb('operation', 'JoinMeetingMutation did not join')
           fetchMeeting()
           return
         }
+        addBreadcrumb('operation', 'JoinMeetingMutation joined')
         resolveJoined()
         if (!isViewerMeetingMember) subscribe()
       },
       onError: () => {
+        addBreadcrumb('operation', 'JoinMeetingMutation failed')
         if (isMounted) fetchMeeting()
       }
     })

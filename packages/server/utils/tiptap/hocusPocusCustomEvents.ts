@@ -1,7 +1,7 @@
 import type {Document} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
-import {applyUpdate, encodeStateAsUpdate, XmlElement} from 'yjs'
+import {applyUpdate, encodeStateAsUpdate, XmlElement, XmlText} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
@@ -111,6 +111,47 @@ export const removeBacklinkedPageLinkBlocks = async (
       const parentIdx = parent.toArray().findIndex((child) => child === node)
       if (parentIdx !== -1) {
         parent.delete(parentIdx)
+      }
+    }
+  })
+}
+
+export const readPageContent = async (documentName: string, _payload: {}) => {
+  let content: JSONContent = {type: 'doc', content: []}
+  await withDoc(documentName, (doc) => {
+    content = TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
+  })
+  return content
+}
+
+export const replaceSyncedBlockWithContent = async (
+  documentName: string,
+  payload: {pageCode: number; content: JSONContent[] | null}
+) => {
+  const {pageCode, content} = payload
+  const replacements = content
+    ? TiptapTransformer.toYdoc({type: 'doc', content}, 'default', serverTipTapExtensions)
+        .getXmlFragment('default')
+        .toArray()
+        .filter((node) => node instanceof XmlElement || node instanceof XmlText)
+    : []
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    const nodes = Array.from(walker)
+    for (const node of nodes) {
+      const parent = node.parent as XmlElement
+      const parentIdx = parent.toArray().findIndex((child) => child === node)
+      if (parentIdx === -1) continue
+      parent.delete(parentIdx)
+      if (replacements.length > 0) {
+        parent.insert(
+          parentIdx,
+          replacements.map((replacement) => replacement.clone())
+        )
       }
     }
   })

@@ -26,7 +26,7 @@ export const generateIdenticon = async (userId: string, name: string) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#${backgroundColor}"/><g fill="#fff" transform="translate(${left} ${BASELINE}) scale(${FONT_SCALE} -${FONT_SCALE})">${paths}</g></svg>`
   const sharp = await loadSharp()
   const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer()
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(pngBuffer, userId, 'png')
   return publicLocation
 }

@@ -71,6 +71,21 @@ test('an issue Jira refuses with its 403 page is not logged as an error', async 
   expect(mockLogError).not.toHaveBeenCalled()
 })
 
+test('an issue on a site the Parabol app is not installed on is not logged as an error', async () => {
+  mockFetchWithRetry.mockResolvedValue(
+    jsonResponse(403, {code: 403, message: 'The app is not installed on this instance'})
+  )
+  const issue = await makeLoader().load({
+    teamId,
+    userId,
+    cloudId,
+    issueKey: `UNINSTALLED-${Date.now()}`,
+    viewerId: userId
+  })
+  expect(issue).toBeNull()
+  expect(mockLogError).not.toHaveBeenCalled()
+})
+
 test('other Jira failures are still logged', async () => {
   mockFetchWithRetry.mockResolvedValue(jsonResponse(500, {message: 'Internal server error'}))
   const issue = await makeLoader().load({

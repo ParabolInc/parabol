@@ -1,3 +1,5 @@
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
+
 interface Props {
   label: string
   src: string
@@ -7,7 +9,7 @@ const MeetingsDashTutorialModal = (props: Props) => {
   const {label, src} = props
   return (
     <div>
-      <div className='mb-2 font-semibold text-xl'>{label}</div>
+      <DialogTitle className='mb-2'>{label}</DialogTitle>
       <iframe
         src={src}
         allow='fullscreen'

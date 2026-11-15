@@ -1,5 +1,6 @@
 import logError from '../../utils/logError'
 import type {IssueReadCtx} from '../platform/ServerIntegrationDefinition'
+import {NestedRequestRefusedError} from '../platform/toNestedRequestError'
 import LinearServerManager from './LinearServerManager'
 
 const resolveLinearTaskIntegration = async ({
@@ -27,7 +28,7 @@ const resolveLinearTaskIntegration = async ({
   const manager = new LinearServerManager(linearAuth, context, info)
   const linearRequest = manager.getLinearRequest(info, context)
   const [data, error] = await linearRequest(query, {})
-  if (error) {
+  if (error && !(error instanceof NestedRequestRefusedError)) {
     logError(error, {userId: accessUserId})
   }
   // Ensure the returned object has a standard prototype

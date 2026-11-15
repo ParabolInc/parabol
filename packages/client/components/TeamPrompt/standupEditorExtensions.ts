@@ -7,6 +7,7 @@ import {Focus} from '@tiptap/extensions'
 import type Atmosphere from '../../Atmosphere'
 import type {useUploadUserAsset} from '../../mutations/useUploadUserAsset'
 import {SafeTextStyleKit} from '../../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import FileBlock from '../../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
@@ -33,6 +34,7 @@ export const STANDUP_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Embed: false,
   'Link to page': false,
   'Create page': false,
+  'Synced block': false,
   Database: false,
   Insights: false,
   Image: true,
@@ -56,6 +58,7 @@ export const standupBlockExtensions = ({
   TaskItem.configure({nested: true}),
   SafeTextStyleKit,
   Highlight,
+  SubscriptSuperscriptKit,
   Details.configure({
     persist: true,
     HTMLAttributes: {class: 'details'}

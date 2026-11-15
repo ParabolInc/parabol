@@ -21,12 +21,11 @@ const toSprintPointsState = (space: ClickUpApiSpace | null): SprintPointsState =
 export const loadClickUpEstimateFields = async ({task, dataLoader, teamId}: DimensionFieldCtx) => {
   const {integration} = task
   if (integration?.service !== 'clickup') return null
-  const {accessUserId: userId, taskId} = integration
-  const clickUpTask = await dataLoader.get('clickUpTask').load({teamId, userId, taskId})
-  if (!clickUpTask) return null
+  const clickUpTask = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (clickUpTask?.service !== 'clickup') return null
   const space = await dataLoader
     .get('clickUpSpace')
-    .load({teamId, userId, spaceId: clickUpTask.spaceId})
+    .load({teamId, userId: integration.accessUserId, spaceId: clickUpTask.spaceId})
   const customFields = clickUpTask.customFields.flatMap(({id, name, type}): ServiceField[] => {
     const fieldType = toClickUpEstimateFieldType(type)
     return fieldType ? [{fieldId: id, label: name, type: fieldType}] : []

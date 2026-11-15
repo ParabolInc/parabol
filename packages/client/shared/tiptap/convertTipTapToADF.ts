@@ -17,6 +17,7 @@ import type {
   TipTapTableHeaderNode,
   TipTapTableNode,
   TipTapTableRowNode,
+  TipTapTaskListNode,
   TipTapTextNode,
   TiptapInsightsBlock
 } from './TipTapSerializedContent.d'
@@ -107,6 +108,75 @@ function convertInlineContent(nodes?: TipTapTextNode[]): AdfNode[] {
 }
 
 // ---------------------------------------------------------------------------
+// List content
+// ---------------------------------------------------------------------------
+
+const CHECKBOX_PREFIX = (checked: boolean) => (checked ? '☑ ' : '☐ ')
+
+const ADF_LIST_ITEM_BLOCKS = new Set(['bulletList', 'orderedList', 'codeBlock'])
+
+const getInlineTextContent = (node: TipTapContentNode): AdfNode[] => {
+  if (!('content' in node) || !Array.isArray(node.content)) return []
+  const children: unknown[] = node.content
+  return children
+    .filter(
+      (c): c is TipTapTextNode =>
+        typeof c === 'object' && c !== null && 'type' in c && c.type === 'text'
+    )
+    .map(convertTextNode)
+}
+
+// ADF listItems hold only paragraphs, lists and code; a nested taskList becomes a ☑/☐ bulletList
+function convertListItemChildren(
+  children: TipTapContentNode[],
+  checkboxState?: boolean
+): AdfNode[] {
+  return children.flatMap((child, i) => {
+    if (child.type === 'paragraph') {
+      const content = convertInlineContent(child.content)
+      if (i === 0 && checkboxState !== undefined) {
+        content.unshift({type: 'text', text: CHECKBOX_PREFIX(checkboxState)})
+      }
+      return [{type: 'paragraph', ...(content.length > 0 ? {content} : {})}]
+    }
+    if (child.type === 'taskList') return [convertTaskList(child, true)]
+    if (ADF_LIST_ITEM_BLOCKS.has(child.type)) {
+      const result = convertNode(child)
+      if (!result) return []
+      return Array.isArray(result) ? result : [result]
+    }
+    const inline = getInlineTextContent(child)
+    return [{type: 'paragraph', ...(inline.length > 0 ? {content: inline} : {})}]
+  })
+}
+
+// ADF taskItems hold only inline content
+function convertTaskList(node: TipTapTaskListNode, forceBullet: boolean): AdfNode {
+  const needsBullet =
+    forceBullet || node.content.some((item) => item.content.some((c) => c.type !== 'paragraph'))
+  if (needsBullet) {
+    return {
+      type: 'bulletList',
+      content: node.content.map((item) => ({
+        type: 'listItem',
+        content: convertListItemChildren(item.content, !!item.attrs.checked)
+      }))
+    }
+  }
+  return {
+    type: 'taskList',
+    attrs: {localId: crypto.randomUUID()},
+    content: node.content.map((item) => ({
+      type: 'taskItem',
+      attrs: {state: item.attrs.checked ? 'DONE' : 'TODO', localId: crypto.randomUUID()},
+      content: item.content.flatMap((p) =>
+        p.type === 'paragraph' ? convertInlineContent(p.content) : []
+      )
+    }))
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Block node conversion
 // ---------------------------------------------------------------------------
 
@@ -136,10 +206,7 @@ function convertNode(node: TipTapContentNode): AdfNode | AdfNode[] | null {
         type: 'bulletList',
         content: node.content.map((item) => ({
           type: 'listItem',
-          content: item.content.map((p) => ({
-            type: 'paragraph',
-            content: convertInlineContent(p.content)
-          }))
+          content: convertListItemChildren(item.content)
         }))
       }
 
@@ -150,25 +217,13 @@ function convertNode(node: TipTapContentNode): AdfNode | AdfNode[] | null {
         attrs: {order: node.attrs.start ?? 1},
         content: node.content.map((item) => ({
           type: 'listItem',
-          content: item.content.map((p) => ({
-            type: 'paragraph',
-            content: convertInlineContent(p.content)
-          }))
+          content: convertListItemChildren(item.content)
         }))
       }
 
     // -----------------------------------------------------------------------
     case 'taskList':
-      return {
-        type: 'taskList',
-        attrs: {localId: crypto.randomUUID()},
-        content: node.content.map((item) => ({
-          type: 'taskItem',
-          attrs: {state: item.attrs.checked ? 'DONE' : 'TODO', localId: crypto.randomUUID()},
-          // ADF taskItem contains inline nodes directly, not block nodes
-          content: item.content.flatMap((p) => convertInlineContent(p.content))
-        }))
-      }
+      return convertTaskList(node, false)
 
     // -----------------------------------------------------------------------
     case 'codeBlock':

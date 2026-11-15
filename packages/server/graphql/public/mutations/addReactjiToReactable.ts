@@ -5,7 +5,6 @@ import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import type {GQLContext} from '../../graphql'
@@ -58,6 +57,8 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   // VALIDATION
+  // the emoji data is megabytes of heap once parsed, so the first reactji evaluates it instead of every server's startup
+  const {default: emojiIds} = await import(/* webpackMode: "eager" */ '../../../utils/emojiIds')
   if (!emojiIds.includes(reactji)) {
     return {error: {message: `invalid emoji`}}
   }

@@ -3,12 +3,19 @@ import {Editor} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import type Atmosphere from '../../../../Atmosphere'
 import {CalloutBase} from '../../../../shared/tiptap/extensions/CalloutBase'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {happyWindow} from '../../__tests__/installHappyDom'
 import DragHandleMenu from '../../DragHandleMenu'
 import {Callout} from '../Callout'
 import {CalloutStyleMenu} from '../CalloutStyleMenu'
+
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
 
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
@@ -231,6 +238,8 @@ describe('the block handle menu', () => {
         onClose={jest.fn()}
         anchorElement={document.body.appendChild(document.createElement('div'))}
         canCreateSubPage
+        atmosphere={{} as Atmosphere}
+        pageId='page:1'
       />
     )
     expect(byRole('menuitem', /Turn into/)).toBeDefined()

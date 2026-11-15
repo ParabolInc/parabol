@@ -15,6 +15,7 @@ import {
   Network,
   type NormalizationLinkedField,
   Observable,
+  type ObservableFromValue,
   type OperationType,
   type PayloadError,
   RecordSource,
@@ -83,6 +84,24 @@ const toServerError = (
   return isFailure ? new GraphQLServerError(errors, traceId) : undefined
 }
 
+// Relay finishes a query or mutation whose response stops early as if it had succeeded, and renders the fields that never came
+const failIfEndedEarly = (name: string, response: ObservableFromValue<GraphQLResponse>) =>
+  Observable.create<GraphQLResponse>((sink) => {
+    let isFinal = false
+    const subscription = Observable.from(response).subscribe({
+      next: (payload) => {
+        isFinal = !('hasNext' in payload && payload.hasNext)
+        sink.next(payload)
+      },
+      error: sink.error,
+      complete: () => {
+        if (isFinal) sink.complete()
+        else sink.error(new Error(`${name} ended before its last payload`))
+      }
+    })
+    return () => subscription.unsubscribe()
+  })
+
 interface RetainedSubscription {
   disposable: Disposable
   retainCount: number
@@ -132,6 +151,7 @@ export interface AtmosphereEvents {
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
   authChanged: () => void
+  openPagesTrash: () => void
 }
 
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
@@ -178,7 +198,10 @@ export default class Atmosphere extends Environment {
       handlerProvider,
       network: Network.create(
         (request, variables, cacheConfig, uploadables) =>
-          atmosphere!.fetchFunction(request, variables, cacheConfig, uploadables),
+          failIfEndedEarly(
+            request.name,
+            atmosphere!.fetchFunction(request, variables, cacheConfig, uploadables)
+          ),
         (operation, variables, cacheConfig) =>
           atmosphere!.fetchOrSubscribe(operation, variables, cacheConfig)
       ),
@@ -214,11 +237,11 @@ export default class Atmosphere extends Environment {
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    // DeleteUserMutation is required to unset the cookie
+    // useDeleteUserMutation is required to unset the cookie
     // ReAuth mutations are required to set a new auth cookie
     const isAuth =
       request.name.startsWith('Atmosphere') ||
-      request.name === 'DeleteUserMutation' ||
+      request.name === 'useDeleteUserMutation' ||
       request.name === 'ReAuthWithGoogleMutation' ||
       request.name === 'ReAuthWithMicrosoftMutation' ||
       request.name === 'ReAuthWithPasswordMutation'

@@ -3,11 +3,11 @@ import ReactDOMServer from 'react-dom/server'
 import {RelayEnvironmentProvider} from 'react-relay'
 import {TipTapProvider} from '../../client/components/TipTapProvider'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
-import {generateHTML} from '../utils/tiptap/generateHTML'
-import {generateJSON} from '../utils/tiptap/generateJSON'
+import loadHTMLConverters from '../utils/tiptap/loadHTMLConverters'
 import type ServerEnvironment from './ServerEnvironment'
 
 const renderSSRElement = async (element: ReactElement, environment: ServerEnvironment) => {
+  const {generateHTML, generateJSON} = await loadHTMLConverters()
   const wrappedElement = (
     <TipTapProvider
       generateHTML={generateHTML}

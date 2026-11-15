@@ -2,7 +2,6 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
-import {passwordStrength} from '../../../../client/shared/passwordStrength'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
@@ -12,6 +11,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {blacklistJWT} from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
+import loadPasswordStrength from '../../../utils/loadPasswordStrength'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -46,6 +46,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
   if (!user) {
     return standardError(new Error(`User ${email} does not exist for password reset`))
   }
+  const passwordStrength = await loadPasswordStrength()
   const weakError = passwordStrength(newPassword, email)
   if (weakError) {
     return {error: {message: weakError}}

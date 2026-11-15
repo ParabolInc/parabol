@@ -10,7 +10,6 @@ import type {MutationResolvers} from '../resolverTypes'
 import {isConfluenceExportEnabled} from './helpers/confluenceExport/isConfluenceExportEnabled'
 import {loadPageExportTree} from './helpers/confluenceExport/loadPageExportTree'
 import {resolveConfluenceAuth} from './helpers/confluenceExport/resolveConfluenceAuth'
-import {runConfluenceExport} from './helpers/confluenceExport/runConfluenceExport'
 
 const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = async (
   _source,
@@ -74,6 +73,11 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     )
   }
 
+  // the serializers bring megabytes of emoji data, so the first export evaluates them instead of every server's startup.
+  // Loaded before the row is made, so a failure here can't leave an export that never runs
+  const {runConfluenceExport} = await import(
+    /* webpackMode: "eager" */ './helpers/confluenceExport/runConfluenceExport'
+  )
   const pageExport = await pg
     .insertInto('PageExport')
     .values({

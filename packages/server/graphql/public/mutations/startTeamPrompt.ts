@@ -9,7 +9,7 @@ import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
-import getActiveStandupTemplateId from '../../mutations/helpers/getActiveStandupTemplateId'
+import getValidPromptTemplateId from '../../mutations/helpers/getValidPromptTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
@@ -36,8 +36,9 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
   if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
 
-  const templateId = await getActiveStandupTemplateId(
-    meetingSettings?.selectedTemplateId ?? null,
+  const templateId = await getValidPromptTemplateId(
+    meetingSettings?.selectedTemplateId,
+    'teamPrompt',
     dataLoader
   )
 

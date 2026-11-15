@@ -2,7 +2,7 @@ import type {DimensionFieldCtx, DimensionFieldKey} from '../../platform/ServerIn
 import describeAzureDevOpsDimensionField from '../describeAzureDevOpsDimensionField'
 
 const loaders: Record<string, {load: jest.Mock}> = {
-  azureDevOpsWorkItem: {load: jest.fn()},
+  integrationIssue: {load: jest.fn()},
   azureDevOpsEstimateFields: {load: jest.fn()}
 }
 
@@ -26,7 +26,11 @@ const key: DimensionFieldKey = {repoId: 'dev.azure.com/acme:WebApp', issueType: 
 
 describe('describeAzureDevOpsDimensionField', () => {
   beforeEach(() => {
-    loaders.azureDevOpsWorkItem!.load.mockResolvedValue({teamProject: 'WebApp', type: 'User Story'})
+    loaders.integrationIssue!.load.mockResolvedValue({
+      service: 'azureDevOps',
+      teamProject: 'WebApp',
+      type: 'User Story'
+    })
     loaders.azureDevOpsEstimateFields!.load.mockResolvedValue([
       {fieldId: 'Microsoft.VSTS.Scheduling.StoryPoints', label: 'Story Points', type: 'number'},
       {fieldId: 'Custom.TShirtSize', label: 'T-Shirt Size', type: 'string'}
@@ -55,7 +59,7 @@ describe('describeAzureDevOpsDimensionField', () => {
   })
 
   it('rejects every field when the work item cannot be loaded', async () => {
-    loaders.azureDevOpsWorkItem!.load.mockResolvedValue(null)
+    loaders.integrationIssue!.load.mockResolvedValue(null)
     await expect(
       describeAzureDevOpsDimensionField(ctx, key, 'Microsoft.VSTS.Scheduling.StoryPoints')
     ).resolves.toBeInstanceOf(Error)

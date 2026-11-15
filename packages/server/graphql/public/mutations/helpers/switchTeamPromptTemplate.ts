@@ -9,7 +9,7 @@ import type {TeamPromptMeeting} from '../../../../postgres/types/Meeting'
 import {escapeHtml} from '../../../../utils/escapeHtml'
 import getPhase from '../../../../utils/getPhase'
 import publish from '../../../../utils/publish'
-import {generateJSON} from '../../../../utils/tiptap/generateJSON'
+import loadHTMLConverters from '../../../../utils/tiptap/loadHTMLConverters'
 import type {DataLoaderWorker} from '../../../graphql'
 import {createAIComment} from '../../../mutations/helpers/addAIGeneratedContentToThreads'
 
@@ -60,6 +60,7 @@ const switchTeamPromptTemplate = async (options: Options) => {
     dataLoader.get('tasksByDiscussionId').loadMany(discussionIds)
   ])
   const noteText = `The template changed from ${oldTemplate?.name ?? 'the previous template'} to ${templateName}, so the answer these replies were about was cleared.`
+  const {generateJSON} = await loadHTMLConverters()
   const noteContent = generateJSON(`<p>${escapeHtml(noteText)}</p>`, serverTipTapExtensions)
   const notes = discussionIds.flatMap((discussionId, idx) => {
     const comments = commentsByDiscussion[idx]

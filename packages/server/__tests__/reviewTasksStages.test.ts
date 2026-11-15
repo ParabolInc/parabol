@@ -1,4 +1,5 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
+import {SEED_TASK_TEXT} from 'parabol-client/utils/isSeedTask'
 import AuthToken from '../database/types/AuthToken'
 import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
@@ -73,7 +74,8 @@ const addTask = (
   teamId: string,
   userId: string,
   status: 'active' | 'done' = 'active',
-  tags: Tasktagenum[] = []
+  tags: Tasktagenum[] = [],
+  plaintextContent = ''
 ) =>
   getKysely()
     .insertInto('Task')
@@ -81,7 +83,7 @@ const addTask = (
       id: `${teamId}::${generateUID()}`,
       content: JSON.stringify({}),
       createdBy: userId,
-      plaintextContent: '',
+      plaintextContent,
       teamId,
       userId,
       status,
@@ -142,6 +144,14 @@ test('done, private and archived tasks do not count as open', async () => {
   await addTask(teamId, first.userId, 'done')
   await addTask(teamId, first.userId, 'active', ['private'])
   await addTask(teamId, first.userId, 'active', ['archived'])
+  const meetingId = await start(START_RETRO, 'startRetrospective', owner.cookie, teamId)
+  await join({bearerToken: first.bearerToken}, meetingId)
+  expect(stageOwners(await getUpdatesStages(meetingId))).toEqual([owner.userId])
+})
+
+test('sample tasks do not count as open', async () => {
+  const {owner, first, teamId} = await setUp()
+  await addTask(teamId, first.userId, 'active', [], SEED_TASK_TEXT)
   const meetingId = await start(START_RETRO, 'startRetrospective', owner.cookie, teamId)
   await join({bearerToken: first.bearerToken}, meetingId)
   expect(stageOwners(await getUpdatesStages(meetingId))).toEqual([owner.userId])

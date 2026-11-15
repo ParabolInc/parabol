@@ -27,26 +27,60 @@ const restorePageLink = async (
     .where('id', '=', CipherId.decrypt(pageCode))
     .executeTakeFirst()
   if (!page || page.parentPageId !== parentPageId || page.deletedAt) return
-  const {parent} = item
+  let anchor = item
+  while (anchor.parent instanceof Y.XmlElement && anchor.parent._item?.deleted) {
+    anchor = anchor.parent._item
+  }
+  const {parent} = anchor
   if (!(parent instanceof Y.XmlFragment)) return
-  let {left} = item
+  let {left} = anchor
   while (left?.deleted) left = left.left
-  // with nothing left of it, e.g. after the whole page was replaced, append rather than land above the title
-  const index = left ? parent.toArray().indexOf(left.content.getContent()[0]) + 1 : parent.length
+  const root = parent.doc?.getXmlFragment('default')
+  // with nothing left of it in the root, e.g. after the whole page was replaced, append rather than land above the title
+  const index = left
+    ? parent.toArray().indexOf(left.content.getContent()[0]) + 1
+    : parent === root
+      ? parent.length
+      : 0
   parent.insert(index, [
     createPageLinkElement(pageCode, title, page.isDatabase, page.isSyncedBlock) as Y.XmlElement
   ])
 }
 
+const isUnder = (item: Y.Item, root: Y.XmlFragment) => {
+  let {parent} = item
+  while (parent instanceof Y.AbstractType) {
+    if (parent === root) return true
+    parent = parent._item?.parent ?? null
+  }
+  return false
+}
+
+const getDeletedPageLinkItems = (transaction: Y.Transaction, root: Y.XmlFragment) => {
+  const items: {item: Y.Item; node: Y.XmlElement<PageLinkBlockAttrs>}[] = []
+  Y.iterateDeletedStructs(transaction, transaction.deleteSet, (struct) => {
+    if (!(struct instanceof Y.Item)) return
+    if (!(struct.content instanceof Y.ContentType)) return
+    const node = struct.content.type
+    if (!isPageLink(node)) return
+    if (struct.id.clock >= (transaction.beforeState.get(struct.id.client) ?? 0)) return
+    if (!isUnder(struct, root)) return
+    items.push({item: struct, node})
+  })
+  return items
+}
+
+const handledTransactions = new WeakSet<Y.Transaction>()
+
 export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
-  const {changes, transaction} = e
-  const {deleted} = changes
+  const {transaction} = e
+  if (handledTransactions.has(transaction)) return
+  handledTransactions.add(transaction)
   const userId = getUserIdFromTransaction(transaction)
   const pg = getKysely()
-  deleted.forEach(async (item) => {
+  const root = transaction.doc.getXmlFragment('default')
+  getDeletedPageLinkItems(transaction, root).forEach(async ({item, node}) => {
     try {
-      const [node] = item.content.getContent()
-      if (!isPageLink(node)) return
       const isMoving = getUnsafeDeletedAttribute(node, 'isMoving', true)
       // don't delete it here, it'll get removed as a side effect when it gets added to its new page
       if (isMoving) return
@@ -58,16 +92,16 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
       const pageId = CipherId.decrypt(pageCode)
 
       // there could be multiple non-canonicals
-      const existingSimilarNode = getPageLinks(e.target.doc, isCanonical).find(
+      const existingSimilarNode = getPageLinks(transaction.doc, isCanonical).find(
         (child) => child !== node && child.getAttribute('pageCode') === pageCode
       )
-      const isLinkedElsewhereHere = getPageLinks(e.target.doc).some(
+      const isLinkedElsewhereHere = getPageLinks(transaction.doc).some(
         (child) => child !== node && child.getAttribute('pageCode') === pageCode
       )
 
       if (!existingSimilarNode) {
         if (isCanonical && isSynced) {
-          const remainingCopy = getPageLinks(e.target.doc, false).find(
+          const remainingCopy = getPageLinks(transaction.doc, false).find(
             (child) =>
               child.getAttribute('pageCode') === pageCode && child.getAttribute('synced') === true
           )
