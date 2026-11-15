@@ -13,6 +13,9 @@ import {unsyncSyncedCopy} from '../unsyncSyncedCopy'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/usePageViewerAccess', () => ({
+  lookupPageViewerAccess: () => undefined
+}))
 
 const syncedCopy: JSONContent = {...syncedLink, attrs: {...syncedLink.attrs, canonical: false}}
 

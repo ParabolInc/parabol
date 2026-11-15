@@ -43,3 +43,15 @@ export const getBlockMoveUnrestorableMessage = (count: number, title: string) =>
   count === 1
     ? `Couldn’t move it back here, so it stayed on ${title}.`
     : `Couldn’t move them back here, so they stayed on ${title}.`
+
+export const getChildPageUnownedMessage = (verb: 'move' | 'undo', pageTitle: string) =>
+  `Couldn’t ${verb}: only its owner can move ${pageTitle}. Nothing changed.`
+
+export const getChildPageMovedOffMessage = (pageTitle: string, title: string) =>
+  `Couldn’t undo: ${pageTitle} was moved off ${title} since. Nothing changed.`
+
+export const getChildPageUndoUnreachableMessage = (title: string) =>
+  `Couldn’t undo: ${title} couldn’t be reached. Nothing changed.`
+
+export const getChildPageStayedMessage = (pageTitle: string, title: string) =>
+  `Moved back here, but ${pageTitle} stayed on ${title}.`

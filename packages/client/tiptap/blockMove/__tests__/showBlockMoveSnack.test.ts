@@ -130,10 +130,13 @@ test('leaving the page leaves a newer move snack alone', () => {
   expect(emit).not.toHaveBeenCalled()
 })
 
-test('a move that carried a child page offers no Undo', () => {
-  const snack = show({result: 'moved', meta: null, gap: makeGap(), moved})!
+test('a move that carried a child page offers Undo too', () => {
+  const gap = makeGap()
+  const childMeta = {...meta, childPages: [{pageCode: 7, title: 'Hiring plan'}], gap}
+  const snack = show({result: 'moved', meta: childMeta, gap, moved})!
   expect(snack.action!.label).toBe('Open page')
-  expect(snack.secondaryAction).toBeUndefined()
+  snack.secondaryAction!.callback()
+  expect(undoBlockMove).toHaveBeenCalledWith(editor, childMeta, gap)
 })
 
 test('a copy offers Open page only', () => {

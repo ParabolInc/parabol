@@ -1,9 +1,9 @@
 import type {Editor} from '@tiptap/core'
 import type Atmosphere from '../../Atmosphere'
-import {lookupPageViewerAccess} from '../../hooks/usePageViewerAccess'
 import {GQLID} from '../../utils/GQLID'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import type {BlockDragSession} from './blockDragSession'
+import {findUnownedChildPage} from './findUnownedChildPage'
 import type {BlockDragState} from './getBlockDropRefusal'
 import {getMovableBlocks} from './getMovableBlocks'
 import {trackRange} from './trackRange'
@@ -18,10 +18,7 @@ type Params = {
 export const prepareBlockMove = ({editor, range, pageId, atmosphere}: Params) => {
   const {doc} = editor.state
   const movable = getMovableBlocks(doc, range.from, range.to)
-  const unownedChild = movable.childPages.find(({pageCode}) => {
-    const role = lookupPageViewerAccess(atmosphere, pageCode)
-    return role !== undefined && role !== 'owner'
-  })
+  const unownedChild = findUnownedChildPage(atmosphere, movable.childPages)
   const refusal = movable.hasUpload
     ? 'Wait for the upload to finish'
     : unownedChild

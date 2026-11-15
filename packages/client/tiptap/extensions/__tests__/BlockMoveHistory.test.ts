@@ -28,6 +28,7 @@ import {BlockMoveHistory} from '../BlockMoveHistory'
 import {happyWindow} from './installHappyDom'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../hooks/usePageViewerAccess', () => ({lookupPageViewerAccess: () => undefined}))
 
 let mockTargetDoc: Y.Doc
 const mockProvider = (authorizedScope: string) => ({

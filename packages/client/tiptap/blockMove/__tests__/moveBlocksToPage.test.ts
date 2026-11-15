@@ -319,9 +319,13 @@ test('waits for the server to take a child page link out of a toggle before dele
     targetPageId: 'page:2',
     targetTitle: 'Q3'
   })
-  expect(outcome).toMatchObject({result: 'moved', meta: null})
+  expect(outcome).toMatchObject({
+    result: 'moved',
+    meta: {childPages: [{pageCode: 7, title: 'Hiring plan'}]}
+  })
+  expect(outcome.meta!.gap).toBe(outcome.gap)
   expect(nodeNames(editor)).not.toContain('details')
-  expect(dispatchDelete).toHaveBeenCalledWith(editor, expect.anything(), null)
+  expect(dispatchDelete).toHaveBeenCalledWith(editor, expect.anything(), outcome.meta)
   expect(outcome.moved).toHaveLength(1)
   expect(unregister).toHaveBeenCalledTimes(1)
 })
