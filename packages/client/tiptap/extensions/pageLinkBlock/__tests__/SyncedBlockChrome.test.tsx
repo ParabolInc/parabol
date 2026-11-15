@@ -55,6 +55,7 @@ jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: () => jest.fn()
 }))
+jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../SyncedBlockContent', () => ({
   SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {

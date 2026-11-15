@@ -57,6 +57,7 @@ export const useSyncedBlockMenuActions = (params: Params) => {
     },
     rename: () =>
       runAfterClose(() => withPos((pos) => startSyncedBlockRename(hostEditor.view, pos, pageCode))),
+    whoHasAccess: openDialog('whoHasAccess'),
     duplicatePlain: afterClose((pos) => duplicateSyncedBlockAsPlain(hostEditor, pos, pageCode)),
     unsyncCopy: openDialog('unsyncCopy'),
     unsyncAll: openDialog('unsyncAll'),

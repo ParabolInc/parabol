@@ -1,7 +1,7 @@
 import type {EditorView} from '@tiptap/pm/view'
 import {getSyncedLinkAt} from './getSyncedLinkAt'
 
-export type SyncedBlockDialogKind = 'unsyncCopy' | 'unsyncAll' | 'deleteAll'
+export type SyncedBlockDialogKind = 'unsyncCopy' | 'unsyncAll' | 'deleteAll' | 'whoHasAccess'
 
 export const SYNCED_BLOCK_DIALOG_EVENT = 'synced-block-dialog'
 

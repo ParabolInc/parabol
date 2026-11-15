@@ -6,6 +6,7 @@ import {
   DeleteForever,
   DeleteOutlined,
   Edit,
+  Group,
   NorthEast
 } from '~/ui/icons'
 import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
@@ -25,6 +26,7 @@ const rowLooks: Record<
   copyAndSync: {Icon: ContentCopy, label: 'Copy and sync'},
   goToOriginal: {Icon: NorthEast, label: 'Go to original'},
   rename: {Icon: Edit, label: 'Rename'},
+  whoHasAccess: {Icon: Group, label: 'Who has access'},
   duplicatePlain: {Icon: AddToPhotos, label: 'Duplicate as plain blocks', hint: `${modKey}+D`},
   unsyncCopy: {Icon: CallSplit, label: 'Unsync this copy'},
   unsyncAll: {Icon: CallSplit, label: 'Unsync all'},

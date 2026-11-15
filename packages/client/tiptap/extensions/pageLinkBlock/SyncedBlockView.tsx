@@ -181,6 +181,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
         hostEditor={editor}
         getPos={getPos}
         pageCode={pageCode}
+        name={name}
         onClose={closeDialog}
       />
     </NodeViewWrapper>
