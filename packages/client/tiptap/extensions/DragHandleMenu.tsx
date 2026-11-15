@@ -1,7 +1,7 @@
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
-import {ArrowForward, ContentCopy, DeleteOutlined} from '~/ui/icons'
+import {ArrowForward, Autorenew, ContentCopy, DeleteOutlined} from '~/ui/icons'
 import type Atmosphere from '../../Atmosphere'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -19,6 +19,7 @@ import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
+import {turnRangeIntoSyncedBlock} from './turnInto/turnRangeIntoSyncedBlock'
 
 interface DragHandleMenuProps {
   editor: Editor
@@ -27,6 +28,7 @@ interface DragHandleMenuProps {
   onClose: () => void
   anchorElement: HTMLElement
   canCreateSubPage: boolean
+  canCreateSyncedBlock: boolean
   selection?: {range: BlockRange; count: number} | null
   atmosphere: Atmosphere
   pageId: string
@@ -40,6 +42,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     onClose,
     anchorElement,
     canCreateSubPage,
+    canCreateSyncedBlock,
     selection,
     atmosphere,
     pageId
@@ -56,6 +59,8 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
   const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
+  const showTurnIntoSyncedBlock =
+    !!selection && canCreateSyncedBlock && !!turnRangeIntoSyncedBlock(editor.state, selection.range)
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -89,6 +94,13 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       .focus()
       .insertContentAt(pos + node.nodeSize, json)
       .run()
+  }
+
+  const handleTurnIntoSyncedBlock = () => {
+    const range = getSelectedBlockRange(editor.state)
+    const tr = range && turnRangeIntoSyncedBlock(editor.state, range)
+    if (tr) editor.view.dispatch(tr)
+    editor.commands.focus()
   }
 
   const handleMoveTo = () => {
@@ -187,6 +199,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
               pos={pos}
               current={turnIntoCurrent}
               canCreateSubPage={canCreateSubPage}
+              canCreateSyncedBlock={canCreateSyncedBlock}
             />
           )}
           {!selection && node.type.name === 'callout' && (
@@ -197,6 +210,12 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             <span className='flex-1 text-left'>Duplicate {blocks}</span>
             <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
           </MenuItem>
+          {showTurnIntoSyncedBlock && (
+            <MenuItem onSelect={handleTurnIntoSyncedBlock}>
+              <Autorenew className={MENU_ITEM_ICON} />
+              Turn into synced block
+            </MenuItem>
+          )}
           {showMoveTo && (
             <MenuItem onSelect={handleMoveTo}>
               <ArrowForward className={MENU_ITEM_ICON} />

@@ -47,7 +47,10 @@ const h = (level: number, text: string): JSONContent => ({
 
 let editor: Editor | undefined
 const makeEditor = (...blocks: JSONContent[]) => makeEditorWith({isNested: false}, ...blocks)
-const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[]) => {
+const makeEditorWith = (
+  {isNested, hasSyncedBlocks}: {isNested: boolean; hasSyncedBlocks?: boolean},
+  ...blocks: JSONContent[]
+) => {
   const activeEditor = new Editor({
     element: document.createElement('div'),
     extensions: [
@@ -58,7 +61,12 @@ const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[
           : extension
       ),
       BlockSelection,
-      PageDragHandle.configure({atmosphere: mockAtmosphere, pageId: 'page:1', isNested})
+      PageDragHandle.configure({
+        atmosphere: mockAtmosphere,
+        pageId: 'page:1',
+        isNested,
+        hasSyncedBlocks
+      })
     ],
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
@@ -198,26 +206,30 @@ describe('the handle', () => {
   })
 
   test.each([
-    ['on a page', false, true],
-    ['inside a synced block', true, false]
-  ])('the menu offers Turn into Page %s', (_where, isNested, canCreateSubPage) => {
-    mockPageViewerGrant = 'owner'
-    const activeEditor = makeEditorWith({isNested}, p('word'))
-    const dragHandle = activeEditor.extensionManager.extensions.find(
-      ({name}) => name === 'dragHandle'
-    )
-    const pos = activeEditor.state.doc.child(0).nodeSize
-    dragHandle?.options.onNodeChange({
-      editor: activeEditor,
-      node: activeEditor.state.doc.nodeAt(pos),
-      pos
-    })
-    const handle = activeEditor.view.dom.parentElement!.querySelector('.drag-handle')!
-    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-    expect(mockMenuProps.at(-1)).toMatchObject({canCreateSubPage})
-    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-    mockPageViewerGrant = null
-  })
+    ['on a page', false, false, true, false],
+    ['on a page with synced blocks', false, true, true, true],
+    ['inside a synced block', true, true, false, false]
+  ])(
+    'the menu offers Turn into Page %s',
+    (_where, isNested, hasSyncedBlocks, canCreateSubPage, canCreateSyncedBlock) => {
+      mockPageViewerGrant = 'owner'
+      const activeEditor = makeEditorWith({isNested, hasSyncedBlocks}, p('word'))
+      const dragHandle = activeEditor.extensionManager.extensions.find(
+        ({name}) => name === 'dragHandle'
+      )
+      const pos = activeEditor.state.doc.child(0).nodeSize
+      dragHandle?.options.onNodeChange({
+        editor: activeEditor,
+        node: activeEditor.state.doc.nodeAt(pos),
+        pos
+      })
+      const handle = activeEditor.view.dom.parentElement!.querySelector('.drag-handle')!
+      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      expect(mockMenuProps.at(-1)).toMatchObject({canCreateSubPage, canCreateSyncedBlock})
+      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      mockPageViewerGrant = null
+    }
+  )
 
   test('a refused title drag reaches no later dragstart listener', () => {
     const activeEditor = makeEditor(p('word'))

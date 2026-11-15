@@ -86,7 +86,7 @@ const codeToInline = (code: string, schema: Schema) => {
   return Fragment.from(inline)
 }
 
-const getFirstLine = (node: Node): Fragment => {
+export const getFirstLine = (node: Node): Fragment => {
   if (node.type.name === 'callout') return getFirstLine(getCalloutChildren(node)[0]!)
   if (node.type.name === 'calloutTitle') return toBold(node.content, node.type.schema)
   if (node.type.name === 'codeBlock') return codeToInline(node.textContent, node.type.schema)
@@ -110,7 +110,7 @@ const toPlainText = (inline: Fragment, schema: Schema) =>
     textSerializers: getTextSerializersFromSchema(schema)
   })
 
-const toSingleLine = (inline: Fragment, schema: Schema) =>
+export const toSingleLine = (inline: Fragment, schema: Schema) =>
   toPlainText(inline, schema).replace(/\n/g, ' ')
 
 // a summary holds only text, so anything else in the line has to flatten into it

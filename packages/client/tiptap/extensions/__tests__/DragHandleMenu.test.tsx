@@ -67,7 +67,12 @@ const tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms))
 let root: Root | undefined
 let editor: Editor | undefined
 
-const openMenuOnSelection = async (blocks: JSONContent[], first: number, last: number) => {
+const openMenuOnSelection = async (
+  blocks: JSONContent[],
+  first: number,
+  last: number,
+  canCreateSyncedBlock = false
+) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
     extensions,
@@ -97,6 +102,7 @@ const openMenuOnSelection = async (blocks: JSONContent[], first: number, last: n
         onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage
+        canCreateSyncedBlock={canCreateSyncedBlock}
         selection={{range, count: countBlocks(doc, range)}}
         atmosphere={atmosphere}
         pageId='page:1'
@@ -141,8 +147,7 @@ const texts = () => {
   return all
 }
 
-afterEach(async () => {
-  jest.clearAllMocks()
+const closeMenu = async () => {
   await act(async () => {
     root?.unmount()
     root = undefined
@@ -150,8 +155,13 @@ afterEach(async () => {
   })
   editor?.destroy()
   editor = undefined
-  mockPlaces = null
   document.body.replaceChildren()
+}
+
+afterEach(async () => {
+  jest.clearAllMocks()
+  await closeMenu()
+  mockPlaces = null
 })
 
 afterAll(async () => {
@@ -195,6 +205,36 @@ describe('the menu on a block selection', () => {
     expect(texts()).toEqual(['three'])
   })
 
+  test('a selection offers Turn into synced block', async () => {
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
+    expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
+      'Duplicate',
+      'Turn',
+      'Move',
+      'Delete'
+    ])
+    expect(itemNamed('Turn into synced block').textContent).toBe('Turn into synced block')
+    await closeMenu()
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, false)
+    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
+  })
+
+  test('Turn into synced block moves the selected blocks into one synced block', async () => {
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
+    await click(itemNamed('Turn into synced block'))
+    const link = editor!.state.doc.child(1)
+    expect(link.attrs).toMatchObject({pageCode: -1, synced: true, title: 'one'})
+    expect(link.attrs.content).toEqual([p('one'), p('two')])
+    expect(texts()).toEqual(['three'])
+    expect(editor!.state.selection.$from.parent.textContent).toBe('three')
+  })
+
+  test('a selection holding a page link has no Turn into synced block', async () => {
+    const link = {type: 'pageLinkBlock', attrs: {pageCode: 5, title: 'Other', canonical: true}}
+    await openMenuOnSelection([p('one'), link, p('three')], 1, 2, true)
+    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
+  })
+
   test('mod-D duplicates the selection', async () => {
     await openMenuOnSelection([p('one'), p('two')], 1, 2)
     await pressKey(itemNamed('Duplicate blocks'), 'd', {metaKey: true})
@@ -227,6 +267,7 @@ describe('the menu on a synced block', () => {
           onClose={onClose}
           anchorElement={anchor}
           canCreateSubPage
+          canCreateSyncedBlock={false}
           selection={null}
           atmosphere={atmosphere}
           pageId='page:1'
@@ -441,6 +482,7 @@ const openMenuOnBlock = async (blocks: JSONContent[], index: number, editable = 
         onClose={jest.fn()}
         anchorElement={anchor}
         canCreateSubPage
+        canCreateSyncedBlock={false}
         selection={null}
         atmosphere={atmosphere}
         pageId='page:1'

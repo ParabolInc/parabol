@@ -171,7 +171,7 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested, hasSyncedBlocks}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({
