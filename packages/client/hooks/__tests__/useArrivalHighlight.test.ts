@@ -2,6 +2,7 @@ import '../../tiptap/extensions/__tests__/installHappyDom'
 import type {Editor} from '@tiptap/core'
 import {act, createElement} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
+import {MemoryRouter, useNavigate} from 'react-router'
 import {setPendingArrival, takePendingArrival} from '../../tiptap/blockMove/pendingArrivals'
 import {clearBlockArrival, showBlockArrival} from '../../tiptap/extensions/BlockArrival'
 import {findSyncedBlockPositions} from '../../tiptap/extensions/pageLinkBlock/findSyncedBlockPositions'
@@ -23,11 +24,23 @@ const mockFind = jest.mocked(findSyncedBlockPositions)
 let root: Root
 let container: HTMLElement
 
+let navigateTo: (to: string) => void = () => {}
 const Probe = ({editor}: {editor: Editor}) => {
   useArrivalHighlight(editor, 'page:1')
+  const navigate = useNavigate()
+  navigateTo = navigate
   return null
 }
-const mount = (editor: Editor) => act(() => root.render(createElement(Probe, {editor})))
+const mount = (editor: Editor, hash = '') =>
+  act(() =>
+    root.render(
+      createElement(
+        MemoryRouter,
+        {initialEntries: [`/pages/runbook-1${hash}`]},
+        createElement(Probe, {editor})
+      )
+    )
+  )
 
 const makeEditor = () => {
   const scrollIntoView = jest.fn()
@@ -50,7 +63,6 @@ const makeEditor = () => {
 
 beforeEach(() => {
   jest.clearAllMocks()
-  window.location.hash = ''
   container = document.createElement('div')
   document.body.appendChild(container)
   root = createRoot(container)
@@ -63,20 +75,18 @@ afterEach(() => {
 })
 
 test('highlights the synced block named in the URL', () => {
-  window.location.hash = '#synced-block-9'
   mockFind.mockReturnValue([5, 30])
   const {editor, scrollIntoView} = makeEditor()
-  mount(editor)
+  mount(editor, '#synced-block-9')
   expect(mockFind).toHaveBeenCalledWith(editor.state.doc, 9)
   expect(showBlockArrival).toHaveBeenCalledWith(editor.view, [5])
   expect(scrollIntoView).toHaveBeenCalledWith({block: 'center'})
 })
 
 test('waits for the block to arrive in the doc', () => {
-  window.location.hash = '#synced-block-9'
   mockFind.mockReturnValue([])
   const {editor, update} = makeEditor()
-  mount(editor)
+  mount(editor, '#synced-block-9')
   expect(showBlockArrival).not.toHaveBeenCalled()
   mockFind.mockReturnValue([7])
   act(update)
@@ -84,10 +94,9 @@ test('waits for the block to arrive in the doc', () => {
 })
 
 test('a pending move still wins', () => {
-  window.location.hash = '#synced-block-9'
   setPendingArrival('page:1', [{client: 1, clock: 1, snapshot: ''}])
   const {editor} = makeEditor()
-  mount(editor)
+  mount(editor, '#synced-block-9')
   expect(mockFind).not.toHaveBeenCalled()
   expect(showBlockArrival).toHaveBeenCalledWith(editor.view, [42])
 })
@@ -97,4 +106,15 @@ test('does nothing without a move or a block hash', () => {
   mount(editor)
   expect(showBlockArrival).not.toHaveBeenCalled()
   expect(clearBlockArrival).not.toHaveBeenCalled()
+})
+
+test('a new block hash on the open page highlights the new block', () => {
+  mockFind.mockReturnValue([5])
+  const {editor} = makeEditor()
+  mount(editor)
+  expect(showBlockArrival).not.toHaveBeenCalled()
+  mockFind.mockReturnValue([11])
+  act(() => navigateTo('/pages/runbook-1#synced-block-4'))
+  expect(mockFind).toHaveBeenLastCalledWith(editor.state.doc, 4)
+  expect(showBlockArrival).toHaveBeenLastCalledWith(editor.view, [11])
 })

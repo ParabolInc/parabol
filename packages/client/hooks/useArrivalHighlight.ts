@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {useEffect} from 'react'
+import {useLocation} from 'react-router'
 import {findMovedBlockPositions} from '../tiptap/blockMove/findMovedBlockPositions'
 import {peekPendingArrival, takePendingArrival} from '../tiptap/blockMove/pendingArrivals'
 import {clearBlockArrival, showBlockArrival} from '../tiptap/extensions/BlockArrival'
@@ -10,15 +11,17 @@ const HIGHLIGHT_MS = 1500
 const GIVE_UP_MS = 10_000
 
 export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
+  const {hash} = useLocation()
   useEffect(() => {
     if (!editor) return
     const moved = peekPendingArrival(pageId)
-    const syncedBlockCode = moved ? null : parseSyncedBlockHash(window.location.hash)
-    if (!moved && !syncedBlockCode) return
-    const findPositions = () => {
-      if (moved) return findMovedBlockPositions(editor, moved)
-      return findSyncedBlockPositions(editor.state.doc, syncedBlockCode!).slice(0, 1)
-    }
+    const syncedBlockCode = moved ? null : parseSyncedBlockHash(hash)
+    const findPositions = moved
+      ? () => findMovedBlockPositions(editor, moved)
+      : syncedBlockCode
+        ? () => findSyncedBlockPositions(editor.state.doc, syncedBlockCode).slice(0, 1)
+        : null
+    if (!findPositions) return
     const settle = () => {
       if (moved) takePendingArrival(pageId)
     }
@@ -57,5 +60,5 @@ export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
       window.clearTimeout(giveUpTimeout)
       clear()
     }
-  }, [editor, pageId])
+  }, [editor, pageId, hash])
 }
