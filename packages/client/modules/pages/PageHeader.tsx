@@ -43,6 +43,7 @@ export const PageHeader = (props: Props) => {
         ...PageDeletedHeader_page
         id
         deletedBy
+        isSyncedBlock
       }
     `,
     pageRef
@@ -55,17 +56,18 @@ export const PageHeader = (props: Props) => {
   const exportReport = searchParams.get('report') !== null
   const [exportOpen, setExportOpen] = useState(false)
 
-  const {id: pageId, deletedBy} = page
+  const {id: pageId, deletedBy, isSyncedBlock} = page
+  const canExportToConfluence = showConfluenceExport && !isSyncedBlock
   const pageInTrash = !!deletedBy
   const isExportDisabled = isPageGenerating || pageInTrash
-  const showBadge = showConfluenceExport && showConfluenceBadge()
+  const showBadge = canExportToConfluence && showConfluenceBadge()
   const openExportDialog = () => {
     setExportOpen(true)
   }
   // keyed on location.key so a same-route navigation (e.g. the completion toast's
   // "View report" while already on the page) still opens the dialog
   useEffect(() => {
-    if (exportDeepLinked && showConfluenceExport) {
+    if (exportDeepLinked && canExportToConfluence) {
       setExportOpen(true)
     }
   }, [location.key])
@@ -117,7 +119,7 @@ export const PageHeader = (props: Props) => {
                 <PictureAsPdfIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Export to PDF'}</span>
               </MenuItem>
-              {showConfluenceExport && (
+              {canExportToConfluence && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <MenuItem
@@ -144,7 +146,7 @@ export const PageHeader = (props: Props) => {
               )}
             </MenuContent>
           </Menu>
-          {exportOpen && showConfluenceExport && (
+          {exportOpen && canExportToConfluence && (
             <ExportToConfluenceRoot
               pageId={pageId}
               onClose={() => setExportOpen(false)}

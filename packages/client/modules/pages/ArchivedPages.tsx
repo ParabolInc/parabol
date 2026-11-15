@@ -4,6 +4,8 @@ import {useNavigate} from 'react-router'
 import {Autorenew as AutorenewIcon, Description as DescriptionIcon} from '~/ui/icons'
 import menuSectionTitleClass from '~/ui/Menu/menuSectionTitleClass'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {snackOnError} from '../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {GQLID} from '../../utils/GQLID'
 import {ArchivedPageRow} from './ArchivedPageRow'
@@ -41,12 +43,17 @@ export const ArchivedPages = (props: Props) => {
   const {archivedPages} = viewer
   const {edges} = archivedPages
   const [execute] = useArchivePageMutation()
+  const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const restorePage = (pageId: string) => {
     execute({
       variables: {
         pageId,
         action: 'restore'
+      },
+      onCompleted: (_res, errors) => {
+        const [error] = errors ?? []
+        if (error) snackOnError(atmosphere, 'archivedPageRestoreFailed')(error)
       }
     })
   }

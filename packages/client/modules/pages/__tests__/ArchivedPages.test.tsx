@@ -13,6 +13,7 @@ interface MockNode {
 
 let mockNodes: MockNode[]
 const mockExecute = jest.fn()
+const mockEmit = jest.fn()
 
 jest.mock('babel-plugin-relay/macro', () => ({
   __esModule: true,
@@ -28,12 +29,17 @@ jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
 jest.mock('../../../mutations/useArchivePageMutation', () => ({
   useArchivePageMutation: () => [mockExecute]
 }))
+jest.mock('../../../hooks/useAtmosphere', () => ({
+  __esModule: true,
+  default: () => ({eventEmitter: {emit: mockEmit}})
+}))
 
 let root: Root
 let container: HTMLElement
 
 beforeEach(() => {
   mockExecute.mockClear()
+  mockEmit.mockClear()
   container = document.createElement('div')
   document.body.appendChild(container)
   root = createRoot(container)
@@ -98,7 +104,37 @@ test('a block whose page is live restores on click', () => {
   act(() => {
     restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
   })
-  expect(mockExecute).toHaveBeenCalledWith({variables: {pageId: 'page:2', action: 'restore'}})
+  expect(mockExecute).toHaveBeenCalledWith(
+    expect.objectContaining({variables: {pageId: 'page:2', action: 'restore'}})
+  )
+})
+
+test('a refused restore says why', () => {
+  render([makeBlock(null)])
+  const restore = container.querySelector('[aria-label="Restore"]')!
+  act(() => {
+    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+  })
+  const [{onCompleted}] = mockExecute.mock.calls[0]
+  onCompleted({}, [{message: 'Restore the page this block came from first'}])
+  expect(mockEmit).toHaveBeenCalledWith(
+    'addSnackbar',
+    expect.objectContaining({
+      key: 'archivedPageRestoreFailed',
+      message: 'Restore the page this block came from first'
+    })
+  )
+})
+
+test('a restore that works shows no snackbar', () => {
+  render([makeBlock(null)])
+  const restore = container.querySelector('[aria-label="Restore"]')!
+  act(() => {
+    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+  })
+  const [{onCompleted}] = mockExecute.mock.calls[0]
+  onCompleted({}, null)
+  expect(mockEmit).not.toHaveBeenCalled()
 })
 
 test('shows no heading when Trash holds no blocks', () => {
