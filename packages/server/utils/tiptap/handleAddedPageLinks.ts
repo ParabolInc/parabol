@@ -2,7 +2,6 @@ import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
-import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerializedContent'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -54,7 +53,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           )
           if (!isSyncedBlock) node.removeAttribute('synced')
         }
-        const seedContent = sanitizeSyncedBlockSeed(seed) as TipTapContentNode[]
+        const seedContent = sanitizeSyncedBlockSeed(seed)
+        const bodyNodes =
+          seedContent.length > 0 || !isSyncedBlock ? seedContent : [{type: 'paragraph' as const}]
         const newPage = await createNewPage({
           parentPageId,
           userId,
@@ -68,11 +69,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
                 attrs: {level: 1},
                 content: title ? [{type: 'text', text: title}] : []
               },
-              ...(seedContent.length > 0
-                ? seedContent
-                : isSyncedBlock
-                  ? [{type: 'paragraph' as const}]
-                  : [])
+              ...bodyNodes
             ]
           }
         }).catch(Logger.error)

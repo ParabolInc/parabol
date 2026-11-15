@@ -28,3 +28,21 @@ test('returns nothing for a seed that is not an array', () => {
   expect(sanitizeSyncedBlockSeed(null)).toEqual([])
   expect(sanitizeSyncedBlockSeed({})).toEqual([])
 })
+
+test('drops malformed nodes without throwing', () => {
+  expect(sanitizeSyncedBlockSeed([paragraph, {type: 'paragraph', content: 'x'}])).toEqual([
+    paragraph
+  ])
+  expect(sanitizeSyncedBlockSeed([paragraph, {type: 'paragraph', content: [null]}])).toEqual([
+    paragraph,
+    {type: 'paragraph', content: []}
+  ])
+  expect(sanitizeSyncedBlockSeed([null, 'x', paragraph])).toEqual([paragraph])
+})
+
+test('drops nodes that cannot sit directly under the page', () => {
+  const listItem = {type: 'listItem', content: [paragraph]}
+  expect(sanitizeSyncedBlockSeed([{type: 'text', text: 'loose'}, listItem, paragraph])).toEqual([
+    paragraph
+  ])
+})
