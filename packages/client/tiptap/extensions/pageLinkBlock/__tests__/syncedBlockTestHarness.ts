@@ -2,7 +2,7 @@ import {type AnyExtension, Editor, Extension, type JSONContent} from '@tiptap/co
 import {Document} from '@tiptap/extension-document'
 import StarterKit from '@tiptap/starter-kit'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
-import {SyncedBlockEdges, type SyncedBlockEdgesOptions} from '../SyncedBlockEdges'
+import {SyncedBlockEdges} from '../SyncedBlockEdges'
 import {syncedBlockEntryPlugin} from '../syncedBlockFocus'
 
 const SyncedBlockEntry = Extension.create({
@@ -30,10 +30,10 @@ export const plainLink = {
   attrs: {pageCode: 8, title: 'Other', canonical: false, synced: false}
 }
 
-export const mountHost = (content: JSONContent[]) =>
+export const mountHost = (content: JSONContent[], extraExtensions: AnyExtension[] = []) =>
   new Editor({
     element: document.createElement('div'),
-    extensions: [StarterKit, PageLinkBlockBase, SyncedBlockEntry],
+    extensions: [StarterKit, PageLinkBlockBase, SyncedBlockEntry, ...extraExtensions],
     content: {type: 'doc', content}
   })
 
@@ -52,10 +52,7 @@ export const mountNested = (
   linkPos: number,
   contentLines: string[],
   extraExtensions: AnyExtension[] = [],
-  {
-    named = true,
-    onBlockDrop = async () => {}
-  }: Partial<Pick<SyncedBlockEdgesOptions, 'onBlockDrop'>> & {named?: boolean} = {}
+  {named = true}: {named?: boolean} = {}
 ) => {
   const link = host.state.doc.nodeAt(linkPos)!
   const nested = new Editor({
@@ -66,8 +63,7 @@ export const mountNested = (
       SyncedBlockEdges.configure({
         hostView: host.view,
         getPos: () => linkPos,
-        getSize: () => link.nodeSize,
-        onBlockDrop
+        getSize: () => link.nodeSize
       }),
       ...extraExtensions
     ],
@@ -77,6 +73,7 @@ export const mountNested = (
     }
   })
   const wrapper = document.createElement('div')
+  wrapper.setAttribute('data-synced-editor', '')
   wrapper.appendChild(nested.view.dom)
   const linkDom = host.view.nodeDOM(linkPos) as HTMLElement
   linkDom.appendChild(wrapper)
