@@ -11,9 +11,11 @@ import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
+import {isRemovedFromDoc} from './isRemovedFromDoc'
 import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
 import {rehostSeededAssets} from './rehostExternalAssets'
+import {restoreSeed} from './restoreSeed'
 import {sanitizeSyncedBlockSeed} from './sanitizeSyncedBlockSeed'
 import {updateBacklinks} from './updateBacklinks'
 
@@ -31,9 +33,6 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
   return links
 }
 
-const isRemovedFromDoc = (node: Y.XmlElement<PageLinkBlockAttrs>) =>
-  !node.doc || !!node._item?.deleted
-
 const trashPage = (pageId: number, userId: string) =>
   getKysely()
     .updateTable('Page')
@@ -47,6 +46,8 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
     const seed = node.getAttribute('content')
     if (seed !== undefined) node.removeAttribute('content')
     const childPageCode = node.getAttribute('pageCode')!
+    const seedContent = sanitizeSyncedBlockSeed(seed)
+    let isAwaitingPage = false
     try {
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
         // if a new PageLink was added to the doc, update the backlinks
@@ -58,6 +59,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // mint a fresh page and assign it a real pageCode
         const isDatabase = node.getAttribute('database') || false
         const title = node.getAttribute('title')
+        isAwaitingPage = true
         let isSyncedBlock = false
         if (node.getAttribute('synced') === true) {
           const dataLoader = getNewDataLoader('handleAddedPageLinks')
@@ -66,9 +68,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           )
           if (!isSyncedBlock) node.removeAttribute('synced')
         }
-        const seedContent = sanitizeSyncedBlockSeed(seed)
-        const bodyNodes =
-          seedContent.length > 0 || !isSyncedBlock ? seedContent : [{type: 'paragraph' as const}]
+        const body =
+          title && seedContent[0]?.type === 'heading' ? seedContent.slice(1) : seedContent
+        const bodyNodes = body.length > 0 || !isSyncedBlock ? body : [{type: 'paragraph' as const}]
         const newPage = await createNewPage({
           parentPageId,
           userId,
@@ -86,11 +88,15 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
             ]
           }
         }).catch(Logger.error)
-        if (!newPage) return
+        if (!newPage) {
+          restoreSeed(node, seedContent)
+          return
+        }
         if (isSyncedBlock && isRemovedFromDoc(node)) {
           await trashPage(newPage.id, userId)
           return
         }
+        isAwaitingPage = false
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         if (isSyncedBlock) node.setAttribute('title', '')
         rehostSeededAssets(newPage.id, seedContent, userId)
@@ -116,6 +122,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         }
       }
     } catch (error) {
+      if (isAwaitingPage) restoreSeed(node, seedContent)
       logError(error as Error, {userId, extras: {parentPageId, childPageCode}})
     }
   })

@@ -28,10 +28,9 @@ export const turnRangeIntoSyncedBlock = (
   if (!firstUnit || holdsPageLink(units)) return null
   const isList = parent.type.isInGroup('list')
   const isNamed = firstUnit.type.name === 'heading'
-  const body = isNamed ? units.cut(firstUnit.nodeSize) : units
   const seed: JSONContent[] = isList
     ? [parent.copy(units).toJSON()]
-    : body.content.map((unit) => unit.toJSON())
+    : units.content.map((unit) => unit.toJSON())
   const link = schema.nodes.pageLinkBlock!.create({
     pageCode: -1,
     canonical: true,

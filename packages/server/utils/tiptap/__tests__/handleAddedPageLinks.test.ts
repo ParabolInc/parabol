@@ -18,11 +18,12 @@ jest.mock('../../CipherId', () => ({
 }))
 const mockCreateNewPage = jest.fn(async (_options: object) => ({id: NEW_PAGE_ID}))
 let mockFlagEnabled = false
+const mockIsSyncedBlocksEnabled = jest.fn(async () => mockFlagEnabled)
 jest.mock('../createNewPage', () => ({
   createNewPage: (options: object) => mockCreateNewPage(options)
 }))
 jest.mock('../isSyncedBlocksEnabled', () => ({
-  isSyncedBlocksEnabled: async () => mockFlagEnabled
+  isSyncedBlocksEnabled: () => mockIsSyncedBlocksEnabled()
 }))
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({dispose: () => {}})
@@ -111,6 +112,7 @@ beforeEach(() => {
   mockCreateNewPage.mockClear()
   mockRehostSeededAssets.mockClear()
   mockFlagEnabled = false
+  mockIsSyncedBlocksEnabled.mockClear()
 })
 
 test('records a backlink when a user links a page', async () => {
@@ -317,12 +319,80 @@ test('keeps the text as a plain sub-page when the flag is off', async () => {
   expect(link.getAttribute('content')).toBeUndefined()
 })
 
-test('removes content even when the page cannot be made', async () => {
+const escalationHeading = {
+  type: 'heading',
+  attrs: {level: 2},
+  content: [{type: 'text', text: 'Escalation path'}]
+}
+
+const insertSeededLinkInPage = (seed: unknown) => {
+  const {doc, frag} = makePage()
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, seed)
+  doc.transact(() => {
+    frag.insert(0, [link as Y.XmlElement])
+  }, asUser(EDITOR_ID))
+  return {doc, frag, link}
+}
+
+const nodeNames = (frag: Y.XmlFragment) => frag.toArray().map((n) => (n as Y.XmlElement).nodeName)
+
+test('puts the text back when the synced block page cannot be made', async () => {
   mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
-  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
-  await insertLink(link, asUser(EDITOR_ID))
-  expect(link.getAttribute('content')).toBeUndefined()
+  const {frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['paragraph'])
+  expect(frag.get(0).toString()).toContain('Call on-call first')
+})
+
+test("puts a named block's heading back at its own level", async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const {frag} = insertSeededLinkInPage([escalationHeading, seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['heading', 'paragraph'])
+  expect((frag.get(0) as Y.XmlElement).getAttribute('level')).toBe(2)
+})
+
+test('puts the text back when the flag check fails', async () => {
+  mockIsSyncedBlocksEnabled.mockRejectedValueOnce(new Error('boom'))
+  const {frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['paragraph'])
+})
+
+test('adds nothing back when the link was undone before the page failed', async () => {
+  mockFlagEnabled = true
+  let rejectMint: (error: Error) => void = () => {}
+  mockCreateNewPage.mockImplementationOnce(
+    () =>
+      new Promise((_resolve, reject) => {
+        rejectMint = reject
+      })
+  )
+  const {doc, frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  doc.transact(() => frag.delete(0, 1), asUser(EDITOR_ID))
+  rejectMint(new Error('boom'))
+  await flush()
+  expect(frag.length).toBe(0)
+})
+
+test('names the block from the heading its seed leads with', async () => {
+  mockFlagEnabled = true
+  insertSeededLinkInPage([escalationHeading, seedParagraph])
+  await flush()
+  expect(mockCreateNewPage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      content: {
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Escalation path'}]},
+          seedParagraph
+        ]
+      }
+    })
+  )
 })
 
 test('rehosts the assets a seed carries into the new page as the inserting user', async () => {
