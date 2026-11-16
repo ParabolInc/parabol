@@ -187,7 +187,6 @@ export type JiraIssueRaw = JiraIssueBean<
 
 export interface JiraRawStatus {
   name: string
-  statusCategory: {key: string}
 }
 
 interface JiraAuthor {

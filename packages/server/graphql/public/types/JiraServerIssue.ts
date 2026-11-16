@@ -25,7 +25,7 @@ const JiraServerIssue: JiraServerIssueResolvers = {
 
   title: ({summary}) => summary,
 
-  status: ({status}) => (status ? {name: status.name, category: status.statusCategory.key} : null),
+  status: ({status}) => (status ? {name: status.name} : null),
 
   possibleEstimationFieldNames: async (
     {teamId, userId, providerId, issueType, projectId},
