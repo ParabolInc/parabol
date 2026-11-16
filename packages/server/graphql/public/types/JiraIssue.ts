@@ -50,7 +50,7 @@ const JiraIssue: JiraIssueResolvers = {
       : null
   },
   title: ({summary}) => summary,
-  status: ({status}) => (status ? {name: status.name, category: status.statusCategory.key} : null),
+  status: ({status}) => (status ? {name: status.name} : null),
   description: ({description}) => (description ? JSON.stringify(description) : ''),
   extraFields: async ({extraFields}) => extraFields || []
 }
