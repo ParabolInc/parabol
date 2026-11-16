@@ -29,7 +29,7 @@ import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
-import {moveBlocksIntoSyncedBlock} from '../tiptap/blockMove/moveBlocksIntoSyncedBlock'
+import {moveDroppedBlocks} from '../tiptap/blockMove/moveDroppedBlocks'
 import {BlockArrival} from '../tiptap/extensions/BlockArrival'
 import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
 import {BlockMoveKeys} from '../tiptap/extensions/BlockMoveKeys'
@@ -52,6 +52,7 @@ import {
   type SyncedBlockEdgesOptions
 } from '../tiptap/extensions/pageLinkBlock/SyncedBlockEdges'
 import {showSyncedBlockRemovalSnack} from '../tiptap/extensions/pageLinkBlock/showSyncedBlockRemovalSnack'
+import {SyncedBlockDrops} from '../tiptap/extensions/pageLinkBlock/syncedBlockDrops'
 import type {SyncedBlockRemoval} from '../tiptap/extensions/pageLinkBlock/syncedBlockRemovalPlugin'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
@@ -79,7 +80,7 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
-    nested?: Omit<SyncedBlockEdgesOptions, 'onBlockDrop'> & {
+    nested?: SyncedBlockEdgesOptions & {
       preferredName?: string
       highestTier?: TierEnum
     }
@@ -156,9 +157,7 @@ export const useTipTapPageEditor = (
         SlashCommand.configure({
           commands: getPageSlashCommands({hasDatabases, nested: !!nested})
         }),
-        ...(nested
-          ? [SyncedBlockEdges.configure({...nested, onBlockDrop: moveBlocksIntoSyncedBlock})]
-          : []),
+        ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,
@@ -175,6 +174,7 @@ export const useTipTapPageEditor = (
         IndentHandler,
         LoomExtension,
         PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
+        SyncedBlockDrops.configure({pageId, isNested: !!nested, onBlockDrop: moveDroppedBlocks}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({

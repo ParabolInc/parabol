@@ -7,10 +7,11 @@ import type Atmosphere from '../../../../Atmosphere'
 import {h, p, read, seed} from '../../../blockMove/__tests__/blockMoveTestHelpers'
 import {endBlockDrag, startBlockDrag} from '../../../blockMove/blockDragSession'
 import {getMovableBlocks, type MovableBlocks} from '../../../blockMove/getMovableBlocks'
-import {moveBlocksIntoSyncedBlock} from '../../../blockMove/moveBlocksIntoSyncedBlock'
+import {moveDroppedBlocks} from '../../../blockMove/moveDroppedBlocks'
 import {trackRange} from '../../../blockMove/trackRange'
 import {providerManager} from '../../../providerManager'
 import {happyWindow} from '../../__tests__/installHappyDom'
+import {SyncedBlockDrops} from '../syncedBlockDrops'
 import {findLinkPositions, mountHost, mountNested, syncedLink} from './syncedBlockTestHarness'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
@@ -26,14 +27,19 @@ const atmosphere = {commitUpdate: jest.fn(), eventEmitter: {emit}} as unknown as
 const moveHistory = Extension.create({name: 'blockMoveHistory', addStorage: () => ({atmosphere})})
 const openSynced = jest.mocked(providerManager.openSynced)
 let blockFrag: Y.XmlFragment
+let hostFrag: Y.XmlFragment
+
+const drops = (pageId: string, isNested: boolean) =>
+  SyncedBlockDrops.configure({pageId, isNested, onBlockDrop: moveDroppedBlocks})
 
 const setup = () => {
-  const host = mountHost([p('Para to drag'), p('Next'), syncedLink, p('Tail')])
+  const host = mountHost(
+    [p('Para to drag'), p('Next'), syncedLink, p('Tail')],
+    [moveHistory, drops('page:1', false)]
+  )
   document.body.appendChild(host.view.dom.parentElement!)
   const [linkPos] = findLinkPositions(host)
-  const nested = mountNested(host, linkPos!, ['Block line'], [moveHistory], {
-    onBlockDrop: moveBlocksIntoSyncedBlock
-  })
+  const nested = mountNested(host, linkPos!, ['Block line'], [moveHistory, drops('page:7', true)])
   return {host, nested, blockLine: nested.view.dom.querySelector('p')!}
 }
 
@@ -73,19 +79,22 @@ const hostTexts = (host: Editor) => {
   return texts
 }
 
-beforeEach(() => {
-  blockFrag = seed(h(1, 'Escalation path'), p('Block line'))
-  const provider = {
+const providerFor = (frag: Y.XmlFragment) =>
+  ({
     authorizedScope: 'read-write',
-    document: blockFrag.doc!,
+    document: frag.doc!,
     hasUnsyncedChanges: false,
     on() {},
     off() {}
-  }
+  }) as unknown as HocuspocusProvider
+
+beforeEach(() => {
+  blockFrag = seed(h(1, 'Escalation path'), p('Block line'))
+  hostFrag = seed(h(1, 'Runbook'), p('Host line'))
   openSynced.mockImplementation(
-    () =>
+    (documentName) =>
       new Promise((resolve) => {
-        setTimeout(() => resolve(provider as unknown as HocuspocusProvider), 20)
+        setTimeout(() => resolve(providerFor(documentName === 'page:1' ? hostFrag : blockFrag)), 20)
       })
   )
 })
@@ -158,5 +167,48 @@ describe('drops onto a synced block', () => {
     nested.view.dom.addEventListener('drop', reachedEditor)
     fire(blockLine, 'drop')
     expect(reachedEditor).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('drops out of a synced block onto its page', () => {
+  const dragBlockLine = (nested: Editor) => {
+    const {doc} = nested.state
+    const from = doc.child(0).nodeSize
+    const to = from + doc.child(1).nodeSize
+    const session = {
+      editor: nested,
+      range: trackRange(nested, from, to),
+      sourcePageId: 'page:7',
+      movable: getMovableBlocks(doc, from, to),
+      count: 1
+    }
+    startBlockDrag(atmosphere, session, null)
+    fire(nested.view.dom.querySelector('p')!, 'dragstart')
+  }
+
+  test('a block dragged out of the block moves onto the page', async () => {
+    const {host, nested} = setup()
+    dragBlockLine(nested)
+    const tail = [...host.view.dom.querySelectorAll('p')].find((el) => el.textContent === 'Tail')!
+    const dragover = fire(tail, 'dragover')
+    const drop = fire(tail, 'drop')
+    await afterTiptapTimers()
+    expect(dragover.defaultPrevented).toBe(true)
+    expect(drop.defaultPrevented).toBe(true)
+    expect(read(hostFrag)).toEqual([h(1, 'Runbook'), p('Host line'), p('Block line')])
+    expect(nested.getText()).not.toContain('Block line')
+    expect(openSynced).toHaveBeenCalledWith('page:1', expect.any(Number))
+    const snack = emit.mock.calls.find(([event]) => event === 'addSnackbar')?.[1]
+    expect(snack).toMatchObject({secondaryAction: {label: 'Undo'}})
+  })
+
+  test('a drag out of the block that is not a block move is left to the page', () => {
+    const {host, nested} = setup()
+    const reachedPage = jest.fn()
+    host.view.dom.addEventListener('drop', reachedPage)
+    fire(nested.view.dom.querySelector('p')!, 'dragstart')
+    fire(host.view.dom.querySelector('p')!, 'drop')
+    expect(reachedPage).toHaveBeenCalledTimes(1)
+    expect(openSynced).not.toHaveBeenCalled()
   })
 })

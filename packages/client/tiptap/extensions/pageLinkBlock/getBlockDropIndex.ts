@@ -2,7 +2,7 @@ import type {Slice} from '@tiptap/pm/model'
 import {dropPoint} from '@tiptap/pm/transform'
 import type {EditorView} from '@tiptap/pm/view'
 
-export const getSyncedBlockDropIndex = (view: EditorView, event: DragEvent, slice: Slice) => {
+export const getBlockDropIndex = (view: EditorView, event: DragEvent, slice: Slice) => {
   const coords = view.posAtCoords({left: event.clientX, top: event.clientY})
   if (!coords) return undefined
   const {doc} = view.state
