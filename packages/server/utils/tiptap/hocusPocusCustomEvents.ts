@@ -1,13 +1,14 @@
 import type {Document} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
-import {applyUpdate, encodeStateAsUpdate, XmlElement, XmlText} from 'yjs'
+import {applyUpdate, encodeStateAsUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
 import {setPageLinkTitles} from './setPageLinkTitles'
+import {toYXmlNodes} from './toYXmlNodes'
 
 const withDoc = async (
   documentName: string,
@@ -130,12 +131,7 @@ export const replaceSyncedBlockWithContent = async (
   payload: {pageCode: number; content: JSONContent[] | null}
 ) => {
   const {pageCode, content} = payload
-  const replacements = content
-    ? TiptapTransformer.toYdoc({type: 'doc', content}, 'default', serverTipTapExtensions)
-        .getXmlFragment('default')
-        .toArray()
-        .filter((node) => node instanceof XmlElement || node instanceof XmlText)
-    : []
+  const replacements = content ? toYXmlNodes(content) : []
   await withDoc(documentName, (doc) => {
     const frag = doc.getXmlFragment('default')
     const walker = frag.createTreeWalker((yxml) => {

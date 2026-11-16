@@ -467,3 +467,35 @@ export const truncatePGTables = async (...tables: string[]) => {
     })
   )
 }
+
+export const subscribeToNotifications = async (token: string, query: string) => {
+  const docId = await persistQuery(query)
+  const socket = new WebSocket(`${WS_PROTOCOL}://${HOST}/`, 'graphql-transport-ws')
+  const messages: {type: string; payload?: any}[] = []
+  const listeners: (() => void)[] = []
+  socket.addEventListener('message', (event) => {
+    messages.push(JSON.parse(String(event.data)))
+    listeners.forEach((listener) => listener())
+  })
+  const waitFor = (predicate: (message: {type: string; payload?: any}) => boolean) =>
+    new Promise<{type: string; payload?: any}>((resolve) => {
+      const check = () => {
+        const message = messages.find(predicate)
+        if (message) resolve(message)
+      }
+      listeners.push(check)
+      check()
+    })
+  await new Promise((resolve) => socket.addEventListener('open', resolve))
+  socket.send(JSON.stringify({type: 'connection_init', payload: {token}}))
+  await waitFor(({type}) => type === 'connection_ack')
+  socket.send(
+    JSON.stringify({
+      id: '1',
+      type: 'subscribe',
+      payload: {query: '', docId, extensions: {ackId: 'listening'}}
+    })
+  )
+  await waitFor(({type, payload}) => type === 'ping' && payload?.ackId === 'listening')
+  return {socket, waitFor}
+}

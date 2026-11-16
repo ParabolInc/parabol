@@ -1351,7 +1351,7 @@
 
 .page-editor .block-arrived {
   background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  box-shadow: 0 0 0 2px var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-strong);
   border-radius: 0.25rem;
   transition:
     background-color 300ms,

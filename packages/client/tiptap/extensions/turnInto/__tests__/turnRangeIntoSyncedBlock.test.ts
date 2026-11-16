@@ -127,7 +127,7 @@ test('the last items of a list that ends the page keep the rest of the list and 
   expect(tr.selection.$from.parent).toBe(tr.doc.lastChild)
 })
 
-test('a leading heading names the selected blocks and stays out of their content', () => {
+test('a leading heading names the selected blocks and travels in their content', () => {
   const state = makeState(h(2, 'Runbook'), p('Call the lead'), ul('Page', 'Wait'), p('after'))
   const {doc} = state
   const range = normalizeBlockRange(
@@ -139,7 +139,7 @@ test('a leading heading names the selected blocks and stays out of their content
   expect(blocksOf(tr.doc)).toEqual(['pageLinkBlock:', 'paragraph:after'])
   expect(tr.doc.child(1).attrs).toMatchObject({
     title: 'Runbook',
-    content: [p('Call the lead'), ul('Page', 'Wait')].map(toJSON)
+    content: [h(2, 'Runbook'), p('Call the lead'), ul('Page', 'Wait')].map(toJSON)
   })
 })
 
@@ -147,7 +147,10 @@ test('a lone heading becomes the name of an empty synced block', () => {
   const state = makeState(p('before'), h(3, 'Escalation path'), p('after'))
   const tr = convert(state, unitAt(state, 'Escalation path', 'heading'))
   expect(blocksOf(tr.doc)).toEqual(['paragraph:before', 'pageLinkBlock:', 'paragraph:after'])
-  expect(tr.doc.child(2).attrs).toMatchObject({title: 'Escalation path', content: []})
+  expect(tr.doc.child(2).attrs).toMatchObject({
+    title: 'Escalation path',
+    content: [toJSON(h(3, 'Escalation path'))]
+  })
 })
 
 test('blocks led by anything but a heading become content with a blank name', () => {

@@ -18,11 +18,12 @@ jest.mock('../../CipherId', () => ({
 }))
 const mockCreateNewPage = jest.fn(async (_options: object) => ({id: NEW_PAGE_ID}))
 let mockFlagEnabled = false
+const mockIsSyncedBlocksEnabled = jest.fn(async () => mockFlagEnabled)
 jest.mock('../createNewPage', () => ({
   createNewPage: (options: object) => mockCreateNewPage(options)
 }))
 jest.mock('../isSyncedBlocksEnabled', () => ({
-  isSyncedBlocksEnabled: async () => mockFlagEnabled
+  isSyncedBlocksEnabled: () => mockIsSyncedBlocksEnabled()
 }))
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({dispose: () => {}})
@@ -111,6 +112,7 @@ beforeEach(() => {
   mockCreateNewPage.mockClear()
   mockRehostSeededAssets.mockClear()
   mockFlagEnabled = false
+  mockIsSyncedBlocksEnabled.mockClear()
 })
 
 test('records a backlink when a user links a page', async () => {
@@ -317,12 +319,80 @@ test('keeps the text as a plain sub-page when the flag is off', async () => {
   expect(link.getAttribute('content')).toBeUndefined()
 })
 
-test('removes content even when the page cannot be made', async () => {
+const escalationHeading = {
+  type: 'heading',
+  attrs: {level: 2},
+  content: [{type: 'text', text: 'Escalation path'}]
+}
+
+const insertSeededLinkInPage = (seed: unknown) => {
+  const {doc, frag} = makePage()
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, seed)
+  doc.transact(() => {
+    frag.insert(0, [link as Y.XmlElement])
+  }, asUser(EDITOR_ID))
+  return {doc, frag, link}
+}
+
+const nodeNames = (frag: Y.XmlFragment) => frag.toArray().map((n) => (n as Y.XmlElement).nodeName)
+
+test('puts the text back when the synced block page cannot be made', async () => {
   mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
-  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
-  await insertLink(link, asUser(EDITOR_ID))
-  expect(link.getAttribute('content')).toBeUndefined()
+  const {frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['paragraph'])
+  expect(frag.get(0).toString()).toContain('Call on-call first')
+})
+
+test("puts a named block's heading back at its own level", async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const {frag} = insertSeededLinkInPage([escalationHeading, seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['heading', 'paragraph'])
+  expect((frag.get(0) as Y.XmlElement).getAttribute('level')).toBe(2)
+})
+
+test('puts the text back when the flag check fails', async () => {
+  mockIsSyncedBlocksEnabled.mockRejectedValueOnce(new Error('boom'))
+  const {frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  expect(nodeNames(frag)).toEqual(['paragraph'])
+})
+
+test('adds nothing back when the link was undone before the page failed', async () => {
+  mockFlagEnabled = true
+  let rejectMint: (error: Error) => void = () => {}
+  mockCreateNewPage.mockImplementationOnce(
+    () =>
+      new Promise((_resolve, reject) => {
+        rejectMint = reject
+      })
+  )
+  const {doc, frag} = insertSeededLinkInPage([seedParagraph])
+  await flush()
+  doc.transact(() => frag.delete(0, 1), asUser(EDITOR_ID))
+  rejectMint(new Error('boom'))
+  await flush()
+  expect(frag.length).toBe(0)
+})
+
+test('names the block from the heading its seed leads with', async () => {
+  mockFlagEnabled = true
+  insertSeededLinkInPage([escalationHeading, seedParagraph])
+  await flush()
+  expect(mockCreateNewPage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      content: {
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Escalation path'}]},
+          seedParagraph
+        ]
+      }
+    })
+  )
 })
 
 test('rehosts the assets a seed carries into the new page as the inserting user', async () => {
@@ -377,3 +447,120 @@ test('leaves an ordinary page alone when its link was undone before the page was
   expect(mockUpdates).toEqual([])
   expect(setAttribute).toHaveBeenCalledWith('pageCode', NEW_PAGE_ID)
 })
+
+test('a malformed seed cannot escape the handler', async () => {
+  mockFlagEnabled = true
+  let seed: unknown = {type: 'paragraph'}
+  for (let depth = 0; depth < 20000; depth++) seed = {type: 'blockquote', content: [seed]}
+  const unhandled = jest.fn()
+  process.on('unhandledRejection', unhandled)
+  const {frag, link} = insertSeededLinkInPage([seed])
+  await flush()
+  process.off('unhandledRejection', unhandled)
+  expect(unhandled).not.toHaveBeenCalled()
+  expect(link.getAttribute('content')).toBeUndefined()
+  expect(frag.length).toBe(1)
+})
+
+const makeList = (nodeName: 'bulletList' | 'orderedList', itemTexts: string[]) => {
+  const list = new Y.XmlElement(nodeName)
+  list.insert(
+    0,
+    itemTexts.map((text) => {
+      const item = new Y.XmlElement('listItem')
+      const paragraph = new Y.XmlElement('paragraph')
+      paragraph.insert(0, [new Y.XmlText(text)])
+      item.insert(0, [paragraph])
+      return item
+    })
+  )
+  return list
+}
+
+const listItemTexts = (list: Y.XmlElement) =>
+  list.toArray().map((item) => (item as Y.XmlElement).get(0).toString())
+
+const seedListItem = (text: string) => ({
+  type: 'listItem',
+  content: [{type: 'paragraph', content: [{type: 'text', text}]}]
+})
+
+const insertLinkBetween = (
+  before: Y.XmlElement | null,
+  link: Y.XmlElement<PageLinkBlockAttrs>,
+  after: Y.XmlElement | null
+) => {
+  const {doc, frag} = makePage()
+  doc.transact(() => {
+    frag.insert(0, [...(before ? [before] : []), link as Y.XmlElement, ...(after ? [after] : [])])
+  }, asUser(EDITOR_ID))
+  return frag
+}
+
+test('puts a failed list item back in the middle of its list as one list', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+    {type: 'bulletList', content: [seedListItem('Beta')]}
+  ])
+  const frag = insertLinkBetween(
+    makeList('bulletList', ['Alpha']),
+    link,
+    makeList('bulletList', ['Gamma'])
+  )
+  await flush()
+  expect(nodeNames(frag)).toEqual(['bulletList'])
+  const items = listItemTexts(frag.get(0) as Y.XmlElement)
+  expect(items).toHaveLength(3)
+  expect(items[0]).toContain('Alpha')
+  expect(items[1]).toContain('Beta')
+  expect(items[2]).toContain('Gamma')
+})
+
+test('puts a failed first list item back at the top of the list that follows', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+    {type: 'orderedList', content: [seedListItem('One')]}
+  ])
+  const frag = insertLinkBetween(null, link, makeList('orderedList', ['Two', 'Three']))
+  await flush()
+  expect(nodeNames(frag)).toEqual(['orderedList'])
+  const items = listItemTexts(frag.get(0) as Y.XmlElement)
+  expect(items).toHaveLength(3)
+  expect(items[0]).toContain('One')
+  expect(items[1]).toContain('Two')
+  expect(items[2]).toContain('Three')
+})
+
+test('leaves the link in place when a seed is too deep to put back', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  let seed: unknown = {type: 'paragraph'}
+  for (let depth = 0; depth < 1300; depth++) seed = {type: 'blockquote', content: [seed]}
+  const unhandled = jest.fn()
+  process.on('unhandledRejection', unhandled)
+  const {frag, link} = insertSeededLinkInPage([seed])
+  await flush()
+  process.off('unhandledRejection', unhandled)
+  expect(unhandled).not.toHaveBeenCalled()
+  expect(frag.length).toBe(1)
+  expect(frag.get(0)).toBe(link)
+})
+
+test.each(['bulletList', 'orderedList'] as const)(
+  'puts a lone failed %s back whole',
+  async (listName) => {
+    mockFlagEnabled = true
+    mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+    const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+      {type: listName, content: [seedListItem('Only'), seedListItem('Two')]}
+    ])
+    const frag = insertLinkBetween(null, link, null)
+    await flush()
+    expect(nodeNames(frag)).toEqual([listName])
+    const items = listItemTexts(frag.get(0) as Y.XmlElement)
+    expect(items).toHaveLength(2)
+    expect(items[0]).toContain('Only')
+  }
+)
