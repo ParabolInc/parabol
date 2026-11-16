@@ -2,12 +2,10 @@ import type {JSONContent} from '@tiptap/core'
 import type {Schema} from '@tiptap/pm/model'
 import {prosemirrorJSONToYXmlFragment} from '@tiptap/y-tiptap'
 import * as Y from 'yjs'
+import {getFragmentAppendIndex} from '../getFragmentAppendIndex'
 import {blockSnapshot} from './blockSnapshot'
 
 export type MovedBlock = {client: number; clock: number; snapshot: string}
-
-const isEmptyParagraph = (node: ReturnType<Y.XmlFragment['get']> | undefined) =>
-  node instanceof Y.XmlElement && node.nodeName === 'paragraph' && node.length === 0
 
 export const appendBlocksToFragment = (
   frag: Y.XmlFragment,
@@ -28,13 +26,11 @@ export const appendBlocksToFragment = (
     .filter((child) => child instanceof Y.XmlElement || child instanceof Y.XmlText)
     .map((child) => child.clone())
   const moved: MovedBlock[] = []
-  const getAppendIndex = () => {
-    const last = frag.length > 0 ? frag.get(frag.length - 1) : undefined
-    return frag.length > 1 && isEmptyParagraph(last) ? frag.length - 1 : frag.length
-  }
   const insert = () => {
     const index =
-      insertIndex === undefined ? getAppendIndex() : Math.min(Math.max(insertIndex, 1), frag.length)
+      insertIndex === undefined
+        ? getFragmentAppendIndex(frag)
+        : Math.min(Math.max(insertIndex, 1), frag.length)
     frag.insert(index, clones)
     clones.forEach((clone) => {
       const id = clone._item!.id
