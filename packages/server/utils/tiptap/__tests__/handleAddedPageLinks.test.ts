@@ -461,3 +461,89 @@ test('a malformed seed cannot escape the handler', async () => {
   expect(link.getAttribute('content')).toBeUndefined()
   expect(frag.length).toBe(1)
 })
+
+const makeList = (nodeName: 'bulletList' | 'orderedList', itemTexts: string[]) => {
+  const list = new Y.XmlElement(nodeName)
+  list.insert(
+    0,
+    itemTexts.map((text) => {
+      const item = new Y.XmlElement('listItem')
+      const paragraph = new Y.XmlElement('paragraph')
+      paragraph.insert(0, [new Y.XmlText(text)])
+      item.insert(0, [paragraph])
+      return item
+    })
+  )
+  return list
+}
+
+const listItemTexts = (list: Y.XmlElement) =>
+  list.toArray().map((item) => (item as Y.XmlElement).get(0).toString())
+
+const seedListItem = (text: string) => ({
+  type: 'listItem',
+  content: [{type: 'paragraph', content: [{type: 'text', text}]}]
+})
+
+const insertLinkBetween = (
+  before: Y.XmlElement | null,
+  link: Y.XmlElement<PageLinkBlockAttrs>,
+  after: Y.XmlElement | null
+) => {
+  const {doc, frag} = makePage()
+  doc.transact(() => {
+    frag.insert(0, [...(before ? [before] : []), link as Y.XmlElement, ...(after ? [after] : [])])
+  }, asUser(EDITOR_ID))
+  return frag
+}
+
+test('puts a failed list item back in the middle of its list as one list', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+    {type: 'bulletList', content: [seedListItem('Beta')]}
+  ])
+  const frag = insertLinkBetween(
+    makeList('bulletList', ['Alpha']),
+    link,
+    makeList('bulletList', ['Gamma'])
+  )
+  await flush()
+  expect(nodeNames(frag)).toEqual(['bulletList'])
+  const items = listItemTexts(frag.get(0) as Y.XmlElement)
+  expect(items).toHaveLength(3)
+  expect(items[0]).toContain('Alpha')
+  expect(items[1]).toContain('Beta')
+  expect(items[2]).toContain('Gamma')
+})
+
+test('puts a failed first list item back at the top of the list that follows', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+    {type: 'orderedList', content: [seedListItem('One')]}
+  ])
+  const frag = insertLinkBetween(null, link, makeList('orderedList', ['Two', 'Three']))
+  await flush()
+  expect(nodeNames(frag)).toEqual(['orderedList'])
+  const items = listItemTexts(frag.get(0) as Y.XmlElement)
+  expect(items).toHaveLength(3)
+  expect(items[0]).toContain('One')
+  expect(items[1]).toContain('Two')
+  expect(items[2]).toContain('Three')
+})
+
+test('leaves the link in place when a seed is too deep to put back', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  let seed: unknown = {type: 'paragraph'}
+  for (let depth = 0; depth < 1300; depth++) seed = {type: 'blockquote', content: [seed]}
+  const unhandled = jest.fn()
+  process.on('unhandledRejection', unhandled)
+  const {frag, link} = insertSeededLinkInPage([seed])
+  await flush()
+  process.off('unhandledRejection', unhandled)
+  expect(unhandled).not.toHaveBeenCalled()
+  expect(frag.length).toBe(1)
+  expect(frag.get(0)).toBe(link)
+})

@@ -90,6 +90,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
             ]
           }
         }).catch(Logger.error)
+        isAwaitingPage = false
         if (!newPage) {
           restoreSeed(node, seedContent)
           return
@@ -98,7 +99,6 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           await trashPage(newPage.id, userId)
           return
         }
-        isAwaitingPage = false
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         if (isSyncedBlock) node.setAttribute('title', '')
         rehostSeededAssets(newPage.id, seedContent, userId)
