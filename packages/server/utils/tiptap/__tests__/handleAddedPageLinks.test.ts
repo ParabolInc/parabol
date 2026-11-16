@@ -447,3 +447,17 @@ test('leaves an ordinary page alone when its link was undone before the page was
   expect(mockUpdates).toEqual([])
   expect(setAttribute).toHaveBeenCalledWith('pageCode', NEW_PAGE_ID)
 })
+
+test('a malformed seed cannot escape the handler', async () => {
+  mockFlagEnabled = true
+  let seed: unknown = {type: 'paragraph'}
+  for (let depth = 0; depth < 20000; depth++) seed = {type: 'blockquote', content: [seed]}
+  const unhandled = jest.fn()
+  process.on('unhandledRejection', unhandled)
+  const {frag, link} = insertSeededLinkInPage([seed])
+  await flush()
+  process.off('unhandledRejection', unhandled)
+  expect(unhandled).not.toHaveBeenCalled()
+  expect(link.getAttribute('content')).toBeUndefined()
+  expect(frag.length).toBe(1)
+})

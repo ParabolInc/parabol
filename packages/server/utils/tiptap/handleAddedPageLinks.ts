@@ -3,6 +3,7 @@ import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
+import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerializedContent'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
@@ -46,7 +47,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
     const seed = node.getAttribute('content')
     if (seed !== undefined) node.removeAttribute('content')
     const childPageCode = node.getAttribute('pageCode')!
-    const seedContent = sanitizeSyncedBlockSeed(seed)
+    let seedContent: TipTapContentNode[] = []
     let isAwaitingPage = false
     try {
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
@@ -59,6 +60,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // mint a fresh page and assign it a real pageCode
         const isDatabase = node.getAttribute('database') || false
         const title = node.getAttribute('title')
+        seedContent = sanitizeSyncedBlockSeed(seed)
         isAwaitingPage = true
         let isSyncedBlock = false
         if (node.getAttribute('synced') === true) {
