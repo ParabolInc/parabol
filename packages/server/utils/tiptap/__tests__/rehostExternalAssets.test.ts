@@ -345,7 +345,7 @@ test('hosts the images a seed carries, nested or not, on the quota of the user w
   expect(mockCharges).toEqual([[INSERTER_ID, 5]])
 })
 
-test("hosts an embed card's thumbnail and favicon on the quota of the editor who added it", async () => {
+test("hosts an embed card's thumbnail, not its favicon, on the quota of the editor who added it", async () => {
   const {doc, frag} = makePage()
   const embed = makeEmbed({
     url: 'https://claude.example/artifact',
@@ -354,14 +354,26 @@ test("hosts an embed card's thumbnail and favicon on the quota of the editor who
   })
   doc.transact(() => frag.insert(0, [embed]), asConnection(INSERTER_ID).origin)
   await flush()
-  expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL, EXTERNAL_FAVICON])
-  expect(mockCharges).toEqual([
-    [INSERTER_ID, 5],
-    [INSERTER_ID, 5]
-  ])
+  expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL])
+  expect(mockCharges).toEqual([[INSERTER_ID, 5]])
   expect(embed.getAttribute('url')).toBe('https://claude.example/artifact')
   expect(embed.getAttribute('thumbnailUrl')).toMatch(HOSTED_SRC)
-  expect(embed.getAttribute('faviconUrl')).toMatch(HOSTED_SRC)
+  expect(embed.getAttribute('faviconUrl')).toBe(EXTERNAL_FAVICON)
+})
+
+test("does not fetch a planted thumbnail when another editor's client stamps the card", async () => {
+  const {doc, frag} = makePage()
+  const embed = makeEmbed({
+    url: 'https://claude.example/artifact',
+    thumbnailUrl: EXTERNAL_THUMBNAIL
+  })
+  doc.transact(() => frag.insert(0, [embed]), asConnection(undefined).origin)
+  const reader = asConnection(READER_ID)
+  doc.transact(() => embed.setAttribute('fetchedAt', new Date().toISOString()), reader.origin)
+  await flush()
+  expect(mockFetchedUrls).toEqual([])
+  expect(mockCharges).toEqual([])
+  expect(reader.sendStateless).not.toHaveBeenCalled()
 })
 
 test('hosts the thumbnail a resolve sets on an existing card, but not one a server write sets', async () => {
