@@ -171,6 +171,14 @@ export default class S3Manager extends FileStoreManager {
     )
   }
 
+  // A URL signed with temporary credentials, like those of an IRSA role, stops working when they expire
+  async getPresignedUrlMaxLifetime() {
+    const maxLifetime = await super.getPresignedUrlMaxLifetime()
+    const {expiration} = await this.s3.config.credentials()
+    if (!expiration) return maxLifetime
+    return Math.min(maxLifetime, Math.floor((expiration.getTime() - Date.now()) / 1000))
+  }
+
   async presignUrl(partialPath: PartialPath, expiresIn = 604800) {
     let fullPath: string | undefined = undefined
     if (partialPath.startsWith('/build/')) {

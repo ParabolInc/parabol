@@ -1,22 +1,39 @@
 import type {HttpResponse} from 'uWebSockets.js'
-import ms from 'ms'
 import type {PartialPath} from '../fileStorage/FileStoreManager'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {redisStoreOrNetwork} from './redisStoreOrNetwork'
 
-// A URL signed with an IAM role's credentials stops working when they expire, whatever its own expiry says.
-// The AWS SDK replaces credentials 5 minutes before they expire, so a URL is only certain to work for 5 minutes
-const PRESIGNED_URL_LIFETIME = ms('5m')
-const PRESIGNED_URL_REDIS_TTL = ms('4m')
+interface PresignedBuildUrl {
+  url: string
+  expiresAt: number
+}
 
+// leaves time to follow the redirect after the browser takes it from its cache
+const EXPIRY_MARGIN_MS = 60_000
+
+// Redis keeps a URL for half its lifetime and the browser keeps the redirect for what is left of it,
+// so a URL signed just before its credentials are replaced still works wherever it is cached
 const redirectToPresignedBuildFile = async (res: HttpResponse, partialPath: PartialPath) => {
   const manager = await getFileStoreManager()
-  const url = await redisStoreOrNetwork(
-    `presignedURL:${partialPath}`,
-    () => manager.presignUrl(partialPath, PRESIGNED_URL_LIFETIME / 1000),
-    PRESIGNED_URL_REDIS_TTL
+  const lifetimeSeconds = await manager.getPresignedUrlMaxLifetime()
+  const cachedUrl = await redisStoreOrNetwork(
+    `presignedBuildURL:${partialPath}`,
+    async () => {
+      const presignedUrl: PresignedBuildUrl = {
+        url: await manager.presignUrl(partialPath, lifetimeSeconds),
+        expiresAt: Date.now() + lifetimeSeconds * 1000
+      }
+      return JSON.stringify(presignedUrl)
+    },
+    (lifetimeSeconds * 1000) / 2
   )
-  res.writeStatus('307').writeHeader('Location', url).writeHeader('Cache-Control', 'no-store').end()
+  const {url, expiresAt} = JSON.parse(cachedUrl) as PresignedBuildUrl
+  const maxAge = Math.max(0, Math.floor((expiresAt - Date.now() - EXPIRY_MARGIN_MS) / 1000))
+  res
+    .writeStatus('307')
+    .writeHeader('Location', url)
+    .writeHeader('Cache-Control', `private, max-age=${maxAge}`)
+    .end()
 }
 
 export default redirectToPresignedBuildFile
