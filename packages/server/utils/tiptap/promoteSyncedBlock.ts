@@ -101,7 +101,6 @@ export const announcePromotedBlock = async (
   const triedHostIds = [...excludedHostIds]
   let currentHostId = hostId
   for (;;) {
-    publishSyncedBlockPlacementsChanged(blockPageId)
     let isMarked: boolean | undefined
     try {
       isMarked = await markHostLinkCanonical(currentHostId, blockPageId).catch(() =>
@@ -109,16 +108,19 @@ export const announcePromotedBlock = async (
       )
     } catch (error) {
       Logger.error(error)
-      return
+      break
     }
-    if (isMarked) return
+    if (isMarked) break
     triedHostIds.push(currentHostId)
     const nextHostId = await getKysely()
       .transaction()
       .execute((trx) => promoteSyncedBlock(trx, blockPageId, triedHostIds))
-    if (nextHostId === null) break
+    if (nextHostId === null) {
+      const ownerId = await selectBlockOwnerId(blockPageId)
+      await trashPageUnderParent(blockPageId, currentHostId, ownerId ?? actorId)
+      break
+    }
     currentHostId = nextHostId
   }
-  const ownerId = await selectBlockOwnerId(blockPageId)
-  await trashPageUnderParent(blockPageId, currentHostId, ownerId ?? actorId)
+  publishSyncedBlockPlacementsChanged(blockPageId)
 }

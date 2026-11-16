@@ -1,6 +1,6 @@
 import '../../__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
-import type {Editor} from '@tiptap/core'
+import {type Editor, Extension} from '@tiptap/core'
 import {NodeSelection} from '@tiptap/pm/state'
 import type * as Y from 'yjs'
 import type Atmosphere from '../../../../Atmosphere'
@@ -14,13 +14,16 @@ import {happyWindow} from '../../__tests__/installHappyDom'
 import {findLinkPositions, mountHost, mountNested, syncedLink} from './syncedBlockTestHarness'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../blockMove/undoBlockMove', () => ({undoBlockMove: jest.fn()}))
 jest.mock('../../../providerManager', () => ({
   providerManager: {openSynced: jest.fn(), unregister: jest.fn()}
 }))
 
 Object.defineProperty(globalThis, 'DragEvent', {value: happyWindow.DragEvent, configurable: true})
 
-const atmosphere = {commitUpdate: jest.fn()} as unknown as Atmosphere
+const emit = jest.fn()
+const atmosphere = {commitUpdate: jest.fn(), eventEmitter: {emit}} as unknown as Atmosphere
+const moveHistory = Extension.create({name: 'blockMoveHistory', addStorage: () => ({atmosphere})})
 const openSynced = jest.mocked(providerManager.openSynced)
 let blockFrag: Y.XmlFragment
 
@@ -28,7 +31,7 @@ const setup = () => {
   const host = mountHost([p('Para to drag'), p('Next'), syncedLink, p('Tail')])
   document.body.appendChild(host.view.dom.parentElement!)
   const [linkPos] = findLinkPositions(host)
-  const nested = mountNested(host, linkPos!, ['Block line'], [], {
+  const nested = mountNested(host, linkPos!, ['Block line'], [moveHistory], {
     onBlockDrop: moveBlocksIntoSyncedBlock
   })
   return {host, nested, blockLine: nested.view.dom.querySelector('p')!}
@@ -108,7 +111,13 @@ describe('drops onto a synced block', () => {
     expect(hostTexts(host)).toEqual(['Next', '', 'Tail'])
     expect(read(blockFrag)).toEqual([h(1, 'Escalation path'), p('Para to drag'), p('Block line')])
     expect(nested.getJSON()).toEqual(blockBefore)
-    expect(openSynced).toHaveBeenCalledWith('page:7', expect.any(Number), {nested: true})
+    expect(openSynced).toHaveBeenCalledWith('page:7', expect.any(Number))
+    const snack = emit.mock.calls.find(([event]) => event === 'addSnackbar')?.[1]
+    expect(snack).toMatchObject({
+      message: 'Moved 1 block to Escalation path',
+      secondaryAction: {label: 'Undo'}
+    })
+    expect(snack).not.toHaveProperty('action')
   })
 
   test.each([

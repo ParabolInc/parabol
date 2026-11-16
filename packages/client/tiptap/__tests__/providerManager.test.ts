@@ -119,3 +119,8 @@ test('meetings keep their behavior on an access change', async () => {
   await flushPromises()
   expect(provider.sendToken).not.toHaveBeenCalled()
 })
+
+test('a background write opens the page as nested so a missing page never navigates away', () => {
+  providerManager.openSynced('page:7', 1000)
+  expect(providerManager.providers['page:7']!.isNestedOnly).toBe(true)
+})

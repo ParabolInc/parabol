@@ -41,38 +41,34 @@ const redoMove = async (
     return false
   }
   let redone = false
-  const outcome = await writeToTargetPage(
-    meta.targetPageId,
-    async (frag, provider) => {
-      if (isCancelled()) return
-      const moved = appendBlocksToFragment(frag, meta.blocks, editor.schema, meta.insertIndex)
-      const saved = await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS)
-      const carriesPages = childPageCodes.length > 0
-      if (!carriesPages && (!saved || isCancelled())) {
-        removeMovedBlocks(frag, moved)
-        if (!saved && !isCancelled()) report('unsaved')
-        return
-      }
-      const linksRemoved =
-        saved &&
-        (!carriesPages ||
-          (await waitForChildLinksRemoved(editor, childPageCodes, BLOCK_MOVE_TIMEOUT_MS)))
-      if (editor.isDestroyed) return
-      if (!linksRemoved || isRestoredEdited(undoManager.doc, meta.restored ?? [])) {
-        dropStackItem(undoManager, 'redo', item)
-        report('copied')
-        return
-      }
-      const {added} = popIsolated(undoManager, 'redo', [item])
-      undoneMoves.delete(meta.blocks)
-      const movedMeta = {...meta, moved, restored: undefined}
-      if (added) setMoveMeta(added, movedMeta)
-      else if (meta.childPages) pushMoveStep(undoManager, movedMeta)
-      else return
-      redone = true
-    },
-    {nested: meta.nested}
-  )
+  const outcome = await writeToTargetPage(meta.targetPageId, async (frag, provider) => {
+    if (isCancelled()) return
+    const moved = appendBlocksToFragment(frag, meta.blocks, editor.schema, meta.insertIndex)
+    const saved = await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS)
+    const carriesPages = childPageCodes.length > 0
+    if (!carriesPages && (!saved || isCancelled())) {
+      removeMovedBlocks(frag, moved)
+      if (!saved && !isCancelled()) report('unsaved')
+      return
+    }
+    const linksRemoved =
+      saved &&
+      (!carriesPages ||
+        (await waitForChildLinksRemoved(editor, childPageCodes, BLOCK_MOVE_TIMEOUT_MS)))
+    if (editor.isDestroyed) return
+    if (!linksRemoved || isRestoredEdited(undoManager.doc, meta.restored ?? [])) {
+      dropStackItem(undoManager, 'redo', item)
+      report('copied')
+      return
+    }
+    const {added} = popIsolated(undoManager, 'redo', [item])
+    undoneMoves.delete(meta.blocks)
+    const movedMeta = {...meta, moved, restored: undefined}
+    if (added) setMoveMeta(added, movedMeta)
+    else if (meta.childPages) pushMoveStep(undoManager, movedMeta)
+    else return
+    redone = true
+  })
   if (typeof outcome === 'string' && !isCancelled()) report(outcome)
   return redone
 }

@@ -24,7 +24,6 @@ type Params = {
   targetPageId: string
   targetTitle: string
   insertIndex?: number
-  nested?: boolean
 }
 
 const resultOnly = (result: BlockMoveResult): BlockMoveOutcome => ({
@@ -42,7 +41,7 @@ const deleteFromSource = (editor: Editor, from: number, to: number, meta: BlockM
 }
 
 const moveTrackedBlocks = async (
-  {session, targetPageId, targetTitle, insertIndex, nested}: Params,
+  {session, targetPageId, targetTitle, insertIndex}: Params,
   startPoint: TrackedRange
 ): Promise<BlockMoveOutcome> => {
   const {editor, range, movable} = session
@@ -72,14 +71,12 @@ const moveTrackedBlocks = async (
         targetTitle,
         moved,
         blocks: movable.blocks,
-        insertIndex,
-        nested
+        insertIndex
       }
       if (childPageCodes.length > 0) meta.childPages = movable.childPages
       deleteFromSource(editor, current.from, current.to, meta)
       return {result: 'moved', meta, moved}
-    },
-    {nested}
+    }
   )
   return typeof outcome === 'string' ? resultOnly(outcome) : outcome
 }

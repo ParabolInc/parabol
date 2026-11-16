@@ -1,9 +1,8 @@
 import type {Editor} from '@tiptap/core'
 import {readName} from '../extensions/pageLinkBlock/useSyncedBlockName'
 import type {BlockDragSession} from './blockDragSession'
-import {getBlockMoveMessage} from './getBlockMoveMessage'
 import {moveBlocksToPage} from './moveBlocksToPage'
-import {BLOCK_MOVE_SNACK_KEY, showBlockMoveNotice} from './showBlockMoveNotice'
+import {showBlockMoveSnack} from './showBlockMoveSnack'
 
 export type SyncedBlockDrop = {
   blockEditor: Editor
@@ -19,16 +18,13 @@ export const moveBlocksIntoSyncedBlock = async ({
   insertIndex
 }: SyncedBlockDrop) => {
   const targetTitle = readName(blockEditor) || 'Synced block'
-  const outcome = await moveBlocksToPage({
-    session,
+  const outcome = await moveBlocksToPage({session, targetPageId, targetTitle, insertIndex})
+  showBlockMoveSnack({
+    atmosphere: blockEditor.storage.blockMoveHistory.atmosphere,
+    editor: session.editor,
+    outcome,
+    count: session.count,
     targetPageId,
-    targetTitle,
-    insertIndex,
-    nested: true
+    targetTitle
   })
-  if (outcome.result === 'moved') return
-  const message = getBlockMoveMessage(outcome.result, session.count, targetTitle)
-  if (!message) return
-  const {atmosphere} = blockEditor.storage.blockMoveHistory
-  showBlockMoveNotice(atmosphere, BLOCK_MOVE_SNACK_KEY, message)
 }

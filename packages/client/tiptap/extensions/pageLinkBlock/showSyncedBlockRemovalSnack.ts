@@ -29,14 +29,21 @@ type Params = {
 
 let releaseShown: (() => void) | null = null
 
-const readSyncedBlockPage = async (atmosphere: Atmosphere, pageId: string) => {
-  const data = await fetchQuery<SyncedBlockPlacesQuery>(
+const fetchPlaces = (
+  atmosphere: Atmosphere,
+  pageId: string,
+  fetchPolicy: 'network-only' | 'store-or-network'
+) =>
+  fetchQuery<SyncedBlockPlacesQuery>(
     atmosphere,
     syncedBlockPlacesQuery,
     {pageId},
-    {fetchPolicy: 'network-only'}
-  )
-    .toPromise()
+    {fetchPolicy}
+  ).toPromise()
+
+const readSyncedBlockPage = async (atmosphere: Atmosphere, pageId: string) => {
+  const data = await fetchPlaces(atmosphere, pageId, 'network-only')
+    .catch(() => fetchPlaces(atmosphere, pageId, 'store-or-network'))
     .catch(() => undefined)
   const pageRef = data?.public.page
   return pageRef

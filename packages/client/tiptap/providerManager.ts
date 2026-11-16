@@ -147,9 +147,9 @@ class ProviderManager {
     }
   }
 
-  openSynced(documentName: string, timeoutMs: number, options: {nested?: boolean} = {}) {
+  openSynced(documentName: string, timeoutMs: number) {
     return new Promise<HocuspocusProvider | null>((resolve) => {
-      const provider = this.register(documentName, options)
+      const provider = this.register(documentName, {nested: true})
       if (provider.synced) {
         resolve(provider)
         return

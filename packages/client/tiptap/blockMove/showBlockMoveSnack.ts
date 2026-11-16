@@ -12,7 +12,7 @@ import {undoBlockMove} from './undoBlockMove'
 type Params = {
   atmosphere: Atmosphere
   editor: Editor
-  navigate: (path: string) => void
+  navigate?: (path: string) => void
   outcome: BlockMoveOutcome
   count: number
   targetPageId: string
@@ -47,15 +47,16 @@ export const showBlockMoveSnack = ({
   releaseShown = release
   editor.on('destroy', onEditorDestroy)
   const [pageCode] = GQLID.fromKey(targetPageId)
-  const openPage: SnackAction | undefined = moved
-    ? {
-        label: 'Open page',
-        callback: () => {
-          setPendingArrival(targetPageId, moved)
-          navigate(`/pages/${getPageSlug(pageCode, targetTitle)}`)
+  const openPage: SnackAction | undefined =
+    moved && navigate
+      ? {
+          label: 'Open page',
+          callback: () => {
+            setPendingArrival(targetPageId, moved)
+            navigate(`/pages/${getPageSlug(pageCode, targetTitle)}`)
+          }
         }
-      }
-    : undefined
+      : undefined
   const undo: SnackAction | undefined =
     result === 'moved' && meta
       ? {

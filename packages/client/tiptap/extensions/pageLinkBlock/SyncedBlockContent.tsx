@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {useEffect} from 'react'
+import {GQLID} from '../../../utils/GQLID'
 import {type SyncedBlockChrome, SyncedBlockEditor} from './SyncedBlockEditor'
 import {SyncedBlockState} from './SyncedBlockState'
 import {type SyncedBlockStatus, useSyncedBlockProvider} from './useSyncedBlockProvider'
@@ -50,7 +51,7 @@ export const SyncedBlockContent = (props: Props) => {
   return (
     <SyncedBlockEditor
       provider={provider}
-      pageId={`page:${pageCode}`}
+      pageId={GQLID.toKey(pageCode, 'page')}
       hostEditor={hostEditor}
       getPos={getPos}
       getSize={getSize}

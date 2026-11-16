@@ -46,7 +46,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         const childPageId = CipherId.decrypt(childPageCode)
         const isSynced = node.getAttribute('synced') === true
         updateBacklinks(parentPageId, childPageId)
-          .then(() => isSynced && publishSyncedBlockPlacementsChanged(childPageId))
+          .then(() => {
+            if (isSynced) publishSyncedBlockPlacementsChanged(childPageId)
+          })
           .catch(Logger.log)
       }
       if (node.getAttribute('canonical') !== true || !userId) return

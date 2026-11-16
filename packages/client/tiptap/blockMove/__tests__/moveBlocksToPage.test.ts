@@ -172,10 +172,9 @@ test('records where a drop into a synced block landed, for redo', async () => {
     session: sessionFor(editor, 'paragraph', 0),
     targetPageId: 'page:2',
     targetTitle: 'Escalation',
-    insertIndex: 2,
-    nested: true
+    insertIndex: 2
   })
-  expect(outcome.meta).toMatchObject({insertIndex: 2, nested: true})
+  expect(outcome.meta).toMatchObject({insertIndex: 2})
 })
 
 test('tracks the gap the move left so undo can put the block back there', async () => {

@@ -135,7 +135,6 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
     isSyncedBlock
   } = props
   const pageAccess = pageRoles[role] || 'view'
-  const shownPageName = isSyncedBlock ? pageName || '<Untitled>' : pageName
 
   return (
     <Html>
@@ -178,7 +177,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                       {isSyncedBlock ? (
                         <>
                           {' wants to view the synced block '}
-                          <b>{shownPageName}</b>
+                          <b>{pageName}</b>
                           {'.'}
                         </>
                       ) : (
@@ -207,7 +206,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                   {reason}
                 </p>
               )}
-              {shownPageName && (
+              {pageName && (
                 <table
                   style={{
                     border: `3px solid ${PALETTE.SLATE_600}`,
@@ -239,7 +238,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                           color: PALETTE.SLATE_900
                         }}
                       >
-                        {shownPageName}
+                        {pageName}
                       </td>
                     </tr>
                   </tbody>

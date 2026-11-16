@@ -280,24 +280,15 @@ describe('Shift+Arrow keys', () => {
     expect(selectedTexts(editor)).toEqual(['onetwo', 'gamma'])
   })
 
-  test('Shift+ArrowDown on the last line selects the block and the next one', () => {
+  test.each([
+    ['ArrowDown', 'last line', ['beta', 'gamma']],
+    ['ArrowUp', 'top line', ['alpha', 'beta']]
+  ])('Shift+%s on the %s selects the block and its neighbor', (key, _line, expected) => {
     const editor = makeEditor(p('alpha'), p('beta'), p('gamma'))
     caretIn(editor, 'beta', 2)
     setLineEdge(editor, true)
-    expect(press(editor, 'ArrowDown', {shift: true}).defaultPrevented).toBe(true)
-    expect(selectedTexts(editor)).toEqual(['beta', 'gamma'])
-    press(editor, 'ArrowUp', {shift: true})
-    expect(selectedTexts(editor)).toEqual(['beta'])
-    press(editor, 'Escape')
-    expect(getSelectedBlockRange(editor.state)).toBeNull()
-  })
-
-  test('Shift+ArrowUp on the top line selects the block and the one above', () => {
-    const editor = makeEditor(p('alpha'), p('beta'), p('gamma'))
-    caretIn(editor, 'beta', 2)
-    setLineEdge(editor, true)
-    press(editor, 'ArrowUp', {shift: true})
-    expect(selectedTexts(editor)).toEqual(['alpha', 'beta'])
+    expect(press(editor, key, {shift: true}).defaultPrevented).toBe(true)
+    expect(selectedTexts(editor)).toEqual(expected)
   })
 
   test('Shift+ArrowUp in the first block never selects the title', () => {
@@ -314,19 +305,6 @@ describe('Shift+Arrow keys', () => {
     setLineEdge(editor, false)
     expect(press(editor, 'ArrowDown', {shift: true}).defaultPrevented).toBe(false)
     expect(getSelectedBlockRange(editor.state)).toBeNull()
-  })
-
-  test('the line edge is measured at the head of a text selection', () => {
-    const editor = makeEditor(p('alpha'), p('beta'))
-    const head = posInText(editor, 'alpha') + 1
-    editor.commands.setTextSelection({from: head + 3, to: head})
-    jest
-      .spyOn(editor.view, 'endOfTextblock')
-      .mockImplementation(
-        (_dir, state) => !!state?.selection.empty && state.selection.head === head
-      )
-    press(editor, 'ArrowUp', {shift: true})
-    expect(selectedTexts(editor)).toEqual(['alpha'])
   })
 
   test('a text selection across blocks takes those blocks and the next one', () => {

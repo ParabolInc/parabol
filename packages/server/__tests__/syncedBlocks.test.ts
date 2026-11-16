@@ -948,6 +948,7 @@ describe('a synced block on its own', () => {
     const {userId, cookie} = user
     const {originalHost, block} = await seedSyncedBlock(userId)
     await seedDoc(originalHost, [paragraph('Host')])
+    await pg.updateTable('Page').set({title: 'Escalation'}).where('id', '=', block).execute()
     expect((await archive(cookie, block, 'archive')).errors).toBeUndefined()
     expect((await archive(cookie, originalHost, 'archive')).errors).toBeUndefined()
     const refused = await archive(cookie, block, 'restore')
@@ -961,6 +962,7 @@ describe('a synced block on its own', () => {
     expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, deletedAt: null})
     const doc = await waitForDoc(originalHost, hasLink)
     expect(JSON.stringify(doc)).toContain('"synced":true')
+    expect(JSON.stringify(doc)).not.toContain('Escalation')
   })
 
   test('an ordinary sub-page whose parent is in Trash still restores to the top level', async () => {

@@ -71,7 +71,7 @@ const openMenuOnSelection = async (
   blocks: JSONContent[],
   first: number,
   last: number,
-  canCreateSubPage = false,
+  canCreateSubPage = true,
   editable = true
 ) => {
   const activeEditor = new Editor({
@@ -171,7 +171,7 @@ afterAll(async () => {
 
 describe('the menu on a block selection', () => {
   test('counts the blocks and offers only Duplicate, Move to… and Delete', async () => {
-    await openMenuOnSelection([callout('one'), p('two'), p('three'), p('four')], 1, 3)
+    await openMenuOnSelection([callout('one'), p('two'), p('three'), p('four')], 1, 3, false)
     expect(header()).toBe('3 blocks')
     expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
       'Duplicate',
@@ -207,7 +207,7 @@ describe('the menu on a block selection', () => {
   })
 
   test('a selection offers Turn into synced block', async () => {
-    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2)
     expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
       'Duplicate',
       'Turn',
@@ -218,7 +218,7 @@ describe('the menu on a block selection', () => {
   })
 
   test('Turn into synced block moves the selected blocks into one synced block', async () => {
-    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
+    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2)
     await click(itemNamed('Turn into synced block'))
     const link = editor!.state.doc.child(1)
     expect(link.attrs).toMatchObject({pageCode: -1, synced: true, title: ''})
@@ -450,7 +450,7 @@ const openMenuOnBlock = async (
   blocks: JSONContent[],
   index: number,
   editable = true,
-  canCreateSubPage = false
+  canCreateSubPage = true
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
@@ -541,7 +541,7 @@ describe('Turn into synced block on a block with no Turn into', () => {
     ['table', table],
     ['image', image]
   ])('a lone %s becomes the content of a synced block with a blank name', async (_name, block) => {
-    await openMenuOnBlock([p('before'), block, p('after')], 2, true, true)
+    await openMenuOnBlock([p('before'), block, p('after')], 2)
     expect(items().some((item) => item.textContent?.startsWith('Turn into synced block'))).toBe(
       true
     )
@@ -568,12 +568,12 @@ describe('Turn into synced block on a block with no Turn into', () => {
 
   test('is not offered on a page link', async () => {
     const link = {type: 'pageLinkBlock', attrs: {pageCode: 5, title: 'Other', canonical: true}}
-    await openMenuOnBlock([p('before'), link, p('after')], 2, true, true)
+    await openMenuOnBlock([p('before'), link, p('after')], 2)
     expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
   })
 
   test('a block with Turn into keeps it in the submenu', async () => {
-    await openMenuOnBlock([p('one'), p('two')], 1, true, true)
+    await openMenuOnBlock([p('one'), p('two')], 1)
     expect(items().some((item) => item.textContent?.startsWith('Turn into synced block'))).toBe(
       false
     )

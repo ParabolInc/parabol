@@ -333,7 +333,7 @@ test('a viewer sees no placeholder in an empty block', () => {
 
 const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 
-const mountView = (link = syncedLink, {isJustMade = false} = {}) => {
+const mountView = (link = syncedLink, {isJustMade = false, isHostFocused = false} = {}) => {
   const host = new Editor({
     element: document.createElement('div'),
     extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
@@ -341,6 +341,7 @@ const mountView = (link = syncedLink, {isJustMade = false} = {}) => {
   })
   const linkPos = findLinkPositions(host)[0]!
   hostRef.current = host
+  host.isFocused = isHostFocused
   mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
   const node = host.state.doc.nodeAt(linkPos)!
   if (isJustMade) focusSyncedBlockOnMount(node)
@@ -381,6 +382,9 @@ test('keeps the bar while the places menu is open', async () => {
   await flushTimers()
   expect(copyButton()).toBeUndefined()
   expect(text()).toContain('Escalation path')
+  mockFetchQuery.mockClear()
+  act(() => mockPlacementsChange())
+  expect(mockFetchQuery).not.toHaveBeenCalled()
   outside.remove()
 })
 
@@ -406,14 +410,13 @@ const nestedCaret = () => {
   return {text: $from.parent.textContent, offset: $from.parentOffset}
 }
 
-test('a block just made from the slash menu or Turn into takes the caret once its editor is ready', () => {
-  mountView(syncedLink, {isJustMade: true})
-  expect(nestedCaret()).toEqual({text: 'Sev 1: page the on-call lead.', offset: 29})
-})
-
-test('a block that was already on the page leaves the caret alone', () => {
-  mountView()
-  expect(nestedCaret()).toEqual({text: 'Escalation path', offset: 0})
+test.each([
+  ['a block just made takes the caret once its editor is ready', true, true, 29],
+  ['a block just made leaves the caret alone once the user moved on', true, false, 0],
+  ['a block that was already on the page leaves the caret alone', false, true, 0]
+])('%s', (_name, isJustMade, isHostFocused, offset) => {
+  mountView(syncedLink, {isJustMade, isHostFocused})
+  expect(nestedCaret().offset).toBe(offset)
 })
 
 const mountFocusedView = (link = syncedLink) => {

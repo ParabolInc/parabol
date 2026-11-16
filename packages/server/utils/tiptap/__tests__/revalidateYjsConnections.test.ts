@@ -93,9 +93,12 @@ afterAll(async () => {
 
 test('closes a connection whose page access was removed and keeps the others open', async () => {
   const pageId = await makePage('editor')
+  const otherPageId = await makePage('editor')
   const owner = makeConnection(ownerId)
   const collaborator = makeConnection(collaboratorId)
+  const collaboratorOnOtherPage = makeConnection(collaboratorId)
   openPage(pageId, [owner, collaborator])
+  openPage(otherPageId, [collaboratorOnOtherPage])
 
   await pg
     .deleteFrom('PageUserAccess')
@@ -109,6 +112,7 @@ test('closes a connection whose page access was removed and keeps the others ope
   expect(collaborator.close).toHaveBeenCalledWith({code: 4403, reason: 'AccessChanged'})
   expect(collaborator.webSocket.close).not.toHaveBeenCalled()
   expect(owner.close).not.toHaveBeenCalled()
+  expect(collaboratorOnOtherPage.close).not.toHaveBeenCalled()
 })
 
 test('closes a connection whose role no longer matches its read-only state', async () => {

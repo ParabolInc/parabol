@@ -17,8 +17,11 @@ import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
-import {dispatchBlockConversion} from './turnInto/dispatchBlockConversion'
-import {getBlockRange, getSyncedBlockConversion} from './turnInto/getSyncedBlockConversion'
+import {
+  dispatchSyncedBlockConversion,
+  getBlockRange,
+  getSyncedBlockConversion
+} from './turnInto/getSyncedBlockConversion'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
@@ -59,13 +62,12 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
 
-  const getSyncedBlockTransaction = () =>
-    getSyncedBlockConversion(
-      editor,
-      selection ? getSelectedBlockRange(editor.state) : getBlockRange(editor, node, pos)
-    )
+  const getSyncedBlockRange = () =>
+    selection ? getSelectedBlockRange(editor.state) : getBlockRange(editor, node, pos)
   const showTurnIntoSyncedBlock =
-    canCreateSubPage && !turnIntoCurrent && !!getSyncedBlockTransaction()
+    canCreateSubPage &&
+    !turnIntoCurrent &&
+    !!getSyncedBlockConversion(editor, getSyncedBlockRange())
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -102,8 +104,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleTurnIntoSyncedBlock = () => {
-    const tr = getSyncedBlockTransaction()
-    if (tr) dispatchBlockConversion(editor, tr, pos)
+    dispatchSyncedBlockConversion(editor, getSyncedBlockRange(), pos)
   }
 
   const handleMoveTo = () => {

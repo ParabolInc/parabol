@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {GQLID} from '../../../utils/GQLID'
 import {providerManager} from '../../providerManager'
 import {useReauthenticateOnAccess} from './useReauthenticateOnAccess'
 
@@ -7,7 +8,7 @@ export type SyncedBlockStatus = 'loading' | 'ready' | 'locked' | 'error'
 export const SYNCED_BLOCK_LOAD_TIMEOUT_MS = 15000
 
 export const useSyncedBlockProvider = (pageCode: number) => {
-  const documentName = `page:${pageCode}`
+  const documentName = GQLID.toKey(pageCode, 'page')
   const [attempt, setAttempt] = useState(0)
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
   const provider = useMemo(

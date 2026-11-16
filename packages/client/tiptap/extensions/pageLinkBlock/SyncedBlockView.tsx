@@ -24,6 +24,7 @@ import {SYNCED_BLOCK_RENAME_EVENT} from './startSyncedBlockRename'
 import {
   clearSyncedBlockFocusRequest,
   hasSyncedBlockFocusRequest,
+  isCaretBesideLink,
   placeInNested
 } from './syncedBlockFocus'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
@@ -76,6 +77,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const isHeldOpen = openMenus > 0 || isRenaming || isCheckingUnsync || dialog !== null
   const isFocused = hasFocusWithin || isNodeSelected
   const showBar = !!chrome && (isFocused || isHeldOpen)
+  const showBarRef = useRef(showBar)
+  showBarRef.current = showBar
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
     if (isHeldOpen) return
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
@@ -87,6 +90,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   }, [])
   const handlePlacementsChange = useCallback(() => {
     markSyncedBlockPlacesStale(pageCode)
+    if (!showBarRef.current) return
     fetchQuery<SyncedBlockPlacesQuery>(
       atmosphere,
       syncedBlockPlacesQuery,
@@ -108,7 +112,10 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     if (!focusRequest || !chrome || chrome.isViewOnly) return
     setFocusRequest(null)
     clearSyncedBlockFocusRequest(focusRequest)
-    placeInNested(chrome.editor, 'end', null)
+    const pos = getPos()
+    if (pos !== undefined && isCaretBesideLink(editor, pos, sizeRef.current)) {
+      placeInNested(chrome.editor, 'end', null)
+    }
   }, [focusRequest, chrome])
   useEffect(() => {
     if (isHeldOpen) return

@@ -184,6 +184,7 @@ test('the removal plugin ignores an unsync', () => {
 describe('the removal snack', () => {
   const placesData = {
     public: {
+      id: 'public',
       page: {
         id: 'page:7',
         access: {viewer: 'owner'},
@@ -199,8 +200,10 @@ describe('the removal snack', () => {
     }
   }
 
-  const mountWithSnack = (serverData: typeof placesData = placesData) => {
-    const fetchFromNetwork = jest.fn(() => Promise.resolve({data: serverData}))
+  const mountWithSnack = (serverData: typeof placesData | null = placesData) => {
+    const fetchFromNetwork = jest.fn(() =>
+      serverData ? Promise.resolve({data: serverData}) : Promise.reject(new Error('offline'))
+    )
     const environment = new Environment({
       network: Network.create(fetchFromNetwork),
       store: new Store(new RecordSource())
@@ -261,6 +264,7 @@ describe('the removal snack', () => {
     const pasted = {isOriginal: false, page: {id: 'page:5', title: 'Wiki', deletedAt: null}}
     const {page, shown, lastSnack} = mountWithSnack({
       public: {
+        ...placesData.public,
         page: {
           ...placesData.public.page,
           syncedBlockPlacements: {...placements, pages: [...placements.pages, pasted]}
@@ -271,6 +275,13 @@ describe('the removal snack', () => {
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)
     expect(lastSnack()).toMatchObject({message: 'Removed here. Still on 2 pages.'})
+  })
+
+  test('falls back to the places the store remembers when offline', async () => {
+    const {page, shown, lastSnack} = mountWithSnack(null)
+    page.view.dispatch(deleteLinkAt(page, firstLinkPos(page)))
+    await Promise.all(shown)
+    expect(lastSnack()).toMatchObject({message: 'Removed here. Still on 1 page.'})
   })
 
   test('undo does nothing once the editor is gone', async () => {
@@ -300,6 +311,7 @@ describe('the removal snack', () => {
   test('names the page that already holds the original when the server has caught up', async () => {
     const promoted = {
       public: {
+        ...placesData.public,
         page: {
           ...placesData.public.page,
           syncedBlockPlacements: {

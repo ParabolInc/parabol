@@ -8,7 +8,11 @@ import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
 import {dispatchBlockConversion} from './dispatchBlockConversion'
-import {getBlockRange, getSyncedBlockConversion} from './getSyncedBlockConversion'
+import {
+  dispatchSyncedBlockConversion,
+  getBlockRange,
+  getSyncedBlockConversion
+} from './getSyncedBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
 
@@ -31,14 +35,10 @@ export const TurnIntoMenu = (props: Props) => {
     ({target}) => target.type === current.type && target.level === current.level
   )
 
-  const getSyncedBlockTransaction = () =>
-    getSyncedBlockConversion(editor, getBlockRange(editor, node, pos))
-  const showSyncedBlock = canCreateSubPage && !!getSyncedBlockTransaction()
+  const getRange = () => getBlockRange(editor, node, pos)
+  const showSyncedBlock = canCreateSubPage && !!getSyncedBlockConversion(editor, getRange())
 
-  const isStale = () => {
-    const {doc} = editor.state
-    return !editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)
-  }
+  const isStale = () => !editor.isEditable || !getRange()
 
   const handleValueChange = (title: string) => {
     if (isStale()) return
@@ -48,8 +48,7 @@ export const TurnIntoMenu = (props: Props) => {
   }
 
   const handleSyncedBlock = () => {
-    const tr = getSyncedBlockTransaction()
-    if (tr) dispatchBlockConversion(editor, tr, pos)
+    dispatchSyncedBlockConversion(editor, getRange(), pos)
   }
 
   return (

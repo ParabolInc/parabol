@@ -36,6 +36,14 @@ export const clearSyncedBlockFocusRequest = (link: ProseMirrorNode) => {
   focusRequests.delete(link)
 }
 
+export const isCaretBesideLink = (editor: Editor, linkPos: number, linkSize: number) => {
+  const {selection, doc} = editor.state
+  if (!editor.isFocused || !selection.empty) return false
+  const $after = doc.resolve(linkPos + linkSize)
+  const caret = Selection.findFrom($after, 1, true) ?? Selection.findFrom($after, -1, true)
+  return caret?.from === selection.from
+}
+
 export const placeInNested = (editor: Editor, edge: Edge, x: number | null) => {
   const {state, view} = editor
   const {doc} = state

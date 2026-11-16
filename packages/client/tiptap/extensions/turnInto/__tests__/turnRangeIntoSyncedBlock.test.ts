@@ -68,10 +68,10 @@ const unitAt = (state: EditorState, label: string, type: string) => {
   return range
 }
 const convert = (state: EditorState, range: Parameters<typeof turnRangeIntoSyncedBlock>[1]) => {
-  const tr = turnRangeIntoSyncedBlock(state, range)
-  if (!tr) throw new Error('Expected a transaction')
-  tr.doc.check()
-  return tr
+  const conversion = turnRangeIntoSyncedBlock(state, range)
+  if (!conversion) throw new Error('Expected a transaction')
+  conversion.tr.doc.check()
+  return conversion.tr
 }
 const blocksOf = (doc: Node) => {
   const blocks: string[] = []

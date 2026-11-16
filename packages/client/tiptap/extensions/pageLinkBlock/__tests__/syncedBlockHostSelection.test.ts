@@ -24,8 +24,9 @@ jest.mock('@tiptap/react', () => {
 type ViewWithInput = {input: {mouseDown: object | null}}
 
 test('a click in the host ignores the caret left behind in a synced block', () => {
+  const element = document.body.appendChild(document.createElement('div'))
   const host = new Editor({
-    element: document.body.appendChild(document.createElement('div')),
+    element,
     extensions: [StarterKit, PageLinkBlock.configure({yDoc: new Y.Doc()})],
     content: {
       type: 'doc',
@@ -41,5 +42,7 @@ test('a click in the host ignores the caret left behind in a synced block', () =
   host.view.dom.focus()
   input.mouseDown = null
   expect(host.state.selection.toJSON()).toEqual({type: 'text', anchor: 3, head: 3})
+  nested.destroy()
   host.destroy()
+  element.remove()
 })
