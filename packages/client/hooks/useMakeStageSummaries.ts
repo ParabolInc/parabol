@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
+import type {PokerSidebarStoryTitle_task$key} from '../__generated__/PokerSidebarStoryTitle_task.graphql'
 import type {useMakeStageSummaries_phase$key} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
 interface StageSummary {
   title: string
-  subtitle: string
+  integratedTask: PokerSidebarStoryTitle_task$key | null
   isComplete: boolean
   isNavigable: boolean
   isActive: boolean
@@ -23,44 +24,8 @@ graphql`
     taskId
     task {
       title
-      integration {
-        ... on AzureDevOpsWorkItem {
-          __typename
-          title
-          workItemKey: issueKey
-        }
-        ... on JiraIssue {
-          __typename
-          title
-          issueKey
-        }
-        ... on JiraServerIssue {
-          __typename
-          title
-          issueKey
-        }
-        ... on _xGitHubIssue {
-          __typename
-          title
-          number
-        }
-        ... on _xGitLabIssue {
-          __typename
-          title
-          iid
-        }
-        ... on _xLinearIssue {
-          __typename
-          title
-          identifier
-        }
-        ... on ClickUpTask {
-          __typename
-          title
-          taskId
-          customId
-        }
-      }
+      integrationHash
+      ...PokerSidebarStoryTitle_task @defer
     }
   }
 `
@@ -93,62 +58,9 @@ const useMakeStageSummaries = (
         if (nextStage?.taskId !== taskId) break
         batch.push(nextStage)
       }
-      const getSummary = () => {
-        if (!task) {
-          return {
-            title: '<Unknown Story>',
-            subtitle: ''
-          }
-        }
-        const {integration, title} = task
-        if (!integration) {
-          // pure parabol task
-          return {
-            title,
-            subtitle: ''
-          }
-        }
-        switch (integration.__typename) {
-          case 'JiraIssue':
-          case 'JiraServerIssue':
-            return {
-              title: integration.title,
-              subtitle: integration.issueKey
-            }
-          case 'AzureDevOpsWorkItem':
-            return {
-              title: integration.title,
-              subtitle: `#${integration.workItemKey}`
-            }
-          case '_xGitHubIssue':
-            return {
-              title: integration.title,
-              subtitle: `#${integration.number}`
-            }
-          case '_xGitLabIssue':
-            return {
-              title: integration.title,
-              subtitle: `#${integration.iid}`
-            }
-          case '_xLinearIssue':
-            return {
-              title: integration.title,
-              subtitle: `${integration.identifier}`
-            }
-          case 'ClickUpTask':
-            return {
-              title: integration.title,
-              subtitle: integration.customId ?? integration.taskId
-            }
-          default:
-            return {
-              title: '<Unknown Story>',
-              subtitle: ''
-            }
-        }
-      }
       summaries.push({
-        ...getSummary(),
+        title: task?.title ?? '<Unknown Story>',
+        integratedTask: task?.integrationHash ? task : null,
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),

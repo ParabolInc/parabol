@@ -8,7 +8,7 @@ import PokerSidebarEstimateSection from '../PokerSidebarEstimateSection'
 
 interface Summary {
   title: string
-  subtitle: string
+  integratedTask: null
   isComplete: boolean
   isNavigable: boolean
   isActive: boolean
@@ -50,7 +50,7 @@ jest.mock('../PokerSidebarEstimateMeta', () => ({__esModule: true, default: () =
 
 const makeSummary = (stageId: string, taskId: string, title: string): Summary => ({
   title,
-  subtitle: '',
+  integratedTask: null,
   isComplete: false,
   isNavigable: true,
   isActive: false,
