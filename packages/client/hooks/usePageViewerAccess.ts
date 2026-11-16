@@ -79,3 +79,9 @@ export const usePageIsMeetingTOC = (pageCode: number) => {
   const subscribe = usePageSubscription(pageCode)
   return useSyncExternalStore(subscribe, () => !!lookupPage(atmosphere, pageCode)?.isMeetingTOC)
 }
+
+export const usePageViewerGrant = (pageCode: number) => {
+  const atmosphere = useAtmosphere()
+  const subscribe = usePageSubscription(pageCode)
+  return useSyncExternalStore(subscribe, () => lookupPageViewerGrant(atmosphere, pageCode))
+}
