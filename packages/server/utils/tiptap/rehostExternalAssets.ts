@@ -13,28 +13,36 @@ import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {replacePageAssetSrc} from './hocusPocusHub'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 
-const EMBEDDABLE_NODE_NAMES = new Set(['imageBlock', 'fileBlock'])
 const MAX_CONCURRENT_PER_USER = 3
 
-const isEmbeddable = (node: unknown): node is Y.XmlElement =>
-  node instanceof Y.XmlElement && EMBEDDABLE_NODE_NAMES.has(node.nodeName)
+const getAssetAttrs = (node: unknown) =>
+  node instanceof Y.XmlElement ? PAGE_ASSET_ATTRS.get(node.nodeName) : undefined
 
-const getChangedEmbeds = (e: Y.YEvent<any>) => {
-  const embeds: Y.XmlElement[] = []
+const isAssetNode = (node: unknown): node is Y.XmlElement => !!getAssetAttrs(node)
+
+const getChangedSrcs = (e: Y.YEvent<any>) => {
+  const srcs: unknown[] = []
+  const addSrcs = (node: Y.XmlElement, attrs: readonly string[]) => {
+    attrs.forEach((attr) => srcs.push(node.getAttribute(attr)))
+  }
   e.changes.added.forEach((item) => {
     item.content.getContent().forEach((content) => {
       if (!(content instanceof Y.XmlElement)) return
-      if (isEmbeddable(content)) embeds.push(content)
-      for (const node of content.createTreeWalker(isEmbeddable)) {
-        embeds.push(node as Y.XmlElement)
-      }
+      const nodes = [content, ...content.createTreeWalker(isAssetNode)]
+      nodes.forEach((node) => {
+        const attrs = getAssetAttrs(node)
+        if (attrs) addSrcs(node as Y.XmlElement, attrs)
+      })
     })
   })
-  if (e instanceof Y.YXmlEvent && e.attributesChanged.has('src') && isEmbeddable(e.target)) {
-    embeds.push(e.target)
+  if (e instanceof Y.YXmlEvent) {
+    const attrs = getAssetAttrs(e.target)
+    const changedAttrs = attrs?.filter((attr) => e.attributesChanged.has(attr))
+    if (changedAttrs?.length) addSrcs(e.target as Y.XmlElement, changedAttrs)
   }
-  return embeds
+  return srcs
 }
 
 // A drag deletes a block and adds a copy in the same transaction. Moving an asset someone else added isn't adding it
@@ -47,9 +55,12 @@ const getMovedSrcs = (transaction: Y.Transaction) => {
   Y.iterateDeletedStructs(transaction, transaction.deleteSet, (struct) => {
     if (!(struct instanceof Y.Item)) return
     const [node] = struct.content.getContent()
-    if (!isEmbeddable(node)) return
-    const src = getUnsafeDeletedAttribute(node, 'src', true)
-    if (typeof src === 'string') movedSrcs.add(src)
+    const attrs = getAssetAttrs(node)
+    if (!attrs) return
+    attrs.forEach((attr) => {
+      const src = getUnsafeDeletedAttribute(node as Y.XmlElement, attr, true)
+      if (typeof src === 'string') movedSrcs.add(src)
+    })
   })
   movedSrcsByTransaction.set(transaction, movedSrcs)
   return movedSrcs
@@ -140,12 +151,11 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
   const {origin} = transaction
   const connection =
     isTransactionOrigin(origin) && origin.source === 'connection' ? origin.connection : undefined
-  const embeds = getChangedEmbeds(e)
-  if (embeds.length === 0) return
+  const srcs = getChangedSrcs(e)
+  if (srcs.length === 0) return
   const pageCode = CipherId.encrypt(pageId)
   const movedSrcs = getMovedSrcs(transaction)
-  embeds.forEach((node) => {
-    const src = node.getAttribute('src')
+  srcs.forEach((src) => {
     if (typeof src !== 'string' || movedSrcs.has(src)) return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
@@ -155,10 +165,12 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
 
 export const rehostSeededAssets = (pageId: number, content: JSONContent[], userId: string) => {
   const pageCode = CipherId.encrypt(pageId)
-  const embeds = [...EMBEDDABLE_NODE_NAMES].flatMap((nodeType) =>
-    getAllNodesAttributesByType<{src?: unknown}>({content}, nodeType)
+  const srcs = [...PAGE_ASSET_ATTRS].flatMap(([nodeType, attrs]) =>
+    getAllNodesAttributesByType<Record<string, unknown>>({content}, nodeType).flatMap((nodeAttrs) =>
+      attrs.map((attr) => nodeAttrs[attr])
+    )
   )
-  embeds.forEach(({src}) => {
+  srcs.forEach((src) => {
     if (typeof src !== 'string') return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return

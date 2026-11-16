@@ -7,10 +7,18 @@ jest.mock('../../embed/resolveEmbed', () => ({
   resolveEmbed: (url: string) => mockResolveEmbed(url)
 }))
 
+jest.mock('../../../appOrigin', () => ({__esModule: true, default: 'https://parabol.test'}))
+
 const DAY = 24 * 60 * 60 * 1000
 
 const makeDoc = (
-  embeds: {url: string; fetchedAt?: string; title?: string; embedSrc?: string}[]
+  embeds: {
+    url: string
+    fetchedAt?: string
+    title?: string
+    embedSrc?: string
+    thumbnailUrl?: string
+  }[]
 ) => {
   const doc = new Y.Doc()
   const frag = doc.getXmlFragment('default')
@@ -23,6 +31,7 @@ const makeDoc = (
     if (attrs.fetchedAt) el.setAttribute('fetchedAt', attrs.fetchedAt)
     if (attrs.title) el.setAttribute('title', attrs.title)
     if (attrs.embedSrc) el.setAttribute('embedSrc', attrs.embedSrc)
+    if (attrs.thumbnailUrl) el.setAttribute('thumbnailUrl', attrs.thumbnailUrl)
     return el
   })
   frag.insert(0, nodes)
@@ -351,5 +360,26 @@ describe('syncPageEmbeds', () => {
 
     random.mockRestore()
     expect(mockResolveEmbed).toHaveBeenCalledWith('https://alive.example.com/')
+  })
+
+  it('keeps a hosted copy of the thumbnail when a refresh reports the external original', async () => {
+    const hostedThumbnail = 'https://parabol.test/assets/Page/10/assets/og.png'
+    const {doc, nodes} = makeDoc([
+      {url: 'https://a.example.com/1', fetchedAt: ancient(), thumbnailUrl: hostedThumbnail}
+    ])
+    mockResolveEmbed.mockResolvedValue({
+      metadata: {
+        url: 'https://a.example.com/1',
+        title: 'New title',
+        thumbnailUrl: 'https://a.example.com/og.png',
+        fetchedAt: new Date().toISOString()
+      },
+      isFallback: false
+    })
+
+    await syncPageEmbeds(doc)
+
+    expect(nodes[0]!.getAttribute('thumbnailUrl')).toBe(hostedThumbnail)
+    expect(nodes[0]!.getAttribute('title')).toBe('New title')
   })
 })
