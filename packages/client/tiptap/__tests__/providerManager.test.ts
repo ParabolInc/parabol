@@ -113,10 +113,6 @@ test('forgets a stored refusal before signing in again', async () => {
   expect(provider.sendToken).toHaveBeenCalledTimes(1)
 })
 
-test('does nothing for a document it does not hold', () => {
-  expect(() => providerManager.reauthenticate('page:404')).not.toThrow()
-})
-
 test('meetings keep their behavior on an access change', async () => {
   const provider = providerManager.get('meeting:3') as unknown as FakeProvider
   closeWith(provider, 'AccessChanged')

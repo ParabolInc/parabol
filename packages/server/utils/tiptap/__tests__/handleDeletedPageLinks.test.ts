@@ -59,7 +59,12 @@ jest.mock('../../../dataloader/pageAccessByUserIdBatchFn', () => ({
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
-const mockUpdateBacklinks = jest.fn(async (..._args: unknown[]) => {})
+const mockBacklinkDeletes: unknown[][] = []
+const mockUpdateBacklinks = jest.fn(async (...args: unknown[]) => {
+  await null
+  mockBacklinkDeletes.push(args)
+})
+const mockPlacementPings: {blockPageId: number; backlinkDeletes: unknown[][]}[] = []
 const mockAnnounce = jest.fn()
 const mockPromote = jest.fn(async (..._args: unknown[]): Promise<number | null> => null)
 jest.mock('../updateBacklinks', () => ({
@@ -69,7 +74,11 @@ jest.mock('../promoteSyncedBlock', () => ({
   promoteSyncedBlock: (...args: unknown[]) => mockPromote(...args),
   announcePromotedBlock: (...args: unknown[]) => mockAnnounce(...args)
 }))
-jest.mock('../hocusPocusHub', () => ({removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {})}))
+jest.mock('../hocusPocusHub', () => ({
+  removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {}),
+  publishSyncedBlockPlacementsChanged: (blockPageId: number) =>
+    mockPlacementPings.push({blockPageId, backlinkDeletes: [...mockBacklinkDeletes]})
+}))
 
 const PARENT_PAGE_ID = 10
 const CHILD_PAGE_ID = 11
@@ -102,6 +111,8 @@ const addAndDeleteLink = async (pageId: number, linkedPageId: number, userId: st
 
 beforeEach(() => {
   mockUpdateBacklinks.mockClear()
+  mockBacklinkDeletes.length = 0
+  mockPlacementPings.length = 0
   mockAnnounce.mockClear()
   mockPromote.mockReset()
   mockPromote.mockResolvedValue(null)
@@ -237,10 +248,12 @@ test('promotes a copy on the same page in place and keeps the backlink', async (
   expect(mockArchivedPageIds).toEqual([])
 })
 
-test('removing a copy only drops the backlink', async () => {
+test('removing a copy only drops the backlink, then tells the block its placements changed', async () => {
   removeLink(asUser(EDITOR_ID), {canonical: false}, OTHER_PAGE_ID)
   await flush()
-  expect(mockUpdateBacklinks).toHaveBeenCalledWith(OTHER_PAGE_ID, null, CHILD_PAGE_ID)
+  expect(mockPlacementPings).toEqual([
+    {blockPageId: CHILD_PAGE_ID, backlinkDeletes: [[OTHER_PAGE_ID, null, CHILD_PAGE_ID]]}
+  ])
   expect(mockPromote).not.toHaveBeenCalled()
   expect(mockArchivedPageIds).toEqual([])
 })

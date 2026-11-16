@@ -6,10 +6,10 @@ export const isChildPageLink = (node: unknown): node is Y.XmlElement =>
   node.getAttribute('canonical') === true &&
   Number(node.getAttribute('pageCode')) !== -1
 
-export const holdsChildPageLink = (node: unknown, pageCodes: ReadonlySet<number>): boolean => {
-  if (!(node instanceof Y.XmlFragment)) return false
-  if (isChildPageLink(node)) return pageCodes.has(Number(node.getAttribute('pageCode')))
-  return node.toArray().some((child) => holdsChildPageLink(child, pageCodes))
+export const childPageCodesIn = (node: unknown): number[] => {
+  if (!(node instanceof Y.XmlFragment)) return []
+  if (isChildPageLink(node)) return [Number(node.getAttribute('pageCode'))]
+  return node.toArray().flatMap(childPageCodesIn)
 }
 
 // The server moves child pages by adding and removing their links, so those changes aren't anyone's edit
@@ -24,3 +24,6 @@ export const blockSnapshot = (node: unknown): string => {
   const name = node.nodeName.toLocaleLowerCase()
   return `<${name}${attrString}>${node.toArray().map(blockSnapshot).join('')}</${name}>`
 }
+
+export const isBlockEdited = (node: unknown, snapshot: string) =>
+  blockSnapshot(node) !== snapshot || childPageCodesIn(node).length > 0

@@ -1,11 +1,12 @@
 import type {Editor} from '@tiptap/core'
 import type * as Y from 'yjs'
 import {appendBlocksToFragment} from './appendBlocksToFragment'
-import {enqueue, type PendingRedo, undoneMoves} from './blockMoveHistoryState'
+import {enqueueStep, type PendingStep, undoneMoves} from './blockMoveHistoryState'
 import {
   type BlockMoveMeta,
   dropStackItem,
   popIsolated,
+  pushMoveStep,
   type StackItem,
   setMoveMeta
 } from './blockMoveUndoStack'
@@ -24,7 +25,7 @@ const redoMove = async (
   undoManager: Y.UndoManager,
   item: StackItem,
   meta: BlockMoveMeta,
-  pending: PendingRedo
+  pending: PendingStep
 ) => {
   const isCancelled = () => pending.cancelled || editor.isDestroyed
   const {atmosphere} = editor.storage.blockMoveHistory
@@ -37,8 +38,9 @@ const redoMove = async (
   const unowned = findUnownedChildPage(atmosphere, meta.childPages ?? [])
   if (unowned) {
     notify(getChildPageUnownedMessage('move', unowned.title))
-    return
+    return false
   }
+  let redone = false
   const outcome = await writeToTargetPage(meta.targetPageId, async (frag, provider) => {
     if (isCancelled()) return
     const moved = appendBlocksToFragment(frag, meta.blocks, editor.schema)
@@ -61,9 +63,13 @@ const redoMove = async (
     }
     const {added} = popIsolated(undoManager, 'redo', [item])
     undoneMoves.delete(meta.blocks)
-    if (added) setMoveMeta(added, {...meta, moved, restored: undefined})
+    const movedMeta = {...meta, moved, restored: undefined}
+    if (added) setMoveMeta(added, movedMeta)
+    else pushMoveStep(undoManager, movedMeta)
+    redone = true
   })
   if (typeof outcome === 'string' && !isCancelled()) report(outcome)
+  return redone
 }
 
 export const redoMoveStep = (
@@ -72,14 +78,5 @@ export const redoMoveStep = (
   item: StackItem,
   meta: BlockMoveMeta
 ) => {
-  const storage = editor.storage.blockMoveHistory
-  const pending: PendingRedo = {cancelled: false}
-  storage.pendingRedo = pending
-  enqueue(editor, async () => {
-    try {
-      await redoMove(editor, undoManager, item, meta, pending)
-    } finally {
-      if (storage.pendingRedo === pending) storage.pendingRedo = null
-    }
-  })
+  enqueueStep(editor, 'redo', (pending) => redoMove(editor, undoManager, item, meta, pending))
 }

@@ -82,10 +82,12 @@ describe('useMountNearViewport', () => {
     expect(mounted()).toBe(true)
   })
 
-  test('mounts at once when printing asks for every block', () => {
+  test('mounts at once when printing asks for every block and stays mounted after', () => {
     render()
     expect(mounted()).toBe(false)
     act(() => requestMountAllSyncedBlocks())
+    expect(mounted()).toBe(true)
+    act(() => releaseMountAll())
     expect(mounted()).toBe(true)
   })
 

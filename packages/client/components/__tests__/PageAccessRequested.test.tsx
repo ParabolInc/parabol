@@ -49,17 +49,14 @@ const render = (isSyncedBlock: boolean, title = 'Escalation path') => {
   act(() => root.render(<PageAccessRequested notification={{} as never} />))
 }
 
-test('a block request reads "wants to view the synced block"', () => {
+test('a block request reads "wants to view the synced block", or <Untitled> without a name', () => {
   render(true)
   expect(container.textContent).toBe('Ravi Menon wants to view the synced block Escalation path.')
+  render(true, '')
+  expect(container.textContent).toBe('Ravi Menon wants to view the synced block <Untitled>.')
 })
 
 test('a page request keeps its wording', () => {
   render(false)
   expect(container.textContent).toContain('has requested to view the page')
-})
-
-test('an unnamed block reads <Untitled>', () => {
-  render(true, '')
-  expect(container.textContent).toBe('Ravi Menon wants to view the synced block <Untitled>.')
 })

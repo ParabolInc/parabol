@@ -175,7 +175,7 @@ test('tracks the gap the move left so undo can put the block back there', async 
   })
   const stays = rangeOf(editor, 'paragraph', 0)
   expect(paragraphTexts(editor)[0]).toBe('stays')
-  expect(outcome.gap!.current()).toEqual({from: stays.from, to: stays.from})
+  expect(outcome.meta!.gap!.current()).toEqual({from: stays.from, to: stays.from})
 })
 
 test('leaves a text caret, not a selected link, when the gap is next to a link', async () => {
@@ -230,7 +230,7 @@ test('keeps the original when someone edits it during the move', async () => {
     targetPageId: 'page:2',
     targetTitle: 'Q3'
   })
-  expect(outcome).toMatchObject({result: 'copied', meta: null, gap: null})
+  expect(outcome).toMatchObject({result: 'copied', meta: null})
   expect(paragraphTexts(editor)).toContain('xmoved me')
   expect(read(targetFrag)).toEqual([h(1, 'Q3'), p('moved me')])
   expect(outcome.moved).toHaveLength(1)
@@ -306,7 +306,7 @@ test('cancels without appending when the block is deleted while the target opens
     return Promise.resolve(provider as unknown as HocuspocusProvider)
   })
   const outcome = await moveBlocksToPage({session, targetPageId: 'page:2', targetTitle: 'Q3'})
-  expect(outcome).toMatchObject({result: 'gone', meta: null, gap: null, moved: null})
+  expect(outcome).toMatchObject({result: 'gone', meta: null, moved: null})
   expect(read(targetFrag)).toEqual([h(1, 'Q3')])
   expect(unregister).toHaveBeenCalledTimes(1)
 })
@@ -323,7 +323,6 @@ test('waits for the server to take a child page link out of a toggle before dele
     result: 'moved',
     meta: {childPages: [{pageCode: 7, title: 'Hiring plan'}]}
   })
-  expect(outcome.meta!.gap).toBe(outcome.gap)
   expect(nodeNames(editor)).not.toContain('details')
   expect(dispatchDelete).toHaveBeenCalledWith(editor, expect.anything(), outcome.meta)
   expect(outcome.moved).toHaveLength(1)
@@ -355,7 +354,7 @@ test('keeps the copy of a child page move whose save is acked late', async () =>
   })
   await jest.advanceTimersByTimeAsync(10_000)
   const outcome = await pending
-  expect(outcome).toMatchObject({result: 'copied', meta: null, gap: null})
+  expect(outcome).toMatchObject({result: 'copied', meta: null})
   expect(outcome.moved).toHaveLength(1)
   expect(read(targetFrag).map(({type}) => type)).toEqual(['heading', 'details'])
   expect(nodeNames(editor)).toContain('details')

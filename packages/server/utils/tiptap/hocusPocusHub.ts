@@ -29,17 +29,17 @@ export const updateAllBacklinkedPageLinkTitles = async ({
   title: string
 }) => {
   const pg = getKysely()
-  const backLinks = await pg
-    .selectFrom('PageBacklink')
-    .select('fromPageId')
-    .where('toPageId', '=', pageId)
-    .execute()
   const page = await pg
     .selectFrom('Page')
     .select('isSyncedBlock')
     .where('id', '=', pageId)
     .executeTakeFirst()
-  const linkTitle = page?.isSyncedBlock ? '' : title
+  if (page?.isSyncedBlock) return
+  const backLinks = await pg
+    .selectFrom('PageBacklink')
+    .select('fromPageId')
+    .where('toPageId', '=', pageId)
+    .execute()
   const pageCode = CipherId.encrypt(pageId)
 
   await Promise.all(
@@ -47,7 +47,7 @@ export const updateAllBacklinkedPageLinkTitles = async ({
       const documentName = CipherId.toClient(fromPageId, 'page')
       await redisHocusPocus.handleEvent('updateBacklinkedPageLinkTitles', documentName, {
         pageCode,
-        title: linkTitle
+        title
       })
     })
   )
@@ -67,6 +67,13 @@ export const broadcastUserMentionUpdate = async (
     const payload = {userId, preferredName}
     redisHocusPocus.handleEvent('updateUserMention', documentName, payload, true).catch(Logger.log)
   })
+}
+
+export const publishSyncedBlockPlacementsChanged = (blockPageId: number) => {
+  const documentName = CipherId.toClient(blockPageId, 'page')
+  redisHocusPocus
+    .handleEvent('broadcastSyncedBlockPlacementsChanged', documentName, {}, true)
+    .catch(Logger.log)
 }
 
 export const replacePageAssetSrc = async (pageId: number, src: string, hostedSrc: string) => {

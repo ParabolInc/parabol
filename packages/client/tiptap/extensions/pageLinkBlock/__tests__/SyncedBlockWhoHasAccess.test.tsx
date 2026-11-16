@@ -21,8 +21,10 @@ jest.mock('../../../../modules/pages/PageSharingRoot', () => ({
   }
 }))
 jest.mock('../../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => ({})}))
-jest.mock('../useSyncedBlockAccessLineQuery', () => ({
-  useSyncedBlockAccessLineQuery: () => mockLine
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('react-relay', () => ({
+  ...jest.requireActual('react-relay'),
+  usePreloadedQuery: () => ({public: {page: mockLine}})
 }))
 
 let root: Root

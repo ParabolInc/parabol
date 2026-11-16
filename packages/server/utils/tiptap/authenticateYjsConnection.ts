@@ -38,6 +38,18 @@ const getMeetingTeamId = (meetingId: string) =>
     ms('3h')
   )
 
+export const isMeetingTeamMember = async (meetingId: string, userId: string) => {
+  const meetingTeamId = await getMeetingTeamId(meetingId)
+  const teamMember = await getKysely()
+    .selectFrom('TeamMember')
+    .select('id')
+    .where('teamId', '=', meetingTeamId)
+    .where('userId', '=', userId)
+    .where('isNotRemoved', '=', true)
+    .executeTakeFirst()
+  return !!teamMember
+}
+
 export const authenticateYjsConnection = async ({
   documentName,
   context,
@@ -58,17 +70,9 @@ export const authenticateYjsConnection = async ({
     if (!userId) {
       throw rejectConnection(`Meeting awareness requires a userId`, 'Unauthorized')
     }
-    const meetingTeamId = await getMeetingTeamId(meetingId)
-    const teamMember = await getKysely()
-      .selectFrom('TeamMember')
-      .select('id')
-      .where('teamId', '=', meetingTeamId)
-      .where('userId', '=', userId)
-      .where('isNotRemoved', '=', true)
-      .executeTakeFirst()
-    if (!teamMember) {
+    if (!(await isMeetingTeamMember(meetingId, userId))) {
       throw rejectConnection(
-        `Meeting awareness requires being on the team: ${userId} ${meetingTeamId}`,
+        `Meeting awareness requires being on the team: ${userId} ${meetingId}`,
         'Unauthorized'
       )
     }

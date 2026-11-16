@@ -49,14 +49,14 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     })
   }
 
-  const requestedRole: PageRoleEnum = role ?? 'viewer'
+  const requestedRole: PageRoleEnum = page.isSyncedBlock ? 'viewer' : role
 
   await pg
     .insertInto('PageAccessRequest')
     .values({
       pageId: dbPageId,
       userId: viewerId,
-      role,
+      role: requestedRole,
       reason: reason?.trim() || null
     })
     .onConflict((oc) =>
@@ -91,9 +91,9 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
       ? `${appOrigin}${viewer.picture}`
       : viewer.picture,
     reason,
-    pageName: page.isSyncedBlock ? page.title || '<Untitled>' : (page.title ?? 'Untitled'),
+    pageName: page.isSyncedBlock ? page.title : (page.title ?? 'Untitled'),
     pageLink,
-    role,
+    role: requestedRole,
     isSyncedBlock: page.isSyncedBlock
   })
   const ownerUsers = await dataLoader.get('users').loadMany(owners.map(({userId}) => userId))

@@ -9,21 +9,13 @@ import {removeMovedBlocks} from './removeMovedBlocks'
 import {type TrackedRange, trackRange} from './trackRange'
 import {waitForChildLinksRemoved} from './waitForChildLinksRemoved'
 import {BLOCK_MOVE_TIMEOUT_MS, waitForSaved} from './waitForSaved'
-import {writeToTargetPage} from './writeToTargetPage'
+import {type TargetRefusal, writeToTargetPage} from './writeToTargetPage'
 
-export type BlockMoveResult =
-  | 'moved'
-  | 'copied'
-  | 'offline'
-  | 'readonly'
-  | 'streaming'
-  | 'unsaved'
-  | 'gone'
+export type BlockMoveResult = 'moved' | 'copied' | 'unsaved' | 'gone' | TargetRefusal
 
 export type BlockMoveOutcome = {
   result: BlockMoveResult
   meta: BlockMoveMeta | null
-  gap: TrackedRange | null
   moved: MovedBlock[] | null
 }
 
@@ -32,25 +24,22 @@ type Params = {session: BlockDragSession; targetPageId: string; targetTitle: str
 const resultOnly = (result: BlockMoveResult): BlockMoveOutcome => ({
   result,
   meta: null,
-  gap: null,
   moved: null
 })
 
-const deleteFromSource = (editor: Editor, from: number, to: number, meta: BlockMoveMeta | null) => {
+const deleteFromSource = (editor: Editor, from: number, to: number, meta: BlockMoveMeta) => {
   const tr = editor.state.tr.deleteRange(from, to)
   const gapPos = tr.mapping.map(from)
   tr.setSelection(getTextCaretNear(tr.doc.resolve(gapPos)))
   dispatchBlockMoveDelete(editor, tr, meta)
-  return trackRange(editor, gapPos, gapPos)
+  meta.gap = trackRange(editor, gapPos, gapPos)
 }
 
-const moveTrackedBlocks = async ({
-  session,
-  targetPageId,
-  targetTitle
-}: Params): Promise<BlockMoveOutcome> => {
+const moveTrackedBlocks = async (
+  {session, targetPageId, targetTitle}: Params,
+  startPoint: TrackedRange
+): Promise<BlockMoveOutcome> => {
   const {editor, range, movable} = session
-  if (!range.current()) return resultOnly('gone')
   const childPageCodes = movable.childPages.map(({pageCode}) => pageCode)
   const ignoredPageCodes = new Set(childPageCodes)
   const snapshot = fingerprintBlocks(movable.blocks, ignoredPageCodes)
@@ -59,7 +48,7 @@ const moveTrackedBlocks = async ({
     async (frag, provider): Promise<BlockMoveOutcome> => {
       if (!range.current()) return resultOnly('gone')
       const moved = appendBlocksToFragment(frag, movable.blocks, editor.schema)
-      const copied: BlockMoveOutcome = {result: 'copied', meta: null, gap: null, moved}
+      const copied: BlockMoveOutcome = {result: 'copied', meta: null, moved}
       if (!(await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS))) {
         if (childPageCodes.length > 0) return copied
         removeMovedBlocks(frag, moved)
@@ -68,24 +57,27 @@ const moveTrackedBlocks = async ({
       const linksRemoved =
         childPageCodes.length === 0 ||
         (await waitForChildLinksRemoved(editor, childPageCodes, BLOCK_MOVE_TIMEOUT_MS))
-      const current = range.current()
+      const current = range.current() ?? startPoint.current()
       if (!linksRemoved || !current || editor.isDestroyed) return copied
       const now = getMovableBlocks(editor.state.doc, current.from, current.to).blocks
       if (fingerprintBlocks(now, ignoredPageCodes) !== snapshot) return copied
       const meta: BlockMoveMeta = {targetPageId, targetTitle, moved, blocks: movable.blocks}
       if (childPageCodes.length > 0) meta.childPages = movable.childPages
-      const gap = deleteFromSource(editor, current.from, current.to, meta)
-      if (meta.childPages) meta.gap = gap
-      return {result: 'moved', meta, gap, moved}
+      deleteFromSource(editor, current.from, current.to, meta)
+      return {result: 'moved', meta, moved}
     }
   )
   return typeof outcome === 'string' ? resultOnly(outcome) : outcome
 }
 
 export const moveBlocksToPage = async (params: Params) => {
+  const {editor, range} = params.session
+  const start = range.current()
+  const startPoint = start && trackRange(editor, start.from, start.from)
   try {
-    return await moveTrackedBlocks(params)
+    return startPoint ? await moveTrackedBlocks(params, startPoint) : resultOnly('gone')
   } finally {
-    params.session.range.stop()
+    range.stop()
+    startPoint?.stop()
   }
 }

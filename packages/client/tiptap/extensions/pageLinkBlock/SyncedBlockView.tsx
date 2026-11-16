@@ -3,8 +3,8 @@ import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, us
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {copySyncedBlock} from './copySyncedBlock'
-import {getIsSyncedBlockPanelStatus} from './getIsSyncedBlockPanelStatus'
 import {getSyncedBlockEventTarget} from './getSyncedBlockEventTarget'
+import {markSyncedBlockPlacesStale} from './getSyncedBlockPlacesFetchPolicy'
 import {isValidPageCode} from './isValidPageCode'
 import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
@@ -38,11 +38,12 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
-  const isPanel = getIsSyncedBlockPanelStatus(status)
+  const isPanel = status === 'locked' || status === 'error'
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
   const [placesLabel, setPlacesLabel] = useState<string | null>(null)
+  const [placesVersion, setPlacesVersion] = useState(0)
   const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
@@ -72,6 +73,10 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const handleMenuOpenChange = useCallback((open: boolean) => {
     setOpenMenus((count) => Math.max(0, count + (open ? 1 : -1)))
   }, [])
+  const handlePlacementsChange = useCallback(() => {
+    markSyncedBlockPlacesStale(pageCode)
+    setPlacesVersion((version) => version + 1)
+  }, [pageCode])
   useEffect(() => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
@@ -117,6 +122,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           isViewOnly={isViewOnly}
           places={
             <SyncedBlockPlacesRoot
+              key={placesVersion}
               pageCode={pageCode}
               currentPageId={editor.storage.pageLinkBlock.pageId}
               isViewOnly={isViewOnly}
@@ -170,6 +176,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
             getSize={() => sizeRef.current}
             onChromeChange={setChrome}
             onStatusChange={setStatus}
+            onPlacementsChange={handlePlacementsChange}
           />
         </SyncedBlockChainContext.Provider>
       ) : (

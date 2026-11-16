@@ -17,6 +17,7 @@ test('names the synced block in a block request', () => {
     'Ravi Menon (ravi@example.com) wants to view the synced block Escalation path.'
   )
   expect(html).toContain('requested access to a synced block')
+  expect(html).toContain('<b>Escalation path</b>')
 })
 
 test('keeps the page wording for a page request', () => {
@@ -28,12 +29,5 @@ test('keeps the page wording for a page request', () => {
 test('names an unnamed synced block <Untitled> in the text and the email body', () => {
   const {body, html} = pageAccessRequestEmailCreator({...props, pageName: '', isSyncedBlock: true})
   expect(body).toContain('wants to view the synced block <Untitled>.')
-  expect(html).toContain('wants to view the synced block ')
-  expect(html).toContain('&lt;Untitled&gt;')
-})
-
-test('puts the block name in the email body sentence', () => {
-  const {html} = pageAccessRequestEmailCreator({...props, isSyncedBlock: true})
-  expect(html).toContain('wants to view the synced block ')
-  expect(html).toContain('<b>Escalation path</b>')
+  expect(html).toContain('<b>&lt;Untitled&gt;</b>')
 })

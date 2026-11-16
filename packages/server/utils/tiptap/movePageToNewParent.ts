@@ -10,6 +10,7 @@ import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import {publishPageNotification} from '../publishPageNotification'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {revalidateYjsConnections} from './revalidateYjsConnections'
 import {validateParentPage} from './validateParentPage'
 
@@ -21,7 +22,7 @@ export const movePageToNewParent = async (
   const pg = getKysely()
   const childPage = await pg
     .selectFrom('Page')
-    .select(['parentPageId', 'deletedAt', 'isMeetingTOC'])
+    .select(['parentPageId', 'deletedAt', 'isMeetingTOC', 'isSyncedBlock'])
     .where('id', '=', pageId)
     .executeTakeFirst()
   if (!childPage) {
@@ -309,6 +310,7 @@ export const movePageToNewParent = async (
     }
   })
   await revalidateYjsConnections({pageTreeIds: [pageId]})
+  if (childPage.isSyncedBlock) publishSyncedBlockPlacementsChanged(pageId)
   const dataLoader = getNewDataLoader('movePageToNewParent')
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}

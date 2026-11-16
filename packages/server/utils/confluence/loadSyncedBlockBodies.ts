@@ -1,5 +1,7 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import type {PageLinkBlockAttrs} from 'parabol-client/shared/tiptap/extensions/PageLinkBlockBase'
+import {getAllNodesAttributesByType} from 'parabol-client/shared/tiptap/getAllNodesAttributesByType'
 import {getSyncedBlockBody} from 'parabol-client/shared/tiptap/getSyncedBlockBody'
 import {MAX_SYNCED_BLOCK_DEPTH} from 'parabol-client/shared/tiptap/syncedBlockDepth'
 import {applyUpdate, Doc} from 'yjs'
@@ -9,31 +11,43 @@ import {CipherId} from '../CipherId'
 import {selectUnsyncOutcomes} from '../tiptap/selectUnsyncOutcomes'
 import {MAX_SYNCED_BLOCK_EXPANSIONS} from './types'
 
-const collectSyncedPageCodes = (node: JSONContent, codes: Set<number>) => {
-  if (node.type === 'pageLinkBlock' && node.attrs?.synced === true) {
-    const pageCode = Number(node.attrs.pageCode)
-    if (Number.isInteger(pageCode)) codes.add(pageCode)
-  }
-  node.content?.forEach((child) => {
-    collectSyncedPageCodes(child, codes)
-  })
+const getSyncedPageCodes = (content: JSONContent[]) =>
+  getAllNodesAttributesByType<PageLinkBlockAttrs>({content}, 'pageLinkBlock')
+    .filter(({synced}) => synced === true)
+    .map(({pageCode}) => Number(pageCode))
+    .filter(Number.isInteger)
+
+const isVisibleToHostReaders = async (blockId: number, hostPageId: number) => {
+  const outcome = (await selectUnsyncOutcomes(getKysely(), blockId, [hostPageId])).get(hostPageId)
+  return !!outcome && outcome.hiddenReaderCount === 0 && !outcome.isPublicWithoutBlock
 }
 
-const loadBlockBody = async (pageCode: number, hostPageId: number, viewerId: string) => {
-  const pageId = CipherId.decrypt(pageCode)
-  const page = await getKysely()
-    .selectFrom('Page')
-    .select(['yDoc', 'isSyncedBlock', 'deletedAt'])
-    .where('id', '=', pageId)
-    .executeTakeFirst()
-  if (!page?.isSyncedBlock || page.deletedAt || !page.yDoc) return null
-  const [role] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
-  if (!role) return null
-  const outcome = (await selectUnsyncOutcomes(getKysely(), pageId, [hostPageId])).get(hostPageId)
-  if (!outcome || outcome.hiddenReaderCount > 0 || outcome.isPublicWithoutBlock) return null
-  const yDoc = new Doc()
-  applyUpdate(yDoc, page.yDoc)
-  return getSyncedBlockBody(TiptapTransformer.fromYdoc(yDoc, 'default') as JSONContent)
+const loadBlockBodies = async (pageCodes: number[], hostPageId: number, viewerId: string) => {
+  const pageCodeById = new Map(pageCodes.map((pageCode) => [CipherId.decrypt(pageCode), pageCode]))
+  const pageIds = [...pageCodeById.keys()]
+  const [pages, roles] = await Promise.all([
+    getKysely()
+      .selectFrom('Page')
+      .select(['id', 'yDoc'])
+      .where('id', 'in', pageIds)
+      .where('isSyncedBlock', '=', true)
+      .where('deletedAt', 'is', null)
+      .execute(),
+    pageAccessByUserIdBatchFn(pageIds.map((pageId) => ({pageId, userId: viewerId})))
+  ])
+  const openableIds = new Set(pageIds.filter((_pageId, index) => roles[index]))
+  const loaded = await Promise.all(
+    pages.map(async ({id, yDoc}) => {
+      if (!yDoc || !openableIds.has(id) || !(await isVisibleToHostReaders(id, hostPageId))) {
+        return null
+      }
+      const doc = new Doc()
+      applyUpdate(doc, yDoc)
+      const body = getSyncedBlockBody(TiptapTransformer.fromYdoc(doc, 'default') as JSONContent)
+      return [pageCodeById.get(id)!, body] as const
+    })
+  )
+  return loaded.filter((entry) => entry !== null)
 }
 
 export const loadSyncedBlockBodies = async (
@@ -43,26 +57,16 @@ export const loadSyncedBlockBodies = async (
 ): Promise<Map<number, JSONContent[]>> => {
   const bodies = new Map<number, JSONContent[]>()
   const seen = new Set<number>()
-  let frontier = new Set<number>()
-  collectSyncedPageCodes(doc, frontier)
-  for (let depth = 0; depth < MAX_SYNCED_BLOCK_DEPTH && frontier.size > 0; depth++) {
-    const codes = [...frontier]
-      .filter((code) => !seen.has(code))
+  let frontier = getSyncedPageCodes([doc])
+  for (let depth = 0; depth < MAX_SYNCED_BLOCK_DEPTH; depth++) {
+    const pageCodes = [...new Set(frontier)]
+      .filter((pageCode) => !seen.has(pageCode))
       .slice(0, MAX_SYNCED_BLOCK_EXPANSIONS - seen.size)
-    codes.forEach((code) => {
-      seen.add(code)
-    })
-    const loaded = await Promise.all(
-      codes.map(async (code) => [code, await loadBlockBody(code, hostPageId, viewerId)] as const)
-    )
-    frontier = new Set()
-    for (const [code, body] of loaded) {
-      if (!body) continue
-      bodies.set(code, body)
-      body.forEach((node) => {
-        collectSyncedPageCodes(node, frontier)
-      })
-    }
+    if (pageCodes.length === 0) break
+    pageCodes.forEach((pageCode) => seen.add(pageCode))
+    const loaded = await loadBlockBodies(pageCodes, hostPageId, viewerId)
+    loaded.forEach(([pageCode, body]) => bodies.set(pageCode, body))
+    frontier = getSyncedPageCodes(loaded.flatMap(([, body]) => body))
   }
   return bodies
 }

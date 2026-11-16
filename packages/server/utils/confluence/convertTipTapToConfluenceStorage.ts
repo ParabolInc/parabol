@@ -31,7 +31,7 @@ const TREATMENTS = {
   highlight: 'highlight exported as plain text',
   taskBlock: 'exported as static content — not a Confluence task',
   pageLinkBlock: 'linked to the Parabol page',
-  syncedBlock: "skipped — the exporter can't open this synced block",
+  syncedBlock: 'skipped — not available to this export',
   syncedBlockLimit: 'skipped — nested too deeply or repeated too often',
   fileUpload: 'in-progress upload skipped',
   calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',

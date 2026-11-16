@@ -1,17 +1,16 @@
-import {type RefObject, useEffect, useState} from 'react'
-import {isMountAllRequested, SYNCED_BLOCK_MOUNT_ALL_EVENT} from './syncedBlockPrint'
+import {type RefObject, useEffect, useState, useSyncExternalStore} from 'react'
+import {isMountAllRequested, subscribeToMountAll} from './syncedBlockPrint'
 
 export const useMountNearViewport = (ref: RefObject<HTMLElement | null>) => {
-  const [isMounted, setIsMounted] = useState(
-    typeof IntersectionObserver === 'undefined' || isMountAllRequested()
+  const isPrinting = useSyncExternalStore(subscribeToMountAll, isMountAllRequested)
+  const [shouldStayMounted, setShouldStayMounted] = useState(
+    typeof IntersectionObserver === 'undefined'
   )
+  const isMounted = shouldStayMounted || isPrinting
 
   useEffect(() => {
-    if (isMounted) return
-    const handleMountAll = () => setIsMounted(true)
-    window.addEventListener(SYNCED_BLOCK_MOUNT_ALL_EVENT, handleMountAll)
-    return () => window.removeEventListener(SYNCED_BLOCK_MOUNT_ALL_EVENT, handleMountAll)
-  }, [isMounted])
+    if (isPrinting) setShouldStayMounted(true)
+  }, [isPrinting])
 
   useEffect(() => {
     const el = ref.current
@@ -19,7 +18,7 @@ export const useMountNearViewport = (ref: RefObject<HTMLElement | null>) => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setIsMounted(true)
+          setShouldStayMounted(true)
           observer.disconnect()
         }
       },

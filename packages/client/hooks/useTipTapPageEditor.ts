@@ -92,7 +92,6 @@ export const useTipTapPageEditor = (
         highestTier
         organizations {
           hasDatabases: featureFlag(featureName: "Databases")
-          hasSyncedBlocks: featureFlag(featureName: "SyncedBlocks")
         }
       }
     `,
@@ -101,7 +100,6 @@ export const useTipTapPageEditor = (
   const [commit] = useUploadUserAsset()
   const preferredName = nested ? nested.preferredName : user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
-  const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {hash} = useLocation()
@@ -155,7 +153,7 @@ export const useTipTapPageEditor = (
           nested: true
         }),
         SlashCommand.configure({
-          commands: getPageSlashCommands({hasDatabases, hasSyncedBlocks, nested: !!nested})
+          commands: getPageSlashCommands({hasDatabases, nested: !!nested})
         }),
         ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
         Focus,
@@ -173,7 +171,7 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested, hasSyncedBlocks}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({

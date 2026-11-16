@@ -62,20 +62,15 @@ const openMenu = async (
   blocks: Json[],
   {
     pos = TITLE_SIZE,
-    canCreateSubPage = true,
-    canCreateSyncedBlock = false,
-    editable = true
+    canCreateSubPage = true
   }: {
     pos?: number
     canCreateSubPage?: boolean
-    canCreateSyncedBlock?: boolean
-    editable?: boolean
   } = {}
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
     extensions,
-    editable,
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
   editor = activeEditor
@@ -96,7 +91,6 @@ const openMenu = async (
         onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
-        canCreateSyncedBlock={canCreateSyncedBlock}
         atmosphere={{} as Atmosphere}
         pageId='page:1'
       />
@@ -199,12 +193,13 @@ describe('what the menu offers', () => {
     expect(checkedRows()).toEqual(['Bullet list'])
   })
 
-  test('Page is hidden without a grant on the page', async () => {
+  test('Page and Synced block are hidden without a grant on the page', async () => {
     await openMenu([p('word')], {canCreateSubPage: false})
     await openTurnInto()
     expect(radios().map((row) => row.textContent)).toEqual(
       ROW_TITLES.filter((title) => title !== 'Page')
     )
+    expect(hasItem('Synced block')).toBe(false)
   })
 
   test('a block inside a callout has no Callout row', async () => {
@@ -230,34 +225,17 @@ describe('what the menu offers', () => {
     expect(caption()).toBeNull()
   })
 
-  test('offers Synced block last, only when the page allows it', async () => {
+  test('offers Synced block last', async () => {
     await openMenu([p('word')])
-    await openTurnInto()
-    expect(hasItem('Synced block')).toBe(false)
-    await closeMenu()
-    await openMenu([p('word')], {canCreateSyncedBlock: true})
     await openTurnInto()
     const rows = submenuRows().map((row) => row.getAttribute('role'))
     expect(rows).toEqual([...ROW_TITLES.map(() => 'menuitemradio'), 'separator', 'menuitem'])
     expect(submenuRows().at(-1)?.textContent).toBe('Synced block')
   })
 
-  test('a read-only editor has no Synced block row', async () => {
-    await openMenu([p('word')], {canCreateSyncedBlock: true, editable: false})
-    await openTurnInto()
-    expect(hasItem('Synced block')).toBe(false)
-  })
-
-  test('a block inside a callout has no Synced block row', async () => {
-    const callout: Json = {type: 'callout', attrs: {tone: 'info'}, content: [p('word')]}
-    await openMenu([callout], {pos: TITLE_SIZE + 1, canCreateSyncedBlock: true})
-    await openTurnInto()
-    expect(hasItem('Synced block')).toBe(false)
-  })
-
   test('an image keeps the menu it has today', async () => {
     await openMenu([image])
-    expect(hasItem('Turn into')).toBe(false)
+    expect(items().some((item) => item.textContent === 'Turn into')).toBe(false)
     expect(hasItem('Duplicate block')).toBe(true)
     expect(hasItem('Delete block')).toBe(true)
     expect(caption()).toBeNull()
@@ -298,7 +276,7 @@ describe('picking a row', () => {
 
 describe('Synced block', () => {
   test('moves the block into a new synced block and leaves the caret below it', async () => {
-    const {activeEditor} = await openMenu([p('word'), p('after')], {canCreateSyncedBlock: true})
+    const {activeEditor} = await openMenu([p('word'), p('after')])
     await openTurnInto()
     await click(itemNamed('Synced block'))
     const link = activeEditor.state.doc.child(1)
@@ -309,7 +287,7 @@ describe('Synced block', () => {
   })
 
   test('does nothing when another edit moved the block', async () => {
-    const {activeEditor} = await openMenu([p('word'), p('after')], {canCreateSyncedBlock: true})
+    const {activeEditor} = await openMenu([p('word'), p('after')])
     await openTurnInto()
     act(() => {
       const {tr, schema} = activeEditor.state

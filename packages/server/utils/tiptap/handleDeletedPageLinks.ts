@@ -10,6 +10,7 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {announcePromotedBlock, promoteSyncedBlock} from './promoteSyncedBlock'
 import {trashPageUnderParent} from './trashPageUnderParent'
 import {updateBacklinks} from './updateBacklinks'
@@ -116,6 +117,7 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
         // - delete/add a different item/change attributes
         // The most certain way to see if verify that it no longer exists
         await updateBacklinks(parentPageId, null, pageId).catch(Logger.log)
+        if (isSynced) publishSyncedBlockPlacementsChanged(pageId)
         if (!isCanonical) {
           if (!isSynced || isLinkedElsewhereHere) return
           const block = await pg

@@ -14,17 +14,23 @@ const GIVE_UP_MS = 10_000
 export const isArrivalPending = (pageId: string, hash: string) =>
   !!peekPendingArrival(pageId) || parseSyncedBlockHash(hash) !== null
 
+const getArrivalTarget = (
+  editor: Editor,
+  moved: ReturnType<typeof peekPendingArrival>,
+  hash: string
+) => {
+  if (moved) return () => findMovedBlockPositions(editor, moved)
+  const syncedBlockCode = parseSyncedBlockHash(hash)
+  if (syncedBlockCode === null) return null
+  return () => findSyncedBlockPositions(editor.state.doc, syncedBlockCode).slice(0, 1)
+}
+
 export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
   const {hash} = useLocation()
   useEffect(() => {
     if (!editor) return
     const moved = peekPendingArrival(pageId)
-    const syncedBlockCode = moved ? null : parseSyncedBlockHash(hash)
-    const findPositions = moved
-      ? () => findMovedBlockPositions(editor, moved)
-      : syncedBlockCode
-        ? () => findSyncedBlockPositions(editor.state.doc, syncedBlockCode).slice(0, 1)
-        : null
+    const findPositions = getArrivalTarget(editor, moved, hash)
     if (!findPositions) return
     const settle = () => {
       if (moved) takePendingArrival(pageId)

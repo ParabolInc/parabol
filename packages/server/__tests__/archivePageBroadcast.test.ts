@@ -49,36 +49,33 @@ const archive = async (cookie: string, pageId: string, action: string) => {
 
 const waitForArchivePagePayload = async (
   waitFor: Awaited<ReturnType<typeof subscribeToNotifications>>['waitFor'],
-  pageId: string
+  pageId: string,
+  isDeleted: boolean
 ) => {
   const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000))
   const message = await Promise.race([
-    waitFor(
-      ({type, payload}) =>
+    waitFor(({type, payload}) => {
+      const notification = payload?.data?.notificationSubscription
+      return (
         type === 'next' &&
-        payload?.data?.notificationSubscription?.fieldName === 'ArchivePagePayload' &&
-        payload.data.notificationSubscription.ArchivePagePayload.pageId === pageId
-    ),
+        notification?.fieldName === 'ArchivePagePayload' &&
+        notification.ArchivePagePayload.pageId === pageId &&
+        (notification.ArchivePagePayload.page === null) === isDeleted
+      )
+    }),
     timeout
   ])
   return message?.payload.data.notificationSubscription.ArchivePagePayload ?? null
 }
 
-test("Delete forever reaches the owner's other tabs", async () => {
+test("moving a page to Trash and deleting it forever reach the owner's other tabs", async () => {
   const {cookie, token, pageId} = await setup()
-  await archive(cookie, pageId, 'archive')
   const {socket, waitFor} = await subscribeToNotifications(token, ARCHIVE_PAGE_SUBSCRIPTION)
+  await archive(cookie, pageId, 'archive')
+  const trashed = await waitForArchivePagePayload(waitFor, pageId, false)
   await archive(cookie, pageId, 'delete')
-  const payload = await waitForArchivePagePayload(waitFor, pageId)
+  const deleted = await waitForArchivePagePayload(waitFor, pageId, true)
   socket.close()
-  expect(payload).toEqual({pageId, page: null})
-}, 20_000)
-
-test("moving a page to Trash reaches the owner's other tabs", async () => {
-  const {cookie, token, pageId} = await setup()
-  const {socket, waitFor} = await subscribeToNotifications(token, ARCHIVE_PAGE_SUBSCRIPTION)
-  await archive(cookie, pageId, 'archive')
-  const payload = await waitForArchivePagePayload(waitFor, pageId)
-  socket.close()
-  expect(payload?.page.id).toBe(pageId)
+  expect(trashed?.page.id).toBe(pageId)
+  expect(deleted).toEqual({pageId, page: null})
 }, 20_000)

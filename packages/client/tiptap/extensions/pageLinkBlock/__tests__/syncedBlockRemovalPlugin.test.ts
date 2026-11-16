@@ -199,21 +199,16 @@ describe('the removal snack', () => {
     }
   }
 
-  const mountWithSnack = (
-    fetchFromNetwork: jest.Mock,
-    isStoreLoaded: boolean,
-    storeData: typeof placesData = placesData
-  ) => {
+  const mountWithSnack = (serverData: typeof placesData = placesData) => {
+    const fetchFromNetwork = jest.fn(() => Promise.resolve({data: serverData}))
     const environment = new Environment({
       network: Network.create(fetchFromNetwork),
       store: new Store(new RecordSource())
     })
-    if (isStoreLoaded) {
-      const operation = createOperationDescriptor(getRequest(syncedBlockPlacesQuery), {
-        pageId: 'page:7'
-      })
-      environment.commitPayload(operation, storeData)
-    }
+    const operation = createOperationDescriptor(getRequest(syncedBlockPlacesQuery), {
+      pageId: 'page:7'
+    })
+    environment.commitPayload(operation, placesData)
     const emit = jest.fn()
     const atmosphere = Object.assign(environment, {eventEmitter: {emit}}) as unknown as Atmosphere
     const navigate = jest.fn()
@@ -242,13 +237,11 @@ describe('the removal snack', () => {
   }
 
   test('undo re-inserts a removed original as a copy', async () => {
-    const fetchFromNetwork = jest.fn()
-    const {page, shown, lastSnack, navigate} = mountWithSnack(fetchFromNetwork, true)
+    const {page, shown, lastSnack, navigate} = mountWithSnack()
     const [original] = linksIn(page)
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)
     const snack = lastSnack()!
-    expect(fetchFromNetwork).not.toHaveBeenCalled()
     expect(snack).toMatchObject({
       key: 'SyncedBlockRemoved',
       autoDismiss: 10,
@@ -263,18 +256,25 @@ describe('the removal snack', () => {
     expect(navigate).toHaveBeenCalledWith('/pages/handbook-9')
   })
 
-  test('reads the placements from the network when the store lacks them', async () => {
-    const fetchFromNetwork = jest.fn(() => Promise.resolve({data: placesData}))
-    const {page, shown, lastSnack} = mountWithSnack(fetchFromNetwork, false)
+  test('counts the places the server knows now, not the ones the store remembers', async () => {
+    const placements = placesData.public.page.syncedBlockPlacements
+    const pasted = {isOriginal: false, page: {id: 'page:5', title: 'Wiki', deletedAt: null}}
+    const {page, shown, lastSnack} = mountWithSnack({
+      public: {
+        page: {
+          ...placesData.public.page,
+          syncedBlockPlacements: {...placements, pages: [...placements.pages, pasted]}
+        }
+      }
+    })
     const [original] = linksIn(page)
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)
-    expect(fetchFromNetwork).toHaveBeenCalledTimes(1)
-    expect(lastSnack()).toMatchObject({message: 'Removed here. Still on 1 page.'})
+    expect(lastSnack()).toMatchObject({message: 'Removed here. Still on 2 pages.'})
   })
 
   test('undo does nothing once the editor is gone', async () => {
-    const {page, shown, lastSnack} = mountWithSnack(jest.fn(), true)
+    const {page, shown, lastSnack} = mountWithSnack()
     const [original] = linksIn(page)
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)
@@ -284,7 +284,7 @@ describe('the removal snack', () => {
   })
 
   test('the snack goes away when the block comes back, and its Undo adds no second copy', async () => {
-    const {page, shown, lastSnack, isRemoved} = mountWithSnack(jest.fn(), true)
+    const {page, shown, lastSnack, isRemoved} = mountWithSnack()
     const [original] = linksIn(page)
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)
@@ -297,7 +297,7 @@ describe('the removal snack', () => {
     expect(linksIn(page)).toHaveLength(1)
   })
 
-  test('names the page that already holds the original when the store has caught up', async () => {
+  test('names the page that already holds the original when the server has caught up', async () => {
     const promoted = {
       public: {
         page: {
@@ -313,7 +313,7 @@ describe('the removal snack', () => {
         }
       }
     }
-    const {page, shown, lastSnack} = mountWithSnack(jest.fn(), true, promoted)
+    const {page, shown, lastSnack} = mountWithSnack(promoted)
     const [original] = linksIn(page)
     page.view.dispatch(deleteLinkAt(page, original!.pos))
     await Promise.all(shown)

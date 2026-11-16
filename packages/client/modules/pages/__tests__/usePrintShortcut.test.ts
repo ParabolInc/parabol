@@ -7,6 +7,12 @@ import {usePrintShortcut} from '../usePrintShortcut'
 jest.mock('../../../tiptap/extensions/pageLinkBlock/syncedBlockPrint', () => ({
   printPage: jest.fn()
 }))
+let mockIsOSX = true
+jest.mock('../../../utils/platform', () => ({
+  get isOSX() {
+    return mockIsOSX
+  }
+}))
 jest.mock('../../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => ({})
@@ -21,6 +27,7 @@ describe('usePrintShortcut', () => {
   let root: Root
   beforeEach(() => {
     root = createRoot(document.createElement('div'))
+    mockIsOSX = true
     jest.mocked(printPage).mockClear()
     act(() => root.render(createElement(Probe)))
   })
@@ -34,13 +41,19 @@ describe('usePrintShortcut', () => {
     return event
   }
 
-  test('⌘P prints through the page', () => {
+  test('⌘P prints through the page on macOS, Ctrl+P does not', () => {
+    const ctrlEvent = press({key: 'p', ctrlKey: true})
+    expect(ctrlEvent.defaultPrevented).toBe(false)
+    expect(printPage).not.toHaveBeenCalled()
     const event = press({key: 'p', metaKey: true})
     expect(event.defaultPrevented).toBe(true)
     expect(printPage).toHaveBeenCalledTimes(1)
   })
 
-  test('Ctrl+P prints through the page', () => {
+  test('Ctrl+P prints through the page elsewhere, ⌘P does not', () => {
+    mockIsOSX = false
+    const metaEvent = press({key: 'p', metaKey: true})
+    expect(metaEvent.defaultPrevented).toBe(false)
     const event = press({key: 'p', ctrlKey: true})
     expect(event.defaultPrevented).toBe(true)
     expect(printPage).toHaveBeenCalledTimes(1)

@@ -1,10 +1,9 @@
 import type {Editor} from '@tiptap/core'
 import type * as Y from 'yjs'
 import type Atmosphere from '../../Atmosphere'
-import {enqueue, undoneMoves} from './blockMoveHistoryState'
+import {enqueue, enqueueStep, undoneMoves} from './blockMoveHistoryState'
 import {
   type BlockMoveMeta,
-  dropStackItem,
   getMoveMeta,
   getUndoManager,
   popIsolated,
@@ -20,7 +19,6 @@ import {getGapPosition} from './getGapPosition'
 import {removeMovedBlocks} from './removeMovedBlocks'
 import {collectRestored} from './restoredBlocks'
 import {BLOCK_MOVE_UNDO_SNACK_KEY, showBlockMoveNotice} from './showBlockMoveNotice'
-import type {TrackedRange} from './trackRange'
 import {undoChildPageMove} from './undoChildPageMove'
 import {BLOCK_MOVE_TIMEOUT_MS, waitForSaved} from './waitForSaved'
 import {writeToTargetPage} from './writeToTargetPage'
@@ -61,14 +59,16 @@ const popMoveStep = (editor: Editor, undoManager: Y.UndoManager, item: StackItem
 
 const startChildPageUndo = (
   editor: Editor,
-  undoManager: Y.UndoManager | undefined,
+  undoManager: Y.UndoManager,
   item: StackItem | undefined,
-  meta: BlockMoveMeta,
-  gap: TrackedRange | undefined
+  meta: BlockMoveMeta
 ) => {
-  if (undoManager && item) dropStackItem(undoManager, 'undo', item)
   undoneMoves.add(meta.blocks)
-  return enqueue(editor, () => undoChildPageMove(editor, meta, gap))
+  return enqueueStep(editor, 'undo', async (pending) => {
+    const result = await undoChildPageMove(editor, undoManager, item, meta, pending)
+    if (result === 'unchanged') undoneMoves.delete(meta.blocks)
+    return result === 'reversible'
+  })
 }
 
 export const undoMoveStep = (
@@ -78,7 +78,7 @@ export const undoMoveStep = (
   meta: BlockMoveMeta
 ) => {
   if (meta.childPages) {
-    startChildPageUndo(editor, undoManager, item, meta, meta.gap)
+    startChildPageUndo(editor, undoManager, item, meta)
     return
   }
   if (popMoveStep(editor, undoManager, item)) return
@@ -89,14 +89,14 @@ export const undoMoveStep = (
   )
 }
 
-export const undoBlockMove = async (editor: Editor, meta: BlockMoveMeta, gap: TrackedRange) => {
+export const undoBlockMove = async (editor: Editor, meta: BlockMoveMeta) => {
   if (editor.isDestroyed || undoneMoves.has(meta.blocks)) return
   const storage = editor.storage.blockMoveHistory
   const undoManager = getUndoManager(editor.state)
   const moveItem = undoManager?.undoStack.find((item) => getMoveMeta(item)?.blocks === meta.blocks)
   const latestMeta = getMoveMeta(moveItem) ?? meta
   if (latestMeta.childPages) {
-    await startChildPageUndo(editor, undoManager, moveItem, latestMeta, latestMeta.gap ?? gap)
+    if (undoManager) await startChildPageUndo(editor, undoManager, moveItem, latestMeta)
     return
   }
   if (undoManager && moveItem && popMoveStep(editor, undoManager, moveItem)) {
@@ -104,7 +104,7 @@ export const undoBlockMove = async (editor: Editor, meta: BlockMoveMeta, gap: Tr
     return
   }
   const docBefore = editor.state.doc
-  const insertAt = getGapPosition(docBefore, gap)
+  const insertAt = getGapPosition(docBefore, latestMeta.gap)
   editor.chain().setMeta('addToHistory', false).insertContentAt(insertAt, meta.blocks).run()
   if (editor.state.doc.eq(docBefore)) return
   undoneMoves.add(meta.blocks)

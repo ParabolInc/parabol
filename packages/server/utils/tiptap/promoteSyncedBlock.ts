@@ -5,6 +5,7 @@ import type {DB} from '../../postgres/types/pg'
 import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {trashPageUnderParent} from './trashPageUnderParent'
 
 const selectPromotableBlock = (db: Kysely<DB>, blockPageId: number, excludedHostIds: number[]) =>
@@ -100,6 +101,7 @@ export const announcePromotedBlock = async (
   const triedHostIds = [...excludedHostIds]
   let currentHostId = hostId
   for (;;) {
+    publishSyncedBlockPlacementsChanged(blockPageId)
     let isMarked: boolean | undefined
     try {
       isMarked = await markHostLinkCanonical(currentHostId, blockPageId).catch(() =>

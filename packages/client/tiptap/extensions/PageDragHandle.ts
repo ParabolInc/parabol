@@ -116,7 +116,6 @@ type Options = {
   atmosphere: Atmosphere
   pageId: string
   isNested?: boolean
-  hasSyncedBlocks?: boolean
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',
@@ -206,7 +205,7 @@ export const PageDragHandle = Extension.create<Options>({
     let didStartDrag = false
     let isDraggingSelection = false
     let draggedRange: TrackedRange | null = null
-    const {atmosphere, pageId, isNested, hasSyncedBlocks} = this.options
+    const {atmosphere, pageId, isNested} = this.options
 
     const closeMenu = () => {
       if (!menuRenderer) return
@@ -261,7 +260,6 @@ export const PageDragHandle = Extension.create<Options>({
           onClose: closeMenu,
           anchorElement: dragHandleElement,
           canCreateSubPage,
-          canCreateSyncedBlock: !!hasSyncedBlocks && canCreateSubPage,
           selection,
           atmosphere,
           pageId

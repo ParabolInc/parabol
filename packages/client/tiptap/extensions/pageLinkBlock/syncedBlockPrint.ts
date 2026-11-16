@@ -1,21 +1,28 @@
 import type Atmosphere from '../../../Atmosphere'
 
-export const SYNCED_BLOCK_MOUNT_ALL_EVENT = 'syncedBlockMountAll'
 const PRINT_SNACKBAR_KEY = 'syncedBlocksPrint'
 const SNACKBAR_DELAY_MS = 500
 
 let mountAllRequested = false
+const mountAllListeners = new Set<() => void>()
 
-export const requestMountAllSyncedBlocks = () => {
-  mountAllRequested = true
-  window.dispatchEvent(new Event(SYNCED_BLOCK_MOUNT_ALL_EVENT))
+const setMountAll = (isRequested: boolean) => {
+  mountAllRequested = isRequested
+  mountAllListeners.forEach((listener) => listener())
+}
+
+export const subscribeToMountAll = (listener: () => void) => {
+  mountAllListeners.add(listener)
+  return () => {
+    mountAllListeners.delete(listener)
+  }
 }
 
 export const isMountAllRequested = () => mountAllRequested
 
-export const releaseMountAll = () => {
-  mountAllRequested = false
-}
+export const requestMountAllSyncedBlocks = () => setMountAll(true)
+
+export const releaseMountAll = () => setMountAll(false)
 
 export const waitForSyncedBlocks = (root: ParentNode, timeoutMs = 10_000) =>
   new Promise<void>((resolve) => {

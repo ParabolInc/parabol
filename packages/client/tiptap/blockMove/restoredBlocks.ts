@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import type {MovedBlock} from './appendBlocksToFragment'
 import type {StackItem} from './blockMoveUndoStack'
-import {blockSnapshot} from './blockSnapshot'
+import {blockSnapshot, isBlockEdited} from './blockSnapshot'
 import {findYItem} from './findYItem'
 
 export const collectRestored = (doc: Y.Doc, stackItem: StackItem) => {
@@ -26,5 +26,5 @@ export const isRestoredEdited = (doc: Y.Doc, restored: readonly MovedBlock[]) =>
   restored.some(({client, clock, snapshot}) => {
     const item = findYItem(doc, client, clock)
     if (!item || item.deleted) return false
-    return !(item.content instanceof Y.ContentType) || blockSnapshot(item.content.type) !== snapshot
+    return !(item.content instanceof Y.ContentType) || isBlockEdited(item.content.type, snapshot)
   })

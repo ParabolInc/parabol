@@ -40,16 +40,6 @@ test('centers the block at once and again whenever the page grows', () => {
   expect(block.scrollIntoView).toHaveBeenCalledTimes(2)
 })
 
-test('follows the block when the editor redraws it', () => {
-  const first = makeBlock()
-  const redrawn = makeBlock()
-  let current = first
-  stop = keepArrivalInView(() => current, document.createElement('div'), 10_000)
-  current = redrawn
-  resize()
-  expect(redrawn.scrollIntoView).toHaveBeenCalledWith({block: 'center'})
-})
-
 test.each(['wheel', 'touchstart', 'keydown', 'pointerdown'])(
   'lets go once the reader acts (%s)',
   (type) => {

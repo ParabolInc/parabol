@@ -30,13 +30,13 @@ export const showBlockMoveSnack = ({
   targetPageId,
   targetTitle
 }: Params) => {
-  const {result, meta, gap, moved} = outcome
+  const {result, meta, moved} = outcome
   const message = getBlockMoveMessage(result, count, targetTitle)
   if (!message) return
   releaseShown?.()
   atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === BLOCK_MOVE_SNACK_KEY)
   const release = () => {
-    gap?.stop()
+    meta?.gap?.stop()
     editor.off('destroy', onEditorDestroy)
     if (releaseShown === release) releaseShown = null
   }
@@ -57,11 +57,11 @@ export const showBlockMoveSnack = ({
       }
     : undefined
   const undo: SnackAction | undefined =
-    result === 'moved' && meta && gap
+    result === 'moved' && meta
       ? {
           label: 'Undo',
           callback: () => {
-            undoBlockMove(editor, meta, gap)
+            undoBlockMove(editor, meta)
           }
         }
       : undefined

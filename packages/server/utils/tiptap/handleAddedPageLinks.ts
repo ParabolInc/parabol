@@ -1,10 +1,8 @@
-import {sql} from 'kysely'
 import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerializedContent'
-import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -12,8 +10,8 @@ import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {isRemovedFromDoc} from './isRemovedFromDoc'
-import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
 import {rehostSeededAssets} from './rehostExternalAssets'
 import {restoreSeed} from './restoreSeed'
@@ -34,13 +32,6 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
   return links
 }
 
-const trashPage = (pageId: number, userId: string) =>
-  getKysely()
-    .updateTable('Page')
-    .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: userId})
-    .where('id', '=', pageId)
-    .execute()
-
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
   getAddedPageLinks(e).forEach(async (node) => {
@@ -53,23 +44,19 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
         // if a new PageLink was added to the doc, update the backlinks
         const childPageId = CipherId.decrypt(childPageCode)
-        updateBacklinks(parentPageId, childPageId).catch(Logger.log)
+        const isSynced = node.getAttribute('synced') === true
+        updateBacklinks(parentPageId, childPageId)
+          .then(() => isSynced && publishSyncedBlockPlacementsChanged(childPageId))
+          .catch(Logger.log)
       }
       if (node.getAttribute('canonical') !== true || !userId) return
       if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
         // mint a fresh page and assign it a real pageCode
         const isDatabase = node.getAttribute('database') || false
+        const isSyncedBlock = node.getAttribute('synced') === true
         const title = node.getAttribute('title')
         seedContent = sanitizeSyncedBlockSeed(seed)
         isAwaitingPage = true
-        let isSyncedBlock = false
-        if (node.getAttribute('synced') === true) {
-          const dataLoader = getNewDataLoader('handleAddedPageLinks')
-          isSyncedBlock = await isSyncedBlocksEnabled(userId, dataLoader).finally(() =>
-            dataLoader.dispose()
-          )
-          if (!isSyncedBlock) node.removeAttribute('synced')
-        }
         const body =
           title && seedContent[0]?.type === 'heading' ? seedContent.slice(1) : seedContent
         const bodyNodes = body.length > 0 || !isSyncedBlock ? body : [{type: 'paragraph' as const}]
@@ -96,7 +83,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           return
         }
         if (isSyncedBlock && isRemovedFromDoc(node)) {
-          await trashPage(newPage.id, userId)
+          await getKysely().deleteFrom('Page').where('id', '=', newPage.id).execute()
           return
         }
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))

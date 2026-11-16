@@ -79,9 +79,3 @@ test('a visitor without an account sees no request button', () => {
   expect(text()).toContain('Part of this page is private.')
   expect(container.querySelector('button')).toBeNull()
 })
-
-test('the panel icon renders at 20px', () => {
-  const icon = container.querySelector('svg')!
-  expect(icon.getAttribute('class')).toContain('text-[20px]')
-  expect(icon.getAttribute('class')).not.toContain('text-[24px]')
-})

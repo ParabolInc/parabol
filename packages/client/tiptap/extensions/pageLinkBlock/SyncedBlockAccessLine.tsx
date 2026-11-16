@@ -1,13 +1,28 @@
-import type {PreloadedQuery} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SyncedBlockAccessLineQuery} from '../../../__generated__/SyncedBlockAccessLineQuery.graphql'
-import {useSyncedBlockAccessLineQuery} from './useSyncedBlockAccessLineQuery'
 
 interface Props {
   queryRef: PreloadedQuery<SyncedBlockAccessLineQuery>
 }
 
 export const SyncedBlockAccessLine = ({queryRef}: Props) => {
-  const page = useSyncedBlockAccessLineQuery(queryRef)
+  const data = usePreloadedQuery<SyncedBlockAccessLineQuery>(
+    graphql`
+      query SyncedBlockAccessLineQuery($pageId: ID!) {
+        public {
+          page(pageId: $pageId) {
+            isParentLinked
+            parentPage {
+              title
+            }
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+  const page = data.public?.page
   if (!page?.isParentLinked || !page.parentPage) return null
   return (
     <p className='m-0 text-[13px] text-fg-secondary'>

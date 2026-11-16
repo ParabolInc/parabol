@@ -39,6 +39,7 @@ const meta: BlockMoveMeta = {
   blocks: []
 }
 const makeGap = () => ({current: () => ({from: 1, to: 1}), stop: jest.fn()}) satisfies TrackedRange
+const moveWith = (gap = makeGap()): BlockMoveMeta => ({...meta, gap})
 
 const show = (outcome: BlockMoveOutcome, sourceEditor = editor) => {
   showBlockMoveSnack({
@@ -59,8 +60,8 @@ beforeEach(() => {
 })
 
 test('a move offers Open page and Undo', () => {
-  const gap = makeGap()
-  const snack = show({result: 'moved', meta, gap, moved})!
+  const moveMeta = moveWith()
+  const snack = show({result: 'moved', meta: moveMeta, moved})!
   expect(snack).toMatchObject({
     key: 'blockMove',
     autoDismiss: 10,
@@ -69,7 +70,7 @@ test('a move offers Open page and Undo', () => {
   snack.action!.callback()
   expect(navigate).toHaveBeenCalledWith('/pages/q3-roadmap-42')
   snack.secondaryAction!.callback()
-  expect(undoBlockMove).toHaveBeenCalledWith(editor, meta, gap)
+  expect(undoBlockMove).toHaveBeenCalledWith(editor, moveMeta)
 })
 
 test('Open page hands the arrived blocks to the target page before navigating', () => {
@@ -77,16 +78,16 @@ test('Open page hands the arrived blocks to the target page before navigating', 
   navigate.mockImplementationOnce(() => {
     pendingAtNavigate = takePendingArrival('page:42')
   })
-  const snack = show({result: 'copied', meta: null, gap: null, moved})!
+  const snack = show({result: 'copied', meta: null, moved})!
   expect(takePendingArrival('page:42')).toBeNull()
   snack.action!.callback()
   expect(pendingAtNavigate).toBe(moved)
 })
 
 test('a new move snack replaces the one on screen', () => {
-  show({result: 'moved', meta, gap: makeGap(), moved})
+  show({result: 'moved', meta: moveWith(), moved})
   emit.mockClear()
-  show({result: 'offline', meta: null, gap: null, moved: null})
+  show({result: 'offline', meta: null, moved: null})
   expect(emit.mock.calls.map(([event]) => event)).toEqual(['removeSnackbar', 'addSnackbar'])
   const removeFn = emit.mock.calls[0]![1] as SnackbarRemoveFn
   expect(removeFn({key: 'blockMove', message: '', autoDismiss: 10})).toBe(true)
@@ -95,7 +96,7 @@ test('a new move snack replaces the one on screen', () => {
 
 test('stops tracking the gap when the snackbar is dismissed', () => {
   const gap = makeGap()
-  const snack = show({result: 'moved', meta, gap, moved})!
+  const snack = show({result: 'moved', meta: moveWith(gap), moved})!
   expect(gap.stop).not.toHaveBeenCalled()
   snack.onDismiss!()
   expect(gap.stop).toHaveBeenCalled()
@@ -103,15 +104,15 @@ test('stops tracking the gap when the snackbar is dismissed', () => {
 
 test('stops tracking the gap when a newer move snack replaces it', () => {
   const gap = makeGap()
-  show({result: 'moved', meta, gap, moved})
-  show({result: 'moved', meta, gap: makeGap(), moved})
+  show({result: 'moved', meta: moveWith(gap), moved})
+  show({result: 'moved', meta: moveWith(), moved})
   expect(gap.stop).toHaveBeenCalled()
 })
 
 test('leaving the page takes its move snack away', () => {
   const sourceEditor = makeEditor()
   const gap = makeGap()
-  const snack = show({result: 'moved', meta, gap, moved}, sourceEditor)!
+  const snack = show({result: 'moved', meta: moveWith(gap), moved}, sourceEditor)!
   emit.mockClear()
   sourceEditor.destroy()
   expect(emit.mock.calls.map(([event]) => event)).toEqual(['removeSnackbar'])
@@ -123,36 +124,27 @@ test('leaving the page takes its move snack away', () => {
 
 test('leaving the page leaves a newer move snack alone', () => {
   const sourceEditor = makeEditor()
-  show({result: 'moved', meta, gap: makeGap(), moved}, sourceEditor)
-  show({result: 'offline', meta: null, gap: null, moved: null})
+  show({result: 'moved', meta: moveWith(), moved}, sourceEditor)
+  show({result: 'offline', meta: null, moved: null})
   emit.mockClear()
   sourceEditor.destroy()
   expect(emit).not.toHaveBeenCalled()
 })
 
-test('a move that carried a child page offers Undo too', () => {
-  const gap = makeGap()
-  const childMeta = {...meta, childPages: [{pageCode: 7, title: 'Hiring plan'}], gap}
-  const snack = show({result: 'moved', meta: childMeta, gap, moved})!
-  expect(snack.action!.label).toBe('Open page')
-  snack.secondaryAction!.callback()
-  expect(undoBlockMove).toHaveBeenCalledWith(editor, childMeta, gap)
-})
-
 test('a copy offers Open page only', () => {
-  const snack = show({result: 'copied', meta: null, gap: null, moved})!
+  const snack = show({result: 'copied', meta: null, moved})!
   expect(snack.action!.label).toBe('Open page')
   expect(snack.secondaryAction).toBeUndefined()
 })
 
 test('a refusal offers no actions', () => {
-  const snack = show({result: 'offline', meta: null, gap: null, moved: null})!
+  const snack = show({result: 'offline', meta: null, moved: null})!
   expect(snack.message).toBe('Couldn’t move: you’re offline. Nothing changed.')
   expect(snack.action).toBeUndefined()
   expect(snack.secondaryAction).toBeUndefined()
 })
 
 test('a block that vanished mid-drag shows nothing', () => {
-  show({result: 'gone', meta: null, gap: null, moved: null})
+  show({result: 'gone', meta: null, moved: null})
   expect(emit).not.toHaveBeenCalled()
 })

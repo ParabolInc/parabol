@@ -18,9 +18,9 @@ import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {dispatchBlockConversion} from './turnInto/dispatchBlockConversion'
+import {getSyncedBlockConversion} from './turnInto/getSyncedBlockConversion'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
-import {turnRangeIntoSyncedBlock} from './turnInto/turnRangeIntoSyncedBlock'
 
 interface DragHandleMenuProps {
   editor: Editor
@@ -29,7 +29,6 @@ interface DragHandleMenuProps {
   onClose: () => void
   anchorElement: HTMLElement
   canCreateSubPage: boolean
-  canCreateSyncedBlock: boolean
   selection?: {range: BlockRange; count: number} | null
   atmosphere: Atmosphere
   pageId: string
@@ -43,7 +42,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     onClose,
     anchorElement,
     canCreateSubPage,
-    canCreateSyncedBlock,
     selection,
     atmosphere,
     pageId
@@ -67,16 +65,9 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     depth: editor.state.doc.resolve(pos).depth
   })
 
-  const getSyncedBlockTransaction = () => {
-    const {doc} = editor.state
-    const isBlockInPlace = pos < doc.content.size && !!doc.nodeAt(pos)?.eq(node)
-    const range = selection
-      ? getSelectedBlockRange(editor.state)
-      : isBlockInPlace && getBlockRange()
-    return range ? turnRangeIntoSyncedBlock(editor.state, range) : null
-  }
+  const getSyncedBlockTransaction = () => getSyncedBlockConversion(editor, node, pos, !!selection)
   const showTurnIntoSyncedBlock =
-    editor.isEditable && canCreateSyncedBlock && !turnIntoCurrent && !!getSyncedBlockTransaction()
+    canCreateSubPage && !turnIntoCurrent && !!getSyncedBlockTransaction()
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -113,7 +104,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleTurnIntoSyncedBlock = () => {
-    if (!editor.isEditable) return
     const tr = getSyncedBlockTransaction()
     if (tr) dispatchBlockConversion(editor, tr, pos)
   }
@@ -210,7 +200,6 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
               pos={pos}
               current={turnIntoCurrent}
               canCreateSubPage={canCreateSubPage}
-              canCreateSyncedBlock={canCreateSyncedBlock}
             />
           )}
           {!selection && node.type.name === 'callout' && (

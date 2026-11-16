@@ -10,8 +10,9 @@ import {BlockMoveHistory} from '../../extensions/BlockMoveHistory'
 import {providerManager} from '../../providerManager'
 import {appendBlocksToFragment} from '../appendBlocksToFragment'
 import {type BlockMoveMeta, dispatchBlockMoveDelete} from '../blockMoveUndoStack'
-import {holdsChildPageLink, isChildPageLink} from '../blockSnapshot'
+import {childPageCodesIn, isChildPageLink} from '../blockSnapshot'
 import {getMovableBlocks} from '../getMovableBlocks'
+import {moveBlocksToPage} from '../moveBlocksToPage'
 import {trackRange} from '../trackRange'
 import {undoBlockMove} from '../undoBlockMove'
 import {h, link, normalize, p, rangeOf, read, seed, toggle} from './blockMoveTestHelpers'
@@ -40,13 +41,14 @@ jest.mock('../../providerManager', () => ({
 const openSynced = jest.mocked(providerManager.openSynced)
 const emit = jest.fn()
 const atmosphere = {eventEmitter: {emit}} as unknown as Atmosphere
-const HIRING_PLAN = new Set([7])
+const HIRING_PLAN = 7
 const SERVER = 'server'
 
 let editor: Editor
 let sourceFrag: Y.XmlFragment
 let targetFrag: Y.XmlFragment
 let serverRefuses: boolean
+let onServerMove: (() => void) | undefined
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -84,9 +86,11 @@ const removeChildLink = (frag: Y.XmlFragment) => {
 const reparentOnArrival = (arrivedIn: Y.XmlFragment, leftBehind: Y.XmlFragment) => {
   arrivedIn.doc!.on('afterTransaction', (transaction: Y.Transaction) => {
     if (transaction.origin === SERVER) return
-    if (!holdsChildPageLink(arrivedIn, HIRING_PLAN)) return
-    if (!holdsChildPageLink(leftBehind, HIRING_PLAN)) return
+    if (!childPageCodesIn(arrivedIn).includes(HIRING_PLAN)) return
+    if (!childPageCodesIn(leftBehind).includes(HIRING_PLAN)) return
     queueMicrotask(() => {
+      onServerMove?.()
+      onServerMove = undefined
       if (!serverRefuses) {
         removeChildLink(leftBehind)
         return
@@ -151,14 +155,39 @@ afterAll(async () => {
   await happyWindow.happyDOM.close()
 })
 
-test('the move leaves the page and its paragraph on the target', async () => {
-  startPages(p('moved me'), hiringPlan, p('stays'))
-  await moveParagraphAndChildPage()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me'), hiringPlan]))
+test('a lone child page moves, and ⌘Z and ⌘⇧Z take it back and forth', async () => {
+  startPages(hiringPlan, p('stays'))
+  const {from, to} = rangeOf(editor, 'pageLinkBlock', 0)
+  const outcome = await moveBlocksToPage({
+    session: {
+      editor,
+      range: trackRange(editor, from, to),
+      sourcePageId: 'page:1',
+      movable: getMovableBlocks(editor.state.doc, from, to),
+      count: 1
+    },
+    targetPageId: 'page:2',
+    targetTitle: 'Q3 Roadmap'
+  })
+  expect(outcome).toMatchObject({
+    result: 'moved',
+    meta: {childPages: [{pageCode: 7, title: 'Hiring plan'}]}
+  })
+  const movedOut = [normalize([h(1, 'Title'), p('stays')]), normalize([h(1, 'Q3'), hiringPlan])]
+  const movedBack = [normalize([h(1, 'Title'), hiringPlan, p('stays')]), normalize([h(1, 'Q3')])]
+  expect([sourceBlocks(), read(targetFrag)]).toEqual(movedOut)
+  editor.commands.undo()
+  await flushPromises()
+  expect([sourceBlocks(), read(targetFrag)]).toEqual(movedBack)
+  editor.commands.redo()
+  await flushPromises()
+  expect([sourceBlocks(), read(targetFrag)]).toEqual(movedOut)
+  editor.commands.undo()
+  await flushPromises()
+  expect([sourceBlocks(), read(targetFrag)]).toEqual(movedBack)
 })
 
-test('⌘Z puts the paragraph and the page back here and the server takes the page off the target', async () => {
+test('⌘Z puts the paragraph and the page back, ⌘⇧Z moves them again, and ⌘Z brings them back again', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
   await moveParagraphAndChildPage()
   editor.commands.undo()
@@ -166,13 +195,6 @@ test('⌘Z puts the paragraph and the page back here and the server takes the pa
   expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
   expect(emit).not.toHaveBeenCalled()
-})
-
-test('⌘⇧Z moves them again, and ⌘Z after that brings them back again', async () => {
-  startPages(p('moved me'), hiringPlan, p('stays'))
-  await moveParagraphAndChildPage()
-  editor.commands.undo()
-  await flushPromises()
   editor.commands.redo()
   await flushPromises()
   expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
@@ -187,7 +209,7 @@ test('the snackbar Undo does the same as ⌘Z', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
   const meta = await moveParagraphAndChildPage()
   editor.commands.insertContentAt(editor.state.doc.content.size, p('typed later'))
-  await undoBlockMove(editor, meta, meta.gap!)
+  await undoBlockMove(editor, meta)
   await flushPromises()
   expect(sourceBlocks()).toEqual(
     normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays'), p('typed later')])
@@ -232,7 +254,7 @@ test('an undo refuses a page someone moved off the target since and changes noth
   )
 })
 
-test('an undo whose target is offline changes nothing and says so', async () => {
+test('an undo whose target is offline changes nothing, says so, and can be tried again', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
   await moveParagraphAndChildPage()
   openSynced.mockResolvedValueOnce(null)
@@ -242,18 +264,9 @@ test('an undo whose target is offline changes nothing and says so', async () => 
   expect(lastSnack().message).toBe(
     'Couldn’t undo: Q3 Roadmap couldn’t be reached. Nothing changed.'
   )
-})
-
-test('a refused undo steps past the move, so the next ⌘Z undoes the edit before it', async () => {
-  startPages(p('moved me'), hiringPlan, p('stays'))
-  editor.commands.insertContentAt(editor.state.doc.content.size, p('typed first'))
-  await moveParagraphAndChildPage()
-  mockRoles.set(7, 'viewer')
   editor.commands.undo()
   await flushPromises()
-  editor.commands.undo()
-  await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
 })
 
 test('when the server refuses, the blocks come back, the page stays on the target, and redo is gone', async () => {
@@ -304,15 +317,45 @@ test('a redo keeps the blocks here when the server never takes the page off this
   }
 })
 
-test('an ordinary move still undoes the old way', async () => {
-  startPages(p('moved me'), p('stays'))
-  const {from, to} = rangeOf(editor, 'paragraph', 0)
+test('⌘⇧Z while an undo is on its way cancels it, and ⌘Z still undoes the move after', async () => {
+  startPages(p('moved me'), hiringPlan, p('stays'))
+  await moveParagraphAndChildPage()
+  editor.commands.undo()
+  editor.commands.redo()
+  await flushPromises()
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
+  editor.commands.undo()
+  await flushPromises()
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
+})
+
+test('⌘Z pressed once a redo has handed the page over undoes that redo when it lands', async () => {
+  startPages(p('moved me'), hiringPlan, p('stays'))
+  await moveParagraphAndChildPage()
+  editor.commands.undo()
+  await flushPromises()
+  onServerMove = () => editor.commands.undo()
+  editor.commands.redo()
+  await flushPromises()
+  await flushPromises()
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
+  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+})
+
+test('an ordinary undo keeps a block on the target that someone added a sub-page to', async () => {
+  startPages(toggle('Notes', p('keep')), p('stays'))
+  const {from, to} = rangeOf(editor, 'details', 0)
   const blocks = getMovableBlocks(editor.state.doc, from, to).blocks
   const moved = appendBlocksToFragment(targetFrag, blocks, editor.schema)
   const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks}
   dispatchBlockMoveDelete(editor, editor.state.tr.deleteRange(from, to), meta)
+  const subPage = seed(link(9, 'Budget', true))
+    .get(0)
+    .clone()
+  ;((targetFrag.get(1) as Y.XmlElement).get(1) as Y.XmlElement).push([subPage])
   editor.commands.undo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+  expect(read(targetFrag)).toEqual(
+    normalize([h(1, 'Q3'), toggle('Notes', p('keep'), link(9, 'Budget', true))])
+  )
 })

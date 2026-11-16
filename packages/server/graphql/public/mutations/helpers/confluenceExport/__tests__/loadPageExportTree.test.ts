@@ -144,41 +144,25 @@ describe('loadPageExportTree', () => {
     expect(tree.length).toBe(101)
   }, 120_000)
 
-  it('never exports a synced block as its own page', async () => {
+  it('never exports a synced block page, whatever its link says', async () => {
     const host = await createNewPage({userId, content: pageDoc('Host')})
-    const block = await createNewPage({
-      userId,
-      parentPageId: host.id,
-      isSyncedBlock: true,
-      content: pageDoc('Escalation path')
-    })
+    const makeBlock = () =>
+      createNewPage({
+        userId,
+        parentPageId: host.id,
+        isSyncedBlock: true,
+        content: pageDoc('Escalation path')
+      })
+    const syncedBlock = await makeBlock()
+    const unsyncedLinkBlock = await makeBlock()
+    const syncedLink = pageLink(syncedBlock.id, 'Escalation path')
     await setPageContent(
       host.id,
       pageDoc('Host', [
-        {
-          type: 'pageLinkBlock',
-          attrs: {
-            pageCode: CipherId.encrypt(block.id),
-            title: 'Escalation path',
-            canonical: true,
-            synced: true
-          }
-        }
+        {...syncedLink, attrs: {...syncedLink.attrs, synced: true}},
+        pageLink(unsyncedLinkBlock.id, 'Escalation path')
       ])
     )
-    const tree = await loadPageExportTree(host.id, true, userId)
-    expect(tree.map(({pageId}) => pageId)).toEqual([host.id])
-  }, 30_000)
-
-  it('never exports a synced block page even when its link says synced is false', async () => {
-    const host = await createNewPage({userId, content: pageDoc('Host')})
-    const block = await createNewPage({
-      userId,
-      parentPageId: host.id,
-      isSyncedBlock: true,
-      content: pageDoc('Escalation path')
-    })
-    await setPageContent(host.id, pageDoc('Host', [pageLink(block.id, 'Escalation path')]))
     const tree = await loadPageExportTree(host.id, true, userId)
     expect(tree.map(({pageId}) => pageId)).toEqual([host.id])
   }, 30_000)

@@ -34,7 +34,7 @@ const readSyncedBlockPage = async (atmosphere: Atmosphere, pageId: string) => {
     atmosphere,
     syncedBlockPlacesQuery,
     {pageId},
-    {fetchPolicy: 'store-or-network'}
+    {fetchPolicy: 'network-only'}
   )
     .toPromise()
     .catch(() => undefined)

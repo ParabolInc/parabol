@@ -8,6 +8,7 @@ import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {syncedBlockPlaceholderText} from '../../../pagePlaceholderText'
+import {getSyncedBlockPlacesFetchPolicy} from '../getSyncedBlockPlacesFetchPolicy'
 import {SYNCED_BLOCK_DIALOG_EVENT} from '../openSyncedBlockDialog'
 import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
@@ -25,6 +26,8 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
 }))
 let mockNestedEditor: Editor | null = null
 let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
+let mockPlacementsChange = () => {}
+let mockPlacesMounts = 0
 const hostRef: {current: Editor | null} = {current: null}
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
@@ -58,8 +61,15 @@ jest.mock('react-router', () => ({
 jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../SyncedBlockContent', () => ({
-  SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
+  SyncedBlockContent: ({
+    onChromeChange,
+    onPlacementsChange
+  }: {
+    onChromeChange: (chrome: unknown) => void
+    onPlacementsChange: () => void
+  }) => {
     const {useEffect} = jest.requireActual<typeof import('react')>('react')
+    mockPlacementsChange = onPlacementsChange
     useEffect(() => {
       if (mockChromeState === 'none') return
       onChromeChange({editor: mockNestedEditor, isViewOnly: mockChromeState === 'viewOnly'})
@@ -69,6 +79,10 @@ jest.mock('../SyncedBlockContent', () => ({
 }))
 jest.mock('../SyncedBlockPlacesRoot', () => ({
   SyncedBlockPlacesRoot: ({onOpenChange}: {onOpenChange: (open: boolean) => void}) => {
+    const {useEffect} = jest.requireActual<typeof import('react')>('react')
+    useEffect(() => {
+      mockPlacesMounts++
+    }, [])
     const {Menu} = jest.requireActual<typeof import('../../../../ui/Menu/Menu')>(
       '../../../../ui/Menu/Menu'
     )
@@ -385,6 +399,15 @@ const mountFocusedView = (link = syncedLink) => {
   act(() => wrapper.focus())
   return Object.assign(wrapper, {host})
 }
+
+test('a placements change asks the server for the places the bar shows', () => {
+  mountFocusedView()
+  const mounts = mockPlacesMounts
+  getSyncedBlockPlacesFetchPolicy(7, Date.now())
+  act(() => mockPlacementsChange())
+  expect(mockPlacesMounts).toBe(mounts + 1)
+  expect(getSyncedBlockPlacesFetchPolicy(7, Date.now())).toBe('store-and-network')
+})
 
 test('clicking the name opens the rename input with the name selected', () => {
   mountFocusedView()

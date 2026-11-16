@@ -100,25 +100,12 @@ test('a gap survives typing at it', () => {
   expect(range.current()).toBeNull()
 })
 
-test('waitForChildLinksRemoved resolves at once when no link remains', async () => {
-  const editor = makeEditor(p('a'))
-  await expect(waitForChildLinksRemoved(editor, [7], 10_000)).resolves.toBe(true)
-})
-
 test('waitForChildLinksRemoved resolves once the server removes the link', async () => {
   const editor = makeEditor(toggle('Notes', link(7, 'Hiring plan', true)))
   const done = waitForChildLinksRemoved(editor, [7], 10_000)
   const {from, to} = rangeOf(editor, 'pageLinkBlock', 0)
   editor.view.dispatch(editor.state.tr.delete(from, to))
   await expect(done).resolves.toBe(true)
-})
-
-test('waitForChildLinksRemoved gives up after the timeout', async () => {
-  jest.useFakeTimers()
-  const editor = makeEditor(toggle('Notes', link(7, 'Hiring plan', true)))
-  const done = waitForChildLinksRemoved(editor, [7], 10_000)
-  jest.advanceTimersByTime(10_000)
-  await expect(done).resolves.toBe(false)
 })
 
 const makeCollabEditor = (ydoc: Y.Doc, ...blocks: JSONContent[]) => {

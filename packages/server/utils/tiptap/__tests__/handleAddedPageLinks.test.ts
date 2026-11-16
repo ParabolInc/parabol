@@ -7,53 +7,36 @@ import {handleAddedPageLinks} from '../handleAddedPageLinks'
 const mockBacklinks: [fromPageId: number, toPageId: number][] = []
 const mockOwnerByPageId = new Map<number, string>()
 const mockMovedPageIds: number[] = []
+const mockPlacementPings: {blockPageId: number; backlinks: [number, number][]}[] = []
 
 jest.mock('../updateBacklinks', () => ({
   updateBacklinks: async (fromPageId: number, addToPageId?: number | null) => {
+    await null
     if (addToPageId) mockBacklinks.push([fromPageId, addToPageId])
   }
+}))
+jest.mock('../hocusPocusHub', () => ({
+  publishSyncedBlockPlacementsChanged: (blockPageId: number) =>
+    mockPlacementPings.push({blockPageId, backlinks: [...mockBacklinks]})
 }))
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
 const mockCreateNewPage = jest.fn(async (_options: object) => ({id: NEW_PAGE_ID}))
-let mockFlagEnabled = false
-const mockIsSyncedBlocksEnabled = jest.fn(async () => mockFlagEnabled)
 jest.mock('../createNewPage', () => ({
   createNewPage: (options: object) => mockCreateNewPage(options)
 }))
-jest.mock('../isSyncedBlocksEnabled', () => ({
-  isSyncedBlocksEnabled: () => mockIsSyncedBlocksEnabled()
-}))
-jest.mock('../../../dataloader/getNewDataLoader', () => ({
-  getNewDataLoader: () => ({dispose: () => {}})
-}))
-interface MockUpdate {
-  table: string
-  values: Record<string, unknown>
-  where: unknown[][]
-}
-const mockUpdates: MockUpdate[] = []
+const mockDeletes: {table: string; where: unknown[]}[] = []
 jest.mock('../../../postgres/getKysely', () => ({
   __esModule: true,
   default: () => ({
-    updateTable: (table: string) => {
-      const update: MockUpdate = {table, values: {}, where: []}
-      const builder = {
-        set: (values: Record<string, unknown>) => {
-          update.values = values
-          return builder
-        },
-        where: (...args: unknown[]) => {
-          update.where.push(args)
-          return builder
-        },
+    deleteFrom: (table: string) => ({
+      where: (...where: unknown[]) => ({
         execute: async () => {
-          mockUpdates.push(update)
+          mockDeletes.push({table, where})
         }
-      }
-      return builder
-    }
+      })
+    })
   })
 }))
 const mockRehostSeededAssets = jest.fn()
@@ -105,19 +88,26 @@ const insertLink = async (link: Y.XmlElement<PageLinkBlockAttrs>, origin: object
 }
 
 beforeEach(() => {
-  mockUpdates.length = 0
+  mockDeletes.length = 0
   mockBacklinks.length = 0
+  mockPlacementPings.length = 0
   mockMovedPageIds.length = 0
   mockOwnerByPageId.clear()
   mockCreateNewPage.mockClear()
   mockRehostSeededAssets.mockClear()
-  mockFlagEnabled = false
-  mockIsSyncedBlocksEnabled.mockClear()
 })
 
 test('records a backlink when a user links a page', async () => {
   await insertLink(makeLink(LINKED_PAGE_ID, false), asUser(EDITOR_ID))
   expect(mockBacklinks).toEqual([[PARENT_PAGE_ID, LINKED_PAGE_ID]])
+  expect(mockPlacementPings).toEqual([])
+})
+
+test('tells a synced block its placements changed only after the backlink is written', async () => {
+  await insertLink(makeLink(LINKED_PAGE_ID, false, true), asUser(EDITOR_ID))
+  expect(mockPlacementPings).toEqual([
+    {blockPageId: LINKED_PAGE_ID, backlinks: [[PARENT_PAGE_ID, LINKED_PAGE_ID]]}
+  ])
 })
 
 test('records a backlink for a canonical link the server adds', async () => {
@@ -153,8 +143,7 @@ const insertSentinelLink = async (isSyncedBlock: boolean) => {
   return link
 }
 
-test('creates a synced block page with an empty paragraph when the flag is on', async () => {
-  mockFlagEnabled = true
+test('creates a synced block page with an empty paragraph', async () => {
   await insertSentinelLink(true)
   expect(mockCreateNewPage).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -165,13 +154,6 @@ test('creates a synced block page with an empty paragraph when the flag is on', 
       }
     })
   )
-})
-
-test('creates an ordinary child page and drops synced when the flag is off', async () => {
-  mockFlagEnabled = false
-  const node = await insertSentinelLink(true)
-  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: false}))
-  expect(node.getAttribute('synced')).toBeUndefined()
 })
 
 const wrapIn = (nodeName: 'details' | 'callout', link: Y.XmlElement<PageLinkBlockAttrs>) => {
@@ -249,7 +231,6 @@ const makeSeededLink = (pageCode: number, content: unknown) => {
 }
 
 test('seeds a new synced block with the content it carries', async () => {
-  mockFlagEnabled = true
   const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
   await insertLink(link, asUser(EDITOR_ID))
   expect(mockCreateNewPage).toHaveBeenCalledWith(
@@ -274,7 +255,6 @@ test('seeds a new synced block with the content it carries', async () => {
 })
 
 test('drops page links from seed content', async () => {
-  mockFlagEnabled = true
   const pageLink = {type: 'pageLinkBlock', attrs: {pageCode: LINKED_PAGE_ID, title: 'Other'}}
   await insertLink(
     makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, pageLink]),
@@ -295,30 +275,6 @@ test('removes content from a link that is not new', async () => {
   expect(mockCreateNewPage).not.toHaveBeenCalled()
 })
 
-test('keeps the text as a plain sub-page when the flag is off', async () => {
-  mockFlagEnabled = false
-  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
-  await insertLink(link, asUser(EDITOR_ID))
-  expect(mockCreateNewPage).toHaveBeenCalledWith(
-    expect.objectContaining({
-      isSyncedBlock: false,
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'heading',
-            attrs: {level: 1},
-            content: [{type: 'text', text: 'Escalation path'}]
-          },
-          seedParagraph
-        ]
-      }
-    })
-  )
-  expect(link.getAttribute('synced')).toBeUndefined()
-  expect(link.getAttribute('content')).toBeUndefined()
-})
-
 const escalationHeading = {
   type: 'heading',
   attrs: {level: 2},
@@ -337,7 +293,6 @@ const insertSeededLinkInPage = (seed: unknown) => {
 const nodeNames = (frag: Y.XmlFragment) => frag.toArray().map((n) => (n as Y.XmlElement).nodeName)
 
 test('puts the text back when the synced block page cannot be made', async () => {
-  mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
   const {frag} = insertSeededLinkInPage([seedParagraph])
   await flush()
@@ -346,7 +301,6 @@ test('puts the text back when the synced block page cannot be made', async () =>
 })
 
 test("puts a named block's heading back at its own level", async () => {
-  mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
   const {frag} = insertSeededLinkInPage([escalationHeading, seedParagraph])
   await flush()
@@ -354,15 +308,7 @@ test("puts a named block's heading back at its own level", async () => {
   expect((frag.get(0) as Y.XmlElement).getAttribute('level')).toBe(2)
 })
 
-test('puts the text back when the flag check fails', async () => {
-  mockIsSyncedBlocksEnabled.mockRejectedValueOnce(new Error('boom'))
-  const {frag} = insertSeededLinkInPage([seedParagraph])
-  await flush()
-  expect(nodeNames(frag)).toEqual(['paragraph'])
-})
-
 test('adds nothing back when the link was undone before the page failed', async () => {
-  mockFlagEnabled = true
   let rejectMint: (error: Error) => void = () => {}
   mockCreateNewPage.mockImplementationOnce(
     () =>
@@ -379,7 +325,6 @@ test('adds nothing back when the link was undone before the page failed', async 
 })
 
 test('names the block from the heading its seed leads with', async () => {
-  mockFlagEnabled = true
   insertSeededLinkInPage([escalationHeading, seedParagraph])
   await flush()
   expect(mockCreateNewPage).toHaveBeenCalledWith(
@@ -396,7 +341,6 @@ test('names the block from the heading its seed leads with', async () => {
 })
 
 test('rehosts the assets a seed carries into the new page as the inserting user', async () => {
-  mockFlagEnabled = true
   const image = {type: 'imageBlock', attrs: {src: 'https://tracker.example/pixel.png'}}
   await insertLink(
     makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, image]),
@@ -425,17 +369,10 @@ const insertThenUndoBeforeMint = async (isSyncedBlock: boolean) => {
   return {setAttribute}
 }
 
-test('sends a synced block page to Trash when its link was undone before the page was made', async () => {
-  mockFlagEnabled = true
+test('deletes a synced block page outright when its link was undone before the page was made', async () => {
   const {setAttribute} = await insertThenUndoBeforeMint(true)
   expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: true}))
-  expect(mockUpdates).toEqual([
-    {
-      table: 'Page',
-      values: {deletedAt: expect.anything(), deletedBy: EDITOR_ID},
-      where: [['id', '=', NEW_PAGE_ID]]
-    }
-  ])
+  expect(mockDeletes).toEqual([{table: 'Page', where: ['id', '=', NEW_PAGE_ID]}])
   expect(setAttribute).not.toHaveBeenCalled()
   expect(mockRehostSeededAssets).not.toHaveBeenCalled()
   expect(mockBacklinks).toEqual([])
@@ -444,12 +381,11 @@ test('sends a synced block page to Trash when its link was undone before the pag
 test('leaves an ordinary page alone when its link was undone before the page was made', async () => {
   const {setAttribute} = await insertThenUndoBeforeMint(false)
   expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: false}))
-  expect(mockUpdates).toEqual([])
+  expect(mockDeletes).toEqual([])
   expect(setAttribute).toHaveBeenCalledWith('pageCode', NEW_PAGE_ID)
 })
 
 test('a malformed seed cannot escape the handler', async () => {
-  mockFlagEnabled = true
   let seed: unknown = {type: 'paragraph'}
   for (let depth = 0; depth < 20000; depth++) seed = {type: 'blockquote', content: [seed]}
   const unhandled = jest.fn()
@@ -498,7 +434,6 @@ const insertLinkBetween = (
 }
 
 test('puts a failed list item back in the middle of its list as one list', async () => {
-  mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
   const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
     {type: 'bulletList', content: [seedListItem('Beta')]}
@@ -518,7 +453,6 @@ test('puts a failed list item back in the middle of its list as one list', async
 })
 
 test('puts a failed first list item back at the top of the list that follows', async () => {
-  mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
   const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
     {type: 'orderedList', content: [seedListItem('One')]}
@@ -534,7 +468,6 @@ test('puts a failed first list item back at the top of the list that follows', a
 })
 
 test('leaves the link in place when a seed is too deep to put back', async () => {
-  mockFlagEnabled = true
   mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
   let seed: unknown = {type: 'paragraph'}
   for (let depth = 0; depth < 1300; depth++) seed = {type: 'blockquote', content: [seed]}
@@ -551,7 +484,6 @@ test('leaves the link in place when a seed is too deep to put back', async () =>
 test.each(['bulletList', 'orderedList'] as const)(
   'puts a lone failed %s back whole',
   async (listName) => {
-    mockFlagEnabled = true
     mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
     const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
       {type: listName, content: [seedListItem('Only'), seedListItem('Two')]}

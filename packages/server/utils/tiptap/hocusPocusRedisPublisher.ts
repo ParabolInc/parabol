@@ -1,6 +1,7 @@
 import {
   type afterLoadDocumentPayload,
   type afterUnloadDocumentPayload,
+  type Connection,
   type Document,
   type Extension
 } from '@hocuspocus/server'
@@ -11,9 +12,28 @@ import {Logger} from '../Logger'
 import publish from '../publish'
 import type {PublicPageNotificationPayload} from '../publishPageNotification'
 import RedisInstance from '../RedisInstance'
+import {isMeetingTeamMember} from './authenticateYjsConnection'
 import {getPageConnectionAccess} from './getPageConnectionAccess'
 import {isYjsSessionLive} from './isYjsSessionLive'
 import {YJS_REVALIDATE_CHANNEL, type YjsRevalidation} from './revalidateYjsConnections'
+
+const closeRevokedConnections = (
+  document: Document,
+  isAffected: (connection: Connection) => boolean,
+  hasAccess: (connection: Connection) => Promise<boolean>
+) =>
+  Promise.all(
+    document
+      .getConnections()
+      .filter(isAffected)
+      .map(async (connection) => {
+        const {userId, iat, exp, jti, connectedAt} = connection.context
+        const isLive = !userId || (await isYjsSessionLive({userId, iat, exp, jti, connectedAt}))
+        if (!isLive || !(await hasAccess(connection))) {
+          connection.close({code: 4403, reason: 'AccessChanged'})
+        }
+      })
+  )
 
 export class RedisPublisher implements Extension {
   priority = 1001
@@ -21,6 +41,8 @@ export class RedisPublisher implements Extension {
   sub: RedisInstance
 
   documentConnections = new Map<string, Document>()
+
+  meetingDocuments = new Map<string, Document>()
 
   public constructor() {
     this.sub = new RedisInstance('publicPage_sub')
@@ -48,25 +70,26 @@ export class RedisPublisher implements Extension {
   }
 
   private async revalidate({pageIds, userIds}: YjsRevalidation) {
-    await Promise.all(
-      Array.from(this.documentConnections, async ([channelName, document]) => {
-        const pageId = Number(channelName.split(':')[1])
-        const isTargetPage = pageIds.includes(pageId)
-        const connections = document
-          .getConnections()
-          .filter((connection) => isTargetPage || userIds.includes(connection.context.userId))
-        await Promise.all(
-          connections.map(async (connection) => {
-            const {userId, iat, exp, jti, connectedAt} = connection.context
-            const isLive = !userId || (await isYjsSessionLive({userId, iat, exp, jti, connectedAt}))
-            const access = isLive ? await getPageConnectionAccess(pageId, userId) : null
-            if (!access || access.readOnly !== connection.readOnly) {
-              connection.close({code: 4403, reason: 'AccessChanged'})
-            }
-          })
-        )
-      })
+    const pageChecks = Array.from(this.documentConnections, ([channelName, document]) => {
+      const pageId = Number(channelName.split(':')[1])
+      const isTargetPage = pageIds.includes(pageId)
+      return closeRevokedConnections(
+        document,
+        (connection) => isTargetPage || userIds.includes(connection.context.userId),
+        async (connection) => {
+          const access = await getPageConnectionAccess(pageId, connection.context.userId)
+          return access?.readOnly === connection.readOnly
+        }
+      )
+    })
+    const meetingChecks = Array.from(this.meetingDocuments, ([meetingId, document]) =>
+      closeRevokedConnections(
+        document,
+        (connection) => userIds.includes(connection.context.userId),
+        (connection) => isMeetingTeamMember(meetingId, connection.context.userId).catch(() => false)
+      )
     )
+    await Promise.all([...pageChecks, ...meetingChecks])
   }
 
   private getChannelName(documentName: string) {
@@ -75,6 +98,10 @@ export class RedisPublisher implements Extension {
   }
 
   async afterLoadDocument({documentName, document}: afterLoadDocumentPayload) {
+    if (documentName.startsWith('meeting:')) {
+      this.meetingDocuments.set(documentName.slice('meeting:'.length), document)
+      return
+    }
     if (!documentName.startsWith('page:')) return
     const channelName = this.getChannelName(documentName)
     this.sub.subscribe(channelName).catch(Logger.error)
@@ -82,6 +109,10 @@ export class RedisPublisher implements Extension {
   }
 
   async afterUnloadDocument({documentName}: afterUnloadDocumentPayload) {
+    if (documentName.startsWith('meeting:')) {
+      this.meetingDocuments.delete(documentName.slice('meeting:'.length))
+      return
+    }
     if (!documentName.startsWith('page:')) return
     const channelName = this.getChannelName(documentName)
     this.documentConnections.delete(channelName)

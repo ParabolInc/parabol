@@ -6,19 +6,15 @@ test('keeps valid blocks and drops invalid ones', () => {
   expect(sanitizeSyncedBlockSeed([paragraph, {type: 'notANode'}])).toEqual([paragraph])
 })
 
-test('drops page links nested inside lists', () => {
+test.each(['pageLinkBlock', 'thinkingBlock', 'fileUpload'])('drops %s at any depth', (type) => {
+  const dropped = {type}
   const seed = [
-    {
-      type: 'bulletList',
-      content: [
-        {
-          type: 'listItem',
-          content: [paragraph, {type: 'pageLinkBlock', attrs: {pageCode: 7, title: 'Runbook'}}]
-        }
-      ]
-    }
+    dropped,
+    {type: 'blockquote', content: [paragraph, dropped]},
+    {type: 'bulletList', content: [{type: 'listItem', content: [paragraph, dropped]}]}
   ]
   expect(sanitizeSyncedBlockSeed(seed)).toEqual([
+    {type: 'blockquote', content: [paragraph]},
     {type: 'bulletList', content: [{type: 'listItem', content: [paragraph]}]}
   ])
 })
@@ -45,22 +41,6 @@ test('drops nodes that cannot sit directly under the page', () => {
   expect(sanitizeSyncedBlockSeed([{type: 'text', text: 'loose'}, listItem, paragraph])).toEqual([
     paragraph
   ])
-})
-
-test('drops thinking blocks at any depth', () => {
-  const thinkingBlock = {type: 'thinkingBlock'}
-  const seed = [
-    thinkingBlock,
-    {type: 'bulletList', content: [{type: 'listItem', content: [paragraph, thinkingBlock]}]},
-    {
-      type: 'details',
-      content: [
-        {type: 'detailsSummary'},
-        {type: 'detailsContent', content: [paragraph, thinkingBlock]}
-      ]
-    }
-  ]
-  expect(JSON.stringify(sanitizeSyncedBlockSeed(seed))).not.toContain('thinkingBlock')
 })
 
 test("normalizes kept blocks to the schema's JSON", () => {

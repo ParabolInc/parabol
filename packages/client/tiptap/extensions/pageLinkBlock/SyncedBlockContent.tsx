@@ -11,14 +11,34 @@ interface Props {
   getSize: () => number
   onChromeChange: (chrome: SyncedBlockChrome | null) => void
   onStatusChange: (status: SyncedBlockStatus) => void
+  onPlacementsChange: () => void
 }
 
+const PLACEMENTS_CHANGED = JSON.stringify({type: 'syncedBlockPlacementsChanged'})
+
 export const SyncedBlockContent = (props: Props) => {
-  const {pageCode, hostEditor, getPos, getSize, onChromeChange, onStatusChange} = props
+  const {
+    pageCode,
+    hostEditor,
+    getPos,
+    getSize,
+    onChromeChange,
+    onStatusChange,
+    onPlacementsChange
+  } = props
   const {provider, status, retry} = useSyncedBlockProvider(pageCode)
   useEffect(() => {
     onStatusChange(status)
   }, [status, onStatusChange])
+  useEffect(() => {
+    const handleStateless = ({payload}: {payload: string}) => {
+      if (payload === PLACEMENTS_CHANGED) onPlacementsChange()
+    }
+    provider.on('stateless', handleStateless)
+    return () => {
+      provider.off('stateless', handleStateless)
+    }
+  }, [provider, onPlacementsChange])
   if (status !== 'ready')
     return <SyncedBlockState status={status} pageCode={pageCode} onRetry={retry} />
   return (

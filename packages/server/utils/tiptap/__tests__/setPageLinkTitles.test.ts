@@ -21,14 +21,16 @@ const titles = (doc: ReturnType<typeof docWithLinks>) =>
     (node: {attrs?: {title?: string}}) => node.attrs?.title
   )
 
-test('sets the title on every link to the page', () => {
+test('sets the title on every link to the page and leaves links to other pages alone', () => {
   const doc = docWithLinks()
   setPageLinkTitles(doc.getXmlFragment('default'), 7, 'Escalation path')
-  expect(titles(doc).slice(0, 2)).toEqual(['Escalation path', 'Escalation path'])
+  expect(titles(doc)).toEqual(['Escalation path', 'Escalation path', 'Other'])
 })
 
-test('leaves links to other pages alone', () => {
+test('writes nothing when the links already carry the title', () => {
   const doc = docWithLinks()
-  setPageLinkTitles(doc.getXmlFragment('default'), 7, 'Escalation path')
-  expect(titles(doc)[2]).toBe('Other')
+  const onUpdate = jest.fn()
+  doc.on('update', onUpdate)
+  setPageLinkTitles(doc.getXmlFragment('default'), 8, 'Other')
+  expect(onUpdate).not.toHaveBeenCalled()
 })

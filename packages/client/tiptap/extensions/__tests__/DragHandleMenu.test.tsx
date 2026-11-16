@@ -71,7 +71,7 @@ const openMenuOnSelection = async (
   blocks: JSONContent[],
   first: number,
   last: number,
-  canCreateSyncedBlock = false,
+  canCreateSubPage = false,
   editable = true
 ) => {
   const activeEditor = new Editor({
@@ -103,8 +103,7 @@ const openMenuOnSelection = async (
         pos={pos}
         onClose={onClose}
         anchorElement={anchor}
-        canCreateSubPage
-        canCreateSyncedBlock={canCreateSyncedBlock}
+        canCreateSubPage={canCreateSubPage}
         selection={{range, count: countBlocks(doc, range)}}
         atmosphere={atmosphere}
         pageId='page:1'
@@ -216,9 +215,6 @@ describe('the menu on a block selection', () => {
       'Delete'
     ])
     expect(itemNamed('Turn into synced block').textContent).toBe('Turn into synced block')
-    await closeMenu()
-    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, false)
-    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
   })
 
   test('Turn into synced block moves the selected blocks into one synced block', async () => {
@@ -229,30 +225,6 @@ describe('the menu on a block selection', () => {
     expect(link.attrs.content).toEqual([p('one'), p('two')])
     expect(texts()).toEqual(['three'])
     expect(editor!.state.selection.$from.parent.textContent).toBe('three')
-  })
-
-  test('Turn into synced block holds the editor at its height until the block has rendered', async () => {
-    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true)
-    const {dom} = editor!.view
-    jest.spyOn(dom, 'offsetHeight', 'get').mockReturnValue(500)
-    const held: string[] = []
-    editor!.on('update', () => held.push(dom.style.minHeight))
-    await click(itemNamed('Turn into synced block'))
-    expect(held).toEqual(['500px'])
-    expect(dom.style.minHeight).toBe('')
-    expect(editor!.state.selection.$from.parent.textContent).toBe('three')
-  })
-
-  test('a selection holding a page link has no Turn into synced block', async () => {
-    const link = {type: 'pageLinkBlock', attrs: {pageCode: 5, title: 'Other', canonical: true}}
-    await openMenuOnSelection([p('one'), link, p('three')], 1, 2, true)
-    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
-  })
-
-  test('a read-only editor has no Turn into synced block', async () => {
-    await openMenuOnSelection([p('one'), p('two'), p('three')], 1, 2, true, false)
-    expect(items().length).toBeGreaterThan(0)
-    expect(items().some((item) => item.textContent?.startsWith('Turn into'))).toBe(false)
   })
 
   test('mod-D duplicates the selection', async () => {
@@ -287,7 +259,6 @@ describe('the menu on a synced block', () => {
           onClose={onClose}
           anchorElement={anchor}
           canCreateSubPage
-          canCreateSyncedBlock={false}
           selection={null}
           atmosphere={atmosphere}
           pageId='page:1'
@@ -479,7 +450,7 @@ const openMenuOnBlock = async (
   blocks: JSONContent[],
   index: number,
   editable = true,
-  canCreateSyncedBlock = false
+  canCreateSubPage = false
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
@@ -506,8 +477,7 @@ const openMenuOnBlock = async (
         pos={pos}
         onClose={jest.fn()}
         anchorElement={anchor}
-        canCreateSubPage
-        canCreateSyncedBlock={canCreateSyncedBlock}
+        canCreateSubPage={canCreateSubPage}
         selection={null}
         atmosphere={atmosphere}
         pageId='page:1'

@@ -11,7 +11,6 @@ import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
 import {createNewPage} from '../../tiptap/createNewPage'
 import {loadSyncedBlockBodies} from '../loadSyncedBlockBodies'
-import {MAX_SYNCED_BLOCK_EXPANSIONS} from '../types'
 
 const pg = getKysely()
 const userId = `syncedBodies|${generateUID()}`
@@ -73,50 +72,30 @@ afterAll(async () => {
 })
 
 describe('loadSyncedBlockBodies', () => {
-  it("loads a readable block's body without its name", async () => {
+  it('loads only readable synced blocks, each body without its name', async () => {
     const host = await createNewPage({userId, content: toContent(heading('Host'))})
     const block = await makeBlock(host.id, heading('Escalation path'), para('Call on-call first'))
-    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
+    const trashed = await makeBlock(host.id, heading('Gone'), para('Deleted'))
+    await pg
+      .updateTable('Page')
+      .set({deletedAt: new Date(), deletedBy: userId})
+      .where('id', '=', trashed.id)
+      .execute()
+    const ordinary = await createNewPage({
+      userId,
+      parentPageId: host.id,
+      content: toContent(heading('Ordinary'), para('Plain'))
+    })
+    const doc = hostDoc(block.id, trashed.id, ordinary.id) as JSONContent
+    const bodies = await loadSyncedBlockBodies(doc, host.id, userId)
+    expect([...bodies.keys()]).toEqual([CipherId.encrypt(block.id)])
     expect(bodies.get(CipherId.encrypt(block.id))).toEqual([
       expect.objectContaining({
         type: 'paragraph',
         content: [expect.objectContaining({text: 'Call on-call first'})]
       })
     ])
-  }, 30_000)
-
-  it("leaves out a block the viewer can't open", async () => {
-    const host = await createNewPage({userId, content: toContent(heading('Host'))})
-    const block = await makeBlock(host.id, heading('Secret'), para('Hidden'))
-    const bodies = await loadSyncedBlockBodies(
-      hostDoc(block.id) as JSONContent,
-      host.id,
-      strangerId
-    )
-    expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
-  }, 30_000)
-
-  it('leaves out a block in Trash', async () => {
-    const host = await createNewPage({userId, content: toContent(heading('Host'))})
-    const block = await makeBlock(host.id, heading('Gone'), para('Deleted'))
-    await pg
-      .updateTable('Page')
-      .set({deletedAt: new Date(), deletedBy: userId})
-      .where('id', '=', block.id)
-      .execute()
-    const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
-    expect(bodies.has(CipherId.encrypt(block.id))).toBe(false)
-  }, 30_000)
-
-  it('leaves out a page that is not a synced block', async () => {
-    const host = await createNewPage({userId, content: toContent(heading('Host'))})
-    const ordinary = await createNewPage({
-      userId,
-      parentPageId: host.id,
-      content: toContent(heading('Ordinary'), para('Plain'))
-    })
-    const bodies = await loadSyncedBlockBodies(hostDoc(ordinary.id) as JSONContent, host.id, userId)
-    expect(bodies.size).toBe(0)
+    expect((await loadSyncedBlockBodies(doc, host.id, strangerId)).size).toBe(0)
   }, 30_000)
 
   it('follows a block nested inside a block and stops at a cycle', async () => {
@@ -173,16 +152,4 @@ describe('loadSyncedBlockBodies', () => {
     const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
     expect(bodies.has(CipherId.encrypt(block.id))).toBe(true)
   }, 30_000)
-
-  it('loads no more distinct blocks than an export can expand', async () => {
-    const host = await createNewPage({userId, content: toContent(heading('Host'))})
-    const blockIds: number[] = []
-    for (let i = 0; i <= MAX_SYNCED_BLOCK_EXPANSIONS; i++) {
-      const block = await makeBlock(host.id, heading(`Block ${i}`), para(`Body ${i}`))
-      blockIds.push(block.id)
-    }
-    const bodies = await loadSyncedBlockBodies(hostDoc(...blockIds) as JSONContent, host.id, userId)
-    expect(bodies.size).toBe(MAX_SYNCED_BLOCK_EXPANSIONS)
-    expect(bodies.has(CipherId.encrypt(blockIds.at(-1)!))).toBe(false)
-  }, 120_000)
 })

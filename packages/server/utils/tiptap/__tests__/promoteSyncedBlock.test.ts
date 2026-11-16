@@ -135,6 +135,12 @@ test('re-parents under the host placed first and keeps every access row', async 
   expect(mockHandleEvent).toHaveBeenCalledWith('markPageLinkCanonical', `page:${firstCopyHost}`, {
     pageCode: block
   })
+  expect(mockHandleEvent).toHaveBeenCalledWith(
+    'broadcastSyncedBlockPlacementsChanged',
+    `page:${block}`,
+    {},
+    true
+  )
 }, 30_000)
 
 test('skips a host whose editors cannot see the block', async () => {

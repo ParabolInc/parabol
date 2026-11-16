@@ -46,7 +46,7 @@ let renderers: FakeRenderer[] = []
 
 const atmosphere = {} as Atmosphere
 const anchorRect = {top: 10, left: 20, width: 24, height: 24}
-const moved: BlockMoveOutcome = {result: 'moved', meta: null, gap: null, moved: null}
+const moved: BlockMoveOutcome = {result: 'moved', meta: null, moved: null}
 const flush = () => new Promise((resolve) => setTimeout(resolve, 20))
 
 const open = (editor: Editor, range = twoBlocks(editor)) => {
