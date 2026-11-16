@@ -15,7 +15,7 @@ import {type Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
-import {useNavigate} from 'react-router'
+import {useLocation, useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {
@@ -65,6 +65,7 @@ import {getPageFileType} from '../tiptap/getPageFileType'
 import {pagePlaceholderText, syncedBlockPlaceholderText} from '../tiptap/pagePlaceholderText'
 import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
+import {isArrivalPending} from './useArrivalHighlight'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
@@ -103,6 +104,7 @@ export const useTipTapPageEditor = (
   const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
+  const {hash} = useLocation()
   const [executeArchive] = useArchivePageMutation()
   const onSyncedBlockRemoved = useEventCallback(
     (removal: SyncedBlockRemoval, removedFrom: Editor) => {
@@ -171,7 +173,7 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested, hasSyncedBlocks}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({
@@ -349,7 +351,7 @@ export const useTipTapPageEditor = (
           }
         })
       ],
-      autofocus: !nested,
+      autofocus: !nested && !isArrivalPending(pageId, hash),
       editable: true
     },
     [provider]

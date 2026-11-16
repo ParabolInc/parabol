@@ -15,6 +15,8 @@ import {
   showConfluenceBadge
 } from '../../components/ExportToConfluence/ConfluenceNewBadge'
 import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {printPage} from '../../tiptap/extensions/pageLinkBlock/syncedBlockPrint'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -33,6 +35,7 @@ interface Props {
 
 export const PageHeader = (props: Props) => {
   const {pageRef, showConfluenceExport, isPageGenerating} = props
+  const atmosphere = useAtmosphere()
   const page = useFragment(
     graphql`
       fragment PageHeader_page on Page {
@@ -40,6 +43,7 @@ export const PageHeader = (props: Props) => {
         ...PageDeletedHeader_page
         id
         deletedBy
+        isSyncedBlock
       }
     `,
     pageRef
@@ -52,17 +56,18 @@ export const PageHeader = (props: Props) => {
   const exportReport = searchParams.get('report') !== null
   const [exportOpen, setExportOpen] = useState(false)
 
-  const {id: pageId, deletedBy} = page
+  const {id: pageId, deletedBy, isSyncedBlock} = page
+  const canExportToConfluence = showConfluenceExport && !isSyncedBlock
   const pageInTrash = !!deletedBy
   const isExportDisabled = isPageGenerating || pageInTrash
-  const showBadge = showConfluenceExport && showConfluenceBadge()
+  const showBadge = canExportToConfluence && showConfluenceBadge()
   const openExportDialog = () => {
     setExportOpen(true)
   }
   // keyed on location.key so a same-route navigation (e.g. the completion toast's
   // "View report" while already on the page) still opens the dialog
   useEffect(() => {
-    if (exportDeepLinked && showConfluenceExport) {
+    if (exportDeepLinked && canExportToConfluence) {
       setExportOpen(true)
     }
   }, [location.key])
@@ -108,13 +113,13 @@ export const PageHeader = (props: Props) => {
             <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
               <MenuItem
                 onSelect={() => {
-                  window.print()
+                  printPage(atmosphere)
                 }}
               >
                 <PictureAsPdfIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Export to PDF'}</span>
               </MenuItem>
-              {showConfluenceExport && (
+              {canExportToConfluence && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <MenuItem
@@ -141,7 +146,7 @@ export const PageHeader = (props: Props) => {
               )}
             </MenuContent>
           </Menu>
-          {exportOpen && showConfluenceExport && (
+          {exportOpen && canExportToConfluence && (
             <ExportToConfluenceRoot
               pageId={pageId}
               onClose={() => setExportOpen(false)}

@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {GQLID} from '../../../utils/GQLID'
 import {getPageSlug} from '../../getPageSlug'
+import {getSyncedBlockHash} from '../../syncedBlockHash'
 import {copySyncedBlock} from './copySyncedBlock'
 import {deleteSyncedBlockFromPage} from './deleteSyncedBlockFromPage'
 import {duplicateSyncedBlockAsPlain} from './duplicateSyncedBlockAsPlain'
@@ -53,7 +54,9 @@ export const useSyncedBlockMenuActions = (params: Params) => {
     goToOriginal: () => {
       if (!original) return
       const [originalPageCode] = GQLID.fromKey(original.pageId)
-      navigate(`/pages/${getPageSlug(originalPageCode, original.title)}`)
+      navigate(
+        `/pages/${getPageSlug(originalPageCode, original.title)}${getSyncedBlockHash(pageCode)}`
+      )
     },
     rename: () =>
       runAfterClose(() => withPos((pos) => startSyncedBlockRename(hostEditor.view, pos, pageCode))),

@@ -26,7 +26,7 @@ export const SearchDialogResultsRecent = (props: Props) => {
           ... on Page {
             id
             updatedAt
-            title
+            ...getSearchResultHref_page
           }
         }
       }

@@ -60,11 +60,22 @@ let editor: Editor | undefined
 
 const openMenu = async (
   blocks: Json[],
-  {pos = TITLE_SIZE, canCreateSubPage = true}: {pos?: number; canCreateSubPage?: boolean} = {}
+  {
+    pos = TITLE_SIZE,
+    canCreateSubPage = true,
+    canCreateSyncedBlock = false,
+    editable = true
+  }: {
+    pos?: number
+    canCreateSubPage?: boolean
+    canCreateSyncedBlock?: boolean
+    editable?: boolean
+  } = {}
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
     extensions,
+    editable,
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
   })
   editor = activeEditor
@@ -85,6 +96,7 @@ const openMenu = async (
         onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
+        canCreateSyncedBlock={canCreateSyncedBlock}
         atmosphere={{} as Atmosphere}
         pageId='page:1'
       />
@@ -101,6 +113,12 @@ const itemNamed = (name: string) => {
   return item
 }
 const hasItem = (name: string) => items().some((item) => item.textContent?.startsWith(name))
+const submenuRows = () => {
+  const submenu = Array.from(document.querySelectorAll('[data-radix-menu-content]')).at(-1)
+  return Array.from(
+    submenu?.querySelectorAll<HTMLElement>('[role^="menuitem"], [role="separator"]') ?? []
+  )
+}
 const radios = () => Array.from(document.querySelectorAll<HTMLElement>('[role="menuitemradio"]'))
 const checkedRows = () =>
   radios()
@@ -136,7 +154,7 @@ const blockTypes = () => {
 }
 const rootContent = () => document.querySelector<HTMLElement>('[role="menu"]')!
 
-afterEach(async () => {
+const closeMenu = async () => {
   await act(async () => {
     root?.unmount()
     root = undefined
@@ -145,7 +163,9 @@ afterEach(async () => {
   editor?.destroy()
   editor = undefined
   document.body.replaceChildren()
-})
+}
+
+afterEach(closeMenu)
 
 const uncaught: unknown[] = []
 happyWindow.addEventListener('error', (event) => {
@@ -210,6 +230,31 @@ describe('what the menu offers', () => {
     expect(caption()).toBeNull()
   })
 
+  test('offers Synced block last, only when the page allows it', async () => {
+    await openMenu([p('word')])
+    await openTurnInto()
+    expect(hasItem('Synced block')).toBe(false)
+    await closeMenu()
+    await openMenu([p('word')], {canCreateSyncedBlock: true})
+    await openTurnInto()
+    const rows = submenuRows().map((row) => row.getAttribute('role'))
+    expect(rows).toEqual([...ROW_TITLES.map(() => 'menuitemradio'), 'separator', 'menuitem'])
+    expect(submenuRows().at(-1)?.textContent).toBe('Synced block')
+  })
+
+  test('a read-only editor has no Synced block row', async () => {
+    await openMenu([p('word')], {canCreateSyncedBlock: true, editable: false})
+    await openTurnInto()
+    expect(hasItem('Synced block')).toBe(false)
+  })
+
+  test('a block inside a callout has no Synced block row', async () => {
+    const callout: Json = {type: 'callout', attrs: {tone: 'info'}, content: [p('word')]}
+    await openMenu([callout], {pos: TITLE_SIZE + 1, canCreateSyncedBlock: true})
+    await openTurnInto()
+    expect(hasItem('Synced block')).toBe(false)
+  })
+
   test('an image keeps the menu it has today', async () => {
     await openMenu([image])
     expect(hasItem('Turn into')).toBe(false)
@@ -248,6 +293,31 @@ describe('picking a row', () => {
     const link = activeEditor.state.doc.child(1)
     expect(link.type.name).toBe('pageLinkBlock')
     expect(link.attrs).toMatchObject({pageCode: -1, title: 'word', canonical: true})
+  })
+})
+
+describe('Synced block', () => {
+  test('moves the block into a new synced block and leaves the caret below it', async () => {
+    const {activeEditor} = await openMenu([p('word'), p('after')], {canCreateSyncedBlock: true})
+    await openTurnInto()
+    await click(itemNamed('Synced block'))
+    const link = activeEditor.state.doc.child(1)
+    expect(link.type.name).toBe('pageLinkBlock')
+    expect(link.attrs).toMatchObject({pageCode: -1, canonical: true, synced: true, title: ''})
+    expect(link.attrs.content).toEqual([p('word')])
+    expect(activeEditor.state.selection.$from.parent.textContent).toBe('after')
+  })
+
+  test('does nothing when another edit moved the block', async () => {
+    const {activeEditor} = await openMenu([p('word'), p('after')], {canCreateSyncedBlock: true})
+    await openTurnInto()
+    act(() => {
+      const {tr, schema} = activeEditor.state
+      activeEditor.view.dispatch(tr.insert(TITLE_SIZE, schema.nodeFromJSON(p('new'))))
+    })
+    const before = activeEditor.state.doc
+    await click(itemNamed('Synced block'))
+    expect(activeEditor.state.doc.eq(before)).toBe(true)
   })
 })
 

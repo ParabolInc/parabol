@@ -116,6 +116,7 @@ type Options = {
   atmosphere: Atmosphere
   pageId: string
   isNested?: boolean
+  hasSyncedBlocks?: boolean
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',
@@ -205,7 +206,7 @@ export const PageDragHandle = Extension.create<Options>({
     let didStartDrag = false
     let isDraggingSelection = false
     let draggedRange: TrackedRange | null = null
-    const {atmosphere, pageId, isNested} = this.options
+    const {atmosphere, pageId, isNested, hasSyncedBlocks} = this.options
 
     const closeMenu = () => {
       if (!menuRenderer) return
@@ -249,6 +250,8 @@ export const PageDragHandle = Extension.create<Options>({
 
       editorRef.commands.lockDragHandle()
 
+      const canCreateSubPage =
+        !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
       menuRenderer = new ReactRenderer(DragHandleMenu, {
         editor: editorRef,
         props: {
@@ -257,8 +260,8 @@ export const PageDragHandle = Extension.create<Options>({
           pos,
           onClose: closeMenu,
           anchorElement: dragHandleElement,
-          canCreateSubPage:
-            !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0]),
+          canCreateSubPage,
+          canCreateSyncedBlock: !!hasSyncedBlocks && canCreateSubPage,
           selection,
           atmosphere,
           pageId
@@ -451,16 +454,19 @@ export const PageDragHandle = Extension.create<Options>({
           const {right} = horizontalRef.getBoundingClientRect()
           const handleWidth = dragHandleElement.offsetWidth
           const blockLeft = syncedBlock?.getBoundingClientRect().left
-          const fitsInsideBlock =
-            !!syncedBlock &&
-            parseFloat(getComputedStyle(syncedBlock).paddingLeft) >=
-              SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
+          const blockPaddingLeft = syncedBlock
+            ? parseFloat(getComputedStyle(syncedBlock).paddingLeft)
+            : 0
+          const hasHandleGutter =
+            blockPaddingLeft >= SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
           const left =
             blockLeft === undefined
               ? horizontalRef.getBoundingClientRect().left
-              : isNested && fitsInsideBlock
-                ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
-                : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
+              : !hasHandleGutter
+                ? blockLeft + blockPaddingLeft
+                : isNested
+                  ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
+                  : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
           // Media blocks carry no text to anchor to. Without this the walker below finds
           // nothing and the handle never renders for an iframe embed, and anchors to the
           // title line rather than the block top for a card.

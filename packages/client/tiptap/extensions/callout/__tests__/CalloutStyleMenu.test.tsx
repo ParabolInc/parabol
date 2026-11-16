@@ -238,6 +238,7 @@ describe('the block handle menu', () => {
         onClose={jest.fn()}
         anchorElement={document.body.appendChild(document.createElement('div'))}
         canCreateSubPage
+        canCreateSyncedBlock={false}
         atmosphere={{} as Atmosphere}
         pageId='page:1'
       />

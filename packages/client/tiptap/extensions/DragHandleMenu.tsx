@@ -1,7 +1,7 @@
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
-import {ArrowForward, ContentCopy, DeleteOutlined} from '~/ui/icons'
+import {ArrowForward, Autorenew, ContentCopy, DeleteOutlined} from '~/ui/icons'
 import type Atmosphere from '../../Atmosphere'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -17,8 +17,10 @@ import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
+import {dispatchBlockConversion} from './turnInto/dispatchBlockConversion'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
+import {turnRangeIntoSyncedBlock} from './turnInto/turnRangeIntoSyncedBlock'
 
 interface DragHandleMenuProps {
   editor: Editor
@@ -27,6 +29,7 @@ interface DragHandleMenuProps {
   onClose: () => void
   anchorElement: HTMLElement
   canCreateSubPage: boolean
+  canCreateSyncedBlock: boolean
   selection?: {range: BlockRange; count: number} | null
   atmosphere: Atmosphere
   pageId: string
@@ -40,6 +43,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     onClose,
     anchorElement,
     canCreateSubPage,
+    canCreateSyncedBlock,
     selection,
     atmosphere,
     pageId
@@ -56,6 +60,23 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const showDelete = !!selection || (!isCanonicalPageLink && !isDocumentHeading)
   const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
+
+  const getBlockRange = (): BlockRange => ({
+    from: pos,
+    to: pos + node.nodeSize,
+    depth: editor.state.doc.resolve(pos).depth
+  })
+
+  const getSyncedBlockTransaction = () => {
+    const {doc} = editor.state
+    const isBlockInPlace = pos < doc.content.size && !!doc.nodeAt(pos)?.eq(node)
+    const range = selection
+      ? getSelectedBlockRange(editor.state)
+      : isBlockInPlace && getBlockRange()
+    return range ? turnRangeIntoSyncedBlock(editor.state, range) : null
+  }
+  const showTurnIntoSyncedBlock =
+    editor.isEditable && canCreateSyncedBlock && !turnIntoCurrent && !!getSyncedBlockTransaction()
   const blocks = plural(selection?.count ?? 1, 'block')
 
   useLayoutEffect(() => {
@@ -91,12 +112,14 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       .run()
   }
 
+  const handleTurnIntoSyncedBlock = () => {
+    if (!editor.isEditable) return
+    const tr = getSyncedBlockTransaction()
+    if (tr) dispatchBlockConversion(editor, tr, pos)
+  }
+
   const handleMoveTo = () => {
-    const range = selection?.range ?? {
-      from: pos,
-      to: pos + node.nodeSize,
-      depth: editor.state.doc.resolve(pos).depth
-    }
+    const range = selection?.range ?? getBlockRange()
     const {top, left, width, height} = anchorElement.getBoundingClientRect()
     const anchorRect = {top, left, width, height}
     openMoveToPageMenu({editor, range, anchorRect, pageId, atmosphere})
@@ -187,6 +210,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
               pos={pos}
               current={turnIntoCurrent}
               canCreateSubPage={canCreateSubPage}
+              canCreateSyncedBlock={canCreateSyncedBlock}
             />
           )}
           {!selection && node.type.name === 'callout' && (
@@ -197,6 +221,12 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
             <span className='flex-1 text-left'>Duplicate {blocks}</span>
             <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
           </MenuItem>
+          {showTurnIntoSyncedBlock && (
+            <MenuItem onSelect={handleTurnIntoSyncedBlock}>
+              <Autorenew className={MENU_ITEM_ICON} />
+              Turn into synced block
+            </MenuItem>
+          )}
           {showMoveTo && (
             <MenuItem onSelect={handleMoveTo}>
               <ArrowForward className={MENU_ITEM_ICON} />

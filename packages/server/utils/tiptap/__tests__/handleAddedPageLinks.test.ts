@@ -27,6 +27,38 @@ jest.mock('../isSyncedBlocksEnabled', () => ({
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({dispose: () => {}})
 }))
+interface MockUpdate {
+  table: string
+  values: Record<string, unknown>
+  where: unknown[][]
+}
+const mockUpdates: MockUpdate[] = []
+jest.mock('../../../postgres/getKysely', () => ({
+  __esModule: true,
+  default: () => ({
+    updateTable: (table: string) => {
+      const update: MockUpdate = {table, values: {}, where: []}
+      const builder = {
+        set: (values: Record<string, unknown>) => {
+          update.values = values
+          return builder
+        },
+        where: (...args: unknown[]) => {
+          update.where.push(args)
+          return builder
+        },
+        execute: async () => {
+          mockUpdates.push(update)
+        }
+      }
+      return builder
+    }
+  })
+}))
+const mockRehostSeededAssets = jest.fn()
+jest.mock('../rehostExternalAssets', () => ({
+  rehostSeededAssets: (...args: unknown[]) => mockRehostSeededAssets(...args)
+}))
 jest.mock('../movePageToNewParent', () => ({
   movePageToNewParent: async (userId: string, pageId: number) => {
     if (pageId === CHILD_PAGE_ID) return
@@ -72,10 +104,12 @@ const insertLink = async (link: Y.XmlElement<PageLinkBlockAttrs>, origin: object
 }
 
 beforeEach(() => {
+  mockUpdates.length = 0
   mockBacklinks.length = 0
   mockMovedPageIds.length = 0
   mockOwnerByPageId.clear()
   mockCreateNewPage.mockClear()
+  mockRehostSeededAssets.mockClear()
   mockFlagEnabled = false
 })
 
@@ -201,4 +235,145 @@ test('keeps a canonical link the server adds when the move would be refused', as
   expect(frag.length).toBe(1)
   expect(link.getAttribute('canonical')).toBe(true)
   expect(mockMovedPageIds).toEqual([])
+})
+
+const seedParagraph = {type: 'paragraph', content: [{type: 'text', text: 'Call on-call first'}]}
+
+const makeSeededLink = (pageCode: number, content: unknown) => {
+  const link = makeLink(pageCode, true, true)
+  link.setAttribute('title', 'Escalation path')
+  link.setAttribute('content', content as PageLinkBlockAttrs['content'])
+  return link
+}
+
+test('seeds a new synced block with the content it carries', async () => {
+  mockFlagEnabled = true
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
+  await insertLink(link, asUser(EDITOR_ID))
+  expect(mockCreateNewPage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      isSyncedBlock: true,
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: {level: 1},
+            content: [{type: 'text', text: 'Escalation path'}]
+          },
+          seedParagraph
+        ]
+      }
+    })
+  )
+  expect(link.getAttribute('content')).toBeUndefined()
+  expect(link.getAttribute('title')).toBe('')
+  expect(link.getAttribute('pageCode')).toBe(NEW_PAGE_ID)
+})
+
+test('drops page links from seed content', async () => {
+  mockFlagEnabled = true
+  const pageLink = {type: 'pageLinkBlock', attrs: {pageCode: LINKED_PAGE_ID, title: 'Other'}}
+  await insertLink(
+    makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, pageLink]),
+    asUser(EDITOR_ID)
+  )
+  const [{content}] = mockCreateNewPage.mock.calls[0] as [{content: {content: unknown[]}}]
+  expect(content.content).toEqual([
+    {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Escalation path'}]},
+    seedParagraph
+  ])
+})
+
+test('removes content from a link that is not new', async () => {
+  mockOwnerByPageId.set(LINKED_PAGE_ID, EDITOR_ID)
+  const link = makeSeededLink(LINKED_PAGE_ID, [seedParagraph])
+  await insertLink(link, asUser(EDITOR_ID))
+  expect(link.getAttribute('content')).toBeUndefined()
+  expect(mockCreateNewPage).not.toHaveBeenCalled()
+})
+
+test('keeps the text as a plain sub-page when the flag is off', async () => {
+  mockFlagEnabled = false
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
+  await insertLink(link, asUser(EDITOR_ID))
+  expect(mockCreateNewPage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      isSyncedBlock: false,
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: {level: 1},
+            content: [{type: 'text', text: 'Escalation path'}]
+          },
+          seedParagraph
+        ]
+      }
+    })
+  )
+  expect(link.getAttribute('synced')).toBeUndefined()
+  expect(link.getAttribute('content')).toBeUndefined()
+})
+
+test('removes content even when the page cannot be made', async () => {
+  mockFlagEnabled = true
+  mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
+  await insertLink(link, asUser(EDITOR_ID))
+  expect(link.getAttribute('content')).toBeUndefined()
+})
+
+test('rehosts the assets a seed carries into the new page as the inserting user', async () => {
+  mockFlagEnabled = true
+  const image = {type: 'imageBlock', attrs: {src: 'https://tracker.example/pixel.png'}}
+  await insertLink(
+    makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, image]),
+    asUser(EDITOR_ID)
+  )
+  expect(mockRehostSeededAssets).toHaveBeenCalledWith(
+    NEW_PAGE_ID,
+    [seedParagraph, {type: 'imageBlock', attrs: expect.objectContaining(image.attrs)}],
+    EDITOR_ID
+  )
+})
+
+const insertThenUndoBeforeMint = async (isSyncedBlock: boolean) => {
+  const {doc, frag} = makePage()
+  const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph])
+  if (!isSyncedBlock) link.removeAttribute('synced')
+  mockCreateNewPage.mockImplementationOnce(async () => {
+    doc.transact(() => frag.delete(0, 1), asUser(EDITOR_ID))
+    return {id: NEW_PAGE_ID}
+  })
+  doc.transact(() => {
+    frag.insert(0, [link as Y.XmlElement])
+  }, asUser(EDITOR_ID))
+  const setAttribute = jest.spyOn(link, 'setAttribute')
+  await flush()
+  return {setAttribute}
+}
+
+test('sends a synced block page to Trash when its link was undone before the page was made', async () => {
+  mockFlagEnabled = true
+  const {setAttribute} = await insertThenUndoBeforeMint(true)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: true}))
+  expect(mockUpdates).toEqual([
+    {
+      table: 'Page',
+      values: {deletedAt: expect.anything(), deletedBy: EDITOR_ID},
+      where: [['id', '=', NEW_PAGE_ID]]
+    }
+  ])
+  expect(setAttribute).not.toHaveBeenCalled()
+  expect(mockRehostSeededAssets).not.toHaveBeenCalled()
+  expect(mockBacklinks).toEqual([])
+})
+
+test('leaves an ordinary page alone when its link was undone before the page was made', async () => {
+  const {setAttribute} = await insertThenUndoBeforeMint(false)
+  expect(mockCreateNewPage).toHaveBeenCalledWith(expect.objectContaining({isSyncedBlock: false}))
+  expect(mockUpdates).toEqual([])
+  expect(setAttribute).toHaveBeenCalledWith('pageCode', NEW_PAGE_ID)
 })

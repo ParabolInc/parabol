@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import type {IconComponent} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -7,21 +8,27 @@ interface Props {
   Icon: IconComponent
   tooltip: string
   onClick: React.MouseEventHandler
+  disabled?: boolean
   className?: string
 }
 
 export const ArchivedPagesButton = (props: Props) => {
-  const {onClick, Icon, tooltip} = props
+  const {onClick, Icon, tooltip, disabled} = props
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={
-            'flex size-4 cursor-pointer items-center justify-center rounded-sm bg-surface-well hover:bg-hairline-strong group-hover:bg-surface-nav-hover group-data-highlighted:bg-surface-nav-active'
-          }
+          aria-label={tooltip}
+          aria-disabled={disabled}
+          className={clsx(
+            'flex size-4 items-center justify-center rounded-sm bg-surface-well',
+            disabled
+              ? 'opacity-50'
+              : 'cursor-pointer hover:bg-hairline-strong group-hover:bg-surface-nav-hover group-data-highlighted:bg-surface-nav-active'
+          )}
         >
-          <Icon className='size-4' onClick={onClick} />
+          <Icon className='size-4' onClick={disabled ? undefined : onClick} />
         </div>
       </TooltipTrigger>
       <TooltipContent side={'bottom'}>{tooltip}</TooltipContent>

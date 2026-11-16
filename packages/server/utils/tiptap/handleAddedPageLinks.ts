@@ -1,8 +1,10 @@
+import {sql} from 'kysely'
 import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
+import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import logError from '../logError'
@@ -11,6 +13,8 @@ import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {isSyncedBlocksEnabled} from './isSyncedBlocksEnabled'
 import {movePageToNewParent} from './movePageToNewParent'
+import {rehostSeededAssets} from './rehostExternalAssets'
+import {sanitizeSyncedBlockSeed} from './sanitizeSyncedBlockSeed'
 import {updateBacklinks} from './updateBacklinks'
 
 const getAddedPageLinks = (e: Y.YEvent<any>) => {
@@ -27,9 +31,21 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
   return links
 }
 
+const isRemovedFromDoc = (node: Y.XmlElement<PageLinkBlockAttrs>) =>
+  !node.doc || !!node._item?.deleted
+
+const trashPage = (pageId: number, userId: string) =>
+  getKysely()
+    .updateTable('Page')
+    .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: userId})
+    .where('id', '=', pageId)
+    .execute()
+
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
   getAddedPageLinks(e).forEach(async (node) => {
+    const seed = node.getAttribute('content')
+    if (seed !== undefined) node.removeAttribute('content')
     const childPageCode = node.getAttribute('pageCode')!
     try {
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
@@ -50,6 +66,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           )
           if (!isSyncedBlock) node.removeAttribute('synced')
         }
+        const seedContent = sanitizeSyncedBlockSeed(seed)
+        const bodyNodes =
+          seedContent.length > 0 || !isSyncedBlock ? seedContent : [{type: 'paragraph' as const}]
         const newPage = await createNewPage({
           parentPageId,
           userId,
@@ -63,12 +82,18 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
                 attrs: {level: 1},
                 content: title ? [{type: 'text', text: title}] : []
               },
-              ...(isSyncedBlock ? [{type: 'paragraph' as const}] : [])
+              ...bodyNodes
             ]
           }
         }).catch(Logger.error)
         if (!newPage) return
+        if (isSyncedBlock && isRemovedFromDoc(node)) {
+          await trashPage(newPage.id, userId)
+          return
+        }
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
+        if (isSyncedBlock) node.setAttribute('title', '')
+        rehostSeededAssets(newPage.id, seedContent, userId)
         await updateBacklinks(parentPageId, newPage.id)
       } else {
         // check for duplicates on the same page

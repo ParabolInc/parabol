@@ -1,15 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
-import {
-  DeleteForever as DeleteForeverIcon,
-  Description as DescriptionIcon,
-  Undo as UndoIcon
-} from '~/ui/icons'
+import {Autorenew as AutorenewIcon, Description as DescriptionIcon} from '~/ui/icons'
+import menuSectionTitleClass from '~/ui/Menu/menuSectionTitleClass'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {snackOnError} from '../../mutations/handlers/snackOnError'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {GQLID} from '../../utils/GQLID'
-import {ArchivedPagesButton} from './ArchivedPagesButton'
+import {ArchivedPageRow} from './ArchivedPageRow'
 
 interface Props {
   queryRef: PreloadedQuery<ArchivedPagesQuery>
@@ -27,6 +26,11 @@ export const ArchivedPages = (props: Props) => {
               node {
                 id
                 title
+                isSyncedBlock
+                parentPage {
+                  title
+                  deletedAt
+                }
               }
             }
           }
@@ -39,12 +43,17 @@ export const ArchivedPages = (props: Props) => {
   const {archivedPages} = viewer
   const {edges} = archivedPages
   const [execute] = useArchivePageMutation()
+  const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const restorePage = (pageId: string) => {
     execute({
       variables: {
         pageId,
         action: 'restore'
+      },
+      onCompleted: (_res, errors) => {
+        const [error] = errors ?? []
+        if (error) snackOnError(atmosphere, 'archivedPageRestoreFailed')(error)
       }
     })
   }
@@ -60,41 +69,35 @@ export const ArchivedPages = (props: Props) => {
       }
     })
   }
+  const pages = edges.filter(({node}) => !node.isSyncedBlock)
+  const blocks = edges.filter(({node}) => node.isSyncedBlock)
+  const renderRow = ({node}: (typeof edges)[number]) => {
+    const {id: pageId, title, isSyncedBlock, parentPage} = node
+    const parentTitle = parentPage?.title || '<Untitled>'
+    return (
+      <ArchivedPageRow
+        key={pageId}
+        pageId={pageId}
+        title={title ?? ''}
+        Icon={isSyncedBlock ? AutorenewIcon : DescriptionIcon}
+        subline={isSyncedBlock ? `From ${parentTitle}` : null}
+        restoreBlockedBy={parentPage?.deletedAt ? parentTitle : null}
+        onRestore={restorePage}
+        onDelete={deletePage}
+      />
+    )
+  }
   const header = edges.length === 0 ? 'No deleted pages' : 'Deleted pages'
   return (
     <div className='flex max-h-96 min-h-56 min-w-96 flex-col space-y-1 overflow-x-auto rounded-lg border border-hairline bg-surface-card p-4 pb-0 text-fg-primary'>
       <div className='self-center font-semibold text-sm'>{header}</div>
-      {edges.map(({node}) => {
-        const {id: pageId, title} = node
-        return (
-          <div className='flex items-center justify-between' key={pageId}>
-            <div className='flex w-full items-center rounded-md pr-2 pl-1 hover:bg-surface-hover'>
-              <DescriptionIcon className='mr-0.5 size-4' />
-              <div className='flex grow flex-col'>
-                <div className='font-medium text-fg-primary text-sm'>{title || '<Untitled>'}</div>
-              </div>
-              <div className='flex items-center justify-end space-x-1'>
-                <ArchivedPagesButton
-                  Icon={UndoIcon}
-                  tooltip='Restore'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    restorePage(pageId)
-                  }}
-                />
-                <ArchivedPagesButton
-                  Icon={DeleteForeverIcon}
-                  tooltip='Permanently Delete'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    deletePage(pageId)
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )
-      })}
+      {pages.map(renderRow)}
+      {blocks.length > 0 && (
+        <>
+          <div className={menuSectionTitleClass}>Synced blocks</div>
+          {blocks.map(renderRow)}
+        </>
+      )}
     </div>
   )
 }

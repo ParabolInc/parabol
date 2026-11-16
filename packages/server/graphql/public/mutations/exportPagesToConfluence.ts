@@ -95,7 +95,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     .executeTakeFirstOrThrow()
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')
-  runConfluenceExport(pageExport.id, jobDataLoader)
+  runConfluenceExport(pageExport.id, jobDataLoader, {isTokenScoped: !!resourceGrants})
     .catch(Logger.error)
     .finally(() => jobDataLoader.dispose())
 

@@ -308,4 +308,107 @@ describe('convertTipTapToConfluenceStorage', () => {
       expect(xhtml).not.toContain('ac:adf-extension')
     })
   })
+
+  describe('synced blocks', () => {
+    const syncedLink = (synced: boolean) => ({
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Host'}]},
+        {
+          type: 'pageLinkBlock',
+          attrs: {pageCode: 9, title: 'Escalation path', synced, canonical: true}
+        }
+      ]
+    })
+
+    it('flattens a block the exporter can open', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => (code === 9 ? [para('Call on-call first')] : null)
+      })
+      expect(xhtml).toContain('<p>Call on-call first</p>')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded.find(({blockType}) => blockType === 'pageLinkBlock')).toBeUndefined()
+    })
+
+    it("skips a block the exporter can't open", () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: () => null
+      })
+      expect(xhtml).not.toContain('Call on-call first')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock',
+        count: 1,
+        treatment: "skipped — the exporter can't open this synced block"
+      })
+    })
+
+    it('skips every block when there is no resolver', () => {
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), ctx)
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
+    })
+
+    const linkTo = (pageCode: number) => ({
+      type: 'pageLinkBlock',
+      attrs: {pageCode, title: 'Block', synced: true, canonical: true}
+    })
+
+    it('terminates on a self-referencing block and counts a skip', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`body ${code}`), linkTo(code)]
+      })
+      expect(xhtml).toContain('<p>body 9</p>')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock:limit',
+        count: 1,
+        treatment: 'skipped — nested too deeply or repeated too often'
+      })
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('caps the total number of expansions so fan-out cannot multiply', () => {
+      let expansions = 0
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => {
+          expansions += 1
+          if (code === 9) return Array.from({length: 20}, () => linkTo(10))
+          if (code === 10) return Array.from({length: 20}, () => linkTo(11))
+          return [para('leaf')]
+        }
+      })
+      expect(expansions).toBeLessThanOrEqual(100)
+      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock:limit')
+      expect(skipped!.count).toBeGreaterThan(0)
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('stops a deep chain at the depth cap', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`level ${code}`), linkTo(code + 1)]
+      })
+      expect(xhtml).toContain('<p>level 11</p>')
+      expect(xhtml).not.toContain('level 12')
+      expect(degraded).toEqual([
+        {
+          blockType: 'syncedBlock:limit',
+          count: 1,
+          treatment: 'skipped — nested too deeply or repeated too often'
+        }
+      ])
+    })
+
+    it('leaves an ordinary page link unchanged', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(false), {
+        ...ctx,
+        resolveSyncedBlock: () => [para('Call on-call first')]
+      })
+      expect(xhtml).toContain('<a href="https://dev.parabol.co/pages/9">Escalation path</a>')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'pageLinkBlock'}))
+    })
+  })
 })

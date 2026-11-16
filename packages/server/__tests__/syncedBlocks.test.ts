@@ -922,3 +922,47 @@ describe('page section after sharing', () => {
     expect(await share(child)).not.toBeNull()
   })
 })
+
+describe('restoring a synced block', () => {
+  test('refuses to restore a block while its page is in Trash', async () => {
+    const {userId, cookie} = await signUp()
+    const {originalHost, block} = await seedSyncedBlock(userId)
+    expect((await archive(cookie, block, 'archive')).errors).toBeUndefined()
+    expect((await archive(cookie, originalHost, 'archive')).errors).toBeUndefined()
+    const res = await archive(cookie, block, 'restore')
+    expect(res.errors?.[0]).toMatchObject({
+      message: 'Restore the page this block came from first',
+      extensions: {code: 'CONFLICT'}
+    })
+    expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
+    expect((await pageRow(block))?.deletedAt).not.toBeNull()
+  })
+
+  test('restoring the page and then the block puts it back on that page', async () => {
+    const {userId, cookie} = await signUp()
+    const {originalHost, block} = await seedSyncedBlock(userId)
+    await seedDoc(originalHost, [paragraph('Host')])
+    await archive(cookie, block, 'archive')
+    await archive(cookie, originalHost, 'archive')
+    expect((await archive(cookie, originalHost, 'restore')).errors).toBeUndefined()
+    const res = await archive(cookie, block, 'restore')
+    expect(res.errors).toBeUndefined()
+    expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, deletedAt: null})
+    const doc = await waitForDoc(originalHost, hasLink)
+    expect(JSON.stringify(doc)).toContain('"synced":true')
+  })
+
+  test('an ordinary sub-page whose parent is in Trash still restores to the top level', async () => {
+    const {userId, cookie} = await signUp()
+    const parent = await makePage(userId)
+    const child = await makePage(userId, parent)
+    await pg
+      .updateTable('Page')
+      .set({deletedAt: new Date()})
+      .where('id', 'in', [parent, child])
+      .execute()
+    const res = await archive(cookie, child, 'restore')
+    expect(res.errors).toBeUndefined()
+    expect(await pageRow(child)).toMatchObject({parentPageId: null, deletedAt: null})
+  })
+})

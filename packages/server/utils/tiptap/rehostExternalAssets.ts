@@ -1,4 +1,5 @@
 import {type Connection, isTransactionOrigin} from '@hocuspocus/server'
+import type {JSONContent} from '@tiptap/core'
 import * as Y from 'yjs'
 import appOrigin from '../../appOrigin'
 import AuthToken from '../../database/types/AuthToken'
@@ -146,5 +147,22 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
     rehostAsset(pageId, src, sourceUrl, userId, connection)
+  })
+}
+
+const getSeededEmbeds = (nodes: JSONContent[]): JSONContent[] =>
+  nodes.flatMap((node) => [
+    ...(node.type && EMBEDDABLE_NODE_NAMES.has(node.type) ? [node] : []),
+    ...getSeededEmbeds(node.content ?? [])
+  ])
+
+export const rehostSeededAssets = (pageId: number, content: JSONContent[], userId: string) => {
+  const pageCode = CipherId.encrypt(pageId)
+  getSeededEmbeds(content).forEach(({attrs}) => {
+    const src = attrs?.src
+    if (typeof src !== 'string') return
+    const sourceUrl = getSourceUrl(src, pageCode)
+    if (!sourceUrl) return
+    rehostAsset(pageId, src, sourceUrl, userId, undefined)
   })
 }

@@ -1,14 +1,17 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
-import {SwapHoriz} from '~/ui/icons'
-import {MENU_ITEM_ICON} from '../../../ui/Menu/MenuItem'
+import {Autorenew, SwapHoriz} from '~/ui/icons'
+import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
 import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
 import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
+import {getBlockUnitAt} from '../../blockSelection/blockUnits'
+import {dispatchBlockConversion} from './dispatchBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
+import {turnRangeIntoSyncedBlock} from './turnRangeIntoSyncedBlock'
 
 interface Props {
   editor: Editor
@@ -16,20 +19,11 @@ interface Props {
   pos: number
   current: TurnIntoTarget
   canCreateSubPage: boolean
-}
-
-const saveScroll = (element: Element) => {
-  const scrolled: [Element, number, number][] = []
-  for (let ancestor: Element | null = element; ancestor; ancestor = ancestor.parentElement) {
-    scrolled.push([ancestor, ancestor.scrollLeft, ancestor.scrollTop])
-  }
-  return () => {
-    for (const [ancestor, left, top] of scrolled) ancestor.scrollTo(left, top)
-  }
+  canCreateSyncedBlock: boolean
 }
 
 export const TurnIntoMenu = (props: Props) => {
-  const {editor, node, pos, current, canCreateSubPage} = props
+  const {editor, node, pos, current, canCreateSubPage, canCreateSyncedBlock} = props
   const isInCallout = isInsideCallout(editor.state.doc, pos)
   const rows = turnIntoRows.filter(({target}) => {
     if (target.type === 'callout') return !isInCallout
@@ -39,30 +33,28 @@ export const TurnIntoMenu = (props: Props) => {
     ({target}) => target.type === current.type && target.level === current.level
   )
 
-  const handleValueChange = (title: string) => {
+  const getSyncedBlockTransaction = () => {
+    const range = getBlockUnitAt(editor.state.doc, pos + 1)
+    return range && turnRangeIntoSyncedBlock(editor.state, range)
+  }
+  const showSyncedBlock = editor.isEditable && canCreateSyncedBlock && !!getSyncedBlockTransaction()
+
+  const isStale = () => {
     const {doc} = editor.state
-    if (!editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)) return
+    return !editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)
+  }
+
+  const handleValueChange = (title: string) => {
+    if (isStale()) return
     const target = rows.find((row) => row.title === title)?.target
     const tr = target && turnBlockInto(editor.state, pos, target)
-    if (!tr) return
-    const caret = tr.selection.from
-    const isHandleOnAnotherBlock = tr.mapping.map(pos) !== pos
-    const {dom} = editor.view
-    // New node views start out short, and a page scrolled to its end would clamp to that height
-    dom.style.minHeight = `${dom.offsetHeight}px`
-    editor.view.dispatch(tr)
-    // Focusing before new node views render makes WebKit jump near the end of the page
-    setTimeout(() => {
-      dom.style.minHeight = ''
-      // WebKit scrolls to the caret when the editor takes focus, whatever preventScroll says
-      const restoreScroll = saveScroll(dom)
-      editor
-        .chain()
-        .setMeta('hideDragHandle', isHandleOnAnotherBlock)
-        .focus(caret, {scrollIntoView: false})
-        .run()
-      restoreScroll()
-    })
+    if (tr) dispatchBlockConversion(editor, tr, pos)
+  }
+
+  const handleSyncedBlock = () => {
+    if (isStale()) return
+    const tr = getSyncedBlockTransaction()
+    if (tr) dispatchBlockConversion(editor, tr, pos)
   }
 
   return (
@@ -86,6 +78,15 @@ export const TurnIntoMenu = (props: Props) => {
               </MenuRadioItem>
             ))}
           </DropdownMenu.RadioGroup>
+          {showSyncedBlock && (
+            <>
+              <MenuSeparator />
+              <MenuItem onSelect={handleSyncedBlock}>
+                <Autorenew className={MENU_ITEM_ICON} />
+                Synced block
+              </MenuItem>
+            </>
+          )}
         </MenuSubContent>
       </DropdownMenu.Sub>
       <MenuSeparator />
