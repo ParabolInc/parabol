@@ -136,6 +136,9 @@ describe('archivePageNotificationUpdater', () => {
 
   it('restoring a child whose parent is in Trash puts it at the top of the nav', () => {
     const {environment, sharedConnId, archivedConnId} = createEnvironment('archived')
+    commitLocalUpdate(environment, (store) => {
+      store.get(pageId)!.setValue('page:0', 'parentPageId')
+    })
     receive(environment, pageId, pageFields({parentPageId: null, teamId: null, isPrivate: false}))
     expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([pageId])
     expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
