@@ -9,9 +9,11 @@ import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
 import menuSectionTitleClass from '../../ui/Menu/menuSectionTitleClass'
 import {modKey} from '../../utils/platform'
 import plural from '../../utils/plural'
+import {canMoveBlockRange, moveBlockRange} from '../blockMove/moveBlocksBy'
 import {openMoveToPageMenu} from '../blockMove/openMoveToPageMenu'
 import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
 import type {BlockRange} from '../blockSelection/blockUnits'
+import BlockMoveMenuItem from './BlockMoveMenuItem'
 import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
@@ -69,6 +71,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     !turnIntoCurrent &&
     !!getSyncedBlockConversion(editor, getSyncedBlockRange())
   const blocks = plural(selection?.count ?? 1, 'block')
+  const getMoveRange = () => selection?.range ?? getBlockRange(editor, node, pos)
+  const moveRange = showMoveTo ? getMoveRange() : null
+  const canMoveUp = !!moveRange && canMoveBlockRange(editor.state.doc, moveRange, 'up')
+  const canMoveDown = !!moveRange && canMoveBlockRange(editor.state.doc, moveRange, 'down')
 
   useLayoutEffect(() => {
     const trigger = triggerRef.current
@@ -108,11 +114,17 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleMoveTo = () => {
-    const range = selection?.range ?? getBlockRange(editor, node, pos)
+    const range = getMoveRange()
     if (!range) return
     const {top, left, width, height} = anchorElement.getBoundingClientRect()
     const anchorRect = {top, left, width, height}
     openMoveToPageMenu({editor, range, anchorRect, pageId, atmosphere})
+  }
+
+  const moveBy = (direction: 'up' | 'down') => {
+    const range = getMoveRange()
+    if (range) moveBlockRange(editor, range, direction)
+    editor.commands.focus()
   }
 
   const handleDelete = () => {
@@ -132,15 +144,20 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     const isDeleteKey = e.key === 'Delete' || e.key === 'Backspace'
     const isDuplicateKey = e.key === 'd' && (e.metaKey || e.ctrlKey)
     const isMoveToKey = e.key.toLowerCase() === 'p' && e.shiftKey && (e.metaKey || e.ctrlKey)
-    if (!isDeleteKey && !isDuplicateKey && !isMoveToKey) return
+    const isMoveByKey =
+      (e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.shiftKey && (e.metaKey || e.ctrlKey)
+    if (!isDeleteKey && !isDuplicateKey && !isMoveToKey && !isMoveByKey) return
     // left alone these reach the browser, which can go back a page or open a bookmark dialog
     e.preventDefault()
     // keys from the Turn into submenu bubble here through its portal
     if (!e.currentTarget.contains(e.target as HTMLElement)) return
     if (isDeleteKey && !showDelete) return
     if (isMoveToKey && !showMoveTo) return
+    const moveDirection = e.key === 'ArrowUp' ? 'up' : 'down'
+    if (isMoveByKey && !(moveDirection === 'up' ? canMoveUp : canMoveDown)) return
     if (isDeleteKey) handleDelete()
     else if (isMoveToKey) handleMoveTo()
+    else if (isMoveByKey) moveBy(moveDirection)
     else handleDuplicate()
     queueMicrotask(onClose)
   }
@@ -222,6 +239,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
               <span className='flex-1 text-left'>Move to…</span>
               <span className='ml-4 text-fg-muted text-xs'>{modKey}+Shift+P</span>
             </MenuItem>
+          )}
+          {showMoveTo && <BlockMoveMenuItem direction='up' canMove={canMoveUp} onMove={moveBy} />}
+          {showMoveTo && (
+            <BlockMoveMenuItem direction='down' canMove={canMoveDown} onMove={moveBy} />
           )}
           {showDelete && (
             <MenuItem onSelect={handleDelete}>

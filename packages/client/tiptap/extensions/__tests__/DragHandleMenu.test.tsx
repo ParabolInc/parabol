@@ -140,6 +140,13 @@ const pressKey = async (element: HTMLElement, key: string, modifiers = {}) => {
     await tick()
   })
 }
+const posOfText = (text: string) => {
+  let found = -1
+  editor?.state.doc.descendants((node, pos) => {
+    if (found < 0 && node.isText && node.text === text) found = pos
+  })
+  return found
+}
 const texts = () => {
   const all: string[] = []
   editor?.state.doc.forEach((node, offset) => {
@@ -170,13 +177,15 @@ afterAll(async () => {
 })
 
 describe('the menu on a block selection', () => {
-  test('counts the blocks and offers only Duplicate, Move to… and Delete', async () => {
+  test('counts the blocks and offers only Duplicate, the moves and Delete', async () => {
     await openMenuOnSelection([callout('one'), p('two'), p('three'), p('four')], 1, 3, false)
     expect(header()).toBe('3 blocks')
-    expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
-      'Duplicate',
-      'Move',
-      'Delete'
+    expect(items().map((item) => item.querySelector('.flex-1')?.textContent)).toEqual([
+      'Duplicate blocks',
+      'Move to…',
+      'Move up',
+      'Move down',
+      'Delete blocks'
     ])
     expect(itemNamed('Duplicate blocks')).toBeTruthy()
     expect(itemNamed('Delete blocks')).toBeTruthy()
@@ -211,6 +220,8 @@ describe('the menu on a block selection', () => {
     expect(items().map((item) => item.textContent?.replace(/\s.*$/, ''))).toEqual([
       'Duplicate',
       'Turn',
+      'Move',
+      'Move',
       'Move',
       'Delete'
     ])
@@ -468,6 +479,7 @@ const openMenuOnBlock = async (
   jest
     .spyOn(anchor, 'getBoundingClientRect')
     .mockReturnValue({top: 10, left: 20, width: 24, height: 24} as DOMRect)
+  const onClose = jest.fn()
   await act(async () => {
     root = createRoot(host)
     root.render(
@@ -475,7 +487,7 @@ const openMenuOnBlock = async (
         editor={activeEditor}
         node={node}
         pos={pos}
-        onClose={jest.fn()}
+        onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
         selection={null}
@@ -485,7 +497,7 @@ const openMenuOnBlock = async (
     )
     await tick()
   })
-  return {activeEditor, pos, node}
+  return {activeEditor, pos, node, onClose}
 }
 const moveToItem = () => items().find((element) => element.textContent?.startsWith('Move to…'))
 
@@ -528,6 +540,86 @@ test('mod-shift-P opens the picker from the handle menu', async () => {
   await openMenuOnBlock([p('one')], 1)
   await pressKey(itemNamed('Duplicate'), 'P', {metaKey: true, shiftKey: true})
   expect(openMoveToPageMenu).toHaveBeenCalledTimes(1)
+})
+
+describe('Move up and Move down', () => {
+  const selectedText = () => {
+    const range = getSelectedBlockRange(editor!.state)
+    if (!range) throw new Error('No block selection')
+    return editor!.state.doc.textBetween(range.from, range.to, '|')
+  }
+  const isDisabled = (name: string) => itemNamed(name).getAttribute('aria-disabled') === 'true'
+
+  test('show the shortcut', async () => {
+    await openMenuOnBlock([p('one'), p('two'), p('three')], 2)
+    expect(itemNamed('Move up').textContent).toMatch(/\+Shift\+↑$/)
+    expect(itemNamed('Move down').textContent).toMatch(/\+Shift\+↓$/)
+  })
+
+  test('Move down swaps the block with the next one, selects it and closes the menu', async () => {
+    const {onClose} = await openMenuOnBlock([p('one'), p('two'), p('three')], 1)
+    await click(itemNamed('Move down'))
+    expect(texts()).toEqual(['two', 'one', 'three'])
+    expect(selectedText()).toBe('one')
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  test('Move up moves the block the menu opened on, not the one holding the caret', async () => {
+    const {activeEditor} = await openMenuOnBlock([p('one'), p('two'), p('three')], 3)
+    activeEditor.commands.setTextSelection(posOfText('one'))
+    await click(itemNamed('Move up'))
+    expect(texts()).toEqual(['one', 'three', 'two'])
+    expect(selectedText()).toBe('three')
+  })
+
+  test('move a whole selection and keep it selected', async () => {
+    await openMenuOnSelection([p('one'), p('two'), p('three'), p('four')], 2, 3)
+    await click(itemNamed('Move up'))
+    expect(texts()).toEqual(['two', 'three', 'one', 'four'])
+    expect(selectedText()).toBe('two|three')
+  })
+
+  test('Move up is disabled on the first block and does nothing', async () => {
+    const {onClose} = await openMenuOnBlock([p('one'), p('two')], 1)
+    expect(isDisabled('Move up')).toBe(true)
+    expect(isDisabled('Move down')).toBe(false)
+    await click(itemNamed('Move up'))
+    expect(texts()).toEqual(['one', 'two'])
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  test('Move down is disabled on the last block', async () => {
+    await openMenuOnBlock([p('one'), p('two')], 2)
+    expect(isDisabled('Move up')).toBe(false)
+    expect(isDisabled('Move down')).toBe(true)
+  })
+
+  test('Move down is disabled above the trailing empty paragraph', async () => {
+    await openMenuOnBlock([p('one'), {type: 'paragraph'}], 1)
+    expect(isDisabled('Move down')).toBe(true)
+  })
+
+  test('are not offered on the title or in a read-only editor', async () => {
+    await openMenuOnBlock([p('one'), p('two')], 0)
+    expect(items().some((item) => item.textContent?.startsWith('Move up'))).toBe(false)
+    await closeMenu()
+    await openMenuOnBlock([p('one'), p('two')], 1, false)
+    expect(items().some((item) => item.textContent?.startsWith('Move down'))).toBe(false)
+  })
+
+  test('mod-shift-arrows move the block from the handle menu', async () => {
+    const {onClose} = await openMenuOnBlock([p('one'), p('two'), p('three')], 1)
+    await pressKey(itemNamed('Duplicate'), 'ArrowDown', {metaKey: true, shiftKey: true})
+    expect(texts()).toEqual(['two', 'one', 'three'])
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  test('mod-shift-up on the first block keeps the menu open', async () => {
+    const {onClose} = await openMenuOnBlock([p('one'), p('two')], 1)
+    await pressKey(itemNamed('Duplicate'), 'ArrowUp', {ctrlKey: true, shiftKey: true})
+    expect(texts()).toEqual(['one', 'two'])
+    expect(onClose).not.toHaveBeenCalled()
+  })
 })
 
 describe('Turn into synced block on a block with no Turn into', () => {
