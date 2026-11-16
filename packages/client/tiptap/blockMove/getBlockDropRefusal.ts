@@ -14,6 +14,7 @@ export type BlockDropTarget = {
 export type BlockDragState = {
   sourcePageId: string
   childPageIds: readonly string[]
+  syncedBlockIds?: readonly string[]
   refusal: string | null
 }
 
@@ -26,6 +27,7 @@ export const getBlockDropRefusal = (target: BlockDropTarget, drag: BlockDragStat
   ) {
     return 'Inside itself'
   }
+  if (target.isSyncedBlock && drag.syncedBlockIds?.includes(target.pageId)) return 'Inside itself'
   if (target.isSyncedBlock && drag.childPageIds.length > 0) return 'No pages in synced blocks'
   if (target.isDatabase) return 'Database'
   if (target.isMeetingTOC) return 'Read-only'

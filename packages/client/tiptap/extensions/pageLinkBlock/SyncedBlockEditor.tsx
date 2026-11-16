@@ -46,6 +46,7 @@ export const SyncedBlockEditor = (props: Props) => {
     draggingPageId,
     draggingBlocksSourcePageId,
     draggingBlocksChildPageIds,
+    draggingBlocksSyncedBlockIds,
     draggingBlocksRefusal
   } = viewer ?? {}
   const pageDropRefusal = draggingPageId === pageId ? 'Inside itself' : 'No pages in synced blocks'
@@ -54,6 +55,7 @@ export const SyncedBlockEditor = (props: Props) => {
       ? getSyncedBlockDropRefusal(pageId, isViewOnly, {
           sourcePageId: draggingBlocksSourcePageId,
           childPageIds: draggingBlocksChildPageIds ?? [],
+          syncedBlockIds: draggingBlocksSyncedBlockIds ?? [],
           refusal: draggingBlocksRefusal ?? null
         })
       : null

@@ -4,7 +4,7 @@ import {type EditorState, NodeSelection, Plugin, TextSelection} from '@tiptap/pm
 import type {EditorView} from '@tiptap/pm/view'
 import type {SyncedBlockDrop} from '../../blockMove/moveBlocksIntoSyncedBlock'
 import {keepFocusInHost} from './keepFocusInHost'
-import {routeForeignDrops} from './routeForeignDrops'
+import {syncedBlockDrops} from './syncedBlockDrops'
 import {exitSyncedBlock} from './syncedBlockFocus'
 
 export interface SyncedBlockEdgesOptions {
@@ -118,7 +118,7 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
     const {editor} = this
     const {hostView, getPos, onBlockDrop} = this.options
     return [
-      routeForeignDrops({editor, hostView, getPos, onBlockDrop}),
+      syncedBlockDrops({editor, hostView, getPos, onBlockDrop}),
       new Plugin({
         appendTransaction: (_transactions, _oldState, state) => {
           const {selection, doc} = state

@@ -36,6 +36,7 @@ test('prepareBlockMove refuses a run holding a child page the viewer does not ow
   expect(getBlockDragState(session, refusal)).toEqual({
     sourcePageId: 'page:1',
     childPageIds: ['page:7'],
+    syncedBlockIds: [],
     refusal: 'Only its owner can move Specs'
   })
 })

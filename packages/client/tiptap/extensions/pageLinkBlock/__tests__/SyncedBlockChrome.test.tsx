@@ -894,6 +894,12 @@ test.each([
   ],
   ['a block drag onto a view-only block', {}, 'readonly', 'View only'],
   [
+    'a block drag carrying a copy of the block',
+    {draggingBlocksSyncedBlockIds: ['page:7']},
+    'read-write',
+    'Inside itself'
+  ],
+  [
     'a block drag from inside the block',
     {draggingBlocksSourcePageId: 'page:7', draggingBlocksChildPageIds: ['page:9']},
     'read-write',

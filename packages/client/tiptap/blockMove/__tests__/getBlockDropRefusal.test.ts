@@ -26,3 +26,11 @@ test('a refusal from the dragged content wins', () => {
     )
   ).toBe('Wait for the upload to finish')
 })
+
+test.each([
+  ['a synced block the drag holds a copy of', ['page:2'], 'Inside itself'],
+  ['a synced block, with a page in the drag', [], 'No pages in synced blocks']
+] as const)('%s', (_label, syncedBlockIds, expected) => {
+  const target = {pageId: 'page:2', viewerRole: 'editor', isSyncedBlock: true} as const
+  expect(getBlockDropRefusal(target, {...drag, syncedBlockIds})).toBe(expected)
+})

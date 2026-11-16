@@ -25,6 +25,7 @@ graphql`
       draggingPageViewerAccess
       draggingBlocksSourcePageId
       draggingBlocksChildPageIds
+      draggingBlocksSyncedBlockIds
       draggingBlocksRefusal
       draggingBlocksCount
     }

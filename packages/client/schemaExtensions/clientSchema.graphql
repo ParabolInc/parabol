@@ -138,6 +138,8 @@ extend type User {
   draggingBlocksSourcePageId: ID
   # Child pages inside the blocks being dragged, as page keys
   draggingBlocksChildPageIds: [ID!]
+  # Synced blocks inside the blocks being dragged, as page keys
+  draggingBlocksSyncedBlockIds: [ID!]
   # Why the dragged blocks cannot be dropped anywhere, if they cannot
   draggingBlocksRefusal: String
   # How many blocks are being dragged
