@@ -135,7 +135,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       onFocus={() => setHasFocusWithin(true)}
       onBlur={handleBlur}
       className={cn(
-        '-mx-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent print:outline-none',
+        '@min-[852px]/page:-mr-3 @min-[852px]/page:-ml-9 relative mb-3 rounded-md px-3 py-1 @min-[852px]/page:pl-9 outline outline-1 outline-transparent print:mx-0! print:px-0! print:outline-none',
         isPanel ? 'mt-3!' : 'mt-9! print:mt-3!',
         'before:-top-9 before:-left-[26px] before:absolute before:bottom-0 before:w-[38px] before:content-[""]',
         !showBar && 'hover:outline-hairline-strong',

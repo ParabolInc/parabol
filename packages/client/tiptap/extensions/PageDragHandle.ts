@@ -43,14 +43,83 @@ const queryNode = graphql`
   }
 `
 
-// Approximates a text line so the handle sits at the top of a media block
+// Approximates a text line so the handle sits at the top of a block without one
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
+// Blocks drawn as a box anchor to the box's top edge rather than their first line
+const TOP_ANCHORED_BLOCKS = new Set([
+  'blockquote',
+  'callout',
+  'codeBlock',
+  'database',
+  'embedBlock',
+  'fileBlock',
+  'imageBlock',
+  'insightsBlock',
+  'responseBlock',
+  'table',
+  'taskBlock'
+])
 const SYNCED_BLOCK_HANDLE_OFFSET = 26
 const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 const BLOCK_DRAG_TEXT = '__dummy__'
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
+}
+
+interface Line {
+  top: number
+  height: number
+}
+
+const getTextLine = (root: HTMLElement): Line | null => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) =>
+      node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+  })
+  const textNode = walker.nextNode()
+  if (!textNode) return null
+  const range = document.createRange()
+  range.setStart(textNode, 0)
+  range.setEnd(textNode, 1)
+  const {top, height} = range.getBoundingClientRect()
+  return {top, height}
+}
+
+const getEmptyLine = (textblock: HTMLElement): Line => {
+  const {top, height} = textblock.getBoundingClientRect()
+  const style = getComputedStyle(textblock)
+  const paddingTop = parseFloat(style.paddingTop) || 0
+  const paddingBottom = parseFloat(style.paddingBottom) || 0
+  return {top: top + paddingTop, height: height - paddingTop - paddingBottom}
+}
+
+const findFirstTextblockPos = (node: Node, pos: number) => {
+  if (node.isTextblock) return pos
+  let found = -1
+  node.descendants((child, offset) => {
+    if (found < 0 && child.isTextblock) found = pos + 1 + offset
+    return found < 0
+  })
+  return found
+}
+
+// The handle centers on a block's first line. Node view chrome, like a to-do checkbox's
+// screen-reader label, must not stand in for that line.
+const getFirstLine = (view: EditorView, node: Node, pos: number, dom: HTMLElement) => {
+  const textblockPos = TOP_ANCHORED_BLOCKS.has(node.type.name)
+    ? -1
+    : findFirstTextblockPos(node, pos)
+  const textblock = textblockPos >= 0 ? view.nodeDOM(textblockPos) : null
+  const line =
+    textblock instanceof HTMLElement
+      ? (getTextLine(textblock) ?? getEmptyLine(textblock))
+      : TOP_ANCHORED_BLOCKS.has(node.type.name)
+        ? null
+        : getTextLine(dom)
+  if (line) return line.height ? line : null
+  const {top, height} = dom.getBoundingClientRect()
+  return {top, height: Math.min(height, DRAG_HANDLE_ANCHOR_HEIGHT)}
 }
 
 function isInside($pos: ResolvedPos, depth: number, typeName: string) {
@@ -445,10 +514,12 @@ export const PageDragHandle = Extension.create<Options>({
           if (horizontalRef.tagName === 'LI' && horizontalRef.parentElement) {
             horizontalRef = horizontalRef.parentElement
           }
-          const handleNode = editorRef.state.doc.nodeAt(dragHandleNodePos)
+          const {view, state} = editorRef
+          const handleNode = state.doc.nodeAt(dragHandleNodePos)
+          if (!handleNode) return null
           const syncedBlock = isNested
-            ? editorRef.view.dom.closest<HTMLElement>('[data-synced-block]')
-            : handleNode?.type.name === 'pageLinkBlock' && handleNode.attrs.synced
+            ? view.dom.closest<HTMLElement>('[data-synced-block]')
+            : handleNode.type.name === 'pageLinkBlock' && handleNode.attrs.synced
               ? dom.querySelector<HTMLElement>('[data-synced-block]')
               : null
           const {right} = horizontalRef.getBoundingClientRect()
@@ -459,54 +530,35 @@ export const PageDragHandle = Extension.create<Options>({
             : 0
           const hasHandleGutter =
             blockPaddingLeft >= SYNCED_BLOCK_LINE_HANDLE_INSET * 2 + handleWidth
+          const getIndent = () => {
+            const $handlePos = state.doc.resolve(dragHandleNodePos)
+            if ($handlePos.depth === 0) return 0
+            const topLevelDom = view.nodeDOM($handlePos.before(1))
+            if (!(topLevelDom instanceof HTMLElement)) return 0
+            return (
+              horizontalRef.getBoundingClientRect().left - topLevelDom.getBoundingClientRect().left
+            )
+          }
           const left =
             blockLeft === undefined
               ? horizontalRef.getBoundingClientRect().left
-              : !hasHandleGutter
-                ? blockLeft + blockPaddingLeft
-                : isNested
-                  ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
-                  : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth
-          // Media blocks carry no text to anchor to. Without this the walker below finds
-          // nothing and the handle never renders for an iframe embed, and anchors to the
-          // title line rather than the block top for a card.
-          if (handleNode?.type.name === 'embedBlock') {
-            const blockRect = dom.getBoundingClientRect()
-            const anchorHeight = Math.min(blockRect.height, DRAG_HANDLE_ANCHOR_HEIGHT)
-            return {
-              getBoundingClientRect: () => ({
-                x: left,
-                y: blockRect.y,
-                width: right - left,
-                height: anchorHeight,
-                top: blockRect.top,
-                right,
-                bottom: blockRect.top + anchorHeight,
-                left
-              }),
-              contextElement: horizontalRef
-            }
-          }
-          const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
-            acceptNode: (node) =>
-              node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-          })
-          const textNode = walker.nextNode()
-          if (!textNode) return null
-          const range = document.createRange()
-          range.setStart(textNode, 0)
-          range.setEnd(textNode, 1)
-          const lineRect = range.getBoundingClientRect()
-          if (!lineRect.height) return null
+              : getIndent() +
+                (!hasHandleGutter
+                  ? blockLeft
+                  : isNested
+                    ? blockLeft + SYNCED_BLOCK_LINE_HANDLE_INSET + handleWidth
+                    : blockLeft - SYNCED_BLOCK_HANDLE_OFFSET + handleWidth)
+          const line = getFirstLine(view, handleNode, dragHandleNodePos, dom)
+          if (!line) return null
           return {
             getBoundingClientRect: () => ({
               x: left,
-              y: lineRect.y,
+              y: line.top,
               width: right - left,
-              height: lineRect.height,
-              top: lineRect.top,
+              height: line.height,
+              top: line.top,
               right,
-              bottom: lineRect.bottom,
+              bottom: line.top + line.height,
               left
             }),
             contextElement: horizontalRef
