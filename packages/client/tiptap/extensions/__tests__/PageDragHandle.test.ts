@@ -191,6 +191,34 @@ describe('the handle', () => {
     expect(scoreAt('body', 2)).toBe(0)
   })
 
+  const anchorRect = (activeEditor: Editor, pos: number) => {
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    dragHandle?.options.onNodeChange({
+      editor: activeEditor,
+      node: activeEditor.state.doc.nodeAt(pos),
+      pos
+    })
+    return dragHandle?.options.getReferencedVirtualElement()?.getBoundingClientRect()
+  }
+  const positionOf = (activeEditor: Editor, typeName: string) => {
+    let found = -1
+    activeEditor.state.doc.descendants((node, pos) => {
+      if (found < 0 && node.type.name === typeName) found = pos
+      return found < 0
+    })
+    return found
+  }
+  const textRectAt = (rects: Record<string, number>) =>
+    jest.spyOn(happyWindow.Range.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: Range
+    ) {
+      const text = this.startContainer.textContent ?? ''
+      const key = Object.keys(rects).find((prefix) => text.startsWith(prefix))
+      return new happyWindow.DOMRect(0, key ? rects[key] : 0, 8, 20)
+    })
+
   test('falls back to the block when its text is not laid out', () => {
     const activeEditor = makeEditor(p('word'))
     const {extensions} = activeEditor.extensionManager
@@ -201,23 +229,62 @@ describe('the handle', () => {
     expect(dragHandle?.options.getReferencedVirtualElement()).toBeNull()
   })
 
+  describe('lines up with the first line of', () => {
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    test('a to-do, not its checkbox label', () => {
+      const activeEditor = makeEditor({
+        type: 'taskList',
+        content: [{type: 'taskItem', attrs: {checked: false}, content: [p('Ship it')]}]
+      })
+      const itemPos = positionOf(activeEditor, 'taskItem')
+      const item = activeEditor.view.nodeDOM(itemPos) as HTMLElement
+      item.querySelector('label')!.prepend('Task item checkbox for Ship it')
+      textRectAt({'Task item': 40, 'Ship it': 4})
+      expect(anchorRect(activeEditor, itemPos)?.top).toBe(4)
+    })
+
+    test('a table, even when its first row is empty', () => {
+      const cell = (type: string, text?: string) => ({
+        type,
+        content: [text ? p(text) : {type: 'paragraph'}]
+      })
+      const activeEditor = makeEditor({
+        type: 'table',
+        content: [
+          {type: 'tableRow', content: [cell('tableHeader'), cell('tableHeader')]},
+          {type: 'tableRow', content: [cell('tableCell'), cell('tableCell', 'only here')]}
+        ]
+      })
+      textRectAt({'only here': 60})
+      const firstCellLine = activeEditor.view.nodeDOM(
+        positionOf(activeEditor, 'tableHeader') + 1
+      ) as HTMLElement
+      firstCellLine.getBoundingClientRect = () => new happyWindow.DOMRect(0, 10, 300, 26)
+      expect(anchorRect(activeEditor, positionOf(activeEditor, 'table'))).toMatchObject({
+        top: 10,
+        height: 26
+      })
+    })
+
+    test('an image, which is its top', () => {
+      const activeEditor = makeEditor({type: 'imageBlock', attrs: {src: 'https://a.co/i.png'}})
+      const imagePos = positionOf(activeEditor, 'imageBlock')
+      const image = activeEditor.view.nodeDOM(imagePos) as HTMLElement
+      image.getBoundingClientRect = () => new happyWindow.DOMRect(0, 100, 600, 300)
+      expect(anchorRect(activeEditor, imagePos)).toMatchObject({top: 100, height: 24})
+    })
+  })
+
   describe('beside a synced block', () => {
     const laidOutBlock = (block: HTMLElement, left: number, paddingLeft: number) => {
       block.dataset.syncedBlock = ''
       block.style.paddingLeft = `${paddingLeft}px`
       block.getBoundingClientRect = () => new happyWindow.DOMRect(left, 0, 720, 40)
     }
-    const handleLeft = (activeEditor: Editor, pos: number) => {
-      const dragHandle = activeEditor.extensionManager.extensions.find(
-        ({name}) => name === 'dragHandle'
-      )
-      dragHandle?.options.onNodeChange({
-        editor: activeEditor,
-        node: activeEditor.state.doc.nodeAt(pos),
-        pos
-      })
-      return dragHandle?.options.getReferencedVirtualElement().getBoundingClientRect().left
-    }
+    const handleLeft = (activeEditor: Editor, pos: number) => anchorRect(activeEditor, pos)?.left
     beforeEach(() => {
       jest
         .spyOn(happyWindow.Range.prototype, 'getBoundingClientRect')
@@ -229,7 +296,7 @@ describe('the handle', () => {
 
     test.each([
       ['sits outside the block when it has a gutter', 452, 36, 426],
-      ['sits where an ordinary block handle does when it has none', 268, 12, 280]
+      ['sits where an ordinary block handle does when it has none', 268, 12, 268]
     ])('for the whole block %s', (_case, blockLeft, paddingLeft, expectedLeft) => {
       const activeEditor = makeEditor(p('Above'), syncedLink)
       document.body.appendChild(activeEditor.view.dom.parentElement!)
@@ -243,13 +310,49 @@ describe('the handle', () => {
 
     test.each([
       ['sits inside the gutter when there is one', 452, 36, 460],
-      ['sits where an ordinary block handle does when there is none', 268, 12, 280]
+      ['sits where an ordinary block handle does when there is none', 268, 12, 268]
     ])('for a line inside it %s', (_case, blockLeft, paddingLeft, expectedLeft) => {
       const activeEditor = makeEditorWith({isNested: true}, p('Sev 1'))
       document.body.appendChild(activeEditor.view.dom.parentElement!)
       laidOutBlock(activeEditor.view.dom.parentElement!, blockLeft, paddingLeft)
       expect(handleLeft(activeEditor, activeEditor.state.doc.child(0).nodeSize)).toBe(expectedLeft)
     })
+
+    test.each([
+      ['in the gutter', 36, 484],
+      ['without a gutter', 12, 292]
+    ])(
+      'for a nested list item %s it steps in with the list',
+      (_case, paddingLeft, expectedLeft) => {
+        const item = (text: string, ...nested: JSONContent[]) => ({
+          type: 'listItem',
+          content: [p(text), ...nested]
+        })
+        const activeEditor = makeEditorWith(
+          {isNested: true},
+          {
+            type: 'bulletList',
+            content: [item('Sev 1', {type: 'bulletList', content: [item('Page')]})]
+          }
+        )
+        document.body.appendChild(activeEditor.view.dom.parentElement!)
+        laidOutBlock(
+          activeEditor.view.dom.parentElement!,
+          paddingLeft === 36 ? 452 : 268,
+          paddingLeft
+        )
+        const {view, state} = activeEditor
+        const outerList = view.nodeDOM(positionOf(activeEditor, 'bulletList')) as HTMLElement
+        const innerList = outerList.querySelector('ul')!
+        outerList.getBoundingClientRect = () => new happyWindow.DOMRect(500, 0, 600, 80)
+        innerList.getBoundingClientRect = () => new happyWindow.DOMRect(524, 40, 576, 40)
+        let innerItemPos = -1
+        state.doc.descendants((node, pos) => {
+          if (node.type.name === 'listItem' && node.textContent === 'Page') innerItemPos = pos
+        })
+        expect(handleLeft(activeEditor, innerItemPos)).toBe(expectedLeft)
+      }
+    )
   })
 
   test.each([
