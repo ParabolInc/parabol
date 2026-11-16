@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.36.1](https://github.com/ParabolInc/parabol/compare/v15.36.0...v15.36.1) (2026-11-16)
+
+
+### Fixed
+
+* **pages:** a page dropped onto another page goes to its bottom ([#14249](https://github.com/ParabolInc/parabol/issues/14249)) ([8e8870e](https://github.com/ParabolInc/parabol/commit/8e8870e281b5b7c5c56bc7498fd2c33eae13c89b))
+* **pages:** host link card thumbnails so blocked images still show ([#14250](https://github.com/ParabolInc/parabol/issues/14250)) ([3950cf9](https://github.com/ParabolInc/parabol/commit/3950cf93f40d1ca95b3488584dcb9983e9e343f3))
+
+
+### Changed
+
+* drop the unused Jira status category ([#14245](https://github.com/ParabolInc/parabol/issues/14245)) ([16d6809](https://github.com/ParabolInc/parabol/commit/16d6809d212b2a6b6f78990f0435269af2b61402))
+
 ## [15.36.0](https://github.com/ParabolInc/parabol/compare/v15.35.1...v15.36.0) (2026-11-16)
 
 
