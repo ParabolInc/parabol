@@ -4,6 +4,7 @@ import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {link, makeEditor, p} from '../../../tiptap/blockMove/__tests__/blockMoveTestHelpers'
 import {
+  createBlockSelection,
   getSelectedBlockRange,
   selectBlockRange
 } from '../../../tiptap/blockSelection/blockSelectionState'
@@ -153,5 +154,116 @@ describe('BlockMarquee session', () => {
       await new Promise((resolve) => setTimeout(resolve, 50))
     })
     expect(marqueeBoxCount()).toBe(0)
+  })
+})
+
+describe('BlockMarquee shift-drag', () => {
+  let root: Root
+  let column: HTMLElement
+  let editor: ReturnType<typeof makeEditor>
+  const LINE_HEIGHT = 20
+  const lineTop = (n: number) => 200 + n * LINE_HEIGHT
+
+  beforeEach(() => {
+    document.body.innerHTML =
+      '<div id="surface" data-page-surface><div id="column"></div></div><div id="mount"></div>'
+    column = document.getElementById('column')!
+    editor = makeEditor(p('L1'), p('L2'), p('L3'), p('L4'), p('L5'), p('L6'))
+    column.appendChild(editor.view.dom)
+    jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: Element
+    ) {
+      const line = /^L(\d)$/.exec(this.tagName === 'P' ? (this.textContent ?? '') : '')
+      const top = line ? lineTop(Number(line[1])) : 0
+      const height = line ? LINE_HEIGHT : 0
+      return {
+        top,
+        bottom: top + height,
+        left: 100,
+        right: line ? 400 : 100,
+        width: line ? 300 : 0,
+        height,
+        x: 100,
+        y: top,
+        toJSON: () => ({})
+      } as DOMRect
+    })
+    root = createRoot(document.getElementById('mount')!)
+    act(() => {
+      root.render(
+        <BlockMarquee
+          editor={editor}
+          containerRef={{current: document.getElementById('surface')}}
+        />
+      )
+    })
+  })
+  afterEach(() => {
+    act(() => root.unmount())
+    jest.restoreAllMocks()
+  })
+
+  const blockOf = (text: string) => {
+    let found = {from: -1, to: -1}
+    editor.state.doc.forEach((node, offset) => {
+      if (node.textContent === text) found = {from: offset, to: offset + node.nodeSize}
+    })
+    return found
+  }
+  const selectLines = (first: string, last: string, isBackward = false) => {
+    const range = {from: blockOf(first).from, to: blockOf(last).to, depth: 0}
+    const {state, view} = editor
+    view.dispatch(state.tr.setSelection(createBlockSelection(state.doc, range, isBackward)))
+  }
+  const shiftDrag = async (firstLine: number, lastLine: number) => {
+    const startY = lineTop(firstLine) + 2
+    const endY = lineTop(lastLine) + LINE_HEIGHT - 2
+    fire(column, 'pointerdown', {
+      button: 0,
+      buttons: 1,
+      clientX: 50,
+      clientY: startY,
+      shiftKey: true
+    })
+    fire(column, 'pointermove', {buttons: 1, clientX: 150, clientY: endY, shiftKey: true})
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    })
+    fire(document.body, 'pointerup', {buttons: 0, clientX: 150, clientY: endY, shiftKey: true})
+  }
+  const selectedLines = () => {
+    const range = getSelectedBlockRange(editor.state)
+    if (!range) return null
+    const lines: string[] = []
+    editor.state.doc.nodesBetween(range.from, range.to, (node, pos) => {
+      if (pos >= range.from) lines.push(node.textContent)
+      return false
+    })
+    return lines
+  }
+
+  test('below a selection made upward keeps every selected block', async () => {
+    selectLines('L1', 'L3', true)
+    await shiftDrag(5, 6)
+    expect(selectedLines()).toEqual(['L1', 'L2', 'L3', 'L4', 'L5', 'L6'])
+  })
+
+  test('above a selection keeps every selected block', async () => {
+    selectLines('L4', 'L6')
+    await shiftDrag(1, 1)
+    expect(selectedLines()).toEqual(['L1', 'L2', 'L3', 'L4', 'L5', 'L6'])
+  })
+
+  test('inside a selection leaves it as it was', async () => {
+    selectLines('L2', 'L5')
+    await shiftDrag(3, 3)
+    expect(selectedLines()).toEqual(['L2', 'L3', 'L4', 'L5'])
+  })
+
+  test('from a caret selects from the caret block through the box', async () => {
+    const {state, view} = editor
+    view.dispatch(state.tr.setSelection(TextSelection.create(state.doc, blockOf('L2').from + 1)))
+    await shiftDrag(4, 5)
+    expect(selectedLines()).toEqual(['L2', 'L3', 'L4', 'L5'])
   })
 })

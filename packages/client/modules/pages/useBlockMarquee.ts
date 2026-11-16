@@ -53,7 +53,7 @@ type Session = {
   y: number
   isDragging: boolean
   isDirty: boolean
-  anchor: {from: number; to: number} | null
+  kept: {from: number; to: number} | null
   originalState: EditorState | null
   lastRange: BlockRange | null
   frameId: number
@@ -95,7 +95,7 @@ export const useBlockMarquee = (
     }
 
     const update = (current: Session) => {
-      const {startX, startContentY, x, y, scroller, anchor} = current
+      const {startX, startContentY, x, y, scroller, kept} = current
       const startY = startContentY - scroller.scrollTop
       const rect = {
         left: Math.min(startX, x),
@@ -130,14 +130,14 @@ export const useBlockMarquee = (
         current.lastRange = null
         return
       }
-      const range = getRunFromBoxes(state.doc, hit.first, hit.last, anchor)
+      const range = getRunFromBoxes(state.doc, hit.first, hit.last, kept)
       if (!range) return
       const last = current.lastRange
       if (last && last.from === range.from && last.to === range.to && last.depth === range.depth) {
         return
       }
       current.lastRange = range
-      const isBackward = anchor ? isRunBackward(range, anchor) : y < startY
+      const isBackward = kept ? isRunBackward(range, kept) : y < startY
       view.dispatch(state.tr.setSelection(createBlockSelection(state.doc, range, isBackward)))
     }
 
@@ -197,7 +197,7 @@ export const useBlockMarquee = (
         y: e.clientY,
         isDragging: false,
         isDirty: false,
-        anchor: e.shiftKey ? getAnchorBlockUnit(state) : null,
+        kept: e.shiftKey ? (getSelectedBlockRange(state) ?? getAnchorBlockUnit(state)) : null,
         originalState: e.shiftKey ? state : null,
         lastRange: null,
         frameId: 0,
@@ -234,11 +234,11 @@ export const useBlockMarquee = (
 
     const onPointerEnd = (e: PointerEvent) => {
       if (!session || e.pointerId !== session.pointerId) return
-      const {isDragging, lastRange, anchor} = session
+      const {isDragging, lastRange, kept} = session
       endSession(e.pointerId)
       if (isDragging) {
         if (lastRange) editor.view.dom.focus({preventScroll: true})
-      } else if (e.type === 'pointerup' && !anchor) {
+      } else if (e.type === 'pointerup' && !kept) {
         placeCaret(e.clientX, e.clientY)
       }
     }
