@@ -61,7 +61,7 @@ afterAll(async () => {
 })
 
 describe('exportPageEntry synced blocks', () => {
-  const exportHost = async (isTokenScoped: boolean) => {
+  it('flattens the block for a normal export and skips it for a token-scoped one', async () => {
     const host = await createNewPage({userId, content: toContent(heading('Host'))})
     const block = await createNewPage({
       userId,
@@ -89,35 +89,32 @@ describe('exportPageEntry synced blocks', () => {
       parentPageId: null,
       status: 'pending'
     }
-    const {confluence, storageValues} = makeStubConfluence()
-    const result = await exportPageEntry({
-      entry,
-      pagesJson: [entry],
-      parentConfluenceId: undefined,
-      confluence,
-      spaceId: 's1',
-      siteUrl: undefined,
-      userId,
-      pageExportId: 'test',
-      isTokenScoped
-    })
-    return {result, storage: storageValues[0]!}
-  }
-
-  it('flattens the block for a normal export', async () => {
-    const {result, storage} = await exportHost(false)
-    expect(result.status).toBe('success')
-    expect(storage).toContain('Call on-call first')
-  }, 30_000)
-
-  it('skips the block for a token-scoped export', async () => {
-    const {result, storage} = await exportHost(true)
-    expect(result.status).toBe('success')
-    expect(storage).not.toContain('Call on-call first')
-    if (result.status === 'success') {
-      expect(result.degraded).toContainEqual(
-        expect.objectContaining({blockType: 'syncedBlock', count: 1})
-      )
+    const exportAs = async (isTokenScoped: boolean) => {
+      const {confluence, storageValues} = makeStubConfluence()
+      const result = await exportPageEntry({
+        entry,
+        pagesJson: [entry],
+        parentConfluenceId: undefined,
+        confluence,
+        spaceId: 's1',
+        siteUrl: undefined,
+        userId,
+        pageExportId: 'test',
+        isTokenScoped
+      })
+      return {result, storage: storageValues[0]!}
     }
+
+    const normal = await exportAs(false)
+    expect(normal.result.status).toBe('success')
+    expect(normal.storage).toContain('Call on-call first')
+    const tokenScoped = await exportAs(true)
+    expect(tokenScoped.storage).not.toContain('Call on-call first')
+    expect(tokenScoped.result).toMatchObject({
+      status: 'success',
+      degraded: expect.arrayContaining([
+        expect.objectContaining({blockType: 'syncedBlock', count: 1})
+      ])
+    })
   }, 30_000)
 })

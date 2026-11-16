@@ -94,11 +94,15 @@ const paragraphTexts = (activeEditor: Editor) => {
 
 const endOfDoc = (activeEditor: Editor) => activeEditor.state.doc.content.size
 
-const moveFirstParagraph = (activeEditor: Editor, frag: Y.XmlFragment) => {
+const moveFirstParagraph = (
+  activeEditor: Editor,
+  frag: Y.XmlFragment,
+  drop: Pick<BlockMoveMeta, 'insertIndex'> = {}
+) => {
   const {from, to} = rangeOf(activeEditor, 'paragraph', 0)
   const blocks = getMovableBlocks(activeEditor.state.doc, from, to).blocks
-  const moved = appendBlocksToFragment(frag, blocks, activeEditor.schema)
-  const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks}
+  const moved = appendBlocksToFragment(frag, blocks, activeEditor.schema, drop.insertIndex)
+  const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks, ...drop}
   dispatchBlockMoveDelete(activeEditor, activeEditor.state.tr.deleteRange(from, to), meta)
   return meta
 }
@@ -147,14 +151,6 @@ afterAll(async () => {
   await happyWindow.happyDOM.close()
 })
 
-test('undo restores the source and removes the block from the target', async () => {
-  moveFirstParagraph(editor, targetFrag)
-  editor.commands.undo()
-  await flushPromises()
-  expect(paragraphTexts(editor)).toContain('moved me')
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
-})
-
 test('undo leaves a block someone edited on the target and says so', async () => {
   moveFirstParagraph(editor, targetFrag)
   editTargetBlock(1)
@@ -189,21 +185,16 @@ test('undo of a partly edited move says how many came back', async () => {
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('edited stays')]))
 })
 
-test('a clean undo shows no snackbar', async () => {
-  moveFirstParagraph(editor, targetFrag)
-  editor.commands.undo()
-  await flushPromises()
-  expect(atmosphere.eventEmitter.emit).not.toHaveBeenCalled()
-})
-
-test('redo moves the block again', async () => {
-  moveFirstParagraph(editor, targetFrag)
+test('undo and redo of a drop into a synced block use the drop spot', async () => {
+  targetFrag = seed(h(1, 'Q3'), p('top'), p('bottom'))
+  mockTargetDoc = targetFrag.doc!
+  moveFirstParagraph(editor, targetFrag, {insertIndex: 2})
   editor.commands.undo()
   await flushPromises()
   editor.commands.redo()
   await flushPromises()
-  expect(paragraphTexts(editor)).not.toContain('moved me')
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me')]))
+  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('top'), p('moved me'), p('bottom')]))
+  expect(paragraphTexts(editor)).toEqual(['stays'])
 })
 
 test('undo after redo takes the new copy back', async () => {
@@ -413,12 +404,13 @@ test('an undo that cannot put the block back leaves the copy on the target and n
 })
 
 describe('the keyboard', () => {
-  test('⌘Z right after a move restores here and removes from the target', async () => {
+  test('⌘Z right after a move restores here quietly and removes from the target, ⌘⇧Z moves it again', async () => {
     moveFirstParagraph(editor, targetFrag)
     pressMod(editor, 'z')
     await flushPromises()
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+    expect(atmosphere.eventEmitter.emit).not.toHaveBeenCalled()
     pressMod(editor, 'z', true)
     await flushPromises()
     expect(paragraphTexts(editor)).toEqual(['stays'])
@@ -553,37 +545,38 @@ describe('the snackbar Undo', () => {
   const moveWithGap = () => {
     const {from} = rangeOf(editor, 'paragraph', 0)
     const meta: BlockMoveMeta = moveFirstParagraph(editor, targetFrag)
-    return {meta, gap: trackRange(editor, from, from)}
+    meta.gap = trackRange(editor, from, from)
+    return meta
   }
 
   test('undoes the move when it is the latest step', async () => {
-    const {meta, gap} = moveWithGap()
-    await undoBlockMove(editor, meta, gap)
+    const meta = moveWithGap()
+    await undoBlockMove(editor, meta)
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
     expect(yUndoPluginKey.getState(editor.state)!.undoManager.redoStack.length).toBe(1)
   })
 
   test('puts the block back in its gap after later edits', async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.insertContentAt(endOfDoc(editor), p('typed later'))
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays', 'typed later'])
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
   })
 
   test('changes nothing once the move was undone with ⌘Z', async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.undo()
     await flushPromises()
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
   })
 
   test("a later ⌘Z after the snackbar fallback doesn't restore the block twice", async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.insertContentAt(endOfDoc(editor), p('typed later'))
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     editor.commands.undo()
     await flushPromises()
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
@@ -593,9 +586,9 @@ describe('the snackbar Undo', () => {
   })
 
   test('restores the block as its own paragraph after the title was typed at', async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.insertContentAt(editor.state.doc.child(0).nodeSize - 1, ' plan')
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(editor.state.doc.child(0).textContent).toBe('Title plan')
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
   })
@@ -604,32 +597,32 @@ describe('the snackbar Undo', () => {
     const {from, to} = rangeOf(editor, 'paragraph', 1)
     const blocks = getMovableBlocks(editor.state.doc, from, to).blocks
     const moved = appendBlocksToFragment(targetFrag, blocks, editor.schema)
-    const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks}
     const gap = trackRange(editor, from, from)
+    const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks, gap}
     dispatchBlockMoveDelete(editor, editor.state.tr.deleteRange(from, to), meta)
     editor.commands.insertContentAt(from - 1, ' typed')
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(paragraphTexts(editor)).toEqual(['moved me typed', 'stays'])
   })
 
   test('does nothing once the editor is gone', async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.insertContentAt(endOfDoc(editor), p('typed later'))
     const sourceBefore = read(sourceFrag)
     editor.destroy()
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(read(sourceFrag)).toEqual(sourceBefore)
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me')]))
   })
 
   test('after a redo, removes the copy the redo made', async () => {
-    const {meta, gap} = moveWithGap()
+    const meta = moveWithGap()
     editor.commands.undo()
     await flushPromises()
     editor.commands.redo()
     await flushPromises()
     editor.commands.insertContentAt(endOfDoc(editor), p('typed later'))
-    await undoBlockMove(editor, meta, gap)
+    await undoBlockMove(editor, meta)
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays', 'typed later'])
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
   })

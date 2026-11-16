@@ -7,11 +7,14 @@ import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
 import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
-import {getBlockUnitAt} from '../../blockSelection/blockUnits'
 import {dispatchBlockConversion} from './dispatchBlockConversion'
+import {
+  dispatchSyncedBlockConversion,
+  getBlockRange,
+  getSyncedBlockConversion
+} from './getSyncedBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
-import {turnRangeIntoSyncedBlock} from './turnRangeIntoSyncedBlock'
 
 interface Props {
   editor: Editor
@@ -19,11 +22,10 @@ interface Props {
   pos: number
   current: TurnIntoTarget
   canCreateSubPage: boolean
-  canCreateSyncedBlock: boolean
 }
 
 export const TurnIntoMenu = (props: Props) => {
-  const {editor, node, pos, current, canCreateSubPage, canCreateSyncedBlock} = props
+  const {editor, node, pos, current, canCreateSubPage} = props
   const isInCallout = isInsideCallout(editor.state.doc, pos)
   const rows = turnIntoRows.filter(({target}) => {
     if (target.type === 'callout') return !isInCallout
@@ -33,16 +35,10 @@ export const TurnIntoMenu = (props: Props) => {
     ({target}) => target.type === current.type && target.level === current.level
   )
 
-  const getSyncedBlockTransaction = () => {
-    const range = getBlockUnitAt(editor.state.doc, pos + 1)
-    return range && turnRangeIntoSyncedBlock(editor.state, range)
-  }
-  const showSyncedBlock = editor.isEditable && canCreateSyncedBlock && !!getSyncedBlockTransaction()
+  const getRange = () => getBlockRange(editor, node, pos)
+  const showSyncedBlock = canCreateSubPage && !!getSyncedBlockConversion(editor, getRange())
 
-  const isStale = () => {
-    const {doc} = editor.state
-    return !editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)
-  }
+  const isStale = () => !editor.isEditable || !getRange()
 
   const handleValueChange = (title: string) => {
     if (isStale()) return
@@ -52,9 +48,7 @@ export const TurnIntoMenu = (props: Props) => {
   }
 
   const handleSyncedBlock = () => {
-    if (isStale()) return
-    const tr = getSyncedBlockTransaction()
-    if (tr) dispatchBlockConversion(editor, tr, pos)
+    dispatchSyncedBlockConversion(editor, getRange(), pos)
   }
 
   return (

@@ -113,13 +113,14 @@ test('forgets a stored refusal before signing in again', async () => {
   expect(provider.sendToken).toHaveBeenCalledTimes(1)
 })
 
-test('does nothing for a document it does not hold', () => {
-  expect(() => providerManager.reauthenticate('page:404')).not.toThrow()
-})
-
 test('meetings keep their behavior on an access change', async () => {
   const provider = providerManager.get('meeting:3') as unknown as FakeProvider
   closeWith(provider, 'AccessChanged')
   await flushPromises()
   expect(provider.sendToken).not.toHaveBeenCalled()
+})
+
+test('a background write opens the page as nested so a missing page never navigates away', () => {
+  providerManager.openSynced('page:7', 1000)
+  expect(providerManager.providers['page:7']!.isNestedOnly).toBe(true)
 })

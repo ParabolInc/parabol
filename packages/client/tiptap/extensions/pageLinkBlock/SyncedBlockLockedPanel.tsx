@@ -3,6 +3,7 @@ import {Lock, Schedule} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useRequestPageAccessMutation} from '../../../mutations/useRequestPageAccessMutation'
 import {Button} from '../../../ui/Button/Button'
+import {GQLID} from '../../../utils/GQLID'
 import getMutationError from '../../../utils/relay/getMutationError'
 import {SyncedBlockPanel} from './SyncedBlockPanel'
 
@@ -42,7 +43,7 @@ export const SyncedBlockLockedPanel = (props: Props) => {
   const requestAccess = () => {
     if (submitting) return
     execute({
-      variables: {pageId: `page:${pageCode}`, reason: '', role: 'viewer'},
+      variables: {pageId: GQLID.toKey(pageCode, 'page'), reason: '', role: 'viewer'},
       onError: (error) => handleResult(getMutationError(error).code ?? 'ERROR'),
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]

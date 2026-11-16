@@ -164,6 +164,12 @@ export const updateBacklinkedPageLinkTitles = async (
   })
 }
 
+export const broadcastSyncedBlockPlacementsChanged = async (documentName: string) => {
+  hocuspocus.documents
+    .get(documentName)
+    ?.broadcastStateless(JSON.stringify({type: 'syncedBlockPlacementsChanged'}))
+}
+
 export const replaceAssetSrc = async (
   documentName: string,
   payload: {src: string; hostedSrc: string}

@@ -1,5 +1,6 @@
 import type Atmosphere from '../../../Atmosphere'
-import {getBlockDragState, prepareBlockMove} from '../prepareBlockMove'
+import {getBlockDragState} from '../blockDragSession'
+import {prepareBlockMove} from '../prepareBlockMove'
 import {destroyEditors, link, makeEditor, p, rangeOf} from './blockMoveTestHelpers'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
@@ -35,6 +36,7 @@ test('prepareBlockMove refuses a run holding a child page the viewer does not ow
   expect(getBlockDragState(session, refusal)).toEqual({
     sourcePageId: 'page:1',
     childPageIds: ['page:7'],
+    syncedBlockIds: [],
     refusal: 'Only its owner can move Specs'
   })
 })

@@ -1,7 +1,8 @@
-import type {Editor} from '@tiptap/core'
+import type {Editor, JSONContent} from '@tiptap/core'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import {GQLID} from '../../utils/GQLID'
+import type {BlockDragState} from './getBlockDropRefusal'
 import type {MovableBlocks} from './getMovableBlocks'
 import type {TrackedRange} from './trackRange'
 
@@ -13,42 +14,66 @@ export type BlockDragSession = {
   count: number
 }
 
-let activeSession: BlockDragSession | null = null
+export type ActiveBlockDrag = {session: BlockDragSession; refusal: string | null}
+
+let activeDrag: ActiveBlockDrag | null = null
+
+const getSyncedBlockIds = (blocks: JSONContent[]): string[] =>
+  blocks.flatMap((block) => [
+    ...(block.type === 'pageLinkBlock' && block.attrs?.synced
+      ? [GQLID.toKey(block.attrs.pageCode, 'page')]
+      : []),
+    ...getSyncedBlockIds(block.content ?? [])
+  ])
+
+export const getBlockDragState = (
+  session: BlockDragSession,
+  refusal: string | null
+): BlockDragState => ({
+  sourcePageId: session.sourcePageId,
+  childPageIds: session.movable.childPages.map(({pageCode}) => GQLID.toKey(pageCode, 'page')),
+  syncedBlockIds: getSyncedBlockIds(session.movable.blocks),
+  refusal
+})
 
 export const startBlockDrag = (
   atmosphere: Atmosphere,
   session: BlockDragSession,
   refusal: string | null
 ) => {
-  activeSession?.range.stop()
-  activeSession = session
-  const childPageIds = session.movable.childPages.map(({pageCode}) => GQLID.toKey(pageCode, 'page'))
+  activeDrag?.session.range.stop()
+  activeDrag = {session, refusal}
+  const {childPageIds, syncedBlockIds} = getBlockDragState(session, refusal)
   commitLocalUpdate(atmosphere, (store) => {
     store
       .getRoot()
       .getLinkedRecord('viewer')
       ?.setValue(session.sourcePageId, 'draggingBlocksSourcePageId')
       .setValue(childPageIds, 'draggingBlocksChildPageIds')
+      .setValue(syncedBlockIds, 'draggingBlocksSyncedBlockIds')
       .setValue(refusal, 'draggingBlocksRefusal')
       .setValue(session.count, 'draggingBlocksCount')
   })
 }
 
+export const peekBlockDrag = () => activeDrag
+
 export const takeBlockDrag = () => {
-  const session = activeSession
-  activeSession = null
+  const session = activeDrag?.session ?? null
+  activeDrag = null
   return session
 }
 
 export const endBlockDrag = (atmosphere: Atmosphere) => {
-  activeSession?.range.stop()
-  activeSession = null
+  activeDrag?.session.range.stop()
+  activeDrag = null
   commitLocalUpdate(atmosphere, (store) => {
     store
       .getRoot()
       .getLinkedRecord('viewer')
       ?.setValue(null, 'draggingBlocksSourcePageId')
       .setValue(null, 'draggingBlocksChildPageIds')
+      .setValue(null, 'draggingBlocksSyncedBlockIds')
       .setValue(null, 'draggingBlocksRefusal')
       .setValue(null, 'draggingBlocksCount')
   })

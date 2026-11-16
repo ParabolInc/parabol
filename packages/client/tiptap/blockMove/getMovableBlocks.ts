@@ -9,6 +9,9 @@ export type MovableBlocks = {
 
 const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList'])
 
+export const isChildPageNode = (node: Node) =>
+  node.type.name === 'pageLinkBlock' && node.attrs.canonical === true && node.attrs.pageCode !== -1
+
 export const getMovableBlocks = (doc: Node, from: number, to: number): MovableBlocks => {
   const items = (doc.slice(from, to).content.toJSON() ?? []) as JSONContent[]
   const parentType = doc.resolve(from).parent.type.name
@@ -17,11 +20,7 @@ export const getMovableBlocks = (doc: Node, from: number, to: number): MovableBl
   let hasUpload = false
   doc.nodesBetween(from, to, (node) => {
     if (node.type.name === 'fileUpload') hasUpload = true
-    if (
-      node.type.name === 'pageLinkBlock' &&
-      node.attrs.canonical === true &&
-      node.attrs.pageCode !== -1
-    ) {
+    if (isChildPageNode(node)) {
       childPages.push({pageCode: node.attrs.pageCode, title: node.attrs.title})
     }
   })

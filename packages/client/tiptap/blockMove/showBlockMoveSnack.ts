@@ -12,7 +12,7 @@ import {undoBlockMove} from './undoBlockMove'
 type Params = {
   atmosphere: Atmosphere
   editor: Editor
-  navigate: (path: string) => void
+  navigate?: (path: string) => void
   outcome: BlockMoveOutcome
   count: number
   targetPageId: string
@@ -30,13 +30,13 @@ export const showBlockMoveSnack = ({
   targetPageId,
   targetTitle
 }: Params) => {
-  const {result, meta, gap, moved} = outcome
+  const {result, meta, moved} = outcome
   const message = getBlockMoveMessage(result, count, targetTitle)
   if (!message) return
   releaseShown?.()
   atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === BLOCK_MOVE_SNACK_KEY)
   const release = () => {
-    gap?.stop()
+    meta?.gap?.stop()
     editor.off('destroy', onEditorDestroy)
     if (releaseShown === release) releaseShown = null
   }
@@ -47,21 +47,22 @@ export const showBlockMoveSnack = ({
   releaseShown = release
   editor.on('destroy', onEditorDestroy)
   const [pageCode] = GQLID.fromKey(targetPageId)
-  const openPage: SnackAction | undefined = moved
-    ? {
-        label: 'Open page',
-        callback: () => {
-          setPendingArrival(targetPageId, moved)
-          navigate(`/pages/${getPageSlug(pageCode, targetTitle)}`)
+  const openPage: SnackAction | undefined =
+    moved && navigate
+      ? {
+          label: 'Open page',
+          callback: () => {
+            setPendingArrival(targetPageId, moved)
+            navigate(`/pages/${getPageSlug(pageCode, targetTitle)}`)
+          }
         }
-      }
-    : undefined
+      : undefined
   const undo: SnackAction | undefined =
-    result === 'moved' && meta && gap
+    result === 'moved' && meta
       ? {
           label: 'Undo',
           callback: () => {
-            undoBlockMove(editor, meta, gap)
+            undoBlockMove(editor, meta)
           }
         }
       : undefined

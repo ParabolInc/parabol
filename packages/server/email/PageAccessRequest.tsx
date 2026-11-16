@@ -177,7 +177,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                       {isSyncedBlock ? (
                         <>
                           {' wants to view the synced block '}
-                          <b>{pageName || '<Untitled>'}</b>
+                          <b>{pageName}</b>
                           {'.'}
                         </>
                       ) : (

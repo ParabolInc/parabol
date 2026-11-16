@@ -6,7 +6,7 @@ import {MemoryRouter, useNavigate} from 'react-router'
 import {setPendingArrival, takePendingArrival} from '../../tiptap/blockMove/pendingArrivals'
 import {clearBlockArrival, showBlockArrival} from '../../tiptap/extensions/BlockArrival'
 import {findSyncedBlockPositions} from '../../tiptap/extensions/pageLinkBlock/findSyncedBlockPositions'
-import {useArrivalHighlight} from '../useArrivalHighlight'
+import {isArrivalPending, useArrivalHighlight} from '../useArrivalHighlight'
 
 jest.mock('../../tiptap/extensions/BlockArrival', () => ({
   showBlockArrival: jest.fn(),
@@ -117,4 +117,12 @@ test('a new block hash on the open page highlights the new block', () => {
   act(() => navigateTo('/pages/runbook-1#synced-block-4'))
   expect(mockFind).toHaveBeenLastCalledWith(editor.state.doc, 4)
   expect(showBlockArrival).toHaveBeenLastCalledWith(editor.view, [11])
+})
+
+test('a pending move or a block hash keeps the caret out of the title', () => {
+  expect(isArrivalPending('page:1', '#synced-block-9')).toBe(true)
+  setPendingArrival('page:1', [{client: 1, clock: 1, snapshot: ''}])
+  expect(isArrivalPending('page:1', '')).toBe(true)
+  takePendingArrival('page:1')
+  expect(isArrivalPending('page:1', '')).toBe(false)
 })

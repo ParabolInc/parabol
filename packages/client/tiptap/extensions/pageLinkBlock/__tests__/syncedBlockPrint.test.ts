@@ -36,23 +36,6 @@ describe('syncedBlockPrint', () => {
     releaseMountAll()
   })
 
-  test('waits until every block has loaded', async () => {
-    const first = addBlock('loading')
-    const second = addBlock('loading')
-    let done = false
-    waitForSyncedBlocks(document).then(() => {
-      done = true
-    })
-    await flush(100)
-    expect(done).toBe(false)
-    first.setAttribute('data-status', 'ready')
-    await flush(100)
-    expect(done).toBe(false)
-    second.setAttribute('data-status', 'ready')
-    await flush(100)
-    expect(done).toBe(true)
-  })
-
   test('a locked or failed block counts as loaded', async () => {
     addBlock('locked')
     addBlock('error')

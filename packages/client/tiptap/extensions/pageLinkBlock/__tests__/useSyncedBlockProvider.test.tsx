@@ -1,5 +1,6 @@
 import '../../__tests__/installHappyDom'
 import type {HocuspocusProvider} from '@hocuspocus/provider'
+import type {Editor} from '@tiptap/core'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {
@@ -7,6 +8,7 @@ import {
   subscribeToPageViewerAccess
 } from '../../../../hooks/usePageViewerAccess'
 import {providerManager} from '../../../providerManager'
+import {SyncedBlockContent} from '../SyncedBlockContent'
 import {SyncedBlockState} from '../SyncedBlockState'
 import {SYNCED_BLOCK_LOAD_TIMEOUT_MS, useSyncedBlockProvider} from '../useSyncedBlockProvider'
 
@@ -62,6 +64,7 @@ jest.mock('../../../../hooks/useAtmosphere', () => ({
 jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
   useRequestPageAccessMutation: () => [jest.fn(), false]
 }))
+jest.mock('../SyncedBlockEditor', () => ({SyncedBlockEditor: () => null}))
 jest.mock('../../../../hooks/usePageViewerAccess', () => ({
   subscribeToPageViewerAccess: jest.fn(),
   lookupPageViewerAccess: jest.fn()
@@ -254,15 +257,6 @@ test('destroying the provider clears the stored failure', () => {
   expect(providerManager.getAuthenticationFailure('page:11')).toBeUndefined()
 })
 
-test('a ready block shows the locked panel when access is revoked', () => {
-  render(10)
-  act(() => providerFor(10).emit('synced'))
-  expect(statusOf()).toBe('ready')
-  act(() => providerFor(10).emit('authenticationFailed', {reason: 'Unauthorized'}))
-  expect(statusOf()).toBe('locked')
-  expect(screenText()).not.toContain(SECRET_TEXT)
-})
-
 test('a locked block shows its text once it syncs again', () => {
   render(15)
   act(() => providerFor(15).emit('authenticationFailed', {reason: 'Unauthorized'}))
@@ -286,6 +280,29 @@ test('a block that mounted ready locks when access is revoked', () => {
   act(() => providerFor(17).emit('authenticationFailed', {reason: 'Unauthorized'}))
   expect(statusOf()).toBe('locked')
   expect(screenText()).not.toContain(SECRET_TEXT)
+})
+
+test('the block hears when its placements change', () => {
+  const onPlacementsChange = jest.fn()
+  act(() =>
+    root.render(
+      <SyncedBlockContent
+        pageCode={18}
+        hostEditor={{} as unknown as Editor}
+        getPos={() => 0}
+        getSize={() => 0}
+        onChromeChange={() => {}}
+        onStatusChange={() => {}}
+        onPlacementsChange={onPlacementsChange}
+      />
+    )
+  )
+  const stateless = (payload: string) => act(() => providerFor(18).emit('stateless', {payload}))
+  stateless('not json')
+  stateless(JSON.stringify({type: 'assetNotHosted', src: 'https://example.com/a.png'}))
+  expect(onPlacementsChange).not.toHaveBeenCalled()
+  stateless(JSON.stringify({type: 'syncedBlockPlacementsChanged'}))
+  expect(onPlacementsChange).toHaveBeenCalledTimes(1)
 })
 
 describe('watching access while locked', () => {

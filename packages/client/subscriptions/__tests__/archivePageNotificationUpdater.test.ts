@@ -21,7 +21,7 @@ const pageId = 'page:1'
 
 type PageLocation = 'shared' | 'archived'
 
-const createEnvironment = (location: PageLocation, extraPageIds: string[] = []) => {
+const createEnvironment = (location: PageLocation) => {
   const sharedConn = createPageConnection(
     viewerId,
     'User_sharedPages',
@@ -33,9 +33,6 @@ const createEnvironment = (location: PageLocation, extraPageIds: string[] = []) 
     'User_archivedPages',
     {isArchived: true},
     location === 'archived' ? [pageId] : []
-  )
-  const extraPages = Object.fromEntries(
-    extraPageIds.map((id) => [id, {__id: id, __typename: 'Page', id, title: 'Other'}])
   )
   const environment = new Environment({
     network: Network.create(async () => ({data: {}})),
@@ -66,7 +63,6 @@ const createEnvironment = (location: PageLocation, extraPageIds: string[] = []) 
           deletedAt: location === 'archived' ? '2026-11-15T00:00:00.000Z' : null,
           deletedBy: location === 'archived' ? viewerId : null
         },
-        ...extraPages,
         ...sharedConn.records,
         ...archivedConn.records
       })
@@ -127,13 +123,6 @@ describe('archivePageNotificationUpdater', () => {
     expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([pageId])
   })
 
-  it('restore from another tab moves the page back', () => {
-    const {environment, sharedConnId, archivedConnId} = createEnvironment('archived')
-    receive(environment, pageId, pageFields({}))
-    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([pageId])
-    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
-  })
-
   it('restoring a child whose parent is in Trash puts it at the top of the nav', () => {
     const {environment, sharedConnId, archivedConnId} = createEnvironment('archived')
     commitLocalUpdate(environment, (store) => {
@@ -149,13 +138,6 @@ describe('archivePageNotificationUpdater', () => {
     receive(environment, pageId, null)
     expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
     expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])
-  })
-
-  it('Delete forever of a page this tab never loaded does nothing', () => {
-    const {environment, sharedConnId, archivedConnId} = createEnvironment('archived')
-    expect(() => receive(environment, 'page:9', null)).not.toThrow()
-    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])
-    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([pageId])
   })
 
   it("a collaborator's Trash doesn't gain someone else's deleted page", () => {

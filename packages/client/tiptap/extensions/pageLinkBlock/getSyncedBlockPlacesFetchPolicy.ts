@@ -13,3 +13,7 @@ export const getSyncedBlockPlacesFetchPolicy = (
   lastFetchedAt.set(pageCode, now)
   return 'store-and-network'
 }
+
+export const markSyncedBlockPlacesStale = (pageCode: number) => {
+  lastFetchedAt.delete(pageCode)
+}

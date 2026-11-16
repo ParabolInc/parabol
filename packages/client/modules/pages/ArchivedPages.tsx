@@ -81,7 +81,7 @@ export const ArchivedPages = (props: Props) => {
         title={title ?? ''}
         Icon={isSyncedBlock ? AutorenewIcon : DescriptionIcon}
         subline={isSyncedBlock ? `From ${parentTitle}` : null}
-        restoreBlockedBy={parentPage?.deletedAt ? parentTitle : null}
+        restoreBlockedBy={isSyncedBlock && parentPage?.deletedAt ? parentTitle : null}
         onRestore={restorePage}
         onDelete={deletePage}
       />

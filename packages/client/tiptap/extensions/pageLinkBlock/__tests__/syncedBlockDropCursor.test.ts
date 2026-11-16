@@ -1,6 +1,5 @@
 import '../../__tests__/installHappyDom'
 import {happyWindow} from '../../__tests__/installHappyDom'
-import {refuseForeignDrops} from '../refuseForeignDrops'
 import {
   clearDropCursorOverSyncedBlocks,
   disableDropCursorInSyncedBlock
@@ -57,8 +56,7 @@ describe("the page's drop line and synced blocks", () => {
   })
 
   test("entering a block that refuses the drag still clears the page's drop line", () => {
-    const {host, nested, hostLeaves, hostLine, blockLine} = setup()
-    nested.registerPlugin(refuseForeignDrops())
+    const {host, hostLeaves, hostLine, blockLine} = setup()
     fire(hostLine, 'dragstart')
     fire(blockLine, 'dragenter')
     fire(hostLine, 'dragend')

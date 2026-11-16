@@ -27,6 +27,16 @@ test('goes above a trailing empty paragraph, and right after a lone title', () =
   expect(read(lone)).toEqual(normalize([h(1, 'Q3'), p('moved')]))
 })
 
+test('inserts at a given index, never above the title and past a trailing empty paragraph', () => {
+  const frag = seed(h(1, 'Q3'), p('a'), {type: 'paragraph'})
+  appendBlocksToFragment(frag, [p('second')], schema, 2)
+  appendBlocksToFragment(frag, [p('first')], schema, 0)
+  appendBlocksToFragment(frag, [p('last')], schema, 99)
+  expect(read(frag)).toEqual(
+    normalize([h(1, 'Q3'), p('first'), p('a'), p('second'), {type: 'paragraph'}, p('last')])
+  )
+})
+
 test('keeps marks and nested content', () => {
   const block = toggle('Notes', {
     type: 'paragraph',

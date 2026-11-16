@@ -1,10 +1,15 @@
 import {isNodeSelection, type NodeViewProps, NodeViewWrapper, useEditorState} from '@tiptap/react'
 import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {fetchQuery} from 'relay-runtime'
+import syncedBlockPlacesQuery, {
+  type SyncedBlockPlacesQuery
+} from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
+import {GQLID} from '../../../utils/GQLID'
 import {copySyncedBlock} from './copySyncedBlock'
-import {getIsSyncedBlockPanelStatus} from './getIsSyncedBlockPanelStatus'
 import {getSyncedBlockEventTarget} from './getSyncedBlockEventTarget'
+import {markSyncedBlockPlacesStale} from './getSyncedBlockPlacesFetchPolicy'
 import {isValidPageCode} from './isValidPageCode'
 import {SyncedBlockBar} from './SyncedBlockBar'
 import {SyncedBlockCaption} from './SyncedBlockCaption'
@@ -16,6 +21,12 @@ import {SyncedBlockNameInput} from './SyncedBlockNameInput'
 import {SyncedBlockPlacesRoot} from './SyncedBlockPlacesRoot'
 import {SyncedBlockState} from './SyncedBlockState'
 import {SYNCED_BLOCK_RENAME_EVENT} from './startSyncedBlockRename'
+import {
+  clearSyncedBlockFocusRequest,
+  hasSyncedBlockFocusRequest,
+  isCaretBesideLink,
+  placeInNested
+} from './syncedBlockFocus'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
 import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockDialog} from './useSyncedBlockDialog'
@@ -37,8 +48,11 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
+  const [focusRequest, setFocusRequest] = useState(() =>
+    hasSyncedBlockFocusRequest(node) ? node : null
+  )
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
-  const isPanel = getIsSyncedBlockPanelStatus(status)
+  const isPanel = status === 'locked' || status === 'error'
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
@@ -63,6 +77,8 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const isHeldOpen = openMenus > 0 || isRenaming || isCheckingUnsync || dialog !== null
   const isFocused = hasFocusWithin || isNodeSelected
   const showBar = !!chrome && (isFocused || isHeldOpen)
+  const showBarRef = useRef(showBar)
+  showBarRef.current = showBar
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
     if (isHeldOpen) return
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
@@ -72,6 +88,16 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const handleMenuOpenChange = useCallback((open: boolean) => {
     setOpenMenus((count) => Math.max(0, count + (open ? 1 : -1)))
   }, [])
+  const handlePlacementsChange = useCallback(() => {
+    markSyncedBlockPlacesStale(pageCode)
+    if (!showBarRef.current) return
+    fetchQuery<SyncedBlockPlacesQuery>(
+      atmosphere,
+      syncedBlockPlacesQuery,
+      {pageId: GQLID.toKey(pageCode, 'page')},
+      {fetchPolicy: 'network-only'}
+    ).subscribe({error: () => {}})
+  }, [atmosphere, pageCode])
   useEffect(() => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
@@ -82,6 +108,15 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     target.addEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
     return () => target.removeEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
   }, [])
+  useEffect(() => {
+    if (!focusRequest || !chrome || chrome.isViewOnly) return
+    setFocusRequest(null)
+    clearSyncedBlockFocusRequest(focusRequest)
+    const pos = getPos()
+    if (pos !== undefined && isCaretBesideLink(editor, pos, sizeRef.current)) {
+      placeInNested(chrome.editor, 'end', null)
+    }
+  }, [focusRequest, chrome])
   useEffect(() => {
     if (isHeldOpen) return
     const timer = setTimeout(() => {
@@ -170,6 +205,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
             getSize={() => sizeRef.current}
             onChromeChange={setChrome}
             onStatusChange={setStatus}
+            onPlacementsChange={handlePlacementsChange}
           />
         </SyncedBlockChainContext.Provider>
       ) : (

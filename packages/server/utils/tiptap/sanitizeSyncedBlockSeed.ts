@@ -6,7 +6,7 @@ import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerial
 const schema = getSchema(serverTipTapExtensions)
 const emptyHeading = schema.nodes.heading!.create({level: 1})
 
-const DROPPED_NODE_NAMES = new Set(['pageLinkBlock', 'thinkingBlock'])
+const DROPPED_NODE_NAMES = new Set(['pageLinkBlock', 'thinkingBlock', 'fileUpload'])
 
 const isNodeJSON = (node: unknown): node is JSONContent =>
   !!node && typeof node === 'object' && !Array.isArray(node)

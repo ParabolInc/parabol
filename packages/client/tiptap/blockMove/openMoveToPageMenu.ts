@@ -3,8 +3,9 @@ import {ReactRenderer} from '@tiptap/react'
 import type Atmosphere from '../../Atmosphere'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import MoveToPageMenu from '../extensions/moveToPage/MoveToPageMenu'
+import {getBlockDragState} from './blockDragSession'
 import {moveBlocksToPage} from './moveBlocksToPage'
-import {getBlockDragState, prepareBlockMove} from './prepareBlockMove'
+import {prepareBlockMove} from './prepareBlockMove'
 import {showBlockMoveSnack} from './showBlockMoveSnack'
 
 export type MoveToPageAnchorRect = {top: number; left: number; width: number; height: number}

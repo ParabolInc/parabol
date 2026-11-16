@@ -1,7 +1,7 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import type {EditorState, Transaction} from '@tiptap/pm/state'
 import {yUndoPluginKey} from '@tiptap/y-tiptap'
-import type * as Y from 'yjs'
+import * as Y from 'yjs'
 import type {MovedBlock} from './appendBlocksToFragment'
 import type {MovableBlocks} from './getMovableBlocks'
 import type {TrackedRange} from './trackRange'
@@ -14,11 +14,12 @@ export type BlockMoveMeta = {
   restored?: MovedBlock[]
   childPages?: MovableBlocks['childPages']
   gap?: TrackedRange
+  insertIndex?: number
 }
 
 export type StackItem = Y.UndoManager['undoStack'][number]
 
-type Direction = 'undo' | 'redo'
+export type Direction = 'undo' | 'redo'
 
 const BLOCK_MOVE_META_KEY = 'blockMove'
 export const BLOCK_MOVE_DELETE_META = 'blockMoveDelete'
@@ -44,8 +45,10 @@ export const dispatchBlockMoveDelete = (
     editor.view.dispatch(meta ? tr : tr.setMeta('addToHistory', false))
     return
   }
+  let tagged = false
   const tagStackItem = ({stackItem}: {stackItem: StackItem}) => {
     setMoveMeta(stackItem, meta)
+    tagged = true
   }
   undoManager.stopCapturing()
   undoManager.on('stack-item-added', tagStackItem)
@@ -55,6 +58,22 @@ export const dispatchBlockMoveDelete = (
     undoManager.off('stack-item-added', tagStackItem)
     undoManager.stopCapturing()
   }
+  if (!tagged) {
+    undoManager.clear(false, true)
+    pushMoveStep(undoManager, meta)
+  }
+}
+
+// For a move whose blocks the server already took off this page, leaving no local change to undo
+export const pushMoveStep = (undoManager: Y.UndoManager, meta: BlockMoveMeta) => {
+  const stackItem: StackItem = {
+    insertions: Y.createDeleteSet(),
+    deletions: Y.createDeleteSet(),
+    meta: new Map()
+  }
+  setMoveMeta(stackItem, meta)
+  undoManager.undoStack.push(stackItem)
+  undoManager.stopCapturing()
 }
 
 export const dropStackItem = (

@@ -45,14 +45,10 @@ beforeEach(() => {
   handleEvent.mockClear()
 })
 
-test('sends no name to the hosts of a synced block', async () => {
-  const {pageId, host} = await seedPageWithHost(true)
+test('sends nothing to the hosts of a synced block', async () => {
+  const {pageId} = await seedPageWithHost(true)
   await updateAllBacklinkedPageLinkTitles({pageId, title: 'Escalation'})
-  expect(handleEvent).toHaveBeenCalledWith(
-    'updateBacklinkedPageLinkTitles',
-    CipherId.toClient(host, 'page'),
-    {pageCode: CipherId.encrypt(pageId), title: ''}
-  )
+  expect(handleEvent).not.toHaveBeenCalled()
 })
 
 test('sends the title to the hosts of an ordinary page', async () => {

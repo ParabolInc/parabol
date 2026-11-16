@@ -29,6 +29,7 @@ import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {moveBlocksIntoSyncedBlock} from '../tiptap/blockMove/moveBlocksIntoSyncedBlock'
 import {BlockArrival} from '../tiptap/extensions/BlockArrival'
 import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
 import {BlockMoveKeys} from '../tiptap/extensions/BlockMoveKeys'
@@ -78,7 +79,7 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
-    nested?: SyncedBlockEdgesOptions & {
+    nested?: Omit<SyncedBlockEdgesOptions, 'onBlockDrop'> & {
       preferredName?: string
       highestTier?: TierEnum
     }
@@ -92,7 +93,6 @@ export const useTipTapPageEditor = (
         highestTier
         organizations {
           hasDatabases: featureFlag(featureName: "Databases")
-          hasSyncedBlocks: featureFlag(featureName: "SyncedBlocks")
         }
       }
     `,
@@ -101,7 +101,6 @@ export const useTipTapPageEditor = (
   const [commit] = useUploadUserAsset()
   const preferredName = nested ? nested.preferredName : user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
-  const hasSyncedBlocks = !!user?.organizations?.find((org) => org?.hasSyncedBlocks)
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {hash} = useLocation()
@@ -155,9 +154,11 @@ export const useTipTapPageEditor = (
           nested: true
         }),
         SlashCommand.configure({
-          commands: getPageSlashCommands({hasDatabases, hasSyncedBlocks, nested: !!nested})
+          commands: getPageSlashCommands({hasDatabases, nested: !!nested})
         }),
-        ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
+        ...(nested
+          ? [SyncedBlockEdges.configure({...nested, onBlockDrop: moveBlocksIntoSyncedBlock})]
+          : []),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,
@@ -173,7 +174,7 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested, hasSyncedBlocks}),
+        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),
         Placeholder.configure({

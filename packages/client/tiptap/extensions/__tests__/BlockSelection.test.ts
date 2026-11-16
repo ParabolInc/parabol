@@ -3,7 +3,7 @@ import {Editor, Extension, type JSONContent} from '@tiptap/core'
 import Collaboration from '@tiptap/extension-collaboration'
 import {isNodeRangeSelection} from '@tiptap/extension-node-range'
 import {NodeSelection, PluginKey, TextSelection} from '@tiptap/pm/state'
-import Suggestion from '@tiptap/suggestion'
+import Suggestion, {type SuggestionOptions} from '@tiptap/suggestion'
 import * as Y from 'yjs'
 import type Atmosphere from '../../../Atmosphere'
 import {TiptapLinkExtension} from '../../../components/TipTapEditor/TiptapLinkExtension'
@@ -18,7 +18,11 @@ import {
   seed,
   toggle
 } from '../../blockMove/__tests__/blockMoveTestHelpers'
-import {posInText, textsIn} from '../../blockSelection/__tests__/blockSelectionTestHelpers'
+import {
+  posInText,
+  table2x2,
+  textsIn
+} from '../../blockSelection/__tests__/blockSelectionTestHelpers'
 import {getSelectedBlockRange, selectBlockRange} from '../../blockSelection/blockSelectionState'
 import {getBlockUnitAt, normalizeBlockRange} from '../../blockSelection/blockUnits'
 import {BlockSelection} from '../BlockSelection'
@@ -105,6 +109,33 @@ const blockTexts = (editor: Editor) => {
   return texts
 }
 
+const makeEditorWithOpenMenu = (priority: number, render: SuggestionOptions['render']) => {
+  const pluginKey = new PluginKey(`testSuggestion${priority}`)
+  const TestSuggestion = Extension.create({
+    name: `testSuggestion${priority}`,
+    priority,
+    addProseMirrorPlugins() {
+      return [
+        Suggestion({editor: this.editor, char: '/', pluginKey, items: () => ['Text'], render})
+      ]
+    }
+  })
+  const editor = track(
+    new Editor({
+      element: document.createElement('div'),
+      extensions: [...pageExtensions, TestSuggestion],
+      content: {type: 'doc', content: [h(1, 'Title'), p('alpha'), {type: 'paragraph'}]}
+    })
+  )
+  editor.commands.setTextSelection(editor.state.doc.content.size - 1)
+  editor.commands.insertContent('/')
+  expect(pluginKey.getState(editor.state).active).toBe(true)
+  return editor
+}
+
+const setLineEdge = (editor: Editor, isOnEdge: boolean) =>
+  jest.spyOn(editor.view, 'endOfTextblock').mockReturnValue(isOnEdge)
+
 afterEach(() => {
   editors.forEach((editor) => {
     if (!editor.isDestroyed) editor.destroy()
@@ -190,40 +221,15 @@ describe('Escape', () => {
   ])('Escape in %s closes the menu and selects nothing', (_name, priority) => {
     const escapes: string[] = []
     let exits = 0
-    const pluginKey = new PluginKey(`testSuggestion${priority}`)
-    const TestSuggestion = Extension.create({
-      name: `testSuggestion${priority}`,
-      priority,
-      addProseMirrorPlugins() {
-        return [
-          Suggestion({
-            editor: this.editor,
-            char: '/',
-            pluginKey,
-            items: () => ['Text'],
-            render: () => ({
-              onKeyDown: ({event}) => {
-                escapes.push(event.key)
-                return true
-              },
-              onExit: () => {
-                exits++
-              }
-            })
-          })
-        ]
+    const editor = makeEditorWithOpenMenu(priority, () => ({
+      onKeyDown: ({event}) => {
+        escapes.push(event.key)
+        return true
+      },
+      onExit: () => {
+        exits++
       }
-    })
-    const editor = track(
-      new Editor({
-        element: document.createElement('div'),
-        extensions: [...pageExtensions, TestSuggestion],
-        content: {type: 'doc', content: [h(1, 'Title'), p('alpha'), {type: 'paragraph'}]}
-      })
-    )
-    editor.commands.setTextSelection(editor.state.doc.content.size - 1)
-    editor.commands.insertContent('/')
-    expect(pluginKey.getState(editor.state).active).toBe(true)
+    }))
     press(editor, 'Escape')
     expect(escapes).toEqual(['Escape'])
     expect(exits).toBe(1)
@@ -272,6 +278,62 @@ describe('Shift+Arrow keys', () => {
     selectTexts(editor, 'two')
     press(editor, 'ArrowDown', {shift: true})
     expect(selectedTexts(editor)).toEqual(['onetwo', 'gamma'])
+  })
+
+  test.each([
+    ['ArrowDown', 'last line', ['beta', 'gamma']],
+    ['ArrowUp', 'top line', ['alpha', 'beta']]
+  ])('Shift+%s on the %s selects the block and its neighbor', (key, _line, expected) => {
+    const editor = makeEditor(p('alpha'), p('beta'), p('gamma'))
+    caretIn(editor, 'beta', 2)
+    setLineEdge(editor, true)
+    expect(press(editor, key, {shift: true}).defaultPrevented).toBe(true)
+    expect(selectedTexts(editor)).toEqual(expected)
+  })
+
+  test('Shift+ArrowUp in the first block never selects the title', () => {
+    const editor = makeEditor(p('alpha'), p('beta'))
+    caretIn(editor, 'alpha')
+    setLineEdge(editor, true)
+    press(editor, 'ArrowUp', {shift: true})
+    expect(selectedTexts(editor)).toEqual(['alpha'])
+  })
+
+  test('Shift+ArrowDown inside a block leaves the text selection to the browser', () => {
+    const editor = makeEditor(p('alpha'), p('beta'))
+    caretIn(editor, 'alpha', 2)
+    setLineEdge(editor, false)
+    expect(press(editor, 'ArrowDown', {shift: true}).defaultPrevented).toBe(false)
+    expect(getSelectedBlockRange(editor.state)).toBeNull()
+  })
+
+  test('a text selection across blocks takes those blocks and the next one', () => {
+    const editor = makeEditor(p('alpha'), p('beta'), p('gamma'))
+    editor.commands.setTextSelection({
+      from: posInText(editor, 'alpha') + 1,
+      to: posInText(editor, 'beta') + 1
+    })
+    setLineEdge(editor, false)
+    press(editor, 'ArrowDown', {shift: true})
+    expect(selectedTexts(editor)).toEqual(['alpha', 'beta', 'gamma'])
+  })
+
+  test.each([
+    ['the title', () => makeEditor(p('alpha')), 'Title'],
+    ['a table cell', () => makeEditor(table2x2(), p('alpha')), 'c1']
+  ])('Shift+ArrowDown in %s selects no blocks', (_where, make, text) => {
+    const editor = make()
+    caretIn(editor, text)
+    setLineEdge(editor, true)
+    press(editor, 'ArrowDown', {shift: true})
+    expect(getSelectedBlockRange(editor.state)).toBeNull()
+  })
+
+  test('Shift+ArrowUp with a menu open selects no blocks', () => {
+    const editor = makeEditorWithOpenMenu(200, () => ({}))
+    setLineEdge(editor, true)
+    press(editor, 'ArrowUp', {shift: true})
+    expect(getSelectedBlockRange(editor.state)).toBeNull()
   })
 })
 

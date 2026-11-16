@@ -47,10 +47,7 @@ const h = (level: number, text: string): JSONContent => ({
 
 let editor: Editor | undefined
 const makeEditor = (...blocks: JSONContent[]) => makeEditorWith({isNested: false}, ...blocks)
-const makeEditorWith = (
-  {isNested, hasSyncedBlocks}: {isNested: boolean; hasSyncedBlocks?: boolean},
-  ...blocks: JSONContent[]
-) => {
+const makeEditorWith = ({isNested}: {isNested: boolean}, ...blocks: JSONContent[]) => {
   const activeEditor = new Editor({
     element: document.createElement('div'),
     extensions: [
@@ -64,8 +61,7 @@ const makeEditorWith = (
       PageDragHandle.configure({
         atmosphere: mockAtmosphere,
         pageId: 'page:1',
-        isNested,
-        hasSyncedBlocks
+        isNested
       })
     ],
     content: {type: 'doc', content: [h(1, 'Title'), ...blocks]}
@@ -257,30 +253,26 @@ describe('the handle', () => {
   })
 
   test.each([
-    ['on a page', false, false, true, false],
-    ['on a page with synced blocks', false, true, true, true],
-    ['inside a synced block', true, true, false, false]
-  ])(
-    'the menu offers Turn into Page %s',
-    (_where, isNested, hasSyncedBlocks, canCreateSubPage, canCreateSyncedBlock) => {
-      mockPageViewerGrant = 'owner'
-      const activeEditor = makeEditorWith({isNested, hasSyncedBlocks}, p('word'))
-      const dragHandle = activeEditor.extensionManager.extensions.find(
-        ({name}) => name === 'dragHandle'
-      )
-      const pos = activeEditor.state.doc.child(0).nodeSize
-      dragHandle?.options.onNodeChange({
-        editor: activeEditor,
-        node: activeEditor.state.doc.nodeAt(pos),
-        pos
-      })
-      const handle = activeEditor.view.dom.parentElement!.querySelector('.drag-handle')!
-      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      expect(mockMenuProps.at(-1)).toMatchObject({canCreateSubPage, canCreateSyncedBlock})
-      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      mockPageViewerGrant = null
-    }
-  )
+    ['on a page', false, true],
+    ['inside a synced block', true, false]
+  ])('the menu offers Turn into Page %s', (_where, isNested, canCreateSubPage) => {
+    mockPageViewerGrant = 'owner'
+    const activeEditor = makeEditorWith({isNested}, p('word'))
+    const dragHandle = activeEditor.extensionManager.extensions.find(
+      ({name}) => name === 'dragHandle'
+    )
+    const pos = activeEditor.state.doc.child(0).nodeSize
+    dragHandle?.options.onNodeChange({
+      editor: activeEditor,
+      node: activeEditor.state.doc.nodeAt(pos),
+      pos
+    })
+    const handle = activeEditor.view.dom.parentElement!.querySelector('.drag-handle')!
+    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+    expect(mockMenuProps.at(-1)).toMatchObject({canCreateSubPage})
+    handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+    mockPageViewerGrant = null
+  })
 
   test('a refused title drag reaches no later dragstart listener', () => {
     const activeEditor = makeEditor(p('word'))
@@ -552,6 +544,33 @@ describe('many blocks', () => {
       dropAt(activeEditor, blockAt(activeEditor, 'four').to)
       expect(texts(activeEditor)).toEqual(['four', 'one', 'two', 'three', 'five'])
       expect(selectedTexts(activeEditor)).toEqual(['one', 'two', 'three'])
+    })
+
+    test('dropped on the page around a synced block, a selection from inside it lands nothing', () => {
+      const host = makeEditor(p('host'))
+      const block = makeEditorWith({isNested: true}, p('one'), p('two'))
+      selectBlocks(block, 'one', 'two')
+      hover(block, 'one')
+      const data = new Map<string, string>()
+      const dataTransfer = {
+        clearData: () => data.clear(),
+        setDragImage: jest.fn(),
+        setData: (type: string, value: string) => data.set(type, value),
+        getData: (type: string) => data.get(type) ?? '',
+        files: [],
+        types: []
+      }
+      const dragstart = new Event('dragstart', {cancelable: true})
+      Object.assign(dragstart, {dataTransfer})
+      handleOf(block).dispatchEvent(dragstart)
+      jest
+        .spyOn(host.view, 'posAtCoords')
+        .mockReturnValue({pos: blockAt(host, 'host').to, inside: -1})
+      const drop = new Event('drop', {bubbles: true, cancelable: true})
+      Object.assign(drop, {clientX: 0, clientY: 0, dataTransfer})
+      host.view.dom.dispatchEvent(drop)
+      expect(texts(host)).toEqual(['host'])
+      host.destroy()
     })
 
     test('reorders list items inside their list', () => {

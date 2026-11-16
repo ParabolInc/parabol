@@ -923,37 +923,50 @@ describe('page section after sharing', () => {
   })
 })
 
-describe('restoring a synced block', () => {
-  test('refuses to restore a block while its page is in Trash', async () => {
-    const {userId, cookie} = await signUp()
+const EXPORT_TO_CONFLUENCE = `
+  mutation ExportSyncedBlock($pageId: ID!, $teamId: ID!) {
+    exportPagesToConfluence(
+      pageId: $pageId
+      teamId: $teamId
+      includeSubPages: false
+      cloudId: "cloud"
+      spaceId: "space"
+      spaceName: "Space"
+    ) {
+      pageExportId
+    }
+  }
+`
+
+describe('a synced block on its own', () => {
+  let user: Awaited<ReturnType<typeof signUp>>
+  beforeAll(async () => {
+    user = await signUp()
+  })
+
+  test('restores only after the page it came from is restored', async () => {
+    const {userId, cookie} = user
     const {originalHost, block} = await seedSyncedBlock(userId)
+    await seedDoc(originalHost, [paragraph('Host')])
+    await pg.updateTable('Page').set({title: 'Escalation'}).where('id', '=', block).execute()
     expect((await archive(cookie, block, 'archive')).errors).toBeUndefined()
     expect((await archive(cookie, originalHost, 'archive')).errors).toBeUndefined()
-    const res = await archive(cookie, block, 'restore')
-    expect(res.errors?.[0]).toMatchObject({
+    const refused = await archive(cookie, block, 'restore')
+    expect(refused.errors?.[0]).toMatchObject({
       message: 'Restore the page this block came from first',
       extensions: {code: 'CONFLICT'}
     })
-    expect(await pageRow(block)).toMatchObject({parentPageId: originalHost})
     expect((await pageRow(block))?.deletedAt).not.toBeNull()
-  })
-
-  test('restoring the page and then the block puts it back on that page', async () => {
-    const {userId, cookie} = await signUp()
-    const {originalHost, block} = await seedSyncedBlock(userId)
-    await seedDoc(originalHost, [paragraph('Host')])
-    await archive(cookie, block, 'archive')
-    await archive(cookie, originalHost, 'archive')
     expect((await archive(cookie, originalHost, 'restore')).errors).toBeUndefined()
-    const res = await archive(cookie, block, 'restore')
-    expect(res.errors).toBeUndefined()
+    expect((await archive(cookie, block, 'restore')).errors).toBeUndefined()
     expect(await pageRow(block)).toMatchObject({parentPageId: originalHost, deletedAt: null})
     const doc = await waitForDoc(originalHost, hasLink)
     expect(JSON.stringify(doc)).toContain('"synced":true')
+    expect(JSON.stringify(doc)).not.toContain('Escalation')
   })
 
   test('an ordinary sub-page whose parent is in Trash still restores to the top level', async () => {
-    const {userId, cookie} = await signUp()
+    const {userId, cookie} = user
     const parent = await makePage(userId)
     const child = await makePage(userId, parent)
     await pg
@@ -964,5 +977,23 @@ describe('restoring a synced block', () => {
     const res = await archive(cookie, child, 'restore')
     expect(res.errors).toBeUndefined()
     expect(await pageRow(child)).toMatchObject({parentPageId: null, deletedAt: null})
+  })
+
+  test('cannot be exported to Confluence by itself', async () => {
+    const {userId, cookie, orgId, teamId} = user
+    await pg
+      .insertInto('FeatureFlagOwner')
+      .values({featureName: 'ConfluenceExport', orgId})
+      .execute()
+    const {block} = await seedSyncedBlock(userId)
+    const res = await sendPublic({
+      query: EXPORT_TO_CONFLUENCE,
+      variables: {pageId: CipherId.toClient(block, 'page'), teamId},
+      cookie
+    })
+    expect(res.errors?.[0]).toMatchObject({
+      message: 'Export a page this synced block is on instead',
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   })
 })

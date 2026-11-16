@@ -49,18 +49,20 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     })
   }
 
-  const requestedRole: PageRoleEnum = role ?? 'viewer'
+  const requestedRole: PageRoleEnum = page.isSyncedBlock ? 'viewer' : role
 
   await pg
     .insertInto('PageAccessRequest')
     .values({
       pageId: dbPageId,
       userId: viewerId,
-      role,
+      role: requestedRole,
       reason: reason?.trim() || null
     })
     .onConflict((oc) =>
-      oc.columns(['userId', 'pageId']).doUpdateSet({createdAt: sql`CURRENT_TIMESTAMP`})
+      oc
+        .columns(['userId', 'pageId'])
+        .doUpdateSet({createdAt: sql`CURRENT_TIMESTAMP`, role: requestedRole})
     )
     .execute()
 
@@ -93,7 +95,7 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     reason,
     pageName: page.isSyncedBlock ? page.title || '<Untitled>' : (page.title ?? 'Untitled'),
     pageLink,
-    role,
+    role: requestedRole,
     isSyncedBlock: page.isSyncedBlock
   })
   const ownerUsers = await dataLoader.get('users').loadMany(owners.map(({userId}) => userId))

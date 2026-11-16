@@ -331,23 +331,17 @@ describe('convertTipTapToConfluenceStorage', () => {
       expect(degraded.find(({blockType}) => blockType === 'pageLinkBlock')).toBeUndefined()
     })
 
-    it("skips a block the exporter can't open", () => {
-      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
-        ...ctx,
-        resolveSyncedBlock: () => null
-      })
-      expect(xhtml).not.toContain('Call on-call first')
+    it.each([
+      ['a block that does not resolve', {...ctx, resolveSyncedBlock: () => null}],
+      ['every block when there is no resolver', ctx]
+    ])('skips %s', (_case, conversionCtx) => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), conversionCtx)
       expect(xhtml).not.toContain('/pages/9')
       expect(degraded).toContainEqual({
         blockType: 'syncedBlock',
         count: 1,
-        treatment: "skipped — the exporter can't open this synced block"
+        treatment: 'skipped — not available to this export'
       })
-    })
-
-    it('skips every block when there is no resolver', () => {
-      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), ctx)
-      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'syncedBlock', count: 1}))
     })
 
     const linkTo = (pageCode: number) => ({

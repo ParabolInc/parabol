@@ -1,6 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
 import {Fragment} from '@tiptap/pm/model'
-import {type EditorState, Selection, type Transaction} from '@tiptap/pm/state'
+import {type EditorState, Selection} from '@tiptap/pm/state'
 import {type BlockRange, isUnitParent} from '../../blockSelection/blockUnits'
 import {toSingleLine} from './turnBlockInto'
 
@@ -13,10 +13,7 @@ const holdsPageLink = (units: Fragment) => {
   return found
 }
 
-export const turnRangeIntoSyncedBlock = (
-  state: EditorState,
-  range: BlockRange
-): Transaction | null => {
+export const turnRangeIntoSyncedBlock = (state: EditorState, range: BlockRange) => {
   const {doc, schema, tr} = state
   const titleSize = doc.firstChild?.nodeSize ?? 0
   if (range.from < titleSize || range.to <= range.from) return null
@@ -59,5 +56,5 @@ export const turnRangeIntoSyncedBlock = (
   const $afterLink = tr.doc.resolve(from + (listBefore[0]?.nodeSize ?? 0) + link.nodeSize)
   const caret = Selection.findFrom($afterLink, 1, true) ?? Selection.findFrom($afterLink, -1, true)
   if (caret) tr.setSelection(caret)
-  return tr
+  return {tr, link}
 }

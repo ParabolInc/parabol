@@ -14,6 +14,7 @@ import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
 import {SyncedBlockView} from '../SyncedBlockView'
 import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
+import {focusSyncedBlockOnMount} from '../syncedBlockFocus'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
@@ -25,7 +26,18 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
 }))
 let mockNestedEditor: Editor | null = null
 let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
+let mockPlacementsChange = () => {}
+const mockFetchQuery = jest.fn((..._args: unknown[]) => ({subscribe: jest.fn()}))
+jest.mock('relay-runtime', () => ({
+  ...jest.requireActual('relay-runtime'),
+  fetchQuery: (...args: unknown[]) => mockFetchQuery(...args)
+}))
 const hostRef: {current: Editor | null} = {current: null}
+let mockDragViewer: Record<string, unknown> | null = null
+jest.mock('react-relay', () => ({
+  ...jest.requireActual('react-relay'),
+  useClientQuery: () => ({viewer: mockDragViewer})
+}))
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
 }))
@@ -58,8 +70,15 @@ jest.mock('react-router', () => ({
 jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))
 jest.mock('../useMountNearViewport', () => ({useMountNearViewport: () => true}))
 jest.mock('../SyncedBlockContent', () => ({
-  SyncedBlockContent: ({onChromeChange}: {onChromeChange: (chrome: unknown) => void}) => {
+  SyncedBlockContent: ({
+    onChromeChange,
+    onPlacementsChange
+  }: {
+    onChromeChange: (chrome: unknown) => void
+    onPlacementsChange: () => void
+  }) => {
     const {useEffect} = jest.requireActual<typeof import('react')>('react')
+    mockPlacementsChange = onPlacementsChange
     useEffect(() => {
       if (mockChromeState === 'none') return
       onChromeChange({editor: mockNestedEditor, isViewOnly: mockChromeState === 'viewOnly'})
@@ -121,6 +140,7 @@ afterEach(() => {
   container.remove()
   mockNestedEditor = null
   mockChromeState = 'editable'
+  mockDragViewer = null
 })
 
 const text = () => container.textContent ?? ''
@@ -313,7 +333,7 @@ test('a viewer sees no placeholder in an empty block', () => {
 
 const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 
-const mountView = (link = syncedLink) => {
+const mountView = (link = syncedLink, {isJustMade = false, isHostFocused = false} = {}) => {
   const host = new Editor({
     element: document.createElement('div'),
     extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
@@ -321,9 +341,12 @@ const mountView = (link = syncedLink) => {
   })
   const linkPos = findLinkPositions(host)[0]!
   hostRef.current = host
+  host.isFocused = isHostFocused
   mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
+  const node = host.state.doc.nodeAt(linkPos)!
+  if (isJustMade) focusSyncedBlockOnMount(node)
   const props = {
-    node: host.state.doc.nodeAt(linkPos)!,
+    node,
     editor: host,
     getPos: () => findLinkPositions(host)[0]
   } as unknown as NodeViewProps
@@ -359,6 +382,9 @@ test('keeps the bar while the places menu is open', async () => {
   await flushTimers()
   expect(copyButton()).toBeUndefined()
   expect(text()).toContain('Escalation path')
+  mockFetchQuery.mockClear()
+  act(() => mockPlacementsChange())
+  expect(mockFetchQuery).not.toHaveBeenCalled()
   outside.remove()
 })
 
@@ -379,12 +405,46 @@ const pressKey = (input: HTMLInputElement, key: string) =>
     input.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles: true, cancelable: true}))
   })
 
+const nestedCaret = () => {
+  const {$from} = mockNestedEditor!.state.selection
+  return {text: $from.parent.textContent, offset: $from.parentOffset}
+}
+
+test.each([
+  ['a block just made takes the caret once its editor is ready', true, true, 29],
+  ['a block just made leaves the caret alone once the user moved on', true, false, 0],
+  ['a block that was already on the page leaves the caret alone', false, true, 0]
+])('%s', (_name, isJustMade, isHostFocused, offset) => {
+  mountView(syncedLink, {isJustMade, isHostFocused})
+  expect(nestedCaret().offset).toBe(offset)
+})
+
 const mountFocusedView = (link = syncedLink) => {
   const host = mountView(link)
   const wrapper = container.querySelector<HTMLElement>('[data-synced-block]')!
   act(() => wrapper.focus())
   return Object.assign(wrapper, {host})
 }
+
+test('a placements change asks the server for the places while the places menu stays open', async () => {
+  mountFocusedView()
+  const placesButton = Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Also on 1 page'
+  )!
+  act(() => {
+    placesButton.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
+  act(() => mockPlacementsChange())
+  await flushTimers()
+  expect(mockFetchQuery).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    {pageId: 'page:7'},
+    {fetchPolicy: 'network-only'}
+  )
+  expect(document.body.querySelector('[role="menu"]')).not.toBeNull()
+  expect(copyButton()).toBeDefined()
+})
 
 test('clicking the name opens the rename input with the name selected', () => {
   mountFocusedView()
@@ -823,4 +883,51 @@ test.each([
   await flushTimers()
   await flushFrame()
   expect(focusSpy).toHaveBeenCalled()
+})
+
+test.each([
+  [
+    'a block drag carrying a page',
+    {draggingBlocksChildPageIds: ['page:9']},
+    'read-write',
+    'No pages in synced blocks'
+  ],
+  ['a block drag onto a view-only block', {}, 'readonly', 'View only'],
+  [
+    'a block drag carrying a copy of the block',
+    {draggingBlocksSyncedBlockIds: ['page:7']},
+    'read-write',
+    'Inside itself'
+  ],
+  [
+    'a block drag from inside the block',
+    {draggingBlocksSourcePageId: 'page:7', draggingBlocksChildPageIds: ['page:9']},
+    'read-write',
+    null
+  ],
+  [
+    'a drag of a page',
+    {draggingBlocksSourcePageId: null, draggingPageId: 'page:9'},
+    'read-write',
+    'No pages in synced blocks'
+  ],
+  [
+    'a drag of the block itself',
+    {draggingBlocksSourcePageId: null, draggingPageId: 'page:7'},
+    'read-write',
+    'Inside itself'
+  ]
+] as const)('%s marks the block content for the drop hint', (_label, drag, scope, refusal) => {
+  mockDragViewer = {draggingBlocksSourcePageId: 'page:1', ...drag}
+  mountBlock(scope)
+  const content = container.querySelector('[data-synced-editor]')!
+  expect(content.getAttribute('data-drop-refused')).toBe(refusal)
+  expect(content.getAttribute('data-drop-title')).toBe(refusal && 'Escalation path')
+})
+
+test('a host drop on the frame around a refusing block is left to the page', () => {
+  mockDragViewer = {draggingBlocksSourcePageId: 'page:1', draggingBlocksChildPageIds: ['page:9']}
+  mountView()
+  const frame = container.querySelector('[data-synced-block]')!
+  expect(frame.closest('[data-drop-in], [data-drop-refused]')).toBeNull()
 })

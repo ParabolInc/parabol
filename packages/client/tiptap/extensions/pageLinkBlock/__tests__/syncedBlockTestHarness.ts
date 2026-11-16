@@ -2,7 +2,7 @@ import {type AnyExtension, Editor, Extension, type JSONContent} from '@tiptap/co
 import {Document} from '@tiptap/extension-document'
 import StarterKit from '@tiptap/starter-kit'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
-import {SyncedBlockEdges} from '../SyncedBlockEdges'
+import {SyncedBlockEdges, type SyncedBlockEdgesOptions} from '../SyncedBlockEdges'
 import {syncedBlockEntryPlugin} from '../syncedBlockFocus'
 
 const SyncedBlockEntry = Extension.create({
@@ -52,7 +52,10 @@ export const mountNested = (
   linkPos: number,
   contentLines: string[],
   extraExtensions: AnyExtension[] = [],
-  {named = true}: {named?: boolean} = {}
+  {
+    named = true,
+    onBlockDrop = async () => {}
+  }: Partial<Pick<SyncedBlockEdgesOptions, 'onBlockDrop'>> & {named?: boolean} = {}
 ) => {
   const link = host.state.doc.nodeAt(linkPos)!
   const nested = new Editor({
@@ -63,7 +66,8 @@ export const mountNested = (
       SyncedBlockEdges.configure({
         hostView: host.view,
         getPos: () => linkPos,
-        getSize: () => link.nodeSize
+        getSize: () => link.nodeSize,
+        onBlockDrop
       }),
       ...extraExtensions
     ],

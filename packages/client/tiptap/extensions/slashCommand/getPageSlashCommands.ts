@@ -18,7 +18,7 @@ const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
   Embed: true,
   'Link to page': true,
   'Create page': true,
-  'Synced block': false,
+  'Synced block': true,
   Database: false,
   Insights: true,
   Image: true,
@@ -27,14 +27,13 @@ const PAGE_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
 
 export const getPageSlashCommands = (options: {
   hasDatabases: boolean
-  hasSyncedBlocks: boolean
   nested: boolean
 }): Record<CommandTitle, boolean> => {
-  const {hasDatabases, hasSyncedBlocks, nested} = options
+  const {hasDatabases, nested} = options
   return {
     ...PAGE_SLASH_COMMANDS,
     'Create page': !nested,
-    'Synced block': hasSyncedBlocks && !nested,
+    'Synced block': !nested,
     Database: hasDatabases && !nested
   }
 }

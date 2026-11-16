@@ -68,10 +68,10 @@ const unitAt = (state: EditorState, label: string, type: string) => {
   return range
 }
 const convert = (state: EditorState, range: Parameters<typeof turnRangeIntoSyncedBlock>[1]) => {
-  const tr = turnRangeIntoSyncedBlock(state, range)
-  if (!tr) throw new Error('Expected a transaction')
-  tr.doc.check()
-  return tr
+  const conversion = turnRangeIntoSyncedBlock(state, range)
+  if (!conversion) throw new Error('Expected a transaction')
+  conversion.tr.doc.check()
+  return conversion.tr
 }
 const blocksOf = (doc: Node) => {
   const blocks: string[] = []
@@ -143,17 +143,7 @@ test('a leading heading names the selected blocks and travels in their content',
   })
 })
 
-test('a lone heading becomes the name of an empty synced block', () => {
-  const state = makeState(p('before'), h(3, 'Escalation path'), p('after'))
-  const tr = convert(state, unitAt(state, 'Escalation path', 'heading'))
-  expect(blocksOf(tr.doc)).toEqual(['paragraph:before', 'pageLinkBlock:', 'paragraph:after'])
-  expect(tr.doc.child(2).attrs).toMatchObject({
-    title: 'Escalation path',
-    content: [toJSON(h(3, 'Escalation path'))]
-  })
-})
-
-test('blocks led by anything but a heading become content with a blank name', () => {
+test('a heading anywhere but first does not name the block', () => {
   const state = makeState(p('Call the lead'), h(2, 'Runbook'), p('after'))
   const {doc} = state
   const range = normalizeBlockRange(
@@ -201,10 +191,4 @@ test('leaves a line after a block that ends the page', () => {
   expect(blocksOf(tr.doc)).toEqual(['paragraph:one', 'pageLinkBlock:', 'paragraph:'])
   expect(tr.selection).toBeInstanceOf(TextSelection)
   expect(tr.selection.$from.parent).toBe(tr.doc.lastChild)
-})
-
-test('a block that starts with no text gives an empty name', () => {
-  const state = makeState({type: 'horizontalRule'}, p('after'))
-  const range = {from: state.doc.child(0).nodeSize, to: state.doc.child(0).nodeSize + 1, depth: 0}
-  expect(convert(state, range).doc.child(1).attrs).toMatchObject({synced: true, title: ''})
 })

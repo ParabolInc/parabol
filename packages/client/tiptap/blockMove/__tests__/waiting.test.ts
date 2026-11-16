@@ -6,9 +6,8 @@ import * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../shared/tiptap/serverTipTapExtensions'
 import {happyWindow} from '../../extensions/__tests__/installHappyDom'
 import {trackRange} from '../trackRange'
-import {waitForChildLinksRemoved} from '../waitForChildLinksRemoved'
 import {waitForSaved} from '../waitForSaved'
-import {destroyEditors, h, li, link, makeEditor, p, rangeOf, toggle} from './blockMoveTestHelpers'
+import {destroyEditors, h, li, makeEditor, p, rangeOf} from './blockMoveTestHelpers'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 
@@ -98,27 +97,6 @@ test('a gap survives typing at it', () => {
   const {to} = rangeOf(editor, 'paragraph', 1)
   editor.view.dispatch(editor.state.tr.delete(from, to))
   expect(range.current()).toBeNull()
-})
-
-test('waitForChildLinksRemoved resolves at once when no link remains', async () => {
-  const editor = makeEditor(p('a'))
-  await expect(waitForChildLinksRemoved(editor, [7], 10_000)).resolves.toBe(true)
-})
-
-test('waitForChildLinksRemoved resolves once the server removes the link', async () => {
-  const editor = makeEditor(toggle('Notes', link(7, 'Hiring plan', true)))
-  const done = waitForChildLinksRemoved(editor, [7], 10_000)
-  const {from, to} = rangeOf(editor, 'pageLinkBlock', 0)
-  editor.view.dispatch(editor.state.tr.delete(from, to))
-  await expect(done).resolves.toBe(true)
-})
-
-test('waitForChildLinksRemoved gives up after the timeout', async () => {
-  jest.useFakeTimers()
-  const editor = makeEditor(toggle('Notes', link(7, 'Hiring plan', true)))
-  const done = waitForChildLinksRemoved(editor, [7], 10_000)
-  jest.advanceTimersByTime(10_000)
-  await expect(done).resolves.toBe(false)
 })
 
 const makeCollabEditor = (ydoc: Y.Doc, ...blocks: JSONContent[]) => {

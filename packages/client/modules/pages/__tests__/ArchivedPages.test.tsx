@@ -57,6 +57,13 @@ const runbook: MockNode = {
   parentPage: null
 }
 
+const makeSubPage = (deletedAt: string | null): MockNode => ({
+  id: 'page:3',
+  title: 'Retro notes',
+  isSyncedBlock: false,
+  parentPage: {title: 'Team space', deletedAt}
+})
+
 const makeBlock = (deletedAt: string | null): MockNode => ({
   id: 'page:2',
   title: 'Escalation path',
@@ -75,6 +82,13 @@ const render = (nodes: MockNode[]) => {
   )
 }
 
+const clickRestore = (label = 'Restore') => {
+  const restore = container.querySelector(`[aria-label="${label}"]`)!
+  act(() => {
+    restore.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+  })
+}
+
 test('lists synced blocks under their own heading', () => {
   render([makeBlock(null), runbook])
   const text = container.textContent!
@@ -83,39 +97,35 @@ test('lists synced blocks under their own heading', () => {
   expect(text.indexOf('Escalation path')).toBeGreaterThan(text.indexOf('Synced blocks'))
 })
 
-test('names the page each block came from', () => {
-  render([makeBlock(null)])
-  expect(container.textContent).toContain('From Incident response runbook')
-})
-
 test("a block whose page is in Trash can't be restored yet", () => {
   render([makeBlock('2026-11-15T00:00:00Z')])
-  const restore = container.querySelector('[aria-label="Restore Incident response runbook first"]')!
-  expect(restore).not.toBeNull()
-  act(() => {
-    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-  })
+  clickRestore('Restore Incident response runbook first')
   expect(mockExecute).not.toHaveBeenCalled()
+})
+
+test('a sub-page whose parent is in Trash still restores', () => {
+  render([makeSubPage('2026-11-15T00:00:00Z')])
+  clickRestore()
+  expect(mockExecute).toHaveBeenCalledWith(
+    expect.objectContaining({variables: {pageId: 'page:3', action: 'restore'}})
+  )
 })
 
 test('a block whose page is live restores on click', () => {
   render([makeBlock(null)])
-  const restore = container.querySelector('[aria-label="Restore"]')!
-  act(() => {
-    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-  })
+  expect(container.textContent).toContain('From Incident response runbook')
+  clickRestore()
   expect(mockExecute).toHaveBeenCalledWith(
     expect.objectContaining({variables: {pageId: 'page:2', action: 'restore'}})
   )
 })
 
-test('a refused restore says why', () => {
+test('a refused restore says why, a successful one stays quiet', () => {
   render([makeBlock(null)])
-  const restore = container.querySelector('[aria-label="Restore"]')!
-  act(() => {
-    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-  })
+  clickRestore()
   const [{onCompleted}] = mockExecute.mock.calls[0]
+  onCompleted({}, null)
+  expect(mockEmit).not.toHaveBeenCalled()
   onCompleted({}, [{message: 'Restore the page this block came from first'}])
   expect(mockEmit).toHaveBeenCalledWith(
     'addSnackbar',
@@ -124,20 +134,4 @@ test('a refused restore says why', () => {
       message: 'Restore the page this block came from first'
     })
   )
-})
-
-test('a restore that works shows no snackbar', () => {
-  render([makeBlock(null)])
-  const restore = container.querySelector('[aria-label="Restore"]')!
-  act(() => {
-    restore.querySelector('svg')!.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-  })
-  const [{onCompleted}] = mockExecute.mock.calls[0]
-  onCompleted({}, null)
-  expect(mockEmit).not.toHaveBeenCalled()
-})
-
-test('shows no heading when Trash holds no blocks', () => {
-  render([runbook])
-  expect(container.textContent).not.toContain('Synced blocks')
 })

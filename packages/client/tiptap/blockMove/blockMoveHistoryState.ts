@@ -1,12 +1,13 @@
 import type {Editor, JSONContent} from '@tiptap/core'
 import type Atmosphere from '../../Atmosphere'
+import type {Direction} from './blockMoveUndoStack'
 
-export type PendingRedo = {cancelled: boolean}
+export type PendingStep = {direction: Direction; cancelled: boolean}
 
 export type BlockMoveHistoryStorage = {
   atmosphere: Atmosphere
   queue: Promise<void>
-  pendingRedo: PendingRedo | null
+  pendingStep: PendingStep | null
 }
 
 declare module '@tiptap/core' {
@@ -24,4 +25,26 @@ export const enqueue = (editor: Editor, task: () => Promise<void>) => {
     console.error(error)
   })
   return storage.queue
+}
+
+// A step pressed the other way while this one is pending cancels it, or reverses it once it can no longer be stopped
+export const enqueueStep = (
+  editor: Editor,
+  direction: Direction,
+  step: (pending: PendingStep) => Promise<boolean>
+) => {
+  const storage = editor.storage.blockMoveHistory
+  const pending: PendingStep = {direction, cancelled: false}
+  storage.pendingStep = pending
+  return enqueue(editor, async () => {
+    let reversible = false
+    try {
+      reversible = await step(pending)
+    } finally {
+      if (storage.pendingStep === pending) storage.pendingStep = null
+    }
+    if (!reversible || !pending.cancelled || editor.isDestroyed) return
+    if (direction === 'undo') editor.commands.redo()
+    else editor.commands.undo()
+  })
 }

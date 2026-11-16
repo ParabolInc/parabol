@@ -11,17 +11,9 @@ const allCommands = (slashCommands as unknown as readonly SlashCommandGroup[]).f
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 
-const enabledTitles = (options: {hasSyncedBlocks: boolean; nested: boolean}) => {
-  const commands = getPageSlashCommands({hasDatabases: false, ...options})
-  return allCommands
-    .map((command) => command.title)
-    .filter((title) => commands[title as keyof typeof commands])
-}
-
-test('offers Synced block only when the flag is on and outside a synced block', () => {
-  expect(enabledTitles({hasSyncedBlocks: true, nested: false})).toContain('Synced block')
-  expect(enabledTitles({hasSyncedBlocks: false, nested: false})).not.toContain('Synced block')
-  expect(enabledTitles({hasSyncedBlocks: true, nested: true})).not.toContain('Synced block')
+test('offers Synced block only outside a synced block', () => {
+  expect(getPageSlashCommands({hasDatabases: false, nested: false})['Synced block']).toBe(true)
+  expect(getPageSlashCommands({hasDatabases: false, nested: true})['Synced block']).toBe(false)
 })
 
 test('Synced block inserts a canonical synced sentinel link', () => {
