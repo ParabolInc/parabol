@@ -261,6 +261,19 @@ describe('the handle', () => {
       expect(anchorRect(activeEditor, tablePos)).toMatchObject({top: 0, height: 24})
     })
 
+    test.each([
+      ['a quote', {type: 'blockquote', content: [p('Said once')]}],
+      ['a code block', {type: 'codeBlock', content: [{type: 'text', text: 'const a = 1'}]}],
+      ['a callout', {type: 'callout', content: [p('Heads up')]}]
+    ])('%s, which is its box top', (_case, block) => {
+      const activeEditor = makeEditor(block)
+      textRectAt({'Said once': 17, 'const a': 17, 'Heads up': 17})
+      const pos = activeEditor.state.doc.child(0).nodeSize
+      const box = activeEditor.view.nodeDOM(pos) as HTMLElement
+      box.getBoundingClientRect = () => new happyWindow.DOMRect(0, 0, 600, 80)
+      expect(anchorRect(activeEditor, pos)).toMatchObject({top: 0, height: 24})
+    })
+
     test('an image, which is its top', () => {
       const activeEditor = makeEditor({type: 'imageBlock', attrs: {src: 'https://a.co/i.png'}})
       const imagePos = positionOf(activeEditor, 'imageBlock')

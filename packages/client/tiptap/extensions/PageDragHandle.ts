@@ -45,8 +45,20 @@ const queryNode = graphql`
 
 // Approximates a text line so the handle sits at the top of a block without one
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
-// Boxes whose first text is not their top line anchor to the box top
-const TOP_ANCHORED_BLOCKS = new Set(['embedBlock', 'imageBlock', 'table'])
+// Blocks drawn as a box anchor to the box's top edge rather than their first line
+const TOP_ANCHORED_BLOCKS = new Set([
+  'blockquote',
+  'callout',
+  'codeBlock',
+  'database',
+  'embedBlock',
+  'fileBlock',
+  'imageBlock',
+  'insightsBlock',
+  'responseBlock',
+  'table',
+  'taskBlock'
+])
 const SYNCED_BLOCK_HANDLE_OFFSET = 26
 const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 const BLOCK_DRAG_TEXT = '__dummy__'
