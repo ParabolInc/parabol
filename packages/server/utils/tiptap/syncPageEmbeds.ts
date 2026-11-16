@@ -1,8 +1,9 @@
 import * as Y from 'yjs'
 import {type EmbedMetadata, PROVIDER_ATTR_KEYS} from '../../../client/shared/embed/embedTypes'
+import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
 import {EMBED_CACHE_TTL_MS, resolveEmbed} from '../embed/resolveEmbed'
 import {Logger} from '../Logger'
-import {isParabolHostedAsset, PAGE_ASSET_ATTRS} from './pageAssetAttrs'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 
 const RESOLVED_METADATA_KEYS = PROVIDER_ATTR_KEYS.filter((key) => key !== 'fetchedAt')
 const EMBED_ASSET_ATTRS = PAGE_ASSET_ATTRS.get('embedBlock') ?? []

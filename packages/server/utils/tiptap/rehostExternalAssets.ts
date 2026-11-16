@@ -5,6 +5,7 @@ import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllN
 import appOrigin from '../../appOrigin'
 import AuthToken from '../../database/types/AuthToken'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
+import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
 import {hostUserAsset} from '../../graphql/public/mutations/helpers/hostUserAsset'
 import {validateScope} from '../../graphql/public/mutations/uploadUserAsset'
 import {CipherId} from '../CipherId'
@@ -75,8 +76,7 @@ const getSourceUrl = (src: string, pageCode: number) => {
     return null
   }
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
-  if (url.origin !== appOrigin) return url
-  if (!url.pathname.startsWith('/assets/')) return null
+  if (!isParabolHostedAsset(url)) return url.origin === appOrigin ? null : url
   return url.pathname.startsWith(`/assets/Page/${pageCode}/`) ? null : url
 }
 
