@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.36.0](https://github.com/ParabolInc/parabol/compare/v15.35.1...v15.36.0) (2026-11-16)
+
+
+### Added
+
+* **pages:** Move up and Move down in the block menu ([#14239](https://github.com/ParabolInc/parabol/issues/14239)) ([9a08ac9](https://github.com/ParabolInc/parabol/commit/9a08ac96a29aefdcf7f8b85360674397cb29b9e5))
+
+
+### Fixed
+
+* **pages:** keep a leading heading inside a new synced block ([#14243](https://github.com/ParabolInc/parabol/issues/14243)) ([fc91367](https://github.com/ParabolInc/parabol/commit/fc9136746f50b63f4e84def7128fb6cd79c413a4))
+* **pages:** line drag handles up with the top of each block ([#14240](https://github.com/ParabolInc/parabol/issues/14240)) ([68911df](https://github.com/ParabolInc/parabol/commit/68911df7e685d9bc125c3a68960ef315529cb328))
+* **pages:** shift-drag adds to the whole block selection ([#14242](https://github.com/ParabolInc/parabol/issues/14242)) ([6f0bf4c](https://github.com/ParabolInc/parabol/commit/6f0bf4c10e96632af341f1957a366a4cee215fa1))
+
 ## [15.35.1](https://github.com/ParabolInc/parabol/compare/v15.35.0...v15.35.1) (2026-11-16)
 
 
