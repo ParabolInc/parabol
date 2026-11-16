@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.36.2](https://github.com/ParabolInc/parabol/compare/v15.36.1...v15.36.2) (2026-11-16)
+
+
+### Fixed
+
+* **server:** stop caching presigned build redirects past credential expiry ([#14251](https://github.com/ParabolInc/parabol/issues/14251)) ([d257230](https://github.com/ParabolInc/parabol/commit/d2572303db08d7801883759b1e9bc7635d986735))
+
 ## [15.36.1](https://github.com/ParabolInc/parabol/compare/v15.36.0...v15.36.1) (2026-11-16)
 
 
