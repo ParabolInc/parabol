@@ -15,17 +15,18 @@ const EXPIRY_MARGIN_MS = 60_000
 // so a URL signed just before its credentials are replaced still works wherever it is cached
 const redirectToPresignedBuildFile = async (res: HttpResponse, partialPath: PartialPath) => {
   const manager = await getFileStoreManager()
-  const lifetimeSeconds = await manager.getPresignedUrlMaxLifetime()
+  let lifetimeSeconds = 0
   const cachedUrl = await redisStoreOrNetwork(
     `presignedBuildURL:${partialPath}`,
     async () => {
+      lifetimeSeconds = await manager.getPresignedUrlMaxLifetime()
       const presignedUrl: PresignedBuildUrl = {
         url: await manager.presignUrl(partialPath, lifetimeSeconds),
         expiresAt: Date.now() + lifetimeSeconds * 1000
       }
       return JSON.stringify(presignedUrl)
     },
-    (lifetimeSeconds * 1000) / 2
+    () => (lifetimeSeconds * 1000) / 2
   )
   const {url, expiresAt} = JSON.parse(cachedUrl) as PresignedBuildUrl
   const maxAge = Math.max(0, Math.floor((expiresAt - Date.now() - EXPIRY_MARGIN_MS) / 1000))
