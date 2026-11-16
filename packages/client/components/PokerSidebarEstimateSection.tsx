@@ -1,5 +1,6 @@
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {PokerSidebarEstimateSection_meeting$key} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
 import type useGotoStageId from '~/hooks/useGotoStageId'
@@ -11,6 +12,7 @@ import isTempId from '../utils/relay/isTempId'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
+import PokerSidebarStoryTitle from './PokerSidebarStoryTitle'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -120,8 +122,15 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <div className='h-full overflow-auto pb-2' ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {stageIds, title, subtitle, isActive, isNavigable, finalScores, taskId} =
-                    summary
+                  const {
+                    stageIds,
+                    title,
+                    integratedTask,
+                    isActive,
+                    isNavigable,
+                    finalScores,
+                    taskId
+                  } = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage =
@@ -154,16 +163,23 @@ const PokerSidebarEstimateSection = (props: Props) => {
                               isDisabled={!isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             >
-                              <>
-                                <div className='overflow-hidden text-ellipsis whitespace-pre text-sm [word-break:break-word]'>
-                                  {title!}
-                                </div>
-                                {subtitle && (
-                                  <div className='font-semibold text-[11px] text-fg-muted leading-3'>
-                                    {subtitle}
-                                  </div>
-                                )}
-                              </>
+                              <Suspense
+                                fallback={
+                                  <>
+                                    <div className='flex h-5 items-center'>
+                                      <div className='h-3 w-3/4 animate-pulse rounded-sm bg-surface-well' />
+                                    </div>
+                                    <div className='flex h-3 items-center'>
+                                      <div className='h-2 w-12 animate-pulse rounded-sm bg-surface-well' />
+                                    </div>
+                                  </>
+                                }
+                              >
+                                <PokerSidebarStoryTitle
+                                  title={title}
+                                  integratedTask={integratedTask}
+                                />
+                              </Suspense>
                             </MeetingSubnavItem>
                           </div>
                         )

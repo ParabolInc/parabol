@@ -8,7 +8,7 @@ type JoinHandlers = {onCompleted: (response: unknown) => void; onError: () => vo
 
 const mockEvents: string[] = []
 const mockJoin: {handlers?: JoinHandlers} = {}
-const mockFetch: {complete?: () => void} = {}
+const mockFetch: {next?: () => void; complete?: () => void} = {}
 function mockGetKey(name: string, variables: unknown) {
   return JSON.stringify({name, variables})
 }
@@ -45,8 +45,9 @@ jest.mock('../../mutations/JoinMeetingMutation', () => ({
 jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   fetchQuery: () => ({
-    subscribe: ({complete}: {complete: () => void}) => {
+    subscribe: ({next, complete}: {next: () => void; complete: () => void}) => {
       mockEvents.push('fetch')
+      mockFetch.next = next
       mockFetch.complete = complete
     }
   }),
@@ -146,4 +147,17 @@ test('leaving before the join lands hands over the held messages without fetchin
   root.unmount()
   await tick()
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold', 'release'])
+})
+
+test('the meeting loads from its first payload and holds subscription messages until the last', async () => {
+  const root = await renderJoinedMeeting()
+  mockJoin.handlers!.onCompleted(joined)
+  await tick()
+  await acknowledgeSubscription()
+  mockFetch.next!()
+  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load'])
+  mockFetch.next!()
+  mockFetch.complete!()
+  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load', 'release'])
+  root.unmount()
 })

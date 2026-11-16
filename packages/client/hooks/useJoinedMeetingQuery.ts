@@ -14,6 +14,8 @@ import useAtmosphere from './useAtmosphere'
 // The subscription's messages wait until that fetch is in the store, so none are missed or overwritten.
 // A reconnect makes the server acknowledge the subscription again, which fetches the meeting again.
 // A viewer the store already knows is in the meeting, like the one who just started it, subscribes while joining.
+// The meeting renders from the first payload: deferred fragments suspend until their own payloads arrive,
+// and subscription messages stay held until the last one.
 const useJoinedMeetingQuery = (meetingId: string | undefined) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
@@ -24,9 +26,16 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
     const subKey = Atmosphere.getKey(MeetingSubscription.key, variables)
     let isMounted = true
     const fetchMeeting = (releaseSubscription?: () => void) => {
+      let isLoaded = false
+      const loadFromStore = () => {
+        if (isLoaded || !isMounted) return
+        isLoaded = true
+        loadQuery(variables, {fetchPolicy: 'store-only'})
+      }
       fetchQuery<MeetingSelectorQuery>(atmosphere, meetingSelectorQuery, variables, {
         fetchPolicy: 'network-only'
       }).subscribe({
+        next: loadFromStore,
         complete: () => {
           addBreadcrumb(
             'operation',
@@ -34,7 +43,7 @@ const useJoinedMeetingQuery = (meetingId: string | undefined) => {
               ? 'MeetingSelectorQuery fetched, loaded from the store'
               : 'MeetingSelectorQuery fetched after leaving'
           )
-          if (isMounted) loadQuery(variables, {fetchPolicy: 'store-only'})
+          loadFromStore()
           releaseSubscription?.()
         },
         error: () => {

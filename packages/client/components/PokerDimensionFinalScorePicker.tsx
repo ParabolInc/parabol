@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {RefObject} from 'react'
+import {type RefObject, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
@@ -9,7 +9,7 @@ import {
   getClientIntegration,
   isRegisteredClientIntegration
 } from '../integrations/platform/registry'
-import EstimateFieldDropdown from './EstimateFieldDropdown'
+import EstimateFieldDropdown, {type ServiceFieldSummary} from './EstimateFieldDropdown'
 
 interface Props {
   canUpdate: boolean
@@ -19,18 +19,25 @@ interface Props {
   error?: string | null
   submitScore: () => void
   inputRef: RefObject<HTMLInputElement | null>
+  onServiceFieldChange: (serviceField: ServiceFieldSummary) => void
 }
 
 const PokerDimensionFinalScorePicker = (props: Props) => {
-  const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
+  const {
+    inputRef,
+    isFacilitator,
+    canUpdate,
+    error,
+    stageRef,
+    clearError,
+    submitScore,
+    onServiceFieldChange
+  } = props
   const stage = useFragment(
     graphql`
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
-        ...EstimateFieldDropdown_stage
+        ...EstimateFieldDropdown_stage @defer
         task {
-          integration {
-            __typename
-          }
           taskService
         }
       }
@@ -38,7 +45,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     stageRef
   )
 
-  const service = stage.task?.integration ? stage.task.taskService : null
+  const service = stage.task?.taskService ?? null
   const title =
     service && isRegisteredClientIntegration(service)
       ? getClientIntegration(service).title
@@ -77,20 +84,18 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
           </div>
         )}
         {title && (
-          <div className='flex items-center'>
-            {isDesktop ? (
-              <div className='flex px-2 font-semibold text-sm'>{`${title} Label: `}</div>
-            ) : (
-              <div className='flex pr-1 font-semibold text-sm'>Label:</div>
-            )}
-
+          <Suspense
+            fallback={<div className='h-3 w-32 animate-pulse rounded-sm bg-surface-well' />}
+          >
             <EstimateFieldDropdown
+              title={title}
               clearError={clearError}
               stageRef={stage}
               isFacilitator={isFacilitator}
               submitScore={submitScore}
+              onServiceFieldChange={onServiceFieldChange}
             />
-          </div>
+          </Suspense>
         )}
       </div>
     </div>

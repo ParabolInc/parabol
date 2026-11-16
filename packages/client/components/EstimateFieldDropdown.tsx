@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 import {ExpandMore} from '~/ui/icons'
 import type {EstimateFieldDropdown_stage$key} from '../__generated__/EstimateFieldDropdown_stage.graphql'
 import {cn} from '../ui/cn'
@@ -11,15 +13,22 @@ import EstimateFieldMenu from './EstimateFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
 import {resolveServiceFieldLabel} from './serviceFieldLabel'
 
+export interface ServiceFieldSummary {
+  fieldId: string
+  type: string
+}
+
 interface Props {
+  title: string
   clearError: () => void
   isFacilitator: boolean
   stageRef: EstimateFieldDropdown_stage$key
   submitScore(): void
+  onServiceFieldChange: (serviceField: ServiceFieldSummary) => void
 }
 
 const EstimateFieldDropdown = (props: Props) => {
-  const {clearError, stageRef, isFacilitator, submitScore} = props
+  const {title, clearError, stageRef, isFacilitator, submitScore, onServiceFieldChange} = props
   const stage = useFragment(
     graphql`
       fragment EstimateFieldDropdown_stage on EstimateStage {
@@ -28,6 +37,7 @@ const EstimateFieldDropdown = (props: Props) => {
         serviceField {
           fieldId
           label
+          type
         }
         serviceFieldListing {
           targets
@@ -35,12 +45,22 @@ const EstimateFieldDropdown = (props: Props) => {
             fieldId
           }
         }
+        task {
+          integration {
+            __typename
+          }
+        }
       }
     `,
     stageRef
   )
-  const {finalScore, serviceField, serviceFieldListing} = stage
+  const {finalScore, serviceField, serviceFieldListing, task} = stage
   const [editModalConfig, setEditModalConfig] = useState<EditModalConfig | null>(null)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  useEffect(() => {
+    onServiceFieldChange(serviceField)
+  }, [serviceField])
+  if (!task?.integration) return null
   const label = resolveServiceFieldLabel(serviceField, serviceFieldListing, finalScore)
   // a label service renders a Menu, every other service a Select, which anchors on its own value
   const isSelect = isFacilitator && !serviceFieldListing.targets.includes('label')
@@ -60,17 +80,24 @@ const EstimateFieldDropdown = (props: Props) => {
     </PlainButton>
   )
 
-  if (!isFacilitator) return trigger
-
   return (
-    <>
-      <EstimateFieldMenu
-        stageRef={stage}
-        trigger={trigger}
-        onOpenChange={(isOpen) => isOpen && clearError()}
-        submitScore={submitScore}
-        onOpenEditModal={setEditModalConfig}
-      />
+    <div className='flex items-center'>
+      {isDesktop ? (
+        <div className='flex px-2 font-semibold text-sm'>{`${title} Label: `}</div>
+      ) : (
+        <div className='flex pr-1 font-semibold text-sm'>Label:</div>
+      )}
+      {isFacilitator ? (
+        <EstimateFieldMenu
+          stageRef={stage}
+          trigger={trigger}
+          onOpenChange={(isOpen) => isOpen && clearError()}
+          submitScore={submitScore}
+          onOpenEditModal={setEditModalConfig}
+        />
+      ) : (
+        trigger
+      )}
       {editModalConfig && (
         <EditVotingLabelTemplateModal
           isOpen
@@ -80,7 +107,7 @@ const EstimateFieldDropdown = (props: Props) => {
           placeholder={editModalConfig.placeholder}
         />
       )}
-    </>
+    </div>
   )
 }
 

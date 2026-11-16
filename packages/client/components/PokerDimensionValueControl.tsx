@@ -8,6 +8,7 @@ import type {PokerDimensionValueControl_stage$key} from '../__generated__/PokerD
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
+import type {ServiceFieldSummary} from './EstimateFieldDropdown'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScorePicker from './PokerDimensionFinalScorePicker'
 import StyledError from './StyledError'
@@ -24,6 +25,8 @@ interface Props {
   onError: (error: Error) => void
   onSubmitScore: () => void
   isStale: boolean
+  serviceFieldType: string | null
+  onServiceFieldChange: (serviceField: ServiceFieldSummary) => void
   isLocallyValidatedRef: RefObject<boolean>
   setCardScore: Dispatch<SetStateAction<string>>
   cardScore: string
@@ -39,6 +42,8 @@ const PokerDimensionValueControl = (props: Props) => {
     onCompleted,
     onError,
     isStale,
+    serviceFieldType,
+    onServiceFieldChange,
     isLocallyValidatedRef,
     setCardScore,
     cardScore
@@ -51,14 +56,9 @@ const PokerDimensionValueControl = (props: Props) => {
         meetingId
         teamId
         finalScore
-        serviceField {
-          type
-        }
         taskId
         task {
-          integration {
-            __typename
-          }
+          taskService
         }
         dimensionRef {
           name
@@ -73,9 +73,8 @@ const PokerDimensionValueControl = (props: Props) => {
     `,
     stageRef
   )
-  const {dimensionRef, serviceField, task} = stage
+  const {dimensionRef, task} = stage
   const finalScore = stage.finalScore || ''
-  const {type: serviceFieldType} = serviceField
   const {scale} = dimensionRef
   const {values: scaleValues} = scale
   const inputRef = useRef<HTMLInputElement>(null)
@@ -119,7 +118,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color
   const isFinal = !!finalScore && cardScore === finalScore
-  const hasIntegration = !!task?.integration?.__typename
+  const hasIntegration = !!task?.taskService
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
@@ -152,6 +151,7 @@ const PokerDimensionValueControl = (props: Props) => {
             clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
+            onServiceFieldChange={onServiceFieldChange}
           />
         )}
 
