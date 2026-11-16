@@ -6,11 +6,8 @@ export const useMountNearViewport = (ref: RefObject<HTMLElement | null>) => {
   const [shouldStayMounted, setShouldStayMounted] = useState(
     typeof IntersectionObserver === 'undefined'
   )
+  if (isPrinting && !shouldStayMounted) setShouldStayMounted(true)
   const isMounted = shouldStayMounted || isPrinting
-
-  useEffect(() => {
-    if (isPrinting) setShouldStayMounted(true)
-  }, [isPrinting])
 
   useEffect(() => {
     const el = ref.current

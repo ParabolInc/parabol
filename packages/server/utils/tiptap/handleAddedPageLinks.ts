@@ -90,6 +90,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         if (isSyncedBlock) node.setAttribute('title', '')
         rehostSeededAssets(newPage.id, seedContent, userId)
         await updateBacklinks(parentPageId, newPage.id)
+        if (isSyncedBlock) publishSyncedBlockPlacementsChanged(newPage.id)
       } else {
         // check for duplicates on the same page
         const existingNode = getPageLinks(e.target.doc, true).find(

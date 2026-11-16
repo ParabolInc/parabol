@@ -60,15 +60,14 @@ const popMoveStep = (editor: Editor, undoManager: Y.UndoManager, item: StackItem
 const startChildPageUndo = (
   editor: Editor,
   undoManager: Y.UndoManager,
-  item: StackItem | undefined,
+  moveItem: StackItem | undefined,
   meta: BlockMoveMeta
 ) => {
   undoneMoves.add(meta.blocks)
-  return enqueueStep(editor, 'undo', async (pending) => {
-    const result = await undoChildPageMove(editor, undoManager, item, meta, pending)
-    if (result === 'unchanged') undoneMoves.delete(meta.blocks)
-    return result === 'reversible'
-  })
+  const latestStepBefore = undoManager.undoStack.at(-1)
+  return enqueueStep(editor, 'undo', (pending) =>
+    undoChildPageMove(editor, {undoManager, moveItem, latestStepBefore, meta}, pending)
+  )
 }
 
 export const undoMoveStep = (
@@ -90,8 +89,8 @@ export const undoMoveStep = (
 }
 
 export const undoBlockMove = async (editor: Editor, meta: BlockMoveMeta) => {
-  if (editor.isDestroyed || undoneMoves.has(meta.blocks)) return
   const storage = editor.storage.blockMoveHistory
+  if (editor.isDestroyed || storage.pendingStep || undoneMoves.has(meta.blocks)) return
   const undoManager = getUndoManager(editor.state)
   const moveItem = undoManager?.undoStack.find((item) => getMoveMeta(item)?.blocks === meta.blocks)
   const latestMeta = getMoveMeta(moveItem) ?? meta

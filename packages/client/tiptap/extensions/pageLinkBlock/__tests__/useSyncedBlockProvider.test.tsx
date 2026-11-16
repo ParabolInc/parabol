@@ -297,11 +297,11 @@ test('the block hears when its placements change', () => {
       />
     )
   )
-  const stateless = (message: object) =>
-    act(() => providerFor(18).emit('stateless', {payload: JSON.stringify(message)}))
-  stateless({type: 'assetNotHosted', src: 'https://example.com/a.png'})
+  const stateless = (payload: string) => act(() => providerFor(18).emit('stateless', {payload}))
+  stateless('not json')
+  stateless(JSON.stringify({type: 'assetNotHosted', src: 'https://example.com/a.png'}))
   expect(onPlacementsChange).not.toHaveBeenCalled()
-  stateless({type: 'syncedBlockPlacementsChanged'})
+  stateless(JSON.stringify({type: 'syncedBlockPlacementsChanged'}))
   expect(onPlacementsChange).toHaveBeenCalledTimes(1)
 })
 

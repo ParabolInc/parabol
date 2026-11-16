@@ -23,8 +23,7 @@ const isVisibleToHostReaders = async (blockId: number, hostPageId: number) => {
 }
 
 const loadBlockBodies = async (pageCodes: number[], hostPageId: number, viewerId: string) => {
-  const pageCodeById = new Map(pageCodes.map((pageCode) => [CipherId.decrypt(pageCode), pageCode]))
-  const pageIds = [...pageCodeById.keys()]
+  const pageIds = pageCodes.map((pageCode) => CipherId.decrypt(pageCode))
   const [pages, roles] = await Promise.all([
     getKysely()
       .selectFrom('Page')
@@ -35,16 +34,15 @@ const loadBlockBodies = async (pageCodes: number[], hostPageId: number, viewerId
       .execute(),
     pageAccessByUserIdBatchFn(pageIds.map((pageId) => ({pageId, userId: viewerId})))
   ])
-  const openableIds = new Set(pageIds.filter((_pageId, index) => roles[index]))
+  const yDocById = new Map(pages.map(({id, yDoc}) => [id, yDoc]))
   const loaded = await Promise.all(
-    pages.map(async ({id, yDoc}) => {
-      if (!yDoc || !openableIds.has(id) || !(await isVisibleToHostReaders(id, hostPageId))) {
-        return null
-      }
+    pageIds.map(async (pageId, index) => {
+      const yDoc = yDocById.get(pageId)
+      if (!yDoc || !roles[index] || !(await isVisibleToHostReaders(pageId, hostPageId))) return null
       const doc = new Doc()
       applyUpdate(doc, yDoc)
       const body = getSyncedBlockBody(TiptapTransformer.fromYdoc(doc, 'default') as JSONContent)
-      return [pageCodeById.get(id)!, body] as const
+      return [pageCodes[index]!, body] as const
     })
   )
   return loaded.filter((entry) => entry !== null)

@@ -18,7 +18,7 @@ import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {dispatchBlockConversion} from './turnInto/dispatchBlockConversion'
-import {getSyncedBlockConversion} from './turnInto/getSyncedBlockConversion'
+import {getBlockRange, getSyncedBlockConversion} from './turnInto/getSyncedBlockConversion'
 import {TurnIntoMenu} from './turnInto/TurnIntoMenu'
 import {getTurnIntoTarget} from './turnInto/turnBlockInto'
 
@@ -59,13 +59,11 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   const showMoveTo = !isDocumentHeading && editor.isEditable
   const turnIntoCurrent = selection ? null : getTurnIntoTarget(editor.state.doc, pos)
 
-  const getBlockRange = (): BlockRange => ({
-    from: pos,
-    to: pos + node.nodeSize,
-    depth: editor.state.doc.resolve(pos).depth
-  })
-
-  const getSyncedBlockTransaction = () => getSyncedBlockConversion(editor, node, pos, !!selection)
+  const getSyncedBlockTransaction = () =>
+    getSyncedBlockConversion(
+      editor,
+      selection ? getSelectedBlockRange(editor.state) : getBlockRange(editor, node, pos)
+    )
   const showTurnIntoSyncedBlock =
     canCreateSubPage && !turnIntoCurrent && !!getSyncedBlockTransaction()
   const blocks = plural(selection?.count ?? 1, 'block')
@@ -109,7 +107,8 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleMoveTo = () => {
-    const range = selection?.range ?? getBlockRange()
+    const range = selection?.range ?? getBlockRange(editor, node, pos)
+    if (!range) return
     const {top, left, width, height} = anchorElement.getBoundingClientRect()
     const anchorRect = {top, left, width, height}
     openMoveToPageMenu({editor, range, anchorRect, pageId, atmosphere})

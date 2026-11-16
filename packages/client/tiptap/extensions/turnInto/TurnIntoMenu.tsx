@@ -8,7 +8,7 @@ import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
 import {dispatchBlockConversion} from './dispatchBlockConversion'
-import {getSyncedBlockConversion} from './getSyncedBlockConversion'
+import {getBlockRange, getSyncedBlockConversion} from './getSyncedBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
 
@@ -31,7 +31,8 @@ export const TurnIntoMenu = (props: Props) => {
     ({target}) => target.type === current.type && target.level === current.level
   )
 
-  const getSyncedBlockTransaction = () => getSyncedBlockConversion(editor, node, pos, false)
+  const getSyncedBlockTransaction = () =>
+    getSyncedBlockConversion(editor, getBlockRange(editor, node, pos))
   const showSyncedBlock = canCreateSubPage && !!getSyncedBlockTransaction()
 
   const isStale = () => {

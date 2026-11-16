@@ -22,7 +22,7 @@ const rejectConnection = (message: string, reason: string) =>
   Object.assign(new Error(message), {reason})
 
 // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
-const getMeetingTeamId = (meetingId: string) =>
+export const getMeetingTeamId = (meetingId: string) =>
   redisStoreOrNetwork(
     `meetingTeamId:${meetingId}`,
     async () => {
@@ -38,12 +38,11 @@ const getMeetingTeamId = (meetingId: string) =>
     ms('3h')
   )
 
-export const isMeetingTeamMember = async (meetingId: string, userId: string) => {
-  const meetingTeamId = await getMeetingTeamId(meetingId)
+export const isActiveTeamMember = async (teamId: string, userId: string) => {
   const teamMember = await getKysely()
     .selectFrom('TeamMember')
     .select('id')
-    .where('teamId', '=', meetingTeamId)
+    .where('teamId', '=', teamId)
     .where('userId', '=', userId)
     .where('isNotRemoved', '=', true)
     .executeTakeFirst()
@@ -70,9 +69,10 @@ export const authenticateYjsConnection = async ({
     if (!userId) {
       throw rejectConnection(`Meeting awareness requires a userId`, 'Unauthorized')
     }
-    if (!(await isMeetingTeamMember(meetingId, userId))) {
+    const meetingTeamId = await getMeetingTeamId(meetingId)
+    if (!(await isActiveTeamMember(meetingTeamId, userId))) {
       throw rejectConnection(
-        `Meeting awareness requires being on the team: ${userId} ${meetingId}`,
+        `Meeting awareness requires being on the team: ${userId} ${meetingTeamId}`,
         'Unauthorized'
       )
     }

@@ -30,4 +30,5 @@ test('names an unnamed synced block <Untitled> in the text and the email body', 
   const {body, html} = pageAccessRequestEmailCreator({...props, pageName: '', isSyncedBlock: true})
   expect(body).toContain('wants to view the synced block <Untitled>.')
   expect(html).toContain('<b>&lt;Untitled&gt;</b>')
+  expect(html).toContain('&lt;Untitled&gt;</td>')
 })

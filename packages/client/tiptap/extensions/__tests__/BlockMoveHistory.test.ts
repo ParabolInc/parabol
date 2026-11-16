@@ -147,14 +147,6 @@ afterAll(async () => {
   await happyWindow.happyDOM.close()
 })
 
-test('undo restores the source and removes the block from the target', async () => {
-  moveFirstParagraph(editor, targetFrag)
-  editor.commands.undo()
-  await flushPromises()
-  expect(paragraphTexts(editor)).toContain('moved me')
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
-})
-
 test('undo leaves a block someone edited on the target and says so', async () => {
   moveFirstParagraph(editor, targetFrag)
   editTargetBlock(1)
@@ -187,23 +179,6 @@ test('undo of a partly edited move says how many came back', async () => {
     })
   )
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('edited stays')]))
-})
-
-test('a clean undo shows no snackbar', async () => {
-  moveFirstParagraph(editor, targetFrag)
-  editor.commands.undo()
-  await flushPromises()
-  expect(atmosphere.eventEmitter.emit).not.toHaveBeenCalled()
-})
-
-test('redo moves the block again', async () => {
-  moveFirstParagraph(editor, targetFrag)
-  editor.commands.undo()
-  await flushPromises()
-  editor.commands.redo()
-  await flushPromises()
-  expect(paragraphTexts(editor)).not.toContain('moved me')
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me')]))
 })
 
 test('undo after redo takes the new copy back', async () => {
@@ -413,12 +388,13 @@ test('an undo that cannot put the block back leaves the copy on the target and n
 })
 
 describe('the keyboard', () => {
-  test('⌘Z right after a move restores here and removes from the target', async () => {
+  test('⌘Z right after a move restores here quietly and removes from the target, ⌘⇧Z moves it again', async () => {
     moveFirstParagraph(editor, targetFrag)
     pressMod(editor, 'z')
     await flushPromises()
     expect(paragraphTexts(editor)).toEqual(['moved me', 'stays'])
     expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+    expect(atmosphere.eventEmitter.emit).not.toHaveBeenCalled()
     pressMod(editor, 'z', true)
     await flushPromises()
     expect(paragraphTexts(editor)).toEqual(['stays'])

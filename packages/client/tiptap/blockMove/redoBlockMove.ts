@@ -65,7 +65,8 @@ const redoMove = async (
     undoneMoves.delete(meta.blocks)
     const movedMeta = {...meta, moved, restored: undefined}
     if (added) setMoveMeta(added, movedMeta)
-    else pushMoveStep(undoManager, movedMeta)
+    else if (meta.childPages) pushMoveStep(undoManager, movedMeta)
+    else return
     redone = true
   })
   if (typeof outcome === 'string' && !isCancelled()) report(outcome)

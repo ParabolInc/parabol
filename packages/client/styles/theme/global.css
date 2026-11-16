@@ -1385,6 +1385,14 @@
   transform: translateX(-11px);
 }
 
+.page-editor:has(.has-block-selection) .drag-handle::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 100%;
+  width: 12px;
+}
+
 /* If a page title is empty, always show it */
 /* If a top-level page block is empty, show when focused */
 /* For other editors, only show placeholder when the whole thing is empty */

@@ -1,7 +1,12 @@
 import {isNodeSelection, type NodeViewProps, NodeViewWrapper, useEditorState} from '@tiptap/react'
 import {type FocusEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {fetchQuery} from 'relay-runtime'
+import syncedBlockPlacesQuery, {
+  type SyncedBlockPlacesQuery
+} from '../../../__generated__/SyncedBlockPlacesQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
+import {GQLID} from '../../../utils/GQLID'
 import {copySyncedBlock} from './copySyncedBlock'
 import {getSyncedBlockEventTarget} from './getSyncedBlockEventTarget'
 import {markSyncedBlockPlacesStale} from './getSyncedBlockPlacesFetchPolicy'
@@ -43,7 +48,6 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const [openMenus, setOpenMenus] = useState(0)
   const [isRenaming, setIsRenaming] = useState(false)
   const [placesLabel, setPlacesLabel] = useState<string | null>(null)
-  const [placesVersion, setPlacesVersion] = useState(0)
   const canRenameRef = useRef(false)
   const isNodeSelected = useEditorState({
     editor,
@@ -75,8 +79,13 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   }, [])
   const handlePlacementsChange = useCallback(() => {
     markSyncedBlockPlacesStale(pageCode)
-    setPlacesVersion((version) => version + 1)
-  }, [pageCode])
+    fetchQuery<SyncedBlockPlacesQuery>(
+      atmosphere,
+      syncedBlockPlacesQuery,
+      {pageId: GQLID.toKey(pageCode, 'page')},
+      {fetchPolicy: 'network-only'}
+    ).subscribe({})
+  }, [atmosphere, pageCode])
   useEffect(() => {
     const wrapper = wrapperRef.current
     if (!wrapper) return
@@ -122,7 +131,6 @@ export const SyncedBlockView = (props: NodeViewProps) => {
           isViewOnly={isViewOnly}
           places={
             <SyncedBlockPlacesRoot
-              key={placesVersion}
               pageCode={pageCode}
               currentPageId={editor.storage.pageLinkBlock.pageId}
               isViewOnly={isViewOnly}

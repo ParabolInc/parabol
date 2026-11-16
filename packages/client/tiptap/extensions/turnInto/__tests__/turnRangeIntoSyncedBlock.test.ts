@@ -143,6 +143,21 @@ test('a leading heading names the selected blocks and travels in their content',
   })
 })
 
+test('a heading anywhere but first does not name the block', () => {
+  const state = makeState(p('Call the lead'), h(2, 'Runbook'), p('after'))
+  const {doc} = state
+  const range = normalizeBlockRange(
+    doc,
+    findPos(doc, 'Call the lead', 'paragraph') + 1,
+    findPos(doc, 'Runbook', 'heading') + 1
+  )
+  const tr = convert(state, range!)
+  expect(tr.doc.child(1).attrs).toMatchObject({
+    title: '',
+    content: [p('Call the lead'), h(2, 'Runbook')].map(toJSON)
+  })
+})
+
 test('refuses blocks that hold a page link', () => {
   const state = makeState(details('Notes', p('see'), pageLink(5, 'Other')), p('after'))
   expect(turnRangeIntoSyncedBlock(state, unitAt(state, 'Notes', 'details'))).toBeNull()

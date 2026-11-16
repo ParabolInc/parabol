@@ -12,6 +12,8 @@ import getRedis from '../../getRedis'
 import {createNewPage} from '../../tiptap/createNewPage'
 import {loadSyncedBlockBodies} from '../loadSyncedBlockBodies'
 
+jest.mock('../types', () => ({...jest.requireActual('../types'), MAX_SYNCED_BLOCK_EXPANSIONS: 3}))
+
 const pg = getKysely()
 const userId = `syncedBodies|${generateUID()}`
 const strangerId = `syncedBodiesStranger|${generateUID()}`
@@ -151,5 +153,15 @@ describe('loadSyncedBlockBodies', () => {
     await updatePageAccessTable(pg, host.id, {skipDeleteOld: true})
     const bodies = await loadSyncedBlockBodies(hostDoc(block.id) as JSONContent, host.id, userId)
     expect(bodies.has(CipherId.encrypt(block.id))).toBe(true)
+  }, 30_000)
+
+  it('loads the first blocks in document order up to the expansion cap', async () => {
+    const host = await createNewPage({userId, content: toContent(heading('Host'))})
+    const blocks = await Promise.all(
+      ['A', 'B', 'C', 'D'].map((name) => makeBlock(host.id, heading(name), para(name)))
+    )
+    const blockIds = blocks.map(({id}) => id).reverse()
+    const bodies = await loadSyncedBlockBodies(hostDoc(...blockIds) as JSONContent, host.id, userId)
+    expect([...bodies.keys()]).toEqual(blockIds.slice(0, 3).map((id) => CipherId.encrypt(id)))
   }, 30_000)
 })

@@ -8,7 +8,6 @@ import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {PageLinkBlockBase} from '../../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {syncedBlockPlaceholderText} from '../../../pagePlaceholderText'
-import {getSyncedBlockPlacesFetchPolicy} from '../getSyncedBlockPlacesFetchPolicy'
 import {SYNCED_BLOCK_DIALOG_EVENT} from '../openSyncedBlockDialog'
 import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockCaption} from '../SyncedBlockCaption'
@@ -27,7 +26,11 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
 let mockNestedEditor: Editor | null = null
 let mockChromeState: 'editable' | 'viewOnly' | 'none' = 'editable'
 let mockPlacementsChange = () => {}
-let mockPlacesMounts = 0
+const mockFetchQuery = jest.fn((..._args: unknown[]) => ({subscribe: jest.fn()}))
+jest.mock('relay-runtime', () => ({
+  ...jest.requireActual('relay-runtime'),
+  fetchQuery: (...args: unknown[]) => mockFetchQuery(...args)
+}))
 const hostRef: {current: Editor | null} = {current: null}
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
@@ -79,10 +82,6 @@ jest.mock('../SyncedBlockContent', () => ({
 }))
 jest.mock('../SyncedBlockPlacesRoot', () => ({
   SyncedBlockPlacesRoot: ({onOpenChange}: {onOpenChange: (open: boolean) => void}) => {
-    const {useEffect} = jest.requireActual<typeof import('react')>('react')
-    useEffect(() => {
-      mockPlacesMounts++
-    }, [])
     const {Menu} = jest.requireActual<typeof import('../../../../ui/Menu/Menu')>(
       '../../../../ui/Menu/Menu'
     )
@@ -400,13 +399,24 @@ const mountFocusedView = (link = syncedLink) => {
   return Object.assign(wrapper, {host})
 }
 
-test('a placements change asks the server for the places the bar shows', () => {
+test('a placements change asks the server for the places while the places menu stays open', async () => {
   mountFocusedView()
-  const mounts = mockPlacesMounts
-  getSyncedBlockPlacesFetchPolicy(7, Date.now())
+  const placesButton = Array.from(container.querySelectorAll('button')).find(
+    (button) => button.textContent === 'Also on 1 page'
+  )!
+  act(() => {
+    placesButton.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+  })
   act(() => mockPlacementsChange())
-  expect(mockPlacesMounts).toBe(mounts + 1)
-  expect(getSyncedBlockPlacesFetchPolicy(7, Date.now())).toBe('store-and-network')
+  await flushTimers()
+  expect(mockFetchQuery).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    {pageId: 'page:7'},
+    {fetchPolicy: 'network-only'}
+  )
+  expect(document.body.querySelector('[role="menu"]')).not.toBeNull()
+  expect(copyButton()).toBeDefined()
 })
 
 test('clicking the name opens the rename input with the name selected', () => {

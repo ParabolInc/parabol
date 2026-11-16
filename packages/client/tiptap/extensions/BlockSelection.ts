@@ -5,8 +5,10 @@ import {
   Plugin,
   PluginKey,
   type Selection,
+  TextSelection,
   type Transaction
 } from '@tiptap/pm/state'
+import {isInTable} from '@tiptap/pm/tables'
 import {Decoration, DecorationSet, type EditorView} from '@tiptap/pm/view'
 import {ySyncPluginKey} from '@tiptap/y-tiptap'
 import {
@@ -22,7 +24,7 @@ import {
   isBlockRun,
   isRunCollapsedOntoNeighbor
 } from '../blockSelection/blockSelectionState'
-import type {BlockRange} from '../blockSelection/blockUnits'
+import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 
 const isActiveSuggestion = (pluginState: unknown) =>
   typeof pluginState === 'object' &&
@@ -133,14 +135,38 @@ const selectAdjacentBlock =
     return true
   }
 
-const extendSelection =
-  (dir: 1 | -1): BlockCommand =>
-  ({editor}) => {
+const isHeadOnEdgeLine = (view: EditorView, dir: 1 | -1) => {
+  const {state} = view
+  const {selection} = state
+  if (!(selection instanceof TextSelection)) return true
+  const caretState = selection.empty
+    ? state
+    : state.apply(state.tr.setSelection(TextSelection.create(state.doc, selection.head)))
+  return view.endOfTextblock(dir > 0 ? 'down' : 'up', caretState)
+}
+
+const promoteToBlockSelection = (view: EditorView, dir: 1 | -1) => {
+  const {state} = view
+  if (isSuggestionOpen(state) || isInTable(state)) return null
+  const range = getBlockRangeAtCaret(state)
+  if (!range) return null
+  if (countBlocks(state.doc, range) < 2 && !isHeadOnEdgeLine(view, dir)) return null
+  const current = createBlockSelection(state.doc, range, dir < 0)
+  return extendBlockSelection(state.doc, current, dir) ?? current
+}
+
+const extendOrSelectBlocks =
+  (dir: 1 | -1) =>
+  ({editor}: {editor: Editor}) => {
+    if (!editor.isEditable) return false
     const {state, view} = editor
-    if (!isNodeRangeSelection(state.selection)) return false
-    const next = extendBlockSelection(state.doc, state.selection, dir)
+    const {selection} = state
+    const isBlockSelection = isNodeRangeSelection(selection)
+    const next = isBlockSelection
+      ? extendBlockSelection(state.doc, selection, dir)
+      : promoteToBlockSelection(view, dir)
     if (next) view.dispatch(state.tr.setSelection(next).scrollIntoView())
-    return true
+    return isBlockSelection || !!next
   }
 
 export const duplicateBlocks: BlockCommand = ({editor, range}) => {
@@ -175,8 +201,8 @@ export const BlockSelection = Extension.create({
       'Mod-d': onBlockSelection(duplicateBlocks),
       ArrowUp: onBlockSelection(selectAdjacentBlock(-1)),
       ArrowDown: onBlockSelection(selectAdjacentBlock(1)),
-      'Shift-ArrowUp': onBlockSelection(extendSelection(-1)),
-      'Shift-ArrowDown': onBlockSelection(extendSelection(1))
+      'Shift-ArrowUp': extendOrSelectBlocks(-1),
+      'Shift-ArrowDown': extendOrSelectBlocks(1)
     }
   },
 

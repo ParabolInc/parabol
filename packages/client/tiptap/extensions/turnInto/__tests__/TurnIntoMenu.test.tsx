@@ -27,6 +27,10 @@ const ul = (...items: string[]): Json => ({
   content: items.map((text) => ({type: 'listItem', content: [p(text)]}))
 })
 const image: Json = {type: 'imageBlock', attrs: {src: 'https://example.com/a.png'}}
+const table: Json = {
+  type: 'table',
+  content: [{type: 'tableRow', content: [{type: 'tableCell', content: [p('cell')]}]}]
+}
 const TITLE_SIZE = 7
 const ROW_TITLES = [
   'Text',
@@ -231,6 +235,13 @@ describe('what the menu offers', () => {
     const rows = submenuRows().map((row) => row.getAttribute('role'))
     expect(rows).toEqual([...ROW_TITLES.map(() => 'menuitemradio'), 'separator', 'menuitem'])
     expect(submenuRows().at(-1)?.textContent).toBe('Synced block')
+  })
+
+  test('a paragraph inside a table cell has no Synced block row', async () => {
+    await openMenu([table], {pos: TITLE_SIZE + 3})
+    expect(hasItem('Duplicate block')).toBe(true)
+    expect(hasItem('Turn into')).toBe(false)
+    expect(hasItem('Synced block')).toBe(false)
   })
 
   test('an image keeps the menu it has today', async () => {

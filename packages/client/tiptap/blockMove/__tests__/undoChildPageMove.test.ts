@@ -187,22 +187,32 @@ test('a lone child page moves, and ⌘Z and ⌘⇧Z take it back and forth', asy
   expect([sourceBlocks(), read(targetFrag)]).toEqual(movedBack)
 })
 
-test('⌘Z puts the paragraph and the page back, ⌘⇧Z moves them again, and ⌘Z brings them back again', async () => {
+test('⌘Z puts the blocks back, ⌘⇧Z moves them again, and a ⌘Z during that redo undoes it once it lands', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
   await moveParagraphAndChildPage()
+  const pages = () => [sourceBlocks(), read(targetFrag)]
+  const movedBack = [
+    normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]),
+    [h(1, 'Q3')]
+  ]
   editor.commands.undo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+  expect(pages()).toEqual(movedBack)
   expect(emit).not.toHaveBeenCalled()
   editor.commands.redo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me'), hiringPlan]))
+  expect(pages()).toEqual([
+    [h(1, 'Title'), p('stays')],
+    normalize([h(1, 'Q3'), p('moved me'), hiringPlan])
+  ])
   editor.commands.undo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+  expect(pages()).toEqual(movedBack)
+  onServerMove = () => editor.commands.undo()
+  editor.commands.redo()
+  await flushPromises()
+  await flushPromises()
+  expect(pages()).toEqual(movedBack)
 })
 
 test('the snackbar Undo does the same as ⌘Z', async () => {
@@ -228,17 +238,21 @@ test('a toggle holding the page comes back whole and leaves the target', async (
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
 })
 
-test('an undo refuses a page the viewer no longer owns and changes nothing', async () => {
+test('an undo refuses a page the viewer no longer owns, changes nothing, and the next ⌘Z undoes the edit before it', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
+  editor.commands.insertContentAt(editor.state.doc.content.size, p('typed first'))
   await moveParagraphAndChildPage()
   mockRoles.set(7, 'editor')
   editor.commands.undo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays'), p('typed first')]))
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me'), hiringPlan]))
   expect(lastSnack().message).toBe(
     'Couldn’t undo: only its owner can move Hiring plan. Nothing changed.'
   )
+  editor.commands.undo()
+  await flushPromises()
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
 })
 
 test('an undo refuses a page someone moved off the target since and changes nothing', async () => {
@@ -317,29 +331,20 @@ test('a redo keeps the blocks here when the server never takes the page off this
   }
 })
 
-test('⌘⇧Z while an undo is on its way cancels it, and ⌘Z still undoes the move after', async () => {
+test('⌘⇧Z cancels an undo on its way, or redoes the move once the blocks are back', async () => {
   startPages(p('moved me'), hiringPlan, p('stays'))
   await moveParagraphAndChildPage()
   editor.commands.undo()
   editor.commands.redo()
   await flushPromises()
   expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
+  onServerMove = () => editor.commands.redo()
   editor.commands.undo()
   await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
-})
-
-test('⌘Z pressed once a redo has handed the page over undoes that redo when it lands', async () => {
-  startPages(p('moved me'), hiringPlan, p('stays'))
-  await moveParagraphAndChildPage()
-  editor.commands.undo()
   await flushPromises()
-  onServerMove = () => editor.commands.undo()
-  editor.commands.redo()
-  await flushPromises()
-  await flushPromises()
-  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('moved me'), hiringPlan, p('stays')]))
-  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3')]))
+  expect(onServerMove).toBeUndefined()
+  expect(sourceBlocks()).toEqual(normalize([h(1, 'Title'), p('stays')]))
+  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('moved me'), hiringPlan]))
 })
 
 test('an ordinary undo keeps a block on the target that someone added a sub-page to', async () => {

@@ -14,7 +14,13 @@ interface Props {
   onPlacementsChange: () => void
 }
 
-const PLACEMENTS_CHANGED = JSON.stringify({type: 'syncedBlockPlacementsChanged'})
+const isPlacementsChange = (payload: string) => {
+  try {
+    return JSON.parse(payload)?.type === 'syncedBlockPlacementsChanged'
+  } catch {
+    return false
+  }
+}
 
 export const SyncedBlockContent = (props: Props) => {
   const {
@@ -32,7 +38,7 @@ export const SyncedBlockContent = (props: Props) => {
   }, [status, onStatusChange])
   useEffect(() => {
     const handleStateless = ({payload}: {payload: string}) => {
-      if (payload === PLACEMENTS_CHANGED) onPlacementsChange()
+      if (isPlacementsChange(payload)) onPlacementsChange()
     }
     provider.on('stateless', handleStateless)
     return () => {

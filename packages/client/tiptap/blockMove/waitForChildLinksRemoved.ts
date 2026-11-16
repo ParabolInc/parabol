@@ -21,9 +21,7 @@ export const waitForChildLinksRemoved = (
     () => !hasChildLinks(editor, codes),
     (onChange) => {
       editor.on('transaction', onChange)
-      return () => {
-        editor.off('transaction', onChange)
-      }
+      return () => editor.off('transaction', onChange)
     },
     timeoutMs
   )

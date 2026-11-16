@@ -10,9 +10,7 @@ export const waitForSaved = (provider: SavingProvider, timeoutMs: number) =>
     () => !provider.hasUnsyncedChanges,
     (onChange) => {
       provider.on('unsyncedChanges', onChange)
-      return () => {
-        provider.off('unsyncedChanges', onChange)
-      }
+      return () => provider.off('unsyncedChanges', onChange)
     },
     timeoutMs
   )

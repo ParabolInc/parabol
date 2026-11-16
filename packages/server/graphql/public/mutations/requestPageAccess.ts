@@ -60,7 +60,9 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
       reason: reason?.trim() || null
     })
     .onConflict((oc) =>
-      oc.columns(['userId', 'pageId']).doUpdateSet({createdAt: sql`CURRENT_TIMESTAMP`})
+      oc
+        .columns(['userId', 'pageId'])
+        .doUpdateSet({createdAt: sql`CURRENT_TIMESTAMP`, role: requestedRole})
     )
     .execute()
 

@@ -12,7 +12,7 @@ import {Logger} from '../Logger'
 import publish from '../publish'
 import type {PublicPageNotificationPayload} from '../publishPageNotification'
 import RedisInstance from '../RedisInstance'
-import {isMeetingTeamMember} from './authenticateYjsConnection'
+import {getMeetingTeamId, isActiveTeamMember} from './authenticateYjsConnection'
 import {getPageConnectionAccess} from './getPageConnectionAccess'
 import {isYjsSessionLive} from './isYjsSessionLive'
 import {YJS_REVALIDATE_CHANNEL, type YjsRevalidation} from './revalidateYjsConnections'
@@ -82,14 +82,21 @@ export class RedisPublisher implements Extension {
         }
       )
     })
-    const meetingChecks = Array.from(this.meetingDocuments, ([meetingId, document]) =>
+    await Promise.all([...pageChecks, ...this.revalidateMeetings(userIds)])
+  }
+
+  private revalidateMeetings(userIds: string[]) {
+    if (userIds.length === 0) return []
+    return Array.from(this.meetingDocuments, ([meetingId, document]) =>
       closeRevokedConnections(
         document,
         (connection) => userIds.includes(connection.context.userId),
-        (connection) => isMeetingTeamMember(meetingId, connection.context.userId).catch(() => false)
+        (connection) =>
+          getMeetingTeamId(meetingId)
+            .then((teamId) => isActiveTeamMember(teamId, connection.context.userId))
+            .catch(() => false)
       )
     )
-    await Promise.all([...pageChecks, ...meetingChecks])
   }
 
   private getChannelName(documentName: string) {

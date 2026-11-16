@@ -4,6 +4,7 @@ import type Atmosphere from '../../Atmosphere'
 import {getBlockSelectionAround} from '../blockSelection/blockSelectionState'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import type {BlockDragSession} from './blockDragSession'
+import {isChildPageNode} from './getMovableBlocks'
 import {prepareBlockMove} from './prepareBlockMove'
 
 export type BlockDragPlan =
@@ -35,8 +36,7 @@ export const prepareBlockDrag = ({
   const {doc} = editor.state
   const around = getBlockSelectionAround(editor.state, pos, pos + node.nodeSize)
   const isSelectedAlone = around?.from === pos && around.to === pos + node.nodeSize
-  const isCanonicalLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical
-  if (isCanonicalLink && (!around || isSelectedAlone)) return {kind: 'page'}
+  if (isChildPageNode(node) && (!around || isSelectedAlone)) return {kind: 'page'}
   const range: BlockRange = around ?? {
     from: pos,
     to: pos + node.nodeSize,
