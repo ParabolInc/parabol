@@ -34,6 +34,34 @@ export async function sendIntranet(req: {query: string; variables?: Record<strin
   return response.json()
 }
 
+const PROCESS_RECURRENCE = `
+  mutation {
+    processRecurrence {
+      ... on ProcessRecurrenceSuccess {
+        meetingsStarted
+        meetingsEnded
+      }
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+    }
+  }
+`
+
+// processRecurrence refuses to run while another call holds its lock, e.g. one from a suite running in parallel
+export const processRecurrence = async () => {
+  let res = await sendIntranet({query: PROCESS_RECURRENCE})
+  while (
+    res.data?.processRecurrence?.error?.message === 'Mutation processRecurrence is already running'
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    res = await sendIntranet({query: PROCESS_RECURRENCE})
+  }
+  return res
+}
+
 const persistFunction = (text: string) => {
   const hasher = crypto.createHash('md5')
   hasher.update(text)
@@ -438,4 +466,36 @@ export const truncatePGTables = async (...tables: string[]) => {
       return sql`TRUNCATE TABLE ${sql.table(table)} CASCADE`.execute(pg)
     })
   )
+}
+
+export const subscribeToNotifications = async (token: string, query: string) => {
+  const docId = await persistQuery(query)
+  const socket = new WebSocket(`${WS_PROTOCOL}://${HOST}/`, 'graphql-transport-ws')
+  const messages: {type: string; payload?: any}[] = []
+  const listeners: (() => void)[] = []
+  socket.addEventListener('message', (event) => {
+    messages.push(JSON.parse(String(event.data)))
+    listeners.forEach((listener) => listener())
+  })
+  const waitFor = (predicate: (message: {type: string; payload?: any}) => boolean) =>
+    new Promise<{type: string; payload?: any}>((resolve) => {
+      const check = () => {
+        const message = messages.find(predicate)
+        if (message) resolve(message)
+      }
+      listeners.push(check)
+      check()
+    })
+  await new Promise((resolve) => socket.addEventListener('open', resolve))
+  socket.send(JSON.stringify({type: 'connection_init', payload: {token}}))
+  await waitFor(({type}) => type === 'connection_ack')
+  socket.send(
+    JSON.stringify({
+      id: '1',
+      type: 'subscribe',
+      payload: {query: '', docId, extensions: {ackId: 'listening'}}
+    })
+  )
+  await waitFor(({type, payload}) => type === 'ping' && payload?.ackId === 'listening')
+  return {socket, waitFor}
 }

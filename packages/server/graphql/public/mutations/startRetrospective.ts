@@ -10,6 +10,7 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import getValidPromptTemplateId from '../../mutations/helpers/getValidPromptTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
@@ -51,7 +52,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   } = meetingSettings as typeof meetingSettings & {
     meetingType: 'retrospective'
   }
-  const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
+  const selectedTemplateId = await getValidPromptTemplateId(
+    meetingSettings.selectedTemplateId,
+    meetingType,
+    dataLoader
+  )
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
 

@@ -377,6 +377,18 @@ test('startTeamPrompt records the template on a recurring series', async () => {
   expect(series.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
 })
 
+test('a recurring standup started on its first occurrence runs until the next one', async () => {
+  const {teamId, cookie} = await signUp()
+  const {meeting} = await startStandup({cookie}, teamId, immediateRrule())
+  const {scheduledEndTime} = await getKysely()
+    .selectFrom('NewMeeting')
+    .select('scheduledEndTime')
+    .where('id', '=', meeting.id)
+    .executeTakeFirstOrThrow()
+  // the rule recurs weekly, so the next occurrence is a week out
+  expect(scheduledEndTime).toBeAfter(dayjs().add(6, 'day').toDate())
+})
+
 test('a recurring standup inherits the series template and skips an inactive one', async () => {
   const pg = getKysely()
   const {userId, teamId, cookie} = await signUp()

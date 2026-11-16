@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import {rehostExternalAssets} from '../rehostExternalAssets'
+import {rehostExternalAssets, rehostSeededAssets} from '../rehostExternalAssets'
 
 const mockPageRoles = new Map<string, string>()
 const mockPublicRoles = new Map<number, string>()
@@ -312,5 +312,26 @@ test('skips assets already hosted in the page and server writes with no user', a
     context: {userId: INSERTER_ID}
   })
   await flush()
+  expect(mockCharges).toEqual([[INSERTER_ID, 5]])
+})
+
+test('hosts the images a seed carries, nested or not, on the quota of the user who seeded it', async () => {
+  const {frag} = makePage()
+  const hostedSrc = 'https://parabol.test/assets/Page/10/assets/uploaded.png'
+  frag.insert(0, [makeImage(EXTERNAL_SRC), makeImage(hostedSrc)])
+  rehostSeededAssets(
+    PAGE_ID,
+    [
+      {type: 'paragraph'},
+      {
+        type: 'bulletList',
+        content: [{type: 'listItem', content: [{type: 'imageBlock', attrs: {src: EXTERNAL_SRC}}]}]
+      },
+      {type: 'imageBlock', attrs: {src: hostedSrc}}
+    ],
+    INSERTER_ID
+  )
+  await flush()
+  expect(mockFetchedUrls).toEqual([EXTERNAL_SRC])
   expect(mockCharges).toEqual([[INSERTER_ID, 5]])
 })

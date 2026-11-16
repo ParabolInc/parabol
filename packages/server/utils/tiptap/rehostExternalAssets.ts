@@ -1,5 +1,7 @@
 import {type Connection, isTransactionOrigin} from '@hocuspocus/server'
+import type {JSONContent} from '@tiptap/core'
 import * as Y from 'yjs'
+import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllNodesAttributesByType'
 import appOrigin from '../../appOrigin'
 import AuthToken from '../../database/types/AuthToken'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
@@ -7,6 +9,7 @@ import {hostUserAsset} from '../../graphql/public/mutations/helpers/hostUserAsse
 import {validateScope} from '../../graphql/public/mutations/uploadUserAsset'
 import {CipherId} from '../CipherId'
 import isExpectedError from '../isExpectedError'
+import {Logger} from '../Logger'
 import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
@@ -115,6 +118,8 @@ const rehostAsset = (
       return
     } catch (error) {
       if (!isExpectedError(error)) logError(error as Error, {userId, extras: {pageId}})
+      else if (!connection)
+        Logger.warn(`Asset not copied into page ${pageId}: ${(error as Error).message}`)
     } finally {
       inFlight.delete(key)
     }
@@ -144,5 +149,18 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
     rehostAsset(pageId, src, sourceUrl, userId, connection)
+  })
+}
+
+export const rehostSeededAssets = (pageId: number, content: JSONContent[], userId: string) => {
+  const pageCode = CipherId.encrypt(pageId)
+  const embeds = [...EMBEDDABLE_NODE_NAMES].flatMap((nodeType) =>
+    getAllNodesAttributesByType<{src?: unknown}>({content}, nodeType)
+  )
+  embeds.forEach(({src}) => {
+    if (typeof src !== 'string') return
+    const sourceUrl = getSourceUrl(src, pageCode)
+    if (!sourceUrl) return
+    rehostAsset(pageId, src, sourceUrl, userId, undefined)
   })
 }

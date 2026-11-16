@@ -119,11 +119,21 @@ export interface PageAccessRequestProps {
   pageName: string | null
   title: string
   role: PageRoleEnum
+  isSyncedBlock: boolean
 }
 
 const PageAccessRequest = (props: PageAccessRequestProps) => {
-  const {requesterName, requesterEmail, requesterAvatar, reason, pageLink, pageName, title, role} =
-    props
+  const {
+    requesterName,
+    requesterEmail,
+    requesterAvatar,
+    reason,
+    pageLink,
+    pageName,
+    title,
+    role,
+    isSyncedBlock
+  } = props
   const pageAccess = pageRoles[role] || 'view'
 
   return (
@@ -133,7 +143,9 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
       <Body style={main}>
         <Container style={container}>
           <Section style={{marginBottom: '20px'}}>
-            <h1 style={emailHeadingStyle}>{requesterName} requested access to a page</h1>
+            <h1 style={emailHeadingStyle}>
+              {requesterName} requested access to {isSyncedBlock ? 'a synced block' : 'a page'}
+            </h1>
             <p style={emailCopyStyle}>
               <table style={emailTableBase} width='100%'>
                 <tbody>
@@ -162,9 +174,19 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                           {requesterEmail}
                         </a>
                       )}
-                      {' requested to '}
-                      <b>{pageAccess}</b>
-                      {` ${pageName ? 'this' : 'a'} page in Parabol.`}
+                      {isSyncedBlock ? (
+                        <>
+                          {' wants to view the synced block '}
+                          <b>{pageName}</b>
+                          {'.'}
+                        </>
+                      ) : (
+                        <>
+                          {' requested to '}
+                          <b>{pageAccess}</b>
+                          {` ${pageName ? 'this' : 'a'} page in Parabol.`}
+                        </>
+                      )}
                     </td>
                   </tr>
                 </tbody>

@@ -1,12 +1,6 @@
-import {
-  ConnectionHandler,
-  commitLocalUpdate,
-  Environment,
-  Network,
-  RecordSource,
-  Store
-} from 'relay-runtime'
+import {commitLocalUpdate, Environment, Network, RecordSource, Store} from 'relay-runtime'
 import {handleArchivePage} from '../useArchivePageMutation'
+import createPageConnection from './createPageConnection'
 
 jest.mock('babel-plugin-relay/macro', () => ({
   __esModule: true,
@@ -16,35 +10,16 @@ jest.mock('babel-plugin-relay/macro', () => ({
 const viewerId = 'user1'
 const pageId = 'page:1'
 
-const createConnection = (key: string, filters: Record<string, unknown>, nodeIds: string[]) => {
-  const connId = ConnectionHandler.getConnectionID(viewerId, key, filters)
-  const storageKey = connId.slice(`client:${viewerId}:`.length)
-  const edgeIds = nodeIds.map((nodeId) => `${connId}:edge:${nodeId}`)
-  const records = Object.fromEntries([
-    [
-      connId,
-      {
-        __id: connId,
-        __typename: 'PageConnection',
-        edges: {__refs: edgeIds},
-        pageInfo: null
-      }
-    ],
-    ...nodeIds.map((nodeId, idx) => [
-      edgeIds[idx],
-      {__id: edgeIds[idx], __typename: 'PageEdge', cursor: null, node: {__ref: nodeId}}
-    ])
-  ])
-  return {storageKey, connId, records}
-}
-
-const createEnvironment = () => {
-  const sharedConn = createConnection(
+const createEnvironment = (pageFields: Record<string, unknown> = {}) => {
+  const sharedConn = createPageConnection(
+    viewerId,
     'User_sharedPages',
     {parentPageId: null, isPrivate: false},
     []
   )
-  const archivedConn = createConnection('User_archivedPages', {isArchived: true}, [pageId])
+  const archivedConn = createPageConnection(viewerId, 'User_archivedPages', {isArchived: true}, [
+    pageId
+  ])
   const environment = new Environment({
     network: Network.create(async () => ({data: {}})),
     store: new Store(
@@ -62,7 +37,13 @@ const createEnvironment = () => {
           [archivedConn.storageKey]: {__ref: archivedConn.connId}
         },
         // the trash list only loads id & title for its pages
-        [pageId]: {__id: pageId, __typename: 'Page', id: pageId, title: 'Old notes'},
+        [pageId]: {
+          __id: pageId,
+          __typename: 'Page',
+          id: pageId,
+          title: 'Old notes',
+          ...pageFields
+        },
         ...sharedConn.records,
         ...archivedConn.records
       })
@@ -82,6 +63,38 @@ describe('handleArchivePage', () => {
     const {environment, sharedConnId, archivedConnId} = createEnvironment()
     commitLocalUpdate(environment, (store) => {
       handleArchivePage(pageId, {store, isHardDelete: true})
+    })
+    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
+    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])
+  })
+
+  const restoredPageFields = {
+    deletedAt: null,
+    sortOrder: 'a',
+    teamId: null,
+    isPrivate: false,
+    parentPageId: null
+  }
+
+  it('restoring an ordinary page adds it to the sidebar connection', () => {
+    const {environment, sharedConnId, archivedConnId} = createEnvironment({
+      ...restoredPageFields,
+      isSyncedBlock: false
+    })
+    commitLocalUpdate(environment, (store) => {
+      handleArchivePage(pageId, {store, isHardDelete: false})
+    })
+    expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
+    expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([pageId])
+  })
+
+  it('restoring a synced block page leaves the sidebar connection alone', () => {
+    const {environment, sharedConnId, archivedConnId} = createEnvironment({
+      ...restoredPageFields,
+      isSyncedBlock: true
+    })
+    commitLocalUpdate(environment, (store) => {
+      handleArchivePage(pageId, {store, isHardDelete: false})
     })
     expect(getConnectionNodeIds(environment, archivedConnId)).toEqual([])
     expect(getConnectionNodeIds(environment, sharedConnId)).toEqual([])

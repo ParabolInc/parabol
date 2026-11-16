@@ -10,10 +10,11 @@ import {usePageSharingAutocomplete} from './usePageSharingAutocomplete'
 interface Props {
   pageId: string
   queryRef: PreloadedQuery<PageSharingQuery>
+  hideCopyLink?: boolean
 }
 
 export const PageSharing = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, hideCopyLink} = props
   const query = usePreloadedQuery<PageSharingQuery>(
     graphql`
       query PageSharingQuery($pageId: ID!) {
@@ -64,9 +65,13 @@ export const PageSharing = (props: Props) => {
           <PageSharingAccessList pageRef={page} />
         )}
       </div>
-      <div className='border-hairline border-t p-3'>
-        <PageSharingCopyLink />
-      </div>
+      {hideCopyLink ? (
+        <div className='h-3' />
+      ) : (
+        <div className='border-hairline border-t p-3'>
+          <PageSharingCopyLink />
+        </div>
+      )}
     </div>
   )
 }

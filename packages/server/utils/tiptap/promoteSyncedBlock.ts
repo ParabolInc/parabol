@@ -5,6 +5,7 @@ import type {DB} from '../../postgres/types/pg'
 import {updatePageAncestorIds} from '../../postgres/updatePageAncestorIds'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {trashPageUnderParent} from './trashPageUnderParent'
 
 const selectPromotableBlock = (db: Kysely<DB>, blockPageId: number, excludedHostIds: number[]) =>
@@ -43,6 +44,7 @@ export const selectPromotionHost = async (
           .where('blockAccess.pageId', '=', blockPageId)
       )
     )
+    .orderBy('h.isSyncedBlock')
     .orderBy('b.createdAt')
     .orderBy('b.fromPageId')
     .limit(1)
@@ -106,16 +108,19 @@ export const announcePromotedBlock = async (
       )
     } catch (error) {
       Logger.error(error)
-      return
+      break
     }
-    if (isMarked) return
+    if (isMarked) break
     triedHostIds.push(currentHostId)
     const nextHostId = await getKysely()
       .transaction()
       .execute((trx) => promoteSyncedBlock(trx, blockPageId, triedHostIds))
-    if (nextHostId === null) break
+    if (nextHostId === null) {
+      const ownerId = await selectBlockOwnerId(blockPageId)
+      await trashPageUnderParent(blockPageId, currentHostId, ownerId ?? actorId)
+      break
+    }
     currentHostId = nextHostId
   }
-  const ownerId = await selectBlockOwnerId(blockPageId)
-  await trashPageUnderParent(blockPageId, currentHostId, ownerId ?? actorId)
+  publishSyncedBlockPlacementsChanged(blockPageId)
 }

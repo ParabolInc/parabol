@@ -8,6 +8,7 @@ import {
   isTaskClientIntegration,
   listClientIntegrationServices
 } from '../integrations/platform/registry'
+import setStorageItem from '../utils/setStorageItem'
 import IntegrationScopingPanel from './IntegrationScopingPanel'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaConnect from './ScopePhaseAreaConnect'
@@ -116,7 +117,7 @@ const ScopePhaseArea = (props: Props) => {
 
   const selectTab = (key: string) => {
     setSavedActiveKey(key)
-    window.localStorage.setItem(FAVORITE_SERVICE_STORAGE_KEY, key)
+    setStorageItem('localStorage', FAVORITE_SERVICE_STORAGE_KEY, key)
   }
   const pickFromMenu = (key: string) => {
     setHeldPickKey(key)

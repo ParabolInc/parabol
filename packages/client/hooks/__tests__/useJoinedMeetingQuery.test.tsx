@@ -1,6 +1,7 @@
 import {Window} from 'happy-dom'
 import {createRoot} from 'react-dom/client'
 import {MemoryRouter} from 'react-router'
+import {getBreadcrumbs} from '../../utils/clientBreadcrumbs'
 import useJoinedMeetingQuery from '../useJoinedMeetingQuery'
 
 type JoinHandlers = {onCompleted: (response: unknown) => void; onError: () => void}
@@ -105,6 +106,22 @@ test('a viewer not yet in the meeting subscribes after joining, then fetches onc
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch'])
   mockFetch.complete!()
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load', 'release'])
+  root.unmount()
+})
+
+test('each step of loading the meeting leaves a breadcrumb', async () => {
+  const root = await renderJoinedMeeting()
+  mockJoin.handlers!.onCompleted(joined)
+  await tick()
+  await acknowledgeSubscription()
+  mockFetch.complete!()
+  expect(getBreadcrumbs().map(({message}) => message)).toEqual(
+    expect.arrayContaining([
+      'JoinMeetingMutation joined',
+      'MeetingSubscription acknowledged',
+      'MeetingSelectorQuery fetched, loaded from the store'
+    ])
+  )
   root.unmount()
 })
 

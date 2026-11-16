@@ -32,6 +32,11 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
   if (page.deletedAt) {
     throw new GraphQLError('Cannot export a page in the trash', {extensions: {code: 'CONFLICT'}})
   }
+  if (page.isSyncedBlock) {
+    throw new GraphQLError('Export a page this synced block is on instead', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
   const {auth, error: authError} = await resolveConfluenceAuth(
     dataLoader,
     viewerId,
@@ -95,7 +100,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     .executeTakeFirstOrThrow()
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')
-  runConfluenceExport(pageExport.id, jobDataLoader)
+  runConfluenceExport(pageExport.id, jobDataLoader, {isTokenScoped: !!resourceGrants})
     .catch(Logger.error)
     .finally(() => jobDataLoader.dispose())
 

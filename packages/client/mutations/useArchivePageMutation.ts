@@ -10,12 +10,14 @@ import {isPrivatePageConnectionLookup} from './useUpdatePageMutation'
 
 graphql`
   fragment useArchivePageMutation_notification on ArchivePagePayload {
+    pageId
     page {
       ...LeftNavPageLink_page @relay(mask: false)
       ...PageDeletedHeader_page
       id
       deletedAt
       deletedBy
+      isSyncedBlock
       sortOrder
       # When restoring a child without its parent, it will get promoted to top-level
       parentPageId
@@ -60,6 +62,7 @@ export const handleArchivePage = (
     safeRemoveNodeFromConn(pageId, archivedConn)
   } else if (isRestore) {
     safeRemoveNodeFromConn(pageId, archivedConn)
+    if (page.getValue('isSyncedBlock')) return
     safePutNodeInConn(conn, page, store, 'sortOrder', true)
   } else {
     // archive

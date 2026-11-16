@@ -110,7 +110,7 @@ const toPlainText = (inline: Fragment, schema: Schema) =>
     textSerializers: getTextSerializersFromSchema(schema)
   })
 
-const toSingleLine = (inline: Fragment, schema: Schema) =>
+export const toSingleLine = (inline: Fragment, schema: Schema) =>
   toPlainText(inline, schema).replace(/\n/g, ' ')
 
 // a summary holds only text, so anything else in the line has to flatten into it

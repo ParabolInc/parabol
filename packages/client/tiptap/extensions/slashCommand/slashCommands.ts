@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import type {IconComponent} from '~/ui/icons'
 import {
   AttachFile as AttachFileIcon,
+  Autorenew as AutorenewIcon,
   Checklist as ChecklistIcon,
   Code as CodeIcon,
   ArrowRight as DetailsIcon,
@@ -24,6 +25,7 @@ import {
 } from '~/ui/icons'
 import {CALLOUT_TONE_LABELS, CALLOUT_TONES} from '../../../shared/tiptap/calloutTones'
 import {calloutForQuery} from '../callout/calloutSlashCommand'
+import {focusSyncedBlockOnMount} from '../pageLinkBlock/syncedBlockFocus'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -203,6 +205,35 @@ export const slashCommands = [
             title: undefined,
             canonical: true
           })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, pageLinkNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
+        }
+      },
+      {
+        title: 'Synced block',
+        description: 'Content that stays the same on every page',
+        searchTerms: ['sync', 'synced', 'shared', 'reuse'],
+        icon: AutorenewIcon,
+        action: (editor: Editor) => {
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          const pageLinkNode = schema.nodes.pageLinkBlock!.create({
+            pageCode: -1,
+            title: undefined,
+            canonical: true,
+            synced: true
+          })
+          focusSyncedBlockOnMount(pageLinkNode)
 
           editor
             .chain()

@@ -6,7 +6,8 @@ import getKysely from '../../../postgres/getKysely'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
+import {getNextRRuleDate, getUpcomingRRuleDates} from '../../../utils/getNextRRuleDate'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
@@ -80,7 +81,10 @@ export const startNewMeetingSeries = async (
     facilitatorId,
     ...seriesParams
   })
-  const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
+  // The meeting stands in for an occurrence that is about to start, so it runs until the one after
+  const [nextOccurrence, followingOccurrence] = getUpcomingRRuleDates(recurrenceRule, 2)
+  const nextMeetingStartDate =
+    (isImmediateOccurrence(recurrenceRule) ? followingOccurrence : nextOccurrence) ?? null
   await getKysely()
     .updateTable('NewMeeting')
     .set({

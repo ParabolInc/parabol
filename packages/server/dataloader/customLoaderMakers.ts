@@ -646,22 +646,23 @@ export const lastMeetingByMeetingSeriesId = (
   return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) => {
       const meetingIdRes = await getKysely()
-        .with('LastMeetings', (qc) =>
-          qc
-            .selectFrom('NewMeeting')
-            .select([
-              'id',
-              'meetingSeriesId',
-              'createdAt',
-              sql`ROW_NUMBER() OVER (PARTITION BY "meetingSeriesId" ORDER BY "createdAt" DESC)`.as(
-                'rn'
-              )
-            ])
-            .where('meetingSeriesId', 'in', keys)
+        .selectFrom(
+          sql<{meetingSeriesId: number}>`unnest(${keys}::int[])`.as<'Series'>(
+            sql`${sql.id('Series')}(${sql.id('meetingSeriesId')})`
+          )
         )
-        .selectFrom('LastMeetings')
-        .select('id')
-        .where('rn', '=', 1)
+        .innerJoinLateral(
+          (eb) =>
+            eb
+              .selectFrom('NewMeeting')
+              .select('id')
+              .whereRef('NewMeeting.meetingSeriesId', '=', 'Series.meetingSeriesId')
+              .orderBy('createdAt', 'desc')
+              .limit(1)
+              .as('LastMeeting'),
+          (join) => join.onTrue()
+        )
+        .select('LastMeeting.id')
         .execute()
 
       const meetingIds = meetingIdRes.map(({id}) => id)

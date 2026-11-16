@@ -28,10 +28,10 @@ import {
 } from '../mutations/RemoveTeamMemberMutation'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
-import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
+import archivePageNotificationUpdater from './archivePageNotificationUpdater'
 import {createSubscription} from './createSubscription'
 
 graphql`
@@ -292,15 +292,6 @@ const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
   const notification = payload.getLinkedRecord('addedNotification')
   if (!notification) return
   handleAddNotifications(notification, context.store)
-}
-
-const archivePageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
-  const archivedPageId = payload.getValue('pageId')
-  const archivedPage = payload.getLinkedRecord('page')
-  handleArchivePage(archivedPageId, {
-    ...context,
-    isHardDelete: !archivedPage
-  })
 }
 
 const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => {

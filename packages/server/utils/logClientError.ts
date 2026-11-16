@@ -1,8 +1,12 @@
-import describeUserAgent from './describeUserAgent'
+import describeUserAgent, {isCrawler} from './describeUserAgent'
 import {CLIENT_LOG_SERVICE, normalizeErrorMessage} from './getErrorFingerprint'
 import {Logger} from './Logger'
 import normalizeUrlPath from './normalizeUrlPath'
-import type {ClientErrorBreadcrumb, ClientErrorReport} from './parseClientErrorBatch'
+import type {
+  ClientErrorBreadcrumb,
+  ClientErrorCause,
+  ClientErrorReport
+} from './parseClientErrorBatch'
 import {runWithLogContext} from './requestLogContext'
 import symbolicateClientStack, {symbolicateComponentStack} from './symbolicateClientStack'
 
@@ -12,6 +16,16 @@ const describeBreadcrumb = (breadcrumb: ClientErrorBreadcrumb): ClientErrorBread
   if (type === 'navigation') return {...breadcrumb, message: normalizeUrlPath(message)}
   if (type === 'error') return {...breadcrumb, message: normalizeErrorMessage(message)}
   return breadcrumb
+}
+
+const toSymbolicatedError = async (
+  {name, message, stack}: ClientErrorCause,
+  buildDir: string | undefined
+) => {
+  const error = new Error(message)
+  error.name = name
+  error.stack = await symbolicateClientStack(name, message, stack, buildDir)
+  return error
 }
 
 const logClientError = async (
@@ -24,6 +38,7 @@ const logClientError = async (
     name,
     message,
     stack,
+    causes = [],
     componentStack,
     traceId,
     sessionId,
@@ -34,13 +49,15 @@ const logClientError = async (
     eventId,
     count
   } = report
-  const error = new Error(message)
-  error.name = name
-  const [symbolicatedStack, symbolicatedComponentStack] = await Promise.all([
-    symbolicateClientStack(name, message, stack, buildDir),
-    componentStack ? symbolicateComponentStack(componentStack, buildDir) : undefined
+  const [error, symbolicatedComponentStack, ...causeErrors] = await Promise.all([
+    toSymbolicatedError({name, message, stack}, buildDir),
+    componentStack ? symbolicateComponentStack(componentStack, buildDir) : undefined,
+    ...causes.map((cause) => toSymbolicatedError(cause, buildDir))
   ])
-  error.stack = symbolicatedStack
+  causeErrors.reduce<Error>((parent, cause) => {
+    parent.cause = cause
+    return cause
+  }, error)
   runWithLogContext(
     {
       userId,
@@ -52,7 +69,8 @@ const logClientError = async (
       version: release ?? 'unknown'
     },
     () => {
-      Logger[level](error, {
+      // a crawler renders the app under limits no visitor has: it blocks requests, answers some itself, cuts rendering short
+      Logger[isCrawler(userAgent) ? 'warn' : level](error, {
         client: {
           ...(route && {route: normalizeUrlPath(route), rawRoute: route}),
           ...describeUserAgent(userAgent),

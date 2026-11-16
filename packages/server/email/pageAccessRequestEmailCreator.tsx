@@ -1,20 +1,23 @@
 import ReactDOMServer from 'react-dom/server'
 import PageAccessRequest, {type PageAccessRequestProps, pageRoles} from './PageAccessRequest'
 
-const subjectLine = (requesterName: string): string =>
-  `${requesterName} has requested access to a Page on Parabol`
+const subjectLine = (requesterName: string, isSyncedBlock: boolean): string =>
+  isSyncedBlock
+    ? `${requesterName} wants to view a synced block on Parabol`
+    : `${requesterName} has requested access to a Page on Parabol`
 
 const plaintext = (props: Omit<PageAccessRequestProps, 'title'>) => {
-  const {requesterName, requesterEmail, pageName, pageLink, role, reason} = props
+  const {requesterName, requesterEmail, pageName, pageLink, role, reason, isSyncedBlock} = props
   const pageAccess = pageRoles[role] || 'view'
 
   const requester = requesterName ? `${requesterName} (${requesterEmail})` : requesterEmail
-  const page = pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'
-
   const reasonBlock = reason ? `${reason}`.replace(/^/gm, '| ') : ''
+  const headline = isSyncedBlock
+    ? `${requester} wants to view the synced block ${pageName}.`
+    : `${requester} has requested to ${pageAccess} ${pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'}`
 
   return `
-${requester} has requested to ${pageAccess} ${page}
+${headline}
 ${reasonBlock}
 
 Review the Page permissions here: ${pageLink}
@@ -25,7 +28,7 @@ The Parabol Product Team
 }
 
 const pageAccessRequestEmailCreator = (props: Omit<PageAccessRequestProps, 'title'>) => {
-  const subject = subjectLine(props.requesterName ?? props.requesterEmail)
+  const subject = subjectLine(props.requesterName ?? props.requesterEmail, props.isSyncedBlock)
   const rawHTML = ReactDOMServer.renderToStaticMarkup(
     <PageAccessRequest {...props} title={subject} />
   )
