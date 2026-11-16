@@ -59,9 +59,8 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         const title = node.getAttribute('title')
         seedContent = sanitizeSyncedBlockSeed(seed)
         isAwaitingPage = true
-        const body =
-          title && seedContent[0]?.type === 'heading' ? seedContent.slice(1) : seedContent
-        const bodyNodes = body.length > 0 || !isSyncedBlock ? body : [{type: 'paragraph' as const}]
+        const bodyNodes =
+          seedContent.length > 0 || !isSyncedBlock ? seedContent : [{type: 'paragraph' as const}]
         const newPage = await createNewPage({
           parentPageId,
           userId,

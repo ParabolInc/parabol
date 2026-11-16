@@ -324,7 +324,7 @@ test('adds nothing back when the link was undone before the page failed', async 
   expect(frag.length).toBe(0)
 })
 
-test('names the block from the heading its seed leads with', async () => {
+test('names the block from the heading its seed leads with and keeps the heading inside', async () => {
   insertSeededLinkInPage([escalationHeading, seedParagraph])
   await flush()
   expect(mockCreateNewPage).toHaveBeenCalledWith(
@@ -333,6 +333,7 @@ test('names the block from the heading its seed leads with', async () => {
         type: 'doc',
         content: [
           {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Escalation path'}]},
+          escalationHeading,
           seedParagraph
         ]
       }
