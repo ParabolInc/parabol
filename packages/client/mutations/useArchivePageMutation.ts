@@ -10,6 +10,7 @@ import {isPrivatePageConnectionLookup} from './useUpdatePageMutation'
 
 graphql`
   fragment useArchivePageMutation_notification on ArchivePagePayload {
+    pageId
     page {
       ...LeftNavPageLink_page @relay(mask: false)
       ...PageDeletedHeader_page
