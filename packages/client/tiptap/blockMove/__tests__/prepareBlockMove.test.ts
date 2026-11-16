@@ -1,5 +1,6 @@
 import type Atmosphere from '../../../Atmosphere'
-import {getBlockDragState, prepareBlockMove} from '../prepareBlockMove'
+import {getBlockDragState} from '../blockDragSession'
+import {prepareBlockMove} from '../prepareBlockMove'
 import {destroyEditors, link, makeEditor, p, rangeOf} from './blockMoveTestHelpers'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))

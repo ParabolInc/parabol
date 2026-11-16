@@ -2,6 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import {Fragment} from '@tiptap/pm/model'
 import {type EditorState, Selection, type Transaction} from '@tiptap/pm/state'
 import {type BlockRange, isUnitParent} from '../../blockSelection/blockUnits'
+import {focusSyncedBlockOnMount} from '../pageLinkBlock/syncedBlockFocus'
 import {toSingleLine} from './turnBlockInto'
 
 const holdsPageLink = (units: Fragment) => {
@@ -59,5 +60,6 @@ export const turnRangeIntoSyncedBlock = (
   const $afterLink = tr.doc.resolve(from + (listBefore[0]?.nodeSize ?? 0) + link.nodeSize)
   const caret = Selection.findFrom($afterLink, 1, true) ?? Selection.findFrom($afterLink, -1, true)
   if (caret) tr.setSelection(caret)
+  focusSyncedBlockOnMount(link)
   return tr
 }

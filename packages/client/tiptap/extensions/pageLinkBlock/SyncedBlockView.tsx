@@ -21,6 +21,11 @@ import {SyncedBlockNameInput} from './SyncedBlockNameInput'
 import {SyncedBlockPlacesRoot} from './SyncedBlockPlacesRoot'
 import {SyncedBlockState} from './SyncedBlockState'
 import {SYNCED_BLOCK_RENAME_EVENT} from './startSyncedBlockRename'
+import {
+  clearSyncedBlockFocusRequest,
+  hasSyncedBlockFocusRequest,
+  placeInNested
+} from './syncedBlockFocus'
 import {canNestSyncedBlock, getEnclosingChain, SyncedBlockChainContext} from './syncedBlockNesting'
 import {useMountNearViewport} from './useMountNearViewport'
 import {useSyncedBlockDialog} from './useSyncedBlockDialog'
@@ -42,6 +47,9 @@ export const SyncedBlockView = (props: NodeViewProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const isNearViewport = useMountNearViewport(wrapperRef)
   const [chrome, setChrome] = useState<SyncedBlockChrome | null>(null)
+  const [focusRequest, setFocusRequest] = useState(() =>
+    hasSyncedBlockFocusRequest(node) ? node : null
+  )
   const [status, setStatus] = useState<SyncedBlockStatus>('loading')
   const isPanel = status === 'locked' || status === 'error'
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
@@ -84,7 +92,7 @@ export const SyncedBlockView = (props: NodeViewProps) => {
       syncedBlockPlacesQuery,
       {pageId: GQLID.toKey(pageCode, 'page')},
       {fetchPolicy: 'network-only'}
-    ).subscribe({})
+    ).subscribe({error: () => {}})
   }, [atmosphere, pageCode])
   useEffect(() => {
     const wrapper = wrapperRef.current
@@ -96,6 +104,12 @@ export const SyncedBlockView = (props: NodeViewProps) => {
     target.addEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
     return () => target.removeEventListener(SYNCED_BLOCK_RENAME_EVENT, handleRename)
   }, [])
+  useEffect(() => {
+    if (!focusRequest || !chrome || chrome.isViewOnly) return
+    setFocusRequest(null)
+    clearSyncedBlockFocusRequest(focusRequest)
+    placeInNested(chrome.editor, 'end', null)
+  }, [focusRequest, chrome])
   useEffect(() => {
     if (isHeldOpen) return
     const timer = setTimeout(() => {

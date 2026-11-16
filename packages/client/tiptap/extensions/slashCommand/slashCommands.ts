@@ -25,6 +25,7 @@ import {
 } from '~/ui/icons'
 import {CALLOUT_TONE_LABELS, CALLOUT_TONES} from '../../../shared/tiptap/calloutTones'
 import {calloutForQuery} from '../callout/calloutSlashCommand'
+import {focusSyncedBlockOnMount} from '../pageLinkBlock/syncedBlockFocus'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -232,6 +233,7 @@ export const slashCommands = [
             canonical: true,
             synced: true
           })
+          focusSyncedBlockOnMount(pageLinkNode)
 
           editor
             .chain()

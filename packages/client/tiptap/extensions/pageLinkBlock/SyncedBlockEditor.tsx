@@ -1,8 +1,14 @@
 import type {AuthorizedScope, HocuspocusProvider} from '@hocuspocus/provider'
 import type {Editor} from '@tiptap/core'
 import {useEffect, useState} from 'react'
+import {useClientQuery} from 'react-relay'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../../__generated__/PageDropTargetQuery.graphql'
 import {TipTapEditor} from '../../../components/TipTapEditor/TipTapEditor'
 import {useTipTapPageEditor} from '../../../hooks/useTipTapPageEditor'
+import {getSyncedBlockDropRefusal} from '../../blockMove/getBlockDropRefusal'
+import {useSyncedBlockName} from './useSyncedBlockName'
 
 export interface SyncedBlockChrome {
   editor: Editor
@@ -34,6 +40,24 @@ export const SyncedBlockEditor = (props: Props) => {
   const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
   const [isHostEditable, setIsHostEditable] = useState(hostEditor.isEditable)
   const isViewOnly = authorizedScope === 'readonly' || !isHostEditable
+  const name = useSyncedBlockName(editor)
+  const {viewer} = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
+  const {
+    draggingPageId,
+    draggingBlocksSourcePageId,
+    draggingBlocksChildPageIds,
+    draggingBlocksRefusal
+  } = viewer ?? {}
+  const pageDropRefusal = draggingPageId === pageId ? 'Inside itself' : 'No pages in synced blocks'
+  const blockDropRefusal =
+    draggingBlocksSourcePageId && draggingBlocksSourcePageId !== pageId
+      ? getSyncedBlockDropRefusal(pageId, isViewOnly, {
+          sourcePageId: draggingBlocksSourcePageId,
+          childPageIds: draggingBlocksChildPageIds ?? [],
+          refusal: draggingBlocksRefusal ?? null
+        })
+      : null
+  const dropRefusal = draggingPageId ? pageDropRefusal : blockDropRefusal
 
   useEffect(() => {
     const handleAuthenticated = ({scope}: {scope: AuthorizedScope}) => setAuthorizedScope(scope)
@@ -58,7 +82,11 @@ export const SyncedBlockEditor = (props: Props) => {
 
   if (!editor) return null
   return (
-    <div data-synced-editor>
+    <div
+      data-synced-editor
+      data-drop-title={dropRefusal ? name || 'Synced block' : undefined}
+      data-drop-refused={dropRefusal ?? undefined}
+    >
       <TipTapEditor
         editor={editor}
         className='page-editor [&>.tiptap]:-ml-[19px] @min-[852px]/page:[&>.tiptap]:-ml-9 relative flex w-full [&>.tiptap]:box-content @min-[852px]/page:[&>.tiptap]:pl-9 [&>.tiptap]:pl-[19px] [&_.tiptap>h1:first-child]:hidden'

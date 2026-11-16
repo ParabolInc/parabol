@@ -47,6 +47,7 @@ const queryNode = graphql`
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
 const SYNCED_BLOCK_HANDLE_OFFSET = 26
 const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
+const BLOCK_DRAG_TEXT = '__dummy__'
 
 function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
@@ -185,9 +186,10 @@ export const PageDragHandle = Extension.create<Options>({
       new Plugin({
         key: new PluginKey('pageTargetDrop'),
         props: {
-          handleDrop: (_view, event) =>
-            event.target instanceof Element &&
-            !!event.target.closest('[data-drop-in], [data-drop-refused]')
+          handleDrop: (view, event) =>
+            (event.target instanceof Element &&
+              !!event.target.closest('[data-drop-in], [data-drop-refused]')) ||
+            (!view.dragging && event.dataTransfer?.getData('text/plain') === BLOCK_DRAG_TEXT)
         }
       }),
       listItemDropPointPlugin()
@@ -304,7 +306,7 @@ export const PageDragHandle = Extension.create<Options>({
         e.stopImmediatePropagation()
         const {from, to} = plan.selection
         setDragImage(e.dataTransfer, view, getChildPositions(view, plan.selection))
-        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.setData('text/plain', BLOCK_DRAG_TEXT)
         e.dataTransfer.effectAllowed = 'copyMove'
         didStartDrag = true
         isDraggingSelection = true
@@ -332,7 +334,7 @@ export const PageDragHandle = Extension.create<Options>({
       view.dispatch(tr)
 
       if (plan.kind === 'blocks') {
-        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.setData('text/plain', BLOCK_DRAG_TEXT)
         e.dataTransfer.effectAllowed = 'copyMove'
         startBlockDrag(atmosphere, plan.session, plan.refusal)
         return
@@ -343,7 +345,7 @@ export const PageDragHandle = Extension.create<Options>({
         const attrs = dragHandleNode.attrs as PageLinkBlockAttrs
         if (!attrs.canonical) return
         const pageKey = GQLID.toKey(attrs.pageCode, 'page')
-        e.dataTransfer.setData('text/plain', '__dummy__')
+        e.dataTransfer.setData('text/plain', BLOCK_DRAG_TEXT)
         e.dataTransfer.effectAllowed = 'copyMove'
         atmosphere.fetchQuery<PageDragHandleQuery>(queryNode, {pageId: pageKey}).then((res) => {
           if (attrs.pageCode !== dragHandleNode?.attrs.pageCode) return

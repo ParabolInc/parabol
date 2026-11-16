@@ -29,6 +29,7 @@ import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
 import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {moveBlocksIntoSyncedBlock} from '../tiptap/blockMove/moveBlocksIntoSyncedBlock'
 import {BlockArrival} from '../tiptap/extensions/BlockArrival'
 import {BlockMoveHistory} from '../tiptap/extensions/BlockMoveHistory'
 import {BlockMoveKeys} from '../tiptap/extensions/BlockMoveKeys'
@@ -78,7 +79,7 @@ export const useTipTapPageEditor = (
     pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
-    nested?: SyncedBlockEdgesOptions & {
+    nested?: Omit<SyncedBlockEdgesOptions, 'onBlockDrop'> & {
       preferredName?: string
       highestTier?: TierEnum
     }
@@ -155,7 +156,9 @@ export const useTipTapPageEditor = (
         SlashCommand.configure({
           commands: getPageSlashCommands({hasDatabases, nested: !!nested})
         }),
-        ...(nested ? [SyncedBlockEdges.configure(nested)] : []),
+        ...(nested
+          ? [SyncedBlockEdges.configure({...nested, onBlockDrop: moveBlocksIntoSyncedBlock})]
+          : []),
         Focus,
         FileUpload.configure({
           scopeKey: pageId,

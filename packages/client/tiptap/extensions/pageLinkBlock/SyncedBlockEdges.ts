@@ -2,14 +2,16 @@ import {type Editor, Extension} from '@tiptap/core'
 import type {ResolvedPos} from '@tiptap/pm/model'
 import {type EditorState, NodeSelection, Plugin, TextSelection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
+import type {SyncedBlockDrop} from '../../blockMove/moveBlocksIntoSyncedBlock'
 import {keepFocusInHost} from './keepFocusInHost'
-import {refuseForeignDrops} from './refuseForeignDrops'
+import {routeForeignDrops} from './routeForeignDrops'
 import {exitSyncedBlock} from './syncedBlockFocus'
 
 export interface SyncedBlockEdgesOptions {
   hostView: EditorView
   getPos: () => number | undefined
   getSize: () => number
+  onBlockDrop: (drop: SyncedBlockDrop) => Promise<void>
 }
 
 const isFirstContent = ($head: ResolvedPos) => {
@@ -114,8 +116,9 @@ export const SyncedBlockEdges = Extension.create<SyncedBlockEdgesOptions>({
 
   addProseMirrorPlugins() {
     const {editor} = this
+    const {hostView, getPos, onBlockDrop} = this.options
     return [
-      refuseForeignDrops(),
+      routeForeignDrops({editor, hostView, getPos, onBlockDrop}),
       new Plugin({
         appendTransaction: (_transactions, _oldState, state) => {
           const {selection, doc} = state

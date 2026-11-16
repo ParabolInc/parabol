@@ -1,10 +1,8 @@
 import type {Editor} from '@tiptap/core'
 import type Atmosphere from '../../Atmosphere'
-import {GQLID} from '../../utils/GQLID'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import type {BlockDragSession} from './blockDragSession'
 import {findUnownedChildPage} from './findUnownedChildPage'
-import type {BlockDragState} from './getBlockDropRefusal'
 import {getMovableBlocks} from './getMovableBlocks'
 import {trackRange} from './trackRange'
 
@@ -33,12 +31,3 @@ export const prepareBlockMove = ({editor, range, pageId, atmosphere}: Params) =>
   }
   return {session, refusal}
 }
-
-export const getBlockDragState = (
-  session: BlockDragSession,
-  refusal: string | null
-): BlockDragState => ({
-  sourcePageId: session.sourcePageId,
-  childPageIds: session.movable.childPages.map(({pageCode}) => GQLID.toKey(pageCode, 'page')),
-  refusal
-})

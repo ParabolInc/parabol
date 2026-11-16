@@ -546,6 +546,33 @@ describe('many blocks', () => {
       expect(selectedTexts(activeEditor)).toEqual(['one', 'two', 'three'])
     })
 
+    test('dropped on the page around a synced block, a selection from inside it lands nothing', () => {
+      const host = makeEditor(p('host'))
+      const block = makeEditorWith({isNested: true}, p('one'), p('two'))
+      selectBlocks(block, 'one', 'two')
+      hover(block, 'one')
+      const data = new Map<string, string>()
+      const dataTransfer = {
+        clearData: () => data.clear(),
+        setDragImage: jest.fn(),
+        setData: (type: string, value: string) => data.set(type, value),
+        getData: (type: string) => data.get(type) ?? '',
+        files: [],
+        types: []
+      }
+      const dragstart = new Event('dragstart', {cancelable: true})
+      Object.assign(dragstart, {dataTransfer})
+      handleOf(block).dispatchEvent(dragstart)
+      jest
+        .spyOn(host.view, 'posAtCoords')
+        .mockReturnValue({pos: blockAt(host, 'host').to, inside: -1})
+      const drop = new Event('drop', {bubbles: true, cancelable: true})
+      Object.assign(drop, {clientX: 0, clientY: 0, dataTransfer})
+      host.view.dom.dispatchEvent(drop)
+      expect(texts(host)).toEqual(['host'])
+      host.destroy()
+    })
+
     test('reorders list items inside their list', () => {
       const activeEditor = makeEditor({
         type: 'bulletList',

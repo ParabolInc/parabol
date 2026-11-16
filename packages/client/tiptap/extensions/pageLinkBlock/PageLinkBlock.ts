@@ -8,6 +8,7 @@ import type * as Y from 'yjs'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {findSyncedOriginalBesideCaret, isSyncedOriginal} from './findSyncedOriginalBesideCaret'
+import {isInNestedEditor} from './isInSyncedBlockContent'
 import {isValidPageCode} from './isValidPageCode'
 import {keepFocusInHost} from './keepFocusInHost'
 import {type GetPageViewerAccess, keepUnownedPageLinksPlugin} from './keepUnownedPageLinksPlugin'
@@ -121,6 +122,10 @@ export const PageLinkBlock = PageLinkBlockBase.extend<PageLinkBlockOptions, Page
       }
       nodeView.stopEvent = (event: Event) =>
         nodeView.dom instanceof HTMLElement && stopPageLinkBlockEvent(event, nodeView.dom)
+      const ignoreMutation = nodeView.ignoreMutation?.bind(nodeView)
+      nodeView.ignoreMutation = (mutation) =>
+        (mutation.type === 'selection' && isInNestedEditor(mutation.target, nodeView.dom)) ||
+        !!ignoreMutation?.(mutation)
       return nodeView
     }
   },

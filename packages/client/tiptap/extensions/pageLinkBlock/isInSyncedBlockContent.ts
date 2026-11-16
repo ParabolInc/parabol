@@ -3,3 +3,8 @@ export const isInSyncedBlockContent = (target: EventTarget | null, root: Element
     target instanceof Element ? target.closest('[data-synced-editor], [data-synced-chrome]') : null
   return !!owner && root.contains(owner)
 }
+
+export const isInNestedEditor = (target: EventTarget | null, root: Node) => {
+  const editor = target instanceof Element ? target.closest('[data-synced-editor]') : null
+  return !!editor && root.contains(editor)
+}

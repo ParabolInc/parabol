@@ -94,11 +94,15 @@ const paragraphTexts = (activeEditor: Editor) => {
 
 const endOfDoc = (activeEditor: Editor) => activeEditor.state.doc.content.size
 
-const moveFirstParagraph = (activeEditor: Editor, frag: Y.XmlFragment) => {
+const moveFirstParagraph = (
+  activeEditor: Editor,
+  frag: Y.XmlFragment,
+  drop: Pick<BlockMoveMeta, 'insertIndex' | 'nested'> = {}
+) => {
   const {from, to} = rangeOf(activeEditor, 'paragraph', 0)
   const blocks = getMovableBlocks(activeEditor.state.doc, from, to).blocks
-  const moved = appendBlocksToFragment(frag, blocks, activeEditor.schema)
-  const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks}
+  const moved = appendBlocksToFragment(frag, blocks, activeEditor.schema, drop.insertIndex)
+  const meta = {targetPageId: 'page:2', targetTitle: 'Q3 Roadmap', moved, blocks, ...drop}
   dispatchBlockMoveDelete(activeEditor, activeEditor.state.tr.deleteRange(from, to), meta)
   return meta
 }
@@ -179,6 +183,23 @@ test('undo of a partly edited move says how many came back', async () => {
     })
   )
   expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('edited stays')]))
+})
+
+test('undo and redo of a drop into a synced block use its nested provider and the drop spot', async () => {
+  openSynced.mockClear()
+  targetFrag = seed(h(1, 'Q3'), p('top'), p('bottom'))
+  mockTargetDoc = targetFrag.doc!
+  moveFirstParagraph(editor, targetFrag, {insertIndex: 2, nested: true})
+  editor.commands.undo()
+  await flushPromises()
+  editor.commands.redo()
+  await flushPromises()
+  expect(read(targetFrag)).toEqual(normalize([h(1, 'Q3'), p('top'), p('moved me'), p('bottom')]))
+  expect(paragraphTexts(editor)).toEqual(['stays'])
+  expect(openSynced.mock.calls).toEqual([
+    ['page:2', expect.any(Number), {nested: true}],
+    ['page:2', expect.any(Number), {nested: true}]
+  ])
 })
 
 test('undo after redo takes the new copy back', async () => {

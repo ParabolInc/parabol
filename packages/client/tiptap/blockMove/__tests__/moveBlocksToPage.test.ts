@@ -167,6 +167,17 @@ test('records the move for undo and the appended blocks, and releases the target
   expect(unregister).toHaveBeenCalledWith('page:2')
 })
 
+test('records where a drop into a synced block landed, for redo', async () => {
+  const outcome = await moveBlocksToPage({
+    session: sessionFor(editor, 'paragraph', 0),
+    targetPageId: 'page:2',
+    targetTitle: 'Escalation',
+    insertIndex: 2,
+    nested: true
+  })
+  expect(outcome.meta).toMatchObject({insertIndex: 2, nested: true})
+})
+
 test('tracks the gap the move left so undo can put the block back there', async () => {
   const outcome = await moveBlocksToPage({
     session: sessionFor(editor, 'paragraph', 0),

@@ -8,9 +8,9 @@ export type TargetRefusal = 'offline' | 'readonly' | 'streaming'
 export const writeToTargetPage = async <T extends object | void>(
   targetPageId: string,
   write: (frag: Y.XmlFragment, provider: HocuspocusProvider) => Promise<T>,
-  {refuseWhileStreaming = true} = {}
+  {refuseWhileStreaming = true, nested = false} = {}
 ): Promise<T | TargetRefusal> => {
-  const provider = await providerManager.openSynced(targetPageId, BLOCK_MOVE_TIMEOUT_MS)
+  const provider = await providerManager.openSynced(targetPageId, BLOCK_MOVE_TIMEOUT_MS, {nested})
   if (!provider) return 'offline'
   try {
     if (provider.authorizedScope === 'readonly') return 'readonly'

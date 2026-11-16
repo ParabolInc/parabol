@@ -14,6 +14,8 @@ export type BlockMoveMeta = {
   restored?: MovedBlock[]
   childPages?: MovableBlocks['childPages']
   gap?: TrackedRange
+  insertIndex?: number
+  nested?: boolean
 }
 
 export type StackItem = Y.UndoManager['undoStack'][number]

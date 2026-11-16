@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import {GQLID} from '../../utils/GQLID'
+import type {BlockDragState} from './getBlockDropRefusal'
 import type {MovableBlocks} from './getMovableBlocks'
 import type {TrackedRange} from './trackRange'
 
@@ -13,16 +14,27 @@ export type BlockDragSession = {
   count: number
 }
 
-let activeSession: BlockDragSession | null = null
+export type ActiveBlockDrag = {session: BlockDragSession; refusal: string | null}
+
+let activeDrag: ActiveBlockDrag | null = null
+
+export const getBlockDragState = (
+  session: BlockDragSession,
+  refusal: string | null
+): BlockDragState => ({
+  sourcePageId: session.sourcePageId,
+  childPageIds: session.movable.childPages.map(({pageCode}) => GQLID.toKey(pageCode, 'page')),
+  refusal
+})
 
 export const startBlockDrag = (
   atmosphere: Atmosphere,
   session: BlockDragSession,
   refusal: string | null
 ) => {
-  activeSession?.range.stop()
-  activeSession = session
-  const childPageIds = session.movable.childPages.map(({pageCode}) => GQLID.toKey(pageCode, 'page'))
+  activeDrag?.session.range.stop()
+  activeDrag = {session, refusal}
+  const {childPageIds} = getBlockDragState(session, refusal)
   commitLocalUpdate(atmosphere, (store) => {
     store
       .getRoot()
@@ -34,15 +46,17 @@ export const startBlockDrag = (
   })
 }
 
+export const peekBlockDrag = () => activeDrag
+
 export const takeBlockDrag = () => {
-  const session = activeSession
-  activeSession = null
+  const session = activeDrag?.session ?? null
+  activeDrag = null
   return session
 }
 
 export const endBlockDrag = (atmosphere: Atmosphere) => {
-  activeSession?.range.stop()
-  activeSession = null
+  activeDrag?.session.range.stop()
+  activeDrag = null
   commitLocalUpdate(atmosphere, (store) => {
     store
       .getRoot()

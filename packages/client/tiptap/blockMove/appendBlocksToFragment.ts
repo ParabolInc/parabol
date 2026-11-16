@@ -12,7 +12,8 @@ const isEmptyParagraph = (node: ReturnType<Y.XmlFragment['get']> | undefined) =>
 export const appendBlocksToFragment = (
   frag: Y.XmlFragment,
   blocks: JSONContent[],
-  schema: Schema
+  schema: Schema,
+  insertIndex?: number
 ): MovedBlock[] => {
   const scratch = new Y.Doc()
   const scratchFrag = scratch.getXmlFragment('default')
@@ -27,9 +28,13 @@ export const appendBlocksToFragment = (
     .filter((child) => child instanceof Y.XmlElement || child instanceof Y.XmlText)
     .map((child) => child.clone())
   const moved: MovedBlock[] = []
-  const insert = () => {
+  const getAppendIndex = () => {
     const last = frag.length > 0 ? frag.get(frag.length - 1) : undefined
-    const index = frag.length > 1 && isEmptyParagraph(last) ? frag.length - 1 : frag.length
+    return frag.length > 1 && isEmptyParagraph(last) ? frag.length - 1 : frag.length
+  }
+  const insert = () => {
+    const index =
+      insertIndex === undefined ? getAppendIndex() : Math.min(Math.max(insertIndex, 1), frag.length)
     frag.insert(index, clones)
     clones.forEach((clone) => {
       const id = clone._item!.id

@@ -14,6 +14,7 @@ import {SyncedBlockCaption} from '../SyncedBlockCaption'
 import {type SyncedBlockChrome, SyncedBlockEditor} from '../SyncedBlockEditor'
 import {SyncedBlockView} from '../SyncedBlockView'
 import {SYNCED_BLOCK_RENAME_EVENT} from '../startSyncedBlockRename'
+import {focusSyncedBlockOnMount} from '../syncedBlockFocus'
 import {useSyncedBlockName} from '../useSyncedBlockName'
 import {findLinkPositions, mountNested, syncedLink} from './syncedBlockTestHarness'
 
@@ -32,6 +33,11 @@ jest.mock('relay-runtime', () => ({
   fetchQuery: (...args: unknown[]) => mockFetchQuery(...args)
 }))
 const hostRef: {current: Editor | null} = {current: null}
+let mockDragViewer: Record<string, unknown> | null = null
+jest.mock('react-relay', () => ({
+  ...jest.requireActual('react-relay'),
+  useClientQuery: () => ({viewer: mockDragViewer})
+}))
 jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
   useTipTapPageEditor: () => ({editor: mockNestedEditor})
 }))
@@ -134,6 +140,7 @@ afterEach(() => {
   container.remove()
   mockNestedEditor = null
   mockChromeState = 'editable'
+  mockDragViewer = null
 })
 
 const text = () => container.textContent ?? ''
@@ -326,7 +333,7 @@ test('a viewer sees no placeholder in an empty block', () => {
 
 const flushTimers = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 
-const mountView = (link = syncedLink) => {
+const mountView = (link = syncedLink, {isJustMade = false} = {}) => {
   const host = new Editor({
     element: document.createElement('div'),
     extensions: [StarterKit, PageLinkBlockBase.extend({addStorage: () => ({pageId: 'page:1'})})],
@@ -335,8 +342,10 @@ const mountView = (link = syncedLink) => {
   const linkPos = findLinkPositions(host)[0]!
   hostRef.current = host
   mockNestedEditor = mountNested(host, linkPos, ['Sev 1: page the on-call lead.'])
+  const node = host.state.doc.nodeAt(linkPos)!
+  if (isJustMade) focusSyncedBlockOnMount(node)
   const props = {
-    node: host.state.doc.nodeAt(linkPos)!,
+    node,
     editor: host,
     getPos: () => findLinkPositions(host)[0]
   } as unknown as NodeViewProps
@@ -391,6 +400,21 @@ const pressKey = (input: HTMLInputElement, key: string) =>
   act(() => {
     input.dispatchEvent(new KeyboardEvent('keydown', {key, bubbles: true, cancelable: true}))
   })
+
+const nestedCaret = () => {
+  const {$from} = mockNestedEditor!.state.selection
+  return {text: $from.parent.textContent, offset: $from.parentOffset}
+}
+
+test('a block just made from the slash menu or Turn into takes the caret once its editor is ready', () => {
+  mountView(syncedLink, {isJustMade: true})
+  expect(nestedCaret()).toEqual({text: 'Sev 1: page the on-call lead.', offset: 29})
+})
+
+test('a block that was already on the page leaves the caret alone', () => {
+  mountView()
+  expect(nestedCaret()).toEqual({text: 'Escalation path', offset: 0})
+})
 
 const mountFocusedView = (link = syncedLink) => {
   const host = mountView(link)
@@ -856,4 +880,45 @@ test.each([
   await flushTimers()
   await flushFrame()
   expect(focusSpy).toHaveBeenCalled()
+})
+
+test.each([
+  [
+    'a block drag carrying a page',
+    {draggingBlocksChildPageIds: ['page:9']},
+    'read-write',
+    'No pages in synced blocks'
+  ],
+  ['a block drag onto a view-only block', {}, 'readonly', 'View only'],
+  [
+    'a block drag from inside the block',
+    {draggingBlocksSourcePageId: 'page:7', draggingBlocksChildPageIds: ['page:9']},
+    'read-write',
+    null
+  ],
+  [
+    'a drag of a page',
+    {draggingBlocksSourcePageId: null, draggingPageId: 'page:9'},
+    'read-write',
+    'No pages in synced blocks'
+  ],
+  [
+    'a drag of the block itself',
+    {draggingBlocksSourcePageId: null, draggingPageId: 'page:7'},
+    'read-write',
+    'Inside itself'
+  ]
+] as const)('%s marks the block content for the drop hint', (_label, drag, scope, refusal) => {
+  mockDragViewer = {draggingBlocksSourcePageId: 'page:1', ...drag}
+  mountBlock(scope)
+  const content = container.querySelector('[data-synced-editor]')!
+  expect(content.getAttribute('data-drop-refused')).toBe(refusal)
+  expect(content.getAttribute('data-drop-title')).toBe(refusal && 'Escalation path')
+})
+
+test('a host drop on the frame around a refusing block is left to the page', () => {
+  mockDragViewer = {draggingBlocksSourcePageId: 'page:1', draggingBlocksChildPageIds: ['page:9']}
+  mountView()
+  const frame = container.querySelector('[data-synced-block]')!
+  expect(frame.closest('[data-drop-in], [data-drop-refused]')).toBeNull()
 })

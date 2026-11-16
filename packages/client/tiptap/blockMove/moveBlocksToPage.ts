@@ -19,7 +19,13 @@ export type BlockMoveOutcome = {
   moved: MovedBlock[] | null
 }
 
-type Params = {session: BlockDragSession; targetPageId: string; targetTitle: string}
+type Params = {
+  session: BlockDragSession
+  targetPageId: string
+  targetTitle: string
+  insertIndex?: number
+  nested?: boolean
+}
 
 const resultOnly = (result: BlockMoveResult): BlockMoveOutcome => ({
   result,
@@ -36,7 +42,7 @@ const deleteFromSource = (editor: Editor, from: number, to: number, meta: BlockM
 }
 
 const moveTrackedBlocks = async (
-  {session, targetPageId, targetTitle}: Params,
+  {session, targetPageId, targetTitle, insertIndex, nested}: Params,
   startPoint: TrackedRange
 ): Promise<BlockMoveOutcome> => {
   const {editor, range, movable} = session
@@ -47,7 +53,7 @@ const moveTrackedBlocks = async (
     targetPageId,
     async (frag, provider): Promise<BlockMoveOutcome> => {
       if (!range.current()) return resultOnly('gone')
-      const moved = appendBlocksToFragment(frag, movable.blocks, editor.schema)
+      const moved = appendBlocksToFragment(frag, movable.blocks, editor.schema, insertIndex)
       const copied: BlockMoveOutcome = {result: 'copied', meta: null, moved}
       if (!(await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS))) {
         if (childPageCodes.length > 0) return copied
@@ -61,11 +67,19 @@ const moveTrackedBlocks = async (
       if (!linksRemoved || !current || editor.isDestroyed) return copied
       const now = getMovableBlocks(editor.state.doc, current.from, current.to).blocks
       if (fingerprintBlocks(now, ignoredPageCodes) !== snapshot) return copied
-      const meta: BlockMoveMeta = {targetPageId, targetTitle, moved, blocks: movable.blocks}
+      const meta: BlockMoveMeta = {
+        targetPageId,
+        targetTitle,
+        moved,
+        blocks: movable.blocks,
+        insertIndex,
+        nested
+      }
       if (childPageCodes.length > 0) meta.childPages = movable.childPages
       deleteFromSource(editor, current.from, current.to, meta)
       return {result: 'moved', meta, moved}
-    }
+    },
+    {nested}
   )
   return typeof outcome === 'string' ? resultOnly(outcome) : outcome
 }

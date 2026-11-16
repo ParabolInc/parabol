@@ -31,7 +31,7 @@ const takeBackFromTarget = async (atmosphere: Atmosphere, meta: BlockMoveMeta) =
       const {removed, kept} = removeMovedBlocks(frag, meta.moved)
       return {removed, kept, saved: await waitForSaved(provider, BLOCK_MOVE_TIMEOUT_MS)}
     },
-    {refuseWhileStreaming: false}
+    {refuseWhileStreaming: false, nested: meta.nested}
   )
   const notify = (message: string) =>
     showBlockMoveNotice(atmosphere, BLOCK_MOVE_UNDO_SNACK_KEY, message)

@@ -1,4 +1,4 @@
-import {getBlockDropRefusal} from '../getBlockDropRefusal'
+import {getBlockDropRefusal, getSyncedBlockDropRefusal} from '../getBlockDropRefusal'
 
 const drag = {sourcePageId: 'page:1', childPageIds: ['page:7'], refusal: null}
 test.each([
@@ -25,4 +25,8 @@ test('a refusal from the dragged content wins', () => {
       {...drag, refusal: 'Wait for the upload to finish'}
     )
   ).toBe('Wait for the upload to finish')
+})
+
+test('a synced block refuses a drag carrying a page', () => {
+  expect(getSyncedBlockDropRefusal('page:2', false, drag)).toBe('No pages in synced blocks')
 })

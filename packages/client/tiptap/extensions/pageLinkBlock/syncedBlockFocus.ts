@@ -1,5 +1,5 @@
 import type {Editor} from '@tiptap/core'
-import type {ResolvedPos} from '@tiptap/pm/model'
+import type {Node as ProseMirrorNode, ResolvedPos} from '@tiptap/pm/model'
 import {NodeSelection, Plugin, Selection, TextSelection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
 
@@ -24,7 +24,19 @@ export const getNestedEditor = (view: EditorView, pos: number) => {
 
 const firstContentPos = (editor: Editor) => editor.state.doc.firstChild!.nodeSize
 
-const placeInNested = (editor: Editor, edge: Edge, x: number | null) => {
+const focusRequests = new WeakSet<ProseMirrorNode>()
+
+export const focusSyncedBlockOnMount = (link: ProseMirrorNode) => {
+  focusRequests.add(link)
+}
+
+export const hasSyncedBlockFocusRequest = (link: ProseMirrorNode) => focusRequests.has(link)
+
+export const clearSyncedBlockFocusRequest = (link: ProseMirrorNode) => {
+  focusRequests.delete(link)
+}
+
+export const placeInNested = (editor: Editor, edge: Edge, x: number | null) => {
   const {state, view} = editor
   const {doc} = state
   const min = firstContentPos(editor)
