@@ -23,10 +23,11 @@ const buildRestored = (seedContent: JSONContent[]) => {
   ) {
     return {
       listName: seedList.nodeName,
-      restored: seedList.toArray().map((item) => item.clone() as Y.XmlElement)
+      items: seedList.toArray().map((item) => item.clone() as Y.XmlElement),
+      restored: seedNodes.map((seedNode) => seedNode.clone())
     }
   }
-  return {listName: null, restored: seedNodes.map((seedNode) => seedNode.clone())}
+  return {listName: null, items: [], restored: seedNodes.map((seedNode) => seedNode.clone())}
 }
 
 export const restoreSeed = (node: Y.XmlElement<PageLinkBlockAttrs>, seedContent: JSONContent[]) => {
@@ -41,13 +42,13 @@ export const restoreSeed = (node: Y.XmlElement<PageLinkBlockAttrs>, seedContent:
     Logger.error(error)
     return
   }
-  const {listName, restored} = built
+  const {listName, items, restored} = built
   node.doc.transact(() => {
     parent.delete(index)
     const left = getSibling(parent, index - 1, listName)
     const right = getSibling(parent, index, listName)
     if (left) {
-      left.insert(left.length, restored)
+      left.insert(left.length, items)
       if (right) {
         left.insert(
           left.length,
@@ -56,7 +57,7 @@ export const restoreSeed = (node: Y.XmlElement<PageLinkBlockAttrs>, seedContent:
         parent.delete(index)
       }
     } else if (right) {
-      right.insert(0, restored)
+      right.insert(0, items)
     } else {
       parent.insert(index, restored)
     }

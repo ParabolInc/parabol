@@ -547,3 +547,20 @@ test('leaves the link in place when a seed is too deep to put back', async () =>
   expect(frag.length).toBe(1)
   expect(frag.get(0)).toBe(link)
 })
+
+test.each(['bulletList', 'orderedList'] as const)(
+  'puts a lone failed %s back whole',
+  async (listName) => {
+    mockFlagEnabled = true
+    mockCreateNewPage.mockRejectedValueOnce(new Error('boom'))
+    const link = makeSeededLink(NEW_PAGE_SENTINEL_CODE, [
+      {type: listName, content: [seedListItem('Only'), seedListItem('Two')]}
+    ])
+    const frag = insertLinkBetween(null, link, null)
+    await flush()
+    expect(nodeNames(frag)).toEqual([listName])
+    const items = listItemTexts(frag.get(0) as Y.XmlElement)
+    expect(items).toHaveLength(2)
+    expect(items[0]).toContain('Only')
+  }
+)
