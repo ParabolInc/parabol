@@ -178,13 +178,14 @@ export const replaceAssetSrc = async (
   const {src, hostedSrc} = payload
   await withDoc(documentName, (doc) => {
     const frag = doc.getXmlFragment('default')
-    const walker = frag.createTreeWalker(
-      (yxml) => yxml instanceof XmlElement && PAGE_ASSET_ATTRS.has(yxml.nodeName)
-    )
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!(yxml instanceof XmlElement)) return false
+      const attr = PAGE_ASSET_ATTRS.get(yxml.nodeName)
+      return !!attr && yxml.getAttribute(attr) === src
+    })
     for (const node of Array.from(walker) as XmlElement[]) {
-      PAGE_ASSET_ATTRS.get(node.nodeName)?.forEach((attr) => {
-        if (node.getAttribute(attr) === src) node.setAttribute(attr, hostedSrc)
-      })
+      const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+      if (attr) node.setAttribute(attr, hostedSrc)
     }
   })
 }

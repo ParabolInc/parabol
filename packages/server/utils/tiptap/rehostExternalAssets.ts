@@ -18,32 +18,25 @@ import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 
 const MAX_CONCURRENT_PER_USER = 3
 
-const getAssetAttrs = (node: unknown) =>
-  node instanceof Y.XmlElement ? PAGE_ASSET_ATTRS.get(node.nodeName) : undefined
+const isEmbeddable = (node: unknown): node is Y.XmlElement =>
+  node instanceof Y.XmlElement && PAGE_ASSET_ATTRS.has(node.nodeName)
 
-const isAssetNode = (node: unknown): node is Y.XmlElement => !!getAssetAttrs(node)
-
-const getChangedSrcs = (e: Y.YEvent<any>) => {
-  const srcs: unknown[] = []
-  const addSrcs = (node: Y.XmlElement, attrs: readonly string[]) => {
-    attrs.forEach((attr) => srcs.push(node.getAttribute(attr)))
-  }
+const getChangedEmbeds = (e: Y.YEvent<any>) => {
+  const embeds: Y.XmlElement[] = []
   e.changes.added.forEach((item) => {
     item.content.getContent().forEach((content) => {
       if (!(content instanceof Y.XmlElement)) return
-      const nodes = [content, ...content.createTreeWalker(isAssetNode)]
-      nodes.forEach((node) => {
-        const attrs = getAssetAttrs(node)
-        if (attrs) addSrcs(node as Y.XmlElement, attrs)
-      })
+      if (isEmbeddable(content)) embeds.push(content)
+      for (const node of content.createTreeWalker(isEmbeddable)) {
+        embeds.push(node as Y.XmlElement)
+      }
     })
   })
-  if (e instanceof Y.YXmlEvent) {
-    const attrs = getAssetAttrs(e.target)
-    const changedAttrs = attrs?.filter((attr) => e.attributesChanged.has(attr))
-    if (changedAttrs?.length) addSrcs(e.target as Y.XmlElement, changedAttrs)
+  if (e instanceof Y.YXmlEvent && isEmbeddable(e.target)) {
+    const attr = PAGE_ASSET_ATTRS.get(e.target.nodeName)
+    if (attr && e.attributesChanged.has(attr)) embeds.push(e.target)
   }
-  return srcs
+  return embeds
 }
 
 // A drag deletes a block and adds a copy in the same transaction. Moving an asset someone else added isn't adding it
@@ -56,12 +49,10 @@ const getMovedSrcs = (transaction: Y.Transaction) => {
   Y.iterateDeletedStructs(transaction, transaction.deleteSet, (struct) => {
     if (!(struct instanceof Y.Item)) return
     const [node] = struct.content.getContent()
-    const attrs = getAssetAttrs(node)
-    if (!attrs) return
-    attrs.forEach((attr) => {
-      const src = getUnsafeDeletedAttribute(node as Y.XmlElement, attr, true)
-      if (typeof src === 'string') movedSrcs.add(src)
-    })
+    if (!isEmbeddable(node)) return
+    const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+    const src = attr && getUnsafeDeletedAttribute(node, attr, true)
+    if (typeof src === 'string') movedSrcs.add(src)
   })
   movedSrcsByTransaction.set(transaction, movedSrcs)
   return movedSrcs
@@ -151,11 +142,13 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
   const {origin} = transaction
   const connection =
     isTransactionOrigin(origin) && origin.source === 'connection' ? origin.connection : undefined
-  const srcs = getChangedSrcs(e)
-  if (srcs.length === 0) return
+  const embeds = getChangedEmbeds(e)
+  if (embeds.length === 0) return
   const pageCode = CipherId.encrypt(pageId)
   const movedSrcs = getMovedSrcs(transaction)
-  srcs.forEach((src) => {
+  embeds.forEach((node) => {
+    const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+    const src = attr && node.getAttribute(attr)
     if (typeof src !== 'string' || movedSrcs.has(src)) return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
@@ -165,9 +158,9 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
 
 export const rehostSeededAssets = (pageId: number, content: JSONContent[], userId: string) => {
   const pageCode = CipherId.encrypt(pageId)
-  const srcs = [...PAGE_ASSET_ATTRS].flatMap(([nodeType, attrs]) =>
-    getAllNodesAttributesByType<Record<string, unknown>>({content}, nodeType).flatMap((nodeAttrs) =>
-      attrs.map((attr) => nodeAttrs[attr])
+  const srcs = [...PAGE_ASSET_ATTRS].flatMap(([nodeType, attr]) =>
+    getAllNodesAttributesByType<Record<string, unknown>>({content}, nodeType).map(
+      (attrs) => attrs[attr]
     )
   )
   srcs.forEach((src) => {

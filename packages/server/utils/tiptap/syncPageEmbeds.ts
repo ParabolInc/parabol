@@ -6,11 +6,11 @@ import {Logger} from '../Logger'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 
 const RESOLVED_METADATA_KEYS = PROVIDER_ATTR_KEYS.filter((key) => key !== 'fetchedAt')
-const EMBED_ASSET_ATTRS = PAGE_ASSET_ATTRS.get('embedBlock') ?? []
+const EMBED_ASSET_ATTR = PAGE_ASSET_ATTRS.get('embedBlock')
 
 // A hosted copy stands in for the provider's image, which may refuse to load on other sites
 const isHostedCopy = (key: string, current: unknown) =>
-  EMBED_ASSET_ATTRS.includes(key) && typeof current === 'string' && isParabolHostedAsset(current)
+  key === EMBED_ASSET_ATTR && typeof current === 'string' && isParabolHostedAsset(current)
 
 export const MAX_REVALIDATIONS_PER_LOAD = 10
 
