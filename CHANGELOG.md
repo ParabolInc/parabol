@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.35.1](https://github.com/ParabolInc/parabol/compare/v15.35.0...v15.35.1) (2026-11-16)
+
+
+### Fixed
+
+* **pages:** drag blocks out of a synced block onto its page ([#14236](https://github.com/ParabolInc/parabol/issues/14236)) ([10cffb1](https://github.com/ParabolInc/parabol/commit/10cffb1318d566a2ee88f7370c9d6198b3632cc9))
+
 ## [15.35.0](https://github.com/ParabolInc/parabol/compare/v15.34.0...v15.35.0) (2026-11-16)
 
 
