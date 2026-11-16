@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.34.0](https://github.com/ParabolInc/parabol/compare/v15.33.0...v15.34.0) (2026-11-16)
+
+
+### Added
+
+* **pages:** synced block access ([#14229](https://github.com/ParabolInc/parabol/issues/14229)) ([841852d](https://github.com/ParabolInc/parabol/commit/841852dd74bc294d08a1c997d64d7727ff2be388))
+* **pages:** synced blocks in search, print, export, Trash and Turn into ([#14232](https://github.com/ParabolInc/parabol/issues/14232)) ([b52ee6c](https://github.com/ParabolInc/parabol/commit/b52ee6c62f46ba7e24ffc38fdcb251065617bc40))
+* **pages:** undo block moves that carry a child page ([#14230](https://github.com/ParabolInc/parabol/issues/14230)) ([308896c](https://github.com/ParabolInc/parabol/commit/308896c0d1dd6cf25fdfdd4cf3772c5bb32b6497))
+
+
+### Fixed
+
+* **pages:** Trash in other tabs, failed Turn into, arrival ring ([#14233](https://github.com/ParabolInc/parabol/issues/14233)) ([e1e0453](https://github.com/ParabolInc/parabol/commit/e1e04530154dad5afe4fffdfa86b28f1eb8df01c))
+
 ## [15.33.0](https://github.com/ParabolInc/parabol/compare/v15.32.1...v15.33.0) (2026-11-15)
 
 
