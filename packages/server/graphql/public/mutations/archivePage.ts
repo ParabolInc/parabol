@@ -1,7 +1,8 @@
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
+import {type Selectable, sql} from 'kysely'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
+import type {PageAccess} from '../../../postgres/types/pg'
 import {updatePageAncestorIds} from '../../../postgres/updatePageAncestorIds'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
@@ -40,6 +41,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
       extensions: {code: 'CONFLICT'}
     })
   }
+  let accessBeforeDelete: Selectable<PageAccess>[] | undefined
   if (action === 'delete') {
     const subtreeIds = (
       await pg
@@ -100,6 +102,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
         extensions: {code: 'FORBIDDEN'}
       })
     }
+    accessBeforeDelete = await dataLoader.get('pageAccessByPageId').load(dbPageId)
     const promotions = await pg.transaction().execute(async (trx) => {
       const promoted: {hostId: number; blockId: number}[] = []
       for (const blockId of promotableIds) {
@@ -201,7 +204,14 @@ const archivePage: MutationResolvers['archivePage'] = async (
     }
   }
   const data = {pageId: dbPageId, action}
-  await publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
+  await publishPageNotification(
+    dbPageId,
+    'ArchivePagePayload',
+    data,
+    subOptions,
+    dataLoader,
+    accessBeforeDelete
+  )
   return data
 }
 

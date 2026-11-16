@@ -1,7 +1,9 @@
+import type {Selectable} from 'kysely'
 import {pack} from 'msgpackr'
 import {SubscriptionChannel} from '../../client/types/constEnums'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {ResolversTypes} from '../graphql/public/resolverTypes'
+import type {PageAccess} from '../postgres/types/pg'
 import getRedis from './getRedis'
 import publish, {type SubscriptionPayloadName} from './publish'
 
@@ -22,9 +24,10 @@ export const publishPageNotification = async <T extends PageNotificationPayloadN
   type: T,
   data: Record<string, any>,
   subOptions: {mutatorId?: string; operationId?: string},
-  dataLoader: DataLoaderInstance
+  dataLoader: DataLoaderInstance,
+  accessOverride?: Selectable<PageAccess>[]
 ) => {
-  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  const access = accessOverride ?? (await dataLoader.get('pageAccessByPageId').load(pageId))
   const userIds = access.map((a) => a.userId).filter((userId) => userId !== '*')
   const isPubliclyAccessible = userIds.length < access.length
   userIds.forEach((userId) => {
