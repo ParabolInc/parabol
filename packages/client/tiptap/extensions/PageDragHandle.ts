@@ -45,8 +45,8 @@ const queryNode = graphql`
 
 // Approximates a text line so the handle sits at the top of a block without one
 const DRAG_HANDLE_ANCHOR_HEIGHT = 24
-// A card's title is not its top line, so media blocks anchor to the block top
-const MEDIA_BLOCKS = new Set(['embedBlock', 'imageBlock'])
+// Boxes whose first text is not their top line anchor to the box top
+const TOP_ANCHORED_BLOCKS = new Set(['embedBlock', 'imageBlock', 'table'])
 const SYNCED_BLOCK_HANDLE_OFFSET = 26
 const SYNCED_BLOCK_LINE_HANDLE_INSET = 8
 const BLOCK_DRAG_TEXT = '__dummy__'
@@ -92,15 +92,17 @@ const findFirstTextblockPos = (node: Node, pos: number) => {
   return found
 }
 
-// The handle centers on a block's first line. Node view chrome (a task checkbox's
-// screen-reader label, a table's empty header row) must not stand in for that line.
+// The handle centers on a block's first line. Node view chrome, like a to-do checkbox's
+// screen-reader label, must not stand in for that line.
 const getFirstLine = (view: EditorView, node: Node, pos: number, dom: HTMLElement) => {
-  const textblockPos = MEDIA_BLOCKS.has(node.type.name) ? -1 : findFirstTextblockPos(node, pos)
+  const textblockPos = TOP_ANCHORED_BLOCKS.has(node.type.name)
+    ? -1
+    : findFirstTextblockPos(node, pos)
   const textblock = textblockPos >= 0 ? view.nodeDOM(textblockPos) : null
   const line =
     textblock instanceof HTMLElement
       ? (getTextLine(textblock) ?? getEmptyLine(textblock))
-      : MEDIA_BLOCKS.has(node.type.name)
+      : TOP_ANCHORED_BLOCKS.has(node.type.name)
         ? null
         : getTextLine(dom)
   if (line) return line.height ? line : null

@@ -246,27 +246,19 @@ describe('the handle', () => {
       expect(anchorRect(activeEditor, itemPos)?.top).toBe(4)
     })
 
-    test('a table, even when its first row is empty', () => {
-      const cell = (type: string, text?: string) => ({
-        type,
-        content: [text ? p(text) : {type: 'paragraph'}]
-      })
+    test('a table, which is its top', () => {
+      const cell = (type: string, text: string) => ({type, content: [p(text)]})
       const activeEditor = makeEditor({
         type: 'table',
         content: [
-          {type: 'tableRow', content: [cell('tableHeader'), cell('tableHeader')]},
-          {type: 'tableRow', content: [cell('tableCell'), cell('tableCell', 'only here')]}
+          {type: 'tableRow', content: [cell('tableHeader', 'Owner'), cell('tableHeader', 'Due')]}
         ]
       })
-      textRectAt({'only here': 60})
-      const firstCellLine = activeEditor.view.nodeDOM(
-        positionOf(activeEditor, 'tableHeader') + 1
-      ) as HTMLElement
-      firstCellLine.getBoundingClientRect = () => new happyWindow.DOMRect(0, 10, 300, 26)
-      expect(anchorRect(activeEditor, positionOf(activeEditor, 'table'))).toMatchObject({
-        top: 10,
-        height: 26
-      })
+      textRectAt({Owner: 16})
+      const tablePos = positionOf(activeEditor, 'table')
+      const table = activeEditor.view.nodeDOM(tablePos) as HTMLElement
+      table.getBoundingClientRect = () => new happyWindow.DOMRect(0, 0, 600, 120)
+      expect(anchorRect(activeEditor, tablePos)).toMatchObject({top: 0, height: 24})
     })
 
     test('an image, which is its top', () => {
