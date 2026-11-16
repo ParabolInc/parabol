@@ -1,8 +1,14 @@
 import type {HttpResponse} from 'uWebSockets.js'
+import http from 'node:http'
+import net, {type AddressInfo} from 'node:net'
 import {createSchema, createYoga} from 'graphql-yoga'
 import {FIRST_FILL_PRIORITY} from '../../embedder/getEmbedderJobPriority'
 import {graphqlPrometheusPlugin, logins, metricsHandler} from '../metricsHandler'
+import traceOutboundHttp from '../tracing/traceOutboundHttp'
 import {Logger} from '../utils/Logger'
+import {useVendorWait} from '../utils/vendorWait'
+
+traceOutboundHttp()
 
 const mockCountJobsByState = jest.fn()
 const mockCountFillJobs = jest.fn().mockResolvedValue([])
@@ -128,7 +134,55 @@ test('counts GraphQL operations by name and times them by operation type only', 
   })
   const {body} = await scrape()
   expect(body).toMatch(/graphql_envelop_request\{[^}]*operationName="Hello"[^}]*\} 1/)
-  expect(body).toContain('graphql_envelop_request_duration_count{operationType="query"} 1')
+  expect(body).toContain(
+    'graphql_envelop_request_duration_count{operationType="query",slow_because="parabol"} 1'
+  )
   expect(body).not.toMatch(/graphql_envelop_request_duration_count\{[^}]*operationName/)
   expect(body).not.toContain('graphql_envelop_phase_')
+})
+
+test('an operation slow only because a vendor streamed its response for over a second is slow because of the vendor', async () => {
+  mockCountJobsByState.mockResolvedValue([])
+  const vendor = http.createServer((_req, res) => {
+    res.flushHeaders()
+    setTimeout(() => res.end('ok'), 1100)
+  })
+  await new Promise<void>((resolve) => vendor.listen(0, '127.0.0.1', resolve))
+  const {port} = vendor.address() as AddressInfo
+  const getFromGitHub = () =>
+    new Promise<void>((resolve, reject) => {
+      http
+        .get(
+          {
+            hostname: 'api.github.com',
+            path: '/',
+            createConnection: () => net.connect(port, '127.0.0.1')
+          },
+          (res) => {
+            res.resume()
+            res.on('end', resolve)
+          }
+        )
+        .on('error', reject)
+    })
+  const yoga = createYoga({
+    schema: createSchema({
+      typeDefs: 'type Query { issueTitle: String }',
+      resolvers: {Query: {issueTitle: () => getFromGitHub().then(() => 'title')}}
+    }),
+    plugins: [useVendorWait(), graphqlPrometheusPlugin]
+  })
+  await yoga.fetch('http://localhost/graphql', {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify({query: 'query IssueTitle { issueTitle }'})
+  })
+  await new Promise((resolve) => vendor.close(resolve))
+  const {body} = await scrape()
+  expect(body).toContain(
+    'graphql_envelop_request_duration_count{operationType="query",slow_because="vendor"} 1'
+  )
+  expect(body).toContain(
+    'parabol_vendor_request_duration_seconds_count{host="api.github.com",status_class="2xx"} 1'
+  )
 })
