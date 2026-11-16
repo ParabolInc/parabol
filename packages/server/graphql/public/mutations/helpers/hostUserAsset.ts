@@ -8,11 +8,11 @@ import {
   MAX_USER_UPLOAD_BYTES_FREE,
   MAX_USER_UPLOAD_BYTES_PAID
 } from '../../../../../client/utils/constants'
-import appOrigin from '../../../../appOrigin'
 import {checkAccess} from '../../../../assetProxyHandler'
 import type AuthToken from '../../../../database/types/AuthToken'
 import type {AssetType, PartialPath} from '../../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
+import {isParabolHostedAsset} from '../../../../fileStorage/isParabolHostedAsset'
 import {getUserId} from '../../../../utils/authorization'
 import {compressImage} from '../../../../utils/compressImage'
 import encodeAuthToken from '../../../../utils/encodeAuthToken'
@@ -44,9 +44,7 @@ export const hostUserAsset = async (
   if (BigInt(bytesUploaded) > BigInt(maxSize)) {
     return {error: {message: `Upload limit reached. Please contact sales`}}
   }
-  const isParabolHostedAsset =
-    parsedUrl.origin === appOrigin && parsedUrl.pathname.startsWith('/assets/')
-  if (isParabolHostedAsset) {
+  if (isParabolHostedAsset(parsedUrl)) {
     // if we host it, just make a copy of it in the new directory
     const manager = await getFileStoreManager()
     const sourcePartialPath = parsedUrl.pathname.slice('/assets/'.length) as PartialPath
