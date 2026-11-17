@@ -25,6 +25,7 @@ import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {TokenScopesTable} from '../TokenScopesTable'
 import OAuthClientTypeField, {type OAuthClientType} from './OAuthClientTypeField'
+import OAuthClientTypeSwitchDialog from './OAuthClientTypeSwitchDialog'
 
 const MASKED_SECRET = '••••••••••••••••••••'
 
@@ -53,6 +54,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
+  const [switchConfirmOpen, setSwitchConfirmOpen] = useState(false)
 
   const [commitCreate] = useMutation<OAuthAppFormContentCreateMutation>(graphql`
     mutation OAuthAppFormContentCreateMutation(
@@ -124,7 +126,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   )
   const [showSecret, setShowSecret] = useState(false)
 
-  const handleSave = () => {
+  const handleSave = (isClientTypeSwitchConfirmed = false) => {
     setIsSaving(true)
     setError(null)
     const uriList = redirectUris
@@ -155,6 +157,12 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     }
 
     const providerId = initialData?.id
+    const isSwitchingClientType = !!providerId && clientType !== savedClientType
+    if (isSwitchingClientType && !isClientTypeSwitchConfirmed) {
+      setIsSaving(false)
+      setSwitchConfirmOpen(true)
+      return
+    }
 
     const mutationScopes = [...scopes]
 
@@ -165,7 +173,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           name,
           redirectUris: uriList,
           scopes: mutationScopes,
-          clientType: clientType === savedClientType ? undefined : clientType
+          clientType: isSwitchingClientType ? clientType : undefined
         },
         onCompleted: (response) => {
           setIsSaving(false)
@@ -526,6 +534,16 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </Button>
           </DialogActions>
         </form>
+        <OAuthClientTypeSwitchDialog
+          appName={name || initialData?.name}
+          clientType={clientType}
+          isOpen={switchConfirmOpen}
+          onClose={() => setSwitchConfirmOpen(false)}
+          onConfirm={() => {
+            setSwitchConfirmOpen(false)
+            handleSave(true)
+          }}
+        />
       </DialogContent>
     </>
   )
