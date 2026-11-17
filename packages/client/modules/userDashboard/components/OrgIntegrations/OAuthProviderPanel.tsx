@@ -1,28 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {OAuthProviderPanelQuery} from '../../../../__generated__/OAuthProviderPanelQuery.graphql'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import Panel from '../../../../components/Panel/Panel'
-import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OAuthProviderList from './OAuthProviderList'
 
-const query = graphql`
-  query OAuthProviderPanelQuery($orgId: ID!) {
-    viewer {
-      organization(orgId: $orgId) {
-        ...OAuthProviderList_organization
-      }
-    }
-  }
-`
-
-const OAuthProviderPanelContent = ({
-  queryRef
-}: {
+interface Props {
   queryRef: PreloadedQuery<OAuthProviderPanelQuery>
-}) => {
-  const data = usePreloadedQuery<OAuthProviderPanelQuery>(query, queryRef)
+}
+
+const OAuthProviderPanel = (props: Props) => {
+  const {queryRef} = props
+  const data = usePreloadedQuery<OAuthProviderPanelQuery>(
+    graphql`
+      query OAuthProviderPanelQuery($orgId: ID!) {
+        viewer {
+          organization(orgId: $orgId) {
+            ...OAuthProviderList_organization
+          }
+        }
+      }
+    `,
+    queryRef
+  )
   const {organization} = data.viewer
   if (!organization) return null
   return (
@@ -36,15 +36,6 @@ const OAuthProviderPanelContent = ({
         <OAuthProviderList organizationRef={organization} />
       </div>
     </Panel>
-  )
-}
-
-const OAuthProviderPanel = ({orgId}: {orgId: string}) => {
-  const queryRef = useQueryLoaderNow<OAuthProviderPanelQuery>(query, {orgId})
-  return (
-    <Suspense fallback={''}>
-      {queryRef && <OAuthProviderPanelContent queryRef={queryRef} />}
-    </Suspense>
   )
 }
 
