@@ -1,6 +1,7 @@
 import type {Doc, YXmlEvent} from 'yjs'
 import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
 import getKysely from '../postgres/getKysely'
+import {feistelCipher} from '../utils/feistelCipher'
 import {getTestEmail, sendPublic, sendTipTap, signUp, signUpWithEmail} from './common'
 
 afterAll(async () => {
@@ -894,4 +895,60 @@ test('createPage blocks creating a team page for a team the viewer is not a memb
       })
     ]
   })
+})
+
+const findCodeBeyondDbIds = () => {
+  let code = 1
+  while (feistelCipher.decrypt(code) <= 2 ** 31 - 1) code++
+  return code
+}
+
+test.each([
+  ['a code that decrypts beyond the largest page id', () => `page:${findCodeBeyondDbIds()}`],
+  ['a code beyond uint32', () => `page:${2 ** 32 + 7}`],
+  ['a negative code', () => 'page:-12']
+])('A page id from %s is a page the viewer cannot access', async (_label, makePageId) => {
+  const {cookie} = await signUp()
+  const pageId = makePageId()
+
+  const pageRes = await sendPublic({
+    query: `
+      query Page($pageId: ID!) {
+        public {
+          page(pageId: $pageId) {
+            id
+          }
+        }
+      }
+    `,
+    variables: {pageId},
+    cookie
+  })
+  expect(pageRes).toEqual({
+    data: {public: {page: null}},
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Insufficient permission.')
+      })
+    ]
+  })
+
+  const childrenRes = await sendPublic({
+    query: `
+      query Pages($parentPageId: ID!) {
+        viewer {
+          pages(parentPageId: $parentPageId, first: 10) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {parentPageId: pageId},
+    cookie
+  })
+  expect(childrenRes).toEqual({data: {viewer: {pages: {edges: []}}}})
 })

@@ -5,6 +5,7 @@ import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {blacklistJWT, blacklistJWTSession} from '../../blacklistJWT'
 import {CipherId} from '../../CipherId'
 import {toEpochSeconds} from '../../epochTime'
+import {feistelCipher} from '../../feistelCipher'
 import getPubSub from '../../getPubSub'
 import getRedis from '../../getRedis'
 import {authenticateYjsConnection} from '../authenticateYjsConnection'
@@ -103,6 +104,16 @@ test('rejects other names that resolve to the same page', async () => {
   const pageCode = CipherId.encrypt(pageId)
   for (const alias of [`doc:${pageCode}`, `page:0${pageCode}`, `page:${pageCode}:x`]) {
     await expect(authenticate(alias, ownerId)).rejects.toMatchObject({reason: 'InvalidDocument'})
+  }
+})
+
+test('rejects names that cannot be a page', async () => {
+  let codeBeyondDbIds = 1
+  while (feistelCipher.decrypt(codeBeyondDbIds) <= 2 ** 31 - 1) codeBeyondDbIds++
+  for (const documentName of [`page:${codeBeyondDbIds}`, `page:${2 ** 32 + 7}`, 'page:-12']) {
+    await expect(authenticate(documentName, ownerId)).rejects.toMatchObject({
+      reason: 'InvalidDocument'
+    })
   }
 })
 
