@@ -280,7 +280,6 @@ test.each([
     expect(res).toEqual({
       data: {
         createOAuth1AuthorizeUrl: {
-          error: null,
           url: `${jiraServerUrl}/plugins/servlet/oauth/authorize?oauth_token=requestToken1`
         }
       }

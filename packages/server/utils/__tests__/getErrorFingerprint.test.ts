@@ -86,7 +86,7 @@ test.each([
 // symbolicated top frames production logged for one console error, from Chrome, Safari and two Firefox releases
 test('a console error has one fingerprint in every browser and release', () => {
   const message =
-    'Notification Subscription Payload received without field: SetNotificationSettingSuccess'
+    'Notification Subscription Payload received without field: SetNotificationSettingPayload'
   const fingerprints = [
     '    at packages/client/utils/registerClientErrorHandlers.ts:29:19',
     '    at packages/client/utils/registerClientErrorHandlers.ts:29:24',
