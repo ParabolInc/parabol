@@ -287,6 +287,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
+    patchPageContent: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.patchPageContent'>('args.pageId', 'editor'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
     pokerAnnounceDeckHover:
@@ -765,6 +770,10 @@ const permissionMap: PermissionMap<Resolvers> = {
   Page: {
     '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
     access: allow,
+    content: and(
+      hasPageAccess<'Page.content'>('source.id', 'viewer'),
+      rateLimit({perMinute: 100, perHour: 1000, cache: 'strict'})
+    ),
     id: allow,
     team: allow,
     teamId: allow,

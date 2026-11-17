@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {getPageContent} from '../../../utils/tiptap/getPageContent'
 import {selectPromotionHost} from '../../../utils/tiptap/promoteSyncedBlock'
 import isValid from '../../isValid'
 import {canViewerOpenPage} from '../rules/canViewerOpenPage'
@@ -10,6 +11,7 @@ import type {ReqResolvers} from './ReqResolvers'
 const Page: ReqResolvers<'Page'> = {
   id: ({id}) => CipherId.toClient(id, 'page'),
   access: ({id}) => ({id}),
+  content: ({id}, {format}, {dataLoader}) => getPageContent(id, format, dataLoader),
   parentPage: async ({parentPageId}, _args, {dataLoader}) => {
     if (!parentPageId) return null
     const parentPage = await dataLoader.get('pages').load(parentPageId)

@@ -224,6 +224,10 @@ export const pages = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectPages().where('id', 'in', ids).execute()
 })
 
+export const pageYDocs = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return getKysely().selectFrom('Page').select(['id', 'yDoc']).where('id', 'in', ids).execute()
+})
+
 export const integrationSearchQueries = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectIntegrationSearchQuery().where('id', 'in', ids).execute()
 })
