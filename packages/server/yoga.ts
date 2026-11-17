@@ -37,6 +37,7 @@ import {useErrorLogging} from './utils/useErrorLogging'
 import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
+import {useVendorWait} from './utils/vendorWait'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
@@ -217,7 +218,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useErrorLogging(),
     ...(TRACING_ENABLED ? [useTracing()] : []),
-    ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
+    ...(ENABLE_METRICS ? [useVendorWait(), graphqlPrometheusPlugin] : []),
     useDeferStream(),
     usePersistedOperations({
       async allowArbitraryOperations(request) {

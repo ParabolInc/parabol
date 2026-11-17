@@ -6,6 +6,7 @@ import {activeClients} from './activeClients'
 import getKysely from './postgres/getKysely'
 import type {Embeddingsjobstateenum} from './postgres/types/pg'
 import {Logger} from './utils/Logger'
+import {getOperationSlowBecause, vendorRequestDuration} from './utils/vendorWait'
 
 export const ENABLE_METRICS = process.env.ENABLE_METRICS
   ? process.env.ENABLE_METRICS === 'true'
@@ -248,6 +249,8 @@ export const clientNavigationSuspendedQueries = new Histogram({
   registers: [register]
 })
 
+register.registerMetric(vendorRequestDuration)
+
 export const chatNotificationsSent = new Counter({
   name: 'parabol_chat_notifications_sent_total',
   help: 'Notifications delivered to Slack, Mattermost or Microsoft Teams, by service and event',
@@ -342,11 +345,14 @@ export const graphqlPrometheusPlugin = usePrometheus({
       registry: register,
       histogram: {
         name: 'graphql_envelop_request_duration',
-        help: 'Time to execute or subscribe to a GraphQL operation, in seconds',
-        labelNames: ['operationType'] as const,
+        help: 'Time to execute or subscribe to a GraphQL operation, in seconds. slow_because is vendor when it took over a second only because it waited on third-party requests',
+        labelNames: ['operationType', 'slow_because'] as const,
         buckets: [0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
       },
-      fillLabelsFn: ({operationType}) => ({operationType: operationType ?? 'unknown'})
+      fillLabelsFn: ({operationType}, contextValue) => ({
+        operationType: operationType ?? 'unknown',
+        slow_because: getOperationSlowBecause(contextValue)
+      })
     }),
     graphql_envelop_request_time_summary: false,
     graphql_envelop_phase_parse: false,

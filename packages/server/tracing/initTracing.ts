@@ -15,7 +15,6 @@ import {getLogIdentity, Logger} from '../utils/Logger'
 import {runWithoutLogContext} from '../utils/requestLogContext'
 import FailedTraceSpanProcessor from './FailedTraceSpanProcessor'
 import {setFailedTraceKeeper} from './failedTraces'
-import traceOutboundHttp from './traceOutboundHttp'
 import traceRedisCommands from './traceRedisCommands'
 
 const SAMPLE_RATIO = Number(process.env.OTEL_TRACES_SAMPLER_ARG || 1)
@@ -86,7 +85,6 @@ const startTracing = (url: string) => {
   context.setGlobalContextManager(new AsyncLocalStorageContextManager())
   trace.setGlobalTracerProvider(provider)
   traceRedisCommands()
-  traceOutboundHttp()
   return provider
 }
 
