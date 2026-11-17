@@ -39,7 +39,10 @@ const createCookies = (token: AuthToken | null) => {
   ] as CookieListItem[]
 }
 
-export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
+export const setAuthCookie = (
+  context: Pick<GQLContext, 'request' | 'resourceGrants'>,
+  authToken: AuthToken
+) => {
   if (!context.request) {
     Logger.warn('No request object on context, cannot set auth cookie')
     return

@@ -34,6 +34,7 @@ import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useErrorLogging} from './utils/useErrorLogging'
+import {useFreshAuthToken} from './utils/useFreshAuthToken'
 import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
@@ -238,6 +239,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
+    // after the blacklist check, because a fresh token has a new iat and would escape a sign-out of every older session
+    useFreshAuthToken(),
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {

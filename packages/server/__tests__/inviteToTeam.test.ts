@@ -548,20 +548,20 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
   })
 
   // User2 leaves the team
-  const teamMemberId = `${user2Id}::${teamId}`
-  await sendPublic({
+  const leaveResult = await sendPublic({
     query: `
-      mutation RemoveTeamMember($teamMemberId: ID!) {
-        removeTeamMember(teamMemberId: $teamMemberId) {
+      mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
+        removeTeamMember(teamId: $teamId, userId: $userId) {
           error {
             message
           }
         }
       }
     `,
-    variables: {teamMemberId},
+    variables: {teamId, userId: user2Id},
     cookie: user2Cookie
   })
+  expect(leaveResult).toMatchObject({data: {removeTeamMember: {error: null}}})
 
   // User2 tries to accept the same invite token again — should fail
   const reAcceptResult = await sendPublic({
