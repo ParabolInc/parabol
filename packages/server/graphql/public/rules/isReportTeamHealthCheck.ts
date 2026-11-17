@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import getReportScope from '../../../reports/getReportScope'
-import {getRuleViewerId, isSuperUser} from '../../../utils/authorization'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -20,7 +20,7 @@ export const isReportTeamHealthCheck = <T>(
       }
       const {teams} = await getReportScope({
         orgId,
-        viewerId: getRuleViewerId(authToken),
+        viewerId: getUserId(authToken),
         isSuperUser: isSuperUser(authToken),
         dataLoader
       })

@@ -75,8 +75,9 @@ const getUserByEmailOrPersistentNameId = async (
 const loginSAML: MutationResolvers['loginSAML'] = async (
   _source,
   {samlName, queryString},
-  {dataLoader}
+  context
 ) => {
+  const {dataLoader} = context
   const pg = getKysely()
 
   const normalizedName = samlName.trim().toLowerCase()
@@ -244,10 +245,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       await pg.updateTable('User').set({persistentNameId}).where('id', '=', user.id).execute()
     }
     const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
+    context.authToken = new AuthToken({sub: user.id, tms, rol: user.rol})
     logins.inc({method: 'saml'})
     return {
       userId: user.id,
-      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms, rol: user.rol})),
+      authToken: encodeAuthToken(context.authToken),
       isNewUser: false
     }
   }
@@ -296,7 +298,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const isOrganic = orgIds.length === 0 && !isInvited
-  const authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
+  context.authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
 
   await Promise.all(
     orgIds.map((orgId) => adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader))
@@ -305,7 +307,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   logins.inc({method: 'saml'})
   return {
     userId,
-    authToken: encodeAuthToken(authToken),
+    authToken: encodeAuthToken(context.authToken),
     isNewUser: true
   }
 }

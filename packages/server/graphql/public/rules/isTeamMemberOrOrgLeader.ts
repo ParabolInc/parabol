@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import {getRuleViewerId} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -15,7 +15,7 @@ export const isTeamMemberOrOrgLeader = <T>(dotPath: ResolverDotPath<T>) =>
   rule(`isTeamMemberOrOrgLeader-${dotPath}`, {cache: 'strict'})(
     async (source, args, context: RuleContext) => {
       const {authToken, dataLoader, resourceGrants} = context
-      const viewerId = getRuleViewerId(authToken)
+      const viewerId = getUserId(authToken)
       const argVar = getResolverDotPath(dotPath, source, args)
       const teamIds = (Array.isArray(argVar) ? argVar : [argVar]) as string[]
 
