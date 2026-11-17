@@ -430,6 +430,32 @@ describe('the handle', () => {
     expect(activeEditor.view.dragging).toBeTruthy()
   })
 
+  test('targets the Page block under the pointer when another sits right below it', async () => {
+    const pageLink = (pageCode: number, title: string): JSONContent => ({
+      type: 'pageLinkBlock',
+      attrs: {pageCode, title, canonical: true}
+    })
+    const activeEditor = makeEditor(pageLink(1, 'First'), pageLink(2, 'Second'), p('after'))
+    const {view} = activeEditor
+    const [first = -1, second = -1] = findLinkPositions(activeEditor)
+    jest
+      .spyOn(happyWindow.HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue(new happyWindow.DOMRect(0, 0, 600, 40))
+    const handle = view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')!
+    const hoverLowerHalfOf = async (linkPos: number) => {
+      const after = linkPos + view.state.doc.nodeAt(linkPos)!.nodeSize
+      jest.spyOn(view, 'posAtCoords').mockReturnValue({pos: after, inside: linkPos})
+      view.dom.dispatchEvent(new MouseEvent('mousemove', {clientX: 300, clientY: 30}))
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      const {pos} = mockMenuProps.at(-1)!
+      handle.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      return pos
+    }
+    expect(await hoverLowerHalfOf(first)).toBe(first)
+    expect(await hoverLowerHalfOf(second)).toBe(second)
+  })
+
   test('hides on the meta Turn into sends', () => {
     const activeEditor = makeEditor(p('word'))
     const handle = activeEditor.view.dom.parentElement?.querySelector<HTMLElement>('.drag-handle')
