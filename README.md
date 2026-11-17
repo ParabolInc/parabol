@@ -146,4 +146,4 @@ pnpm i && pnpm build && pnpm predeploy && pnpm start
 
 Copyright (c) 2016-present, Parabol, Inc.
 
-Dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 while holding, at Parabol's sole discretion, the right to create new licenses. See [LICENSE](LICENSE).
+Licensed under the [Business Source License 1.1](LICENSE), which permits non-production use only. Production use requires a [commercial license](docs/alternative-licenses/commercial-self-hosted/LICENSE) from Parabol.
