@@ -1,9 +1,16 @@
 import * as Y from 'yjs'
 import {type EmbedMetadata, PROVIDER_ATTR_KEYS} from '../../../client/shared/embed/embedTypes'
+import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
 import {EMBED_CACHE_TTL_MS, resolveEmbed} from '../embed/resolveEmbed'
 import {Logger} from '../Logger'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 
 const RESOLVED_METADATA_KEYS = PROVIDER_ATTR_KEYS.filter((key) => key !== 'fetchedAt')
+const EMBED_ASSET_ATTR = PAGE_ASSET_ATTRS.get('embedBlock')
+
+// A hosted copy stands in for the provider's image, which may refuse to load on other sites
+const isHostedCopy = (key: string, current: unknown) =>
+  key === EMBED_ASSET_ATTR && typeof current === 'string' && isParabolHostedAsset(current)
 
 export const MAX_REVALIDATIONS_PER_LOAD = 10
 
@@ -30,7 +37,9 @@ const getMetadataChanges = (embed: Y.XmlElement, metadata: EmbedMetadata) => {
   const changes: {key: (typeof RESOLVED_METADATA_KEYS)[number]; value: string | null}[] = []
   for (const key of RESOLVED_METADATA_KEYS) {
     const value = metadata[key]
-    if (value === undefined || embed.getAttribute(key) === (value ?? undefined)) continue
+    const current = embed.getAttribute(key)
+    if (value === undefined || current === (value ?? undefined) || isHostedCopy(key, current))
+      continue
     changes.push({key, value})
   }
   return changes

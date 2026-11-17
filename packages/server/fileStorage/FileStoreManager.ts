@@ -38,6 +38,10 @@ export default abstract class FileStoreManager {
   abstract copyFile(oldKey: PartialPath, newKey: PartialPath): Promise<string>
   abstract moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void>
   abstract presignUrl(partialPath: PartialPath, expiresIn?: number): Promise<string>
+  // in seconds. S3 refuses to sign for longer than 7 days
+  async getPresignedUrlMaxLifetime() {
+    return 604800
+  }
 
   private userFileWritesByPath = new Map<PartialPath, Promise<string>>()
 

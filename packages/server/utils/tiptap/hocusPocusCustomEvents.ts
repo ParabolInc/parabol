@@ -8,6 +8,7 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
 import {insertCanonicalLink} from './insertCanonicalLink'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
 import {toYXmlNodes} from './toYXmlNodes'
 
@@ -187,11 +188,12 @@ export const replaceAssetSrc = async (
     const frag = doc.getXmlFragment('default')
     const walker = frag.createTreeWalker((yxml) => {
       if (!(yxml instanceof XmlElement)) return false
-      if (yxml.nodeName !== 'imageBlock' && yxml.nodeName !== 'fileBlock') return false
-      return yxml.getAttribute('src') === src
+      const attr = PAGE_ASSET_ATTRS.get(yxml.nodeName)
+      return !!attr && yxml.getAttribute(attr) === src
     })
-    for (const node of Array.from(walker)) {
-      ;(node as XmlElement).setAttribute('src', hostedSrc)
+    for (const node of Array.from(walker) as XmlElement[]) {
+      const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+      if (attr) node.setAttribute(attr, hostedSrc)
     }
   })
 }
