@@ -20,7 +20,7 @@ const mutation = graphql`
       invitationToken: $invitationToken
       params: $params
     ) {
-      error {
+      userErrors {
         message
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
@@ -43,9 +43,9 @@ const LoginWithMicrosoftMutation: StandardMutation<
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithMicrosoft} = res
       onCompleted({loginWithMicrosoft}, errors)
-      const {error: uiError} = loginWithMicrosoft
+      const [userError] = loginWithMicrosoft.userErrors
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!uiError && !errors) {
+      if (!userError && !errors) {
         handleSuccessfulLogin(atmosphere, loginWithMicrosoft)
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,

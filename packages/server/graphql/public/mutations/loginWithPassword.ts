@@ -3,6 +3,7 @@ import {logins} from '../../../metricsHandler'
 import {setAuthCookie} from '../../../utils/authCookie'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import type {MutationResolvers} from '../resolverTypes'
+import userErrorResult from './helpers/userErrorResult'
 
 const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   _source,
@@ -23,18 +24,12 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   }
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-    return {error: {message: 'Try logging in with Google'}}
-  } else if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
-    return {error: {message: 'Try logging in with Microsoft'}}
-  } else if (
-    error === AuthenticationError.INVALID_PASSWORD ||
-    error === AuthenticationError.USER_NOT_FOUND
-  ) {
-    return {error: {message: 'Invalid email or password'}}
-  } else if (error === AuthenticationError.MISSING_HASH) {
-    return {error: {message: error}}
+    return userErrorResult('SIGN_IN_WITH_GOOGLE', 'Try logging in with Google')
   }
-  return {error: {message: 'Unknown Error'}}
+  if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
+    return userErrorResult('SIGN_IN_WITH_MICROSOFT', 'Try logging in with Microsoft')
+  }
+  return userErrorResult('INVALID_CREDENTIALS', 'Invalid email or password')
 }
 
 export default loginWithPassword
