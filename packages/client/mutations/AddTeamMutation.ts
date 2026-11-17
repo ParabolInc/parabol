@@ -2,14 +2,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 import type {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
+import {isRejected} from '../hooks/useTeamInviteeDrafts'
 import type {
   NavigateLocalHandler,
-  OnNextHandler,
   OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import getGraphQLError from '../utils/relay/getGraphQLError'
+import plural from '../utils/plural'
+import getMutationError from '../utils/relay/getMutationError'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -34,24 +35,36 @@ const mutation = graphql`
       error {
         message
       }
+      invitees {
+        email
+        status
+        message
+        suggestedEmail
+      }
       ...AddTeamMutation_notification @relay(mask: false)
     }
   }
 `
 
-const popTeamCreatedToast: OnNextHandler<
-  AddTeamMutation_notification$data,
-  OnNextNavigateContext
-> = (payload, {atmosphere, navigate}) => {
-  const {team} = payload
+const popTeamCreatedToast = (
+  addTeam: TAddTeamMutation['response']['addTeam'],
+  {atmosphere, navigate}: OnNextNavigateContext
+) => {
+  const {team, invitees} = addTeam
   if (!team) return
   const {id: teamId, name: teamName} = team
+  const sentCount = invitees?.filter(({status}) => status === 'sent').length ?? 0
+  const createdMessage = sentCount
+    ? `Team created and ${sentCount} ${plural(sentCount, 'invitation')} sent!`
+    : 'Team created!'
   atmosphere.eventEmitter.emit('addSnackbar', {
     autoDismiss: 5,
     key: `teamCreated:${teamId}`,
-    message: `Team created! Here's your new team dashboard for ${teamName}`
+    message: `${createdMessage} Here's your new team dashboard for ${teamName}`
   })
-  navigate?.(`/team/${teamId}`)
+  // the team page opens its invite dialog to explain any invitation that did not go out
+  const inviteResults = invitees?.some(isRejected) ? invitees : undefined
+  navigate?.(`/team/${teamId}`, {state: inviteResults ? {inviteResults} : null})
 }
 
 export const addTeamMutationNotificationUpdater: SharedUpdater<
@@ -82,7 +95,7 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedNavigateLocalH
     // optimistic updater is too brittle because if we are missing a single field it could break
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      const error = getGraphQLError(res, errors)
+      const error = getMutationError(res, errors)
       const {addTeam} = res
       if (!error) {
         if (showTeamCreatedToast) {

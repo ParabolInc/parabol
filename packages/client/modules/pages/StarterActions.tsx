@@ -1,6 +1,6 @@
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import type {Editor} from '@tiptap/core'
 import {useEffect, useState} from 'react'
+import {AutoAwesome as AutoAwesomeIcon} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 
 interface Props {
@@ -26,10 +26,10 @@ export const StarterActions = (props: Props) => {
   if (!isEmpty) return null
 
   return (
-    <div className='w-full px-6'>
+    <div data-starter-actions className='w-full px-6'>
       <Button
         variant='outline'
-        className='rounded-full text-slate-600 text-sm'
+        className='text-fg-secondary text-sm'
         onClick={() => {
           editor.chain().focus().setInsights().run()
         }}

@@ -1,35 +1,33 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getSortOrder} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const movePokerTemplateScaleValue: MutationResolvers['movePokerTemplateScaleValue'] = async (
   _source,
   {scaleId, label, index},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const scale = await dataLoader.get('templateScales').load(scaleId)
 
   // AUTH
   if (!scale || scale.removedAt) {
-    return standardError(new Error('Did not find an active scale'), {userId: viewerId})
+    throw new GraphQLError('Did not find an active scale', {extensions: {code: 'NOT_FOUND'}})
   }
   // VALIDATION
   const itemIdx = scale.values.findIndex((scaleValue) => scaleValue.label === label)
   if (itemIdx === -1) {
-    return standardError(new Error('Did not find an existing scale value to move'), {
-      userId: viewerId
+    throw new GraphQLError('Did not find an existing scale value to move', {
+      extensions: {code: 'NOT_FOUND'}
     })
   }
   if (index < 0 || index >= scale.values.length - 2) {
-    return standardError(new Error('Invalid index to move to'), {userId: viewerId})
+    throw new GraphQLError('Invalid index to move to', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION

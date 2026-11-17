@@ -38,6 +38,35 @@ export type JiraPermissionScope =
   | 'offline_access'
   | 'manage:jira-project'
 
+export type ConfluencePermissionScope =
+  | 'read:page:confluence'
+  | 'write:page:confluence'
+  | 'read:space:confluence'
+  | 'write:attachment:confluence'
+  | 'read:content-details:confluence'
+
+export type AtlassianPermissionScope = JiraPermissionScope | ConfluencePermissionScope
+
+/**
+ * Atlassian re-consent REPLACES the token's grant, so every authorize request must
+ * include the union of the requested product scopes and whatever the grant already
+ * holds (the server-stored scope list) — otherwise connecting/refreshing one product
+ * silently breaks the other. If the union would contain no product scopes at all,
+ * falls back to the Jira set (the legacy default) so a bare call can never mint a
+ * useless token.
+ */
+export const unionAtlassianScopes = (
+  requested: readonly AtlassianPermissionScope[],
+  heldScopes: readonly string[] | null | undefined
+): string[] => {
+  const scopes = new Set<string>([...(heldScopes ?? []), ...requested])
+  const hasProductScope = [...scopes].some((scope) => scope !== 'offline_access')
+  if (!hasProductScope) {
+    AtlassianManager.JIRA_SCOPE.forEach((scope) => scopes.add(scope))
+  }
+  return [...scopes]
+}
+
 export class RateLimitError {
   retryAt: Date
   name = 'RateLimitError' as const
@@ -52,11 +81,23 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE: JiraPermissionScope[] = [
+  static JIRA_SCOPE: JiraPermissionScope[] = [
     'read:jira-user',
     'read:jira-work',
     'write:jira-work',
     'offline_access'
+  ]
+  // FINE-GRAINED granular scopes only — verified live 2026-07-27: the Confluence OAuth
+  // gateway rejects classic scopes AND the coarse read/write:content umbrellas with 401
+  // "scope does not match" on both v1 and v2 content routes. No search scope exists for
+  // granular apps (the parent picker lists recent space pages via read:page instead).
+  static CONFLUENCE_SCOPE: ConfluencePermissionScope[] = [
+    'read:page:confluence',
+    'write:page:confluence',
+    'read:space:confluence',
+    // v1 attachment upload (the only upload endpoint) requires BOTH of these
+    'write:attachment:confluence',
+    'read:content-details:confluence'
   ]
   accessToken: string
   protected headers = {
@@ -66,6 +107,19 @@ export default abstract class AtlassianManager {
   }
 
   protected readonly get = async <T extends object>(url: string) => {
+    const res = await this.getOnce<T>(url)
+    // Freshly-minted OAuth tokens can lag at Atlassian's edge and transiently 401
+    // with this exact message right after consent. One bounded retry absorbs the
+    // blip; a genuine scope mismatch just surfaces the same error 750ms later.
+    // GETs only — mutating requests must never auto-retry.
+    if (res instanceof Error && res.message === 'Unauthorized; scope does not match') {
+      await new Promise((resolve) => setTimeout(resolve, 750))
+      return this.getOnce<T>(url)
+    }
+    return res
+  }
+
+  private readonly getOnce = async <T extends object>(url: string) => {
     try {
       const res = await this.fetch(url, {
         headers: this.headers,

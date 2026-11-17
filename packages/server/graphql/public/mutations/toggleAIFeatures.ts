@@ -25,7 +25,7 @@ const toggleAIFeatures: MutationResolvers['toggleAIFeatures'] = async (
     orgId
   }
 
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'ToggleAIFeaturesPayload', data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'ToggleAIFeaturesSuccess', data, subOptions)
   return data
 }
 

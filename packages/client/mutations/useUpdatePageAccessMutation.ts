@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 import {handleUpdatePage} from './useUpdatePageMutation'
 
 graphql`
@@ -46,17 +48,9 @@ const mutation = graphql`
   }
 `
 
-// since all preview types (e.g. TeamPreview) start with the `preview:` in their ID
-// this is because relay forces a GUID, so it can't have the same ID as a Team type
-// We need to use a TeamPreview type here
-// so someone with viewer access doesn't access all the props on the Team object
-const getServerSubjectId = (subjectId: string) => {
-  const PREFIX = 'preview:'
-  return subjectId.startsWith(PREFIX) ? subjectId.slice(PREFIX.length) : subjectId
-}
-
 export const useUpdatePageAccessMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdatePageAccessMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TuseUpdatePageAccessMutation>) => {
     return commit({
       updater: (store) => {
@@ -64,11 +58,8 @@ export const useUpdatePageAccessMutation = () => {
         if (!payload) return
         handleUpdatePage(payload, {store})
       },
-      ...config,
-      variables: {
-        ...config.variables,
-        subjectId: getServerSubjectId(config.variables.subjectId)
-      }
+      onError: snackOnError(atmosphere),
+      ...config
     })
   }
   return [execute, submitting] as const

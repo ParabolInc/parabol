@@ -1,6 +1,5 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLoader}) => {
@@ -8,11 +7,11 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
-    return {error: {message: 'Organization not found'}}
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
   // VALIDATION
   if (!organization.trialStartDate) {
-    return standardError(new Error('No trial active for org'))
+    throw new GraphQLError('No trial active for org', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION
@@ -20,8 +19,6 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
 
   const initialTrialStartDate = organization.trialStartDate
   organization.trialStartDate = null
-
-  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   return {orgId, trialStartDate: initialTrialStartDate}
 }

@@ -12,7 +12,9 @@ type Props = {
 const AddGitLabProviderDialog = (props: Props) => {
   const {orgId, isOpen, onClose} = props
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const onUpsert = (serverBaseUrl: string, clientId: string, clientSecret: string) => {
     if (submitting) return

@@ -25,7 +25,11 @@ const TeamPromptOverflowAvatar = (props: Props) => {
       <div
         ref={ref}
         className='flex select-none items-center justify-center overflow-hidden rounded-full bg-black/50 font-semibold text-white text-xs'
-        style={{width, height: width, border: `2px solid ${borderColor ?? '#fff'}`}}
+        style={{
+          width,
+          height: width,
+          border: `2px solid ${borderColor ?? 'var(--color-surface-card)'}`
+        }}
       >
         +{label}
       </div>

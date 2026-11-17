@@ -20,7 +20,7 @@ interface Props {
 
 const GitHubIntegrationResults = (props: Props) => {
   const {queryRef, queryType, searchQuery, teamId, onResultCount} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<GitHubIntegrationResultsQuery>(
     graphql`
       query GitHubIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...GitHubIntegrationResults_search @arguments(teamId: $teamId)
@@ -92,7 +92,7 @@ const GitHubIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='flex h-full flex-col gap-y-2 overflow-auto px-4'>
+      <div className='flex flex-col gap-y-2 px-4'>
         {githubResults && githubResults.length > 0 ? (
           githubResults?.map((result, idx) => {
             if (!result) {
@@ -108,7 +108,7 @@ const GitHubIntegrationResults = (props: Props) => {
                 <div className='mt-7 w-2/3 text-center'>{errors[0].message}</div>
                 <Link
                   to={`/team/${teamId}/integrations`}
-                  className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+                  className='mt-4 font-semibold text-accent hover:text-sky-400'
                 >
                   Review your GitHub configuration
                 </Link>

@@ -10,8 +10,8 @@ const MeetingAvatarCard = ({picture, preferredName, email}: Props) => (
   <div className='flex items-center gap-2 px-3 py-1.5'>
     <Avatar picture={picture} alt={preferredName} className='h-7 w-7 shrink-0' />
     <div>
-      <div className='text-slate-700 text-sm'>{preferredName}</div>
-      <div className='text-slate-500 text-xs'>{email}</div>
+      <div className='text-fg-primary text-sm'>{preferredName}</div>
+      <div className='text-fg-muted text-xs'>{email}</div>
     </div>
   </div>
 )

@@ -1,0 +1,9 @@
+"""
+Returned when addTemplatePrompt succeeds
+"""
+type AddTemplatePromptSuccess {
+  """
+  The prompt appended to the template, with its generated id, default question, color, and sort order
+  """
+  prompt: TemplatePrompt!
+}

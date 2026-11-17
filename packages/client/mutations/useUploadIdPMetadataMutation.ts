@@ -1,18 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
 import type {useUploadIdPMetadataMutation as TuseUploadIdPMetadataMutation} from '../__generated__/useUploadIdPMetadataMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
-  mutation useUploadIdPMetadataMutation($file: File!, $orgId: ID!) {
-    uploadIdPMetadata(file: $file, orgId: $orgId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UploadIdPMetadataSuccess {
-        url
-      }
+  mutation useUploadIdPMetadataMutation($file: File!, $samlId: ID!) {
+    uploadIdPMetadata(file: $file, samlId: $samlId) {
+      url
     }
   }
 `
@@ -23,21 +18,11 @@ interface TTuseUploadIdPMetadataMutation extends Omit<TuseUploadIdPMetadataMutat
 
 export const useUploadIdPMetadata = () => {
   const [commit, submitting] = useMutation<TTuseUploadIdPMetadataMutation>(mutation)
+  const atmosphere = useAtmosphere()
   type Execute = (
     config: Parameters<typeof commit>[0] & {uploadables: {file: File}}
   ) => ReturnType<typeof commit>
 
-  const execute: Execute = (config) => {
-    const {variables} = config
-    const {orgId} = variables
-    return commit({
-      updater: (store) => {
-        const org = store.get(orgId)
-        org?.setValue(orgId, 'id')
-      },
-      // allow components to override default handlers
-      ...config
-    })
-  }
+  const execute: Execute = (config) => commit({onError: snackOnError(atmosphere), ...config})
   return [execute, submitting] as const
 }

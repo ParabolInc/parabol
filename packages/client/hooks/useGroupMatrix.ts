@@ -9,8 +9,8 @@ type Group = SpotlightResultsQuery['response']['viewer']['similarReflectionGroup
 
 const useGroupMatrix = (
   resultsGroups: readonly Group[],
-  resultsRef: RefObject<HTMLDivElement>,
-  phaseRef: RefObject<HTMLDivElement>
+  resultsRef: RefObject<HTMLDivElement | null>,
+  phaseRef: RefObject<HTMLDivElement | null>
 ) => {
   const isInit = useInitialRender()
   const [groupMatrix, setGroupMatrix] = useState<Group[][]>([])

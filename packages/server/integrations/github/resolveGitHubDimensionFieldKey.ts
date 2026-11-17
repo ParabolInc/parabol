@@ -1,0 +1,11 @@
+import type {DimensionFieldCtx, DimensionFieldKey} from '../platform/ServerIntegrationDefinition'
+
+const resolveGitHubDimensionFieldKey = async ({
+  task
+}: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
+  const {integration} = task
+  if (integration?.service !== 'github') return null
+  return {repoId: integration.nameWithOwner, issueType: null}
+}
+
+export default resolveGitHubDimensionFieldKey

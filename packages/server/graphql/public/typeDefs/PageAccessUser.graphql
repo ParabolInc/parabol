@@ -5,7 +5,7 @@ type PageAccessUser {
   """
   The user who was granted access
   """
-  user: UserPreview!
+  user: User!
 
   """
   The access role granted to this user

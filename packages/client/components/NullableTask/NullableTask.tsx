@@ -1,14 +1,14 @@
 import type {DraggableProvided, DraggableStateSnapshot} from '@hello-pangea/dnd'
-import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import useEventCallback from '~/hooks/useEventCallback'
 import type {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import DraggableTaskWrapper from '../../containers/TaskCard/DraggableTaskWrapper'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import TaskCardContainer from '../../modules/taskCard/containers/TaskCard/TaskCardContainer'
 import DeleteTaskMutation from '../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
@@ -57,19 +57,17 @@ const NullableTask = (props: Props) => {
         createdByUser {
           preferredName
         }
-        integration {
-          __typename
-        }
+        taskService
         status
         teamId
         tags
-        ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
+        ...TaskCardContainer_task @arguments(meetingId: $meetingId)
       }
     `,
     taskRef
   )
-  const {content, createdBy, createdByUser, integration, teamId, id: taskId, tags} = task
-  const isIntegration = !!integration?.__typename
+  const {content, createdBy, createdByUser, taskService, teamId, id: taskId, tags} = task
+  const isIntegration = !!taskService
   const {preferredName} = createdByUser
   const atmosphere = useAtmosphere()
   const isArchived = isTaskArchived(tags)
@@ -102,14 +100,14 @@ const NullableTask = (props: Props) => {
     atmosphere,
     teamId,
     readOnly,
-    onModEnter: onModEnter
+    onModEnter: onModEnter,
+    onUploadSettled: handleCardUpdate
   })
 
-  const showOutcome =
-    editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
+  const showTask = editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
   const renderTask = (_dragProvided?: DraggableProvided, dragSnapshot?: DraggableStateSnapshot) =>
-    showOutcome ? (
-      <OutcomeCardContainer
+    showTask ? (
+      <TaskCardContainer
         area={area}
         className={className}
         editor={editor}

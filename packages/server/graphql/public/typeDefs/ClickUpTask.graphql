@@ -1,0 +1,54 @@
+"""
+A ClickUp task fetched live from the ClickUp API. A Parabol task can link to it
+"""
+type ClickUpTask implements TaskIntegration {
+  """
+  The integration hash: the workspace id and the task id joined as "<workspaceId>::<taskId>"
+  """
+  id: ID!
+
+  """
+  The task name
+  """
+  title: String!
+
+  """
+  The id ClickUp gave the task (e.g. "86abc123"). It never changes
+  """
+  taskId: ID!
+
+  """
+  The custom task id (e.g. "ENG-12"). Null unless the task's Space uses Custom Task IDs
+  """
+  customId: String
+
+  """
+  The link to the task in ClickUp
+  """
+  url: URL!
+
+  """
+  The task description as Markdown. Empty when the task has none
+  """
+  description: String!
+
+  """
+  The task's current status
+  """
+  status: ClickUpTaskStatus!
+
+  """
+  The name of the List the task lives in
+  """
+  listName: String!
+
+  """
+  The name of the Folder that holds the List. Null when the List sits directly in a Space
+  """
+  folderName: String
+
+  """
+  When the task last changed in ClickUp
+  """
+  updatedAt: DateTime!
+}

@@ -9,7 +9,7 @@ graphql`
   fragment RemovePokerTemplateDimensionMutation_team on RemovePokerTemplateDimensionPayload {
     dimension {
       id
-      teamId
+      templateId
     }
   }
 `
@@ -25,9 +25,13 @@ const mutation = graphql`
 export const removePokerTemplateDimensionTeamUpdater: SharedUpdater<
   RemovePokerTemplateDimensionMutation_team$data
 > = (payload, {store}) => {
-  const dimensionId = payload.getLinkedRecord('dimension').getValue('id')
-  const teamId = payload.getLinkedRecord('dimension').getValue('teamId')
-  handleRemovePokerTemplateDimension(dimensionId, teamId, store)
+  const dimension = payload.getLinkedRecord('dimension')
+  if (!dimension) return
+  handleRemovePokerTemplateDimension(
+    dimension.getValue('id'),
+    dimension.getValue('templateId'),
+    store
+  )
 }
 
 const RemovePokerTemplateDimensionMutation: StandardMutation<
@@ -47,9 +51,9 @@ const RemovePokerTemplateDimensionMutation: StandardMutation<
       const {dimensionId} = variables
       const dimension = store.get(dimensionId)
       if (!dimension) return
-      const teamId = dimension.getValue('teamId') as string
-      if (!teamId) return
-      handleRemovePokerTemplateDimension(dimensionId, teamId, store)
+      const templateId = dimension.getValue('templateId') as string
+      if (!templateId) return
+      handleRemovePokerTemplateDimension(dimensionId, templateId, store)
     }
   })
 }

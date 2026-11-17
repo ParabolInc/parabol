@@ -1,0 +1,408 @@
+import type {JSONContent} from '@tiptap/core'
+import fs from 'fs'
+import path from 'path'
+import {convertTipTapToConfluenceStorage} from '../convertTipTapToConfluenceStorage'
+import type {StorageConversionCtx} from '../types'
+import {kitchenSink} from './fixtures/kitchenSink'
+
+const ctx: StorageConversionCtx = {
+  parabolPageUrl: 'https://dev.parabol.co/pages/kitchen-sink-777',
+  appOrigin: 'https://dev.parabol.co',
+  resolvePageLink: (pageCode: number) =>
+    pageCode === 999
+      ? {href: 'https://dev.parabol.co/pages/999', confluenceTitle: 'Child page'}
+      : null
+}
+
+const para = (text: string) => ({type: 'paragraph', content: [{type: 'text', text}]})
+
+describe('convertTipTapToConfluenceStorage', () => {
+  it('matches the golden storage-format output byte-for-byte', () => {
+    const {title, xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    const golden = fs.readFileSync(
+      path.join(__dirname, 'fixtures/kitchenSink.storage.xhtml'),
+      'utf8'
+    )
+    expect(title).toBe('Kitchen Sink')
+    expect(xhtml).toBe(golden.trimEnd())
+  })
+
+  it('collects app-origin images/files as assets and leaves external images inline', () => {
+    const {assets, xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(assets).toContainEqual({
+      srcUrl: 'https://dev.parabol.co/assets/Page/123/assets/abc123.png',
+      filename: 'abc123.png'
+    })
+    expect(assets).toContainEqual({
+      srcUrl: 'https://dev.parabol.co/assets/Page/123/assets/def456.pdf',
+      filename: 'quarterly-report.pdf'
+    })
+    expect(xhtml).toContain('<ri:url ri:value="https://picsum.photos/200"')
+    expect(xhtml).toContain('<ri:attachment ri:filename="abc123.png"')
+    expect(xhtml).toContain('ac:align="left"')
+    expect(xhtml).toContain('ac:width="320"')
+  })
+
+  it('recurses stringified nested docs in taskBlock/responseBlock', () => {
+    const {xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(xhtml).toContain('Ship the exporter')
+    expect(xhtml).toContain('write the golden test')
+    expect(xhtml).toContain('Yesterday I fixed the fan-out bug.')
+    expect(xhtml).not.toContain('&quot;type&quot;:&quot;doc&quot;')
+    expect(xhtml).toContain('<ac:structured-macro ac:name="status">')
+    expect(xhtml).toContain('<h3>Marcus</h3>')
+  })
+
+  it('renders confluence-native task lists with nested items', () => {
+    const {xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(xhtml).toContain('<ac:task-list>')
+    expect(xhtml).toContain('<ac:task-status>complete</ac:task-status>')
+    expect(xhtml).toContain('<ac:task-status>incomplete</ac:task-status>')
+    expect(xhtml).toContain('nested todo')
+  })
+
+  it('exports a task list holding a bullet or numbered list as checkbox bullets', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {type: 'taskItem', attrs: {checked: true}, content: [para('done')]},
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('parent'),
+                {type: 'orderedList', content: [{type: 'listItem', content: [para('sub one')]}]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain(
+      '<ul><li><p>☑ done</p></li><li><p>☐ parent</p><ol><li><p>sub one</p></li></ol></li></ul>'
+    )
+  })
+
+  it('looks through nested task lists for a bullet list', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('outer'),
+                {
+                  type: 'taskList',
+                  content: [
+                    {
+                      type: 'taskItem',
+                      attrs: {checked: false},
+                      content: [
+                        para('inner'),
+                        {type: 'bulletList', content: [{type: 'listItem', content: [para('leaf')]}]}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain('<p>☐ outer</p><ul><li><p>☐ inner</p><ul><li><p>leaf</p>')
+  })
+
+  it('links exported children as ri:page and everything else back to Parabol', () => {
+    const {xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(xhtml).toContain('<ri:page ri:content-title="Child page"')
+    expect(xhtml).toContain('<a href="https://dev.parabol.co/pages/998">A referenced page</a>')
+  })
+
+  it('degrades mentions to plain text and counts the census', () => {
+    const {xhtml, degraded} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(xhtml).toContain('@Dana')
+    expect(xhtml).toContain('@Marcus')
+    expect(xhtml).toContain('#archived')
+    expect(degraded).toContainEqual({
+      blockType: 'mention',
+      count: 2,
+      treatment: 'exported as plain text'
+    })
+    expect(degraded).toContainEqual(expect.objectContaining({blockType: 'taskBlock', count: 1}))
+    expect(degraded).toContainEqual(expect.objectContaining({blockType: 'textStyle'}))
+    expect(degraded).toContainEqual(expect.objectContaining({blockType: 'fileUpload'}))
+  })
+
+  it('appends the Exported-from-Parabol footer with the live-page link', () => {
+    const {xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
+    expect(xhtml.endsWith('</p>')).toBe(true)
+    expect(xhtml).toContain('Exported from Parabol')
+    expect(xhtml).toContain('href="https://dev.parabol.co/pages/kitchen-sink-777"')
+  })
+
+  it('escapes XML-hostile text everywhere (title, body, code CDATA)', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T & <T>'}]},
+        {type: 'paragraph', content: [{type: 'text', text: `<script>&"'`}]},
+        {type: 'codeBlock', attrs: {language: 'x'}, content: [{type: 'text', text: 'a ]]> b'}]}
+      ]
+    }
+    const {xhtml, title} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(title).toBe('T & <T>')
+    expect(xhtml).toContain('&lt;script&gt;&amp;&quot;&#39;')
+    expect(xhtml).not.toContain('a ]]> b')
+    expect(xhtml).toContain(']]]]><![CDATA[>')
+  })
+
+  it('skips thinkingBlock and renders unknown blocks as text with a census entry', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {type: 'thinkingBlock'},
+        {type: 'mysteryBlock', content: [{type: 'text', text: 'mystery text'}]}
+      ]
+    }
+    const {xhtml, degraded} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('thinking')
+    expect(xhtml).toContain('mystery text')
+    expect(degraded).toContainEqual(expect.objectContaining({blockType: 'unknown:mysteryBlock'}))
+  })
+
+  it('exports a table of contents block as the native toc macro', () => {
+    const {xhtml, degraded} = convertTipTapToConfluenceStorage(
+      {
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Title'}]},
+          {type: 'tableOfContents'},
+          {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: 'Section'}]}
+        ]
+      },
+      ctx
+    )
+    expect(xhtml).toContain(
+      '<ac:structured-macro ac:name="toc"><ac:parameter ac:name="minLevel">1</ac:parameter><ac:parameter ac:name="maxLevel">3</ac:parameter></ac:structured-macro>'
+    )
+    expect(degraded).toEqual([])
+  })
+
+  describe('callouts', () => {
+    const p = (text: string): JSONContent => ({type: 'paragraph', content: [{type: 'text', text}]})
+    const title = (text: string): JSONContent => ({
+      type: 'calloutTitle',
+      content: [{type: 'text', text}]
+    })
+    const callout = (
+      tone: string,
+      content: JSONContent[],
+      attrs: {emoji?: string} = {}
+    ): JSONContent => ({type: 'callout', attrs: {tone, emoji: attrs.emoji ?? null}, content})
+    const exportOne = (node: JSONContent) =>
+      convertTipTapToConfluenceStorage(
+        {
+          type: 'doc',
+          content: [
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Callouts'}]},
+            node
+          ]
+        },
+        ctx
+      ).xhtml.replace(/<p><em>Exported from Parabol.*$/, '')
+
+    it('exports each tone as the storage form Confluence itself saves', () => {
+      expect(exportOne(callout('info', [p('x')]))).toBe(
+        '<ac:structured-macro ac:name="info"><ac:rich-text-body><p>x</p></ac:rich-text-body></ac:structured-macro>'
+      )
+      expect(exportOne(callout('tip', [p('x')]))).toContain('ac:name="tip"')
+      expect(exportOne(callout('warning', [p('x')]))).toContain('ac:name="note"')
+      expect(exportOne(callout('danger', [p('x')]))).toContain('ac:name="warning"')
+      expect(exportOne(callout('important', [p('x')]))).toContain(
+        '<ac:adf-attribute key="panel-type">note</ac:adf-attribute>'
+      )
+    })
+
+    it('writes the title as a bold first paragraph inside the panel', () => {
+      expect(exportOne(callout('warning', [title('Freeze <now>'), p('x')]))).toContain(
+        '<ac:rich-text-body><p><strong>Freeze &lt;now&gt;</strong></p>'
+      )
+    })
+
+    it('writes a plain callout as a gray custom panel carrying its emoji', () => {
+      const xhtml = exportOne(callout('plain', [p('x')], {emoji: '🚀'}))
+      expect(xhtml).toContain('<ac:parameter ac:name="bgColor">#B7B9BE</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIcon">:rocket:</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIconText">🚀</ac:parameter>')
+      expect(xhtml).toContain('<ac:parameter ac:name="panelIconId">1f680</ac:parameter>')
+    })
+
+    it('drops the emoji of a non-plain callout', () => {
+      expect(exportOne(callout('info', [p('x')], {emoji: '🚀'}))).not.toContain('🚀')
+    })
+    it('flattens a callout inside a blockquote into plain blocks', () => {
+      const quote: JSONContent = {
+        type: 'blockquote',
+        content: [callout('info', [title('Heads up'), p('inner text')])]
+      }
+      const xhtml = exportOne(quote)
+      expect(xhtml).toBe(
+        '<blockquote><p><strong>Heads up</strong></p><p>inner text</p></blockquote>'
+      )
+    })
+
+    it('flattens a callout inside a list item and counts it', () => {
+      const list: JSONContent = {
+        type: 'bulletList',
+        content: [
+          {
+            type: 'listItem',
+            content: [p('item'), callout('warning', [title('Careful'), p('inner text')])]
+          }
+        ]
+      }
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(
+        {
+          type: 'doc',
+          content: [
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Callouts'}]},
+            list,
+            callout('info', [p('after')])
+          ]
+        },
+        ctx
+      )
+      expect(xhtml).toContain(
+        '<ul><li><p>item</p><p><strong>Careful</strong></p><p>inner text</p></li></ul><ac:structured-macro ac:name="info">'
+      )
+      expect(degraded).toContainEqual(
+        expect.objectContaining({blockType: 'calloutInList', count: 1})
+      )
+    })
+
+    it('flattens a callout inside a blockquote inside a callout, keeping the outer panel', () => {
+      const xhtml = exportOne(
+        callout('tip', [
+          {type: 'blockquote', content: [callout('important', [p('deep text')])]},
+          p('after')
+        ])
+      )
+      expect(xhtml).toBe(
+        '<ac:structured-macro ac:name="tip"><ac:rich-text-body><blockquote><p>deep text</p></blockquote><p>after</p></ac:rich-text-body></ac:structured-macro>'
+      )
+      expect(xhtml).not.toContain('ac:adf-extension')
+    })
+  })
+
+  describe('synced blocks', () => {
+    const syncedLink = (synced: boolean) => ({
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Host'}]},
+        {
+          type: 'pageLinkBlock',
+          attrs: {pageCode: 9, title: 'Escalation path', synced, canonical: true}
+        }
+      ]
+    })
+
+    it('flattens a block the exporter can open', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => (code === 9 ? [para('Call on-call first')] : null)
+      })
+      expect(xhtml).toContain('<p>Call on-call first</p>')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded.find(({blockType}) => blockType === 'pageLinkBlock')).toBeUndefined()
+    })
+
+    it.each([
+      ['a block that does not resolve', {...ctx, resolveSyncedBlock: () => null}],
+      ['every block when there is no resolver', ctx]
+    ])('skips %s', (_case, conversionCtx) => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), conversionCtx)
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock',
+        count: 1,
+        treatment: 'skipped — not available to this export'
+      })
+    })
+
+    const linkTo = (pageCode: number) => ({
+      type: 'pageLinkBlock',
+      attrs: {pageCode, title: 'Block', synced: true, canonical: true}
+    })
+
+    it('terminates on a self-referencing block and counts a skip', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`body ${code}`), linkTo(code)]
+      })
+      expect(xhtml).toContain('<p>body 9</p>')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock:limit',
+        count: 1,
+        treatment: 'skipped — nested too deeply or repeated too often'
+      })
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('caps the total number of expansions so fan-out cannot multiply', () => {
+      let expansions = 0
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => {
+          expansions += 1
+          if (code === 9) return Array.from({length: 20}, () => linkTo(10))
+          if (code === 10) return Array.from({length: 20}, () => linkTo(11))
+          return [para('leaf')]
+        }
+      })
+      expect(expansions).toBeLessThanOrEqual(100)
+      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock:limit')
+      expect(skipped!.count).toBeGreaterThan(0)
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('stops a deep chain at the depth cap', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`level ${code}`), linkTo(code + 1)]
+      })
+      expect(xhtml).toContain('<p>level 11</p>')
+      expect(xhtml).not.toContain('level 12')
+      expect(degraded).toEqual([
+        {
+          blockType: 'syncedBlock:limit',
+          count: 1,
+          treatment: 'skipped — nested too deeply or repeated too often'
+        }
+      ])
+    })
+
+    it('leaves an ordinary page link unchanged', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(false), {
+        ...ctx,
+        resolveSyncedBlock: () => [para('Call on-call first')]
+      })
+      expect(xhtml).toContain('<a href="https://dev.parabol.co/pages/9">Escalation path</a>')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'pageLinkBlock'}))
+    })
+  })
+})

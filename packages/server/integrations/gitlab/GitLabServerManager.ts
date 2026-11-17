@@ -1,12 +1,14 @@
-import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
-import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
-import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
+import type {BaseGraphQLError} from 'nest-graphql-endpoint'
+import GitLabIssueId from 'parabol-client/integrations/gitlab/shared/GitLabIssueId'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {tipTapToMarkdown} from 'parabol-client/shared/tiptap/tipTapToMarkdown'
 import type {InternalContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
+import getGroupIssues from '../../graphql/nestedSchema/GitLab/queries/getGroupIssues.graphql'
 import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import getLabels from '../../graphql/nestedSchema/GitLab/queries/getLabels.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
@@ -19,6 +21,8 @@ import type {
   CreateLabelMutation,
   CreateLabelMutationVariables,
   CreateNoteMutation,
+  GetGroupIssuesQuery,
+  GetGroupIssuesQueryVariables,
   GetIssueQuery,
   GetLabelsQuery,
   GetProfileQuery,
@@ -28,9 +32,32 @@ import type {
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/gitlabTypes'
-import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
-import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
-import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {
+  CreateTaskParams,
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../platform/TaskIntegrationManager'
+import toNestedRequestError from '../platform/toNestedRequestError'
+import makeCreateGitLabTaskComment from './makeCreateGitLabTaskComment'
+
+export class GitLabRateLimitError extends Error {}
+
+interface GitLabGraphQLError {
+  message: string
+  extensions?: {error_type?: string}
+}
+
+// GitLab answers a request over the user's quota with this error, and only newer versions add the error_type
+const isRateLimited = ({message, extensions}: GitLabGraphQLError) =>
+  extensions?.error_type === 'rate_limited' || message.includes('too many times')
+
+const toGitLabError = (errors: readonly BaseGraphQLError[] | null | undefined) => {
+  const [error] = errors ?? []
+  if (error && isRateLimited(error)) {
+    return new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
+  }
+  return toNestedRequestError(errors)
+}
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -65,7 +92,7 @@ class GitLabServerManager implements TaskIntegrationManager {
         batchRef
       })
       const {data, errors} = result
-      const error = errors ? new Error(errors[0]?.message) : null
+      const error = toGitLabError(errors)
       return [data, error] as [TData, typeof error]
     }
   }
@@ -94,14 +121,11 @@ class GitLabServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentJSON,
+    title,
+    bodyContent,
     integrationRepoId
-  }: {
-    rawContentJSON: JSONContent
-    integrationRepoId: string
-  }): Promise<CreateTaskResponse> {
-    const {title, bodyContent} = splitTipTapContent(rawContentJSON)
-    const description = convertTipTapToMarkdown(bodyContent)
+  }: CreateTaskParams): Promise<CreateTaskResponse> {
+    const description = bodyContent ? tipTapToMarkdown(bodyContent) : ''
     const [createIssueData, createIssueError] = await this.createIssue({
       title,
       description,
@@ -111,14 +135,15 @@ class GitLabServerManager implements TaskIntegrationManager {
     const issue = createIssueData.createIssue?.issue
     if (!issue) return new Error('Failed to create issue')
     const {id: gid} = issue
+    const providerId = IntegrationProviderId.join(this.auth.providerId)
     return {
-      integrationHash: GitLabIssueId.join(`${this.auth.providerId}`, gid),
+      integrationHash: GitLabIssueId.join(providerId, gid),
       issueId: gid,
       integration: {
         accessUserId: this.auth.userId,
         service: 'gitlab',
         gid,
-        providerId: `${this.auth.providerId}`
+        providerId
       }
     }
   }
@@ -166,6 +191,15 @@ class GitLabServerManager implements TaskIntegrationManager {
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(
       getProjectIssues,
       projectIssuesArgs
+    )
+    return [issuesData, issuesError] as const
+  }
+
+  async getGroupIssues(groupIssuesArgs: GetGroupIssuesQueryVariables) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [issuesData, issuesError] = await gitlabRequest<GetGroupIssuesQuery>(
+      getGroupIssues,
+      groupIssuesArgs
     )
     return [issuesData, issuesError] as const
   }

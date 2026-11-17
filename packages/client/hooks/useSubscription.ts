@@ -1,30 +1,18 @@
 import {useEffect} from 'react'
 import {useNavigate} from 'react-router'
+import type {Variables} from 'relay-runtime'
 import type {SubscriptionRequestor} from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
 
-const useSubscription = (
-  queryKey: string,
-  subscription: SubscriptionRequestor,
-  inVariables: any = {}
-) => {
+const useSubscription = (subscription: SubscriptionRequestor, inVariables: Variables = {}) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const variables = useDeepEqual(inVariables)
-  const router = {navigate}
-  useEffect(() => {
-    if (atmosphere.registerQuery) {
-      atmosphere.registerQuery(queryKey, subscription, variables, router).catch(() => {
-        /*ignore*/
-      })
-    }
-    return () => {
-      if (atmosphere.scheduleUnregisterQuery) {
-        atmosphere.scheduleUnregisterQuery(queryKey, 300000)
-      }
-    }
-  }, [atmosphere, queryKey, subscription, variables])
+  useEffect(
+    () => atmosphere.retainSubscription(subscription, variables, {navigate}),
+    [atmosphere, subscription, variables]
+  )
 }
 
 export default useSubscription

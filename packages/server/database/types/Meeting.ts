@@ -20,7 +20,8 @@ interface Input {
 
 const namePrefix = {
   action: 'Check-in',
-  retrospective: 'Retro'
+  retrospective: 'Retro',
+  teamHealth: 'Team Health'
 } as Record<MeetingTypeEnum, string>
 export default abstract class Meeting {
   id: string
@@ -43,7 +44,6 @@ export default abstract class Meeting {
   summary?: string | null
   sentimentScore?: number | null
   usedReactjis?: Record<string, number> | null
-  slackTs?: string | number | null
   engagement?: number | null
 
   constructor(input: Input) {

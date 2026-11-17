@@ -1,10 +1,17 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const ThreadedItemWrapper = styled('div')<{isReply: boolean}>(({isReply}) => ({
-  display: 'flex',
-  flexShrink: 0, // required for safari
-  marginTop: isReply ? 8 : undefined,
-  width: '100%'
-}))
+interface Props extends ComponentPropsWithoutRef<'div'> {
+  isReply: boolean
+}
+
+const ThreadedItemWrapper = forwardRef<HTMLDivElement, Props>((props, ref) => {
+  const {isReply, className, children, ...rest} = props
+  return (
+    <div ref={ref} className={cn('flex w-full shrink-0', isReply && 'mt-2', className)} {...rest}>
+      {children}
+    </div>
+  )
+})
 
 export default ThreadedItemWrapper

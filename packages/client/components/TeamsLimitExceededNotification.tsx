@@ -1,12 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {TeamsLimitExceededNotification_notification$key} from '~/__generated__/TeamsLimitExceededNotification_notification.graphql'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {Threshold} from '../types/constEnums'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -16,7 +13,6 @@ interface Props {
 
 const TeamsLimitExceededNotification = (props: Props) => {
   const {notification: notificationRef} = props
-  const atmosphere = useAtmosphere()
   const notification = useFragment(
     graphql`
       fragment TeamsLimitExceededNotification_notification on NotifyTeamsLimitExceeded {
@@ -32,17 +28,7 @@ const TeamsLimitExceededNotification = (props: Props) => {
   const navigate = useNavigate()
   const {orgId, orgName, orgPicture} = notification
 
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
-      upgradeCTALocation: 'teamsLimitExceededNotification',
-      orgId
-    })
-  }, [])
-
   const onActionClick = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'teamsLimitExceededNotification'
-    })
     navigate(`/me/organizations/${orgId}`)
   }
 

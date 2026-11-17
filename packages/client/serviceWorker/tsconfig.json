@@ -2,13 +2,8 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["esnext", "webworker"],
-    "target": "esnext",
-    "module": "commonjs",
-    "sourceMap": true,
-    "paths": {
-      "*": [
-        "*" // resolve all absolute imports as imports relative to the client package
-      ]
-    }
+    "types": [],
+    // sw.ts has no imports or exports, but it must not share a scope with the worker globals it redeclares
+    "moduleDetection": "force"
   }
 }

@@ -1,12 +1,12 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
+import MoveTemplatePromptMutation from '../../../mutations/MoveTemplatePromptMutation'
 import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
+import isTempId from '../../../utils/relay/isTempId'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
@@ -15,21 +15,16 @@ interface Props {
   templateId: string
 }
 
-const PromptList = styled('div')({
-  margin: 0,
-  padding: 0,
-  width: '100%'
-})
-
 const TemplatePromptList = (props: Props) => {
   const {isOwner, prompts: promptsRef, templateId} = props
   const prompts = useFragment(
     graphql`
-      fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
+      fragment TemplatePromptList_prompts on TemplatePrompt @relay(plural: true) {
         id
         sortOrder
         question
         groupColor
+        templateId
         ...TemplatePromptItem_prompt
         ...TemplatePromptItem_prompts
       }
@@ -55,12 +50,12 @@ const TemplatePromptList = (props: Props) => {
     const sortOrder = getSortOrder(prompts, source.index, destination.index)
     const {id: promptId} = sourcePrompt
     const variables = {promptId, sortOrder}
-    MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})
+    MoveTemplatePromptMutation(atmosphere, variables, {templateId})
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <PromptList>
+      <div className='m-0 w-full p-0'>
         <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
           {(provided) => {
             return (
@@ -71,7 +66,7 @@ const TemplatePromptList = (props: Props) => {
                       key={prompt.id}
                       draggableId={prompt.id}
                       index={idx}
-                      isDragDisabled={!isOwner}
+                      isDragDisabled={!isOwner || isTempId(prompt.id)}
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (
@@ -92,7 +87,7 @@ const TemplatePromptList = (props: Props) => {
             )
           }}
         </Droppable>
-      </PromptList>
+      </div>
     </DragDropContext>
   )
 }

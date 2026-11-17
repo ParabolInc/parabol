@@ -1,7 +1,7 @@
 import type {ExecutionResult} from 'graphql'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
-import privateSchema from '../graphql/private/rootSchema'
+import {getFullSchema} from '../graphql/private/rootSchema'
 import {yoga} from '../yoga'
 
 // Only call this from the server that is running yoga! e.g. a webhook endpoint or similar
@@ -13,7 +13,7 @@ export const callGQL = async <TData>(query: string, variables?: Record<string, a
   const result = await execute({
     document: parse(query),
     variableValues: variables,
-    schema: privateSchema,
+    schema: getFullSchema(),
     contextValue: {...envelopedContext, dataLoader, authToken}
   })
   dataLoader.dispose()

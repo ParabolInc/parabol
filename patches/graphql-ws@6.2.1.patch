@@ -1,0 +1,108 @@
+diff --git a/dist/use/uWebSockets.cjs b/dist/use/uWebSockets.cjs
+index ff170d19d4ecf56de3b8283eb5027cfed35f17b1..19c50e07fe0ff635660fe31eb9625d9efb092ff2 100644
+--- a/dist/use/uWebSockets.cjs
++++ b/dist/use/uWebSockets.cjs
+@@ -8,8 +8,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+   const isProd = process.env.NODE_ENV === "production";
+   const server$1 = server.makeServer(options);
+   const clients = /* @__PURE__ */ new Map();
+-  let onDrain = () => {
+-  };
+   return {
+     ...behavior,
+     pong(...args) {
+@@ -51,6 +49,9 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       const client = {
+         pingInterval: null,
+         pongWaitTimeout: null,
++        // each socket waits on its own drain. One resolver shared by every socket meant a second backpressured socket
++        // overwrote the first one's, so the first socket's operation stalled until that socket closed
++        drainWaiters: [],
+         handleMessage: () => {
+           throw new Error("Message received before handler was registered");
+         },
+@@ -66,7 +67,7 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+           send: async (message) => {
+             if (!clients.has(socket)) return;
+             if (!socket.send(message))
+-              await new Promise((resolve) => onDrain = resolve);
++              await new Promise((resolve) => client.drainWaiters.push(resolve));
+           },
+           close: (code, reason) => {
+             setImmediate(() => {
+@@ -87,7 +88,11 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+     },
+     drain(...args) {
+       behavior.drain?.(...args);
+-      onDrain();
++      const [socket] = args;
++      const drainWaiters = clients.get(socket)?.drainWaiters.splice(0);
++      // resume once uWS returns from the drain callback. A large send that only partly writes from inside it leaves uWS
++      // no longer waiting for the socket to become writable, so the socket never drains again (uNetworking/uSockets#265)
++      if (drainWaiters?.length) setImmediate(() => drainWaiters.forEach((resolve) => resolve()));
+     },
+     async message(...args) {
+       behavior.message?.(...args);
+@@ -119,6 +124,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       if (client.pingInterval) clearTimeout(client.pingInterval);
+       client.closed(code, Buffer.from(message).toString());
+       clients.delete(socket);
++      // a closed socket never drains, so release its waiting sends and let their operations end
++      client.drainWaiters.splice(0).forEach((resolve) => resolve());
+     }
+   };
+ }
+diff --git a/dist/use/uWebSockets.js b/dist/use/uWebSockets.js
+index 06775d68d286d5f78cce99abd33c4a54bdbf4718..f771e165d576cfeb15fe28bb137a0b84d2f49af6 100644
+--- a/dist/use/uWebSockets.js
++++ b/dist/use/uWebSockets.js
+@@ -6,8 +6,6 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+   const isProd = process.env.NODE_ENV === "production";
+   const server = makeServer(options);
+   const clients = /* @__PURE__ */ new Map();
+-  let onDrain = () => {
+-  };
+   return {
+     ...behavior,
+     pong(...args) {
+@@ -49,6 +47,9 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       const client = {
+         pingInterval: null,
+         pongWaitTimeout: null,
++        // each socket waits on its own drain. One resolver shared by every socket meant a second backpressured socket
++        // overwrote the first one's, so the first socket's operation stalled until that socket closed
++        drainWaiters: [],
+         handleMessage: () => {
+           throw new Error("Message received before handler was registered");
+         },
+@@ -64,7 +65,7 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+           send: async (message) => {
+             if (!clients.has(socket)) return;
+             if (!socket.send(message))
+-              await new Promise((resolve) => onDrain = resolve);
++              await new Promise((resolve) => client.drainWaiters.push(resolve));
+           },
+           close: (code, reason) => {
+             setImmediate(() => {
+@@ -85,7 +86,11 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+     },
+     drain(...args) {
+       behavior.drain?.(...args);
+-      onDrain();
++      const [socket] = args;
++      const drainWaiters = clients.get(socket)?.drainWaiters.splice(0);
++      // resume once uWS returns from the drain callback. A large send that only partly writes from inside it leaves uWS
++      // no longer waiting for the socket to become writable, so the socket never drains again (uNetworking/uSockets#265)
++      if (drainWaiters?.length) setImmediate(() => drainWaiters.forEach((resolve) => resolve()));
+     },
+     async message(...args) {
+       behavior.message?.(...args);
+@@ -117,6 +122,8 @@ function makeBehavior(options, behavior = {}, keepAlive = 12e3) {
+       if (client.pingInterval) clearTimeout(client.pingInterval);
+       client.closed(code, Buffer.from(message).toString());
+       clients.delete(socket);
++      // a closed socket never drains, so release its waiting sends and let their operations end
++      client.drainWaiters.splice(0).forEach((resolve) => resolve());
+     }
+   };
+ }

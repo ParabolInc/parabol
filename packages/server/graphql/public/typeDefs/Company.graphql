@@ -13,8 +13,9 @@ type Company {
   id: ID!
 
   """
-  The total number of non-archived teams that are currently active across all
-  Organizations belonging to this company.
+  The total number of active teams across all Organizations belonging to this company.
+  A team is active when it is not archived, has at least 2 members, and in the last 30 days
+  started or ended a meeting that at least 2 people joined.
   """
   activeTeamCount: Int!
 
@@ -33,9 +34,8 @@ type Company {
   ): Int!
 
   """
-  The number of Organizations within this company that are considered "active":
-  they must have at least one non-archived team and at least two team members
-  who have logged in within the last 30 days.
+  The number of Organizations within this company that have at least one active team
+  (see activeTeamCount).
   """
   activeOrganizationCount: Int!
 

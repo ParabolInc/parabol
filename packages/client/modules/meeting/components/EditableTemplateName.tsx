@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -13,17 +12,12 @@ interface Props {
   className?: string
 }
 
-const InheritedStyles = styled('div')({
-  flex: 1,
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px'
-})
-
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, isOwner, className} = props
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const autoFocus = name.startsWith('*New Template') || name.endsWith(' Copy')
 
   const handleSubmit = (rawName: string) => {
@@ -52,9 +46,10 @@ const EditableTemplateName = (props: Props) => {
   }
 
   return (
-    <InheritedStyles>
+    <div className='flex-1 font-semibold text-[20px] leading-6'>
       <div className={cn('leading-6', className)}>
         <EditableText
+          key={templateId}
           autoFocus={autoFocus}
           disabled={!isOwner}
           error={error ? error.message : undefined}
@@ -65,7 +60,7 @@ const EditableTemplateName = (props: Props) => {
           placeholder={'*New Template'}
         />
       </div>
-    </InheritedStyles>
+    </div>
   )
 }
 

@@ -1,0 +1,235 @@
+jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../jira/AtlassianClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn(), JIRA_SCOPE: ['read:jira-work']}
+}))
+jest.mock('../../jiraServer/JiraServerClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+jest.mock('../../github/GitHubClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+jest.mock('../../gitlab/GitLabClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+jest.mock('../../azureDevOps/AzureDevOpsClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+jest.mock('../../linear/LinearClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+jest.mock('../../../utils/GcalClientManager', () => ({
+  __esModule: true,
+  default: {openOAuth: jest.fn()}
+}))
+
+import type {IntegrationProviderServiceEnum} from '../../../__generated__/CreateTaskIntegrationMutation.graphql'
+import type Atmosphere from '../../../Atmosphere'
+import type {MenuMutationProps} from '../../../hooks/useMutationProps'
+import GcalClientManager from '../../../utils/GcalClientManager'
+import GitLabClientManager from '../../gitlab/GitLabClientManager'
+import AtlassianClientManager from '../../jira/AtlassianClientManager'
+import JiraServerClientManager from '../../jiraServer/JiraServerClientManager'
+import LinearClientManager from '../../linear/LinearClientManager'
+import {
+  clientIntegrations,
+  clientIntegrationsByPopularity,
+  getClientIntegration,
+  isRegisteredClientIntegration,
+  isTaskClientIntegration,
+  listClientIntegrationServices
+} from '../registry'
+
+describe('clientIntegrations registry', () => {
+  it('looks up a definition by service, null for a service with no client integration', () => {
+    expect(getClientIntegration('jira')).toBe(clientIntegrations.jira)
+    expect(getClientIntegration('zoom')).toBeNull()
+  })
+
+  it('lists the registered services it is given in popularity order', () => {
+    const listed = listClientIntegrationServices([
+      {service: 'gcal'},
+      {service: 'zoom'},
+      {service: 'github'},
+      {service: 'jira'}
+    ])
+    expect(listed.map(({integrationService}) => integrationService.service)).toEqual([
+      'jira',
+      'github',
+      'gcal'
+    ])
+    expect(listed[0]?.definition).toBe(clientIntegrations.jira)
+  })
+
+  it('the two Jira services label a saved project filter by its project key', () => {
+    expect(
+      clientIntegrations.jira.capabilities.scoping?.filterChipLabel?.({
+        key: 'project',
+        value: 'cloud1:WEB'
+      })
+    ).toBe('WEB')
+    expect(
+      clientIntegrations.jiraServer.capabilities.scoping?.filterChipLabel?.({
+        key: 'project',
+        value: 'jiraServer:9:10001:WEB'
+      })
+    ).toBe('WEB')
+  })
+
+  it('ClickUp labels saved List filters by their count, since a List id has no readable part', () => {
+    const savedFiltersLabel = clientIntegrations.clickup.capabilities.scoping?.savedFiltersLabel
+    expect(savedFiltersLabel?.([{key: 'listIds', value: '901423080038'}])).toBe('1 list')
+    expect(
+      savedFiltersLabel?.([
+        {key: 'listIds', value: '901423080038'},
+        {key: 'listIds', value: '901423080041'}
+      ])
+    ).toBe('2 lists')
+  })
+
+  it('only Jira Data Center sets contactUs, the slot both surfaces advertise on', () => {
+    const advertised = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.contactUs)
+      .map(([key]) => key)
+    expect(advertised).toEqual(['jiraServer'])
+    expect(clientIntegrations.jiraServer.contactUs).toEqual({
+      url: 'https://www.parabol.co/integrations/jira-server'
+    })
+  })
+
+  it('only GitHub carries a dark-theme logo, whose mark is otherwise invisible', () => {
+    const withDarkSrc = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.logo.darkSrc)
+      .map(([key]) => key)
+    expect(withDarkSrc).toEqual(['github'])
+  })
+
+  it('only Jira Cloud explains what a disconnect takes with it', () => {
+    const withSubline = Object.entries(clientIntegrations)
+      .filter(([, definition]) => definition.capabilities.settings?.getDisconnectSubline)
+      .map(([key]) => key)
+    expect(withSubline).toEqual(['jira'])
+    const getDisconnectSubline = clientIntegrations.jira.capabilities.settings?.getDisconnectSubline
+    const jiraScopes = ['read:jira-user', 'read:jira-work', 'write:jira-work', 'offline_access']
+    const confluenceScopes = [
+      'read:page:confluence',
+      'write:page:confluence',
+      'read:space:confluence',
+      'write:attachment:confluence',
+      'read:content-details:confluence'
+    ]
+    expect(getDisconnectSubline?.(jiraScopes)).toBe('Disconnects Jira')
+    expect(getDisconnectSubline?.(confluenceScopes)).toBe('Disconnects Confluence')
+    expect(getDisconnectSubline?.([...jiraScopes, ...confluenceScopes])).toBe(
+      'Disconnects Jira and Confluence'
+    )
+  })
+})
+
+const atmosphere = {} as Atmosphere
+const mutationProps = {} as MenuMutationProps
+
+describe('connect with an interface-shaped provider ref', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('jira forwards heldScopes so a re-consent keeps Confluence scopes', () => {
+    clientIntegrations.jira.connect(atmosphere, {
+      teamId: 'team1',
+      mutationProps,
+      provider: {id: 'p1', clientId: 'c1', serverBaseUrl: null, tenantId: null},
+      heldScopes: ['read:confluence-space.summary']
+    })
+    expect(AtlassianClientManager.openOAuth).toHaveBeenCalledWith(
+      atmosphere,
+      'team1',
+      {id: 'p1', clientId: 'c1'},
+      mutationProps,
+      ['read:jira-work'],
+      ['read:confluence-space.summary']
+    )
+  })
+
+  it('OAuth2 services report false and open nothing without the fields their manager needs', () => {
+    const noClient = {id: 'p1', clientId: null, serverBaseUrl: 'https://x', tenantId: null}
+    const noBaseUrl = {id: 'p1', clientId: 'c1', serverBaseUrl: null, tenantId: null}
+    expect(
+      clientIntegrations.jira.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noClient
+      })
+    ).toBe(false)
+    expect(
+      clientIntegrations.gitlab.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noBaseUrl
+      })
+    ).toBe(false)
+    expect(
+      clientIntegrations.linear.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: noBaseUrl
+      })
+    ).toBe(false)
+    expect(AtlassianClientManager.openOAuth).not.toHaveBeenCalled()
+    expect(GitLabClientManager.openOAuth).not.toHaveBeenCalled()
+    expect(LinearClientManager.openOAuth).not.toHaveBeenCalled()
+  })
+
+  it('gcal opens the Google popup with the provider id and client id', () => {
+    expect(
+      clientIntegrations.gcal.connect(atmosphere, {
+        teamId: 'team1',
+        mutationProps,
+        provider: {id: 'p7', clientId: 'google1', serverBaseUrl: null, tenantId: null}
+      })
+    ).toBe(true)
+    clientIntegrations.gcal.connect(atmosphere, {
+      teamId: 'team1',
+      mutationProps,
+      provider: {id: 'p8', clientId: null, serverBaseUrl: null, tenantId: null}
+    })
+    expect(GcalClientManager.openOAuth).toHaveBeenCalledTimes(1)
+    expect(GcalClientManager.openOAuth).toHaveBeenCalledWith(
+      atmosphere,
+      'p7',
+      'google1',
+      'team1',
+      mutationProps
+    )
+  })
+
+  it('jiraServer (OAuth1) connects with only the provider id', () => {
+    clientIntegrations.jiraServer.connect(atmosphere, {
+      teamId: 'team1',
+      mutationProps,
+      provider: {id: 'p9', clientId: null, serverBaseUrl: 'https://jira.acme.com', tenantId: null}
+    })
+    expect(JiraServerClientManager.openOAuth).toHaveBeenCalledWith(
+      atmosphere,
+      'p9',
+      'team1',
+      mutationProps
+    )
+  })
+
+  it('exposes a type guard over the registry keys', () => {
+    expect(isRegisteredClientIntegration('linear')).toBe(true)
+    expect(isRegisteredClientIntegration('gcal')).toBe(true)
+    expect(isRegisteredClientIntegration('zoom')).toBe(false)
+    expect(isRegisteredClientIntegration('toString' as IntegrationProviderServiceEnum)).toBe(false)
+  })
+
+  it('task surfaces see every service but Google Calendar', () => {
+    expect(clientIntegrationsByPopularity.filter(isTaskClientIntegration)).toEqual(
+      clientIntegrationsByPopularity.filter((service) => service !== 'gcal')
+    )
+  })
+})

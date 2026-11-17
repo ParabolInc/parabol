@@ -1,5 +1,3 @@
-import {forwardRef} from 'react'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -7,13 +5,14 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const UpdatesHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
-  useClientSideTrack('Help Menu Open', {phase: 'updates'})
+const UpdatesHelpMenu = (props: Props) => {
+  const {onClose} = props
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup.updates}</HelpMenuHeader>
       <HelpMenuCopy>
         {
@@ -31,6 +30,6 @@ const UpdatesHelpMenu = forwardRef((_props: Props, ref: any) => {
       />
     </HelpMenuContent>
   )
-})
+}
 
 export default UpdatesHelpMenu

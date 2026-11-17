@@ -1,13 +1,7 @@
 import type {PageAccessUserResolvers} from '../resolverTypes'
 
 const PageAccessUser: PageAccessUserResolvers = {
-  user: async ({userId}, _args, {dataLoader}) => {
-    const user = await dataLoader.get('users').loadNonNull(userId)
-    return {
-      ...user,
-      id: `preview:${user.id}`
-    }
-  }
+  user: ({userId}, _args, {dataLoader}) => dataLoader.get('users').loadNonNull(userId)
 }
 
 export default PageAccessUser

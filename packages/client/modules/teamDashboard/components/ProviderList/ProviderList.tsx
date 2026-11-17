@@ -1,14 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
-import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
-import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
-import GcalProviderRow from '../ProviderRow/GcalProviderRow'
-import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
-import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
-import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
-import LinearProviderRow from '../ProviderRow/LinearProviderRow'
+import {
+  getClientIntegration,
+  isRegisteredClientIntegration
+} from '../../../../integrations/platform/registry'
+import {Providers} from '../../../../types/constEnums'
+import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
+import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
+import IntegrationServiceProviderRow from '../ProviderRow/IntegrationServiceProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
@@ -16,55 +19,27 @@ import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 interface Props {
   queryRef: PreloadedQuery<ProviderListQuery>
   teamId: string
-  retry: () => void
 }
 
 const query = graphql`
   query ProviderListQuery($teamId: ID!) {
     viewer {
-      ...AtlassianProviderRow_viewer
-      ...JiraServerProviderRow_viewer
-      ...GitHubProviderRow_viewer
-      ...GitLabProviderRow_viewer
+      ...ConfluenceProviderRow_viewer
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
-      ...AzureDevOpsProviderRow_viewer
       ...MSTeamsProviderRow_viewer
-      ...GcalProviderRow_viewer
-      ...LinearProviderRow_viewer
       teamMember(teamId: $teamId) {
+        services {
+          service
+          title
+          isAvailable
+          isConnected
+          ...IntegrationServiceProviderRow_service
+        }
         integrations {
           atlassian {
             accessToken
-          }
-          jiraServer {
-            auth {
-              id
-              isActive
-            }
-            sharedProviders {
-              id
-            }
-          }
-          gcal {
-            auth {
-              id
-            }
-          }
-          github {
-            accessToken
-          }
-          gitlab {
-            auth {
-              provider {
-                scope
-              }
-            }
-          }
-          linear {
-            auth {
-              id
-            }
+            scope
           }
           mattermost {
             auth {
@@ -75,11 +50,6 @@ const query = graphql`
           }
           slack {
             isActive
-          }
-          azureDevOps {
-            auth {
-              accessToken
-            }
           }
           msTeams {
             auth {
@@ -95,64 +65,61 @@ const query = graphql`
 `
 
 const ProviderList = (props: Props) => {
-  const {queryRef, retry, teamId} = props
+  const {queryRef, teamId} = props
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
+  const {hash} = useLocation()
+  useEffect(() => {
+    if (!hash) return
+    document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})
+  }, [hash])
+  const [newlyConnectedService, setNewlyConnectedService] = useState<string>()
   const integrations = viewer.teamMember?.integrations
+  const services = viewer.teamMember?.services ?? []
+
+  const taskIntegrations = services
+    .filter(
+      ({service, isAvailable}) =>
+        isRegisteredClientIntegration(service) &&
+        (isAvailable || !!getClientIntegration(service).contactUs)
+    )
+    .map((integrationService) => ({
+      name: integrationService.title,
+      connected: integrationService.isConnected && integrationService.isAvailable,
+      component: (
+        <IntegrationServiceProviderRow
+          key={integrationService.service}
+          teamId={teamId}
+          serviceRef={integrationService}
+          isNewlyConnected={newlyConnectedService === integrationService.service}
+          onConnected={() => setNewlyConnectedService(integrationService.service)}
+        />
+      )
+    }))
 
   const allIntegrations = [
+    ...taskIntegrations,
     {
-      name: 'Atlassian',
-      connected: !!integrations?.atlassian?.accessToken,
-      component: (
-        <AtlassianProviderRow key='atlassian' teamId={teamId} retry={retry} viewer={viewer} />
-      )
-    },
-    {
-      name: 'Jira Data Center',
+      name: Providers.CONFLUENCE_NAME,
       connected:
-        !!integrations?.jiraServer?.auth?.isActive && integrations.jiraServer?.sharedProviders[0],
-      component: <JiraServerProviderRow key='jira' teamId={teamId} viewerRef={viewer} />
+        !!integrations?.atlassian?.accessToken &&
+        hasConfluenceScopes(integrations?.atlassian?.scope),
+      component: <ConfluenceProviderRow key='confluence' teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'GitHub',
-      connected: !!integrations?.github?.accessToken,
-      component: <GitHubProviderRow key='github' teamId={teamId} viewer={viewer} />
-    },
-    {
-      name: 'GitLab',
-      connected: !!integrations?.gitlab.auth,
-      component: <GitLabProviderRow key='gitlab' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: 'Linear',
-      connected: !!integrations?.linear?.auth,
-      component: <LinearProviderRow key='linear' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: 'Mattermost',
+      name: Providers.MATTERMOST_NAME,
       connected: !!integrations?.mattermost.auth,
       component: <MattermostProviderRow key='mm' teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Slack',
-      connected: integrations?.slack?.isActive,
+      name: Providers.SLACK_NAME,
+      connected: !!integrations?.slack?.isActive,
       component: <SlackProviderRow key='slack' teamId={teamId} viewer={viewer} />
     },
     {
-      name: 'Azure DevOps',
-      connected: !!integrations?.azureDevOps.auth?.accessToken,
-      component: <AzureDevOpsProviderRow key='azure' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: 'MS Teams',
+      name: Providers.MSTEAMS_NAME,
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow key='teams' teamId={teamId} viewerRef={viewer} />
-    },
-    {
-      name: 'Gcal Integration',
-      connected: !!integrations?.gcal?.auth,
-      component: <GcalProviderRow key='gcal' viewerRef={viewer} teamId={teamId} />
     }
   ]
 
@@ -175,13 +142,13 @@ const ProviderList = (props: Props) => {
         </div>
 
         {connectedIntegrations.length > 0 && (
-          <div className='font-semibold text-base text-slate-700'>Connected</div>
+          <div className='font-semibold text-base text-fg-primary'>Connected</div>
         )}
 
         {connectedIntegrations}
 
         {availableIntegrations.length > 0 && (
-          <div className='pt-4 font-semibold text-base text-slate-700'>Available</div>
+          <div className='pt-4 font-semibold text-base text-fg-primary'>Available</div>
         )}
 
         {availableIntegrations}

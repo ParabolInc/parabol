@@ -1,5 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {QuickStats_meeting$key} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
+import type {
+  MeetingTypeEnum,
+  QuickStats_meeting$key
+} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
@@ -43,11 +46,12 @@ interface Props {
   meeting: QuickStats_meeting$key
 }
 
-const quickStatsLookup = {
+// teamHealth has no summary stats yet
+const quickStatsLookup: Partial<
+  Record<MeetingTypeEnum, (meeting: any) => {value: string | number; label: string}[]>
+> = {
   [ACTION]: makeActionStats,
-  [RETROSPECTIVE]: makeRetroStats,
-  poker: makePokerStats,
-  teamPrompt: makeTeamPromptStats
+  [RETROSPECTIVE]: makeRetroStats
 }
 
 const QuickStats = (props: Props) => {
@@ -57,8 +61,8 @@ const QuickStats = (props: Props) => {
       fragment QuickStats_meeting on NewMeeting {
         __typename
         meetingType
-        ...makePokerStats_meeting
-        ...makeTeamPromptStats_meeting
+        ...makePokerStats_meeting @alias
+        ...makeTeamPromptStats_meeting @alias
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
             voteCount
@@ -95,10 +99,13 @@ const QuickStats = (props: Props) => {
     `,
     meetingRef
   )
-  const {meetingType} = meeting
-  const quickStatMaker = quickStatsLookup[meetingType]
-  if (!quickStatMaker) return null
-  const stats = quickStatMaker(meeting as any)
+  const {meetingType, makePokerStats_meeting, makeTeamPromptStats_meeting} = meeting
+  const stats = makePokerStats_meeting
+    ? makePokerStats(makePokerStats_meeting)
+    : makeTeamPromptStats_meeting
+      ? makeTeamPromptStats(makeTeamPromptStats_meeting)
+      : quickStatsLookup[meetingType]?.(meeting as any)
+  if (!stats) return null
   return (
     <table width='75%' align='center' style={tableStyle}>
       <tbody>

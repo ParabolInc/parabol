@@ -1,18 +1,15 @@
-export type RemoveIntegrationSearchQuerySuccessSource =
-  | {
-      userId: string
-      teamId: string
-    }
-  | {error: {message: string}}
+import type {RegisteredServerIntegration} from '../../../integrations/platform/registry'
+import type {RemoveIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
+import {makeIntegrationServiceSource} from './IntegrationService'
 
-const RemoveIntegrationSearchQuerySuccess: {
-  jiraServerIntegration: (
-    source: RemoveIntegrationSearchQuerySuccessSource
-  ) => RemoveIntegrationSearchQuerySuccessSource
-} = {
-  jiraServerIntegration: (source) => {
-    return source
-  }
+export type RemoveIntegrationSearchQuerySuccessSource = {
+  teamId: string
+  userId: string
+  service: RegisteredServerIntegration
+}
+
+const RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccessResolvers = {
+  service: ({service, teamId, userId}) => makeIntegrationServiceSource(service, teamId, userId)
 }
 
 export default RemoveIntegrationSearchQuerySuccess

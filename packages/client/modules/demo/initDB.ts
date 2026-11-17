@@ -1,8 +1,18 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
-import {PALETTE} from '~/styles/paletteV3'
-import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
+import {githubIntegrationMeta} from '../../integrations/github/shared/githubIntegrationMeta'
+import {gitlabIntegrationMeta} from '../../integrations/gitlab/shared/gitlabIntegrationMeta'
+import JiraProjectId from '../../integrations/jira/shared/JiraProjectId'
+import {jiraIntegrationMeta} from '../../integrations/jira/shared/jiraIntegrationMeta'
+import IntegrationRepoId from '../../shared/gqlIds/IntegrationRepoId'
+import IntegrationServiceId from '../../shared/gqlIds/IntegrationServiceId'
+import type {IntegrationMeta} from '../../shared/integrations/IntegrationMeta'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
+import {
+  DemoIntegration,
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -59,7 +69,7 @@ const initMeetingSettings = () => {
 }
 
 export const JiraDemoKey = 'Demo'
-export const JiraDemoCloudName = 'jira-demo'
+export const JiraDemoCloudName = DemoIntegration.JIRA_CLOUD_NAME
 const JiraSecretKey = 'jira-secret'
 const JiraDemoProjectId = '123:Demo'
 const JiraSecretProjectId = '123:jira-secret'
@@ -96,6 +106,7 @@ class DemoJiraRemoteProject {
   name: string
   avatar: string
   service: 'jira'
+  integrationRepoId: string
   avatarUrls = {
     x16: '',
     x24: '',
@@ -115,10 +126,11 @@ class DemoJiraRemoteProject {
     this.name = name
     this.avatar = avatar
     this.service = 'jira'
+    this.integrationRepoId = IntegrationRepoId.join({service: 'jira', cloudId, key: projectKey})
   }
 }
 const GitLabDemoKey = 'parabol/parabol-demo'
-export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
+export const GitHubDemoKey = DemoIntegration.GITHUB_REPO
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
     nameWithOwner: GitHubDemoKey,
@@ -127,9 +139,29 @@ export const GitHubProjectKeyLookup = {
 }
 
 const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
-  __typename: '_xGitHubRepository',
-  id: `si:${nameWithOwner}`,
-  ...GitHubProjectKeyLookup[nameWithOwner]
+  __typename: 'RepoContainer',
+  id: `github:${nameWithOwner}`,
+  service: 'github',
+  name: nameWithOwner,
+  integrationRepoId: nameWithOwner
+})
+
+const makeDemoIntegrationService = (
+  userId: string,
+  __typename: string,
+  {service, title}: IntegrationMeta,
+  repos: readonly object[]
+) => ({
+  __typename,
+  id: IntegrationServiceId.join(demoTeamId, userId, service),
+  service,
+  title,
+  isAvailable: true,
+  isConnected: true,
+  grantedScopes: [],
+  cloudProvider: null,
+  sharedProviders: [],
+  repos
 })
 
 const initSlackNotification = (userId: string) => ({
@@ -217,17 +249,42 @@ const initDemoTeamMember = (
     isSelf: idx === 0,
     picture: picture,
     preferredName,
+    services: [
+      makeDemoIntegrationService(userId, 'JiraIntegrationService', jiraIntegrationMeta, [
+        new DemoJiraRemoteProject(JiraDemoProjectId)
+      ]),
+      makeDemoIntegrationService(userId, 'GitHubIntegrationService', githubIntegrationMeta, [
+        makeRepoIntegrationGitHub(GitHubDemoKey)
+      ]),
+      makeDemoIntegrationService(userId, 'GitLabIntegrationService', gitlabIntegrationMeta, [
+        makeRepoIntegrationGitLab(GitLabDemoKey)
+      ])
+    ],
     integrations: {
       id: 'demoTeamIntegrations',
       atlassian: {
         id: 'demoTeamAtlassianIntegration',
         isActive: true,
-        accessToken: '123'
+        accessToken: '123',
+        scope: []
       },
       github: {
         id: 'demoTeamGitHubIntegration',
         isActive: true,
-        accessToken: '123'
+        accessToken: '123',
+        api: null
+      },
+      gcal: null,
+      jiraServer: {
+        id: 'demoTeamJiraServerIntegration',
+        auth: null,
+        sharedProviders: []
+      },
+      linear: {
+        id: 'demoTeamLinearIntegration',
+        auth: null,
+        cloudProvider: null,
+        api: null
       },
       gitlab: {
         id: 'demoTeamGitLabIntegration',
@@ -258,7 +315,9 @@ const initDemoTeamMember = (
           isActive: true,
           provider: demoMattermostProvider
         },
-        sharedProviders: []
+        isActive: false,
+        sharedProviders: [],
+        teamNotificationSettings: null
       },
       msTeams: {
         id: 'demoMsTeamsIntegration',
@@ -266,17 +325,11 @@ const initDemoTeamMember = (
           id: 'demoMsTeamsAuth',
           isActive: true,
           provider: demoMsTeamsProvider
-        }
+        },
+        isActive: false,
+        teamNotificationSettings: null
       },
       slack: initSlackAuth(userId)
-    },
-    repoIntegrations: {
-      hasMore: false,
-      items: [
-        new DemoJiraRemoteProject(JiraDemoProjectId),
-        makeRepoIntegrationGitHub(GitHubDemoKey),
-        makeRepoIntegrationGitLab(GitLabDemoKey)
-      ]
     },
     prevUsedRepoIntegrations: {
       hasMore: false,
@@ -317,8 +370,8 @@ const initDemoOrg = () => {
     hasSuggestGroupsFlag: false,
     hasZoomFlag: false,
     tierLimitExceededAt: null,
-    useAI: true
-    // viewerOrganizationUser
+    useAI: true,
+    viewerOrganizationUser: null
   } as const
 }
 
@@ -342,7 +395,12 @@ const initDemoTeam = (
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
-    teamMembers
+    teamMembers,
+    tasks: {edges: [], pageInfo: {endCursor: null, hasNextPage: false}},
+    qualAIMeetingsCount: 0,
+    autoAssignFacilitator: false,
+    facilitatorRotation: [],
+    viewerTeamMember: null
   }
 }
 
@@ -367,7 +425,7 @@ const initPhases = () => {
           promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
-          groupColor: PALETTE.JADE_400,
+          groupColor: 'var(--color-jade-400)',
           sortOrder: 0
         },
         {
@@ -375,7 +433,7 @@ const initPhases = () => {
           promptId: 'stopId',
           question: 'Stop',
           description: 'What existing behaviors should we cease doing?',
-          groupColor: PALETTE.TOMATO_500,
+          groupColor: 'var(--color-tomato-500)',
           sortOrder: 1
         },
         {
@@ -383,7 +441,7 @@ const initPhases = () => {
           promptId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
-          groupColor: PALETTE.SKY_500,
+          groupColor: 'var(--color-sky-500)',
           sortOrder: 2
         }
       ],
@@ -534,12 +592,24 @@ const initNewMeeting = (
     name: 'Retro Meeting',
     organization,
     meetingMembers,
+    meetingSeries: null,
     nextAutoGroupThreshold: null,
+    prevMeeting: null,
+    scheduledEndTime: null,
+    parabolInspirationItems: [],
+    githubInspirationItems: [],
+    jiraInspirationItems: [],
+    gcalInspirationItems: [],
+    linearInspirationItems: [],
+    azureDevOpsInspirationItems: [],
     viewerMeetingMember,
     reflectionGroups: [] as any[],
+    // The demo has no server to generate suggestions, so the hover outline & modal stay inert
+    suggestedGrouping: null,
     votesRemaining: teamMembers.length * 5,
     phases: initPhases() as any[],
     summarySentAt: null,
+    summaryPageId: null,
     summary: `The team are feeling the strain of too many meetings and over-packed sprints, which is stifling creativity, especially for the interns and junior staff. Clarifying processes, reducing unproductive group chats, and giving everyone more space to share ideas should help.`,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
@@ -617,13 +687,10 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
 export type RetroDemoDB = ReturnType<typeof initDB>
 export default initDB
 
-const makeRepoIntegrationGitLab = (fullPath: string) => {
-  return {
-    __typename: '_xGitLabProject',
-    id: fullPath,
-    service: 'gitlab',
-    fullPath,
-    name: fullPath.split('/')[1],
-    description: 'Parabol GitLab Demo Project'
-  }
-}
+const makeRepoIntegrationGitLab = (fullPath: string) => ({
+  __typename: 'RepoContainer',
+  id: `gitlab:${fullPath}`,
+  service: 'gitlab',
+  name: fullPath,
+  integrationRepoId: fullPath
+})

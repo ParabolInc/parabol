@@ -10,10 +10,11 @@ import {usePageSharingAutocomplete} from './usePageSharingAutocomplete'
 interface Props {
   pageId: string
   queryRef: PreloadedQuery<PageSharingQuery>
+  hideCopyLink?: boolean
 }
 
 export const PageSharing = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, hideCopyLink} = props
   const query = usePreloadedQuery<PageSharingQuery>(
     graphql`
       query PageSharingQuery($pageId: ID!) {
@@ -42,7 +43,7 @@ export const PageSharing = (props: Props) => {
     setValue
   } = usePageSharingAutocomplete(query)
   return (
-    <div className='flex w-96 flex-col bg-white pt-3 text-slate-700'>
+    <div className='flex w-96 flex-col bg-surface-card pt-3 text-fg-primary'>
       <div className='flex max-h-96 flex-col px-3'>
         <PageSharingInput
           pageId={page.id}
@@ -53,7 +54,7 @@ export const PageSharing = (props: Props) => {
           setAnchorEl={setAnchorEl}
           value={value}
         />
-        {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
+        {error && <div className='mt-2 font-semibold text-fg-error text-sm'>{error}</div>}
         {groupedOptions.length ? (
           <PageSharingInviteOptions
             getListboxProps={getListboxProps}
@@ -64,9 +65,13 @@ export const PageSharing = (props: Props) => {
           <PageSharingAccessList pageRef={page} />
         )}
       </div>
-      <div className='border-slate-300 border-t p-3'>
-        <PageSharingCopyLink />
-      </div>
+      {hideCopyLink ? (
+        <div className='h-3' />
+      ) : (
+        <div className='border-hairline border-t p-3'>
+          <PageSharingCopyLink />
+        </div>
+      )}
     </div>
   )
 }

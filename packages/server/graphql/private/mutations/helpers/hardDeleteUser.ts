@@ -1,6 +1,5 @@
 import {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
-import {analytics} from '../../../../utils/analytics/analytics'
 import {blacklistJWT} from '../../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import {broadcastUserMentionUpdate} from '../../../../utils/tiptap/hocusPocusHub'
@@ -41,7 +40,6 @@ const setFacilitatedUserIdOrDelete = async (
 
 export const hardDeleteUser = async (
   userToDelete: {id: string; email: string},
-  reasonText: string,
   dataLoader: DataLoaderWorker
 ) => {
   const {id: userIdToDelete} = userToDelete
@@ -68,8 +66,6 @@ export const hardDeleteUser = async (
       .where('createdBy', '=', userIdToDelete)
       .execute()
   }
-
-  analytics.accountRemoved(userToDelete, reasonText)
 
   // User needs to be deleted after children
   await pg.deleteFrom('User').where('id', '=', userIdToDelete).execute()

@@ -1,10 +1,8 @@
-import getKysely from '../../../postgres/getKysely'
+import {FEATURE_FLAGS} from '../../../utils/featureFlags'
 import type {QueryResolvers} from '../resolverTypes'
 
 const getAllFeatureFlags: QueryResolvers['getAllFeatureFlags'] = async () => {
-  const pg = getKysely()
-
-  return await pg.selectFrom('FeatureFlag').selectAll().orderBy('featureName').execute()
+  return Object.values(FEATURE_FLAGS).sort((a, b) => a.featureName.localeCompare(b.featureName))
 }
 
 export default getAllFeatureFlags

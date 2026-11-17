@@ -6,6 +6,7 @@ import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
+import promptTemplateRules from '../../public/mutations/helpers/promptTemplateRules'
 
 interface ValidNewTeam {
   id: string
@@ -89,7 +90,15 @@ export default async function createTeamAndLeader(
             id: generateUID(),
             teamId,
             meetingType: 'retrospective',
-            phaseTypes: ['checkin', 'TEAM_HEALTH', 'reflect', 'group', 'vote', 'discuss'],
+            phaseTypes: [
+              'checkin',
+              'TEAM_HEALTH',
+              'updates',
+              'reflect',
+              'group',
+              'vote',
+              'discuss'
+            ],
             disableAnonymity: false,
             maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
             totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
@@ -107,6 +116,20 @@ export default async function createTeamAndLeader(
             meetingType: 'poker',
             phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
             selectedTemplateId: 'estimatedEffortTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'teamHealth',
+            phaseTypes: ['TEAM_HEALTH_RESPONSE'],
+            selectedTemplateId: 'everythingBagelTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'teamPrompt',
+            phaseTypes: ['RESPONSES'],
+            selectedTemplateId: promptTemplateRules.teamPrompt.defaultTemplateId
           }
         ])
       )

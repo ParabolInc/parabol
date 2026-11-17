@@ -1,13 +1,18 @@
 import {expect, test} from '@playwright/test'
 import config from '../config'
-import {goToNextPhase, skipToVotePhase} from './retrospective-demo-helpers'
+import {
+  goToNextPhase,
+  meetingNav,
+  skipToVotePhase,
+  voteControls
+} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / vote page', () => {
   test('it allows voting up a group', async ({page}) => {
     await skipToVotePhase(page)
-    const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
+    const {voteCount, addVote} = voteControls(page, 'Start', 0)
     await expect(voteCount).toHaveText('0')
-    await page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`).click()
+    await addVote.click()
     await expect(voteCount).toHaveText('1')
   })
 
@@ -15,24 +20,23 @@ test.describe('retrospective-demo / vote page', () => {
     await skipToVotePhase(page)
     const totalRemainingVotes = page.locator('div:right-of(:text("My Votes")) >> nth=0')
     await expect(totalRemainingVotes).toHaveText('5')
-    await page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`).click()
+    await voteControls(page, 'Start', 0).addVote.click()
     await expect(totalRemainingVotes).toHaveText('4')
   })
 
   test('it allows removing a vote from a group', async ({page}) => {
     await skipToVotePhase(page)
-    const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
+    const {voteCount, addVote, removeVote} = voteControls(page, 'Start', 0)
     await expect(voteCount).toHaveText('0')
-    await page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`).click()
+    await addVote.click()
     await expect(voteCount).toHaveText('1')
-    await page.locator(`[data-cy="Start-group-0"] [aria-label="Remove vote"]`).click()
+    await removeVote.click()
     await expect(voteCount).toHaveText('0')
   })
 
   test('it allows voting up a topic up to three times by default', async ({page}) => {
     await skipToVotePhase(page)
-    const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
-    const addVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`)
+    const {voteCount, addVote} = voteControls(page, 'Start', 0)
     await expect(voteCount).toHaveText('0')
     await addVote.click()
     await expect(voteCount).toHaveText('1')
@@ -49,22 +53,16 @@ test.describe('retrospective-demo / vote page', () => {
     await skipToVotePhase(page)
 
     // Vote three times on start group 0
-    const group0VoteCount = page.locator(
-      `[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`
-    )
+    const {voteCount: group0VoteCount, addVote: group0AddVote} = voteControls(page, 'Start', 0)
     await expect(group0VoteCount).toHaveText('0')
-    const group0AddVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`)
     await group0AddVote.click()
     await group0AddVote.click()
     await group0AddVote.click()
     await expect(group0VoteCount).toHaveText('3')
 
     // And two times on start group 1
-    const group1VoteCount = page.locator(
-      `[data-cy="Start-group-1"] [data-cy="completed-vote-count"]`
-    )
+    const {voteCount: group1VoteCount, addVote: group1AddVote} = voteControls(page, 'Start', 1)
     await expect(group1VoteCount).toHaveText('0')
-    const group1AddVote = page.locator(`[data-cy="Start-group-1"] [aria-label="Add vote"]`)
     await group1AddVote.click()
     await group1AddVote.click()
     // button should be disabled, force click anyways in case this changes in the future
@@ -74,9 +72,8 @@ test.describe('retrospective-demo / vote page', () => {
 
   test('it does not allow downvoting a group with no votes', async ({page}) => {
     await skipToVotePhase(page)
-    const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
+    const {voteCount, removeVote} = voteControls(page, 'Start', 0)
     await expect(voteCount).toHaveText('0')
-    const removeVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Remove vote"]`)
     // button should be disabled, force click anyways in case this changes in the future
     await removeVote.click({force: true})
     await expect(voteCount).toHaveText('0')
@@ -107,22 +104,16 @@ test.describe('retrospective-demo / vote page', () => {
 
     // Then add 6 total votes
     // Vote three times on start group 0
-    const group0VoteCount = page.locator(
-      `[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`
-    )
+    const {voteCount: group0VoteCount, addVote: group0AddVote} = voteControls(page, 'Start', 0)
     await expect(group0VoteCount).toHaveText('0')
-    const group0AddVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`)
     await group0AddVote.click()
     await group0AddVote.click()
     await group0AddVote.click()
     await expect(group0VoteCount).toHaveText('3')
 
     // And two times on start group 1
-    const group1VoteCount = page.locator(
-      `[data-cy="Start-group-1"] [data-cy="completed-vote-count"]`
-    )
+    const {voteCount: group1VoteCount, addVote: group1AddVote} = voteControls(page, 'Start', 1)
     await expect(group1VoteCount).toHaveText('0')
-    const group1AddVote = page.locator(`[data-cy="Start-group-1"] [aria-label="Add vote"]`)
     await group1AddVote.click()
     await group1AddVote.click()
     await group1AddVote.click()
@@ -148,8 +139,7 @@ test.describe('retrospective-demo / vote page', () => {
     await page.locator('text=Vote Settings').click()
 
     // Then add 4 votes to a single group
-    const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
-    const addVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Add vote"]`)
+    const {voteCount, addVote} = voteControls(page, 'Start', 0)
     await expect(voteCount).toHaveText('0')
     await addVote.click()
     await expect(voteCount).toHaveText('1')
@@ -181,7 +171,7 @@ test.describe('retrospective-demo / vote page', () => {
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
-    await page.click('[data-cy=sidebar] :text("Vote")')
+    await meetingNav(page).getByText('Vote', {exact: true}).click()
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
     await expect(page.locator(':text("Phase Completed")')).toBeVisible()
   })

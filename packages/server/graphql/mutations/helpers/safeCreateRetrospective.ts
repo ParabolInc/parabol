@@ -1,10 +1,10 @@
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import generateUID from '../../../generateUID'
-import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import type {RetroMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import type {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
+import insertNewMeeting from './insertNewMeeting'
 
 const safeCreateRetrospective = async (
   meetingSettings: {
@@ -21,7 +21,6 @@ const safeCreateRetrospective = async (
   },
   dataLoader: DataLoaderWorker
 ) => {
-  const pg = getKysely()
   const {teamId, facilitatorUserId, name} = meetingSettings
   const meetingType: MeetingTypeEnum = 'retrospective'
   const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
@@ -44,13 +43,7 @@ const safeCreateRetrospective = async (
     name
   }) as RetrospectiveMeeting
   try {
-    await pg.transaction().execute(async (pg) => {
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(meeting.phases)})
-        .execute()
-      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
-    })
+    await insertNewMeeting(meeting, inserts)
   } catch {
     // meeting already started
     return null

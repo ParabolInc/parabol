@@ -1,6 +1,6 @@
 """
-Parameters used to re-run a Your Work integration search server-side and generate
-inspiration items from the matching work items.
+Parameters used to re-run Your Work integration searches server-side and generate
+inspiration items from the matching issues.
 """
 input GenerateInspirationItemsInput {
   """
@@ -9,15 +9,10 @@ input GenerateInspirationItemsInput {
   meetingId: ID!
 
   """
-  The integration service to pull work items from, e.g. github
+  The searches to draft from. A retrospective drafts from exactly one; a standup drafts one
+  combined answer from all of them
   """
-  service: String!
-
-  """
-  The service-specific search string. For github, the same search string the client
-  uses (including any date range filter and is:issue / is:pr qualifier)
-  """
-  searchQuery: String!
+  sources: [InspirationSourceInput!]!
 
   """
   An optional custom prompt that overrides the default generation prompt

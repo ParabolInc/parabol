@@ -1,15 +1,13 @@
-import styled from '@emotion/styled'
-import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {EditableTemplatePromptColor_prompt$key} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
 import type {EditableTemplatePromptColor_prompts$key} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
-import {BezierCurve} from '~/types/constEnums'
+import {ArrowDropDown as ArrowDropDownIcon} from '~/ui/icons'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
-import {PALETTE} from '../../../styles/paletteV3'
+import {cn} from '../../../ui/cn'
+import {Menu} from '../../../ui/Menu/Menu'
 
 interface Props {
   isOwner: boolean
@@ -17,49 +15,11 @@ interface Props {
   prompts: EditableTemplatePromptColor_prompts$key
 }
 
-const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
-  cursor: isOwner ? 'pointer' : 'default',
-  display: 'block',
-  flex: 1,
-  flexShrink: 0,
-  height: 24,
-  padding: 4,
-  position: 'relative',
-  width: 24,
-  ':hover': {
-    i: {
-      opacity: isOwner ? 1 : undefined
-    }
-  }
-}))
-
-const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
-  backgroundColor: groupColor,
-  borderRadius: '50%',
-  height: 14,
-  margin: 1,
-  width: 14
-}))
-
-const DropdownIcon = styled('div')({
-  bottom: 0,
-  color: PALETTE.SLATE_600,
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  opacity: 0,
-  position: 'absolute',
-  right: -6,
-  transition: `opacity 300ms ${BezierCurve.DECELERATE}`,
-  width: 12
-})
-
 const EditableTemplatePromptColor = (props: Props) => {
   const {isOwner, prompt: promptRef, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
+      fragment EditableTemplatePromptColor_prompts on TemplatePrompt @relay(plural: true) {
         ...PalettePicker_prompts
       }
     `,
@@ -67,7 +27,7 @@ const EditableTemplatePromptColor = (props: Props) => {
   )
   const prompt = useFragment(
     graphql`
-      fragment EditableTemplatePromptColor_prompt on ReflectPrompt {
+      fragment EditableTemplatePromptColor_prompt on TemplatePrompt {
         ...PalettePicker_prompt
         groupColor
       }
@@ -75,17 +35,32 @@ const EditableTemplatePromptColor = (props: Props) => {
     promptRef
   )
   const {groupColor} = prompt
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_LEFT
-  )
-  return (
-    <PromptColor ref={originRef} isOwner={isOwner} onClick={isOwner ? togglePortal : undefined}>
-      <ColorBadge groupColor={groupColor} />
-      <DropdownIcon>
+  const [isOpen, setIsOpen] = useState(false)
+  const trigger = (
+    <PlainButton
+      className={cn(
+        'group relative block h-6 w-6 flex-1 shrink-0 p-1',
+        isOwner ? 'cursor-pointer' : 'cursor-default'
+      )}
+    >
+      <div className='m-px h-3.5 w-3.5 rounded-full' style={{backgroundColor: groupColor}} />
+      <div
+        className={cn(
+          '-right-1.5 absolute bottom-0 flex h-6 w-3 items-center text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] [&_svg]:text-[18px]',
+          isOwner && 'group-hover:opacity-100'
+        )}
+      >
         <ArrowDropDownIcon />
-      </DropdownIcon>
-      {menuPortal(<PalettePicker menuProps={menuProps} prompt={prompt} prompts={prompts} />)}
-    </PromptColor>
+      </div>
+    </PlainButton>
+  )
+
+  if (!isOwner) return trigger
+
+  return (
+    <Menu open={isOpen} onOpenChange={setIsOpen} trigger={trigger}>
+      <PalettePicker prompt={prompt} prompts={prompts} onClose={() => setIsOpen(false)} />
+    </Menu>
   )
 }
 

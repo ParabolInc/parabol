@@ -1,0 +1,9 @@
+"""
+Return value for requestSAMLMetadataChange
+"""
+type RequestSAMLMetadataChangeSuccess {
+  """
+  The identity provider's sign-on URL. Signing in there as the requesting org admin saves the new metadata
+  """
+  signOnURL: String!
+}

@@ -1,0 +1,57 @@
+"""
+A record of one export of a Parabol page (and optionally its sub-tree) to an external
+service (Confluence Cloud in v1). Powers the export dialog's live progress and the
+prior-exports history line.
+"""
+type PageExport {
+  """
+  Opaque unique id
+  """
+  id: ID!
+
+  """
+  Overall job status
+  """
+  status: PageExportStatusEnum!
+
+  """
+  The Atlassian cloudId of the destination site
+  """
+  cloudId: ID!
+
+  """
+  The Confluence space id the export targets
+  """
+  spaceId: ID!
+
+  """
+  The Confluence space name at export time (denormalized for the history line)
+  """
+  spaceName: String!
+
+  """
+  Whether sub-pages were included
+  """
+  includeSubPages: Boolean!
+
+  """
+  Absolute URL of the root exported Confluence page, once created
+  """
+  rootTargetUrl: String
+
+  """
+  Per-page live state, in tree order (parents before children)
+  """
+  pages: [PageExportItem!]!
+
+  """
+  A short human-readable paragraph summarizing anything that did not export at full
+  fidelity (failed pages, degraded blocks). Null when the export was clean.
+  """
+  errorSummary: String
+
+  """
+  When the export was started
+  """
+  createdAt: DateTime!
+}

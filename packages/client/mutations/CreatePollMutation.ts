@@ -6,6 +6,7 @@ import type {ThreadedPollBase_poll$data} from '../__generated__/ThreadedPollBase
 import type {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment CreatePollMutation_meeting on CreatePollSuccess {
@@ -30,7 +31,7 @@ const mutation = graphql`
           message
         }
       }
-      ...CreatePollMutation_meeting @relay(mask: false)
+      ...CreatePollMutation_meeting @relay(mask: false) @alias
     }
   }
 `
@@ -69,7 +70,7 @@ const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
 
       const newlyCreatedPoll = payload.getLinkedRecord('poll')
       const existingPoll = store.get(localPoll.id)
-      if (!existingPoll) return
+      if (!newlyCreatedPoll || !existingPoll) return
 
       const newlyCreatedPollId = newlyCreatedPoll.getValue('id')
       existingPoll.setValue(newlyCreatedPollId, 'id')
@@ -79,7 +80,7 @@ const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
       existingPoll.setLinkedRecords(newPollOptions, 'options')
     },
     onCompleted,
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

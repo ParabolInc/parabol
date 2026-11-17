@@ -71,7 +71,7 @@ const NewMeetingSummary = (props: Props) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useSnacksForNewMeetings(activeMeetings as any)
   return (
-    <div className='flex h-full flex-1 overflow-auto bg-slate-200'>
+    <div className='light-island flex h-full flex-1 overflow-auto bg-slate-200'>
       <div className='h-full w-full overflow-auto'>
         <MeetingSummaryEmail
           appOrigin={window.location.origin}

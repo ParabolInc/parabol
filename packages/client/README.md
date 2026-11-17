@@ -12,6 +12,26 @@
 
 ## UI components
 
+### Theming (light/dark)
+
+The app supports light and dark themes ("Grape Dusk"). Theming is driven by semantic CSS custom properties defined in `styles/theme/global.css`: the `@theme` block holds the light values and the `.theme-dark` class (applied to `<html>`) overrides them. The user preference lives on `User.theme` (light/dark/system) and is applied by `ThemeProvider`.
+
+**The one rule: pick the class by the color's _role_, not its value.**
+
+- **Themed roles** (surfaces, text, borders — anything that should flip with the theme) use semantic tokens:
+  - Surfaces: `bg-surface-app`, `bg-surface-card`, `bg-surface-well` (inset), `bg-surface-raised` (elevated/menus), `bg-surface-input`, `bg-surface-hover` (interactive hover fill)
+  - Text: `text-fg-primary`, `text-fg-secondary`, `text-fg-muted` (hints/placeholders)
+  - Borders: `border-hairline` (dividers), `border-hairline-strong` (outlines), `border-hairline-field` (inputs)
+  - Links/focus: `text-accent`, `border-accent`, `ring-accent`
+- **Categorical color** (meeting-type hues, task status, template categories, brand CTAs, avatar fills) keeps raw palette classes (`bg-grape-500`, `text-tomato-400`) — these deliberately do NOT flip with the theme.
+
+Conventions:
+
+- Buttons: use `ui/Button`. Hover fill is `bg-surface-hover`; disabled is `opacity-50`, never a solid gray fill. Menus/popovers are `bg-surface-raised` + `border-hairline` (see `ui/Menu/MenuContent`).
+- A raw `dark:` variant exists (`@custom-variant dark` targets `.theme-dark`) but is a last resort — needed only when a value can't be expressed as a token (e.g. dimming PNG illustrations with `dark:brightness-[.94]`).
+- Emotion components can't use Tailwind classes, and hard-coded `PALETTE.*` values never react to the theme. If you must touch an Emotion style, use a `'var(--color-*)'` string value — but prefer migrating the component to Tailwind.
+- Deliberate light islands: emails are always light, and the in-app meeting summary renders the email markup inside a `.light-island` wrapper that re-declares the tokens to light values. Logged-out pages (auth, invitations) are light and use raw utilities on purpose.
+
 ### Migration from Emotion to Tailwind CSS
 
 #### What is Tailwind CSS?

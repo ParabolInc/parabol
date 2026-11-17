@@ -1,0 +1,15 @@
+"""
+One integration search to draft from
+"""
+input InspirationSourceInput {
+  """
+  The integration service to pull issues from, e.g. github
+  """
+  service: ServiceEnum!
+
+  """
+  The service-specific search string. For github, the same search string the client
+  uses (including any date range filter and is:issue / is:pr qualifier)
+  """
+  searchQuery: String!
+}

@@ -47,18 +47,18 @@ export class ResourceGrants {
     return this.grantedOrgIds.includes(orgId)
   }
 
+  isUnrestricted() {
+    return (
+      this.grantedPageIds === null && this.grantedTeamIds === null && this.grantedOrgIds === null
+    )
+  }
+
   getPageGrantCriteria(): null | {
     pageIds: Set<number> | null
     teamIds: string[] | null
     orgIds: string[] | null
   } {
-    if (
-      this.grantedPageIds === null &&
-      this.grantedTeamIds === null &&
-      this.grantedOrgIds === null
-    ) {
-      return null
-    }
+    if (this.isUnrestricted()) return null
     return {
       pageIds: this.grantedPageIds,
       teamIds: this.grantedTeamIds,
@@ -73,14 +73,7 @@ export class ResourceGrants {
       .load({pageId, userId: this.userId})
     if (!userRole) return false
 
-    // No grant restrictions at all
-    if (
-      this.grantedPageIds === null &&
-      this.grantedTeamIds === null &&
-      this.grantedOrgIds === null
-    ) {
-      return true
-    }
+    if (this.isUnrestricted()) return true
 
     // Page explicitly granted
     if (this.grantedPageIds !== null && this.grantedPageIds.has(pageId)) return true

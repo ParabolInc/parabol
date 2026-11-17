@@ -32,4 +32,9 @@ type JiraServerRemoteProject implements RepoIntegration {
   avatar: String!
   avatarUrls: JiraRemoteAvatarUrls!
   projectCategory: JiraRemoteProjectCategory!
+
+  """
+  The id createTaskIntegration expects for this repo. Differs from id where id is the vendor's node id
+  """
+  integrationRepoId: ID!
 }

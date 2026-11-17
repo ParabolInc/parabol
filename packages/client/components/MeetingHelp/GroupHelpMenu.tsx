@@ -1,5 +1,3 @@
-import {forwardRef} from 'react'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {GROUP} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -8,13 +6,14 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const GroupHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
-  useClientSideTrack('Help Menu Open', {phase: 'group'})
+const GroupHelpMenu = (props: Props) => {
+  const {onClose} = props
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>
       <HelpMenuCopy>
         The goal of this phase is to identify common themes and group them for discussion.
@@ -24,6 +23,6 @@ const GroupHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#group`} />
     </HelpMenuContent>
   )
-})
+}
 
 export default GroupHelpMenu

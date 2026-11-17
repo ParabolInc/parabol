@@ -1,3 +1,4 @@
+import {Logger} from '../../server/utils/Logger'
 import type {AbstractEmbeddingsModel} from './AbstractEmbeddingsModel'
 import type {AbstractGenerationModel} from './AbstractGenerationModel'
 import type {ModelId} from './modelIdDefinitions'
@@ -63,7 +64,13 @@ export class ModelManager {
   }
 
   async maybeCreateTables() {
-    return Promise.all([...this.embeddingModels].map(([, model]) => model.createTable()))
+    const [activeModel, ...otherModels] = this.embeddingModels.values()
+    otherModels.forEach((model) => {
+      model.createTable().catch((error) => {
+        Logger.error(`ModelManager: could not create tables for ${model.modelId}`, error)
+      })
+    })
+    await activeModel?.createTable()
   }
 }
 

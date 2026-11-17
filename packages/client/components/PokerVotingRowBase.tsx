@@ -1,11 +1,17 @@
-import styled from '@emotion/styled'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const PokerVotingRowBase = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexShrink: 0,
-  minHeight: 56, // maintain tallest height, account for avatar group plus padding
-  padding: '5px 0 5px 16px' // 5px instead of 8px, account for overlapping 3px border of avatars
-})
+const PokerVotingRowBase = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        className={cn('flex min-h-14 shrink-0 items-center py-[5px] pr-0 pl-4', className)}
+      />
+    )
+  }
+)
 
 export default PokerVotingRowBase

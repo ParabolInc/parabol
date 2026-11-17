@@ -4,6 +4,7 @@ import type {Disposable} from 'relay-runtime'
 import type {UpdateOrgMutation as TUpdateOrgMutation} from '../__generated__/UpdateOrgMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {LocalHandlers} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment UpdateOrgMutation_organization on UpdateOrgPayload {
@@ -42,7 +43,7 @@ const UpdateOrgMutation = (
       }
     },
     onCompleted,
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

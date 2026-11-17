@@ -1,0 +1,9 @@
+"""
+The way a team health question is answered
+"""
+enum TeamHealthQuestionType {
+  """
+  A statement scored on a 1-5 Likert agreement scale
+  """
+  likert
+}

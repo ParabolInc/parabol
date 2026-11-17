@@ -40,7 +40,9 @@ export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(iterato
     if (capability === undefined) {
       queuedResults.push(resultThunk)
     } else {
-      capability.resolve(resultThunk)
+      const {resolve} = capability
+      capability = undefined
+      resolve(resultThunk)
     }
   }
 
@@ -74,7 +76,6 @@ export function mergeAsyncIterators<T extends AsyncIterator<any>[] | []>(iterato
       if (nextResult === null) {
         return {done: true as const, value: undefined}
       } else {
-        capability = undefined
         return {done: false as const, value: nextResult()}
       }
     },

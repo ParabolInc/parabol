@@ -1,17 +1,16 @@
-import {forwardRef} from 'react'
-import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuLink from './HelpMenuLink'
 
-type Props = {}
+interface Props {
+  onClose: () => void
+}
 
-const ActionMeetingLastCallHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {closePortal} = ref
-  useClientSideTrack('Help Menu Open', {phase: 'firstcall'})
+const ActionMeetingLastCallHelpMenu = (props: Props) => {
+  const {onClose} = props
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent onClose={onClose}>
       <HelpMenuCopy>{'Here’s a chance to add any last topics for discussion.'}</HelpMenuCopy>
       <HelpMenuCopy>
         {'A Meeting Summary will be generated once the Facilitator ends the meeting.'}
@@ -22,6 +21,6 @@ const ActionMeetingLastCallHelpMenu = forwardRef((_props: Props, ref: any) => {
       />
     </HelpMenuContent>
   )
-})
+}
 
 export default ActionMeetingLastCallHelpMenu

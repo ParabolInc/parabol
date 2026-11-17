@@ -1,3 +1,5 @@
+import {resolveModelId} from './modelIdDefinitions'
+
 export type EmbeddingsModelType = 'text-embeddings-inference' | 'vllm'
 export type GenerationModelType = 'openai' | 'text-generation-inference'
 
@@ -33,5 +35,9 @@ export const parseModelEnvVars = (
       }
     })
   })
-  return models
+  if (envVar === 'AI_GENERATION_MODELS') return models
+  return models.map((config: ModelConfig) => {
+    const [modelType, modelId] = config.model.split(':') as [EmbeddingsModelType, string]
+    return {...config, model: `${modelType}:${resolveModelId(modelId)}`}
+  })
 }

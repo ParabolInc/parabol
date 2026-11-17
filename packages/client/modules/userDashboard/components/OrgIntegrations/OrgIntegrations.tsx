@@ -48,18 +48,18 @@ const OrgIntegrations = (props: Props) => {
         <div className='w-[768px] max-w-[768px]'>
           <h1>Integration Settings</h1>
           {isOrgAdmin ? (
-            <div className='text-base text-slate-700'>
+            <div className='text-base text-fg-primary'>
               Configure organization-level integrations that can be used by teams across your
               organization.
               <br />
               See the team integration tab for team-level connections.
             </div>
           ) : (
-            <div className='text-slate-700'>
+            <div className='text-fg-primary'>
               {`Organization-level integrations are managed by `}
               <a
                 href='https://www.parabol.co/support/roles-on-parabol'
-                className='font-bold text-sky-500 hover:text-sky-600'
+                className='font-bold text-accent hover:text-sky-600'
                 target='_blank'
                 rel='noopener'
               >
@@ -71,7 +71,7 @@ const OrgIntegrations = (props: Props) => {
                   {` View yours `}
                   <button
                     onClick={() => navigate(`/me/organizations/${orgId}/billing`)}
-                    className='cursor-pointer bg-transparent p-0 font-bold text-sky-500 hover:text-sky-600'
+                    className='cursor-pointer bg-transparent p-0 font-bold text-accent hover:text-sky-600'
                   >
                     here
                   </button>

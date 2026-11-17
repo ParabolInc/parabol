@@ -14,6 +14,7 @@ graphql`
         recurrenceRule
         duration
         cancelledAt
+        nextMeetingDate
       }
       scheduledEndTime
     }
@@ -28,7 +29,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
+      ...UpdateRecurrenceSettingsMutation_team @relay(mask: false) @alias
     }
   }
 `

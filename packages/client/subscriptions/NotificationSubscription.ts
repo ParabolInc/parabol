@@ -19,10 +19,6 @@ import {
 } from '../mutations/CreateTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
-  inviteToTeamNotificationOnNext,
-  inviteToTeamNotificationUpdater
-} from '../mutations/InviteToTeamMutation'
-import {
   removeOrgUsersNotificationOnNext,
   removeOrgUsersNotificationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
@@ -32,10 +28,10 @@ import {
 } from '../mutations/RemoveTeamMemberMutation'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
-import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
+import archivePageNotificationUpdater from './archivePageNotificationUpdater'
 import {createSubscription} from './createSubscription'
 
 graphql`
@@ -92,16 +88,16 @@ const subscription = graphql`
       }
 
       RemoveIntegrationSearchQuerySuccess {
-        ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
-      }
-      PersistGitHubSearchQuerySuccess {
-        ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+        ...useRemoveIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
       AddOrgPayload {
         ...AddOrgMutation_notification @relay(mask: false)
       }
       AddTeamPayload {
         ...AddTeamMutation_notification @relay(mask: false)
+      }
+      AddTeamMemberIntegrationAuthSuccess {
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
       ArchiveTimelineEventSuccess {
         ...ArchiveTimelineEventMutation_notification @relay(mask: false)
@@ -118,9 +114,6 @@ const subscription = graphql`
       EndRetrospectiveSuccess {
         ...EndRetrospectiveMutation_notification @relay(mask: false)
       }
-      InviteToTeamPayload {
-        ...InviteToTeamMutation_notification @relay(mask: false)
-      }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_notification @relay(mask: false)
       }
@@ -130,11 +123,8 @@ const subscription = graphql`
       InvalidateSessionsPayload {
         ...InvalidateSessionsMutation_notification @relay(mask: false)
       }
-      PersistJiraSearchQuerySuccess {
-        ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      }
       PersistIntegrationSearchQuerySuccess {
-        ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+        ...usePersistIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
 
       AuthTokenPayload {
@@ -180,10 +170,21 @@ const subscription = graphql`
         descriptionHTML
       }
 
+      IntegrationService {
+        ...TaskFooterIntegrateMenuServiceRepos_service @relay(mask: false)
+        ...azureDevOpsSharedProjects_service
+      }
+
       ToggleFeatureFlagSuccess {
         featureFlag {
           featureName
           enabled
+        }
+      }
+      UpdateUserThemeSuccess {
+        user {
+          id
+          theme
         }
       }
       CreatePagePayload {
@@ -194,6 +195,9 @@ const subscription = graphql`
       }
       UpdatePageAccessPayload {
         ...useUpdatePageAccessMutation_notification @relay(mask: false)
+      }
+      ExportPagesToConfluenceSuccess {
+        ...useExportPagesToConfluenceMutation_notification @relay(mask: false)
       }
     }
   }
@@ -290,15 +294,6 @@ const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
   handleAddNotifications(notification, context.store)
 }
 
-const archivePageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
-  const archivedPageId = payload.getValue('pageId')
-  const archivedPage = payload.getLinkedRecord('page')
-  handleArchivePage(archivedPageId, {
-    ...context,
-    isHardDelete: !archivedPage
-  })
-}
-
 const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
   const newPage = payload.getLinkedRecord('page')
   handleCreatePage(newPage, context)
@@ -334,7 +329,6 @@ const updateHandlers = {
   UpdatePageAccessPayload: updatePageAccessNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
-  InviteToTeamPayload: inviteToTeamNotificationUpdater,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
   RemoveTeamMemberPayload: removeTeamMemberNotificationUpdater,
@@ -345,7 +339,6 @@ const updateHandlers = {
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
-  InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,
   RemoveTeamMemberPayload: removeTeamMemberNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,

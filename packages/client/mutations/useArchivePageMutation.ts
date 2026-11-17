@@ -2,18 +2,22 @@ import graphql from 'babel-plugin-relay/macro'
 import {ConnectionHandler, type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import type {useArchivePageMutation as TArchivePageMutation} from '../__generated__/useArchivePageMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {snackOnError} from './handlers/snackOnError'
 import {isPrivatePageConnectionLookup} from './useUpdatePageMutation'
 
 graphql`
   fragment useArchivePageMutation_notification on ArchivePagePayload {
+    pageId
     page {
       ...LeftNavPageLink_page @relay(mask: false)
       ...PageDeletedHeader_page
       id
       deletedAt
       deletedBy
+      isSyncedBlock
       sortOrder
       # When restoring a child without its parent, it will get promoted to top-level
       parentPageId
@@ -54,11 +58,12 @@ export const handleArchivePage = (
     isArchived: true
   })
 
-  if (isRestore) {
+  if (isHardDelete) {
     safeRemoveNodeFromConn(pageId, archivedConn)
+  } else if (isRestore) {
+    safeRemoveNodeFromConn(pageId, archivedConn)
+    if (page.getValue('isSyncedBlock')) return
     safePutNodeInConn(conn, page, store, 'sortOrder', true)
-  } else if (isHardDelete) {
-    safeRemoveNodeFromConn(pageId, archivedConn)
   } else {
     // archive
     safeRemoveNodeFromConn(pageId, conn)
@@ -69,6 +74,7 @@ export const handleArchivePage = (
 }
 export const useArchivePageMutation = () => {
   const [commit, submitting] = useMutation<TArchivePageMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TArchivePageMutation>) => {
     const {variables} = config
     const {pageId, action} = variables
@@ -76,6 +82,7 @@ export const useArchivePageMutation = () => {
       updater: (store) => {
         handleArchivePage(pageId, {store, isHardDelete: action === 'delete'})
       },
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

@@ -1,8 +1,8 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const startDraggingReflection: MutationResolvers['startDraggingReflection'] = async (
@@ -21,10 +21,10 @@ const startDraggingReflection: MutationResolvers['startDraggingReflection'] = as
   const {endedAt, phases, teamId} = meeting
 
   if (endedAt) {
-    return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   }
   if (isPhaseComplete('group', phases)) {
-    return standardError(new Error('Meeting already completed'), {userId: viewerId})
+    throw new GraphQLError('Meeting already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION

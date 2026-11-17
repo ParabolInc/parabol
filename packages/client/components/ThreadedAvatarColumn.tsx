@@ -1,11 +1,5 @@
-import styled from '@emotion/styled'
+import {cn} from '../ui/cn'
 import Avatar from './Avatar/Avatar'
-
-const AvatarCol = styled('div')<{isReply: boolean | undefined}>(({isReply}) => ({
-  display: 'flex',
-  paddingRight: 8,
-  paddingLeft: isReply ? undefined : 12
-}))
 
 interface Props {
   isReply: boolean | undefined
@@ -15,9 +9,9 @@ interface Props {
 const ThreadedAvatarColumn = (props: Props) => {
   const {picture, isReply} = props
   return (
-    <AvatarCol isReply={isReply}>
+    <div className={cn('flex pr-2', !isReply && 'pl-3')}>
       <Avatar picture={picture} className='h-8 w-8' />
-    </AvatarCol>
+    </div>
   )
 }
 

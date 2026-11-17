@@ -1,4 +1,4 @@
-import {Search} from '@mui/icons-material'
+import {Search} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import type {PlainButtonProps} from '../PlainButton/PlainButton'
 import ReflectionCardButton from './ReflectionCardButton'
@@ -12,7 +12,7 @@ const SpotlightButton = (props: Props) => {
   return (
     <ReflectionCardButton
       className={cn(
-        'invisible absolute right-1 bottom-1 bg-white hover:bg-slate-200',
+        'invisible absolute right-1 bottom-1 bg-surface-card hover:bg-surface-hover',
         showSpotlight && 'visible'
       )}
       aria-label='Find similar reflections'

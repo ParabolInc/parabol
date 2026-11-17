@@ -1,17 +1,21 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {generateText} from '@tiptap/core'
+import {generateText, type JSONContent} from '@tiptap/core'
 import {sql} from 'kysely'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {applyUpdate, Doc} from 'yjs'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../server/postgres/getKysely'
+import {Logger} from '../../server/utils/Logger'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
+import {getSearchText} from '../getSearchText'
 import {getTSV, type TSVLanguage} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
 import {JobQueueError} from '../JobQueueError'
+import {planChunkReuse, planPositionalReuse} from '../planChunkReuse'
+import {SectionChunker} from '../SectionChunker'
 import {TipTapChunker} from '../TipTapChunker'
 
 export interface EmbedPageData {
@@ -19,7 +23,21 @@ export interface EmbedPageData {
   modelId: ModelId
 }
 
-function weightedTsvector(language: TSVLanguage, title: string, headings: string, body: string) {
+interface PageChunk {
+  text: string
+  globalTitle: string
+  headingPath: string[]
+  embeddingText: string
+}
+
+const UNSTAMPED_PAGE_UPDATED_AT = new Date(0)
+
+function weightedTsvector(
+  language: TSVLanguage | 'simple',
+  title: string,
+  headings: string,
+  body: string
+) {
   return sql`
     setweight(to_tsvector(${language}, ${title}), 'A') ||
     setweight(to_tsvector(${language}, ${headings}), 'B') ||
@@ -40,7 +58,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     pg.selectFrom('Page').select(['yDoc', 'updatedAt']).where('id', '=', pageId).executeTakeFirst(),
     pg
       .selectFrom(embeddingModel.pagesTableName)
-      .select(['chunkNumber', 'embedText', 'pageUpdatedAt'])
+      .select(['id', 'chunkNumber', 'embedText', 'pageUpdatedAt'])
       .where('pageId', '=', pageId)
       .orderBy('chunkNumber', 'asc')
       .execute()
@@ -53,81 +71,93 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     return new JobQueueError(`pageId ${pageId} has no yDoc`)
   }
 
-  const firstExistingChunk = existingChunks[0]
-  if (firstExistingChunk && firstExistingChunk.pageUpdatedAt === page.updatedAt) {
-    return new JobQueueError(`pageId ${pageId} embedding is already current`)
-  }
+  const isCurrent =
+    existingChunks.length > 0 &&
+    existingChunks.every(({pageUpdatedAt}) => pageUpdatedAt.getTime() === page.updatedAt.getTime())
+  if (isCurrent) return false
 
   const yDoc = new Doc()
   applyUpdate(yDoc, page.yDoc)
   const content = TiptapTransformer.fromYdoc(yDoc, 'default') as TipTapSerializedContent
-  const fullText = generateText(content, serverTipTapExtensions)
+  const usesSectionChunker = embeddingModel.chunker === 'sections'
+  const fullText = usesSectionChunker
+    ? (content.content as JSONContent[]).map(getSearchText).join('\n')
+    : generateText(content, serverTipTapExtensions)
   const language = inferLanguage(fullText, 5)
   const tsvLanguage = getTSV(language)
 
-  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
+  if (
+    !usesSectionChunker &&
+    (!language || !tsvLanguage || !embeddingModel.languages.includes(language))
+  ) {
     return new JobQueueError(`pageId ${pageId} is written in unsupported language: ${language}`)
   }
-  const chunker = new TipTapChunker({language})
-  const chunks = chunker.chunk(content)
-  const updatedChunks = chunks.filter((chunk, idx) => {
-    const oldEmbeding = existingChunks[idx]
-    const isIdentical = oldEmbeding?.embedText === chunk.text
-    return !isIdentical
-  })
-  const errors = await Promise.all(
-    updatedChunks.map(async (chunk, chunkNumber) => {
-      const {text, globalTitle, headingPath, embeddingText} = chunk
-      const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
-      if (embeddingVector instanceof Error) {
-        return new JobQueueError(
-          `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
+  const chunker = usesSectionChunker
+    ? new SectionChunker({language})
+    : new TipTapChunker({language})
+  const chunks: PageChunk[] = chunker.chunk(content)
+  const toStoredText = ({text, embeddingText}: PageChunk) =>
+    usesSectionChunker ? embeddingText : text
+  const storedTexts = chunks.map(toStoredText)
+  const {deleteIds, toEmbed} = usesSectionChunker
+    ? planChunkReuse(existingChunks, storedTexts)
+    : planPositionalReuse(existingChunks, storedTexts)
+  const startedAt = Date.now()
+  let tokens = 0
+  for (const {chunkIndex, chunkNumber} of toEmbed) {
+    const chunk = chunks[chunkIndex]!
+    const {text, globalTitle, headingPath, embeddingText} = chunk
+    const embedded = await embeddingModel.getEmbeddingWithTokens(embeddingText)
+    if (embedded instanceof Error) {
+      return new JobQueueError(`unable to get embeddings from ${modelId}: ${embedded.message}`)
+    }
+    const embeddingVector = embedded.embedding
+    tokens += embedded.tokens
+    try {
+      await pg
+        .insertInto(embeddingModel.pagesTableName)
+        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
+        .expression((eb) =>
+          eb
+            .selectFrom(sql`(SELECT ${toStoredText(chunk)}::text as val)`.as('input'))
+            .select([
+              sql<string>`val`.as('val'),
+              weightedTsvector(
+                tsvLanguage ?? 'simple',
+                globalTitle,
+                headingPath.join(' '),
+                text
+              ).as('tsv'),
+              sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
+              sql<number>`${pageId}`.as('pageId'),
+              sql<number>`${chunkNumber}`.as('chunkNumber'),
+              sql<Date>`${UNSTAMPED_PAGE_UPDATED_AT}`.as('pageUpdatedAt')
+            ])
         )
-      }
-      try {
-        await pg
-          .insertInto(embeddingModel.pagesTableName)
-          .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
-          .expression((eb) =>
-            eb
-              // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
-              .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
-              .select([
-                sql<string>`val`.as('val'),
-                weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
-                sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
-                sql<number>`${pageId}`.as('pageId'),
-                sql<number>`${chunkNumber}`.as('chunkNumber'),
-                // This acts as a version # so we can make sure the embedding is for the most recent page
-                // In the future, if we want to do historical imports where we don't update the model, we can use this, too
-                // For now, updating the model will re-embed all pages, which suffices
-                sql<number>`${page.updatedAt}`.as('pageUpdatedAt')
-              ])
-          )
-          .onConflict((oc) =>
-            oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
-              embedText: eb.ref('excluded.embedText'),
-              tsv: eb.ref('excluded.tsv'),
-              embedding: eb.ref('excluded.embedding'),
-              pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
-            }))
-          )
-          .execute()
-      } catch (e) {
-        return new JobQueueError(e as Error)
-      }
-      return undefined
-    })
-  )
-  const firstError = errors.find((error) => error instanceof JobQueueError)
-  const existingChunkCount = existingChunks?.length ?? 0
-  const deleteOldChunks = chunks.length < existingChunkCount && !firstError
-  if (deleteOldChunks) {
-    await pg
-      .deleteFrom(embeddingModel.pagesTableName)
-      .where('pageId', '=', pageId)
-      .where('chunkNumber', '>', chunks.length - 1)
-      .execute()
+        .onConflict((oc) =>
+          oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
+            embedText: eb.ref('excluded.embedText'),
+            tsv: eb.ref('excluded.tsv'),
+            embedding: eb.ref('excluded.embedding'),
+            pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
+          }))
+        )
+        .execute()
+    } catch (e) {
+      return new JobQueueError(e as Error)
+    }
   }
-  return firstError || data
+  if (deleteIds.length > 0) {
+    await pg.deleteFrom(embeddingModel.pagesTableName).where('id', 'in', deleteIds).execute()
+  }
+  await pg
+    .updateTable(embeddingModel.pagesTableName)
+    .set({pageUpdatedAt: page.updatedAt})
+    .where('pageId', '=', pageId)
+    .where('pageUpdatedAt', '<>', page.updatedAt)
+    .execute()
+  Logger.log(
+    `embedPage ${pageId}: embedded ${toEmbed.length} of ${chunks.length} chunks, ${tokens} tokens, ${Date.now() - startedAt} ms`
+  )
+  return data
 }

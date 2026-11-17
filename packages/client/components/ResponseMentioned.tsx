@@ -1,11 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import type {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
@@ -29,23 +26,13 @@ const ResponseMentioned = (props: Props) => {
           id
           name
         }
-        type
-        status
       }
     `,
     notificationRef
   )
   const navigate = useNavigate()
-  const atmosphere = useAtmosphere()
-  const {meeting, response, type, status} = notification
+  const {meeting, response} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user
-
-  useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Notification Viewed', {
-      notificationType: type,
-      notificationStatus: status
-    })
-  }, [])
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {

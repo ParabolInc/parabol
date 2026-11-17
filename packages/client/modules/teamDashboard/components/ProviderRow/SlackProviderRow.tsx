@@ -4,8 +4,6 @@ import type {SlackProviderRow_viewer$key} from '../../../../__generated__/SlackP
 import SlackConfigMenu from '../../../../components/SlackConfigMenu'
 import SlackProviderLogo from '../../../../components/SlackProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import SlackClientManager from '../../../../utils/SlackClientManager'
@@ -42,28 +40,21 @@ const SlackProviderRow = (props: Props) => {
   const openOAuth = () => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!SlackClientManager.isAvailable) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={!!isActive}
-        onConnectClick={openOAuth}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.SLACK_NAME}
-        providerDescription={Providers.SLACK_DESC}
-        providerLogo={<SlackProviderLogo />}
-      >
-        {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />}
-      </ProviderRow>
-      {menuPortal(
-        <SlackConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
-      )}
-    </>
+    <ProviderRow
+      connected={!!isActive}
+      onConnectClick={openOAuth}
+      submitting={submitting}
+      configMenu={<SlackConfigMenu mutationProps={mutationProps} teamId={teamId} />}
+      providerName={Providers.SLACK_NAME}
+      providerDescription={Providers.SLACK_DESC}
+      providerLogo={<SlackProviderLogo />}
+    >
+      {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />}
+    </ProviderRow>
   )
 }
 

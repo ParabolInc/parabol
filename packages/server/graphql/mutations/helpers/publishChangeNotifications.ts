@@ -3,7 +3,6 @@ import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types'
 import type {TaskInvolvesNotification} from '../../../postgres/types/Notification'
-import {analytics} from '../../../utils/analytics/analytics'
 
 const publishChangeNotifications = async (
   task: Task,
@@ -47,9 +46,6 @@ const publishChangeNotifications = async (
       teamId: task.teamId
     }))
 
-  mentions.forEach((mentionedUserId) => {
-    analytics.mentionedOnTask(changeUser, mentionedUserId, task.teamId)
-  })
   // add in the assignee changes
   if (oldTask.userId && oldTask.userId !== task.userId) {
     if (task.userId && task.userId !== changeUser.id && !usersToIgnore.includes(task.userId)) {

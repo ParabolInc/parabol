@@ -1,11 +1,11 @@
 import useForm from '../hooks/useForm'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import BasicInput from './InputField/BasicInput'
 import PlainButton from './PlainButton/PlainButton'
-import RaisedButton from './RaisedButton'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   isOpen: boolean
@@ -45,22 +45,24 @@ const EditVotingLabelTemplateModal = (props: Props) => {
             onChange={onChange}
             value={value}
             error={undefined}
-            className='mb-2 w-full bg-transparent text-base text-slate-700 outline-none'
+            className='mb-2 w-full bg-transparent text-base text-fg-primary outline-none'
           />
           <span className='p-1 text-base'>{'Use '}</span>
           <PlainButton onClick={addWildcard}>
-            <span className='rounded-lg bg-slate-300 p-1 font-semibold text-base'>{'{{#}}'}</span>
+            <span className='rounded-lg bg-surface-well p-1 font-semibold text-base'>
+              {'{{#}}'}
+            </span>
           </PlainButton>
           <span className='p-1 text-base'>{' as the value wildcard'}</span>
 
-          <div className='mt-6 flex justify-end gap-4'>
-            <SecondaryButton onClick={onClose} size='medium'>
+          <DialogActions>
+            <Button variant='outline' size='md' onClick={onClose}>
               Cancel
-            </SecondaryButton>
-            <RaisedButton onClick={onSave} size='medium' palette={'blue'}>
+            </Button>
+            <Button variant='primary' size='md' onClick={onSave}>
               Save
-            </RaisedButton>
-          </div>
+            </Button>
+          </DialogActions>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,20 +1,25 @@
 import type {Selectable} from 'kysely'
-import type {DB} from 'parabol-server/postgres/types/pg'
-
 import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
+import type {DB} from '../../server/postgres/types/pg'
+import type {DiscussionTextFormat} from '../ai_models/AbstractEmbeddingsModel'
 import {createTextFromMeetingTemplate} from './meetingTemplate'
 import {createTextFromRetroReflection} from './retroReflection'
-import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
+import {
+  createPlainTextFromRetrospectiveDiscussionTopic,
+  createTextFromRetrospectiveDiscussionTopic
+} from './retrospectiveDiscussionTopic'
 
 export const createEmbeddingTextFrom = async (
   embeddingsMetadata: Selectable<DB['EmbeddingsMetadata']>,
   dataLoader: DataLoaderInstance,
-  isRerank?: boolean
+  options: {isRerank?: boolean; discussionText?: DiscussionTextFormat} = {}
 ) => {
   const {refId} = embeddingsMetadata
   switch (embeddingsMetadata.objectType) {
     case 'retrospectiveDiscussionTopic':
-      return createTextFromRetrospectiveDiscussionTopic(refId, dataLoader, isRerank)
+      return options.discussionText === 'plain'
+        ? createPlainTextFromRetrospectiveDiscussionTopic(refId, dataLoader)
+        : createTextFromRetrospectiveDiscussionTopic(refId, dataLoader, options.isRerank)
     case 'meetingTemplate':
       return createTextFromMeetingTemplate(refId, dataLoader)
     case 'retroReflection':

@@ -1,0 +1,8 @@
+"""
+An org structure level as it should be. A level without an id is new
+"""
+input OrgStructureLevelInput {
+  id: ID
+  name: String!
+  values: [OrgStructureValueInput!]!
+}

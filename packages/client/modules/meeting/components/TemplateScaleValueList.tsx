@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -15,13 +14,6 @@ interface Props {
   isOwner: boolean
   scale: TemplateScaleValueList_scale$key
 }
-
-const ScaleList = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'auto',
-  width: '100%'
-})
 
 const TemplateScaleValueList = (props: Props) => {
   const {isOwner, scale: scaleRef} = props
@@ -71,7 +63,7 @@ const TemplateScaleValueList = (props: Props) => {
   }
 
   return (
-    <ScaleList>
+    <div className='flex w-full flex-col overflow-auto'>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={TEMPLATE_SCALE_VALUE} isDropDisabled={!isOwner}>
           {(provided) => {
@@ -115,7 +107,7 @@ const TemplateScaleValueList = (props: Props) => {
             isDragging={false}
           />
         ))}
-    </ScaleList>
+    </div>
   )
 }
 

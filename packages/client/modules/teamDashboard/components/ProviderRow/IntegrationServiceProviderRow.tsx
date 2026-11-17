@@ -1,0 +1,152 @@
+import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
+import {useFragment} from 'react-relay'
+import type {IntegrationServiceProviderRow_service$key} from '../../../../__generated__/IntegrationServiceProviderRow_service.graphql'
+import ProviderLogo from '../../../../components/ProviderLogo'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import {getConnectErrorMessage} from '../../../../integrations/platform/getConnectErrorMessage'
+import {
+  getProviderRowEntries,
+  listServiceProviders,
+  type ProviderRowEntryModel
+} from '../../../../integrations/platform/integrationServiceProviders'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
+import getMutationError from '../../../../utils/relay/getMutationError'
+import ConnectButton from './ConnectButton'
+import ContactUsButton from './ContactUsButton'
+import IntegrationServiceConfigMenu from './IntegrationServiceConfigMenu'
+import ProviderRowEntry, {type ProviderRowEntryProps} from './ProviderRowEntry'
+import ProviderRowShell from './ProviderRowShell'
+
+interface Props {
+  teamId: string
+  serviceRef: IntegrationServiceProviderRow_service$key
+  /** Connecting moves the row to another section, which remounts it, so the list remembers what was just connected */
+  isNewlyConnected: boolean
+  onConnected: () => void
+}
+
+const IntegrationServiceProviderRow = (props: Props) => {
+  const {teamId, serviceRef, isNewlyConnected, onConnected} = props
+  const integrationService = useFragment(
+    graphql`
+      fragment IntegrationServiceProviderRow_service on IntegrationService {
+        service
+        title
+        isAvailable
+        isConnected
+        grantedScopes
+        auth {
+          providerId
+        }
+        ...integrationServiceProviders_service @relay(mask: false)
+      }
+    `,
+    serviceRef
+  )
+  const atmosphere = useAtmosphere()
+  const mutationProps = useMutationProps({errorDisplay: 'inline'})
+  const {submitting, error} = mutationProps
+  const connectMutationProps: MenuMutationProps = {
+    ...mutationProps,
+    onCompleted: (res, errors) => {
+      mutationProps.onCompleted(res, errors)
+      if (!getMutationError(res, errors)) onConnected()
+    }
+  }
+  const {
+    service,
+    title,
+    isAvailable,
+    isConnected,
+    grantedScopes,
+    auth,
+    cloudProvider,
+    sharedProviders
+  } = integrationService
+  const definition = getClientIntegration(service)
+  if (!definition) return null
+  const {description, contactUs, logo} = definition
+
+  if (!isAvailable) {
+    if (!contactUs) return null
+    return (
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />}>
+        <ProviderRowEntry
+          name={title}
+          description={description}
+          connected={false}
+          configMenu={null}
+          connectButton={<ContactUsButton contactUsUrl={contactUs.url} />}
+        />
+      </ProviderRowShell>
+    )
+  }
+
+  const providers = listServiceProviders({cloudProvider, sharedProviders})
+  const entries = getProviderRowEntries({title, description, isConnected, auth, providers})
+  if (entries.length === 0) return null
+  const errorMessage = getConnectErrorMessage(error, definition)
+  const Panel = definition.capabilities.settings?.Panel
+  const panel = isConnected && Panel && (
+    <Suspense fallback={null}>
+      <Panel teamId={teamId} isNewlyConnected={isNewlyConnected} />
+    </Suspense>
+  )
+
+  const entryProps = (entry: ProviderRowEntryModel): ProviderRowEntryProps => ({
+    name: entry.name,
+    description: entry.description,
+    error: errorMessage,
+    connected: isConnected,
+    connectButton: (
+      <ConnectButton
+        onConnectClick={() =>
+          definition.connect(atmosphere, {
+            teamId,
+            mutationProps: connectMutationProps,
+            provider: entry.provider,
+            heldScopes: grantedScopes
+          })
+        }
+        submitting={submitting}
+      />
+    ),
+    configMenu: (
+      <IntegrationServiceConfigMenu
+        definition={definition}
+        teamId={teamId}
+        provider={entry.provider}
+        grantedScopes={grantedScopes}
+        mutationProps={mutationProps}
+      />
+    )
+  })
+
+  if (entries.length === 1) {
+    return (
+      <ProviderRowShell providerLogo={<ProviderLogo logo={logo} />} panel={panel}>
+        <ProviderRowEntry {...entryProps(entries[0]!)} />
+      </ProviderRowShell>
+    )
+  }
+
+  return (
+    <ProviderRowShell
+      providerLogo={<ProviderLogo logo={logo} />}
+      headerClassName='pb-0'
+      panel={panel}
+    >
+      <div className='flex w-full flex-col'>
+        {entries.map((entry) => (
+          <div key={entry.provider.id} className='flex w-full flex-row pb-4'>
+            <ProviderRowEntry {...entryProps(entry)} />
+          </div>
+        ))}
+      </div>
+    </ProviderRowShell>
+  )
+}
+
+export default IntegrationServiceProviderRow

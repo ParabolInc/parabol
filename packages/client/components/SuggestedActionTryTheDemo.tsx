@@ -5,7 +5,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {SuggestedActionTryTheDemo_suggestedAction$key} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
-import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
@@ -38,7 +37,7 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   }
   return (
     <SuggestedActionCard
-      backgroundColor={PALETTE.GOLD_300}
+      backgroundColor='var(--color-gold-300)'
       iconName='group_work'
       suggestedActionId={suggestedActionId}
     >

@@ -1,13 +1,20 @@
-import styled from '@emotion/styled'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../../ui/cn'
 
-const DashSectionControls = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  justifyContent: 'space-between',
-  overflow: 'auto',
-  maxWidth: '100%',
-  width: '100%'
-})
+const DashSectionControls = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        className={cn(
+          'flex w-full max-w-full flex-1 items-center justify-between overflow-auto',
+          className
+        )}
+      />
+    )
+  }
+)
 
 export default DashSectionControls

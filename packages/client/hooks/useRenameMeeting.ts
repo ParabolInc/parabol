@@ -36,7 +36,9 @@ export const useRenameMeeting = (
   validationSettings: ValidationSettings = defaultValidationErrors
 ) => {
   const atmosphere = useAtmosphere()
-  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const handleSubmit = (name: string) => {
     if (submitting) return

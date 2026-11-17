@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {TeamDashTasksTab_viewer$key} from '~/__generated__/TeamDashTasksTab_viewer.graphql'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
+import {Menu} from '../../../../ui/Menu/Menu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 
@@ -52,10 +52,6 @@ const TeamDashTasksTab = (props: Props) => {
 
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.user.preferredName) || 'All team members'
-  const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
-
   return (
     <div className='flex h-full w-full'>
       <div className='relative flex h-full flex-1 flex-col overflow-auto'>
@@ -63,15 +59,20 @@ const TeamDashTasksTab = (props: Props) => {
           {/* Filter by Owner */}
           <div>
             {teamMembers.length > 1 && (
-              <DashFilterToggle
-                label='Team Member'
-                onClick={togglePortal}
-                onMouseEnter={TeamDashTeamMemberMenu.preload}
-                ref={originRef}
-                value={teamMemberFilterName}
-              />
+              <Menu
+                trigger={
+                  <DashFilterToggle
+                    label='Team Member'
+                    onMouseEnter={TeamDashTeamMemberMenu.preload}
+                    value={teamMemberFilterName}
+                  />
+                }
+              >
+                <Suspense fallback={null}>
+                  <TeamDashTeamMemberMenu team={team} />
+                </Suspense>
+              </Menu>
             )}
-            {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
           </div>
           {/* Archive Link */}
           <DashNavControl

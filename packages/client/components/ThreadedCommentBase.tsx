@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type ReactNode, useEffect} from 'react'
+import type {ReactNode} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import type {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
@@ -14,8 +14,6 @@ import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
-import {PARABOL_AI_USER_ID} from '../utils/constants'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
@@ -46,7 +44,6 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_viewer on User {
         ...DiscussionThreadInput_viewer
-        highestTier
       }
     `,
     viewerRef
@@ -58,7 +55,6 @@ const ThreadedCommentBase = (props: Props) => {
         id
         meetingId
         teamId
-        discussionTopicId
         replyingTo {
           id
         }
@@ -74,7 +70,6 @@ const ThreadedCommentBase = (props: Props) => {
         isActive
         content
         createdByUserNullable: createdByUser {
-          id
           preferredName
           picture
         }
@@ -88,7 +83,7 @@ const ThreadedCommentBase = (props: Props) => {
     commentRef
   )
   const isReply = !repliesList
-  const {id: discussionId, meetingId, teamId, discussionTopicId, replyingTo} = discussion
+  const {id: discussionId, meetingId, teamId, replyingTo} = discussion
   const {id: commentId, content, createdByUserNullable, isActive, reactjis} = comment
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
@@ -122,17 +117,6 @@ const ThreadedCommentBase = (props: Props) => {
     editor.setEditable(true)
     editor.commands.focus()
   }
-
-  useEffect(() => {
-    if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
-      SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
-        source: 'Discussion',
-        tier: viewer.highestTier,
-        meetingId,
-        discussionTopicId
-      })
-    }
-  }, [])
 
   const onToggleReactji = (emojiId: string) => {
     if (submitting) return

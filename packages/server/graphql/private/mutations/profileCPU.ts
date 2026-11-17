@@ -1,5 +1,7 @@
 import fs from 'fs'
 import inspector from 'inspector'
+import os from 'os'
+import path from 'path'
 import type {MutationResolvers} from '../resolverTypes'
 
 let session: inspector.Session
@@ -45,7 +47,8 @@ const profileCPU: MutationResolvers['profileCPU'] = async () => {
 
   const profile = await stop()
   const profileStr = JSON.stringify(profile)
-  const name = `cpu-${new Date().toJSON()}.cpuprofile`
+  // the working directory may be read-only
+  const name = path.join(os.tmpdir(), `cpu-${new Date().toJSON()}.cpuprofile`)
   fs.writeFileSync(name, profileStr)
   return `CPU Profile: ${name}`
 }

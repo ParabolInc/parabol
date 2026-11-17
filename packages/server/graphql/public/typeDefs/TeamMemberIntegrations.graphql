@@ -31,6 +31,11 @@ type TeamMemberIntegrations {
   linear: LinearIntegration!
 
   """
+  All things associated with a ClickUp integration for a team member
+  """
+  clickup: ClickUpIntegration!
+
+  """
   All things associated with a Mattermost integration for a team member
   """
   mattermost: MattermostIntegration!
@@ -56,9 +61,9 @@ type TeamMemberIntegrations {
   gcal: GcalIntegration
 
   """
-  All things associated with a Google Drive (Meet transcript) integration for a team member
+  All things associated with a Google Meet (transcript import) integration for a team member
   """
-  gdrive: GdriveIntegration!
+  gmeet: GmeetIntegration!
 
   """
   All things associated with a Zoom integration for a team member

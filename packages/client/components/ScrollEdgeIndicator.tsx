@@ -1,10 +1,10 @@
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import {type RefObject, useEffect, useState} from 'react'
+import {AddToPhotos as AddToPhotosIcon} from '~/ui/icons'
 import {DragAttribute} from '../types/constEnums'
 import {cn} from '../ui/cn'
 
 interface Props {
-  scrollRef: RefObject<HTMLElement>
+  scrollRef: RefObject<HTMLElement | null>
   similarGroupIds: ReadonlySet<string>
 }
 

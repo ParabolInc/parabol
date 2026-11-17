@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
-import removeTeamMemberHelper from '../../mutations/helpers/removeTeamMember'
+import removeTeamMembers from '../../mutations/helpers/removeTeamMembers'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
@@ -20,22 +20,25 @@ const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
 
   const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
 
-  if (!teamMember) return {error: {message: 'User is not on team'}}
-  if (!teamMember.isNotRemoved) return {error: {message: 'User already removed from team'}}
+  if (!teamMember) throw new GraphQLError('User is not on team', {extensions: {code: 'FORBIDDEN'}})
+  if (!teamMember.isNotRemoved)
+    throw new GraphQLError('User already removed from team', {extensions: {code: 'CONFLICT'}})
   const isSelf = viewerId === userId
 
   // RESOLUTION
   const evictorUserId = isSelf ? undefined : viewerId
-  const res = await removeTeamMemberHelper(teamMemberId, {evictorUserId}, dataLoader)
-  const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
-  if (!user) {
-    return standardError(new Error('Could not remove given team member'), {userId})
+  const {removedUserIds, notificationIds, archivedTaskIds, reassignedTaskIds} =
+    await removeTeamMembers(teamId, [userId], {evictorUserId}, dataLoader)
+  if (removedUserIds.length === 0) {
+    throw new GraphQLError('Could not remove given team member', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const tms = await dataLoader.get('teamIdsByUserId').load(userId)
   publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
   const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
-  const data = {teamId, teamMemberId, taskIds, notificationId, userId}
+  const data = {teamId, teamMemberId, taskIds, notificationId: notificationIds[0], userId}
   publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
   teamMembers.forEach(({userId: teamMemberUserId}) => {
     if (teamMemberUserId === userId) return

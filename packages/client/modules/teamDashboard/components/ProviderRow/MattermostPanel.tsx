@@ -1,15 +1,15 @@
-import styled from '@emotion/styled'
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
-import useTooltip from '~/hooks/useTooltip'
+import {Button} from '~/ui/Button/Button'
+import {Info as InfoIcon} from '~/ui/icons'
+import {Tooltip} from '~/ui/Tooltip/Tooltip'
+import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import StyledError from '../../../../components/StyledError'
@@ -18,8 +18,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
 import NotificationSettings from './NotificationSettings'
 
@@ -27,56 +25,6 @@ interface Props {
   viewerRef: MattermostPanel_viewer$key
   teamId: string
 }
-
-const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
-  height: 24,
-  width: 24,
-  marginLeft: 4,
-  ':hover': {
-    cursor: 'pointer'
-  }
-})
-
-const MattermostPanelStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER
-})
-
-const ConnectionGroup = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingBottom: 16
-})
-
-const Heading = styled(LabelHeading)({
-  width: '100%'
-})
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const Label = styled('span')({
-  fontSize: 14,
-  marginRight: 16,
-  width: '100%',
-  position: 'relative',
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
-  fontSize: 12,
-  fontWeight: 600,
-  minWidth: 36,
-  marginLeft: '16px',
-  marginRight: '16px'
-})
 
 const MattermostPanel = (props: Props) => {
   const {teamId, viewerRef} = props
@@ -136,7 +84,7 @@ const MattermostPanel = (props: Props) => {
     error: mutationError,
     onCompleted,
     submitMutation
-  } = useMutationProps()
+  } = useMutationProps({errorDisplay: 'inline'})
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
   const isUpdateDisabled = (error?: string, value?: any) =>
@@ -166,7 +114,8 @@ const MattermostPanel = (props: Props) => {
     } else {
       const handleCompleted = (res: TAddIntegrationProviderMutation['response']) => {
         const {addIntegrationProvider} = res
-        const {provider} = addIntegrationProvider
+        const provider =
+          addIntegrationProvider.AddIntegrationProviderMutation_organization?.provider
         if (!provider) return
         const {id: providerId} = provider
         AddTeamMemberIntegrationAuthMutation(
@@ -194,24 +143,26 @@ const MattermostPanel = (props: Props) => {
     }
   }
 
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_CENTER
-  )
-
   return (
-    <MattermostPanelStyles>
-      <ConnectionGroup>
-        <Heading>Connection</Heading>
-      </ConnectionGroup>
+    <div className='border-hairline border-t p-4'>
+      <div className='flex items-center pb-4'>
+        <LabelHeading className='w-full'>Connection</LabelHeading>
+      </div>
       <form onSubmit={onSubmit}>
-        <Row>
-          <Label>
+        <div className='flex items-center py-2'>
+          <span className='relative mr-4 flex w-full items-center text-[14px]'>
             Mattermost Webhook
-            <StyledIcon onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
-              <InfoIcon />
-            </StyledIcon>
-          </Label>
-          {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className='ml-1 flex h-4 w-4 items-center text-fg-secondary hover:cursor-pointer'>
+                  <InfoIcon className='text-base' />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                Configure in Mattermost: Main Menu &gt; Integrations &gt; Incoming Webhook
+              </TooltipContent>
+            </Tooltip>
+          </span>
           <BasicInput
             value={fields.webhookUrl.value}
             error=''
@@ -219,15 +170,20 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='Enter your webhook URL here...'
           />
-          <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
+          <Button
+            variant='flat'
+            size='md'
+            className='ml-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
+            disabled={isUpdateDisabled(fieldError, fieldValue)}
+          >
             Update
-          </StyledButton>
-        </Row>
+          </Button>
+        </div>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
       {teamNotificationSettings && <NotificationSettings settings={teamNotificationSettings} />}
-    </MattermostPanelStyles>
+    </div>
   )
 }
 

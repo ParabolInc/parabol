@@ -7,6 +7,9 @@ import {Logger} from '../Logger'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
+import {rehostExternalAssets} from './rehostExternalAssets'
+import {removeClientThinkingBlocks} from './removeClientThinkingBlocks'
+import {syncPageEmbeds} from './syncPageEmbeds'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
 
 // Track observers per document so they can be cleaned up on unload
@@ -22,14 +25,18 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
 }) => {
   // Guard against double-load without intervening unload
   if (documentObservers.has(documentName)) return
-  syncPageUserMentionNames(document).catch(Logger.log)
-  const [pageId] = CipherId.fromClient(documentName)
+  const [pageId, , entity] = CipherId.fromClient(documentName)
+  if (entity !== 'page') return
+  syncPageUserMentionNames(document, pageId).catch(Logger.log)
+  syncPageEmbeds(document).catch(Logger.log)
   const root = document.getXmlFragment('default')
   const rootObserver = (events: any[]) => {
     // Ignore any transactions where the page link is "moved" (deleted, then inserted)
     events.forEach((e) => {
+      removeClientThinkingBlocks(e)
       handleAddedPageLinks(e, pageId)
       handleDeletedPageLinks(e, pageId)
+      rehostExternalAssets(e, pageId)
     })
   }
   root.observeDeep(rootObserver)

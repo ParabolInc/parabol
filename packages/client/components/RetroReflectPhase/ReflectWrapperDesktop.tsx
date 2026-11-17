@@ -1,19 +1,4 @@
-import styled from '@emotion/styled'
 import {forwardRef, type ReactNode, type Ref} from 'react'
-
-const DesktopWrapper = styled('div')({
-  display: 'flex',
-  height: '100%',
-  // if the viewport is wide enough for 2+ columns, let them scroll
-  overflowX: 'auto',
-  width: '100%'
-})
-
-const Inner = styled('div')({
-  display: 'flex',
-  margin: '0 auto',
-  justifyContent: 'center'
-})
 
 interface Props {
   children: ReactNode
@@ -22,9 +7,12 @@ interface Props {
 const ReflectWrapperDesktop = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {children} = props
   return (
-    <DesktopWrapper>
-      <Inner ref={ref}>{children}</Inner>
-    </DesktopWrapper>
+    // if the viewport is wide enough for 2+ columns, let them scroll
+    <div className='flex h-full w-full overflow-x-auto'>
+      <div className='mx-auto flex justify-center' ref={ref}>
+        {children}
+      </div>
+    </div>
   )
 })
 

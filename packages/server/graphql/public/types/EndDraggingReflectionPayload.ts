@@ -9,7 +9,7 @@ export type EndDraggingReflectionPayloadSource =
       userId: string
       dropTargetType: string | null | undefined
       dropTargetId: string | null | undefined
-      remoteDrag: {id: string | null | undefined; dragUserId: string}
+      remoteDrag: {id: string; dragUserId: string} | null
     }
   | {error: {message: string}}
 

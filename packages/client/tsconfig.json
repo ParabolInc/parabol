@@ -7,7 +7,10 @@
     },
     "outDir": "lib",
     "incremental": true,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    // browser code: no node globals (and @types/node isn't a dep here)
+    "types": ["jest"]
   },
+  "include": ["**/*", "../types/**/*"],
   "exclude": ["serviceWorker", "node_modules", "dist", "build", "../server", "../embedder"]
 }

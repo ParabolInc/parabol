@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -11,17 +10,11 @@ import type {
 import useForceUpdate from '../hooks/useForceUpdate'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
+import type {ServiceFieldSummary} from './EstimateFieldDropdown'
 import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
-
-const GroupedVotes = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  overflowY: 'auto'
-})
 
 interface Props {
   meeting: PokerDiscussVoting_meeting$key
@@ -51,10 +44,6 @@ const PokerDiscussVoting = (props: Props) => {
         ...PokerDimensionValueControl_stage
         id
         finalScore
-        serviceField {
-          name
-          type
-        }
         taskId
         dimensionRef {
           name
@@ -88,17 +77,23 @@ const PokerDiscussVoting = (props: Props) => {
   )
   const {id: meetingId, facilitatorUserId, team} = meeting
   const {orgId} = team
-  const {id: stageId, dimensionRef, scores, taskId, serviceField} = stage
+  const {id: stageId, dimensionRef, scores, taskId} = stage
   const finalScore = stage.finalScore || ''
-  const {name: serviceFieldName} = serviceField
+  const [serviceField, setServiceField] = useState<ServiceFieldSummary | null>(null)
+  const serviceFieldId = serviceField?.fieldId ?? null
   const {name: dimensionName, scale} = dimensionRef
   const {values: scaleValues} = scale
-  const lastSubmittedFieldRef = useRef(serviceFieldName)
+  const lastSubmittedFieldRef = useRef(serviceFieldId)
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
 
+  const handleServiceFieldChange = (nextServiceField: ServiceFieldSummary) => {
+    lastSubmittedFieldRef.current ??= nextServiceField.fieldId
+    setServiceField(nextServiceField)
+  }
+
   const isStale = (score: string) => {
-    return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
+    return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldId
   }
 
   const {rows, topLabel} = useMemo(() => {
@@ -140,7 +135,8 @@ const PokerDiscussVoting = (props: Props) => {
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
-    lastSubmittedFieldRef.current = serviceFieldName
+    // the field arrives in a deferred payload, and the dropdown reports it before this effect runs
+    if (serviceFieldId !== null) lastSubmittedFieldRef.current = serviceFieldId
     isLocallyValidatedRef.current = true
   }, [finalScore])
 
@@ -155,7 +151,7 @@ const PokerDiscussVoting = (props: Props) => {
 
     const onSuccess = () => {
       // set field A to 1, change fields to B, then submit again. it should not say update
-      lastSubmittedFieldRef.current = serviceFieldName
+      lastSubmittedFieldRef.current = serviceFieldId
       forceUpdate()
     }
 
@@ -182,11 +178,13 @@ const PokerDiscussVoting = (props: Props) => {
           submitScore()
         }}
         isStale={isStale(cardScore)}
+        serviceFieldType={serviceField?.type ?? null}
+        onServiceFieldChange={handleServiceFieldChange}
         isLocallyValidatedRef={isLocallyValidatedRef}
         setCardScore={setCardScore}
         cardScore={cardScore}
       />
-      <GroupedVotes>
+      <div className='flex h-full flex-col overflow-y-auto'>
         {rows.map(({scaleValue, scores, key}) => {
           const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
@@ -211,7 +209,7 @@ const PokerDiscussVoting = (props: Props) => {
             </Fragment>
           )
         })}
-      </GroupedVotes>
+      </div>
     </>
   )
 }

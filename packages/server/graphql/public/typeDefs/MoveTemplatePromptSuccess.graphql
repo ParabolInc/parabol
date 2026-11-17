@@ -1,0 +1,9 @@
+"""
+Returned when moveTemplatePrompt succeeds
+"""
+type MoveTemplatePromptSuccess {
+  """
+  The prompt with its new sort order
+  """
+  prompt: TemplatePrompt!
+}

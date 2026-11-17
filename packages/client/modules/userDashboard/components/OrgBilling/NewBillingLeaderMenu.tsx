@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   NewBillingLeaderMenu_organization$data,
@@ -7,28 +7,25 @@ import type {
 } from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useFilteredItems from '../../../../hooks/useFilteredItems'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useSearchFilter from '../../../../hooks/useSearchFilter'
 import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
+import {MenuSearch} from '../../../../ui/Menu/MenuSearch'
 
 interface Props {
-  menuProps: MenuProps
   organizationRef: NewBillingLeaderMenu_organization$key
-  newLeaderSearchQuery: string
 }
 
 const getOrgUserPreferredName = (
   orgUser: NewBillingLeaderMenu_organization$data['organizationUsers']['edges'][0]
-) => orgUser.node.user.preferredName.toLowerCase()
+) => orgUser.node.user.preferredName
 
-const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
-  const {menuProps, organizationRef, newLeaderSearchQuery} = props
+const NewBillingLeaderMenu = (props: Props) => {
+  const {organizationRef} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const organization = useFragment(
@@ -67,10 +64,11 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
     })
   }, [billingLeaders, organizationUsers])
 
-  const query = newLeaderSearchQuery.toLowerCase()
-  const filteredOrgUsers = useFilteredItems(query, nonLeaderOrgUsers, (orgUser) =>
-    getOrgUserPreferredName(orgUser)
-  )
+  const {
+    query,
+    filteredItems: filteredOrgUsers,
+    onQueryChange
+  } = useSearchFilter(nonLeaderOrgUsers, getOrgUserPreferredName)
 
   const handleClick = (userId: string) => {
     const role = 'BILLING_LEADER' as const
@@ -79,7 +77,13 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
   }
 
   return (
-    <Menu ariaLabel='Select New Billing Leader' keepParentFocus {...menuProps}>
+    <MenuContent align='start'>
+      <MenuSearch
+        className='mt-1'
+        placeholder='Search team members'
+        onChange={onQueryChange}
+        value={query}
+      />
       {filteredOrgUsers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No team members found!
@@ -90,23 +94,16 @@ const NewBillingLeaderMenu = forwardRef((props: Props, ref: any) => {
         const {user} = node
         const {id: userId, preferredName, picture} = user
         return (
-          <MenuItem
-            ref={ref}
-            key={userId}
-            label={
-              <MenuItemLabel>
-                <div className='pr-8'>
-                  <Avatar picture={picture} className='h-8 w-8' />
-                </div>
-                <TypeAheadLabel query={newLeaderSearchQuery} label={preferredName} />
-              </MenuItemLabel>
-            }
-            onClick={() => handleClick(userId)}
-          />
+          <MenuItem key={userId} onClick={() => handleClick(userId)}>
+            <div className='pr-8'>
+              <Avatar picture={picture} className='h-8 w-8' />
+            </div>
+            <TypeAheadLabel query={query} label={preferredName} />
+          </MenuItem>
         )
       })}
-    </Menu>
+    </MenuContent>
   )
-})
+}
 
 export default NewBillingLeaderMenu

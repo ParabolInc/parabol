@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef, useState} from 'react'
+import {type Dispatch, type SetStateAction, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
 import type {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
@@ -16,9 +16,12 @@ import {useTipTapTypingStatus} from '../hooks/useTipTapTypingStatus'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import {cn} from '../ui/cn'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
+import DiscussionComposerTabs, {type DiscussionComposerTab} from './DiscussionComposerTabs'
+import DiscussionTaskDraft from './DiscussionTaskDraft'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
@@ -54,6 +57,16 @@ interface Props {
   isReply?: boolean
   isDisabled?: boolean
   isCreatingPoll?: boolean
+  // false where the discussion changes as a side effect of navigating the meeting rather than
+  // because the viewer went looking for the thread, e.g. team health advancing to the next question
+  autoFocus?: boolean
+  taskDraft?: TaskDraft | null
+  onTaskDraftChange?: Dispatch<SetStateAction<TaskDraft | null>>
+}
+
+export interface TaskDraft {
+  discussionId: string
+  isOpen: boolean
 }
 
 const DiscussionThreadInput = (props: Props) => {
@@ -62,12 +75,14 @@ const DiscussionThreadInput = (props: Props) => {
     getMaxSortOrder,
     discussion: discussionRef,
     viewer: viewerRef,
-    isCreatingPoll
+    isCreatingPoll,
+    autoFocus = true
   } = props
   const viewer = useFragment(
     graphql`
       fragment DiscussionThreadInput_viewer on User {
         picture
+        preferredName
       }
     `,
     viewerRef
@@ -94,7 +109,7 @@ const DiscussionThreadInput = (props: Props) => {
     `,
     discussionRef
   )
-  const {picture} = viewer
+  const {picture, preferredName} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {
@@ -173,12 +188,13 @@ const DiscussionThreadInput = (props: Props) => {
     editor?.commands.clearOnSubmit()
     clearReplyingTo()
   }
-  const addTask = () => {
+  const addTask = (content?: string) => {
     const {viewerId} = atmosphere
     const threadParentId = replyingTo?.threadParentId ?? replyingTo?.id
     const newTask = {
       status: 'active',
       sortOrder: dndNoise(),
+      content,
       discussionId,
       meetingId,
       threadParentId,
@@ -188,41 +204,88 @@ const DiscussionThreadInput = (props: Props) => {
     } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
+  const {taskDraft, onTaskDraftChange: setTaskDraft} = props
+  const hasTabs = allowTasks && !isReply && !!setTaskDraft
+  const hasTaskDraft = taskDraft?.discussionId === discussionId
+  const activeTab: DiscussionComposerTab = hasTaskDraft && taskDraft.isOpen ? 'task' : 'comment'
+  const closeTaskDraft = () => {
+    setTaskDraft?.(null)
+    editor?.commands.focus('end')
+  }
+  const changeTab = (tab: DiscussionComposerTab) => {
+    if (tab === 'task') {
+      setTaskDraft?.({discussionId, isOpen: true})
+      return
+    }
+    setTaskDraft?.((draft) => draft && {...draft, isOpen: false})
+    editor?.commands.focus('end')
+  }
+  const createTask = (content: string) => {
+    addTask(content)
+    closeTaskDraft()
+  }
 
   const addPoll = () => {
     const threadSortOrder = getMaxSortOrder() + SORT_STEP + dndNoise()
     createLocalPoll(atmosphere, discussionId, threadSortOrder)
   }
 
-  const isActionsContainerVisible = allowTasks || allowPolls
+  const isActionsContainerVisible = (allowTasks && isReply) || allowPolls
   const isActionsContainerDisabled = !!editingTaskId || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    containerRef.current?.scrollIntoView({
+    const container = containerRef.current
+    if (!container) return
+    const {left, right} = container.getBoundingClientRect()
+    if (right <= 0 || left >= window.innerWidth) return
+    container.scrollIntoView({
       behavior: 'smooth',
       block: 'center'
     })
-    editor?.commands.focus('end')
-  }, [discussionId, editor])
+    if (autoFocus) editor?.commands.focus('end')
+  }, [discussionId, editor, autoFocus])
   const containerRef = useRef<HTMLDivElement>(null)
   useClickAway(containerRef, clearReplyingTo)
   if (!editor) return null
   return (
     <div
-      className='data-[reply=true]:-ml-3 z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-[reply=true]:mt-2 data-[reply=true]:rounded-t data-disabled:opacity-50 data-[reply=true]:shadow-discussion-thread'
+      className='data-[reply=true]:-ml-3 z-0 flex flex-col border border-hairline-field bg-surface-input shadow-discussion-input data-disabled:pointer-events-none data-[reply=true]:mt-2 data-[reply=true]:rounded-t data-disabled:opacity-50 data-[reply=true]:shadow-discussion-thread'
       data-disabled={isDisabled ? '' : undefined}
       data-reply={isReply}
       ref={containerRef}
     >
-      <div className='flex items-center justify-center p-1'>
+      {hasTabs && (
+        <DiscussionComposerTabs
+          activeTab={activeTab}
+          isTaskDisabled={!!isActionsContainerDisabled}
+          onChange={changeTab}
+        />
+      )}
+      <div
+        role={hasTabs ? 'tabpanel' : undefined}
+        aria-label={hasTabs ? 'Comment' : undefined}
+        className={cn('flex items-center justify-center p-1', activeTab === 'task' && 'hidden')}
+      >
         <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
         <TipTapEditor className='flex max-h-80 grow overflow-auto leading-4' editor={editor} />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
+      {hasTabs && hasTaskDraft && (
+        <DiscussionTaskDraft
+          isOpen={activeTab === 'task'}
+          picture={picture}
+          preferredName={preferredName}
+          teamId={teamId}
+          onCancel={closeTaskDraft}
+          onCreate={createTask}
+        />
+      )}
       {isActionsContainerVisible && (
-        <div className='flex items-center justify-center border-t-[1px] border-t-slate-200 border-solid py-1'>
-          {allowTasks && <AddTaskButton onClick={addTask} disabled={isActionsContainerDisabled} />}
+        <div className='flex items-center justify-center border-t-[1px] border-t-hairline border-solid py-1'>
+          {allowTasks && isReply && (
+            <AddTaskButton onClick={() => addTask()} disabled={isActionsContainerDisabled} />
+          )}
           {allowPolls && <AddPollButton onClick={addPoll} disabled={isActionsContainerDisabled} />}
         </div>
       )}

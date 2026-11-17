@@ -2,21 +2,23 @@ import type DataLoader from 'dataloader'
 import * as aiLoaderMakers from './aiLoaderMakers'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
+import * as clickUpLoaders from './clickUpLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
-import * as gcalLoaders from './gcalLoaders'
-import * as gdriveLoaders from './gdriveLoaders'
+import * as freshAuthLoaders from './freshAuthLoaders'
 import * as githubLoaders from './githubLoaders'
-import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
+import * as integrationDimensionFieldMapLoaders from './integrationDimensionFieldMapLoaders'
+import * as integrationIssueLoaders from './integrationIssueLoaders'
+import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
+import * as integrationUsageLoaders from './integrationUsageLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
-import * as linearLoaders from './linearLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as reportLoaderMakers from './reportLoaderMakers'
 import * as teamLoaderMakers from './teamLoaderMakers'
-import * as zoomLoaders from './zoomLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -33,14 +35,16 @@ const loaderMakers = {
   ...atlassianLoaders,
   ...jiraServerLoaders,
   ...githubLoaders,
-  ...gitlabLoaders,
-  ...gcalLoaders,
-  ...gdriveLoaders,
+  ...freshAuthLoaders,
   ...integrationAuthLoaders,
+  ...integrationDimensionFieldMapLoaders,
+  ...integrationIssueLoaders,
+  ...integrationSearchQueryLoaders,
+  ...integrationUsageLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
-  ...linearLoaders,
-  ...zoomLoaders
+  ...clickUpLoaders,
+  ...reportLoaderMakers
 } as const
 
 export type LoaderTypes = typeof loaderMakers

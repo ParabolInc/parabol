@@ -19,13 +19,13 @@ export const RadioGroupItem = forwardRadix<typeof RadioGroupPrimitive.Item>(
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-full border-2 border-slate-600 bg-white outline-none data-[disabled]:cursor-not-allowed data-[state=checked]:border-sky-500 data-[disabled]:opacity-50',
+        'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-full border-2 border-hairline-strong bg-surface-input outline-none data-[disabled]:cursor-not-allowed data-[state=checked]:border-accent data-[disabled]:opacity-50',
         className
       )}
       {...props}
     >
       <RadioGroupPrimitive.Indicator className='flex items-center justify-center'>
-        <div className='size-2 rounded-full bg-sky-500' />
+        <div className='size-2 rounded-full bg-accent' />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )

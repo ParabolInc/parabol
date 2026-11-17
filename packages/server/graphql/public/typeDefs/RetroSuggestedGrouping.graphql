@@ -1,0 +1,45 @@
+"""
+One retrospective's active grouping — the arrangement a grouper proposed, plus how it was produced.
+A meeting has at most one, and it holds many `groups`; generating a new one replaces it.
+Only successful runs are stored — a grouper that fails throws instead, so there is no error state
+to model here.
+"""
+type RetroSuggestedGrouping {
+  """
+  `suggestedGrouping:<meetingId>`, since there is one active grouping per meeting. Prefixed because
+  the bare meetingId would normalize onto the meeting's own record in a client cache
+  """
+  id: ID!
+
+  mode: SuggestedGroupsMode!
+
+  """
+  The custom instruction that produced these, or null when the built-in strategy was used.
+  Only ever set for `ai` mode.
+  """
+  userPrompt: String
+
+  """
+  True if reflections were never grouped across reflect prompts (columns)
+  """
+  sameColumnOnly: Boolean!
+
+  createdAt: DateTime!
+
+  """
+  The user who asked for these suggestions. The facilitator for the set generated automatically
+  when the meeting entered the group phase.
+  """
+  createdByUser: User!
+
+  """
+  True once a reflection has been edited or added since these were generated, so the suggestions
+  no longer describe the board. The client should offer to regenerate.
+  """
+  isStale: Boolean!
+
+  """
+  The proposed clusters. Empty when nothing looked similar enough to group.
+  """
+  groups: [SuggestedGroup!]!
+}

@@ -1,6 +1,5 @@
-import PrimaryButton from '../../../../components/PrimaryButton'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import {TierLabel} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
@@ -18,9 +17,9 @@ const TeamPrivacyConfirmModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent className='w-[400px] p-4'>
+      <DialogContent className='w-[400px]'>
         <DialogTitle>Make team public?</DialogTitle>
-        <div className='my-4 text-slate-700'>
+        <div className='my-4 text-fg-primary'>
           <p>
             You're about to make <b>{teamName}</b> public. This means:
           </p>
@@ -37,10 +36,12 @@ const TeamPrivacyConfirmModal = (props: Props) => {
           <p className='mt-2'>Are you sure you want to continue?</p>
         </div>
         <DialogActions>
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
-          <PrimaryButton className='ml-4' onClick={onConfirm}>
+          <Button variant='outline' size='md' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant='primary' size='md' onClick={onConfirm}>
             Make Team Public
-          </PrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

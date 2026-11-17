@@ -76,7 +76,8 @@ const TeamDashActivityTab = (props: Props) => {
             meetings.map((meeting) => <MeetingCard key={meeting.id} meeting={meeting} />)
           ) : scheduledSeries.length === 0 ? (
             <>
-              <DemoMeetingCard />
+              <DemoMeetingCard type='teamHealth' />
+              <DemoMeetingCard type='retrospective' />
               <TutorialMeetingCard type='retro' />
               <TutorialMeetingCard type='standup' />
               <TutorialMeetingCard type='poker' />

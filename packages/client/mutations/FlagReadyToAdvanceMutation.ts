@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {FlagReadyToAdvanceMutation as TFlagReadyToAdvanceMutation} from '../__generated__/FlagReadyToAdvanceMutation.graphql'
 import type {SimpleMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvanceSuccess {
@@ -20,13 +21,17 @@ const mutation = graphql`
           message
         }
       }
-      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
+      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Stage = NonNullable<
-  NonNullable<TFlagReadyToAdvanceMutation['response']['flagReadyToAdvance']>['stage']
+  NonNullable<
+    NonNullable<
+      TFlagReadyToAdvanceMutation['response']['flagReadyToAdvance']
+    >['FlagReadyToAdvanceMutation_meeting']
+  >['stage']
 >
 
 const FlagReadyToAdvanceMutation: SimpleMutation<TFlagReadyToAdvanceMutation> = (
@@ -36,6 +41,7 @@ const FlagReadyToAdvanceMutation: SimpleMutation<TFlagReadyToAdvanceMutation> = 
   return commitMutation<TFlagReadyToAdvanceMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     optimisticUpdater: (store) => {
       const {stageId, isReady} = variables
       const stage = store.get<Stage>(stageId)

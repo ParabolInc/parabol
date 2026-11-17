@@ -1,10 +1,9 @@
-import styled from '@emotion/styled'
-import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import {EditorContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {Create as CreateIcon, Refresh as RefreshIcon} from '~/ui/icons'
 import type {
   ModifyType,
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
@@ -17,25 +16,16 @@ import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewChe
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
 import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import {plaintextToTipTap} from '../../../../shared/tiptap/plaintextToTipTap'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 
-const CogIcon = styled('div')({
-  color: PALETTE.SLATE_700,
-  cursor: 'pointer',
-  height: 24,
-  svg: {
-    fontSize: 18
-  },
-  margin: 3,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 24
-})
+const CogIcon = ({children}: {children: ReactNode}) => (
+  <div className='m-[3px] flex h-6 w-6 cursor-pointer items-center justify-center text-fg-primary [&_svg]:text-[18px]'>
+    {children}
+  </div>
+)
 
 interface Props {
   meetingRef: NewCheckInQuestion_meeting$key
@@ -153,12 +143,14 @@ const NewCheckInQuestion = (props: Props) => {
         modifyType
       },
       onCompleted: (res: TModifyCheckInQuestion$data) => {
-        const {modifyCheckInQuestion} = res
-        if (!modifyCheckInQuestion.modifiedCheckInQuestion) {
+        const modifiedCheckInQuestion =
+          res.modifyCheckInQuestion.useModifyCheckInQuestionMutation_success
+            ?.modifiedCheckInQuestion
+        if (!modifiedCheckInQuestion) {
           return
         }
 
-        setAiUpdatedIcebreaker(modifyCheckInQuestion.modifiedCheckInQuestion)
+        setAiUpdatedIcebreaker(modifiedCheckInQuestion)
       }
     })
   }
@@ -198,7 +190,7 @@ const NewCheckInQuestion = (props: Props) => {
         )}
       </div>
       {showAiIcebreaker && (
-        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
+        <div className='flex flex-col gap-4 rounded-lg border border-hairline bg-surface-well p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
@@ -212,7 +204,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('SERIOUS')}
@@ -221,7 +212,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('FUNNY')}
@@ -230,7 +220,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('EXCITING')}
@@ -241,7 +230,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='secondary'
-              shape='pill'
               size='md'
               disabled={aiUpdatedIcebreaker === '' || isModifyingCheckInQuestion || submitting}
               onClick={updateCheckInQuestionWithGeneratedContent}

@@ -14,11 +14,11 @@ const COLUMN_MARGIN = 16
 const COLUMN_WIDTH = ElementWidth.REFLECTION_COLUMN + COLUMN_MARGIN
 
 const useSubColumns = (
-  columnBodyRef: RefObject<HTMLDivElement>,
-  phaseRef: RefObject<HTMLDivElement>,
+  columnBodyRef: RefObject<HTMLDivElement | null>,
+  phaseRef: RefObject<HTMLDivElement | null>,
   reflectPromptsCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups$data,
-  columnsRef: RefObject<HTMLDivElement>
+  columnsRef: RefObject<HTMLDivElement | null>
 ) => {
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)

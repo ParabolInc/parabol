@@ -12,7 +12,7 @@ const mutation = graphql`
     $isInvitation: Boolean!
   ) {
     verifyEmail(verificationToken: $verificationToken) {
-      error {
+      userErrors {
         message
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
@@ -34,7 +34,7 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, Navigat
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, verifyEmail} = res
       onCompleted({verifyEmail}, errors)
-      if (!errors && !verifyEmail.error) {
+      if (!errors && verifyEmail.userErrors.length === 0) {
         handleSuccessfulLogin(atmosphere, verifyEmail)
         const redirectPath = '/meetings'
 

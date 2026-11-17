@@ -15,6 +15,7 @@ import type {
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
@@ -45,7 +46,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!, $area: AreaEnum) {
+  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!, $area: AreaEnum) @raw_response_type {
     updateTask(updatedTask: $updatedTask, area: $area) {
       error {
         message
@@ -128,7 +129,7 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
       }
       handleUpsertTasks(task as any, store)
     },
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted
   })
 }

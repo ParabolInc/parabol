@@ -10,7 +10,7 @@ import SpotlightResults from './SpotlightResults'
 
 interface Props {
   meetingRef: SpotlightResultsRoot_meeting$key
-  phaseRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement | null>
 }
 
 const SpotlightResultsRoot = (props: Props) => {

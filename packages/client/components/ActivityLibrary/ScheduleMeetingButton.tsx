@@ -5,11 +5,11 @@ import type {RRule} from 'rrule'
 import type {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import {ScheduleDialog} from '../ScheduleDialog'
-import SecondaryButton from '../SecondaryButton'
 
 type Props = {
   mutationProps: MenuMutationProps
@@ -56,11 +56,17 @@ const ScheduleMeetingButton = (props: Props) => {
   return (
     <Dialog isOpen={open} onClose={() => setOpen(false)}>
       <DialogTrigger>
-        <SecondaryButton waiting={submitting} className='h-14' onClick={() => setOpen(true)}>
+        <Button
+          variant='outline'
+          size='sm'
+          disabled={submitting}
+          className='h-14'
+          onClick={() => setOpen(true)}
+        >
           <div className='text-lg'>Schedule</div>
-        </SecondaryButton>
+        </Button>
       </DialogTrigger>
-      <DialogContent noClose>
+      <DialogContent noClose className='md:max-w-md'>
         <ScheduleDialog
           teamRef={team}
           placeholder={placeholder}

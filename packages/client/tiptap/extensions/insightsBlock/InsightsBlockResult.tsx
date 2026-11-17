@@ -1,33 +1,24 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import EditIcon from '@mui/icons-material/Edit'
 import {Fragment} from '@tiptap/pm/model'
 import {Editor, getHTMLFromFragment, NodeViewContent, type NodeViewProps} from '@tiptap/react'
 import {serverTipTapExtensions} from '~/shared/tiptap/serverTipTapExtensions'
+import {ContentCopy as ContentCopyIcon, Edit as EditIcon} from '~/ui/icons'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
-import type {InsightsBlockAttrs} from './InsightsBlock'
 export const InsightsBlockResult = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
-  const attrs = node.attrs as InsightsBlockAttrs
-  const {id} = attrs
   return (
     <>
       <div className='flex justify-end space-x-2'>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600 hover:text-slate-700'
+              className='cursor-pointer text-fg-secondary hover:text-fg-primary'
               onClick={async () => {
-                // Leaving the comment here in case we want to switch back to plain text
-                // const plainText = editor.state.doc.textBetween(nodePos.from, nodePos.to, '\n')
-                // Important: get HTML from schema so we get attributes
-                const nodePos = editor.$node('insightsBlock', {id})!
-                // const fragment = Fragment.from(nodePos.node)
-                const htmlFragment = Fragment.from(nodePos.node)
+                const htmlFragment = Fragment.from(node)
                 const htmlText = getHTMLFromFragment(htmlFragment, editor.schema)
 
-                const innerFragment = nodePos.node.content
+                const innerFragment = node.content
                 const innerText = getHTMLFromFragment(innerFragment, editor.schema)
                 const tmpEditor = new Editor({
                   contentType: 'html',
@@ -55,7 +46,7 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600 hover:text-slate-700'
+              className='cursor-pointer text-fg-secondary hover:text-fg-primary'
               onClick={() => {
                 updateAttributes({editing: true})
               }}

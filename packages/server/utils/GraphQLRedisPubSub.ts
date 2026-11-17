@@ -29,9 +29,6 @@ export default class GraphQLRedisPubSub {
   }
 
   subscribe = async (channels: string[], onCompleted?: () => void) => {
-    if (channels.length > 0) {
-      await this.subscriber.subscribe(...channels)
-    }
     const onStart = (listener: SubscriptionListener) => {
       channels.forEach((channel) => {
         this.listenersByChannel[channel] = this.listenersByChannel[channel] || []
@@ -42,7 +39,18 @@ export default class GraphQLRedisPubSub {
       onCompleted?.()
       this.unsubscribe(channels, listener)
     }
-    return new SubscriptionIterator({onStart, onCompleted: onCompletedHandler})
+    // listen before subscribing, so a message that arrives with the SUBSCRIBE reply isn't dropped
+    // and a concurrent unsubscribe from the channel's last listener can't remove the channel
+    const iterator = new SubscriptionIterator({onStart, onCompleted: onCompletedHandler})
+    if (channels.length > 0) {
+      try {
+        await this.subscriber.subscribe(...channels)
+      } catch (error) {
+        await iterator.return()
+        throw error
+      }
+    }
+    return iterator
   }
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {

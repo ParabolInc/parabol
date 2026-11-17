@@ -1,5 +1,5 @@
-import {Close} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Close} from '~/ui/icons'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
 import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
@@ -19,17 +19,21 @@ interface Props {
   meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
   // When provided, the selected tab is persisted to sessionStorage scoped to this meeting.
   meetingId?: string
-  // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
-  // The close button is always appended after this by DiscussionDrawer.
-  headerContent?: ReactNode
   // Content passed inside the thread above thread items (e.g. TeamPrompt's prompt + reactjis).
   threadHeader?: ReactNode
   // When provided a Your Work tab is inserted between Discussion and Transcription.
   workContent?: ReactNode
+  // When set, the Discussion tab is omitted entirely (e.g. retro reflect/group phases, which have
+  // no discussion thread — only Inspiration and Transcription).
+  hideDiscussion?: boolean
   // When provided, the selected tab is controlled by the parent instead of sessionStorage
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
   onChangeTab?: (tabId: string) => void
+  // false where the discussion changes as a side effect of navigating the meeting. See
+  // DiscussionThreadInput
+  autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionDrawer = ({
@@ -38,31 +42,33 @@ const DiscussionDrawer = ({
   allowedThreadables,
   meetingRef,
   meetingId,
-  headerContent,
   threadHeader,
   workContent,
   activeTab,
-  onChangeTab
+  onChangeTab,
+  hideDiscussion,
+  autoFocus,
+  showLastTopicLine
 }: Props) => {
   const tabs = [
-    {id: 'discussion', label: 'Discussion'},
+    ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
     ...(workContent ? [{id: 'inspiration', label: 'Inspiration'}] : []),
     {id: 'transcription', label: 'Transcription'}
   ]
+  const defaultTabId = hideDiscussion ? 'inspiration' : 'discussion'
   const [storedTabId, setStoredTabId] = useSessionStorageState<string>(
     meetingId ? `DiscussionDrawer:tab:${meetingId}` : null,
-    'discussion'
+    defaultTabId
   )
   // When `activeTab` is provided the tab is controlled by the parent (e.g. TeamPrompt's
   // rightDrawerOpen); otherwise it falls back to the sessionStorage-backed state.
   const isControlled = activeTab !== undefined
-  const activeTabId = isControlled ? (activeTab ?? 'discussion') : storedTabId
+  const activeTabId = isControlled ? (activeTab ?? defaultTabId) : storedTabId
   const setActiveTabId = (tabId: string) => {
     if (isControlled) onChangeTab?.(tabId)
     else setStoredTabId(tabId)
   }
 
-  const hasTabs = tabs.length > 1
   const activeIdx = Math.max(
     0,
     tabs.findIndex((tab) => tab.id === activeTabId)
@@ -74,32 +80,23 @@ const DiscussionDrawer = ({
 
   return (
     <div
-      className='flex h-full w-[360px] flex-col justify-start overflow-hidden bg-white'
+      // One surface for every tab, so the tab bar reads the same whichever panel is showing
+      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-drawer'
       style={drawerStyle}
     >
-      <div className='flex w-full select-none items-center border-slate-300 border-b'>
-        {hasTabs ? (
-          <Tabs activeIdx={activeIdx} className='flex-1'>
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.id}
-                label={tab.label}
-                onClick={() => setActiveTabId(tab.id)}
-                className='flex-1 whitespace-nowrap text-xs'
-              />
-            ))}
-          </Tabs>
-        ) : (
-          <div className='flex-1 px-3 py-2'>
-            {headerContent ?? (
-              <span className='font-semibold text-slate-700 text-xs uppercase tracking-wider'>
-                {'Discussion'}
-              </span>
-            )}
-          </div>
-        )}
+      <div className='flex w-full select-none items-center border-hairline border-b'>
+        <Tabs activeIdx={activeIdx} className='flex-1'>
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.id}
+              label={tab.label}
+              onClick={() => setActiveTabId(tab.id)}
+              className='flex-1 whitespace-nowrap text-xs'
+            />
+          ))}
+        </Tabs>
         <PlainButton onClick={onToggle} className='h-6 shrink-0 px-2'>
-          <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
+          <Close className='cursor-pointer text-fg-secondary hover:opacity-50' />
         </PlainButton>
       </div>
       {activeTabId === 'inspiration' ? (
@@ -111,6 +108,8 @@ const DiscussionDrawer = ({
           discussionId={discussionId}
           allowedThreadables={allowedThreadables}
           header={threadHeader}
+          autoFocus={autoFocus}
+          showLastTopicLine={showLastTopicLine}
         />
       ) : null}
     </div>

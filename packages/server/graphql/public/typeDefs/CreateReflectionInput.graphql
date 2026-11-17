@@ -18,7 +18,7 @@ input CreateReflectionInput {
   meetingId: ID!
 
   """
-  The ID of the ReflectPrompt (category) this reflection answers, e.g. "What went well?".
+  The ID of the TemplatePrompt (category) this reflection answers, e.g. "What went well?".
   Determines which column the reflection appears in on the board. Immutable after creation.
   """
   promptId: ID!

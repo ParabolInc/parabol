@@ -1,0 +1,28 @@
+diff --git a/dist/index.cjs.js b/dist/index.cjs.js
+index 4bb3c6ec4a610c316795ddd1a4e4cd614718390f..e67e1b2a49cccba8e1e105d011ac94e7d0d9e4b6 100644
+--- a/dist/index.cjs.js
++++ b/dist/index.cjs.js
+@@ -208,6 +208,8 @@ const SearchAndReplace = core.Extension.create({
+                 state: {
+                     init: () => view.DecorationSet.empty,
+                     apply({ doc, docChanged }, oldState) {
++                        if (!editor.storage.searchAndReplace)
++                            return oldState;
+                         const { searchTerm, lastSearchTerm, caseSensitive, lastCaseSensitive, resultIndex, lastResultIndex, } = editor.storage.searchAndReplace;
+                         if (!docChanged &&
+                             lastSearchTerm === searchTerm &&
+diff --git a/dist/index.js b/dist/index.js
+index 0a7434a91625b556d0df76b65984c3e40fccb290..4be1396740bc77cf73070d6e8fd62bb2eed7cb6f 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -204,6 +204,10 @@ const SearchAndReplace = Extension.create({
+                 state: {
+                     init: () => DecorationSet.empty,
+                     apply({ doc, docChanged }, oldState) {
++                        // PARABOL PATCH: a dispatch can reach a destroyed editor (React StrictMode
++                        // double-mount + shared collab provider); its storage is gone — no-op instead of throwing
++                        if (!editor.storage.searchAndReplace)
++                            return oldState;
+                         const { searchTerm, lastSearchTerm, caseSensitive, lastCaseSensitive, resultIndex, lastResultIndex, } = editor.storage.searchAndReplace;
+                         if (!docChanged &&
+                             lastSearchTerm === searchTerm &&

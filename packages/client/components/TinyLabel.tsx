@@ -1,9 +1,9 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import type {ComponentPropsWithoutRef} from 'react'
+import {cn} from '../ui/cn'
 
-const TinyLabel = styled('label')({
-  color: PALETTE.SLATE_600,
-  fontSize: 11
-})
+const TinyLabel = (props: ComponentPropsWithoutRef<'label'>) => {
+  const {className, ...rest} = props
+  return <label className={cn('text-[11px] text-fg-secondary', className)} {...rest} />
+}
 
 export default TinyLabel

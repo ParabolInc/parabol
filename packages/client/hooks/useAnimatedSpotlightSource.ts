@@ -1,17 +1,16 @@
 import {Times} from 'parabol-client/types/constEnums'
-import {type MutableRefObject, useLayoutEffect, useRef} from 'react'
+import {type RefObject, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import {Elevation} from '~/styles/elevation'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import clientTempId from '~/utils/relay/clientTempId'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 const useAnimatedSpotlightSource = (
   isOpen: boolean,
   reflectionId: string | null | undefined,
-  dragIdRef: MutableRefObject<string | undefined>
+  dragIdRef: RefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
   const sourceRef = useRef<HTMLDivElement | null>(null)
@@ -50,7 +49,6 @@ const useAnimatedSpotlightSource = (
     }, 0)
     dragIdRef.current = clientTempId()
     startDrag(reflectionId, dragIdRef.current)
-    SendClientSideEvent(atmosphere, 'Opened Spotlight', {reflectionId})
     const dragInterval = setInterval(() => {
       if (!dragIdRef.current) return
       startDrag(reflectionId, dragIdRef.current)

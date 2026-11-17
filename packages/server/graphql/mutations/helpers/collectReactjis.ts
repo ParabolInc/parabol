@@ -1,4 +1,3 @@
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
 import type {NewMeetingStage} from '../../../postgres/types/NewMeetingPhase'
 import type {DataLoaderWorker} from '../../graphql'
@@ -39,7 +38,7 @@ const collectReactjis = async (meeting: AnyMeeting, dataLoader: DataLoaderWorker
 
   // Team prompt responses
   if (phases.find(({phaseType}) => phaseType === 'RESPONSES')) {
-    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
     responses.forEach((response) => {
       const {reactjis} = response
       reactjis.forEach(({id}) => {

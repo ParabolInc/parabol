@@ -189,6 +189,19 @@ export const clearEmbedEntries = () => {
   notifyListeners()
 }
 
+// The server re-hosts page assets as the user who added them and tells that user's connection when it can't
+export const handleServerEmbedMessage = ({payload}: {payload: string}) => {
+  let message: {type?: unknown; src?: unknown}
+  try {
+    message = JSON.parse(payload)
+  } catch {
+    return
+  }
+  if (message?.type !== 'assetNotHosted' || typeof message.src !== 'string') return
+  embedEntries.set(message.src, {status: 'error', attempts: 0})
+  notifyListeners()
+}
+
 export const getEmbedStatus = (src: string): EmbedStatus | null => {
   return embedEntries.get(src)?.status ?? null
 }

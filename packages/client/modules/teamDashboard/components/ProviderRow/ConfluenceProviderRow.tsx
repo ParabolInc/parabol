@@ -1,0 +1,97 @@
+import graphql from 'babel-plugin-relay/macro'
+import {useFragment} from 'react-relay'
+import type {ConfluenceProviderRow_viewer$key} from '../../../../__generated__/ConfluenceProviderRow_viewer.graphql'
+import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
+import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import AtlassianClientManager from '../../../../integrations/jira/AtlassianClientManager'
+import {getConnectProvider} from '../../../../integrations/platform/findIntegrationService'
+import {Providers} from '../../../../types/constEnums'
+import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
+import ProviderRow from './ProviderRow'
+
+interface Props {
+  teamId: string
+  viewerRef: ConfluenceProviderRow_viewer$key
+}
+
+const ConfluenceProviderRow = (props: Props) => {
+  const {teamId, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment ConfluenceProviderRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          team {
+            organization {
+              hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
+            }
+          }
+          integrations {
+            atlassian {
+              accessToken
+              scope
+            }
+          }
+          services {
+            ...findIntegrationService_cloudProvider @relay(mask: false)
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
+  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const {teamMember} = viewer
+  const atlassian = teamMember?.integrations.atlassian
+  const provider = teamMember ? getConnectProvider(teamMember.services, 'jira') : null
+  const accessToken = atlassian?.accessToken ?? undefined
+  const connected = !!accessToken && hasConfluenceScopes(atlassian?.scope)
+  const flagOn = teamMember?.team?.organization?.hasConfluenceExport ?? false
+
+  const connectConfluence = () => {
+    if (!provider) return
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      provider,
+      mutationProps,
+      [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
+      atlassian?.scope
+    )
+  }
+
+  if (!flagOn) return null
+  if (!provider) return null
+
+  return (
+    <ProviderRow
+      connected={connected}
+      onConnectClick={connectConfluence}
+      submitting={submitting}
+      configMenu={
+        <AtlassianConfigMenu
+          mutationProps={mutationProps}
+          teamId={teamId}
+          provider={provider}
+          heldScopes={atlassian?.scope}
+        />
+      }
+      providerName={Providers.CONFLUENCE_NAME}
+      providerDescription={
+        <>
+          {Providers.CONFLUENCE_DESC}
+          <div className='text-fg-muted text-xs'>{'Shares your Atlassian sign-in'}</div>
+        </>
+      }
+      providerLogo={<AtlassianProviderLogo />}
+      error={error?.message}
+    />
+  )
+}
+
+export default ConfluenceProviderRow

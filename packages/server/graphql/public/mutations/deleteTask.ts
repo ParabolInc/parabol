@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
@@ -15,7 +16,7 @@ const deleteTask: MutationResolvers['deleteTask'] = async (
   // AUTH
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return {error: {message: 'Task not found'}}
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = task
   // RESOLUTION

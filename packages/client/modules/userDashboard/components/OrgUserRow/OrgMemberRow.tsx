@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import type * as React from 'react'
@@ -25,12 +24,6 @@ import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
-
-const ActionsBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
 
 interface Props {
   billingLeaderCount: number
@@ -97,7 +90,7 @@ const UserActions = ({organizationUser, organization}: UserActionsProps) => {
 
   return (
     <RowActions>
-      <ActionsBlock>
+      <div className='flex items-center justify-end'>
         <OrgAdminActionMenu
           organization={organization}
           organizationUser={organizationUser}
@@ -116,7 +109,7 @@ const UserActions = ({organizationUser, organization}: UserActionsProps) => {
           organizationUsers={[organizationUser]}
           closePortal={() => setIsRemoveOpen(false)}
         />
-      </ActionsBlock>
+      </div>
     </RowActions>
   )
 }
@@ -175,7 +168,7 @@ const OrgMemberRow = (props: Props) => {
   }
 
   return (
-    <tr className='border-slate-300 border-b last:border-b-0'>
+    <tr className='border-hairline border-b last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
           {isViewerOrgAdmin && (
@@ -183,7 +176,7 @@ const OrgMemberRow = (props: Props) => {
               type='checkbox'
               checked={isSelected}
               onChange={handleCheckboxChange}
-              className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+              className='h-4 w-4 rounded border-hairline-field text-grape-700 focus:ring-grape-500'
             />
           )}
         </div>

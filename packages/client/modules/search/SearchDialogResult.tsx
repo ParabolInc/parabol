@@ -1,13 +1,12 @@
-import DescriptionIcon from '@mui/icons-material/Description'
 import graphql from 'babel-plugin-relay/macro'
 import DOMPurify from 'dompurify'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {Autorenew, Description as DescriptionIcon} from '~/ui/icons'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
 import TypeAheadLabel from '../../components/TypeAheadLabel'
-import {getPageSlug} from '../../tiptap/getPageSlug'
-import {GQLID} from '../../utils/GQLID'
+import {getSearchResultHref} from './getSearchResultHref'
 
 interface Props {
   edgeRef: SearchDialogResult_edge$key
@@ -32,6 +31,8 @@ export const SearchDialogResult = ({
       ... on Page {
         id
         title
+        isSyncedBlock
+        ...getSearchResultHref_page
       }
       ... on MeetingTemplate {
         id
@@ -43,12 +44,15 @@ export const SearchDialogResult = ({
     edgeRef
   )
   const {snippets, node} = data
-  const {__typename, title, id} = node
+  const {__typename, title} = node
   const iconLookup = {
-    Page: <DescriptionIcon />
+    Page: node.isSyncedBlock ? <Autorenew /> : <DescriptionIcon />
   } satisfies Record<Exclude<typeof __typename, '%other'>, ReactNode>
   const icon = iconLookup[__typename as keyof typeof iconLookup]
-  const safeSnippets = snippets.map((snippet) => DOMPurify.sanitize(snippet))
+  // snippets are page text with <b> highlights, so any other markup came from the page itself
+  const safeSnippets = snippets.map((snippet) =>
+    DOMPurify.sanitize(snippet, {ALLOWED_TAGS: ['b'], ALLOWED_ATTR: []})
+  )
   const [firstSnippet] = safeSnippets
   const wordPattern = query
     .split(/\s+/)
@@ -67,8 +71,6 @@ export const SearchDialogResult = ({
     console.error('No icon provided for', __typename)
     return null
   }
-  const [pageCode] = GQLID.fromKey(id!)
-  const slug = getPageSlug(Number(pageCode), title)
   return (
     <div
       ref={itemRef}
@@ -76,15 +78,15 @@ export const SearchDialogResult = ({
         setSelectedIndex()
       }}
       data-highlighted={isActive ? '' : undefined}
-      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 outline-none transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
+      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 outline-none transition-colors hover:bg-surface-hover data-highlighted:bg-surface-hover`}
     >
-      <div className='text-slate-600 transition-colors group-hover:text-slate-700 group-data-highlighted:text-slate-700'>
+      <div className='text-fg-secondary transition-colors group-hover:text-fg-primary group-data-highlighted:text-fg-primary'>
         {icon}
       </div>
       <Link
         tabIndex={-1}
         draggable={false}
-        to={`/pages/${slug}`}
+        to={getSearchResultHref(node)}
         className={'ml-1 flex w-full items-center'}
         onClick={closeSearch}
       >
@@ -92,11 +94,11 @@ export const SearchDialogResult = ({
           <TypeAheadLabel
             query={wordPattern}
             label={title || '<Untitled>'}
-            className='font-normal text-[14px] text-slate-800'
+            className='font-normal text-[14px] text-fg-primary'
           />
           {firstSnippet && (
             <span
-              className='text-slate-700 text-xs'
+              className='text-fg-secondary text-xs'
               dangerouslySetInnerHTML={{
                 __html: firstSnippet
               }}

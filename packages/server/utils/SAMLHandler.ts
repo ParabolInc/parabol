@@ -4,13 +4,11 @@ import parseBody from '../parseBody'
 import {createCookieHeaders} from './authCookie'
 import {callGQL} from './callGQL'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
+import isExpectedError from './isExpectedError'
 
 const query = `
 mutation LoginSAML($queryString: String!, $samlName: ID!) {
   loginSAML(queryString: $queryString, samlName: $samlName) {
-    error {
-      message
-    }
     userId
     authToken
     isNewUser
@@ -23,9 +21,6 @@ mutation LoginSAML($queryString: String!, $samlName: ID!) {
 
 type TData = {
   loginSAML: {
-    error?: {
-      message: string
-    }
     userId: string
     authToken: string
     isNewUser: boolean
@@ -51,16 +46,20 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   const payload = await callGQL<TData>(query, {queryString, samlName})
   if (!payload) return
   const {data, errors} = payload
-  if (!data || errors) {
+  const [firstError] = errors ?? []
+  if (firstError) {
+    redirectOnError(res, isExpectedError(firstError) ? firstError.message : GENERIC_ERROR)
+    return
+  }
+  if (!data) {
     redirectOnError(res, GENERIC_ERROR)
     return
   }
   const {loginSAML} = data
-  const {error, userId, authToken, isNewUser, user} = loginSAML
+  const {userId, authToken, isNewUser, user} = loginSAML
   const authObj = getVerifiedAuthToken(authToken)
   if (!authToken || !authObj) {
-    const message = error?.message || GENERIC_ERROR
-    redirectOnError(res, message)
+    redirectOnError(res, GENERIC_ERROR)
     return
   }
 

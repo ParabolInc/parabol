@@ -1,11 +1,10 @@
-import {Redlock} from '@sesamecare-oss/redlock'
-import type {GraphQLResolveInfo} from 'graphql'
+import {ExecutionError, Redlock} from '@sesamecare-oss/redlock'
+import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
 import getRedis from '../../../../utils/getRedis'
-import standardError from '../../../../utils/standardError'
 import type {ErrorPayload, ResolverFn} from '../../resolverTypes'
 
 /**
- * Check if a resolver is already running for this mutation and if so, return an error.
+ * Check if a resolver is already running for this mutation and if so, throw.
  */
 export const checkSequential =
   <TSuccessPayload, TResult extends ErrorPayload | TSuccessPayload, TParent, TContext, TArgs>(
@@ -20,7 +19,12 @@ export const checkSequential =
       return await redlock.using([`checkSequential_${fieldName}`], 10_000, async () => {
         return resolver(parent, args, context, info)
       })
-    } catch {
-      return standardError(new Error(`Mutation ${fieldName} is already running`))
+    } catch (e) {
+      if (e instanceof ExecutionError) {
+        throw new GraphQLError(`Mutation ${fieldName} is already running`, {
+          extensions: {code: 'CONFLICT'}
+        })
+      }
+      throw e
     }
   }

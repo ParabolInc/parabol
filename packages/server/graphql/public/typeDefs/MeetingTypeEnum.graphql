@@ -21,4 +21,9 @@ enum MeetingTypeEnum {
   Standup meeting where each team member shares async written responses to a prompt
   """
   teamPrompt
+
+  """
+  Team Health meeting where team members answer research-backed survey questions on a Likert scale
+  """
+  teamHealth
 }

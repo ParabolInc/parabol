@@ -1,0 +1,19 @@
+"""
+Google Meet integration info for a team member, used for transcript imports
+"""
+type GmeetIntegration {
+  """
+  The OAuth2 access token for this integration, if connected
+  """
+  auth: TeamMemberIntegrationAuthOAuth2
+
+  """
+  The global provider configuration for gmeet OAuth
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """
+  True if the user has an active gmeet integration for this team
+  """
+  isActive: Boolean!
+}

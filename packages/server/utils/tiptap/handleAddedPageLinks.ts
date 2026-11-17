@@ -2,56 +2,70 @@ import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
+import type {TipTapContentNode} from '../../../client/shared/tiptap/TipTapSerializedContent'
+import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
+import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
+import {isRemovedFromDoc} from './isRemovedFromDoc'
 import {movePageToNewParent} from './movePageToNewParent'
+import {rehostSeededAssets} from './rehostExternalAssets'
+import {restoreSeed} from './restoreSeed'
+import {sanitizeSyncedBlockSeed} from './sanitizeSyncedBlockSeed'
 import {updateBacklinks} from './updateBacklinks'
 
+const getAddedPageLinks = (e: Y.YEvent<any>) => {
+  const links: Y.XmlElement<PageLinkBlockAttrs>[] = []
+  e.changes.added.forEach((item) => {
+    item.content.getContent().forEach((content) => {
+      if (!(content instanceof Y.XmlElement)) return
+      if (isPageLink(content)) links.push(content)
+      for (const node of content.createTreeWalker(isPageLink)) {
+        if (isPageLink(node)) links.push(node)
+      }
+    })
+  })
+  return links
+}
+
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
-  const {changes, transaction} = e
-  const {added} = changes
-  const userId = getUserIdFromTransaction(transaction)!
-  added.forEach(async (item) => {
-    const [node] = item.content.getContent()
-    if (!isPageLink(node)) return
+  const userId = getUserIdFromTransaction(e.transaction)
+  getAddedPageLinks(e).forEach(async (node) => {
+    const seed = node.getAttribute('content')
+    if (seed !== undefined) node.removeAttribute('content')
     const childPageCode = node.getAttribute('pageCode')!
+    let seedContent: TipTapContentNode[] = []
+    let isAwaitingPage = false
     try {
       if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
         // if a new PageLink was added to the doc, update the backlinks
         const childPageId = CipherId.decrypt(childPageCode)
-        updateBacklinks(parentPageId, childPageId).catch(Logger.log)
+        const isSynced = node.getAttribute('synced') === true
+        updateBacklinks(parentPageId, childPageId)
+          .then(() => {
+            if (isSynced) publishSyncedBlockPlacementsChanged(childPageId)
+          })
+          .catch(Logger.log)
       }
-      if (node.getAttribute('canonical') !== true) return
+      if (node.getAttribute('canonical') !== true || !userId) return
       if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
         // mint a fresh page and assign it a real pageCode
-        const observer = async (e: Y.YXmlEvent) => {
-          // TODO: does observeAll also watch for this? is it redundant?
-          node.unobserve(observer)
-          // this only needs to get called on freshly minted PageLinks because after the pageCode is set
-          for (const [key] of e.keys) {
-            if (key === 'pageCode') {
-              const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute(
-                'pageCode'
-              )
-              const addToPageId =
-                newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? CipherId.decrypt(newValue) : null
-              if (addToPageId) {
-                await updateBacklinks(parentPageId, addToPageId)
-              }
-            }
-          }
-        }
-        node.observe(observer)
         const isDatabase = node.getAttribute('database') || false
+        const isSyncedBlock = node.getAttribute('synced') === true
         const title = node.getAttribute('title')
+        seedContent = sanitizeSyncedBlockSeed(seed)
+        isAwaitingPage = true
+        const bodyNodes =
+          seedContent.length > 0 || !isSyncedBlock ? seedContent : [{type: 'paragraph' as const}]
         const newPage = await createNewPage({
           parentPageId,
           userId,
           isDatabase,
+          isSyncedBlock,
           content: {
             type: 'doc',
             content: [
@@ -59,16 +73,25 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
                 type: 'heading',
                 attrs: {level: 1},
                 content: title ? [{type: 'text', text: title}] : []
-              }
+              },
+              ...bodyNodes
             ]
           }
         }).catch(Logger.error)
+        isAwaitingPage = false
         if (!newPage) {
-          node.unobserve(observer)
+          restoreSeed(node, seedContent)
           return
         }
-        const pageCode = CipherId.encrypt(newPage.id)
-        node.setAttribute('pageCode', pageCode)
+        if (isSyncedBlock && isRemovedFromDoc(node)) {
+          await getKysely().deleteFrom('Page').where('id', '=', newPage.id).execute()
+          return
+        }
+        node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
+        if (isSyncedBlock) node.setAttribute('title', '')
+        rehostSeededAssets(newPage.id, seedContent, userId)
+        await updateBacklinks(parentPageId, newPage.id)
+        if (isSyncedBlock) publishSyncedBlockPlacementsChanged(newPage.id)
       } else {
         // check for duplicates on the same page
         const existingNode = getPageLinks(e.target.doc, true).find(
@@ -85,15 +108,12 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
             await movePageToNewParent(userId, CipherId.decrypt(childPageCode), parentPageId)
           } catch (e) {
             Logger.error(e)
-            const parent = node.parent
-            if (parent instanceof Y.XmlElement) {
-              const idxToRemove = parent.toArray().findIndex((child) => child === node)
-              parent.delete(idxToRemove)
-            }
+            node.setAttribute('canonical', false)
           }
         }
       }
     } catch (error) {
+      if (isAwaitingPage) restoreSeed(node, seedContent)
       logError(error as Error, {userId, extras: {parentPageId, childPageCode}})
     }
   })

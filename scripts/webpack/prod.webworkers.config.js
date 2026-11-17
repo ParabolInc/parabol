@@ -1,12 +1,14 @@
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 const getProjectRoot = require('./utils/getProjectRoot')
+const persistentCache = require('./utils/persistentCache')
 const WriteWorkerAssets = require('./utils/WriteWorkerAssets')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 
 module.exports = {
+  ...persistentCache('webworkers', __filename),
   mode: 'production',
   target: 'webworker',
   entry: {

@@ -2,16 +2,15 @@ import {cn} from '../../../ui/cn'
 
 interface Props {
   className?: string
-  onMouseDown: (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => void
+  onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void
 }
 export const BlockResizer = (props: Props) => {
-  const {className, onMouseDown} = props
+  const {className, onPointerDown} = props
   return (
     <div
-      onMouseDown={onMouseDown}
-      onTouchStart={onMouseDown}
+      onPointerDown={onPointerDown}
       className={cn(
-        'absolute top-0 flex h-full w-4 items-center justify-center opacity-0 transition-opacity group-hover:opacity-100',
+        'absolute top-0 flex h-full w-4 touch-none items-center justify-center opacity-0 transition-opacity group-hover:opacity-100',
         className
       )}
     >

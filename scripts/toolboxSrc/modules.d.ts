@@ -3,6 +3,11 @@ declare module '*.png' {
   export = value
 }
 
+declare module '*.jpg' {
+  const value: string
+  export = value
+}
+
 declare module '*/getProjectRoot' {
   const value: () => string
   export = value

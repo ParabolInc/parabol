@@ -63,7 +63,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   return (
     <div className='flex flex-col overflow-hidden'>
-      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
+      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-surface-card p-2'>
         <input
           autoFocus
           placeholder={placeholder}
@@ -84,7 +84,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
               className={cn('row-span w-full cursor-pointer rounded-sm')}
               onClick={() => {
                 const src = originalUrl || previewUrl
-                editor.commands.setImageBlock({src})
+                editor.chain().focus().setImageBlock({src}).run()
               }}
             >
               <img

@@ -1,45 +1,38 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import type {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
-import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
+import useConnectInMenu from '../integrations/platform/useConnectInMenu'
+import {getOrgSendServices} from '../utils/getSendServices'
+import TaskFooterIntegrateMenuConnecting from './TaskFooterIntegrateMenuConnecting'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
-  menuProps: MenuProps
+  listLabel?: string
   mutationProps: MenuMutationProps
-  task: TaskFooterIntegrateMenu_task$key
   queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
+  teamId: string
+  onPushToIntegration: (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum
+  ) => void
 }
 
 const query = graphql`
-  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
+  query TaskFooterIntegrateMenuQuery($teamId: ID!) @raw_response_type {
     viewer {
-      id
-      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-        user {
-          preferredName
-        }
-        prevUsedRepoIntegrations(first: 1) {
-          items {
-            id
-          }
-        }
-        integrations {
-          ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
-        }
-      }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-        integrations {
-          ...useIsIntegrated_integrations
-          ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
+        ...TaskFooterIntegrateMenuSignup_teamMember
+        ...TaskFooterIntegrateMenuList_teamMember
+        ...useIsIntegrated_teamMember
+      }
+      team(teamId: $teamId) {
+        recentOrgTaskCounts {
+          service
+          taskCount
         }
       }
     }
@@ -47,89 +40,58 @@ const query = graphql`
 `
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {menuProps, mutationProps, task: taskRef, queryRef} = props
+  const {
+    listLabel = 'Send with your credentials',
+    mutationProps,
+    queryRef,
+    teamId,
+    onPushToIntegration
+  } = props
   const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef)
   const {viewer} = data
-  const task = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenu_task on Task {
-        id
-        teamId
-        userId
-      }
-    `,
-    taskRef
-  )
-  const atmosphere = useAtmosphere()
+  const connectInMenu = useConnectInMenu(mutationProps)
+  const {state: connectState} = connectInMenu
 
-  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
-  const isViewerIntegrated = useIsIntegrated(viewerTeamMember?.integrations)
-  const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember?.integrations)
-  if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {integrations: viewerIntegrations} = viewerTeamMember
-  const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
-  const {preferredName: assigneeName} = assigneeUser
-  const {teamId, userId, id: taskId} = task
-  const isViewerAssignee = viewerId === userId
-  const showAssigneeIntegrations = !!(
-    isAssigneeIntegrated && prevUsedRepoIntegrations.items?.length
-  )
-  const {submitMutation, onError, onCompleted} = mutationProps
+  const {viewerTeamMember} = viewer
+  const isViewerIntegrated = useIsIntegrated(viewerTeamMember)
+  if (!viewerTeamMember) return null
 
-  const handlePushToIntegration = (
-    integrationRepoId: string,
-    integrationProviderService: IntegrationProviderServiceEnum
-  ) => {
-    const variables = {
-      integrationRepoId,
-      taskId: taskId,
-      integrationProviderService: integrationProviderService
-    }
-    submitMutation()
-    CreateTaskIntegrationMutation(atmosphere, variables, {
-      onError,
-      onCompleted
-    })
+  if (connectState.phase === 'waiting') {
+    return (
+      <TaskFooterIntegrateMenuConnecting
+        title={connectState.title}
+        onCancel={connectInMenu.cancel}
+      />
+    )
   }
+  const failure = connectState.phase === 'failed' ? connectState : undefined
 
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
-    const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
-        menuProps={menuProps}
+        failure={failure}
+        onConnect={connectInMenu.begin}
+        mutationProps={mutationProps}
         placeholder={placeholder}
-        teamId={task.teamId}
-        onPushToIntegration={handlePushToIntegration}
-        label={label}
+        teamMemberRef={viewerTeamMember}
+        onPushToIntegration={onPushToIntegration}
+        label={listLabel}
       />
     )
   }
 
-  if (showAssigneeIntegrations) {
-    const placeholder = makePlaceholder(isAssigneeIntegrated)
-    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
-    return (
-      <TaskFooterIntegrateMenuList
-        menuProps={menuProps}
-        placeholder={placeholder}
-        teamId={task.teamId}
-        onPushToIntegration={handlePushToIntegration}
-        label={label}
-      />
-    )
-  }
-  const label = isViewerAssignee
-    ? "You don't have any integrations for this team yet."
-    : `Neither you nor ${assigneeName} has any integrations for this team.`
+  const label = "You don't have any integrations for this team yet."
 
   return (
     <TaskFooterIntegrateMenuSignup
-      menuProps={menuProps}
+      failure={failure}
+      onConnect={connectInMenu.begin}
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      integrationsRef={viewerIntegrations}
+      orgServices={getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])}
+      teamMemberRef={viewerTeamMember}
     />
   )
 }

@@ -1,32 +1,10 @@
-import styled from '@emotion/styled'
-import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
+import {Email as EmailIcon} from '~/ui/icons'
 import Panel from '../../../../components/Panel/Panel'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {ElementWidth, Layout} from '../../../../types/constEnums'
-
-const EnvelopeIcon = styled('div')({
-  height: 18,
-  width: 18,
-  svg: {
-    fontSize: 18
-  },
-  marginLeft: 4
-})
-
-const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER,
-  textAlign: 'center'
-})
-
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
 
 interface Props {
   organization: OrgBillingDangerZone_organization$key
@@ -50,13 +28,13 @@ const OrgBillingDangerZone = (props: Props) => {
   const {id, isBillingLeader, billingTier} = organization
   if (!isBillingLeader)
     return (
-      <StyledPanel isWide={isWide} label='Danger Zone'>
-        <PanelRow>
-          <div className='text-slate-700'>
+      <Panel className={isWide ? 'max-w-[976px]' : 'max-w-[inherit]'} label='Danger Zone'>
+        <div className='border-hairline border-t p-4 text-center'>
+          <div className='text-fg-primary'>
             {'Only the billing leader can manage this organization'}
           </div>
-        </PanelRow>
-      </StyledPanel>
+        </div>
+      </Panel>
     )
   const isStarter = billingTier === 'starter'
   const isTeam = billingTier === 'team'
@@ -66,17 +44,17 @@ const OrgBillingDangerZone = (props: Props) => {
   }
 
   return (
-    <StyledPanel isWide={isWide} label='Danger Zone'>
-      <PanelRow>
+    <Panel className={isWide ? 'max-w-[976px]' : 'max-w-[inherit]'} label='Danger Zone'>
+      <div className='border-hairline border-t p-4 text-center'>
         {isStarter ? (
           <ArchiveOrganization organization={organization} />
         ) : isTeam ? (
-          <div className='flex items-center justify-center text-slate-700'>
+          <div className='flex items-center justify-center text-fg-primary'>
             <span>{'Need to cancel? '}</span>
             <a
               onClick={handleDowngrade}
               title='Downgrade'
-              className='mr-1 ml-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-accent'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Downgrade'}
@@ -85,24 +63,24 @@ const OrgBillingDangerZone = (props: Props) => {
             <span>{' to the Starter tier'}</span>
           </div>
         ) : (
-          <div className='flex items-center justify-center text-slate-700'>
+          <div className='flex items-center justify-center text-fg-primary'>
             <span>{'Need to cancel? It’s painless. '}</span>
             <a
               href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
               title='Instant Unsubscribe from Team Plan'
-              className='mr-1 ml-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-accent'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Contact us'}
               </u>
-              <EnvelopeIcon>
+              <div className='ml-1 h-[18px] w-[18px] [&_svg]:text-[18px]'>
                 <EmailIcon />
-              </EnvelopeIcon>
+              </div>
             </a>
           </div>
         )}
-      </PanelRow>
-    </StyledPanel>
+      </div>
+    </Panel>
   )
 }
 

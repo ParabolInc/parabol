@@ -1,0 +1,121 @@
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
+import type {AtlassianAuth} from '../../../postgres/types'
+import AtlassianServerManager from '../AtlassianServerManager'
+import createJiraTask from '../createJiraTask'
+
+jest.mock('../AtlassianServerManager')
+
+const getCreateMeta = jest.fn()
+const createIssue = jest.fn()
+const MockedManager = AtlassianServerManager as jest.MockedClass<typeof AtlassianServerManager>
+
+const auth = {accessToken: 'token', providerUserId: 'atlassian-account'} as AtlassianAuth
+const summary = 'Fix the widget'
+const bodyContent: TipTapSerializedContent = {
+  type: 'doc',
+  content: [{type: 'paragraph', content: [{type: 'text', text: 'It wobbles'}]}]
+}
+const bodyADF = {
+  type: 'doc',
+  version: 1,
+  content: [{type: 'paragraph', content: [{type: 'text', text: 'It wobbles'}]}]
+}
+const cloudId = 'cloud-1'
+const projectKey = 'AO'
+
+const meta = (fields: Record<string, unknown> | undefined) => ({
+  projects: [{key: projectKey, issuetypes: [{id: '10001', name: 'Task', fields}]}]
+})
+
+const screenField = {required: false, name: '', key: '', hasDefaultValue: false, operations: []}
+
+describe('createJiraTask', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    MockedManager.mockImplementation(
+      () => ({getCreateMeta, createIssue}) as unknown as AtlassianServerManager
+    )
+    createIssue.mockResolvedValue({id: '1', key: `${projectKey}-7`})
+  })
+
+  it('sends the whole body as the description', async () => {
+    getCreateMeta.mockResolvedValue(meta(undefined))
+    await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload.summary).toBe(summary)
+    expect(payload.description).toEqual(bodyADF)
+  })
+
+  it('omits the description when there is no body', async () => {
+    getCreateMeta.mockResolvedValue(meta({summary: screenField, description: screenField}))
+    await createJiraTask(summary, null, cloudId, projectKey, auth)
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload).not.toHaveProperty('description')
+  })
+
+  it('repeats the summary when the project requires a description', async () => {
+    getCreateMeta.mockResolvedValue(
+      meta({summary: screenField, description: {...screenField, required: true}})
+    )
+    await createJiraTask(summary, null, cloudId, projectKey, auth)
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload.description).toEqual({
+      type: 'doc',
+      version: 1,
+      content: [{type: 'paragraph', content: [{type: 'text', text: summary}]}]
+    })
+  })
+
+  it('asks Jira which fields are on the create screen', async () => {
+    getCreateMeta.mockResolvedValue(meta({summary: screenField}))
+    await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    expect(getCreateMeta).toHaveBeenCalledWith(cloudId, [projectKey], true)
+  })
+
+  it('sends assignee, labels and description when the screen has them', async () => {
+    getCreateMeta.mockResolvedValue(
+      meta({
+        summary: screenField,
+        assignee: screenField,
+        labels: screenField,
+        description: screenField
+      })
+    )
+    const res = await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    expect(res).toEqual({issueKey: `${projectKey}-7`})
+    expect(createIssue).toHaveBeenCalledWith(
+      cloudId,
+      projectKey,
+      expect.objectContaining({
+        summary: 'Fix the widget',
+        assignee: {id: 'atlassian-account'},
+        labels: ['parabol'],
+        description: bodyADF,
+        issuetype: {id: '10001'}
+      })
+    )
+  })
+
+  it('omits fields the create screen does not have', async () => {
+    getCreateMeta.mockResolvedValue(meta({summary: screenField, description: screenField}))
+    await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload).not.toHaveProperty('assignee')
+    expect(payload).not.toHaveProperty('labels')
+    expect(payload).toHaveProperty('description')
+  })
+
+  it('sends every field when Jira returns no field metadata', async () => {
+    getCreateMeta.mockResolvedValue(meta(undefined))
+    await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    const payload = createIssue.mock.calls[0]![2]
+    expect(payload).toMatchObject({assignee: {id: 'atlassian-account'}, labels: ['parabol']})
+  })
+
+  it('surfaces the createIssue error', async () => {
+    getCreateMeta.mockResolvedValue(meta(undefined))
+    createIssue.mockResolvedValue(new Error('boom'))
+    const res = await createJiraTask(summary, bodyContent, cloudId, projectKey, auth)
+    expect(res).toEqual({error: new Error('boom')})
+  })
+})

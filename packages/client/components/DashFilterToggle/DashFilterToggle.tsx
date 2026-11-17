@@ -1,47 +1,31 @@
-import styled from '@emotion/styled'
-import {FilterList, Group, Person} from '@mui/icons-material'
-import {forwardRef, type Ref} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
-import LinkButton from '../LinkButton'
+import {type ComponentPropsWithoutRef, forwardRef, type ReactNode, type Ref} from 'react'
+import {FilterList, Group, Person} from '~/ui/icons'
+import {Button} from '../../ui/Button/Button'
+import {cn} from '../../ui/cn'
 
-interface Props {
+interface Props extends Omit<ComponentPropsWithoutRef<'button'>, 'value'> {
   className?: string
   label: string
-  value: string
+  value: ReactNode
   //FIXME 6062: change to React.ComponentType
   iconText?: string
-  dataCy?: string
-  onClick: () => void
-  onMouseEnter: () => void
 }
 
-const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
-  flexShrink: 0,
-  fontWeight: 600,
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
-
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {className, label, value, iconText, onClick, onMouseEnter, dataCy} = props
+  const {className, label, value, iconText, ...rest} = props
   return (
-    <StyledLinkButton
+    <Button
       aria-label={`Filter by ${label}`}
-      className={className}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      size='default'
+      className={cn(
+        'bg-transparent p-0 text-[14px] text-fg-primary leading-5 shadow-none hover:text-accent focus:text-accent active:text-accent',
+        'shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary',
+        className
+      )}
       ref={ref}
-      dataCy={dataCy}
+      {...rest}
     >
-      <StyledIcon>
+      <div className='mr-2 h-6 w-6'>
         {
           {
             person: <Person />,
@@ -49,9 +33,9 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
           }[iconText!]
         }
         {!iconText && <FilterList />}
-      </StyledIcon>
+      </div>
       {value}
-    </StyledLinkButton>
+    </Button>
   )
 })
 

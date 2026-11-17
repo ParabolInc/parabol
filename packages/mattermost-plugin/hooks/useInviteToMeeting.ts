@@ -1,23 +1,14 @@
 import type {Post} from '@mattermost/types/posts'
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import type {
-  MeetingTypeEnum,
-  useInviteToMeeting_meeting$key
-} from 'parabol-client/__generated__/useInviteToMeeting_meeting.graphql'
+import type {useInviteToMeeting_meeting$key} from 'parabol-client/__generated__/useInviteToMeeting_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {MeetingTypeToReadable} from 'parabol-client/utils/meetings/lookups'
 import {useCallback} from 'react'
 import {useFragment} from 'react-relay'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
-
-const MeetingTypeToReadable = {
-  action: 'Team Check-in',
-  poker: 'Sprint Poker',
-  retrospective: 'Retrospective',
-  teamPrompt: 'Standup'
-} satisfies Record<MeetingTypeEnum, string>
 
 export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) => {
   const meeting = useFragment(

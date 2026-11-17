@@ -5,8 +5,7 @@ import type {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_t
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import JoinTeamMutation from '../../mutations/JoinTeamMutation'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
-import SecondaryButton from '../SecondaryButton'
+import {Button} from '../../ui/Button/Button'
 
 type Props = {
   teamRef: PublicTeamItem_team$key
@@ -30,7 +29,6 @@ const PublicTeamItem = (props: Props) => {
 
   const handleJoinTeam = (teamId: string) => {
     if (!teamId) return
-    SendClientSideEvent(atmosphere, 'Joined public team', {teamId})
     JoinTeamMutation(
       atmosphere,
       {teamId},
@@ -56,9 +54,9 @@ const PublicTeamItem = (props: Props) => {
         {isJoined ? (
           <span className='px-6 py-2.5 text-center font-semibold text-grape-500'>Joined!</span>
         ) : (
-          <SecondaryButton onClick={() => handleJoinTeam(team.id)} size='medium'>
+          <Button variant='outline' size='md' onClick={() => handleJoinTeam(team.id)}>
             Join
-          </SecondaryButton>
+          </Button>
         )}
       </div>
     </div>

@@ -13,7 +13,9 @@ extend interface NewMeeting {
 
 extend type ActionMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
@@ -26,25 +28,37 @@ type ParabolSearchQuery {
   statusFilters: [TaskStatusEnum!]
 }
 
+type IntegrationSearchFilter {
+  key: String!
+  value: String!
+}
+
+type ScopingSearchQuery {
+  id: ID!
+  service: TaskServiceEnum!
+  queryString: String!
+  isAdvancedQuery: Boolean!
+  filters: [IntegrationSearchFilter!]!
+}
+
 extend type PokerMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  githubSearchQuery: GitHubSearchQuery!
-  gitlabSearchQuery: GitLabSearchQuery!
-  jiraSearchQuery: JiraSearchQuery!
-  jiraServerSearchQuery: JiraSearchQuery!
+  scopingSearchQueries: [ScopingSearchQuery!]!
   parabolSearchQuery: ParabolSearchQuery!
-  azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
-  linearSearchQuery: LinearSearchQuery!
   musicSettings: MusicSettings
 }
 
 extend type RetrospectiveMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
@@ -54,6 +68,14 @@ extend type RetrospectiveMeeting {
   spotlightSearchQuery: String
   showTranscription: Boolean!
   musicSettings: MusicSettings
+  # createdAt of the newest suggestions a person asked for, which the board flashes once.
+  # Suggestions the server refreshed on its own never land here, so an edited card updates the
+  # hover outlines without lighting up the whole board.
+  suggestedGroupingRevealAt: DateTime
+  # The viewer dismissed the current suggestions: no corner badges, no hover outlines. Local, so
+  # one person clearing the clutter does not take the suggestions away from their team. Asking for
+  # a fresh set brings them back.
+  isSuggestedGroupingHidden: Boolean
 }
 
 extend type TeamPromptMeeting {
@@ -62,6 +84,15 @@ extend type TeamPromptMeeting {
   localStageId: String
   # null = the right drawer is closed. Otherwise the active tab id it is open to
   # (e.g. "discussion", "work", "transcription").
+  rightDrawerOpen: String
+  showSidebar: Boolean!
+  musicSettings: MusicSettings
+}
+
+extend type TeamHealthMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
   rightDrawerOpen: String
   showSidebar: Boolean!
   musicSettings: MusicSettings
@@ -84,7 +115,7 @@ extend type PokerMeetingSettings {
 }
 
 extend type RetrospectiveMeetingSettings {
-  activeTemplate: ReflectTemplate!
+  activeTemplate: PromptTemplate!
   templateSearchQuery: String
 }
 
@@ -92,7 +123,6 @@ extend type User {
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int
   dashSearch: String
-  activityLibrarySearch: String
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID
@@ -104,6 +134,16 @@ extend type User {
   draggingPageParentSection: String
   # The level of access the viewer has on the dragging page
   draggingPageViewerAccess: PageRoleEnum
+  # The page a block drag started from
+  draggingBlocksSourcePageId: ID
+  # Child pages inside the blocks being dragged, as page keys
+  draggingBlocksChildPageIds: [ID!]
+  # Synced blocks inside the blocks being dragged, as page keys
+  draggingBlocksSyncedBlockIds: [ID!]
+  # Why the dragged blocks cannot be dropped anywhere, if they cannot
+  draggingBlocksRefusal: String
+  # How many blocks are being dragged
+  draggingBlocksCount: Int
 }
 
 extend type Page {
@@ -132,7 +172,7 @@ extend type RetroReflection {
   isEditing: Boolean
 }
 
-extend type ReflectPrompt {
+extend type TemplatePrompt {
   editorIds: [ID!]
 }
 
@@ -172,6 +212,14 @@ extend type TeamPromptResponseStage {
   localScheduledEndTime: String
 }
 
+extend type TeamHealthResponseStage {
+  localScheduledEndTime: String
+}
+
+extend type TeamHealthResultStage {
+  localScheduledEndTime: String
+}
+
 extend type Discussion {
   isAnonymousComment: Boolean!
   replyingTo: Threadable
@@ -202,6 +250,10 @@ extend type RetrospectiveMeetingMember {
 }
 
 extend type PokerMeetingMember {
+  isConnectedAt: DateTime
+}
+
+extend type TeamHealthMeetingMember {
   isConnectedAt: DateTime
 }
 

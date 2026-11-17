@@ -1,27 +1,16 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {ArchiveTeamForm_team$key} from '~/__generated__/ArchiveTeamForm_team.graphql'
-import SecondaryButton from '~/components/SecondaryButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Button} from '~/ui/Button/Button'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 import Legitity from '../../../../validation/Legitity'
-
-const ButtonGroup = styled('div')({
-  marginTop: 16,
-  display: 'flex'
-})
-
-const SubmitButton = styled(PrimaryButton)`
-  margin-right: 12px;
-`
 
 interface Props {
   handleCancel: () => any
@@ -90,12 +79,20 @@ const ArchiveTeamForm = (props: Props) => {
         name='archivedTeamName'
         placeholder={teamName}
       />
-      <ButtonGroup>
-        <SubmitButton type='submit' waiting={submitting}>
+      <div className='mt-4 flex'>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mr-3 text-sm'
+          type='submit'
+          disabled={submitting}
+        >
           I understand the consequences, delete this team
-        </SubmitButton>
-        <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
-      </ButtonGroup>
+        </Button>
+        <Button variant='outline' size='sm' onClick={handleCancel}>
+          Cancel
+        </Button>
+      </div>
     </form>
   )
 }

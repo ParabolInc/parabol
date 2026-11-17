@@ -20,7 +20,7 @@ const IntegratedTaskContent = (props: Props) => {
         integration {
           __typename
           ... on JiraIssue {
-            ...JiraExtraFieldsContent_issue
+            ...JiraExtraFieldsContent_issue @alias
             descriptionHTML
             summary
           }
@@ -44,6 +44,10 @@ const IntegratedTaskContent = (props: Props) => {
             description
             title
           }
+          ... on ClickUpTask {
+            clickUpDescription: description
+            title
+          }
         }
       }
     `,
@@ -58,7 +62,12 @@ const IntegratedTaskContent = (props: Props) => {
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{summary}</div>
         <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
-        <JiraExtraFieldsContent jiraDisplayFieldIds={jiraDisplayFieldIds} issueRef={integration} />
+        {integration.JiraExtraFieldsContent_issue && (
+          <JiraExtraFieldsContent
+            jiraDisplayFieldIds={jiraDisplayFieldIds}
+            issueRef={integration.JiraExtraFieldsContent_issue}
+          />
+        )}
       </div>
     )
   } else if (integration.__typename === 'JiraServerIssue') {
@@ -106,6 +115,17 @@ const IntegratedTaskContent = (props: Props) => {
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
         {description && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
+      </div>
+    )
+  } else if (integration.__typename === 'ClickUpTask') {
+    const {clickUpDescription, title} = integration
+    const descriptionHTML = sanitizeExternalHtml(
+      marked(clickUpDescription, {gfm: true, breaks: true}) as string
+    )
+    return (
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{title}</div>
+        {clickUpDescription && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
       </div>
     )
   }

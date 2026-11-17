@@ -10,7 +10,6 @@ type OrganizationSubscriptionPayload {
   RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   ToggleAIFeaturesSuccess: ToggleAIFeaturesSuccess
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
-  UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess
   UpdateOrgPayload: UpdateOrgPayload
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess

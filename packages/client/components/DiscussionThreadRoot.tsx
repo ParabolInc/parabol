@@ -7,16 +7,27 @@ import DiscussionThread from './DiscussionThread'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 
 interface Props {
-  meetingContentRef?: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement | null>
   discussionId: string
   allowedThreadables: DiscussionThreadables[]
   width?: string
   header?: ReactNode
   emptyState?: ReactNode
+  autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionThreadRoot = (props: Props) => {
-  const {allowedThreadables, meetingContentRef, discussionId, width, header, emptyState} = props
+  const {
+    allowedThreadables,
+    meetingContentRef,
+    discussionId,
+    width,
+    header,
+    emptyState,
+    autoFocus,
+    showLastTopicLine
+  } = props
   const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
     <Suspense fallback={''}>
@@ -28,6 +39,8 @@ const DiscussionThreadRoot = (props: Props) => {
           width={width}
           header={header}
           emptyState={emptyState}
+          autoFocus={autoFocus}
+          showLastTopicLine={showLastTopicLine}
         />
       )}
     </Suspense>

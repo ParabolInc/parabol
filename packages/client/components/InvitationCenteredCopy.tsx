@@ -1,12 +1,8 @@
-import styled from '@emotion/styled'
+import {twStyled} from '../ui/twStyled'
 import InvitationDialogCopy from './InvitationDialogCopy'
 
-const InvitationCenteredCopy = styled(InvitationDialogCopy)({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '1.5rem 0 .5rem',
-  justifyContent: 'center'
-})
+const InvitationCenteredCopy = twStyled(InvitationDialogCopy)(
+  'flex flex-col items-center justify-center pt-6 pb-2'
+)
 
 export default InvitationCenteredCopy

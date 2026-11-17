@@ -3,17 +3,19 @@ import './monkeyPatchMonacoEnvironment'
 import './style.css'
 import {ToolbarButton} from '@graphiql/react'
 import {createGraphiQLFetcher, type FetcherOpts, type FetcherParams} from '@graphiql/toolkit'
-import KeyIcon from '@mui/icons-material/Key'
 import {GraphiQL} from 'graphiql'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {Button} from '~/ui/Button/Button'
 import {Dialog} from '~/ui/Dialog/Dialog'
 import {DialogActions} from '~/ui/Dialog/DialogActions'
 import {DialogContent} from '~/ui/Dialog/DialogContent'
 import {DialogTitle} from '~/ui/Dialog/DialogTitle'
+import {Key as KeyIcon} from '~/ui/icons'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import logoMarkDark from '../../../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+import setStorageItem from '../../../../utils/setStorageItem'
 
 const PAT_STORAGE_KEY = 'graphiql:personalAccessToken'
 
@@ -73,7 +75,7 @@ const GraphqlContainer = () => {
     setPatSubmitAttempted(true)
     const token = patInput.trim()
     if (!isValidPat) return
-    localStorage.setItem(PAT_STORAGE_KEY, token)
+    setStorageItem('localStorage', PAT_STORAGE_KEY, token)
     setAccessToken(token)
     setPatInput('')
     setPatSubmitAttempted(false)
@@ -114,20 +116,18 @@ const GraphqlContainer = () => {
           )}
           <DialogActions>
             {accessToken && (
-              <button
-                onClick={handleCloseModal}
-                className='rounded px-4 py-2 font-medium text-slate-600 text-sm hover:bg-slate-100'
-              >
+              <Button variant='outline' size='md' onClick={handleCloseModal}>
                 Cancel
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant='primary'
+              size='md'
               onClick={handleSubmitPat}
               disabled={!patInput.trim()}
-              className='rounded bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600 disabled:opacity-50'
             >
               Submit
-            </button>
+            </Button>
           </DialogActions>
         </DialogContent>
       </Dialog>

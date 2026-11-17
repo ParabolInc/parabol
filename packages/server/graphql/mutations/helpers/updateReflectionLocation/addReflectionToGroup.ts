@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getKysely from '../../../../postgres/getKysely'
 import type {GQLContext} from './../../../graphql'
@@ -13,7 +14,7 @@ const addReflectionToGroup = async (
   const pg = getKysely()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
-  if (!reflection) throw new Error('Reflection not found')
+  if (!reflection) throw new GraphQLError('Reflection not found', {extensions: {code: 'NOT_FOUND'}})
 
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
   const [reflectionGroup, oldReflectionGroup] = await Promise.all([
@@ -24,11 +25,11 @@ const addReflectionToGroup = async (
   dataLoader.get('retroReflectionGroups').clear(oldReflectionGroupId)
 
   if (!reflectionGroup || !reflectionGroup.isActive) {
-    throw new Error('Reflection group not found')
+    throw new GraphQLError('Reflection group not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {meetingId} = reflectionGroup
   if (reflectionMeetingId !== meetingId) {
-    throw new Error('Reflection group not found')
+    throw new GraphQLError('Reflection group not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const reflectionsInNextGroup = await dataLoader
     .get('retroReflectionsByGroupId')

@@ -71,6 +71,7 @@ interface ConversationJoinResponse {
 
 export interface PostMessageResponse {
   ok: true
+  channel: string
   ts: string
 }
 

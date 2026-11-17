@@ -45,31 +45,7 @@ export enum Elevation {
   DISCUSSION_INPUT = '0px 0px 16px 0px rgba(0,0,0,0.3)' // shadow on the top that lays over the thread
 }
 
-// TODO move these into the enum
 export const buttonShadow = Elevation.Z2
-export const buttonRaisedShadow = Elevation.Z8
-
 export const cardShadow = Elevation.Z1
-export const cardHoverShadow = Elevation.Z3
-export const cardFocusShadow = Elevation.Z5 // aka editing
-export const cardRaisedShadow = Elevation.Z8 // aka dragging
-
-export const fabShadow = Elevation.Z6
-export const fabRaisedShadow = Elevation.Z12
-export const menuShadow = Elevation.Z8
-export const modalShadow = Elevation.Z24
-export const bottomBarShadow = Elevation.Z8
-export const navItemRaised = Elevation.Z8
-export const navDrawerShadow = Elevation.Z16
-export const panelShadow = Elevation.Z1
-export const panelRaisedShadow = Elevation.Z8
-export const searchBarShadow = Elevation.Z1
 export const sheetShadow = Elevation.Z16
-export const snackbarShadow = Elevation.Z6
-// some MD examples show the switch to use elevation 2, others elevation 1
-// elevation 2 helps the white off switch thumb stand out more
-export const switchShadow = Elevation.Z2
-export const textButtonShadow = Elevation.Z0
-
-export const desktopBarShadow = Elevation.Z4
 export const desktopSidebarShadow = Elevation.Z4

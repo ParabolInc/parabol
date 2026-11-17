@@ -1,7 +1,7 @@
 import type * as React from 'react'
 import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
-import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {RecordSource} from 'relay-runtime/store/RelayStoreTypes'
 import * as Y from 'yjs'
 import type {PageDragHandleQuery$data} from '../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../Atmosphere'
@@ -14,6 +14,7 @@ import {
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
 import {getPageLinks} from '../shared/tiptap/getPageLinks'
+import {insertPageLink} from '../tiptap/insertPageLink'
 import {providerManager} from '../tiptap/providerManager'
 import {GQLID} from '../utils/GQLID'
 import useAtmosphere from './useAtmosphere'
@@ -120,35 +121,19 @@ export const rawOnPointerUp =
         const fromNode = children.at(fromNodeIdx)!
 
         // yjs nodes cannot be moved, only created and destroyed, so clone the old, delete the old, add the new
-        const nodeToMove = [
-          createPageLinkElement(
-            fromNode.getAttribute('pageCode') as number,
-            fromNode.getAttribute('title') as string,
-            fromNode.getAttribute('database') as boolean
-          ) as Y.XmlElement
-        ]
+        const nodeToMove = createPageLinkElement(
+          fromNode.getAttribute('pageCode') as number,
+          fromNode.getAttribute('title') as string,
+          fromNode.getAttribute('database') as boolean,
+          fromNode.getAttribute('synced') === true
+        ) as Y.XmlElement
 
         // delete the old node first, but flag it as isMoving so it doesn't trigger side effects
         fromNode.setAttribute('isMoving', true)
         const parent = fromNode.parent as Y.XmlElement
         const fromIdx = parent.toArray().findIndex((child) => child === fromNode)
         parent.delete(fromIdx)
-
-        if (dropIdx === -1) {
-          // put it at the beginning
-          const dropTarget = children.at(0)!
-          const firstChildParent = dropTarget.parent as Y.XmlElement
-          const firstChildIdx = firstChildParent
-            .toArray()
-            .findIndex((child) => child === dropTarget)
-          firstChildParent.insert(firstChildIdx, nodeToMove)
-        } else {
-          // if null, put after the last one, else, put after the dropIdx
-          const idx = dropIdx === null ? -1 : dropIdx
-          const dropTarget = children.at(idx) as Y.XmlElement
-          const dropTargetParent = dropTarget.parent as Y.XmlElement
-          dropTargetParent.insertAfter(dropTarget, nodeToMove)
-        }
+        insertPageLink(document, nodeToMove, dropIdx, children)
       })
       return
     }
@@ -169,7 +154,7 @@ export const rawOnPointerUp =
           console.warn('Page not found in Relay')
           return
         }
-        const {title, isDatabase, isMeetingTOC} = pageGQLRecord
+        const {title, isDatabase, isMeetingTOC, isSyncedBlock} = pageGQLRecord
         if (isMeetingTOC) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'useDraggablePage:noDropAccess',
@@ -178,19 +163,11 @@ export const rawOnPointerUp =
           })
           return
         }
-        const children = getPageLinks(document, true)
-        const idx = dropIdx === null ? -1 : dropIdx
-        const dropTarget = children.at(idx) as Y.XmlElement
-        if (dropTarget) {
-          const dropTargetParent = dropTarget.parent as Y.XmlElement
-          dropTargetParent.insertAfter(dropTarget, [
-            createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement
-          ])
-        } else {
-          // this will be the first page link, put it at the top just below the title
-          const frag = document.getXmlFragment('default')
-          frag.insert(1, [createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement])
-        }
+        insertPageLink(
+          document,
+          createPageLinkElement(pageCode, title, !!isDatabase, !!isSyncedBlock) as Y.XmlElement,
+          dropIdx
+        )
       })
     } else {
       // the target is top-level, under a team, shared pages, or private pages

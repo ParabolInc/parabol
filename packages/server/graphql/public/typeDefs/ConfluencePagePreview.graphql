@@ -1,0 +1,14 @@
+"""
+A lightweight Confluence page reference returned by the parent-page search
+"""
+type ConfluencePagePreview {
+  """
+  The Confluence page id
+  """
+  id: ID!
+
+  """
+  The page title
+  """
+  title: String!
+}

@@ -2,7 +2,6 @@ import SCIMMY from 'scimmy'
 import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import softDeleteUserHelper from '../graphql/mutations/helpers/softDeleteUser'
 import getKysely from '../postgres/getKysely'
-import {analytics} from '../utils/analytics/analytics'
 import {blacklistJWT} from '../utils/blacklistJWT'
 import {toEpochSeconds} from '../utils/epochTime'
 import {SCIMContext} from './SCIMContext'
@@ -55,14 +54,12 @@ export const softDeleteUser = async ({
       blacklistJWT(userId, toEpochSeconds(new Date()) + 1)
     ])
 
-    analytics.accountRemoved(user, reasonRemoved)
-
     return deletedUser
   }
 
   // all users can be removed from the managed org
   if (orgId) {
-    await removeFromOrg(userId, orgId, undefined, dataLoader)
+    await removeFromOrg([userId], orgId, undefined, dataLoader)
   }
 
   // From the view of the SCIM client the user was removed as they're not managed by this SCIM provider anymore

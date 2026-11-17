@@ -54,9 +54,9 @@ export const ThreadedItem = (props: Props) => {
   const threadable = useFragment(
     graphql`
       fragment ThreadedItem_threadable on Threadable {
-        ...ThreadedCommentBase_comment
-        ...ThreadedTaskBase_task
-        ...ThreadedPollBase_poll
+        ...ThreadedCommentBase_comment @alias
+        ...ThreadedTaskBase_task @alias
+        ...ThreadedPollBase_poll @alias
         __typename
         replies {
           ...ThreadedRepliesList_replies
@@ -66,7 +66,8 @@ export const ThreadedItem = (props: Props) => {
     `,
     threadableRef
   )
-  const {__typename, replies} = threadable
+  const {ThreadedTaskBase_task, ThreadedPollBase_poll, ThreadedCommentBase_comment, replies} =
+    threadable
   const getMaxSortOrder = () => {
     return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
   }
@@ -78,11 +79,11 @@ export const ThreadedItem = (props: Props) => {
       viewer={viewer}
     />
   )
-  if (__typename === 'Task') {
+  if (ThreadedTaskBase_task) {
     return (
       <ThreadedTaskBase
         allowedThreadables={allowedThreadables}
-        task={threadable}
+        task={ThreadedTaskBase_task}
         discussion={discussion}
         viewer={viewer}
         repliesList={repliesList}
@@ -90,19 +91,20 @@ export const ThreadedItem = (props: Props) => {
       />
     )
   }
-  if (__typename === 'Poll') {
+  if (ThreadedPollBase_poll) {
     return (
       <ThreadedPollBase
         allowedThreadables={allowedThreadables}
-        pollRef={threadable}
+        pollRef={ThreadedPollBase_poll}
         discussionRef={discussion}
       />
     )
   }
+  if (!ThreadedCommentBase_comment) return null
   return (
     <ThreadedCommentBase
       allowedThreadables={allowedThreadables}
-      comment={threadable}
+      comment={ThreadedCommentBase_comment}
       discussion={discussion}
       viewer={viewer}
       repliesList={repliesList}

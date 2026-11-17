@@ -1,15 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Suspense, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SearchDialogResultsQuery} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import gqlQuery from '../../__generated__/SearchDialogResultsQuery.graphql'
+import {Loader} from '../../utils/relay/renderLoader'
+import {SearchDialogBestResults} from './SearchDialogBestResults'
 import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResultsList} from './SearchDialogResultsList'
 import {SearchDialogResultsRecent} from './SearchDialogResultsRecent'
 
 graphql`
-  query SearchDialogResultsQuery($query: String!, $dateField: SearchDateTypeEnum, $startAt: DateTime, $endAt: DateTime, $teamIds: [ID!]) {
+  query SearchDialogResultsQuery($query: String!, $hasQuery: Boolean!, $dateField: SearchDateTypeEnum, $startAt: DateTime, $endAt: DateTime, $teamIds: [ID!]) {
     viewer {
-      search(query: $query, first: 20, dateField: $dateField, startAt: $startAt, endAt: $endAt, teamIds: $teamIds, type: page) {
+      quick: search(query: $query, first: 20, alpha: 0, dateField: $dateField, startAt: $startAt, endAt: $endAt, teamIds: $teamIds, type: page) {
         edges {
           ...SearchDialogResultsRecent_edges
           ...SearchDialogResultsList_edges
@@ -20,41 +23,63 @@ graphql`
           }
         }
       }
+      ...SearchDialogBestResults_viewer @include(if: $hasQuery) @defer
     }
   }
 `
 interface Props {
   queryRef: PreloadedQuery<SearchDialogResultsQuery>
-  searchType: 'recent' | 'simple' | 'hybrid'
   closeSearch: () => void
   resultsListRef: React.Ref<ResultsListRefHandler>
-  query: string
 }
 
 export const SearchDialogResults = (props: Props) => {
-  const {queryRef, searchType, closeSearch, resultsListRef, query} = props
+  const {queryRef, closeSearch, resultsListRef} = props
+  const {query, hasQuery} = queryRef.variables
   const data = usePreloadedQuery<SearchDialogResultsQuery>(gqlQuery, queryRef)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const {viewer} = data
-  const {search} = viewer
-  const {edges} = search
+  const {quick} = viewer
+  const {edges} = quick
 
-  if (searchType === 'recent') {
+  if (!hasQuery) {
     return (
       <SearchDialogResultsRecent
         resultsListRef={resultsListRef}
         edgesRef={edges}
         closeSearch={closeSearch}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
       />
     )
   }
-  const title = searchType === 'simple' ? 'Quick matches' : 'Best matches'
   return (
-    <SearchDialogResultsList
-      resultsListRef={resultsListRef}
-      edgesRef={edges}
-      title={title}
-      closeSearch={closeSearch}
-      query={query}
-    />
+    <Suspense
+      key={queryRef.fetchKey}
+      fallback={
+        edges.length === 0 ? (
+          <Loader />
+        ) : (
+          <SearchDialogResultsList
+            resultsListRef={resultsListRef}
+            edgesRef={edges}
+            title='Quick matches'
+            closeSearch={closeSearch}
+            query={query}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+          />
+        )
+      }
+    >
+      <SearchDialogBestResults
+        viewerRef={viewer}
+        closeSearch={closeSearch}
+        resultsListRef={resultsListRef}
+        query={query}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+      />
+    </Suspense>
   )
 }

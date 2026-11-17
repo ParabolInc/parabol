@@ -1,29 +1,36 @@
-import type {SvgIconTypeMap} from '@mui/material'
-import type {OverridableComponent} from '@mui/material/OverridableComponent'
+import clsx from 'clsx'
+import type {IconComponent} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 
 interface Props {
-  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
+  Icon: IconComponent
   tooltip: string
   onClick: React.MouseEventHandler
-  className?: string
+  disabled?: boolean
 }
 
 export const ArchivedPagesButton = (props: Props) => {
-  const {onClick, Icon, tooltip} = props
+  const {onClick, Icon, tooltip, disabled} = props
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
-          className={
-            'flex size-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-400 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300'
-          }
+        <button
+          type='button'
+          aria-label={tooltip}
+          aria-disabled={disabled}
+          onClick={disabled ? undefined : onClick}
+          className={clsx(
+            'flex size-4 items-center justify-center rounded-sm bg-surface-well p-0',
+            disabled
+              ? 'opacity-50'
+              : 'cursor-pointer hover:bg-hairline-strong group-hover:bg-surface-nav-hover group-data-highlighted:bg-surface-nav-active'
+          )}
         >
-          <Icon className='size-4' onClick={onClick} />
-        </div>
+          <Icon className='size-4' />
+        </button>
       </TooltipTrigger>
       <TooltipContent side={'bottom'}>{tooltip}</TooltipContent>
     </Tooltip>

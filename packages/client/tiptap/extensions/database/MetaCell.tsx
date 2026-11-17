@@ -12,5 +12,5 @@ export const MetaCell = ({
   columnId: ColumnId
 }) => {
   const [value] = useCell(doc, rowId, columnId)
-  return <div className='text-slate-600 text-xs'>{value}</div>
+  return <div className='text-fg-secondary text-xs'>{value}</div>
 }

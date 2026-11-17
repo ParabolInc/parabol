@@ -1,12 +1,12 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
+import {revalidateYjsConnections} from '../../../utils/tiptap/revalidateYjsConnections'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -21,14 +21,10 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
 
   // RESOLUTION
   const viewerId = getUserId(authToken)
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  analytics.archiveTeam(viewer, teamId)
   const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
   if (!team) {
-    return standardError(new Error('Already archived team'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Already archived team', {extensions: {code: 'CONFLICT'}})
   }
 
   const teamTemplates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
@@ -58,6 +54,7 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
     removedSuggestedActionIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
+  await revalidateYjsConnections({userIds: users.filter(isValid).map(({id}) => id)})
 
   await Promise.all(
     users.filter(isValid).map(async (user) => {

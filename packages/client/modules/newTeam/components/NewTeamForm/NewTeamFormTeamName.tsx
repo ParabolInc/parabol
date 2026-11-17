@@ -1,17 +1,8 @@
-import styled from '@emotion/styled'
 import type {ChangeEvent} from 'react'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import {Breakpoint} from '../../../../types/constEnums'
 import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
-
-const FormBlockInline = styled(NewTeamFormBlock)({
-  marginTop: 16,
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    marginTop: 48
-  }
-})
 
 interface Props {
   error: string | undefined
@@ -24,7 +15,7 @@ interface Props {
 const NewTeamFormTeamName = (props: Props) => {
   const {error, onChange, teamName, disabled, autoFocus} = props
   return (
-    <FormBlockInline>
+    <NewTeamFormBlock className='mt-4 sidebar-left:mt-12'>
       <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
       <NewTeamFieldBlock>
         <BasicInput
@@ -36,7 +27,7 @@ const NewTeamFormTeamName = (props: Props) => {
           value={teamName}
         />
       </NewTeamFieldBlock>
-    </FormBlockInline>
+    </NewTeamFormBlock>
   )
 }
 

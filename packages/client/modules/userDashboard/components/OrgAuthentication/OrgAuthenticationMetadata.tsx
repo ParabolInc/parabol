@@ -1,41 +1,23 @@
-import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {UploadFile as UploadFileIcon} from '~/ui/icons'
+import getMutationError from '~/utils/relay/getMutationError'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
-import orgAuthenticationMetadataQuery, {
-  type OrgAuthenticationMetadataQuery
-} from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
+import {snackOnError} from '../../../../mutations/handlers/snackOnError'
+import useRequestSAMLMetadataChangeMutation from '../../../../mutations/useRequestSAMLMetadataChangeMutation'
 import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
 import {Button} from '../../../../ui/Button/Button'
 import getOAuthPopupFeatures from '../../../../utils/getOAuthPopupFeatures'
 import loginSSO from '../../../../utils/loginSSO'
-
-graphql`
-  query OrgAuthenticationMetadataQuery($metadataURL: String!, $domain: String!) {
-    viewer {
-      parseSAMLMetadata(metadataURL: $metadataURL, domain: $domain) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
-        ... on ParseSAMLMetadataSuccess {
-          url
-        }
-      }
-    }
-  }
-`
+import OrgAuthenticationDisconnectIdP from './OrgAuthenticationDisconnectIdP'
 
 interface Props {
-  samlRef: OrgAuthenticationMetadata_saml$key | null
+  samlRef: OrgAuthenticationMetadata_saml$key
   isOrgAdmin: boolean
 }
 
@@ -45,23 +27,44 @@ const OrgAuthenticationMetadata = (props: Props) => {
     graphql`
       fragment OrgAuthenticationMetadata_saml on SAML {
         id
+        domains
         metadataURL
         orgId
+        ...OrgAuthenticationDisconnectIdP_saml
       }
     `,
     samlRef
   )
   const atmosphere = useAtmosphere()
-  const [metadataURL, setMetadataURL] = useState(saml?.metadataURL ?? '')
-  const isMetadataURLSaved = saml ? saml.metadataURL === metadataURL : false
-  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const submitMetadataURL = async () => {
-    if (submitting || !metadataURL) return
-    submitMutation()
-    const domain = saml?.id
-    if (!domain) {
-      onError(new Error('Domain not provided. Please contact customer support'))
+  const {orgId, domains} = saml
+  const [metadataURL, setMetadataURL] = useState(saml.metadataURL ?? '')
+  const isMetadataURLSaved = saml.metadataURL === metadataURL
+  const [requestSAMLMetadataChange, isRequestingChange] = useRequestSAMLMetadataChangeMutation()
+  const [isTestingSignIn, setIsTestingSignIn] = useState(false)
+  const [error, setError] = useState('')
+  const submitting = isRequestingChange || isTestingSignIn
+
+  const testSignIn = async (signOnURL: string) => {
+    setIsTestingSignIn(true)
+    const response = await loginSSO(signOnURL)
+    setIsTestingSignIn(false)
+    if ('error' in response) {
+      setError(response.error || 'Error logging in')
+      return
     }
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(saml.id)?.setValue(metadataURL, 'metadataURL')
+    })
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message: 'SSO Configured Successfully',
+      autoDismiss: 5,
+      key: 'submitMetadata'
+    })
+  }
+
+  const submitMetadataURL = () => {
+    if (submitting || !metadataURL) return
+    setError('')
 
     // Open popup before the first async call to prevent popup blockers
     const optimisticPopup = window.open(
@@ -69,41 +72,21 @@ const OrgAuthenticationMetadata = (props: Props) => {
       'SSO',
       getOAuthPopupFeatures({width: 385, height: 576, top: 64})
     )
-
-    // Get the Sign-on URL, which includes metadataURL in the RelayState
-    const res = await atmosphere.fetchQuery<OrgAuthenticationMetadataQuery>(
-      orgAuthenticationMetadataQuery,
-      {metadataURL, domain}
-    )
-    if (!res || res instanceof Error) {
-      onError(new Error('Could not reach server. Please try again'))
+    const failRequest = (message: string) => {
+      setError(message)
       optimisticPopup?.close()
-      return
     }
-    const {viewer} = res
-    const {parseSAMLMetadata} = viewer
-    const {error} = parseSAMLMetadata
-    if (error) {
-      onError(new Error(error.message))
-      optimisticPopup?.close()
-      return
-    }
-    const url = parseSAMLMetadata.url!
-
-    // Attempt logging in to test for errors
-    const response = await loginSSO(url)
-    if ('error' in response) {
-      onError(new Error(response.error || 'Error logging in'))
-      return
-    }
-    onCompleted()
-    commitLocalUpdate(atmosphere, (store) => {
-      store.get(saml!.id)?.setValue(metadataURL, 'metadataURL')
-    })
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      message: 'SSO Configured Successfully',
-      autoDismiss: 5,
-      key: 'submitMetadata'
+    requestSAMLMetadataChange({
+      variables: {samlId: saml.id, metadataURL},
+      onCompleted: (res, errors) => {
+        const firstError = errors?.[0]
+        if (firstError) {
+          failRequest(firstError.message)
+          return
+        }
+        testSignIn(res.requestSAMLMetadataChange.signOnURL)
+      },
+      onError: (err) => failRequest(getMutationError(err).message)
     })
   }
 
@@ -115,36 +98,24 @@ const OrgAuthenticationMetadata = (props: Props) => {
   const uploadXML = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {files} = e.currentTarget
     const file = files?.[0]
-    if (!file || !saml?.orgId) return
+    if (!file) return
     commit({
-      variables: {orgId: saml.orgId},
-      uploadables: {file: file},
+      variables: {samlId: saml.id},
+      uploadables: {file},
       onCompleted: (res) => {
-        const {uploadIdPMetadata} = res
-        const {error, url} = uploadIdPMetadata
-        const message = error?.message
-        if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorUploadIdPtMetadata',
-            message,
-            autoDismiss: 5
-          })
-          return
-        }
-        setMetadataURL(url!)
-      }
+        setMetadataURL(res.uploadIdPMetadata.url)
+      },
+      onError: snackOnError(atmosphere, 'errorUploadIdPtMetadata')
     })
   }
-
-  const orgId = saml?.orgId
 
   return (
     <>
       {!isOrgAdmin && (
-        <div className='px-6 pb-3 text-slate-700 text-sm'>
+        <div className='px-6 pb-3 text-fg-primary text-sm'>
           {orgId ? (
             <Link
-              className='font-semibold text-sky-500 hover:text-sky-600'
+              className='font-semibold text-accent hover:text-sky-600'
               to={`/me/organizations/${orgId}/members`}
             >
               Contact an Org Admin
@@ -156,10 +127,12 @@ const OrgAuthenticationMetadata = (props: Props) => {
         </div>
       )}
       <div className={!isOrgAdmin ? 'pointer-events-none select-none opacity-50' : ''}>
-        <div className='px-6 pb-3'>
-          <div className='font-semibold text-base text-slate-700 leading-6'>Metadata URL</div>
-          <div className='text-slate-700 text-sm'>
-            Paste the metadata URL from your identity provider
+        <div className='px-6 pt-2 pb-4'>
+          <div className='font-semibold text-base text-fg-primary leading-6'>Metadata URL</div>
+          <div className='mb-3 text-fg-primary text-sm'>
+            Paste the metadata URL from this identity provider. Saving opens a test sign-in: sign in
+            as an Org Admin with an {domains.map((emailDomain) => `@${emailDomain}`).join(' or ')}{' '}
+            address.
           </div>
           <BasicInput
             name='metadataURL'
@@ -170,9 +143,8 @@ const OrgAuthenticationMetadata = (props: Props) => {
             error={undefined}
           />
           <Button
-            className='px-0'
+            className='mt-3 px-0'
             variant='ghost'
-            shape='pill'
             size='sm'
             onClick={onUploadClick}
             disabled={!isOrgAdmin}
@@ -188,15 +160,21 @@ const OrgAuthenticationMetadata = (props: Props) => {
             ref={uploadInputRef}
           />
         </div>
-        <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
-        <div className='flex justify-end px-6 pb-8'>
-          <SecondaryButton
-            size='medium'
+        <div className={'px-6 text-fg-error empty:hidden'}>{error}</div>
+        <div className='flex items-center justify-between gap-4 px-6 pb-8'>
+          {saml.metadataURL ? (
+            <OrgAuthenticationDisconnectIdP samlRef={saml} disabled={!isOrgAdmin} />
+          ) : (
+            <div />
+          )}
+          <Button
+            variant='outline'
+            size='md'
             onClick={submitMetadataURL}
-            disabled={!isOrgAdmin || submitting || isMetadataURLSaved}
+            disabled={!isOrgAdmin || submitting || isMetadataURLSaved || !metadataURL}
           >
-            Update Metadata
-          </SecondaryButton>
+            {saml.metadataURL ? 'Update Metadata' : 'Save & test sign-in'}
+          </Button>
         </div>
       </div>
     </>

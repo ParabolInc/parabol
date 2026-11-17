@@ -4,6 +4,7 @@ import type {EditReflectionMutation_meeting$data} from '~/__generated__/EditRefl
 import type {EditReflectionMutation as TEditReflectionMutation} from '../__generated__/EditReflectionMutation.graphql'
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import handleEditReflection from './handlers/handleEditReflection'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EditReflectionMutation_meeting on EditReflectionPayload {
@@ -31,7 +32,8 @@ export const editReflectionMeetingUpdater: SharedUpdater<EditReflectionMutation_
 const EditReflectionMutation: SimpleMutation<TEditReflectionMutation> = (atmosphere, variables) => {
   return commitMutation(atmosphere, {
     mutation,
-    variables
+    variables,
+    onError: snackOnError(atmosphere)
     // updater: (store) => {
     //   const payload = store.getRootField('editReflection')
     //   if (!payload) return

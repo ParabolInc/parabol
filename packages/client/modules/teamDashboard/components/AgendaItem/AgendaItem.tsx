@@ -1,7 +1,6 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   AgendaItem_meeting$data,
@@ -12,53 +11,17 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
 import type useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
-import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {cn} from '../../../../ui/cn'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
-
-const AgendaItemStyles = styled('div')({
-  position: 'relative',
-  // show the DeleteIconButton on hover
-  '&:hover > button': {
-    opacity: 1
-  }
-})
-
-const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
-  display: 'block',
-  // we can make the position of the del (x) more centered when there’s a low number of agenda items
-  left: 19,
-  lineHeight: ICON_SIZE.MD18,
-  opacity: 0,
-  position: 'absolute',
-  top: '.6875rem',
-  transition: 'opacity .1s ease-in',
-  visibility: disabled ? 'hidden' : undefined
-}))
-
-const IconBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  marginRight: '4px',
-  width: '2rem',
-  '&:active': {
-    opacity: 0.7
-  },
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
-
-const SvgIcon = styled('img')({
-  opacity: 0.7
-})
 
 const getItemProps = (
   agendaItemId: string,
@@ -79,7 +42,8 @@ const getItemProps = (
   const agendaItemsPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const localStageId = (localStage && localStage.id) || ''
   const {phaseType} = localPhase
-  const {stages} = (phaseType === 'agendaitems' ? localPhase : agendaItemsPhase) ?? {}
+  const stages = (phaseType === 'agendaitems' ? localPhase : agendaItemsPhase)?.AgendaItemPhase
+    ?.stages
   if (!stages) return fallback
   const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback
@@ -139,11 +103,11 @@ const AgendaItem = (props: Props) => {
           stages {
             id
           }
-          ...AgendaItemPhase @relay(mask: false)
+          ...AgendaItemPhase @relay(mask: false) @alias
         }
         localPhase {
           phaseType
-          ...AgendaItemPhase @relay(mask: false)
+          ...AgendaItemPhase @relay(mask: false) @alias
         }
         localStage {
           id
@@ -163,10 +127,6 @@ const AgendaItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const ref = useRef<HTMLDivElement>(null)
-  const [isHovering, setIsHovering] = useState(false)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
   const {
     isDisabled,
     onClick,
@@ -201,29 +161,43 @@ const AgendaItem = (props: Props) => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId}, {meetingId})
   }
 
-  const getIcon = () => {
-    if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-    else if (!pinned && !isHovering) return <Avatar picture={picture} className='h-6 w-6' />
-    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
-  }
-
   return (
     <>
-      <AgendaItemStyles
-        onMouseOver={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
+      <div className='group relative'>
         <MeetingSubnavItem
           metaContent={
-            <IconBlock
-              onClick={handleIconClick}
-              onMouseOver={openTooltip}
-              onMouseOut={closeTooltip}
-              ref={originRef}
-            >
-              {getIcon()}
-            </IconBlock>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  onClick={handleIconClick}
+                  className='flex w-6 cursor-pointer justify-center active:opacity-70'
+                >
+                  {/* Idle shows the avatar (or a pin badge when already pinned); hovering the
+                  row swaps in the pin/unpin action icon — all via group-hover, no JS state */}
+                  {pinned ? (
+                    <img
+                      alt='Pinned'
+                      className='opacity-70 group-hover:hidden dark:invert'
+                      src={pinIcon}
+                    />
+                  ) : (
+                    <Avatar picture={picture} className='h-6 w-6 group-hover:hidden' />
+                  )}
+                  <img
+                    alt={pinned ? 'Unpin' : 'Pin'}
+                    className='hidden opacity-70 hover:opacity-100 group-hover:block dark:invert'
+                    src={pinned ? unpinIcon : pinIcon}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                {pinned
+                  ? `Unpin this agenda topic from every check-in`
+                  : `Pin this agenda topic to every check-in`}
+              </TooltipContent>
+            </Tooltip>
           }
+          labelClassName='pl-7'
           isDisabled={isDisabled}
           onClick={onClick}
           isActive={isActive}
@@ -233,19 +207,19 @@ const AgendaItem = (props: Props) => {
         >
           {content}
         </MeetingSubnavItem>
-        <DeleteIconButton
+        {/* Delete (x) sits in the left indent gutter, revealed on row hover */}
+        <IconButton
           aria-label={'Remove this agenda topic'}
+          className={cn(
+            '-translate-y-1/2 absolute top-1/2 left-2 block opacity-0 transition-opacity duration-100 ease-in group-hover:opacity-100',
+            endedAt && 'invisible'
+          )}
           disabled={!!endedAt}
           icon='cancel'
           onClick={handleRemove}
           palette='midGray'
         />
-      </AgendaItemStyles>
-      {tooltipPortal(
-        pinned
-          ? `Unpin this agenda topic from every check-in`
-          : `Pin this agenda topic to every check-in`
-      )}
+      </div>
     </>
   )
 }

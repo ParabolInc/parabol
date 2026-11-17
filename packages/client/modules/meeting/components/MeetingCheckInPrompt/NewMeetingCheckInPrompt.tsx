@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
@@ -6,27 +5,6 @@ import type {NewMeetingCheckInPrompt_user$key} from '../../../../__generated__/N
 import Avatar from '../../../../components/Avatar/Avatar'
 import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
 import NewCheckInQuestion from './NewCheckInQuestion'
-
-const PromptBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  width: '100%',
-  maxWidth: '37.5rem',
-  padding: '0 1.25rem'
-})
-
-const AvatarBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center',
-  paddingBottom: 16
-})
-
-const CheckInBlock = styled('div')({
-  width: '100%'
-})
 
 interface Props {
   meetingRef: NewMeetingCheckInPrompt_meeting$key
@@ -73,15 +51,15 @@ const NewMeetingCheckinPrompt = (props: Props) => {
   const {localPhase} = meeting
   const {checkInGreeting} = localPhase
   return (
-    <PromptBlock>
-      <AvatarBlock>
+    <div className='flex w-full max-w-[37.5rem] flex-col items-center justify-center px-5'>
+      <div className='flex items-center justify-center pb-4'>
         <Avatar picture={picture} className={`h-32 sidebar-left:h-40 sidebar-left:w-40 w-32`} />
-      </AvatarBlock>
-      <CheckInBlock>
+      </div>
+      <div className='w-full'>
         <NewMeetingCheckInGreeting checkInGreetingRef={checkInGreeting!} userRef={user} />
         <NewCheckInQuestion meetingRef={meeting} />
-      </CheckInBlock>
-    </PromptBlock>
+      </div>
+    </div>
   )
 }
 

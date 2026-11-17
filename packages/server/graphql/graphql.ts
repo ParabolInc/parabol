@@ -18,6 +18,9 @@ export interface GQLContext {
   resourceGrants?: ResourceGrants
 }
 
+// Rules run before isAuthenticated has passed (and() runs its rules in parallel), so they see a signed-out caller's null token
+export type RuleContext = Omit<GQLContext, 'authToken'> & {authToken: AuthToken | null}
+
 export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>
 export interface InternalContext {
   dataLoader: DataLoaderWorker

@@ -1,82 +1,21 @@
-import styled from '@emotion/styled'
-import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {Add} from '~/ui/icons'
 import type {AgendaInput_team$key} from '../../../../__generated__/AgendaInput_team.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
-import {MenuPosition} from '../../../../hooks/useCoords'
 import useForm from '../../../../hooks/useForm'
 import useHotkey from '../../../../hooks/useHotkey'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useTooltip from '../../../../hooks/useTooltip'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import {positionAfter} from '../../../../shared/sortOrder'
-import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
-import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
-import {PALETTE} from '../../../../styles/paletteV3'
-import ui from '../../../../styles/ui'
+import {cn} from '../../../../ui/cn'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-
-const AgendaInputBlock = styled('div')({
-  padding: `8px 0`,
-  position: 'relative'
-})
-
-const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
-  backgroundColor: 'transparent',
-  fontSize: 14,
-  padding: `0 0 0 8px`,
-  position: 'relative',
-  width: '100%',
-  ':hover': {
-    backgroundColor: disabled ? 'transparent' : undefined
-  }
-}))
-
-const inputPlaceholderStyles = makePlaceholderStyles(PALETTE.SKY_500)
-
-const InputField = styled('input')<{disabled: boolean}>(
-  {
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
-    boxShadow: 'none',
-    cursor: 'not-allowed',
-    display: 'block',
-    fontSize: 14,
-    fontWeight: 400,
-    lineHeight: '24px',
-    margin: 0,
-    outline: 'none',
-    padding: '8px 8px 8px 43px',
-    position: 'relative',
-    textIndent: '4px',
-    width: '100%',
-    ...makeFieldColorPalette('cool', false, {backgroundColor: 'transparent'}),
-    ...inputPlaceholderStyles
-  },
-  ({disabled}) => {
-    return (
-      !disabled && {
-        cursor: 'text',
-        ...makeFieldColorPalette('cool', true, {
-          backgroundColor: 'transparent'
-        })
-      }
-    )
-  }
-)
-
-const StyledIcon = styled(Add)({
-  color: PALETTE.SKY_500,
-  display: 'block',
-  left: 16,
-  pointerEvents: 'none',
-  position: 'absolute',
-  top: 9
-})
 
 interface Props {
   className?: string
@@ -141,44 +80,43 @@ const AgendaInput = (props: Props) => {
       inputRef.current.blur()
     }
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {
-      delay: 1000,
-      disabled: agendaItems.length > 0 || disabled
-    }
-  )
+  const isTooltipDisabled = agendaItems.length > 0 || disabled
   return (
-    <AgendaInputBlock
-      className={className}
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
-      ref={originRef}
-    >
-      {tooltipPortal(
-        <div style={{textAlign: 'center'}}>
+    <Tooltip delayDuration={1000}>
+      <TooltipTrigger asChild>
+        <div className={cn('relative py-2', className)}>
+          <form className='relative w-full bg-transparent pl-2 text-[14px]' onSubmit={handleSubmit}>
+            <input
+              className={cn(
+                'relative m-0 block w-full appearance-none rounded-[4px] border border-transparent bg-transparent py-2 pr-2 pl-[43px] indent-1 font-normal font-sans text-[14px] text-fg-primary leading-6 shadow-none outline-none selection:bg-hairline-strong placeholder:text-accent',
+                disabled
+                  ? 'cursor-not-allowed'
+                  : 'cursor-text hover:border-accent focus:border-accent active:border-accent'
+              )}
+              autoCapitalize='off'
+              autoComplete='off'
+              disabled={disabled}
+              maxLength={63}
+              name='newItem'
+              onChange={onChange}
+              onKeyDown={onKeyDown}
+              placeholder='Add Agenda Topic…'
+              ref={inputRef}
+              type='text'
+              value={value}
+            />
+            <Add className='pointer-events-none absolute top-[9px] left-4 block text-accent' />
+          </form>
+        </div>
+      </TooltipTrigger>
+      {!isTooltipDisabled && (
+        <TooltipContent side='bottom'>
           {'Add meeting topics to discuss,'}
           <br />
           {'like “upcoming vacation”'}
-        </div>
+        </TooltipContent>
       )}
-      <InputForm disabled={disabled} onSubmit={handleSubmit}>
-        <InputField
-          autoCapitalize='off'
-          autoComplete='off'
-          disabled={disabled}
-          maxLength={63}
-          name='newItem'
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          placeholder='Add Agenda Topic…'
-          ref={inputRef}
-          type='text'
-          value={value}
-        />
-        <StyledIcon />
-      </InputForm>
-    </AgendaInputBlock>
+    </Tooltip>
   )
 }
 

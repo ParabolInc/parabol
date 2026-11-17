@@ -42,8 +42,8 @@ const ThreadedRepliesList = (props: Props) => {
   const replies = useFragment(
     graphql`
       fragment ThreadedRepliesList_replies on Threadable @relay(plural: true) {
-        ...ThreadedTaskBase_task
-        ...ThreadedCommentBase_comment
+        ...ThreadedTaskBase_task @alias
+        ...ThreadedCommentBase_comment @alias
         __typename
         id
         threadSortOrder
@@ -57,21 +57,25 @@ const ThreadedRepliesList = (props: Props) => {
   return (
     <>
       {replies?.map((reply) => {
-        const {__typename, id} = reply
-        return __typename === 'Task' ? (
-          <ThreadedTaskBase
-            allowedThreadables={allowedThreadables}
-            key={id}
-            task={reply}
-            discussion={discussion}
-            viewer={viewer}
-            getMaxSortOrder={getMaxSortOrder}
-          />
-        ) : (
+        const {ThreadedTaskBase_task, ThreadedCommentBase_comment, id} = reply
+        if (ThreadedTaskBase_task) {
+          return (
+            <ThreadedTaskBase
+              allowedThreadables={allowedThreadables}
+              key={id}
+              task={ThreadedTaskBase_task}
+              discussion={discussion}
+              viewer={viewer}
+              getMaxSortOrder={getMaxSortOrder}
+            />
+          )
+        }
+        if (!ThreadedCommentBase_comment) return null
+        return (
           <ThreadedCommentBase
             allowedThreadables={allowedThreadables}
             key={id}
-            comment={reply}
+            comment={ThreadedCommentBase_comment}
             discussion={discussion}
             viewer={viewer}
             getMaxSortOrder={getMaxSortOrder}

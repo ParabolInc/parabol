@@ -1,14 +1,19 @@
-import styled from '@emotion/styled'
-import {meetingTopBarMediaQuery} from '../styles/meeting'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const PhaseHeaderTitle = styled('h1')({
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: 0,
-  padding: 0,
-  [meetingTopBarMediaQuery]: {
-    fontSize: 20
+const PhaseHeaderTitle = forwardRef(
+  (props: HTMLAttributes<HTMLHeadingElement>, ref: Ref<HTMLHeadingElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <h1
+        {...rest}
+        ref={ref}
+        className={cn('m-0 p-0 text-[16px] leading-6 xl:text-[20px]', className)}
+      >
+        {children}
+      </h1>
+    )
   }
-})
+)
 
 export default PhaseHeaderTitle

@@ -1,0 +1,30 @@
+"""
+A reminder that a Team Health cycle the viewer has not finished responding to is about to close
+"""
+type NotifyTeamHealthResponseDue implements Notification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  The ID of the user who should see this notification
+  """
+  userId: ID!
+
+  """
+  The Team Health cycle that is about to close
+  """
+  meeting: TeamHealthMeeting!
+}

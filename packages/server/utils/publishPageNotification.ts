@@ -1,25 +1,33 @@
+import type {Selectable} from 'kysely'
 import {pack} from 'msgpackr'
 import {SubscriptionChannel} from '../../client/types/constEnums'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {ResolversTypes} from '../graphql/public/resolverTypes'
+import type {PageAccess} from '../postgres/types/pg'
 import getRedis from './getRedis'
-import publish from './publish'
+import publish, {type SubscriptionPayloadName} from './publish'
 
-export type PublicPageNotificationPayload<T extends keyof ResolversTypes = 'CreatePagePayload'> = {
+type PageNotificationPayloadName = SubscriptionPayloadName<SubscriptionChannel.NOTIFICATION> &
+  keyof ResolversTypes
+
+export type PublicPageNotificationPayload<
+  T extends PageNotificationPayloadName = 'CreatePagePayload'
+> = {
   type: T
   data: ResolversTypes[T]
   subOptions: {mutatorId?: string; operationId?: string}
   userIdsToIgnore: string[]
 }
 
-export const publishPageNotification = async <T extends keyof ResolversTypes>(
+export const publishPageNotification = async <T extends PageNotificationPayloadName>(
   pageId: number,
   type: T,
   data: Record<string, any>,
   subOptions: {mutatorId?: string; operationId?: string},
-  dataLoader: DataLoaderInstance
+  dataLoader: DataLoaderInstance,
+  accessOverride?: Selectable<PageAccess>[]
 ) => {
-  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  const access = accessOverride ?? (await dataLoader.get('pageAccessByPageId').load(pageId))
   const userIds = access.map((a) => a.userId).filter((userId) => userId !== '*')
   const isPubliclyAccessible = userIds.length < access.length
   userIds.forEach((userId) => {

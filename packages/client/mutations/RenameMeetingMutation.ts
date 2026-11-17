@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...RenameMeetingMutation_team @relay(mask: false)
+      ...RenameMeetingMutation_team @relay(mask: false) @alias
     }
   }
 `

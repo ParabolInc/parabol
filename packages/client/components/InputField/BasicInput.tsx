@@ -1,24 +1,7 @@
-import styled from '@emotion/styled'
 import * as React from 'react'
 import {forwardRef, type Ref} from 'react'
-import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
-import ui from '../../styles/ui'
+import {cn} from '../../ui/cn'
 import StyledError from '../StyledError'
-
-const Input = styled('input')<{disabled: boolean}>(
-  ({disabled}) => ({
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
-    ...makeFieldColorPalette('white', !disabled)
-  }),
-  ({disabled}) => disabled && {...ui.fieldDisabled}
-)
-
-const Error = styled(StyledError)({
-  fontSize: 13,
-  textAlign: 'left',
-  width: '100%'
-})
 
 interface Props {
   autoComplete?: 'off' | 'new-password'
@@ -58,11 +41,17 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   } = props
   return (
     <React.Fragment>
-      <Input
+      <input
         readOnly={readOnly}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
-        className={className}
+        className={cn(
+          'm-0 block w-full appearance-none rounded-[4px] border border-hairline-field bg-surface-input px-[11px] py-[7px] font-sans text-[15px] text-fg-primary leading-6 outline-none selection:bg-hairline-strong placeholder:text-fg-muted',
+          disabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'hover:border-fg-primary focus:border-fg-primary active:border-fg-primary',
+          className
+        )}
         disabled={Boolean(disabled)}
         ref={ref}
         name={name}
@@ -75,7 +64,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
         type={type}
         value={value}
       />
-      {error && <Error>{error}</Error>}
+      {error && <StyledError className='w-full text-[13px]'>{error}</StyledError>}
     </React.Fragment>
   )
 })

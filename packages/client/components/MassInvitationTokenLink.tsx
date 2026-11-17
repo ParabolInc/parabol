@@ -1,27 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
-import {PALETTE} from '../styles/paletteV3'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
-
-const StyledCopyShortLink = styled(CopyShortLink)({
-  borderRadius: 4,
-  border: `1px dashed ${PALETTE.SKY_400}`,
-  color: PALETTE.SKY_500,
-  fontSize: 15,
-  fontWeight: 600,
-  padding: 11,
-  ':hover': {
-    color: PALETTE.SKY_400
-  }
-})
 
 interface Props {
-  meetingId: string | undefined
   queryRef: PreloadedQuery<MassInvitationTokenLinkQuery>
 }
 
@@ -40,29 +23,22 @@ const query = graphql`
 `
 
 const MassInvitationTokenLink = (props: Props) => {
-  const {meetingId, queryRef} = props
+  const {queryRef} = props
   const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {id: teamId, massInvitation} = team!
-  const atmosphere = useAtmosphere()
+  const {massInvitation} = team!
   const {id: token} = massInvitation!
-  const onCopy = () => {
-    SendClientSideEvent(atmosphere, 'Copied Invite Link', {
-      teamId: teamId,
-      meetingId: meetingId
-    })
-  }
   const url = getMassInvitationUrl(token)
   const linkLabel = url.replace(/https?:\/\//, '')
   return (
-    <StyledCopyShortLink
+    <CopyShortLink
+      className='rounded border border-sky-400 border-dashed p-[11px] font-semibold text-[15px] text-sky-500 hover:text-sky-400'
       icon='link'
       url={url}
       label={linkLabel}
       title={'Copy invite link'}
       tooltip={'Copied! Valid for 30 days'}
-      onCopy={onCopy}
     />
   )
 }

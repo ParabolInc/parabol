@@ -1,7 +1,10 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {canShowTeamHealthScore} from '../../../../../client/shared/utils/teamHealthAnonymity'
+import getKysely from '../../../../postgres/getKysely'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
+import averageTeamHealthScore from '../../../../utils/averageTeamHealthScore'
+import getTeamHealthDisplayComment from '../../../../utils/getTeamHealthDisplayComment'
 import logError from '../../../../utils/logError'
 
 const getSummaryText = async (meeting: AnyMeeting) => {
@@ -42,9 +45,13 @@ const getSummaryText = async (meeting: AnyMeeting) => {
       'comment'
     )}.`
   } else if (meeting.meetingType === 'teamPrompt') {
-    const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
-      (response) => !!response.plaintextContent
-    ).length
+    const {count} = await getKysely()
+      .selectFrom('TeamPromptResponse')
+      .select(({fn}) => fn.count<number>('userId').distinct().as('count'))
+      .where('meetingId', '=', meeting.id)
+      .where('sharedAt', 'is not', null)
+      .executeTakeFirstOrThrow()
+    const responseCount = Number(count)
     // :TODO: (jmtaber129): Add additional stats here.
     return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`
   } else if (meeting.meetingType === 'poker') {
@@ -55,6 +62,25 @@ const getSummaryText = async (meeting: AnyMeeting) => {
       'story',
       'stories'
     )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
+  } else if (meeting.meetingType === 'teamHealth') {
+    const responses = await getKysely()
+      .selectFrom('TeamHealthResponse')
+      .select(['userId', 'score', 'comment', 'commentParaphrased', 'isAnonymous'])
+      .where('meetingId', '=', meeting.id)
+      .execute()
+    const respondentCount = new Set(responses.map(({userId}) => userId)).size
+    const scores = responses.flatMap(({score}) => (score === null ? [] : [score]))
+    const scorerIds = new Set(
+      responses.flatMap(({userId, score}) => (score === null ? [] : [userId]))
+    )
+    const averageScore = canShowTeamHealthScore(scorerIds.size)
+      ? averageTeamHealthScore(scores)
+      : null
+    const commentCount = responses.filter(
+      (response) => !!getTeamHealthDisplayComment(response)
+    ).length
+    const scoreText = averageScore === null ? '' : ` with an average score of ${averageScore}/5`
+    return `${respondentCount} ${plural(respondentCount, 'team member')} responded${scoreText}.\nYou added ${commentCount} ${plural(commentCount, 'comment')}.`
   } else {
     throw new Error(`Meeting type not supported ${(meeting as any).meetingType}`)
   }

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventTeamCreated_timelineEvent$key} from '../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
@@ -10,10 +9,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventTeamCreated_timelineEvent$key
 }
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventTeamCreated = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -45,7 +40,9 @@ const TimelineEventTeamCreated = (props: Props) => {
         ) : (
           <>
             {'Visit your '}
-            <Link to={`/team/${teamId}/tasks`}>team dashboard</Link>
+            <StyledLink className='font-semibold' to={`/team/${teamId}/tasks`}>
+              team dashboard
+            </StyledLink>
           </>
         )}
       </TimelineEventBody>

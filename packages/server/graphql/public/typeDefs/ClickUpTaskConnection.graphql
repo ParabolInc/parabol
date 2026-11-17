@@ -1,0 +1,19 @@
+"""
+A page of ClickUp tasks
+"""
+type ClickUpTaskConnection {
+  """
+  Information to aid in pagination. endCursor is the next ClickUp page to read
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges
+  """
+  edges: [ClickUpTaskEdge!]!
+
+  """
+  An error with the connection, if any
+  """
+  error: StandardMutationError
+}

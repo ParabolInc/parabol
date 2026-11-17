@@ -1,7 +1,7 @@
-import {Forum, Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type {SidePanelQuery} from 'parabol-client/__generated__/SidePanelQuery.graphql'
 import Tab from 'parabol-client/components/Tab/Tab'
+import {Forum, Group} from 'parabol-client/ui/icons'
 import {Suspense, useEffect, useMemo, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import Tabs from '~/components/Tabs/Tabs'

@@ -1,4 +1,5 @@
 import type {Selectable} from 'kysely'
+import isGroupTitleUserDefined from 'parabol-client/utils/smartGroup/isGroupTitleUserDefined'
 import type {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import type {RetroReflectionGroupResolvers} from '../resolverTypes'
@@ -12,7 +13,7 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     return retroMeeting
   },
   prompt: ({promptId}, _args, {dataLoader}) => {
-    return dataLoader.get('reflectPrompts').loadNonNull(promptId)
+    return dataLoader.get('templatePrompts').loadNonNull(promptId)
   },
   reflections: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
     // use meetingId so we only hit the DB once instead of once per group
@@ -27,9 +28,7 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return dataLoader.get('teams').loadNonNull(meeting.teamId)
   },
-  titleIsUserDefined: ({title, smartTitle}) => {
-    return title ? title !== smartTitle : false
-  },
+  titleIsUserDefined: isGroupTitleUserDefined,
   voteCount: ({voterIds}) => {
     return voterIds ? voterIds.length : 0
   },

@@ -27,7 +27,7 @@ export const TableHeader = TiptapTableHeader.extend({
       {
         ...HTMLAttributes,
         class:
-          'px-2 py-1.5 text-left relative text-bold text-middle border-1 border-slate-300 bg-slate-100'
+          'px-2 py-1.5 text-left relative text-bold text-middle border-1 border-hairline bg-surface-raised'
       },
       0
     ]

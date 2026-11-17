@@ -5,6 +5,7 @@ import type {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DISCUSS} from '../utils/constants'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment DragDiscussionTopicMutation_meeting on DragDiscussionTopicPayload {
@@ -40,6 +41,7 @@ const DragDiscussionTopicMutation: SimpleMutation<IDragDiscussionTopicMutation> 
   return commitMutation<IDragDiscussionTopicMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('dragDiscussionTopic')
       if (!payload) return

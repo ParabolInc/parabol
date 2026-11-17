@@ -1,9 +1,10 @@
 directive @stream_HACK on FIELD
+directive @stream(if: Boolean! = true, label: String, initialCount: Int = 0) on FIELD
 directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
-type User implements UserPartial {
+type User {
   """
   The userId provided by us
   """
@@ -184,9 +185,10 @@ type User implements UserPartial {
   preferredName: String!
 
   """
-  The last day the user connected via websocket or navigated to a common area
+  The last day the user connected via websocket or navigated to a common area. Null unless the viewer is the
+  user or shares an organization with them, like inactive and isConnected
   """
-  lastSeenAt: DateTime!
+  lastSeenAt: DateTime
 
   """
   The meeting member associated with this user, if a meeting is currently in progress
@@ -269,6 +271,11 @@ type User implements UserPartial {
   Whether the user should receive page invitation emails
   """
   sendPageInvitationEmail: Boolean!
+
+  """
+  The user's preferred UI appearance (light, dark, or follow the OS)
+  """
+  theme: UserThemeEnum!
 
   """
   The reflection groups that are similar to the selected reflection in the Spotlight
@@ -479,21 +486,6 @@ type User implements UserPartial {
   ): MeetingTemplate @scope(name: TEMPLATES_READ)
 
   """
-  A query to parse/validate SAML metadata for a given domain
-  """
-  parseSAMLMetadata(
-    """
-    URL of a blob of XML from the IdP describing how to handle authentication
-    """
-    metadataURL: String!
-
-    """
-    The name of the company, used as a slug in signon URLs
-    """
-    domain: String!
-  ): ParseSAMLMetadataPayload! @scope(name: ORGS_READ)
-
-  """
   The number of free custom retro templates remaining
   """
   freeCustomRetroTemplatesRemaining: Int!
@@ -502,6 +494,12 @@ type User implements UserPartial {
   The number of free custom poker templates remaining
   """
   freeCustomPokerTemplatesRemaining: Int!
+
+  """
+  The number of free custom stand-up templates remaining
+  """
+  freeCustomStandupTemplatesRemaining: Int!
+
   """
   AI-provided Insights
   """
@@ -568,15 +566,20 @@ type User implements UserPartial {
     "The string to search for"
     query: String!
     first: Int!
+    "The pageInfo.endCursor of a previous request with the same query, type, filters and alpha"
     after: String
     type: SearchTypeEnum!
     teamIds: [ID!]
     startAt: DateTime
     endAt: DateTime
     dateField: SearchDateTypeEnum
-    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.75."
+    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.01 for pages and 0.25 otherwise."
     alpha: Float
   ): SearchResultConnection!
   "The user's personal access tokens for API access"
   personalAccessTokens: [PersonalAccessToken!]!
+  """
+  The OAuth 2.0 application behind an authorization request, or null if the request is invalid
+  """
+  oauthAuthorizationRequest(request: OAuthAuthorizationRequestInput!): OAuthAuthorizationRequest
 }

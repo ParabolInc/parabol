@@ -37,6 +37,8 @@ The following attributes are supported for SCIM provisioning:
 - `name.givenName`: only stored and echoed back, guessed when unknown[^1]
 - `name.familyName`: only stored and echoed back, guessed when unknown[^1]
 
+Parabol ignores the other attributes of the core User schema and every attribute of schema extensions, such as the enterprise extension's `employeeNumber` and `manager`.
+
 [^1]: If `name.givenName` or `name.familyName` are unknown, the missing attribute(s) are guessed by the following algorithm:
     - if `displayName` consists of multiple parts (e.g. "Jane H. Doe"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")
     - else if `email` consists of multiple parts separated by `.` (e.g. "jane.h.doe@example.com"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")

@@ -41,6 +41,8 @@ After setting the `FILE_STORE_PROVIDER` env var, there are a couple other env va
 - `AWS_SECRET_ACCESS_KEY="YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"`
 - `CDN_BASE_URL="//some.url.com/instance"`
 
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are optional. Leave both unset to fall back to the AWS SDK's default credential chain, which covers IRSA (EKS IAM Roles for Service Accounts), EC2/ECS instance profiles, and the shared config file. On EKS, annotate the pod's service account with `eks.amazonaws.com/role-arn` and leave the two key vars out of the pod spec entirely — if either is present the SDK will prefer it over the projected web identity token.
+
 After these vars are set correctly, all should be good to go to begin uploading images to the configured S3 bucket.
 
 Within the bucket, the directory structure will be as follows:

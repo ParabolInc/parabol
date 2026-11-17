@@ -14,12 +14,15 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   width: 0
 })
 
-let drag: ReturnType<typeof makeDrag>
+// radix menu triggers preventDefault() on pointerdown, which suppresses the mousedown that
+// would otherwise set this, so every reader has to tolerate it being absent
+let drag: ReturnType<typeof makeDrag> | null = null
 
 const noop = () => undefined
 const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
+    if (!drag) return
     if (e.type === 'touchend') {
       drag.ref.removeEventListener('touchmove', onMouseMove)
     } else {
@@ -28,6 +31,7 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
   })
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
+    if (!drag) return
     const isTouchMove = e.type === 'touchmove'
     const {clientX} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
     const wasDrag = drag.isDrag
@@ -85,9 +89,10 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
     }
   )
   const onClickCapture = useEventCallback((e) => {
-    if (drag.isDrag) {
-      e.stopPropagation()
-    }
+    if (!drag?.isDrag) return
+    // swallow the click that ended the drag, then forget it so the next click lands
+    e.stopPropagation()
+    drag = null
   })
 
   if (isDesktop) {

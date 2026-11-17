@@ -1,7 +1,3 @@
-import styled from '@emotion/styled'
-import {DECELERATE} from '../styles/animation'
-import {PALETTE} from '../styles/paletteV3'
-import {Radius} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 import type {SnackAction} from './Snackbar'
 
@@ -9,27 +5,13 @@ interface Props {
   action: SnackAction | null | undefined
 }
 
-const Action = styled(PlainButton)({
-  borderRadius: Radius.SNACKBAR,
-  color: PALETTE.ROSE_500,
-  fontSize: 14,
-  fontWeight: 600,
-  marginLeft: 8,
-  padding: 8,
-  whiteSpace: 'nowrap',
-  backgroundColor: '#ffffff17',
-  transition: `background 100ms ${DECELERATE}`,
-  ':hover,:focus,:active': {
-    backgroundColor: '#ffffff26'
-  }
-})
-
 const SnackbarMessageAction = (props: Props) => {
   const {action} = props
   if (!action) return null
   const {label, callback} = action
   return (
-    <Action
+    <PlainButton
+      className='ml-2 whitespace-nowrap rounded-sm bg-[#ffffff17] p-2 font-semibold text-rose-500 text-sm leading-[normal] transition-[background] duration-100 ease-out hover:bg-[#ffffff26] focus:bg-[#ffffff26] active:bg-[#ffffff26]'
       onClick={() => {
         // claude added this & i'm not sure why, we want it to propagate up to dismiss
         // e.stopPropagation()
@@ -37,7 +19,7 @@ const SnackbarMessageAction = (props: Props) => {
       }}
     >
       {label}
-    </Action>
+    </PlainButton>
   )
 }
 

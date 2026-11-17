@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
 import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingSuccess {
@@ -16,9 +17,9 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) {
+  mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) @raw_response_type {
     editCommenting(isCommenting: $isCommenting, discussionId: $discussionId) {
-      ...EditCommentingMutation_meeting @relay(mask: false)
+      ...EditCommentingMutation_meeting @relay(mask: false) @alias
       ... on ErrorPayload {
         error {
           message
@@ -34,7 +35,8 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation, Optional
 ) => {
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
-    variables
+    variables,
+    onError: snackOnError(atmosphere)
   })
 }
 

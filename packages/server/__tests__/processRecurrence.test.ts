@@ -7,51 +7,37 @@ import ReflectPhase from '../database/types/ReflectPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
-import {getUserTeams, sendIntranet, signUp} from './common'
+import {getUserTeams, processRecurrence, signUp} from './common'
 
-const PROCESS_RECURRENCE = `
-  mutation {
-    processRecurrence {
-      ... on ProcessRecurrenceSuccess {
-        meetingsStarted
-        meetingsEnded
-      }
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-    }
-  }
-`
+// processRecurrence handles every due series in the database, including other suites', so its
+// counts can't be asserted. These tests check their own team's meetings instead.
+const selectTeamMeetings = () =>
+  getKysely()
+    .selectFrom('NewMeeting')
+    .select(['id', 'endedAt'])
+    .where('teamId', '=', teamId)
+    .orderBy('id')
+    .execute()
+
+const selectSeriesMeetings = (meetingSeriesId: number) =>
+  getKysely()
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('meetingSeriesId', '=', meetingSeriesId)
+    .orderBy('createdAt')
+    .execute()
+
+const runProcessRecurrence = async () => {
+  const res = await processRecurrence()
+  expect(res.data.processRecurrence.error).toBeUndefined()
+}
 
 const assertIdempotency = async () => {
   // Assert that subsequent mutations do nothing.
-  let res = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(res).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 0
-      }
-    }
-  })
-
-  res = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(res).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 0
-      }
-    }
-  })
+  const meetings = await selectTeamMeetings()
+  await runProcessRecurrence()
+  await runProcessRecurrence()
+  expect(await selectTeamMeetings()).toEqual(meetings)
 }
 
 let userId: string
@@ -62,15 +48,9 @@ beforeAll(async () => {
   userId = (await signUp()).userId
   teamId = (await getUserTeams(userId))[0].id
   teamMemberId = TeamMemberId.join(teamId, userId)
-
-  // in case there are pending recurrence events
-  await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
 })
 
-// TODO all these tests regularly timeout or the tests influence each other
-test.skip('Should not end meetings that are not scheduled to end', async () => {
+test('Should not end meetings that are not scheduled to end', async () => {
   const pg = getKysely()
 
   const meetingId = generateUID()
@@ -85,25 +65,14 @@ test.skip('Should not end meetings that are not scheduled to end', async () => {
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       facilitatorStageId: phase.stages[0]?.id
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 0
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
   const actualMeeting = await pg
@@ -114,8 +83,7 @@ test.skip('Should not end meetings that are not scheduled to end', async () => {
   expect(actualMeeting.endedAt).toBeFalsy()
 })
 
-// TODO s.a.
-test.skip('Should not end meetings that are scheduled to end in the future', async () => {
+test('Should not end meetings that are scheduled to end in the future', async () => {
   const pg = getKysely()
 
   const meetingId = generateUID()
@@ -130,6 +98,7 @@ test.skip('Should not end meetings that are scheduled to end in the future', asy
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       scheduledEndTime: new Date(Date.now() + ms('5m')),
@@ -137,19 +106,7 @@ test.skip('Should not end meetings that are scheduled to end in the future', asy
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 0
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
   const actualMeeting = await pg
@@ -161,8 +118,7 @@ test.skip('Should not end meetings that are scheduled to end in the future', asy
   await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
 })
 
-// TODO s.a.
-test.skip('Should end meetings that are scheduled to end in the past', async () => {
+test('Should end meetings that are scheduled to end in the past', async () => {
   const pg = getKysely()
 
   const meetingId = generateUID()
@@ -177,6 +133,7 @@ test.skip('Should end meetings that are scheduled to end in the past', async () 
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       scheduledEndTime: new Date(Date.now() - ms('5m')),
@@ -184,19 +141,7 @@ test.skip('Should end meetings that are scheduled to end in the past', async () 
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 1
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
   const actualMeeting = await pg
@@ -207,11 +152,12 @@ test.skip('Should end meetings that are scheduled to end in the past', async () 
   expect(actualMeeting.endedAt).toBeTruthy()
 }, 10000)
 
-// TODO s.a.
-test.skip('Should end the current team prompt meeting and start a new meeting', async () => {
+test('Should end the current team prompt meeting and start a new meeting', async () => {
   const pg = getKysely()
-  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
-  const dateTime = toDateTime(startDate, 'UTC')
+  // A daily series whose latest occurrence was 5 minutes ago. The last meeting started on the
+  // occurrence before it & was scheduled to run until it.
+  const latestOccurrence = dayjs().utc().subtract(5, 'minute').startOf('minute')
+  const dateTime = toDateTime(latestOccurrence.subtract(2, 'day'), 'UTC')
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   const meetingSeries = await pg
@@ -239,60 +185,32 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
-      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      scheduledEndTime: latestOccurrence.toDate(),
       facilitatorStageId: phase.stages[0]?.id,
       meetingSeriesId,
-      // The last meeting in the series was created just over 24h ago, so the next one should start
-      // soon.
-      createdAt: new Date(Date.now() - ms('25h'))
+      createdAt: latestOccurrence.subtract(1, 'day').toDate()
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 1,
-        meetingsEnded: 1
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
-  const actualMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('id', '=', meetingId)
-    .executeTakeFirstOrThrow()
-  expect(actualMeeting.endedAt).toBeTruthy()
-
-  const lastMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('meetingType', '=', 'teamPrompt')
-    .orderBy('createdAt', 'desc')
-    .limit(1)
-    .executeTakeFirst()
-
-  expect(lastMeeting).toMatchObject({
-    name: expect.stringMatching(/Daily Test Standup.*/),
-    meetingSeriesId
-  })
+  expect(await selectSeriesMeetings(meetingSeriesId)).toMatchObject([
+    {id: meetingId, endedAt: expect.any(Date)},
+    {name: expect.stringMatching(/Daily Test Standup.*/), endedAt: null}
+  ])
 })
 
-// TODO s.a.
-test.skip('Should end the current retro meeting and start a new meeting', async () => {
+test('Should end the current retro meeting and start a new meeting', async () => {
   const pg = getKysely()
 
-  // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
-  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
-  const dateTime = toDateTime(startDate, 'UTC')
+  // A daily series whose latest occurrence was 5 minutes ago. The last meeting started on the
+  // occurrence before it & was scheduled to run until it.
+  const latestOccurrence = dayjs().utc().subtract(5, 'minute').startOf('minute')
+  const dateTime = toDateTime(latestOccurrence.subtract(2, 'day'), 'UTC')
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
@@ -322,7 +240,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       phases: JSON.stringify(phases),
       facilitatorUserId: userId,
       meetingType: 'retrospective',
-      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      scheduledEndTime: latestOccurrence.toDate(),
       facilitatorStageId: phases[0]!.stages[0]!.id,
       meetingSeriesId,
       templateId: 'startStopContinueTemplate',
@@ -331,49 +249,20 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       name: '',
       maxVotesPerGroup: 5,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
-      // The last meeting in the series was created just over 24h ago, so the next one should start
-      // soon.
-      createdAt: new Date(Date.now() - ms('25h'))
+      createdAt: latestOccurrence.subtract(1, 'day').toDate()
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 1,
-        meetingsEnded: 1
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
-  const actualMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('id', '=', meetingId)
-    .executeTakeFirstOrThrow()
-  expect(actualMeeting.endedAt).toBeTruthy()
-
-  const lastMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('meetingType', '=', 'retrospective')
-    .orderBy('createdAt', 'desc')
-    .limit(1)
-    .executeTakeFirst()
-
-  expect(lastMeeting).toMatchObject({
-    meetingSeriesId
-  })
+  expect(await selectSeriesMeetings(meetingSeriesId)).toMatchObject([
+    {id: meetingId, endedAt: expect.any(Date)},
+    {endedAt: null}
+  ])
 })
 
-// TODO s.a.
-test.skip('Should only start a new meeting if it would still be active', async () => {
+test('Should only start a new meeting if it would still be active', async () => {
   const pg = getKysely()
 
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
@@ -407,6 +296,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       facilitatorStageId: phase.stages[0]?.id,
@@ -419,31 +309,16 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 1,
-        meetingsEnded: 0
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
-  const actualMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('id', '=', meetingId)
-    .executeTakeFirstOrThrow()
-  expect(actualMeeting.endedAt).toBeTruthy()
+  expect(await selectSeriesMeetings(newMeetingSeriesId)).toMatchObject([
+    {id: meetingId, endedAt: expect.any(Date)},
+    {endedAt: null}
+  ])
 }, 10000)
 
-// TODO s.a.
-test.skip('Should not start a new meeting if the rrule has not started', async () => {
+test('Should not start a new meeting if the rrule has not started', async () => {
   const pg = getKysely()
 
   const startDate = dayjs().utc().add(1, 'day').set('hour', 9)
@@ -477,6 +352,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       facilitatorStageId: phase.stages[0]?.id,
@@ -489,31 +365,15 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 0
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
-  const actualMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('id', '=', meetingId)
-    .executeTakeFirstOrThrow()
-  expect(actualMeeting.endedAt).toBeTruthy()
+  expect(await selectSeriesMeetings(newMeetingSeriesId)).toMatchObject([
+    {id: meetingId, endedAt: expect.any(Date)}
+  ])
 })
 
-// TODO s.a.
-test.skip('Should not hang if the rrule interval is invalid', async () => {
+test('Should not hang if the rrule interval is invalid', async () => {
   const pg = getKysely()
 
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
@@ -547,6 +407,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today? Stuck on anything?',
+      templateId: 'teamPrompt',
       name: `Team Prompt #1`,
       meetingType: 'teamPrompt',
       facilitatorStageId: phase.stages[0]?.id,
@@ -558,25 +419,10 @@ RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     })
     .execute()
 
-  const update = await sendIntranet({
-    query: PROCESS_RECURRENCE
-  })
-
-  expect(update).toEqual({
-    data: {
-      processRecurrence: {
-        meetingsStarted: 0,
-        meetingsEnded: 1
-      }
-    }
-  })
-
+  await runProcessRecurrence()
   await assertIdempotency()
 
-  const actualMeeting = await pg
-    .selectFrom('NewMeeting')
-    .selectAll()
-    .where('id', '=', meetingId)
-    .executeTakeFirstOrThrow()
-  expect(actualMeeting.endedAt).toBeTruthy()
+  expect(await selectSeriesMeetings(newMeetingSeriesId)).toMatchObject([
+    {id: meetingId, endedAt: expect.any(Date)}
+  ])
 })

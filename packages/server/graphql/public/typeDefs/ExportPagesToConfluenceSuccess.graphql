@@ -1,0 +1,6 @@
+type ExportPagesToConfluenceSuccess {
+  """
+  The export record created for this job; subscribe to notificationSubscription for live updates
+  """
+  pageExport: PageExport!
+}

@@ -1,5 +1,5 @@
 import type * as React from 'react'
-import {type Reducer, useCallback, useMemo, useReducer} from 'react'
+import {useCallback, useMemo, useReducer} from 'react'
 import type Legitity from '../validation/Legitity'
 import useEventCallback from './useEventCallback'
 
@@ -77,7 +77,7 @@ const reducer = <T,>(state: FieldState<T>, action: FormAction<FieldStateKey<T>>)
 }
 
 const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) => {
-  const [state, dispatch] = useReducer<Reducer<FieldState<T>, FormAction<FieldStateKey<T>>>>(
+  const [state, dispatch] = useReducer<FieldState<T>, [FormAction<FieldStateKey<T>>]>(
     reducer,
     useMemo(
       () =>

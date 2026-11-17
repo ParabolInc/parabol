@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingAgendaItems_meeting$key} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
@@ -24,11 +23,6 @@ interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting$key
 }
 
-const StyledHeading = styled(MeetingPhaseHeading)({
-  marginLeft: 16,
-  fontSize: 24
-})
-
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -41,15 +35,15 @@ const ActionMeetingAgendaItems = (props: Props) => {
         showSidebar
         endedAt
         isCommentUnread
-        isRightDrawerOpen
+        rightDrawerOpen
         facilitatorUserId
         phases {
           stages {
-            ...ActionMeetingAgendaItemsStage @relay(mask: false)
+            ...ActionMeetingAgendaItemsStage @relay(mask: false) @alias
           }
         }
         localStage {
-          ...ActionMeetingAgendaItemsStage @relay(mask: false)
+          ...ActionMeetingAgendaItemsStage @relay(mask: false) @alias
         }
       }
     `,
@@ -61,10 +55,12 @@ const ActionMeetingAgendaItems = (props: Props) => {
     endedAt,
     localStage,
     isCommentUnread,
-    isRightDrawerOpen
+    rightDrawerOpen
   } = meeting
-  const {agendaItem, discussionId} = localStage
-  const toggleDrawer = useRightDrawer(meetingId)
+  const agendaItemStage = localStage.ActionMeetingAgendaItemsStage
+  const agendaItem = agendaItemStage?.agendaItem
+  const discussionId = agendaItemStage?.discussionId
+  const [toggleDrawer] = useRightDrawer(meetingId)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
@@ -79,7 +75,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
-          isRightDrawerOpen={isRightDrawerOpen}
+          rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -88,7 +84,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         <PhaseWrapper>
           <div className='mx-auto flex items-center'>
             <Avatar picture={picture} className={'h-16 w-16'} />
-            <StyledHeading>{content}</StyledHeading>
+            <MeetingPhaseHeading className='ml-4 text-[24px]'>{content}</MeetingPhaseHeading>
           </div>
           <MeetingCopy className='mt-4 mb-0'>{`${preferredName}, what do you need?`}</MeetingCopy>
           <StageTimerDisplay meeting={meeting} />
@@ -96,7 +92,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
-        isOpen={isRightDrawerOpen}
+        isOpen={rightDrawerOpen != null}
         isRightDrawer
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}

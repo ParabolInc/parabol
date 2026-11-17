@@ -1,6 +1,5 @@
 import {createSigner, httpbis} from 'http-message-signatures'
-import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import {postUntrusted} from './fetchUntrusted'
+import postWebhook from './postWebhook'
 
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
@@ -59,22 +58,7 @@ class MattermostServerManager {
       headers['Signature-Input'] = signedRequest.headers['Signature-Input']!
     }
 
-    const res = await postUntrusted(url, {
-      headers,
-      body,
-      signal: AbortSignal.timeout(MAX_REQUEST_TIME)
-    })
-    if (!res) {
-      return new Error('Mattermost webhook request failed')
-    }
-    if (res.status !== 200) {
-      if (res.headers.get('content-type') === 'application/json') {
-        const {message: error} = await res.json()
-        return new Error(`${res.status}: ${error}`)
-      }
-      return new Error(`${res.status}: ${res.statusText}`)
-    }
-    return res
+    return postWebhook('Mattermost', url, {headers, body})
   }
 
   async postMessage(textOrAttachmentsArray: string | unknown[], notificationText?: string) {

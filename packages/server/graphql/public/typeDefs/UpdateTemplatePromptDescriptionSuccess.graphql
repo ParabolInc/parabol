@@ -1,0 +1,9 @@
+"""
+Returned when updateTemplatePromptDescription succeeds
+"""
+type UpdateTemplatePromptDescriptionSuccess {
+  """
+  The prompt with its new description
+  """
+  prompt: TemplatePrompt!
+}

@@ -1,6 +1,6 @@
 import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
-import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
+import readScopingSearchStateFromRelayStore from '../../utils/relay/readScopingSearchStateFromRelayStore'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getGitHubIssuesConn from '../connections/getGitHubIssuesConn'
 
@@ -22,13 +22,10 @@ const handleGitHubCreateIssue = (
     ?.getLinkedRecord('github')
     ?.getLinkedRecord('api')
     ?.getLinkedRecord('query')
-  const githubSearchQueryId = SearchQueryId.join('github', meetingId)
-  const githubSearchQuery = store.get(githubSearchQueryId)
-  const queryString = githubSearchQuery?.getValue('queryString') as string | undefined
-  const query = queryString?.trim() ?? ''
+  const {queryString} = readScopingSearchStateFromRelayStore(store, meetingId, 'github')
   const typename = integration.getType()
   if (typename !== '_xGitHubIssue') return
-  const githubIssueConn = getGitHubIssuesConn(github, query)
+  const githubIssueConn = getGitHubIssuesConn(github, queryString.trim())
   if (!githubIssueConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(

@@ -1,50 +1,46 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {type ReactNode, type RefObject, useMemo, useRef} from 'react'
+import {type CSSProperties, type ReactNode, type RefObject, useMemo, useRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
-import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
+import {MeetingControlBarEnum} from '~/types/constEnums'
 import type {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
-import {Elevation} from '../styles/elevation'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
-import DiscussionThreadInput from './DiscussionThreadInput'
+import {cn} from '../ui/cn'
+import getDiscussionThreadCounts from '../utils/getDiscussionThreadCounts'
+import DiscussionLastTopicLine from './DiscussionLastTopicLine'
+import DiscussionThreadFilter, {type DiscussionThreadFilterValue} from './DiscussionThreadFilter'
+import DiscussionThreadInput, {type TaskDraft} from './DiscussionThreadInput'
 import DiscussionThreadList, {type DiscussionThreadables} from './DiscussionThreadList'
 import {isLocalPoll} from './Poll/local/newPoll'
 
-const Wrapper = styled('div')<{isExpanded: boolean; width?: string}>(({isExpanded, width}) => ({
-  background: '#fff',
-  borderRadius: 4,
-  boxShadow: Elevation.DISCUSSION_THREAD,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  height: '100%',
-  overflow: 'hidden',
-  width: width || '100%',
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.COVER_HEIGHT}px)`,
-    width: DiscussionThreadEnum.WIDTH
-  }
-}))
-
 interface Props {
-  meetingContentRef?: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement | null>
   allowedThreadables: DiscussionThreadables[]
   width?: string
   queryRef: PreloadedQuery<DiscussionThreadQuery>
   header?: ReactNode
   emptyState?: ReactNode
+  autoFocus?: boolean
+  showLastTopicLine?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
+  const {
+    meetingContentRef,
+    allowedThreadables,
+    width,
+    queryRef,
+    header,
+    emptyState,
+    autoFocus,
+    showLastTopicLine
+  } = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const ref = useRef<HTMLDivElement>(null)
   const data = usePreloadedQuery<DiscussionThreadQuery>(
     graphql`
-      query DiscussionThreadQuery($discussionId: ID!) {
+      query DiscussionThreadQuery($discussionId: ID!) @raw_response_type {
         viewer {
           ...DiscussionThreadInput_viewer
           ...DiscussionThreadList_viewer
@@ -64,8 +60,20 @@ const DiscussionThread = (props: Props) => {
               edges {
                 node {
                   id
+                  __typename
                   threadSortOrder
                   discussionId
+                  ... on Comment {
+                    isActive
+                    authorId: createdBy
+                  }
+                  replies {
+                    __typename
+                    ... on Comment {
+                      isActive
+                      authorId: createdBy
+                    }
+                  }
                   ...DiscussionThreadList_threadables
                 }
               }
@@ -77,6 +85,11 @@ const DiscussionThread = (props: Props) => {
     queryRef
   )
   const {viewer} = data
+  const [filterChoice, setFilterChoice] = useState<{
+    discussionId: string
+    value: DiscussionThreadFilterValue
+  } | null>(null)
+  const [taskDraft, setTaskDraft] = useState<TaskDraft | null>(null)
   const isExpanded =
     useCoverable(
       'threads',
@@ -103,10 +116,46 @@ const DiscussionThread = (props: Props) => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
   const isCreatingPoll = threadables.some(isLocalPoll)
+  const counts = getDiscussionThreadCounts(threadables)
+  const allowTasks = allowedThreadables.includes('task')
+  const filter: DiscussionThreadFilterValue =
+    allowTasks && filterChoice?.discussionId === discussion.id ? filterChoice.value : 'all'
+  const changeFilter = (value: DiscussionThreadFilterValue) =>
+    setFilterChoice({discussionId: discussion.id, value})
+  const addTask = () => {
+    changeFilter('all')
+    setTaskDraft({discussionId: discussion.id, isOpen: true})
+  }
+  const isLastTopicWithoutTasks = !!showLastTopicLine && counts.tasks === 0
+  const isTaskTabOpen = taskDraft?.discussionId === discussion.id && taskDraft.isOpen
 
   return (
-    <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
+    <div
+      className={cn(
+        // sidebar-left height offset = MeetingControlBarEnum.COVER_HEIGHT (68px)
+        // no card of its own — the thread sits directly on the drawer well, like the other tabs
+        'flex h-full w-(--discussion-thread-width) flex-col justify-between overflow-hidden',
+        !isExpanded && 'sidebar-left:h-[calc(100%-68px)]'
+      )}
+      style={{'--discussion-thread-width': width || '100%'} as CSSProperties}
+      ref={ref}
+    >
+      {allowTasks && (
+        <DiscussionThreadFilter
+          allCount={counts.all}
+          taskCount={counts.tasks}
+          peopleCommentCount={
+            counts.isTaskNudge && !isLastTopicWithoutTasks ? counts.peopleComments : null
+          }
+          value={filter}
+          onChange={changeFilter}
+        />
+      )}
       <DiscussionThreadList
+        filter={filter}
+        hiddenCommentCount={counts.comments}
+        onAddTask={addTask}
+        onShowAll={() => changeFilter('all')}
         discussion={discussion}
         allowedThreadables={allowedThreadables}
         commentorNames={commentorNames}
@@ -115,15 +164,23 @@ const DiscussionThread = (props: Props) => {
         header={header}
         emptyState={emptyState}
       />
-      <DiscussionThreadInput
-        allowedThreadables={allowedThreadables}
-        isDisabled={!!replyingTo?.id}
-        getMaxSortOrder={getMaxSortOrder}
-        discussion={discussion}
-        viewer={viewer}
-        isCreatingPoll={isCreatingPoll}
-      />
-    </Wrapper>
+      <div className={cn(filter === 'tasks' && 'hidden')}>
+        {isLastTopicWithoutTasks && !isTaskTabOpen && (
+          <DiscussionLastTopicLine onAddTask={addTask} />
+        )}
+        <DiscussionThreadInput
+          allowedThreadables={allowedThreadables}
+          isDisabled={!!replyingTo?.id}
+          getMaxSortOrder={getMaxSortOrder}
+          discussion={discussion}
+          viewer={viewer}
+          isCreatingPoll={isCreatingPoll}
+          autoFocus={autoFocus}
+          taskDraft={taskDraft}
+          onTaskDraftChange={setTaskDraft}
+        />
+      </div>
+    </div>
   )
 }
 

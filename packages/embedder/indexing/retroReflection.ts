@@ -1,4 +1,4 @@
-import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import {inferLanguage} from '../inferLanguage'
 
 export const createTextFromRetroReflection = async (

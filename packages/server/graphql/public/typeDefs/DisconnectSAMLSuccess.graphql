@@ -1,0 +1,9 @@
+"""
+Return value for disconnectSAML
+"""
+type DisconnectSAMLSuccess {
+  """
+  The disconnected identity provider. Its email domains remain reserved for the organization
+  """
+  saml: SAML!
+}

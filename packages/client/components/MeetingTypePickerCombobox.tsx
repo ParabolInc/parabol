@@ -5,18 +5,12 @@ import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'
 import {MenuLabelTrigger} from '../ui/Menu/MenuLabelTrigger'
+import {MeetingTypeToReadable} from '../utils/meetings/lookups'
 
 interface Props {
   updateAttributes: NodeViewProps['updateAttributes']
   attrs: InsightsBlockAttrs
 }
-
-export const MeetingTypeToReadable = {
-  action: 'Team Check-in',
-  poker: 'Sprint Poker',
-  retrospective: 'Retrospective',
-  teamPrompt: 'Standup'
-} satisfies Record<MeetingTypeEnum, string>
 
 export const MeetingTypePickerCombobox = (props: Props) => {
   const {updateAttributes, attrs} = props
@@ -34,7 +28,8 @@ export const MeetingTypePickerCombobox = (props: Props) => {
       <MenuContent align='end' sideOffset={4}>
         {Object.entries(MeetingTypeToReadable)
           // Hide Check-in meetings since I didn't build the summarization transform for them
-          .filter((entry) => entry[0] !== 'action')
+          // Hide Team Health meetings until the meeting type ships
+          .filter((entry) => entry[0] !== 'action' && entry[0] !== 'teamHealth')
           .map((entry) => {
             const [meetingType, label] = entry as [MeetingTypeEnum, string]
             const checked = meetingTypes.includes(meetingType)

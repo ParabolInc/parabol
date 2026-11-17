@@ -15,7 +15,7 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
   const clientSecret = generateOAuthClientSecret()
 
   if (scopes.length === 0) {
-    throw new GraphQLError('Must pick a scope')
+    throw new GraphQLError('Must pick a scope', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const pg = getKysely()

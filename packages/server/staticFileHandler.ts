@@ -1,11 +1,11 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import acceptsBrotli from './acceptsBrotli'
 import {Logger} from './utils/Logger'
+import {sendStatus} from './utils/StaticServer'
 import serveStatic from './utils/serveStatic'
 
 export const createStaticFileHandler = (route: string) => {
   let hasWarned = false
-  return async (res: HttpResponse, req: HttpRequest) => {
+  return (res: HttpResponse, req: HttpRequest) => {
     if (__PRODUCTION__ && !hasWarned) {
       hasWarned = true
       Logger.log(
@@ -14,9 +14,8 @@ export const createStaticFileHandler = (route: string) => {
       )
     }
     const fileName = req.getUrl().slice(route.length)
-    const servedStatic = serveStatic(res, fileName, acceptsBrotli(req))
-    if (servedStatic) return
-    res.writeStatus('404').end()
-    return
+    if (!serveStatic(res, req, fileName)) {
+      sendStatus(res, '404 Not Found')
+    }
   }
 }

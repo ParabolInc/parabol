@@ -1,58 +1,41 @@
-import {useEffect, useRef} from 'react'
-import {useLocation} from 'react-router'
-import useAtmosphere from './useAtmosphere'
+import {useEffect} from 'react'
+import getServiceWorkerBuild from '../utils/getServiceWorkerBuild'
 
+// A new service worker waits instead of replacing the old one as soon as it has installed,
+// because Safari has killed the old one while a page was still loading its scripts through it
+// Once this page has loaded, a worker from the same build is told to take over
+// A worker from another build waits for a page of its own build, which useQuietUpdate loads
 const useServiceWorkerUpdater = () => {
-  const atmosphere = useAtmosphere()
-  const isFirstServiceWorkerRef = useRef(true)
-  const sourcesAreDirtyRef = useRef(false)
-
-  const location = useLocation()
-
   useEffect(() => {
-    const setFirstServiceWorker = async () => {
-      const registration = await navigator.serviceWorker.getRegistration()
-      isFirstServiceWorkerRef.current = !registration
+    if (!('serviceWorker' in navigator)) return
+    const pageLoaded = new Promise<void>((resolve) => {
+      if (document.readyState === 'complete') resolve()
+      else window.addEventListener('load', () => resolve(), {once: true})
+    })
+    const onInstalled = async (worker: ServiceWorker) => {
+      const {commitHash} = await getServiceWorkerBuild(worker)
+      if (commitHash !== __COMMIT_HASH__) return
+      await pageLoaded
+      worker.postMessage({type: 'skipWaiting'})
     }
-    const onServiceWorkerChange = () => {
-      // new service worker means new sources
-      sourcesAreDirtyRef.current = true
-
-      if (isFirstServiceWorkerRef.current) {
-        isFirstServiceWorkerRef.current = false
+    const watchWorker = (worker: ServiceWorker | null) => {
+      if (!worker) return
+      if (worker.state === 'installed') {
+        onInstalled(worker)
         return
       }
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'newVersion',
-        autoDismiss: 5,
-        message: 'A new version of Parabol is available 🎉',
-        action: {
-          label: `See what's changed`,
-          callback: () => {
-            const url = `https://github.com/ParabolInc/parabol/releases/tag/v${__APP_VERSION__}`
-            window.open(url, '_blank', 'noopener')?.focus()
-          }
-        }
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed') onInstalled(worker)
       })
     }
-    if ('serviceWorker' in navigator) {
-      setFirstServiceWorker().catch(() => {
-        /*ignore*/
+    // ready waits for the first worker to activate, which is registered after the page loads
+    navigator.serviceWorker.ready.then((registration) => {
+      watchWorker(registration.waiting)
+      watchWorker(registration.installing)
+      registration.addEventListener('updatefound', () => {
+        watchWorker(registration.installing)
       })
-      navigator.serviceWorker.addEventListener('controllerchange', onServiceWorkerChange)
-      return () => {
-        navigator.serviceWorker.removeEventListener('controllerchange', onServiceWorkerChange)
-      }
-    }
-    return
+    })
   }, [])
-
-  useEffect(() => {
-    // When the sources are dirty, we want to reload the page as soon as possible without too much interruption for the user.
-    // Let's hide it in a navigation event.
-    if (sourcesAreDirtyRef.current) {
-      window.location.reload()
-    }
-  }, [location.pathname])
 }
 export default useServiceWorkerUpdater

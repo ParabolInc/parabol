@@ -14,7 +14,9 @@ interface Props {
 
 const EditableTeamName = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const [validationError, setValidationError] = useState<string | undefined>()
   const {team: teamRef} = props
   const team = useFragment(

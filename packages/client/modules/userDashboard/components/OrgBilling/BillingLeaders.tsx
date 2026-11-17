@@ -1,62 +1,16 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {ElementWidth} from '../../../../types/constEnums'
+import {Menu} from '../../../../ui/Menu/Menu'
 import plural from '../../../../utils/plural'
 import BillingLeader from './BillingLeader'
-import NewBillingLeaderInput from './NewBillingLeaderInput'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH,
-  marginBottom: 16
-})
-
-const StyledRow = styled(Row)<{isAddingBillingLeader?: boolean}>(({isAddingBillingLeader}) => ({
-  padding: '12px 16px',
-  display: 'flex',
-  alignItems: 'center',
-  backgroundColor: isAddingBillingLeader ? PALETTE.SLATE_200 : 'inherit'
-}))
-
-const InfoText = styled('span')({
-  fontSize: 16,
-  paddingTop: 8,
-  color: PALETTE.SLATE_900
-})
-
-const StyledButton = styled(FlatButton)({
-  width: ElementWidth.BILLING_AVATAR,
-  height: ElementWidth.BILLING_AVATAR,
-  color: 'inherit',
-  ':hover': {
-    backgroundColor: 'transparent'
-  }
-})
-
-const BillingLeaderLabel = styled(RowInfoHeading)({
-  color: 'inherit',
-  fontWeight: 400
-})
-
-const ButtonWrapper = styled('div')({
-  color: PALETTE.SKY_500,
-  flexDirection: 'row',
-  display: 'flex',
-  ':hover': {
-    color: PALETTE.SKY_600,
-    cursor: 'pointer'
-  }
-})
+import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 
 type Props = {
   organizationRef: BillingLeaders_organization$key
@@ -68,7 +22,7 @@ const BillingLeaders = (props: Props) => {
     graphql`
       fragment BillingLeaders_organization on Organization {
         ...BillingLeader_organization
-        ...NewBillingLeaderInput_organization
+        ...NewBillingLeaderMenu_organization
         isViewerBillingLeader: isBillingLeader
         billingLeaders {
           id
@@ -78,27 +32,18 @@ const BillingLeaders = (props: Props) => {
     `,
     organizationRef
   )
-  const [isAddingBillingLeader, setIsAddingBillingLeader] = useState(false)
   const {billingLeaders, isViewerBillingLeader} = organization
   const billingLeaderCount = billingLeaders.length
 
-  const handleClick = () => {
-    setIsAddingBillingLeader(true)
-  }
-
-  const removeInput = () => {
-    setIsAddingBillingLeader(false)
-  }
-
   return (
-    <StyledPanel label={plural(billingLeaders.length, 'Billing Leader')}>
-      <StyledRow>
-        <InfoText>
+    <Panel className='mb-4 max-w-[976px]' label={plural(billingLeaders.length, 'Billing Leader')}>
+      <Row className='bg-inherit px-4 py-3'>
+        <span className='pt-2 text-[16px] text-fg-primary'>
           {
             'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
           }
-        </InfoText>
-      </StyledRow>
+        </span>
+      </Row>
       {billingLeaders.map((billingLeader, idx) => (
         <BillingLeader
           key={billingLeader.id}
@@ -109,24 +54,31 @@ const BillingLeaders = (props: Props) => {
         />
       ))}
       {isViewerBillingLeader && (
-        <StyledRow isAddingBillingLeader={isAddingBillingLeader}>
-          {isAddingBillingLeader ? (
-            <NewBillingLeaderInput removeInput={removeInput} organizationRef={organization} />
-          ) : (
-            <ButtonWrapper onClick={handleClick}>
-              <StyledButton>
-                <IconLabel iconLarge icon='add' />
-              </StyledButton>
-              <RowInfo>
-                <RowInfoHeader>
-                  <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
-                </RowInfoHeader>
-              </RowInfo>
-            </ButtonWrapper>
-          )}
-        </StyledRow>
+        <Row className='bg-inherit px-4 py-3'>
+          <Menu
+            trigger={
+              <button
+                type='button'
+                className='flex cursor-pointer flex-row rounded-md text-accent hover:text-fg-primary focus-visible:outline-2 focus-visible:outline-accent data-[state=open]:text-fg-primary'
+              >
+                <div className='flex h-11 w-11 items-center justify-center'>
+                  <IconLabel iconLarge icon='add' />
+                </div>
+                <RowInfo>
+                  <RowInfoHeader>
+                    <RowInfoHeading className='font-normal text-inherit'>
+                      Add Billing Leader
+                    </RowInfoHeading>
+                  </RowInfoHeader>
+                </RowInfo>
+              </button>
+            }
+          >
+            <NewBillingLeaderMenu organizationRef={organization} />
+          </Menu>
+        </Row>
       )}
-    </StyledPanel>
+    </Panel>
   )
 }
 

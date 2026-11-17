@@ -5,7 +5,7 @@ interface Node {
 """
 A team
 """
-type Team implements Node & TeamPartial {
+type Team implements Node {
   """
   A shortid for the team
   """
@@ -133,11 +133,6 @@ type Team implements Node & TeamPartial {
   organization: Organization! @scope(name: ORGS_READ)
 
   """
-  The AI insight for the team. Null if not enough data or feature flag isn't set
-  """
-  insight: Insight @scope(name: MEETINGS_READ)
-
-  """
   The agenda items for the upcoming or current meeting
   """
   agendaItems: [AgendaItem!]! @scope(name: MEETINGS_READ)
@@ -163,6 +158,12 @@ type Team implements Node & TeamPartial {
     """
     sortBy: String
   ): [TeamMember!]!
+
+  """
+  The number of team members actively associated with the team.
+  Readable by the team, its org's billing leaders and admins, and anyone on the org when the team is public
+  """
+  teamMembersCount: Int!
 
   """
   true if the team has been archived
@@ -216,4 +217,21 @@ type Team implements Node & TeamPartial {
   The list of Jira fields to be displayed alongside the task content
   """
   jiraDisplayFieldIds: [String!]
+
+  """
+  The team members in facilitator rotation order, soonest first. A teammate who joined since
+  the last meeting sits at the top, so they enter the rotation without an explicit edit.
+  """
+  facilitatorRotation: [TeamMember!]!
+
+  """
+  If true, starting a meeting promotes the next person in the rotation.
+  If false (default) whoever starts the meeting facilitates, as today.
+  """
+  autoAssignFacilitator: Boolean!
+
+  """
+  How many tasks created in the last 180 days, across the teams in this team's organization, are linked to each external task service. Services with no linked tasks are left out
+  """
+  recentOrgTaskCounts: [IntegrationTaskCount!]!
 }

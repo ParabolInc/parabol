@@ -1,15 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionSidebarAgendaItemsSection_meeting$key} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import type useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-
-const StyledRoot = styled(MeetingSidebarPhaseItemChild)({
-  overflow: 'visible',
-  minHeight: 'fit-content'
-})
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -46,14 +40,14 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   const isUpdatesNavigable = updatesPhase?.stages?.[0]?.isNavigable
 
   return (
-    <StyledRoot>
+    <MeetingSidebarPhaseItemChild className='min-h-fit overflow-visible'>
       <AgendaListAndInput
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
         meeting={meeting}
         team={team!}
       />
-    </StyledRoot>
+    </MeetingSidebarPhaseItemChild>
   )
 }
 

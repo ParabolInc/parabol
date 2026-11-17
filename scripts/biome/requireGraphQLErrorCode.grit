@@ -1,0 +1,9 @@
+`new GraphQLError($args)` as $error where {
+  $args <: not contains `extensions: $extensions` where {
+    $extensions <: contains or { `code: $_`, `code` }
+  },
+  register_diagnostic(
+    span = $error,
+    message = "Give every GraphQLError an extensions.code from ParabolGraphQLErrorCodes (packages/types/augments/index.d.ts) so API clients can tell failures apart. A bug the server catches itself is INTERNAL_SERVER_ERROR."
+  )
+}

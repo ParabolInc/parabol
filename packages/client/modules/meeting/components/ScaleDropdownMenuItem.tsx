@@ -1,7 +1,7 @@
-import {Public} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Public} from '~/ui/icons'
 import type {ScaleDropdownMenuItem_dimension$key} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import type {ScaleDropdownMenuItem_scale$key} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -67,16 +67,18 @@ const ScaleDropdownMenuItem = (props: Props) => {
 
   return (
     <DropdownMenu.Item
-      className='mx-1 flex min-w-[300px] cursor-pointer justify-between rounded-md outline-hidden hover:bg-slate-100 focus:bg-slate-100'
+      className='mx-1 flex min-w-[300px] cursor-pointer justify-between rounded-md px-3 py-2 outline-hidden hover:bg-surface-hover focus:bg-surface-hover'
       data-scale-id={scaleId}
       onClick={setScale}
     >
-      <div className='flex max-w-[200px] grow flex-col px-4 py-3'>
-        <div className='flex items-center truncate font-semibold text-base text-slate-700 leading-6'>
+      <div className='flex max-w-[200px] grow flex-col'>
+        <div className='flex items-center truncate font-semibold text-base text-fg-primary leading-6'>
           {scaleName}
           {isStarter && <Public className='ml-1 h-[18px] w-[18px]' />}
         </div>
-        <div className='truncate text-slate-600 text-xs leading-4'>{scaleValueString(values)}</div>
+        <div className='truncate text-fg-secondary text-xs leading-4'>
+          {scaleValueString(values)}
+        </div>
       </div>
       <div className='my-auto px-2'>
         <ScaleActions scale={scale} scaleCount={scaleCount} teamId={dimension.team.id} />

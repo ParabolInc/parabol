@@ -1,5 +1,3 @@
-import {TableChart} from '@mui/icons-material'
-import PictureAsPdf from '@mui/icons-material/PictureAsPdf'
 import graphql from 'babel-plugin-relay/macro'
 import type {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
@@ -8,11 +6,10 @@ import {ACTION} from 'parabol-client/utils/constants'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
-import useAtmosphere from '../../../../../hooks/useAtmosphere'
+import {PictureAsPdf, TableChart} from '~/ui/icons'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import type {CorsOptions} from '../../../../../types/cors'
 import lazyPreload from '../../../../../utils/lazyPreload'
-import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import ExportToCSV from '../ExportToCSV'
 import EmailBorderBottom from '../MeetingSummaryEmail/EmailBorderBottom'
 import ContactUsFooter from './ContactUsFooter'
@@ -60,7 +57,6 @@ const SummarySheet = (props: Props) => {
     appOrigin,
     corsOptions
   } = props
-  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment SummarySheet_meeting on NewMeeting {
@@ -80,9 +76,9 @@ const SummarySheet = (props: Props) => {
         ...TeamHealthSummary_meeting
         ...MeetingMembersWithTasks_meeting
         ...MeetingMembersWithoutTasks_meeting
-        ...RetroTopics_meeting
+        ...RetroTopics_meeting @alias
         ...SummaryPokerStories_meeting
-        ...TeamPromptResponseSummary_meeting
+        ...TeamPromptResponseSummary_meeting @alias
         ...ExportAllTasks_meeting
         meetingType
         name
@@ -95,8 +91,6 @@ const SummarySheet = (props: Props) => {
   const sheetRef = useRef<HTMLTableElement | null>(null)
 
   const downloadPDF = () => {
-    SendClientSideEvent(atmosphere, 'Download PDF Clicked', {meetingId})
-
     const printStyles = `
       <style>
         @media print {
@@ -262,20 +256,24 @@ const SummarySheet = (props: Props) => {
               />
             )}
         <EmailBorderBottom />
-        {isDemo && <CreateAccountSection dataCy='create-account-section' />}
+        {isDemo && <CreateAccountSection />}
         <WholeMeetingSummary meetingRef={meeting} />
         {meetingType === 'teamPrompt' ? (
-          <TeamPromptResponseSummary meetingRef={meeting} />
+          meeting.TeamPromptResponseSummary_meeting && (
+            <TeamPromptResponseSummary meetingRef={meeting.TeamPromptResponseSummary_meeting} />
+          )
         ) : (
           <>
             <MeetingMembersWithTasks meeting={meeting} />
             <MeetingMembersWithoutTasks meeting={meeting} />
-            <RetroTopics
-              isDemo={isDemo}
-              isEmail={referrer === 'email'}
-              meeting={meeting}
-              appOrigin={appOrigin}
-            />
+            {meeting.RetroTopics_meeting && (
+              <RetroTopics
+                isDemo={isDemo}
+                isEmail={referrer === 'email'}
+                meeting={meeting.RetroTopics_meeting}
+                appOrigin={appOrigin}
+              />
+            )}
             <SummaryPokerStories
               appOrigin={appOrigin}
               meeting={meeting}

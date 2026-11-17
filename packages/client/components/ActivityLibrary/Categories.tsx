@@ -1,4 +1,5 @@
-import FavoriteIcon from '@mui/icons-material/Favorite'
+import type {JSX} from 'react'
+import {Favorite as FavoriteIcon} from '~/ui/icons'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import type {CardTheme} from './ActivityCard'
 
@@ -9,7 +10,8 @@ export const MAIN_CATEGORIES = [
   'feedback',
   'strategy',
   'premortem',
-  'postmortem'
+  'postmortem',
+  'teamHealth'
 ] as const
 
 export const QUICK_START_CATEGORY_ID = 'recommended'
@@ -28,15 +30,15 @@ export type AllCategoryID = (typeof ALL_CATEGORIES)[number]
 
 export const DEFAULT_CARD_THEME: CardTheme = {
   primary: 'bg-slate-500',
-  secondary: 'bg-slate-200',
-  text: 'text-slate-500'
+  secondary: 'bg-surface-well',
+  text: 'text-fg-muted'
 }
 
 export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   [QUICK_START_CATEGORY_ID]: {
-    primary: 'bg-grape-700',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    primary: 'bg-grape-700 dark:bg-grape-600',
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   },
   standup: {
     primary: 'bg-aqua-400',
@@ -50,7 +52,7 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   },
   retrospective: {
     primary: 'bg-grape-500',
-    secondary: 'bg-[#F2E1F7]',
+    secondary: 'bg-starter',
     text: 'text-grape-500'
   },
   feedback: {
@@ -59,9 +61,9 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     text: 'text-jade-400'
   },
   strategy: {
-    primary: 'bg-rose-500',
-    secondary: 'bg-rose-100',
-    text: 'text-rose-500'
+    primary: 'bg-sky-500',
+    secondary: 'bg-sky-100',
+    text: 'text-sky-500'
   },
   premortem: {
     primary: 'bg-gold-500',
@@ -73,15 +75,20 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     secondary: 'bg-grass-100',
     text: 'text-grass-500'
   },
+  teamHealth: {
+    primary: 'bg-rose-500',
+    secondary: 'bg-rose-100 dark:bg-surface-well',
+    text: 'text-rose-500'
+  },
   [CUSTOM_CATEGORY_ID]: {
     primary: 'bg-fuscia-400',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   },
   [FAVORITE_CATEGORY_ID]: {
-    primary: 'bg-grape-700',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    primary: 'bg-grape-700 dark:bg-grape-600',
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   }
 }
 
@@ -97,6 +104,7 @@ export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string | JSX.Element> = 
     />
   ),
   [CUSTOM_CATEGORY_ID]: 'Custom',
+  teamHealth: 'Team Health',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
   standup: 'Standup',
@@ -110,5 +118,6 @@ export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {
   retrospective: 'retrospective',
   action: 'feedback',
   poker: 'estimation',
-  teamPrompt: 'standup'
+  teamPrompt: 'standup',
+  teamHealth: 'teamHealth'
 }

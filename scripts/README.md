@@ -1,14 +1,32 @@
 # Scripts
 
-To begin development, simply run `node scripts/dev.js`.
-If the toolbox does not exist yet, it will built it for you.
-If you'd like to rebuild the toolbox, you can run with the `-i` (init) flag
-If you'd like a faster startup & the client/server are the only pieces that have changed, you can run with `-d` (dangerous)
+To begin development, run `pnpm dev` (`node scripts/dev.mts`).
+It runs the whole stack as 1 foreground process, so ctrl+c stops everything.
+
+- A git worktree that has no `.env` yet gets a copy of the one in the main checkout
+- `pnpm install --frozen-lockfile` runs before any task starts, so `node_modules` catches up with a pull or a branch switch that changed dependencies
+- If `PORT` & `SOCKET_PORT` are taken, e.g. by the stack of another worktree, both move up by 10 until they are free
+- `pnpm dev --isolated` gives the checkout its own database (`<POSTGRES_DB>_<directory name>`), its own valkey db, local file storage & the debug mailer
+- `pnpm dev --mattermost` also runs the Mattermost plugin dev server
+- `DEV_RUN_ONLY` runs a subset of the tasks. It is a comma-separated list of: Webpack Servers, Socket Server, Embedder, Dev Server, Flush Valkey, PG Migrations, Relay Compiler, GraphQL Codegen, Kysely Codegen
+- `pnpm dev:status` prints where the stack is served & whether it is ready. `pnpm dev:status --wait` blocks until it is
+- `pnpm dev:login someone@example.com` writes a Playwright storageState for that user to `dev/auth`, signing them up first if needed
+- `pnpm dev:seed someone@example.com` adds Copper, a sample organization with a year of meetings, tasks and Team Health checks and Reports turned on, and makes that user its billing leader. `--starter` puts it on the Starter plan
+- Every task logs to `dev/logs/<task>.log`
+
+`pnpm integration:new <service> --title <Title>` scaffolds a task integration; see [Contributing an integration](../docs/integrations/CONTRIBUTING.md)
+
+The dev scripts are TypeScript that node runs as is, without a build step.
+They are `.mts` files because node treats a `.ts` file in this package as CommonJS.
+`pnpm typecheck` checks them with `scripts/tsconfig.json`.
+The webpack configs & helpers that the production build shares stay `.js`, because webpack-cli loads them.
 
 To run in production,
 
 - build the assets with `node scripts/prod.js`
 - If you'd like to uglify & upload assets to the CDN, use `--deploy`
+- The client is only minified & its source maps are only written for `--deploy` and `--no-deps` builds
+- `--deploy` and `--no-deps` builds skip the GraphQL codegen types, because only `tsc` reads them. Run `pnpm codegen` before typechecking one
 - Run `node dist/preDeploy.js` to prime the DBs and CDN
 
 ## Background

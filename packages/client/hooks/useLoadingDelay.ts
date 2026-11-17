@@ -6,10 +6,10 @@
  * where it left off, making it look seamless.
  */
 
-import {type MutableRefObject, useRef} from 'react'
+import {type RefObject, useRef} from 'react'
 import useForceUpdate from './useForceUpdate'
 
-export type LoadingDelayRef = MutableRefObject<{
+export type LoadingDelayRef = RefObject<{
   start: number
   stop: number
   forceUpdate: () => void

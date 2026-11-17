@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
@@ -6,7 +7,7 @@ import normalizeSlugName from './helpers/normalizeSlugName'
 const verifyDomain: MutationResolvers['verifyDomain'] = async (
   _source,
   {slug, addDomains, orgId, removeDomains},
-  {authToken, dataLoader}
+  {authToken}
 ) => {
   const pg = getKysely()
   const viewerId = getUserId(authToken)
@@ -15,17 +16,8 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
 
   // VALIDATION
   const slugName = normalizeSlugName(slug)
-  if (slugName instanceof Error) return {error: {message: slugName.message}}
-  const existingRowForOrgId = await dataLoader.get('samlByOrgId').load(orgId)
-  dataLoader.get('samlByOrgId').clear(orgId)
-  const existingSlugName = existingRowForOrgId?.id
-  if (existingSlugName && existingSlugName !== slugName) {
-    return {
-      error: {
-        message: `orgId ${orgId} is already controlled by ${existingSlugName}. You must first update ${existingSlugName} with a new orgId`
-      }
-    }
-  }
+  if (slugName instanceof Error)
+    throw new GraphQLError(slugName.message, {extensions: {code: 'BAD_USER_INPUT'}})
   await pg.transaction().execute(async (trx) => {
     // upsert the record with orgId
     await trx

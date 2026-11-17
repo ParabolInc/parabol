@@ -18,6 +18,12 @@ graphql`
           id
         }
       }
+      ... on TeamPromptMeetingSettings {
+        selectedTemplateId
+        selectedTemplate {
+          id
+        }
+      }
     }
   }
 `

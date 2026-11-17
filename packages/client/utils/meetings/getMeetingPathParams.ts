@@ -4,6 +4,7 @@
  */
 import {matchPath} from 'react-router'
 import type {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {TeamHealthDemo} from '../../modules/demo/teamHealthDemoIds'
 import {RetroDemo} from '../../types/constEnums'
 import findKeyByValue from '../findKeyByValue'
 import {phaseTypeToSlug} from './lookups'
@@ -16,16 +17,21 @@ interface MeetingPathResults {
   stageIdxSlug?: string
 }
 
+const demoRoutes = [
+  {path: '/retrospective-demo', meetingId: RetroDemo.MEETING_ID},
+  {path: TeamHealthDemo.ROUTE, meetingId: TeamHealthDemo.MEETING_ID}
+]
+
 const getMeetingPathParams = (): MeetingPathResults => {
   const {location} = window
   const {pathname} = location
   const matchRes = matchPath({path: '/meet/:meetingId', end: false}, pathname)
   if (!matchRes) {
-    const demoMatchRes = matchPath({path: '/retrospective-demo', end: false}, pathname)
-    if (!demoMatchRes) return {}
-    const remaining = pathname.slice(demoMatchRes.pathname.length).split('/').filter(Boolean)
+    const demoRoute = demoRoutes.find(({path}) => matchPath({path, end: false}, pathname))
+    if (!demoRoute) return {}
+    const remaining = pathname.slice(demoRoute.path.length).split('/').filter(Boolean)
     return {
-      meetingId: RetroDemo.MEETING_ID,
+      meetingId: demoRoute.meetingId,
       phaseSlug: remaining[0],
       phaseType: remaining[0]
         ? (findKeyByValue(

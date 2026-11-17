@@ -1,0 +1,271 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {"level": 1},
+      "content": [{"type": "text", "text": "Mobile Poker #13 - Oct 21, 2026"}]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Foxglove Mobile",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://app.example.com/team/Fx2BkN6rTy",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow",
+                "class": "link",
+                "title": null
+              }
+            },
+            {"type": "bold", "attrs": {}}
+          ]
+        },
+        {
+          "type": "text",
+          "text": " — Oct 20 - Oct 21, 2026",
+          "marks": [{"type": "bold", "attrs": {}}]
+        }
+      ]
+    },
+    {"type": "paragraph", "content": [{"type": "text", "text": "5 Stories - 4 Participants"}]},
+    {"type": "paragraph"},
+    {
+      "type": "table",
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableHeader",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "Story", "marks": [{"type": "bold", "attrs": {}}]}
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Story Points",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {"type": "text", "text": "Risk", "marks": [{"type": "bold", "attrs": {}}]}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Offline mode: queue edits while disconnected",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "13"}]}]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "High"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Biometric login on iOS and Android",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Medium"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Dark mode for the invoice list",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Low"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Fix crash when attaching large photos",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "3"}]}]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Medium"}]}]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Checkout crash on older Android devices",
+                      "marks": [{"type": "bold", "attrs": {}}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "5"}]}]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {"colspan": 1, "rowspan": 1},
+              "content": [{"type": "paragraph", "content": [{"type": "text", "text": "High"}]}]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {"level": 2},
+      "content": [{"type": "text", "text": "4 Participants"}]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Mei Zhou"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Nikhil Varma"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Jamal Hartley"}]}]
+        },
+        {
+          "type": "listItem",
+          "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Elif Demir"}]}]
+        }
+      ]
+    },
+    {"type": "paragraph"}
+  ]
+}

@@ -25,7 +25,7 @@ test('Delete user by admin invalidates their JWT', async () => {
     cookie
   })
   expect(afterResult.errors).toBeDefined()
-  expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHORIZED')
+  expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHENTICATED')
 })
 
 test('User deleting themselves invalidates their JWT', async () => {
@@ -43,7 +43,7 @@ test('User deleting themselves invalidates their JWT', async () => {
     cookie
   })
   expect(afterResult.errors).toBeDefined()
-  expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHORIZED')
+  expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHENTICATED')
 })
 
 test('Delete user', async () => {

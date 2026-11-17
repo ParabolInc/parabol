@@ -1,18 +1,4 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
 import Ellipsis from './Ellipsis/Ellipsis'
-
-const CommentingStatus = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_600,
-  display: 'flex',
-  fontSize: 12,
-  height: 36,
-  lineHeight: '20px',
-  paddingLeft: 48,
-  paddingTop: '8px',
-  width: '100%'
-})
 
 interface Props {
   commentorNames: string[] | null
@@ -32,10 +18,10 @@ const CommentingStatusText = (props: Props) => {
   if (!commentorNames?.length) return null
 
   return (
-    <CommentingStatus>
+    <div className='flex h-9 w-full items-center pt-2 pl-12 text-fg-secondary text-xs leading-5'>
       {getStatusText(commentorNames)}
       <Ellipsis />
-    </CommentingStatus>
+    </div>
   )
 }
 

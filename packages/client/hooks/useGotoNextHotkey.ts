@@ -4,7 +4,7 @@ import type useGotoNext from './useGotoNext'
 import useHotkey from './useHotkey'
 
 export const useGotoNextHotkey = (gotoNext: ReturnType<typeof useGotoNext>['gotoNext']) => {
-  const latestHandler = useRef<typeof gotoNext>()
+  const latestHandler = useRef<typeof gotoNext>(undefined)
   useEffect(() => {
     latestHandler.current = gotoNext
   }, [gotoNext])

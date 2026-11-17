@@ -1,11 +1,5 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
 import CircularProgress from './CircularProgress'
 
-const Progress = styled(CircularProgress)({
-  position: 'absolute',
-  transform: `translateY(-6px)`
-})
 interface Props {
   isNext: boolean
   progress: number
@@ -14,10 +8,11 @@ interface Props {
 const BottomControlBarProgress = (props: Props) => {
   const {isNext, progress} = props
   return (
-    <Progress
+    <CircularProgress
+      className='-translate-y-1.5 absolute'
       radius={12}
       progress={progress}
-      stroke={isNext ? PALETTE.ROSE_500 : PALETTE.JADE_400}
+      stroke={isNext ? 'var(--color-rose-500)' : 'var(--color-jade-400)'}
       thickness={2}
     />
   )

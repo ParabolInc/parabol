@@ -87,19 +87,20 @@ const verifiedInvitationResolver: QueryResolvers['verifiedInvitation'] = async (
     }
   }
 
-  const viewer = await getUserByEmail(email)
-  const userId = viewer?.id ?? null
+  const invitee = await getUserByEmail(email)
   const ssoURL = await getSAMLURLFromEmail(email, dataLoader, true)
-  const isGoogle = await getIsGoogleProvider(viewer, email)
+  const isGoogle = await getIsGoogleProvider(invitee, email)
   return {
     ssoURL,
     teamName: team.name,
+    meetingName,
     meetingType,
     inviterName: inviter.preferredName,
     inviterEmail: inviter.email,
     teamInvitation,
     isGoogle,
-    userId
+    userId: invitee?.id ?? null,
+    user: invitee
   }
 }
 

@@ -16,4 +16,6 @@ enum TaskServiceEnum {
   azureDevOps
   "Linear"
   linear
+  "ClickUp"
+  clickup
 }

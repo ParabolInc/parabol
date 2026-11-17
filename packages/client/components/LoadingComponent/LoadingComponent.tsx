@@ -1,26 +1,8 @@
-import styled from '@emotion/styled'
 import {forwardRef, useEffect} from 'react'
 import type {LoadingDelayRef} from '../../hooks/useLoadingDelay'
 import useTimeout from '../../hooks/useTimeout'
 import Spinner from '../../modules/spinner/components/Spinner/Spinner'
-import {PALETTE} from '../../styles/paletteV3'
 import {LoaderSize, Times} from '../../types/constEnums'
-
-interface WrapperProps {
-  height?: string | number
-  width?: string | number
-}
-
-const LoadingWrapper = styled('div')<WrapperProps>(
-  ({height = 'fill-available', width = 'fill-available'}) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height,
-    width
-  })
-)
 
 interface Props {
   delay?: number
@@ -57,13 +39,17 @@ const LoadingComponent = forwardRef((props: Props, ref: any) => {
   }, [loadingDelayRef])
   if (showAfter && !minDelay) return null
   return (
-    <LoadingWrapper ref={ref} height={height} width={width}>
+    <div
+      ref={ref}
+      className='flex h-[-webkit-fill-available] w-[-webkit-fill-available] flex-col items-center justify-center'
+      style={{height, width}}
+    >
       <Spinner
         delay={delay}
-        fill={timedOut ? PALETTE.TOMATO_500 : PALETTE.AQUA_400}
+        fill={timedOut ? 'var(--color-tomato-500)' : 'var(--color-aqua-400)'}
         width={spinnerSize}
       />
-    </LoadingWrapper>
+    </div>
   )
 })
 

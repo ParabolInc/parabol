@@ -14,20 +14,22 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID!) {
+  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID!) @raw_response_type {
     updateCommentContent(commentId: $commentId, content: $content, meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpdateCommentContentMutation_meeting @relay(mask: false)
+      ...UpdateCommentContentMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 type Comment = NonNullable<
-  TUpdateCommentContentMutation['response']['updateCommentContent']
+  NonNullable<
+    TUpdateCommentContentMutation['response']['updateCommentContent']
+  >['UpdateCommentContentMutation_meeting']
 >['comment']
 
 const UpdateCommentContentMutation: StandardMutation<TUpdateCommentContentMutation> = (

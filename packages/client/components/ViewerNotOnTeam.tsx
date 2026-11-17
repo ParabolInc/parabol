@@ -2,12 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
+import {commitLocalUpdate} from 'relay-runtime'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import {Button} from '../ui/Button/Button'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -15,7 +17,6 @@ import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import PrimaryButton from './PrimaryButton'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
@@ -51,7 +52,13 @@ const ViewerNotOnTeam = (props: Props) => {
   useEffect(() => {
     if (isOnTeam) {
       const redirectTo = getValidRedirectParam() || '/meetings'
-      navigate(redirectTo, {replace: true})
+      // the page that sent the viewer here checked the teams in their auth token, which can be older than their team
+      atmosphere.refreshSession(() => {
+        commitLocalUpdate(atmosphere, (store) => {
+          store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+        })
+        navigate(redirectTo, {replace: true})
+      })
     } else if (teamInvitation) {
       if (hasAccepted.current) return
       hasAccepted.current = true
@@ -76,10 +83,10 @@ const ViewerNotOnTeam = (props: Props) => {
           <InvitationDialogCopy>Just ask a team member for an invitation.</InvitationDialogCopy>
           <InvitationDialogCopy>This page will redirect automatically.</InvitationDialogCopy>
           <InvitationCenteredCopy>
-            <PrimaryButton size='medium' waiting>
+            <Button variant='primary' size='md' disabled>
               <span>Waiting for Invitation</span>
               <Ellipsis />
-            </PrimaryButton>
+            </Button>
           </InvitationCenteredCopy>
         </DialogContent>
       </InviteDialog>

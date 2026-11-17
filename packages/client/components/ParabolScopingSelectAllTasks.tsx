@@ -1,29 +1,16 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import useUpdatePokerScopeMutation from '~/mutations/useUpdatePokerScopeMutation'
 import type {ParabolScopingSelectAllTasks_tasks$key} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
 
-const Item = styled('div')({
-  display: 'flex',
-  paddingLeft: 16
-})
-
-const Title = styled('div')({
-  paddingLeft: 16,
-  paddingBottom: 16,
-  fontWeight: 600
-})
 interface Props {
   meetingId: string
   tasks: ParabolScopingSelectAllTasks_tasks$key
-  usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: ReadonlySet<string>
 }
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
@@ -41,12 +28,10 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     tasksRef
   )
   const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
-  const atmosphere = useAtmosphere()
   const [unusedTasks, allSelected] = useUnusedRecords(taskIds, usedServiceTaskIds)
-  const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
+  const [updatePokerScope, submitting] = useUpdatePokerScopeMutation()
   const onClick = () => {
     if (submitting) return
-    submitMutation()
     const updateArr = allSelected ? Array.from(taskIds) : unusedTasks
     const action = allSelected ? 'DELETE' : 'ADD'
     const updates = updateArr.map(
@@ -65,20 +50,15 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
       const task = tasks.find((taskEdge) => taskEdge.node.id === update.serviceTaskId)
       return task?.node.plaintextContent ?? 'Unknown Story'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {
-      onError,
-      onCompleted,
-      contents,
-      selectedAll: true
-    })
+    updatePokerScope({variables, contents})
   }
   if (tasks.length < 2) return null
-  const title = getSelectAllTitle(tasks.length, usedServiceTaskIds.size, 'task')
+  const title = getSelectAllTitle(unusedTasks.length, usedServiceTaskIds.size, 'task', allSelected)
   return (
-    <Item onClick={onClick}>
+    <div className='flex pl-4' onClick={onClick}>
       <Checkbox active={allSelected} />
-      <Title>{title}</Title>
-    </Item>
+      <div className='pb-4 pl-4 font-semibold'>{title}</div>
+    </div>
   )
 }
 

@@ -5,6 +5,7 @@ import type {DeleteTaskMutation_task$data} from '../__generated__/DeleteTaskMuta
 import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import isTempId from '../utils/relay/isTempId'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment DeleteTaskMutation_task on DeleteTaskPayload {
@@ -15,7 +16,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DeleteTaskMutation($taskId: ID!) {
+  mutation DeleteTaskMutation($taskId: ID!) @raw_response_type {
     deleteTask(taskId: $taskId) {
       error {
         message
@@ -39,6 +40,7 @@ const DeleteTaskMutation: SimpleMutation<TDeleteTaskMutation> = (atmosphere, var
   return commitMutation<TDeleteTaskMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('deleteTask')
       if (!payload) return

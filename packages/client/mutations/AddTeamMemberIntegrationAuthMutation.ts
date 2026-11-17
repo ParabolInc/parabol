@@ -3,22 +3,73 @@ import {commitMutation} from 'react-relay'
 import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 import type {StandardMutation} from '../types/relayMutations'
 
+graphql`
+  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
+    teamMember {
+      ...useIsIntegrated_teamMember
+      services {
+        ...IntegrationServiceProviderRow_service
+        ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
+      }
+      integrations {
+        ...MattermostProviderRowTeamMemberIntegrations
+        ...MSTeamsProviderRowTeamMemberIntegrations
+        gcal {
+          auth {
+            id
+            providerId
+          }
+        }
+        gitlab {
+          auth {
+            isActive
+            provider {
+              id
+            }
+          }
+        }
+        linear {
+          auth {
+            isActive
+          }
+        }
+        jiraServer {
+          auth {
+            isActive
+          }
+        }
+        gmeet {
+          isActive
+        }
+        zoom {
+          isActive
+        }
+        atlassian {
+          isActive
+          accessToken
+          scope
+        }
+        github {
+          accessToken
+          login
+        }
+      }
+    }
+  }
+`
+
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
-    $service: IntegrationProviderServiceEnum
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
-    $redirectUri: URL
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
-      service: $service
       oauthCodeOrPat: $oauthCodeOrPat
       oauthVerifier: $oauthVerifier
       teamId: $teamId
-      redirectUri: $redirectUri
     ) {
       ... on ErrorPayload {
         error {
@@ -26,24 +77,7 @@ const mutation = graphql`
         }
       }
       ... on AddTeamMemberIntegrationAuthSuccess {
-        teamMember {
-          ...GitLabProviderRowTeamMember
-          ...ScopePhaseAreaGitLab_teamMember
-          ...JiraServerProviderRowTeamMember
-          ...AzureDevOpsProviderRowTeamMember
-          ...GcalProviderRowTeamMember
-          ...LinearProviderRowTeamMember
-          integrations {
-            ...MattermostProviderRowTeamMemberIntegrations
-            ...MSTeamsProviderRowTeamMemberIntegrations
-            gdrive {
-              isActive
-            }
-            zoom {
-              isActive
-            }
-          }
-        }
+        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
     }
   }

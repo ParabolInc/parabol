@@ -1,5 +1,5 @@
-import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
 import type * as React from 'react'
+import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '~/ui/icons'
 import {cn} from '../ui/cn'
 
 interface Props {
@@ -17,7 +17,7 @@ const Checkbox = (props: Props) => {
   return (
     <div
       className={cn(
-        'text-slate-600',
+        'text-fg-secondary',
         'h-6',
         'w-6',
         'block',

@@ -1,18 +1,29 @@
 import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
-import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
+import sleep from 'parabol-client/utils/sleep'
 import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
-import type {ModelId} from './ai_models/modelIdDefinitions'
+import getKysely from '../server/postgres/getKysely'
+import type {EmbeddingsJobQueueV2} from '../server/postgres/types'
+import type {AbstractEmbeddingsModel} from './ai_models/AbstractEmbeddingsModel'
+import getModelManager from './ai_models/ModelManager'
+import {type ModelId, resolveModelId} from './ai_models/modelIdDefinitions'
 import type {JobType, StepResult, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
-import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
+import {finishEmbeddingsJob} from './finishEmbeddingsJob'
+import {FAILED_JOB_PENALTY, FIRST_FILL_PRIORITY} from './getEmbedderJobPriority'
 import {JobQueueError} from './JobQueueError'
 import {embedMetadata} from './workflows/embedMetadata'
 import {embedPage} from './workflows/embedPage'
 import {embedQuery} from './workflows/embedQuery'
+import {
+  findRelatedDiscussions,
+  getStepAfterEmbeddingTopic
+} from './workflows/findRelatedDiscussions'
 import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
 import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
 import {rerankRetroTopics} from './workflows/rerankRetroTopics'
+
+const MAX_MODEL_OUTAGES_PER_JOB = 5
+const MODEL_WAIT_MS = 5_000
 
 export class WorkflowOrchestrator {
   workflows: Record<string, Workflow> = {
@@ -38,7 +49,11 @@ export class WorkflowOrchestrator {
       },
       embed: {
         run: embedMetadata,
-        getNextStep: () => 'getSimilarRetroTopics'
+        getNextStep: ({data}: {data: {modelId: ModelId}}) =>
+          getStepAfterEmbeddingTopic(data.modelId)
+      },
+      findRelatedDiscussions: {
+        run: findRelatedDiscussions
       },
       getSimilarRetroTopics: {
         run: getSimilarRetroTopics,
@@ -100,9 +115,17 @@ export class WorkflowOrchestrator {
       .execute()
   }
 
-  private finishJob = async (jobId: number) => {
-    const pg = getKysely()
-    await pg.deleteFrom('EmbeddingsJobQueueV2').where('id', '=', jobId).executeTakeFirstOrThrow()
+  private waitForModel = async (
+    jobId: number,
+    model: AbstractEmbeddingsModel,
+    retryCount: number
+  ) => {
+    await getKysely()
+      .updateTable('EmbeddingsJobQueueV2')
+      .set({state: 'queued', startAt: null, retryCount})
+      .where('id', '=', jobId)
+      .execute()
+    await Promise.race([model.ready(), sleep(MODEL_WAIT_MS)])
   }
 
   private addNextJob = async (jobType: JobType, priority: number, data: StepResult) => {
@@ -136,11 +159,13 @@ export class WorkflowOrchestrator {
       jobData,
       jobType,
       priority,
+      retryCount,
       embeddingsMetadataId,
-      modelId,
+      modelId: storedModelId,
       pageId,
       stateMessage
     } = job
+    const modelId = storedModelId && resolveModelId(storedModelId)
     const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)
@@ -148,6 +173,11 @@ export class WorkflowOrchestrator {
     const step = workflow[stepName]
     if (!step) return this.failJob(jobId, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
+    const fillModel =
+      priority >= FIRST_FILL_PRIORITY && modelId
+        ? getModelManager().getEmbedder(modelId as ModelId)
+        : undefined
+    if (fillModel && !fillModel.isReady) return this.waitForModel(jobId, fillModel, retryCount)
     const dataLoader = getNewDataLoader('WorkflowOrchestrator')
     let result: Awaited<ReturnType<typeof run>> = false
     const data = {...jobData, embeddingsMetadataId, modelId, pageId}
@@ -159,8 +189,14 @@ export class WorkflowOrchestrator {
       }
     }
     dataLoader.dispose()
-    if (result instanceof JobQueueError) return this.failJob(jobId, result, stateMessage)
-    await this.finishJob(jobId)
+    if (result instanceof JobQueueError) {
+      // A job that keeps being in flight when its model goes down may be what's taking it down
+      if (fillModel && !fillModel.isReady && retryCount < MAX_MODEL_OUTAGES_PER_JOB) {
+        return this.waitForModel(jobId, fillModel, retryCount + 1)
+      }
+      return this.failJob(jobId, result, stateMessage)
+    }
+    await finishEmbeddingsJob(jobId)
     if (result === false) return
     const nextStepName = await getNextStep?.({
       dataLoader,

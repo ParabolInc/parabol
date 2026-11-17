@@ -1,9 +1,8 @@
-import faker from 'faker'
-import {sendIntranet, signUp} from './common'
+import {getTestEmail, sendIntranet, signUp} from './common'
 
 test('Update user email with unknown email fails', async () => {
-  const email = faker.internet.email().toLowerCase()
-  const newEmail = faker.internet.email().toLowerCase()
+  const email = getTestEmail()
+  const newEmail = getTestEmail()
 
   const updateEmail = await sendIntranet({
     query: `
@@ -24,7 +23,7 @@ test('Update user email with unknown email fails', async () => {
 
 test('Update user email', async () => {
   const {email, userId} = await signUp()
-  const newEmail = faker.internet.email().toLowerCase()
+  const newEmail = getTestEmail()
 
   const updateEmail = await sendIntranet({
     query: `

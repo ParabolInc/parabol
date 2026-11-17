@@ -1,0 +1,53 @@
+import {Providers} from '~/types/constEnums'
+import type Atmosphere from '../../Atmosphere'
+import type {MenuMutationProps} from '../../hooks/useMutationProps'
+import AddTeamMemberIntegrationAuthMutation from '../../mutations/AddTeamMemberIntegrationAuthMutation'
+import getOAuthPopupFeatures from '../../utils/getOAuthPopupFeatures'
+import makeHref from '../../utils/makeHref'
+import {ERROR_POPUP_BLOCKED} from '../../utils/oauthPopupError'
+
+class GitLabClientManager {
+  static SCOPES = Providers.GITLAB_SCOPE
+  static openOAuth(
+    atmosphere: Atmosphere,
+    providerId: string,
+    clientId: string,
+    serverBaseUrl: string,
+    teamId: string,
+    mutationProps: MenuMutationProps
+  ) {
+    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const providerState = Math.random().toString(36).substring(5)
+
+    const redirectUri = makeHref('/auth/gitlab')
+    const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${GitLabClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code`
+
+    const popup = window.open(
+      uri,
+      'OAuth',
+      getOAuthPopupFeatures({width: 500, height: 750, top: 56})
+    )
+    if (!popup) {
+      onError({message: ERROR_POPUP_BLOCKED})
+      return
+    }
+    const handler = (event: MessageEvent) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        return
+      }
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      submitMutation()
+      AddTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {providerId, oauthCodeOrPat: code, teamId},
+        {onError, onCompleted}
+      )
+      popup && popup.close()
+      window.removeEventListener('message', handler)
+    }
+    window.addEventListener('message', handler)
+  }
+}
+
+export default GitLabClientManager

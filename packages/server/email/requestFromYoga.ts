@@ -17,7 +17,7 @@ export const requestFromYoga = async (
     document: parse(query),
     variableValues: variables,
     schema,
-    contextValue: {...envelopedContext, ...context}
+    contextValue: {...envelopedContext, ...context, docId}
   })
   // yoga creates objects using a null prototype. Relay incorrectly uses `{}.hasOwnProperty`
   // As a quick hack, we recate the objects using an Object prototype here

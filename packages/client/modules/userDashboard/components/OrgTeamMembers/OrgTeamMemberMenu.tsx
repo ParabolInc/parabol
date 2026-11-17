@@ -1,16 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {OrgTeamMemberMenu_teamMember$key} from '../../../../__generated__/OrgTeamMemberMenu_teamMember.graphql'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
-import type {MenuProps} from '../../../../hooks/useMenu'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 interface OrgTeamMemberMenuProps {
   isLead: boolean
-  menuProps: MenuProps
   isViewerLead: boolean
   isViewerOrgAdmin: boolean
   manageTeamMemberId?: string | null
@@ -20,16 +16,11 @@ interface OrgTeamMemberMenuProps {
   toggleRemove: () => void
 }
 
-const StyledLabel = styled(MenuItemLabel)({
-  padding: '4px 16px'
-})
-
 export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
   const {
     isViewerLead,
     isViewerOrgAdmin,
     teamMember: teamMemberRef,
-    menuProps,
     togglePromote,
     toggleRemove
   } = props
@@ -50,17 +41,11 @@ export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
 
   return (
-    <Menu ariaLabel={'Select your action'} {...menuProps}>
+    <MenuContent align='end'>
       {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
-        <MenuItem
-          label={<StyledLabel>Promote to Team Lead</StyledLabel>}
-          key='promote'
-          onClick={togglePromote}
-        />
+        <MenuItem onClick={togglePromote}>Promote to Team Lead</MenuItem>
       )}
-      {isViewerTeamAdmin && !isSelf && (
-        <MenuItem label={<StyledLabel>Remove from Team</StyledLabel>} onClick={toggleRemove} />
-      )}
-    </Menu>
+      {isViewerTeamAdmin && !isSelf && <MenuItem onClick={toggleRemove}>Remove from Team</MenuItem>}
+    </MenuContent>
   )
 }

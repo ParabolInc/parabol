@@ -8,6 +8,7 @@ import type {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__g
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -79,6 +80,7 @@ const UpdateAgendaItemMutation: StandardMutation<
   return commitMutation<TUpdateAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('updateAgendaItem')
       if (!payload) return

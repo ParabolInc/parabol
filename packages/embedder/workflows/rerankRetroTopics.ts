@@ -20,7 +20,7 @@ export const rerankRetroTopics: JobQueueStepRun<{
 
   let rerankText: string = ''
   try {
-    const {body} = await createEmbeddingTextFrom(metadata, dataLoader, true)
+    const {body} = await createEmbeddingTextFrom(metadata, dataLoader, {isRerank: true})
     rerankText = body
   } catch (e) {
     return new JobQueueError(e as Error)

@@ -1,18 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EditableTemplatePrompt_prompts$key} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
+import RenameTemplatePromptMutation from '../../../mutations/RenameTemplatePromptMutation'
 import Legitity from '../../../validation/Legitity'
-
-const StyledEditableText = styled(EditableText)({
-  fontSize: 16,
-  lineHeight: '24px',
-  padding: 0
-})
 
 interface Props {
   isOwner: boolean
@@ -27,7 +20,7 @@ const EditableTemplatePrompt = (props: Props) => {
   const {isOwner, promptId, isHover, question, isEditingDescription, prompts: promptsRef} = props
   const prompts = useFragment(
     graphql`
-      fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
+      fragment EditableTemplatePrompt_prompts on TemplatePrompt @relay(plural: true) {
         id
         question
       }
@@ -35,14 +28,16 @@ const EditableTemplatePrompt = (props: Props) => {
     promptsRef
   )
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const handleSubmit = (rawQuestion: string) => {
     if (submitting) return
     const {error, value: question} = validate(rawQuestion)
     if (error) return
     submitMutation()
-    RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {onError, onCompleted})
+    RenameTemplatePromptMutation(atmosphere, {promptId, question}, {onError, onCompleted})
   }
 
   const legitify = (value: string) => {
@@ -69,7 +64,8 @@ const EditableTemplatePrompt = (props: Props) => {
   }
 
   return (
-    <StyledEditableText
+    <EditableText
+      className='p-0 text-[16px] leading-6'
       autoFocus={question.startsWith('New prompt #')}
       disabled={!isOwner}
       error={error?.message}

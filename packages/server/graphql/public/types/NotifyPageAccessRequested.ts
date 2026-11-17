@@ -14,13 +14,7 @@ const NotifyPageAccessRequested: NotifyPageAccessRequestedResolvers = {
     const requester = await dataLoader.get('users').load(requestCreatedBy)
     return requester?.picture ?? null
   },
-  page: async ({pageId}, _args, {dataLoader}) => {
-    const page = await dataLoader.get('pages').loadNonNull(pageId)
-    return {
-      __typename: 'PagePreview',
-      ...page
-    }
-  }
+  page: ({pageId}, _args, {dataLoader}) => dataLoader.get('pages').loadNonNull(pageId)
 }
 
 export default NotifyPageAccessRequested

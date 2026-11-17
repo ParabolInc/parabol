@@ -60,6 +60,7 @@ export const publishSimilarRetroTopics = async (
   similarEmbeddings: {embeddingsMetadataId: number; similarity: number}[],
   dataLoader: DataLoaderWorker
 ) => {
+  if (similarEmbeddings.length === 0) return
   const pg = getKysely()
   const links = await Promise.all(
     similarEmbeddings.map((se) => makeSimilarDiscussionLink(se, dataLoader))

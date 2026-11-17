@@ -5,7 +5,7 @@ type PageAccessTeam {
   """
   The team that was granted access
   """
-  team: TeamPreview!
+  team: Team!
 
   """
   The access role granted to all members of the team

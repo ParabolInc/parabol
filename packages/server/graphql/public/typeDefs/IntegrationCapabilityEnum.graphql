@@ -1,0 +1,39 @@
+"""
+An optional capability an integration service may implement
+"""
+enum IntegrationCapabilityEnum {
+  """
+  Create an issue in the service from a Parabol task
+  """
+  issueCreate
+
+  """
+  Read a single issue back from the service (titles, links, descriptions)
+  """
+  issueRead
+
+  """
+  Search the service's issues, e.g. for poker scoping
+  """
+  issueSearch
+
+  """
+  List the viewer's issues for standup/retro drawers
+  """
+  issueList
+
+  """
+  List the repos/projects a task can be pushed to
+  """
+  repoList
+
+  """
+  Let the viewer choose which of their repos/projects the team can reach
+  """
+  repoAccess
+
+  """
+  Push a poker estimate back to the service (comment, field, or label)
+  """
+  estimatePush
+}

@@ -1,5 +1,4 @@
-import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
+import {GraphQLError} from 'graphql'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -9,16 +8,17 @@ const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (
   context,
   info
 ) => {
-  const {authToken, dataLoader} = context
-  const viewerId = getUserId(authToken)
+  const {dataLoader} = context
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   if (meeting.meetingType !== 'teamPrompt') {
-    return {error: {message: 'Meeting type is not teamPrompt'}}
+    throw new GraphQLError('Meeting type is not teamPrompt', {extensions: {code: 'BAD_USER_INPUT'}})
   }
-  return safeEndTeamPrompt({meeting, context, info})
+  const res = await safeEndTeamPrompt({meeting, context, info})
+  if ('error' in res) throw new GraphQLError(res.error.message, {extensions: {code: 'CONFLICT'}})
+  return res
 }
 
 export default endTeamPrompt

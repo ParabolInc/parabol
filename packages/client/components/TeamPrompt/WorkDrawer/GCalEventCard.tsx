@@ -1,15 +1,13 @@
-import {CheckCircle, Link, LocationOn, People, Schedule} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {CheckCircle, Link, LocationOn, People, Schedule} from '~/ui/icons'
 import type {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_event.graphql'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -104,8 +102,6 @@ const GCalEventCard = (props: Props) => {
     eventRef
   )
 
-  const atmosphere = useAtmosphere()
-
   // A single tooltip that reads "Copy link" on hover and briefly flips to "Copied!" after a copy.
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -113,7 +109,6 @@ const GCalEventCard = (props: Props) => {
   const handleCopy = () => {
     if (!link) return
     navigator.clipboard.writeText(link)
-    trackCopy()
     setCopied(true)
     setTooltipOpen(true)
     setTimeout(() => {
@@ -136,21 +131,9 @@ const GCalEventCard = (props: Props) => {
   // Scale the bar width with duration, saturating at 2h so a marathon meeting fills the track.
   const durationRatio = durationMs === null ? 0 : Math.min(durationMs / ms('2h'), 1)
 
-  const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'gcal'
-    })
-  }
-
-  const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'gcal'
-    })
-  }
-
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex items-center gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex items-center gap-2 text-fg-secondary text-xs'>
         {hasHappened ? (
           <CheckCircle className='h-4 w-4 text-jade-500' />
         ) : isInProgress ? (
@@ -159,12 +142,12 @@ const GCalEventCard = (props: Props) => {
             Now
           </span>
         ) : (
-          <Schedule className='h-4 w-4 text-sky-500' />
+          <Schedule className='h-4 w-4 text-accent' />
         )}
         <div>{formatEventTimeRange(startDate, endDate)}</div>
         {durationMs !== null && durationMs > 0 && (
           <div className='ml-auto flex shrink-0 items-center gap-2'>
-            <div className='h-1.5 w-16 overflow-hidden rounded-full bg-slate-200'>
+            <div className='h-1.5 w-16 overflow-hidden rounded-full bg-surface-well'>
               <div
                 className={cn('h-full rounded-full', getDurationColor(durationMs))}
                 style={{width: `${Math.max(durationRatio * 100, 12)}%`}}
@@ -180,13 +163,12 @@ const GCalEventCard = (props: Props) => {
           href={link ?? undefined}
           target='_blank'
           rel='noreferrer'
-          onClick={trackLinkClick}
         >
           {summary || '(no title)'}
         </a>
       </div>
       <div className='flex items-center justify-between'>
-        <div className='flex min-w-0 items-center gap-3 text-slate-600 text-xs'>
+        <div className='flex min-w-0 items-center gap-3 text-fg-secondary text-xs'>
           {!!attendeeCount && attendeeCount > 0 && (
             <div className='flex shrink-0 items-center gap-1'>
               <People className='h-4 w-4' />
@@ -211,7 +193,7 @@ const GCalEventCard = (props: Props) => {
             <TooltipTrigger asChild>
               <button
                 type='button'
-                className='shrink-0 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
+                className='shrink-0 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover'
                 onClick={handleCopy}
               >
                 <Link className='h-6 w-6 cursor-pointer p-0.5' />

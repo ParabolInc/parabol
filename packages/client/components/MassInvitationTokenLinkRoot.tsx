@@ -17,9 +17,7 @@ const MassInvitationTokenLinkRoot = (props: Props) => {
     teamId
   })
   return (
-    <Suspense fallback={''}>
-      {queryRef && <MassInvitationTokenLink queryRef={queryRef} meetingId={meetingId} />}
-    </Suspense>
+    <Suspense fallback={''}>{queryRef && <MassInvitationTokenLink queryRef={queryRef} />}</Suspense>
   )
 }
 

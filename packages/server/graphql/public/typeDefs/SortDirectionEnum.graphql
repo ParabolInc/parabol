@@ -1,0 +1,7 @@
+"""
+Which way a list is ordered
+"""
+enum SortDirectionEnum {
+  ASC
+  DESC
+}

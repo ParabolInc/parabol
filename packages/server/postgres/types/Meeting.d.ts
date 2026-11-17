@@ -1,11 +1,12 @@
 import {Selectable} from 'kysely'
 import {NonNullableProps} from '../../../client/types/generics'
-import {AutogroupReflectionGroupType, UsedReactjis} from './index.d'
+import {AutogroupReflectionGroupType, ResetReflectionGroupType, UsedReactjis} from './index.d'
 import {
   CheckInMeetingPhase,
   NewMeetingPhase,
   PokerMeetingPhase,
   RetroMeetingPhase,
+  type TeamHealthMeetingPhase,
   TeamPromptPhase
 } from './NewMeetingPhase'
 import {NewMeeting as NewMeetingPG} from './pg'
@@ -33,7 +34,6 @@ type BaseNewMeeting = Pick<
   | 'scheduledEndTime'
   | 'summary'
   | 'sentimentScore'
-  | 'slackTs'
   | 'engagement'
   | 'summaryPageId'
 > & {phases: NewMeetingPhase[]; usedReactjis: UsedReactjis | null}
@@ -54,7 +54,7 @@ export type RetrospectiveMeeting = BaseNewMeeting &
     meetingType: 'retrospective'
     phases: RetroMeetingPhase[]
     autogroupReflectionGroups: AutogroupReflectionGroupType[] | null
-    resetReflectionGroups: AutogroupReflectionGroupType[] | null
+    resetReflectionGroups: ResetReflectionGroupType[] | null
     transcription: TranscriptBlock[] | null
   }
 
@@ -72,12 +72,23 @@ export type CheckInMeeting = BaseNewMeeting &
   }
 
 export type TeamPromptMeeting = BaseNewMeeting &
-  NonNullableProps<Pick<NewMeeting, 'meetingPrompt'>> & {
+  NonNullableProps<Pick<NewMeeting, 'meetingPrompt' | 'templateId'>> & {
     meetingType: 'teamPrompt'
     phases: TeamPromptPhase[]
   }
 
-export type AnyMeeting = RetrospectiveMeeting | PokerMeeting | CheckInMeeting | TeamPromptMeeting
+export type TeamHealthMeeting = BaseNewMeeting &
+  NonNullableProps<Pick<NewMeeting, 'templateId'>> & {
+    meetingType: 'teamHealth'
+    phases: TeamHealthMeetingPhase[]
+  }
+
+export type AnyMeeting =
+  | RetrospectiveMeeting
+  | PokerMeeting
+  | CheckInMeeting
+  | TeamPromptMeeting
+  | TeamHealthMeeting
 
 export interface MeetingMember {
   id: string
@@ -104,8 +115,13 @@ export type PokerMeetingMember = MeetingMember & {
   meetingType: 'poker'
   isSpectating: boolean
 }
+export type TeamHealthMeetingMember = MeetingMember & {
+  meetingType: 'teamHealth'
+  isSpectating: boolean
+}
 export type AnyMeetingMember =
   | PokerMeetingMember
   | RetroMeetingMember
   | ActionMeetingMember
   | TeamPromptMeetingMember
+  | TeamHealthMeetingMember

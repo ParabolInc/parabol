@@ -1,6 +1,4 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import type {RefObject} from 'react'
 import {usePaginationFragment} from 'react-relay'
 import type {
   NotificationDropdown_query$data,
@@ -10,37 +8,21 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useTimeout from '~/hooks/useTimeout'
 import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMutation'
 import type {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
-import useClientSideTrack from '../hooks/useClientSideTrack'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-import type {MenuProps} from '../hooks/useMenu'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import NotificationMenuItem from './NotificationMenuItem'
 import NotificationPicker from './NotificationPicker'
 
 interface Props {
-  menuProps: MenuProps
-  parentRef: RefObject<HTMLDivElement>
   queryRef: NotificationDropdown_query$key
 }
-
-const NoNotifications = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  fontSize: 16,
-  fontWeight: 600,
-  height: 56,
-  justifyContent: 'center',
-  padding: '0 16px',
-  width: '100%'
-})
 
 const defaultViewer = {
   notifications: {edges: []}
 } as unknown as NotificationDropdown_query$data
 
 const NotificationDropdown = (props: Props) => {
-  const {queryRef, menuProps, parentRef} = props
+  const {queryRef} = props
   const paginationRes = usePaginationFragment<
     NotificationDropdownPaginationQuery,
     NotificationDropdown_query$key
@@ -55,7 +37,6 @@ const NotificationDropdown = (props: Props) => {
               node {
                 id
                 status
-                type
                 ...NotificationPicker_notification
               }
             }
@@ -72,41 +53,39 @@ const NotificationDropdown = (props: Props) => {
   const {edges} = notifications
   const hasNotifications = edges.length > 0
   const timeOut = useTimeout(300)
-  const lastItem = useLoadNextOnScrollBottom(paginationRes, {
-    root: parentRef.current,
-    rootMargin: '8px'
-  })
+  // the sentinel is inside the scrolling MenuContent, so the viewport root already
+  // clips it to what is visible in the menu
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {rootMargin: '8px'})
   const atmosphere = useAtmosphere()
-  useClientSideTrack('Notification Menu Opened', {})
   return (
-    <Menu ariaLabel={'Select a notification'} {...menuProps}>
+    <MenuContent
+      align='end'
+      sideOffset={4}
+      aria-label='Select a notification'
+      className='max-h-96 w-100 max-w-[calc(100vw-16px)] py-0'
+    >
       {!hasNotifications && (
-        <MenuItem label={<NoNotifications>{'You’re all caught up! 💯'}</NoNotifications>} />
+        <div className='flex h-14 w-full items-center justify-center px-4 font-semibold text-base'>
+          {'You’re all caught up! 💯'}
+        </div>
       )}
       {edges.map(({node}) => {
-        const {id: notificationId, status, type} = node
+        const {id: notificationId, status} = node
         const onViewFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'READ'}, {})
         }
         const onClickFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'CLICKED'}, {})
-          SendClientSideEvent(atmosphere, 'Notification Clicked', {
-            notificationType: type
-          })
         }
         const onView = status === 'UNREAD' ? onViewFn : undefined
         return (
-          <MenuItem
-            key={node.id}
-            onView={onView}
-            onClick={onClickFn}
-            parentRef={parentRef}
-            label={<NotificationPicker notification={node} />}
-          />
+          <NotificationMenuItem key={node.id} onView={onView} onClick={onClickFn}>
+            <NotificationPicker notification={node} />
+          </NotificationMenuItem>
         )
       })}
-      {hasNotifications && timeOut && <MenuItem key={'last'} label={lastItem} />}
-    </Menu>
+      {hasNotifications && timeOut && lastItem}
+    </MenuContent>
   )
 }
 

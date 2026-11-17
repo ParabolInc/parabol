@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
@@ -14,34 +13,13 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useSlackChannels from '../../../../hooks/useSlackChannels'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout} from '../../../../types/constEnums'
 import SlackChannelPicker from './SlackChannelPicker'
 import SlackNotificationRow from './SlackNotificationRow'
-
-const SlackNotificationListStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER
-})
 
 interface Props {
   teamId: string
   viewer: SlackNotificationList_viewer$key
 }
-
-const TeamGroup = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingBottom: 16
-})
-
-const UserGroup = styled(TeamGroup)({
-  paddingTop: 32
-})
-
-const Heading = styled(LabelHeading)({
-  width: '100%'
-})
 
 const TEAM_EVENTS = [
   'meetingStart',
@@ -49,7 +27,10 @@ const TEAM_EVENTS = [
   'MEETING_STAGE_TIME_LIMIT_START',
   'STANDUP_RESPONSE_SUBMITTED'
 ] as SlackNotificationEventEnum[]
-const USER_EVENTS = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEventEnum[]
+const USER_EVENTS = [
+  'MEETING_STAGE_TIME_LIMIT_END',
+  'TEAM_HEALTH_RESPONSE_DUE'
+] as SlackNotificationEventEnum[]
 
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer: viewerRef} = props
@@ -80,58 +61,59 @@ const SlackNotificationList = (props: Props) => {
   const {integrations} = teamMember!
   const {slack} = integrations
   const notifications = slack?.notifications ?? []
-  const channels = useSlackChannels(slack)
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const {channels, refetch: refetchChannels} = useSlackChannels(slack)
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
   const {isActive, defaultTeamChannelId} = slack!
 
-  const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
-    (slackChannelId) => () => {
-      // only change the active events
-      const slackNotificationEvents = notifications
-        .filter((notification) => notification.channelId && notification.eventType === 'team')
-        .map(({event}) => event)
-      if (
-        submitting ||
-        defaultTeamChannelId === slackChannelId ||
-        slackNotificationEvents.length === 0
-      ) {
-        return
-      }
-      submitMutation()
-      SetDefaultSlackChannelMutation(
-        atmosphere,
-        {slackChannelId: slackChannelId!, teamId},
-        {
-          onError,
-          onCompleted
-        }
-      )
-      SetSlackNotificationMutation(
-        atmosphere,
-        {slackChannelId, slackNotificationEvents, teamId},
-        {
-          onError,
-          onCompleted
-        }
-      )
+  const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback((slackChannelId) => {
+    // only change the active events
+    const slackNotificationEvents = notifications
+      .filter((notification) => notification.channelId && notification.eventType === 'team')
+      .map(({event}) => event)
+    if (
+      submitting ||
+      defaultTeamChannelId === slackChannelId ||
+      slackNotificationEvents.length === 0
+    ) {
+      return
     }
-  )
+    submitMutation()
+    SetDefaultSlackChannelMutation(
+      atmosphere,
+      {slackChannelId, teamId},
+      {
+        onError,
+        onCompleted
+      }
+    )
+    SetSlackNotificationMutation(
+      atmosphere,
+      {slackChannelId, slackNotificationEvents, teamId},
+      {
+        onError,
+        onCompleted
+      }
+    )
+  })
 
   return (
-    <SlackNotificationListStyles>
-      <TeamGroup>
-        <Heading>Team Notifications</Heading>
+    <div className='border-hairline border-t p-4'>
+      <div className='flex items-center pb-4'>
+        <LabelHeading className='w-full'>Team Notifications</LabelHeading>
         <SlackChannelPicker
           channels={channels}
           isTokenValid={isActive}
           localChannelId={defaultTeamChannelId}
           onClick={changeTeamChannel}
+          onOpen={refetchChannels}
           teamId={teamId}
         />
-      </TeamGroup>
+      </div>
       {error && <StyledError>{error.message}</StyledError>}
       {TEAM_EVENTS.map((event) => {
         return (
@@ -144,10 +126,10 @@ const SlackNotificationList = (props: Props) => {
           />
         )
       })}
-      <UserGroup>
-        <Heading>Private Notifications</Heading>
+      <div className='flex items-center pt-8 pb-4'>
+        <LabelHeading className='w-full'>Private Notifications</LabelHeading>
         {'@Parabol'}
-      </UserGroup>
+      </div>
       {error && <StyledError>{error.message}</StyledError>}
       {localPrivateChannelId &&
         USER_EVENTS.map((event) => {
@@ -161,7 +143,7 @@ const SlackNotificationList = (props: Props) => {
             />
           )
         })}
-    </SlackNotificationListStyles>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
@@ -9,10 +8,6 @@ import type {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList
 import type {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 import TimelineEvent from './TimelineEvent'
 import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
 
 interface Props {
   queryRef: TimelineFeedList_query$key
@@ -132,7 +127,7 @@ const TimelineFeedList = (props: Props) => {
     return (
       <div className='text-base'>
         Looks like you have no events with these filters.
-        <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
+        <Link to={'/me'} className='font-sans font-semibold text-accent no-underline'>
           {' '}
           Show all events.
         </Link>
@@ -141,15 +136,15 @@ const TimelineFeedList = (props: Props) => {
   }
 
   return (
-    <ResultScroller>
+    <div className='overflow-auto'>
       {groupedFreeHistory.map(({label, events}) => (
         <div key={label}>
           <div className='my-2 flex items-center gap-4 py-4'>
-            <div className='h-[1px] flex-1 bg-slate-400' />
-            <div className='rounded-full border border-slate-200 bg-slate-50 px-3 py-1 font-medium text-slate-600 text-sm'>
+            <div className='h-[1px] flex-1 bg-hairline-strong' />
+            <div className='rounded border border-hairline bg-surface-card px-3 py-1 font-medium text-fg-secondary text-sm'>
               {label}
             </div>
-            <div className='h-[1px] flex-1 bg-slate-400' />
+            <div className='h-[1px] flex-1 bg-hairline-strong' />
           </div>
           {events.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
@@ -167,7 +162,7 @@ const TimelineFeedList = (props: Props) => {
         </>
       )}
       {lastItem}
-    </ResultScroller>
+    </div>
   )
 }
 

@@ -1,42 +1,8 @@
-import styled from '@emotion/styled'
-import {type CSSProperties, type ReactNode, useRef} from 'react'
+import {type ReactNode, useRef} from 'react'
 import {useCoverable} from '../hooks/useControlBarCovers'
-import {DECELERATE} from '../styles/animation'
 import {desktopSidebarShadow} from '../styles/elevation'
-import {MeetingControlBarEnum, NavSidebar, ZIndex} from '../types/constEnums'
-
-const DURATION = 200
-
-interface StyleProps {
-  isOpen: boolean
-  isRightDrawer?: boolean
-}
-
-const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
-  minWidth: isOpen ? NavSidebar.WIDTH : 0,
-  maxWidth: isOpen ? NavSidebar.WIDTH : 0,
-  // changing width is expensive, but this is only run on non-mobile devices, so it's not horrible & looks better than alternatives
-  transition: `all ${DURATION}ms ${DECELERATE}`,
-  // needs to be above the main view area
-  zIndex: ZIndex.SIDE_SHEET
-}))
-
-const Fixed = styled('div')<StyleProps>(({isOpen}) => ({
-  position: 'fixed',
-  transform: `translateX(${isOpen ? 0 : -NavSidebar.WIDTH}px)`,
-  transition: `all ${DURATION}ms ${DECELERATE}`
-}))
-
-// Inline style keeps `transition` stable across renders so only `width` changes,
-// giving the browser a clear before/after for the CSS transition to fire.
-// height is intentionally omitted so useCoverable can override it via style.height
-const RIGHT_DRAWER_STYLE: CSSProperties = {
-  overflow: 'hidden',
-  flexShrink: 0,
-  flexGrow: 0,
-  minWidth: 0,
-  transition: `width ${DURATION}ms ${DECELERATE}, box-shadow ${DURATION}ms ${DECELERATE}`
-}
+import {MeetingControlBarEnum, NavSidebar} from '../types/constEnums'
+import {cn} from '../ui/cn'
 
 interface Props {
   children: ReactNode
@@ -67,9 +33,9 @@ const StaticSidebar = (props: Props) => {
     return (
       <div
         ref={rightDrawerRef}
-        className='h-full'
+        className='relative z-side-sheet h-full min-w-0 shrink-0 grow-0 overflow-hidden transition-[width,box-shadow] duration-200 ease-[cubic-bezier(0,0,.2,1)]'
         style={{
-          ...RIGHT_DRAWER_STYLE,
+          // height is intentionally omitted so useCoverable can override it via style.height
           width: isOpen ? sidebarWidth : 0,
           boxShadow: isOpen ? desktopSidebarShadow : 'none'
         }}
@@ -79,9 +45,23 @@ const StaticSidebar = (props: Props) => {
     )
   }
   return (
-    <Placeholder isOpen={isOpen}>
-      <Fixed isOpen={isOpen}>{children}</Fixed>
-    </Placeholder>
+    <div
+      className={cn(
+        // changing width is expensive, but this is only run on non-mobile devices, so it's not horrible & looks better than alternatives
+        // needs to be above the main view area
+        'z-side-sheet transition-all duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+        isOpen ? 'min-w-64 max-w-64' : 'min-w-0 max-w-0'
+      )}
+    >
+      <div
+        className={cn(
+          'fixed transition-all duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+          isOpen ? 'translate-x-0' : '-translate-x-64'
+        )}
+      >
+        {children}
+      </div>
+    </div>
   )
 }
 

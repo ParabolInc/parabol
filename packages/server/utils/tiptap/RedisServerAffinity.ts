@@ -10,6 +10,10 @@ import {
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
+import {Logger} from '../Logger'
+import logRedisErrors from '../logRedisErrors'
+import parseSessionId from '../parseSessionId'
+import {type RequestLogContext, runWithLogContext, runWithoutLogContext} from '../requestLogContext'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
 export type RSAMessageProxy = {
@@ -71,6 +75,8 @@ export type SerializedHTTPRequest = {
   url: string
   headers: Omit<IncomingHttpHeaders, 'sec-websocket-key'> & {'sec-websocket-key': string}
   socket: {remoteAddress: string}
+  // set once at upgrade, so every server that handles the socket agrees on when it opened
+  connectedAt: number
 }
 export type Pack = (msg: RSAMessage) => string | Buffer<ArrayBufferLike>
 type Unpack = (packedMessage: Uint8Array | Buffer<ArrayBufferLike>) => RSAMessage
@@ -81,8 +87,16 @@ type CustomEventName = string
 type CustomEvents = Record<CustomEventName, (documentName: string, payload: any) => Promise<any>>
 // Not exported by @hocuspocus/server
 type ClientConnection = ReturnType<Hocuspocus['handleConnection']>
-type OriginConnection = {clientConnection: ClientConnection; socket: WebSocketLike}
-type ProxyConnection = {clientConnection: ClientConnection; socket: HocusPocusProxySocket}
+type OriginConnection = {
+  clientConnection: ClientConnection
+  socket: WebSocketLike
+  logContext: RequestLogContext
+}
+type ProxyConnection = {
+  clientConnection: ClientConnection
+  socket: HocusPocusProxySocket
+  logContext: RequestLogContext
+}
 
 interface Configuration<TCE> {
   redis: RedisClient
@@ -99,17 +113,34 @@ interface Configuration<TCE> {
   deriveContext?: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
 }
 
+// uWS decodes header bytes as UTF-8 (invalid bytes become U+FFFD), but Headers only accepts byte strings
+const toByteString = (value: string) => Buffer.from(value, 'utf8').toString('latin1')
+
+// Hocuspocus logs the connection limits it enforces from inside handleMessage, including on the doc owner
+const getConnectionLogContext = (
+  {url, socket}: SerializedHTTPRequest,
+  context: Record<string, any>
+): RequestLogContext => ({
+  userId: context.userId,
+  ip: socket.remoteAddress,
+  sessionId: parseSessionId(new URL(url, 'http://localhost').searchParams.get('sessionId')),
+  component: 'yjs'
+})
+
 // Hocuspocus expects a web-standard Request, so rehydrate one from what crossed the wire
-const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
+export const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
   const {method, url, headers} = serializedHTTPRequest
   const webHeaders = new Headers()
   Object.entries(headers).forEach(([name, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((v) => {
-        webHeaders.append(name, v)
+    if (value === undefined) return
+    const values = Array.isArray(value) ? value : [value]
+    try {
+      values.forEach((v) => {
+        webHeaders.append(name, toByteString(v))
       })
-    } else if (value !== undefined) {
-      webHeaders.set(name, value)
+    } catch {
+      webHeaders.delete(name)
+      Logger.warn(`toWebRequest: dropped invalid header ${JSON.stringify(name)}`)
     }
   })
   return new Request(new URL(url, 'http://localhost'), {
@@ -153,6 +184,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     } = configuration
     this.pub = redis.duplicate()
     this.sub = redis.duplicate()
+    logRedisErrors(this.pub, 'redisServerAffinity_pub')
+    logRedisErrors(this.sub, 'redisServerAffinity_sub')
     this.pack = pack
     this.unpack = unpack
     this.serverId = serverId
@@ -190,15 +223,18 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     let entry = this.proxyConnections[socketId]
     if (!entry) {
       const socket = new HocusPocusProxySocket(this.pub, this.pack, replyTo, socketId)
+      const context = this.deriveContext(serializedHTTPRequest)
       const clientConnection = this.instance.handleConnection(
         socket,
         toWebRequest(serializedHTTPRequest),
-        this.deriveContext(serializedHTTPRequest)
+        context
       )
-      entry = {clientConnection, socket}
+      const logContext = getConnectionLogContext(serializedHTTPRequest, context)
+      entry = {clientConnection, socket, logContext}
       this.proxyConnections[socketId] = entry
     }
-    entry.clientConnection.handleMessage(message)
+    const {clientConnection, logContext} = entry
+    runWithLogContext(logContext, () => clientConnection.handleMessage(message))
   }
 
   private getLock(documentName: string) {
@@ -230,7 +266,15 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     return this.getOrClaimLock(documentName)
   }
 
-  private handleRedisMessage = async (_channel: Buffer, packedMessage: Buffer) => {
+  private handleRedisMessage = async (channel: Buffer, packedMessage: Buffer) => {
+    try {
+      await this.routeRedisMessage(packedMessage)
+    } catch (e) {
+      Logger.error(`RedisServerAffinity: failed to handle message on ${channel}`, e)
+    }
+  }
+
+  private async routeRedisMessage(packedMessage: Buffer) {
     const msg = this.unpack(packedMessage) as RSAMessage
     const {type} = msg
     if (type === 'proxy') {
@@ -257,7 +301,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         replyId,
         payload: res
       }
-      this.pub.publish(`${replyTo}`, this.pack(reply))
+      this.pub.publish(`${replyTo}`, this.pack(reply)).catch(Logger.error)
       return
     }
     if (type === 'customEventComplete') {
@@ -286,9 +330,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     // Clear any existing interval to prevent leaking it when called more than once
     // (e.g. both onLoadDocument and lockDocument call this for the same document)
     clearInterval(this.locks[documentName])
-    this.locks[documentName] = setInterval(() => {
-      this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
-    }, this.lockTTL / 2)
+    // The lock outlives the socket or operation that loaded the document, so it must not keep their log context
+    this.locks[documentName] = runWithoutLogContext(() =>
+      setInterval(() => {
+        this.pub
+          .set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
+          .catch(Logger.error)
+      }, this.lockTTL / 2)
+    )
   }
 
   async releaseLock(documentName: string) {
@@ -342,7 +391,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'customEventStart'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       const {promise, resolve, reject} = Promise.withResolvers()
       this.pendingReplies[replyId] = resolve
       setTimeout(() => {
@@ -367,12 +416,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   /* WebSocket Server Hooks */
   onSocketOpen(ws: WebSocketLike, serializedHTTPRequest: SerializedHTTPRequest) {
     const socketId = serializedHTTPRequest.headers['sec-websocket-key']
+    const context = this.deriveContext(serializedHTTPRequest)
     const clientConnection = this.instance.handleConnection(
       ws,
       toWebRequest(serializedHTTPRequest),
-      this.deriveContext(serializedHTTPRequest)
+      context
     )
-    this.originConnections[socketId] = {clientConnection, socket: ws}
+    const logContext = getConnectionLogContext(serializedHTTPRequest, context)
+    this.originConnections[socketId] = {clientConnection, socket: ws, logContext}
   }
 
   async onSocketMessage(serializedHTTPRequest: SerializedHTTPRequest, detachableMsg: ArrayBuffer) {
@@ -387,10 +438,12 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     const socketId = serializedHTTPRequest.headers['sec-websocket-key']
     const entry = this.originConnections[socketId]
     if (!entry) return
-    const {clientConnection} = entry
+    const {clientConnection, logContext} = entry
+    const handleMessage = () =>
+      runWithLogContext(logContext, () => clientConnection.handleMessage(message))
 
     if (isDocLoadedOnInstance) {
-      clientConnection.handleMessage(message)
+      handleMessage()
       return
     }
 
@@ -404,11 +457,11 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         type: 'proxy'
       }
       const msg = this.pack(proxyMessage)
-      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg)
+      this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       return
     }
     // This server owns the document, but hocuspocus hasn't loaded it yet
-    clientConnection.handleMessage(message)
+    handleMessage()
   }
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
@@ -436,10 +489,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   async afterUnloadDocument(data: afterUnloadDocumentPayload) {
     const {documentName} = data
-    this.releaseLock(documentName)
+    this.releaseLock(documentName).catch(Logger.error)
     // Broadcast to cluster to immediately remove the cached redis value
     const msg: RSAMessageUnload = {type: 'unload', documentName}
-    this.pub.publish(this.msgChannel, this.pack(msg))
+    this.pub.publish(this.msgChannel, this.pack(msg)).catch(Logger.error)
   }
 
   async onDestroy() {

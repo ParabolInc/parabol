@@ -63,14 +63,21 @@ type JiraIssue implements TaskIntegration {
   summary: String!
 
   """
+  The plaintext title of the issue, same as the summary
+  """
+  title: String!
+
+  """
   Field names that exists on the issue and can be used as estimation fields
   """
   possibleEstimationFields: [JiraIssueField!]!
+    @deprecated(reason: "Use EstimateStage.serviceFieldListing")
 
   """
   Missing estimation field
   """
   missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum
+    @deprecated(reason: "Use EstimateStage.serviceFieldListing.helpUrl")
 
   """
   The stringified ADF of the jira issue description
@@ -81,6 +88,11 @@ type JiraIssue implements TaskIntegration {
   The description converted into raw HTML
   """
   descriptionHTML: String!
+
+  """
+  The issue's current workflow status. Null when the issue was fetched without it
+  """
+  status: JiraIssueStatus
 
   """
   The last time this issue was updated

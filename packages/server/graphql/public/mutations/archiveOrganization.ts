@@ -1,39 +1,31 @@
-import {sql} from 'kysely'
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import type Team from '../../../database/types/Team'
-import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
+import removeAllUsersFromOrg from '../../mutations/helpers/removeAllUsersFromOrg'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   _source,
   {orgId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  const viewerId = getUserId(authToken)
-  const [organization, viewer] = await Promise.all([
-    dataLoader.get('organizations').loadNonNull(orgId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier} = organization
   if (tier !== 'starter') {
-    return standardError(new Error('You must first downgrade before archiving'), {
-      userId: viewerId
+    throw new GraphQLError('You must first downgrade before archiving', {
+      extensions: {code: 'CONFLICT'}
     })
   }
 
   // RESOLUTION
-  analytics.archiveOrganization(viewer, orgId)
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   const teamArchiveResults = (await Promise.all(
@@ -61,15 +53,7 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
 
   const uniqueUserIds = Array.from(new Set(allUserIds))
 
-  await Promise.all([
-    getKysely()
-      .updateTable('OrganizationUser')
-      .set({removedAt: sql`CURRENT_TIMESTAMP`})
-      .where('orgId', '=', orgId)
-      .where('removedAt', 'is', null)
-      .execute(),
-    removeTeamsLimitObjects(orgId, dataLoader)
-  ])
+  await Promise.all([removeAllUsersFromOrg(orgId), removeTeamsLimitObjects(orgId, dataLoader)])
 
   const data = {
     orgId,

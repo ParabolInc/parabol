@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
-import type {useShareTopicMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useShareTopicMutation.graphql'
+import type {useShareTopicMutation as TShareTopicMutation} from '../__generated__/useShareTopicMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useShareTopicMutation_meeting on ShareTopicSuccess {
@@ -20,35 +21,31 @@ const mutation = graphql`
           message
         }
       }
-      ...useShareTopicMutation_meeting @relay(mask: false)
+      ...useShareTopicMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 type Handlers = {
   onSuccess?: () => void
-  onError?: () => void
 }
 const useShareTopicMutation = () => {
-  const [commit, submitting] = useMutation<TAcceptRequestToJoinDomainMutation>(mutation)
+  const [commit, submitting] = useMutation<TShareTopicMutation>(mutation)
   const atmosphere = useAtmosphere()
-  const execute = (
-    config: UseMutationConfig<TAcceptRequestToJoinDomainMutation>,
-    handlers?: Handlers
-  ) => {
+  const execute = (config: UseMutationConfig<TShareTopicMutation>, handlers?: Handlers) => {
     return commit({
       onCompleted: (res) => {
         const error = res.shareTopic.error
         if (!error) {
-          handlers?.onSuccess && handlers.onSuccess()
+          handlers?.onSuccess?.()
         } else {
           atmosphere.eventEmitter.emit('addSnackbar', {
             message: error.message,
             autoDismiss: 5,
             key: 'shareTopicError'
           })
-          handlers?.onError && handlers.onError()
         }
       },
+      onError: snackOnError(atmosphere, 'shareTopicError'),
       // allow components to override default handlers
       ...config
     })

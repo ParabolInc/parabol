@@ -1,66 +1,64 @@
+import {GraphQLError} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
+import getUserDetail from '../../../utils/getUserDetail'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
 
 const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   _source,
   {teamId, parentTemplateId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const [allTemplates, viewerTeam, viewer] = await Promise.all([
+  const [allTemplates, viewerTeam] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('teams').load(teamId)
   ])
 
   if (!viewerTeam) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
+    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
-  if (getFeatureTier(org) === 'starter' && viewer.freeCustomPokerTemplatesRemaining === 0) {
-    return standardError(new Error('You have reached the limit of free custom templates.'), {
-      userId: viewerId
+  const freeTemplatesRemaining = await getUserDetail(
+    viewerId,
+    'freeCustomPokerTemplatesRemaining',
+    dataLoader
+  )
+  if (getFeatureTier(org) === 'starter' && freeTemplatesRemaining === 0) {
+    throw new GraphQLError('You have reached the limit of free custom templates.', {
+      extensions: {code: 'UPGRADE_REQUIRED'}
     })
-  } else {
-    decrementFreeTemplatesRemaining(viewerId, 'poker')
-    viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
   }
   let data
   if (parentTemplateId) {
     const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
     if (!parentTemplate) {
-      return standardError(new Error('Parent template not found'), {
-        userId: viewerId
-      })
+      throw new GraphQLError('Parent template not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {name, scope} = parentTemplate
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, parentTemplate.teamId))
-        return standardError(new Error('Template is scoped to team'), {
-          userId: viewerId
-        })
+        throw new GraphQLError('Template is scoped to team', {extensions: {code: 'FORBIDDEN'}})
     } else if (scope === 'ORGANIZATION') {
       const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
       const isInOrg =
         parentTemplateTeam &&
-        (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
+        (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader)) &&
+        (!resourceGrants || (await resourceGrants.hasOrg(parentTemplateTeam.orgId)))
       if (!isInOrg) {
-        return standardError(new Error('Template is scoped to organization'), {
-          userId: viewerId
+        throw new GraphQLError('Template is scoped to organization', {
+          extensions: {code: 'FORBIDDEN'}
         })
       }
     }
@@ -93,11 +91,9 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
         .insertInto('TemplateDimension')
         .values(newTemplateDimensions)
         .execute(),
-      decrementFreeTemplatesRemaining(viewerId, 'poker')
+      decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
-    dataLoader.clearAll(['users', 'meetingTemplates', 'templateDimensions'])
-    viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
-    analytics.templateMetrics(viewer, newTemplate, 'Template Cloned')
+    dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
     data = {templateId: newTemplate.id}
   } else {
     const {orgId} = viewerTeam
@@ -126,11 +122,9 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
           templateId
         })
         .execute(),
-      decrementFreeTemplatesRemaining(viewerId, 'poker')
+      decrementFreeTemplatesRemaining(viewerId, 'freeCustomPokerTemplatesRemaining')
     ])
-    dataLoader.clearAll(['users', 'meetingTemplates', 'templateDimensions'])
-    viewer.freeCustomPokerTemplatesRemaining = viewer.freeCustomPokerTemplatesRemaining - 1
-    analytics.templateMetrics(viewer, newTemplate, 'Template Created')
+    dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
     data = {templateId}
   }
   publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateSuccess', data, subOptions)

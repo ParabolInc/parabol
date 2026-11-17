@@ -1,19 +1,17 @@
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveIntegrationProviderMutation from '../../../../mutations/RemoveIntegrationProviderMutation'
 import {Duration} from '../../../../types/constEnums'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 interface Props {
-  menuProps: MenuProps
   mutationProps: MenuMutationProps
   providerId: string
 }
 
 const MattermostConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, providerId} = props
+  const {mutationProps, providerId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -26,9 +24,9 @@ const MattermostConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Mattermost integration'} {...menuProps}>
-      <MenuItem label='Remove Mattermost' onClick={removeMattermostAuth} />
-    </Menu>
+    <MenuContent>
+      <MenuItem onClick={removeMattermostAuth}>Remove Mattermost</MenuItem>
+    </MenuContent>
   )
 }
 

@@ -1,0 +1,39 @@
+"""
+The outcome for one address invited to a team
+"""
+enum TeamInviteeStatusEnum {
+  """
+  An invitation email was sent
+  """
+  sent
+
+  """
+  The address belongs to someone already on the team
+  """
+  alreadyOnTeam
+
+  """
+  This team invited the address moments ago, so another email was not sent
+  """
+  alreadyInvited
+
+  """
+  The organization only accepts addresses on its approved domains
+  """
+  notApproved
+
+  """
+  Parabol does not send invitations to this domain
+  """
+  blockedDomain
+
+  """
+  The address cannot receive email
+  """
+  undeliverable
+
+  """
+  The email provider could not send the invitation
+  """
+  sendFailed
+}

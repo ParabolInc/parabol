@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {CreateOAuth1AuthorizeUrlMutation as TCreateOAuth1AuthorizeUrlMutation} from '../__generated__/CreateOAuth1AuthorizeUrlMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
+import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
   mutation CreateOAuth1AuthorizeUrlMutation($providerId: ID!, $teamId: ID!) {
@@ -23,7 +24,7 @@ const CreateOAuth1AuthorizeUrlMutation: StandardMutation<
   return commitMutation<TCreateOAuth1AuthorizeUrlMutation>(atmosphere, {
     mutation,
     variables,
-    onError,
+    onError: onError ?? snackOnError(atmosphere),
     onCompleted
   })
 }

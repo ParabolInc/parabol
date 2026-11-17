@@ -1,13 +1,5 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-
-const Button = styled(PlainButton)({
-  color: PALETTE.SKY_500,
-  padding: 0,
-  paddingLeft: 8
-})
 
 interface Props {
   label: string
@@ -16,7 +8,11 @@ interface Props {
 
 const NotificationAction = (props: Props) => {
   const {label, onClick} = props
-  return <Button onClick={onClick}>{label}</Button>
+  return (
+    <PlainButton className='p-0 pl-2 text-accent' onClick={onClick}>
+      {label}
+    </PlainButton>
+  )
 }
 
 export default NotificationAction

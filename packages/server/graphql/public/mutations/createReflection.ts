@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
@@ -7,7 +8,6 @@ import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhas
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -26,28 +26,27 @@ const createReflection: MutationResolvers['createReflection'] = async (
   const {content, sortOrder, meetingId, promptId} = input
   // AUTH
   const viewerId = getUserId(authToken)
-  const [reflectPrompt, meeting, viewer] = await Promise.all([
-    dataLoader.get('reflectPrompts').load(promptId),
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+  const [reflectPrompt, meeting] = await Promise.all([
+    dataLoader.get('templatePrompts').load(promptId),
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!reflectPrompt) {
-    return {error: {message: 'Category not found'}}
+    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting already ended'}}
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   }
   if (isPhaseComplete('group', phases)) {
-    return {error: {message: 'Meeting phase already completed'}}
+    throw new GraphQLError('Meeting phase already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
   if (content && content.length > 2000) {
-    return {error: {message: 'Reflection content is too long'}}
+    throw new GraphQLError('Reflection content is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const normalizedContent = convertToTipTap(content)
@@ -109,7 +108,6 @@ const createReflection: MutationResolvers['createReflection'] = async (
       .execute()
     dataLoader.clearAll('newMeetings')
   }
-  analytics.reflectionAdded(viewer, teamId, meetingId)
 
   const data = {
     meetingId,

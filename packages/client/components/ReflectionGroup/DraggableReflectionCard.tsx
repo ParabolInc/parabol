@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -40,10 +39,6 @@ const makeDragState = () => ({
   timeout: null as null | number
 })
 
-const DragWrapper = styled('div')<{showDragCursor: boolean | undefined}>(({showDragCursor}) => ({
-  cursor: showDragCursor ? 'grab' : undefined
-}))
-
 export type ReflectionDragState = ReturnType<typeof makeDragState>
 
 interface Props {
@@ -56,7 +51,6 @@ interface Props {
   staticIdx?: number
   staticReflections: DraggableReflectionCard_staticReflections$key | null
   swipeColumn?: SwipeColumn
-  dataCy?: string
   isExpanded?: boolean
   showDragHintAnimation?: boolean
 }
@@ -81,7 +75,6 @@ const DraggableReflectionCard = (props: Props) => {
     isDraggable,
     isExpanded,
     swipeColumn,
-    dataCy,
     showDragHintAnimation
   } = props
   const staticReflections = useFragment(
@@ -137,7 +130,6 @@ const DraggableReflectionCard = (props: Props) => {
           id
         }
         spotlightReflectionId
-        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -171,7 +163,8 @@ const DraggableReflectionCard = (props: Props) => {
   // slow state updates can mean we miss an onMouseDown event
   const handleDrag = canHandleDrag ? onMouseDown : undefined
   return (
-    <DragWrapper
+    <div
+      className={showDragCursor ? 'cursor-grab' : undefined}
       ref={(c) => {
         const isPriorityCard =
           !isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight
@@ -183,10 +176,8 @@ const DraggableReflectionCard = (props: Props) => {
       onTouchStart={handleDrag}
       onMouseEnter={() => onHoverReflection?.(reflectionId)}
       onMouseLeave={() => onHoverReflection?.(null)}
-      showDragCursor={showDragCursor}
     >
       <ReflectionCard
-        dataCy={dataCy}
         reflectionRef={reflection}
         isClipped={isClipped}
         meetingRef={meeting}
@@ -195,7 +186,7 @@ const DraggableReflectionCard = (props: Props) => {
         isExpanded={isExpanded}
         showDragHintAnimation={showDragHintAnimation}
       />
-    </DragWrapper>
+    </div>
   )
 }
 

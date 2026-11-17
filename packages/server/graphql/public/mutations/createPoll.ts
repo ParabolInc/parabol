@@ -1,7 +1,7 @@
+import {GraphQLError} from 'graphql'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -18,54 +18,47 @@ const createPoll: MutationResolvers['createPoll'] = async (
 
   // VALIDATION
   if (title.length < Polls.MIN_TITLE_LENGTH) {
-    return {
-      error: {
-        message: `Poll title too short, provided title is ${title.length}, min ${Polls.MIN_TITLE_LENGTH}`
-      }
-    }
+    throw new GraphQLError(
+      `Poll title too short, provided title is ${title.length}, min ${Polls.MIN_TITLE_LENGTH}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (title.length > Polls.MAX_TITLE_LENGTH) {
-    return {
-      error: {
-        message: `Poll title too long, provided title is ${title.length}, max ${Polls.MAX_TITLE_LENGTH}`
-      }
-    }
+    throw new GraphQLError(
+      `Poll title too long, provided title is ${title.length}, max ${Polls.MAX_TITLE_LENGTH}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (options.length === 0) {
-    return {error: {message: 'No poll options provided'}}
+    throw new GraphQLError('No poll options provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (options.length < Polls.MIN_OPTIONS) {
-    return {
-      error: {
-        message: `Poll has to have at least ${Polls.MIN_OPTIONS} options, provided ${options.length}`
-      }
-    }
+    throw new GraphQLError(
+      `Poll has to have at least ${Polls.MIN_OPTIONS} options, provided ${options.length}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (options.length > Polls.MAX_OPTIONS) {
-    return {
-      error: {
-        message: `Poll can have at most ${Polls.MAX_OPTIONS} options, provided ${options.length}`
-      }
-    }
+    throw new GraphQLError(
+      `Poll can have at most ${Polls.MAX_OPTIONS} options, provided ${options.length}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (options.some((option) => option.title.length === 0)) {
-    return {error: {message: 'All options need a title'}}
+    throw new GraphQLError('All options need a title', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
-    return {error: {message: 'Invalid discussion thread'}}
+    throw new GraphQLError('Invalid discussion thread', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {meetingId, teamId} = discussion
   if (!meetingId) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-  const [viewerMeetingMember, viewer] = await Promise.all([
-    dataLoader.get('meetingMembers').load(meetingMemberId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!viewerMeetingMember) {
-    return {error: {message: 'Not a member of the meeting'}}
+    throw new GraphQLError('Not a member of the meeting', {extensions: {code: 'FORBIDDEN'}})
   }
 
   // RESOLUTION
@@ -96,13 +89,12 @@ const createPoll: MutationResolvers['createPoll'] = async (
     .execute()
 
   if (insertPollResult.length === 0) {
-    return {error: {message: `Couldn't create a poll`}}
+    throw new GraphQLError(`Couldn't create a poll`, {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
   }
 
   const {pollId} = insertPollResult[0]!
 
   const data = {pollId}
-  analytics.pollAdded(viewer, teamId, meetingId)
   publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
   return data
 }

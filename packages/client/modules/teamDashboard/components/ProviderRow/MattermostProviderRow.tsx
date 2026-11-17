@@ -1,11 +1,9 @@
-import {Add as AddIcon, Close as CloseIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
+import {Add as AddIcon, Close as CloseIcon} from '~/ui/icons'
 import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import MattermostConfigMenu from './MattermostConfigMenu'
@@ -47,8 +45,9 @@ const MattermostProviderRow = (props: Props) => {
     viewerRef
   )
   const [isConnectClicked, setConnectClicked] = useState(false)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps({
+    errorDisplay: 'inline'
+  })
   const mutationProps = {
     submitting,
     submitMutation,
@@ -63,31 +62,22 @@ const MattermostProviderRow = (props: Props) => {
   if (window.__ACTION__.mattermostWebhookIntegrationDisabled) return null
 
   return (
-    <>
-      <ProviderRow
-        connected={!!auth}
-        onConnectClick={() => setConnectClicked(!isConnectClicked)}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={originRef}
-        providerName={Providers.MATTERMOST_NAME}
-        providerDescription={Providers.MATTERMOST_DESC}
-        providerLogo={<MattermostProviderLogo />}
-        connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
-        connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
-        error={error?.message}
-      >
-        {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
-      </ProviderRow>
-      {auth &&
-        menuPortal(
-          <MattermostConfigMenu
-            menuProps={menuProps}
-            mutationProps={mutationProps}
-            providerId={auth.provider.id}
-          />
-        )}
-    </>
+    <ProviderRow
+      connected={!!auth}
+      onConnectClick={() => setConnectClicked(!isConnectClicked)}
+      submitting={submitting}
+      configMenu={
+        auth && <MattermostConfigMenu mutationProps={mutationProps} providerId={auth.provider.id} />
+      }
+      providerName={Providers.MATTERMOST_NAME}
+      providerDescription={Providers.MATTERMOST_DESC}
+      providerLogo={<MattermostProviderLogo />}
+      connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
+      connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
+      error={error?.message}
+    >
+      {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
+    </ProviderRow>
   )
 }
 

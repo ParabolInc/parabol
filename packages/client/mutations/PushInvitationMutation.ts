@@ -3,8 +3,9 @@ import {commitMutation} from 'react-relay'
 import type {PushInvitationMutation as TPushInvitationMutation} from '../__generated__/PushInvitationMutation.graphql'
 import type {PushInvitationMutation_team$data} from '../__generated__/PushInvitationMutation_team.graphql'
 import type {OnNextHandler, StandardMutation} from '../types/relayMutations'
+import GraphQLServerError from '../utils/relay/GraphQLServerError'
 import DenyPushInvitationMutation from './DenyPushInvitationMutation'
-import InviteToTeamMutation from './InviteToTeamMutation'
+import {commitInviteToTeamMutation} from './useInviteToTeamMutation'
 
 graphql`
   fragment PushInvitationMutation_team on PushInvitationPayload {
@@ -47,7 +48,36 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
     action: {
       label: 'Accept',
       callback: () => {
-        InviteToTeamMutation(atmosphere, {meetingId, teamId, invitees: [email]}, {})
+        const snackKey = `pushInvitationResult:${teamId}:${userId}`
+        commitInviteToTeamMutation(atmosphere, {
+          variables: {meetingId, teamId, invitees: [email]},
+          onCompleted: (res, errors) => {
+            const requestError = errors?.[0]?.message
+            const invitee = requestError ? undefined : res.inviteToTeam.invitees[0]
+            const status = invitee?.status
+            const message =
+              status === 'sent'
+                ? `${preferredName} has been invited to ${teamName}`
+                : status === 'alreadyInvited' || status === 'alreadyOnTeam'
+                  ? `${preferredName}: ${invitee?.message}`
+                  : `Could not invite ${preferredName}: ${requestError ?? invitee?.message}`
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: snackKey,
+              autoDismiss: status === 'sent' ? 5 : 10,
+              message
+            })
+          },
+          onError: (error) => {
+            const serverMessage = error instanceof GraphQLServerError ? error.message : undefined
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: snackKey,
+              autoDismiss: 10,
+              message: serverMessage
+                ? `Could not invite ${preferredName}: ${serverMessage}`
+                : `Could not invite ${preferredName}. Check your connection and try again.`
+            })
+          }
+        })
       }
     },
     secondaryAction: {

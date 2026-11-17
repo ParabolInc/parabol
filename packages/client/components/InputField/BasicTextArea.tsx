@@ -1,28 +1,24 @@
-import styled from '@emotion/styled'
 import * as React from 'react'
 import {TextareaHTMLAttributes} from 'react'
-import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
-import ui from '../../styles/ui'
+import {cn} from '../../ui/cn'
 import StyledError from '../StyledError'
-
-const TextArea = styled('textarea')<{disabled?: boolean}>(({disabled}) => ({
-  ...ui.fieldBaseStyles,
-  ...ui.fieldSizeStyles.medium,
-  ...makeFieldColorPalette('white', !disabled),
-  minHeight: '5.75rem',
-  ...(disabled && {...ui.fieldDisabled})
-}))
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   error?: string | undefined | null
 }
 
 const BasicTextArea = (props: Props) => {
-  const {error, ...rest} = props
+  const {error, className, ...rest} = props
 
   return (
     <React.Fragment>
-      <TextArea {...rest} />
+      <textarea
+        {...rest}
+        className={cn(
+          'm-0 block min-h-[5.75rem] w-full appearance-none rounded border border-hairline-field bg-surface-input px-[11px] py-[7px] font-sans text-[15px] text-fg-primary leading-6 outline-0 selection:bg-hairline-strong placeholder:text-fg-muted enabled:active:border-fg-primary enabled:focus:border-fg-primary enabled:hover:border-fg-primary disabled:cursor-not-allowed disabled:opacity-50',
+          className
+        )}
+      />
       {error && <StyledError>{error}</StyledError>}
     </React.Fragment>
   )

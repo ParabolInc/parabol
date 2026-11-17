@@ -27,7 +27,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetDefaultSlackChannelMutation_team @relay(mask: false)
+      ...SetDefaultSlackChannelMutation_team @relay(mask: false) @alias
     }
   }
 `

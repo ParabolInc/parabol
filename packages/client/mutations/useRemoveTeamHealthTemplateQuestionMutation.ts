@@ -1,0 +1,50 @@
+import graphql from 'babel-plugin-relay/macro'
+import {type UseMutationConfig, useMutation} from 'react-relay'
+import type {useRemoveTeamHealthTemplateQuestionMutation as TRemoveTeamHealthTemplateQuestionMutation} from '../__generated__/useRemoveTeamHealthTemplateQuestionMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
+
+graphql`
+  fragment useRemoveTeamHealthTemplateQuestionMutation_team on RemoveTeamHealthTemplateQuestionSuccess {
+    template {
+      id
+      questions {
+        id
+      }
+      ...TeamHealthMeetingPreview_template
+    }
+  }
+`
+
+const mutation = graphql`
+  mutation useRemoveTeamHealthTemplateQuestionMutation($templateId: ID!, $questionIds: [ID!]!) {
+    removeTeamHealthTemplateQuestion(templateId: $templateId, questionIds: $questionIds) {
+      ...useRemoveTeamHealthTemplateQuestionMutation_team @relay(mask: false)
+    }
+  }
+`
+
+const useRemoveTeamHealthTemplateQuestionMutation = () => {
+  const [commit, submitting] = useMutation<TRemoveTeamHealthTemplateQuestionMutation>(mutation)
+  const atmosphere = useAtmosphere()
+  const execute = (config: UseMutationConfig<TRemoveTeamHealthTemplateQuestionMutation>) => {
+    const {templateId, questionIds} = config.variables
+    return commit({
+      optimisticUpdater: (store) => {
+        const template = store.get(templateId)
+        if (!template) return
+        const removedIds = new Set(questionIds)
+        const existing = template.getLinkedRecords('questions') ?? []
+        template.setLinkedRecords(
+          existing.filter((q) => !removedIds.has(q.getValue('id') as string)),
+          'questions'
+        )
+      },
+      onError: snackOnError(atmosphere),
+      ...config
+    })
+  }
+  return [execute, submitting] as const
+}
+
+export default useRemoveTeamHealthTemplateQuestionMutation

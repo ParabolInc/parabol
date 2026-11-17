@@ -44,6 +44,8 @@ export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
     Logger.warn('No request object on context, cannot set auth cookie')
     return
   }
+  // A request made with a PAT or an OAuth access token must never be answered with a session
+  if (context.resourceGrants || authToken.aud !== 'action') return
   const cookies = createCookies(authToken)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)

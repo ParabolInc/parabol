@@ -1,4 +1,5 @@
 import getKysely from '../../../../postgres/getKysely'
+import {updatePageAncestorIds} from '../../../../postgres/updatePageAncestorIds'
 
 export const movePageToTopLevel = async (viewerId: string, pageId: number, sortOrder: string) => {
   const pg = getKysely()
@@ -23,9 +24,9 @@ export const movePageToTopLevel = async (viewerId: string, pageId: number, sortO
       teamId: null,
       parentPageId: null,
       isParentLinked: true,
-      sortOrder,
-      ancestorIds: []
+      sortOrder
     })
     .where('id', '=', pageId)
     .execute()
+  await updatePageAncestorIds(pg, pageId)
 }

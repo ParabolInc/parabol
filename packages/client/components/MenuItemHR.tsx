@@ -1,13 +1,15 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const MenuItemHR = styled('hr')({
-  backgroundColor: PALETTE.SLATE_400,
-  border: 'none',
-  height: 1,
-  marginBottom: 8,
-  marginTop: 8,
-  padding: 0
+const MenuItemHR = forwardRef<HTMLHRElement, ComponentPropsWithoutRef<'hr'>>((props, ref) => {
+  const {className, ...rest} = props
+  return (
+    <hr
+      ref={ref}
+      className={cn('my-2 h-px border-none bg-hairline-strong p-0', className)}
+      {...rest}
+    />
+  )
 })
 
 export default MenuItemHR

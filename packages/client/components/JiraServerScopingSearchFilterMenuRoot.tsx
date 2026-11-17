@@ -1,67 +1,19 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
-import type {JiraServerScopingSearchFilterMenuRootQuery} from '../__generated__/JiraServerScopingSearchFilterMenuRootQuery.graphql'
-import type {MenuProps} from '../hooks/useMenu'
-import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
+import jiraServerScopingSearchFilterMenuQuery, {
+  type JiraServerScopingSearchFilterMenuQuery
+} from '../__generated__/JiraServerScopingSearchFilterMenuQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import type {FilterMenuProps} from '../integrations/platform/ScopingSearchState'
+import JiraServerScopingSearchFilterMenu from './JiraServerScopingSearchFilterMenu'
 
-const query = graphql`
-  query JiraServerScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
-    viewer {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          jiraServerSearchQuery {
-            projectKeyFilters
-            isJQL
-          }
-        }
-      }
-      teamMember(teamId: $teamId) {
-        integrations {
-          jiraServer {
-            projects {
-              id
-              name
-              avatar
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-interface Props {
-  menuProps: MenuProps
-  teamId: string
-  meetingId: string
-}
-
-const JiraServerScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meetingId} = props
-
-  const data = useLazyLoadQuery<JiraServerScopingSearchFilterMenuRootQuery>(
-    query,
-    {
-      teamId,
-      meetingId
-    },
-    {
-      fetchPolicy: 'store-or-network'
-    }
+const JiraServerScopingSearchFilterMenuRoot = (props: FilterMenuProps) => {
+  const {teamId, meetingId, state} = props
+  const queryRef = useQueryLoaderNow<JiraServerScopingSearchFilterMenuQuery>(
+    jiraServerScopingSearchFilterMenuQuery,
+    {teamId}
   )
-
-  const projects = data?.viewer.teamMember?.integrations.jiraServer?.projects ?? []
-  const jiraSearchQuery = data?.viewer.meeting?.jiraServerSearchQuery ?? null
-
+  if (!queryRef) return null
   return (
-    <JiraScopingSearchFilterMenu
-      meetingId={meetingId}
-      jiraSearchQuery={jiraSearchQuery}
-      projects={projects}
-      menuProps={menuProps}
-      service='jiraServer'
-    />
+    <JiraServerScopingSearchFilterMenu meetingId={meetingId} state={state} queryRef={queryRef} />
   )
 }
 

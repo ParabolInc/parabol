@@ -4,14 +4,14 @@ import {type PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
+import useResolvedTheme from '../../hooks/useResolvedTheme'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
-import {upperFirst} from '../../utils/upperFirst'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {backgroundImgMap} from './backgroundImgMap'
-import {type CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
+import {CATEGORY_ID_TO_NAME, type CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
 
 export interface CardTheme {
   primary: string
@@ -28,6 +28,9 @@ type ActivityCardImageProps = {
 export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProps>) => {
   const {className, src, category} = props
   const backgroundSrc = backgroundImgMap[category]
+  const resolvedTheme = useResolvedTheme()
+  const hasDarkSurface = category === 'teamHealth'
+  const illustrationSrc = hasDarkSurface && resolvedTheme === 'dark' ? `${src}#dark` : src
 
   return (
     <div
@@ -36,10 +39,17 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         className
       )}
     >
-      <img className='object-contain' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 h-full w-full object-contain p-10'
-        src={src}
+        className={cn('object-contain dark:brightness-[.94]', hasDarkSurface && 'dark:invisible')}
+        src={backgroundSrc}
+        alt=''
+      />
+      <img
+        className={cn(
+          'absolute top-0 left-0 h-full w-full object-contain p-10',
+          !hasDarkSurface && 'dark:brightness-[.94]'
+        )}
+        src={illustrationSrc}
         alt='Card Illustration'
       />
     </div>
@@ -114,7 +124,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
               side='bottom'
               align='center'
               sideOffset={20}
-              className='max-w-md whitespace-normal rounded-lg bg-white p-4 text-left text-slate-700 shadow-lg hover:cursor-pointer sm:max-w-sm'
+              className='max-w-md whitespace-normal rounded-md p-4 text-left font-normal text-sm shadow-lg hover:cursor-pointer sm:max-w-sm'
             >
               <div className='mb-2 text-left font-semibold text-lg'>{title}</div>
               <ActivityLibraryCardDescription templateRef={template} />
@@ -124,8 +134,10 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          <div className='truncate pb-1 text-lg text-slate-800 leading-5'>{title}</div>
-          <div className={cn('font-semibold italic', `${theme.text}`)}>{upperFirst(category)}</div>
+          <div className='truncate pb-1 text-fg-primary text-lg leading-5'>{title}</div>
+          <div className={cn('font-semibold italic', `${theme.text}`)}>
+            {CATEGORY_ID_TO_NAME[category]}
+          </div>
         </div>
       )}
     </div>

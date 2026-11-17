@@ -4,6 +4,7 @@ import type {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '../__g
 import type {RemoveAgendaItemMutation_team$data} from '../__generated__/RemoveAgendaItemMutation_team.graphql'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemoveAgendaItems from './handlers/handleRemoveAgendaItems'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {
@@ -47,6 +48,7 @@ const RemoveAgendaItemMutation: StandardMutation<
   return commitMutation<TRemoveAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('removeAgendaItem')
       if (!payload) return

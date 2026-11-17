@@ -1,7 +1,7 @@
 """
 An organization
 """
-type Organization implements OrganizationPartial {
+type Organization {
   """
   The unique organization ID
   """
@@ -43,13 +43,74 @@ type Organization implements OrganizationPartial {
   name: String!
 
   """
-  Number of teams with 3+ meetings (>1 attendee) that met within last 30 days
+  The count of non-archived teams that have at least 2 members and, in the last 30 days,
+  started or ended a meeting that at least 2 people joined
   """
   activeTeamCount: Int!
 
   """
+  The number of active members at each of the given times, in the same order. A member is active
+  at a time if they used Parabol in the 30 days before it, the same rule that marks members inactive
+  for billing. To chart monthly active users, pass the end of each month. Accepts up to 366 times.
+  """
+  activeUserCounts(
+    """
+    The times to count active members at
+    """
+    at: [DateTime!]!
+  ): [Int!]! @scope(name: USERS_READ)
+
+  """
+  A report on the organization's users, meetings and tasks. Billing leaders and org admins get
+  every team; everyone else gets the teams they're on. Starter counts its 2 largest teams that met
+  in the last 90 days
+  """
+  report(
+    """
+    What to count, how to split it, and how to show it
+    """
+    spec: ReportSpecInput!
+
+    """
+    The IANA time zone that days, weeks and months start in
+    """
+    timeZone: String! = "UTC"
+  ): ReportResult! @scope(name: REPORTS_READ)
+
+  """
+  The result stage of one category of a Team Health check of a team the viewer can report on, for a report's side
+  panel. Null when fewer than 3 people answered the check or scored the category
+  """
+  reportTeamHealthStage(
+    """
+    The Team Health meeting
+    """
+    meetingId: ID!
+
+    """
+    The Team Health category, as the report's CATEGORY keys give it
+    """
+    categoryId: ID!
+  ): TeamHealthResultStage @scope(name: REPORTS_READ)
+
+  """
+  The reports pinned to the Reports page, in order
+  """
+  pinnedReports: [PinnedReport!]! @scope(name: REPORTS_READ)
+
+  """
+  The viewer's recent questions on this organization's Reports page, newest first
+  """
+  recentReportQuestions: [ReportQuestion!]! @scope(name: REPORTS_READ)
+
+  """
+  The levels the organization groups its teams by in Reports, widest first. Empty while Reports is off
+  """
+  structure: [OrgStructureLevel!]! @scope(name: ORGS_READ)
+
+  """
   Teams in the organization that the viewer has access to.
-  For org admins/super users: all teams in the org (viewer's teams first).
+  For billing leaders/org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.
   """
   teams: [Team!]! @scope(name: TEAMS_READ)
@@ -196,9 +257,14 @@ type Organization implements OrganizationPartial {
   featureFlag(featureName: String!): Boolean!
 
   """
-  The SAML record attached to the Organization, if any
+  The oldest SAML identity provider attached to the Organization, if any
   """
-  saml: SAML
+  saml: SAML @deprecated(reason: "An organization can own many identity providers. Use samls")
+
+  """
+  The SAML identity providers owned by the Organization, oldest first. Null if the viewer may not see them
+  """
+  samls: [SAML!]
 
   """
   The SAML id for the organization if it is provisioned via SAML attribute

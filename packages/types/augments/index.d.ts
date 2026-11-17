@@ -2,13 +2,16 @@
 // if a declaration files calls import, then it is regarded as an ESModule and the scope
 // of the declaration is limited to that module, instead of being hoisted globally
 type ParabolGraphQLErrorCodes =
+  | 'BAD_USER_INPUT'
+  | 'CONFLICT'
   | 'INTERNAL_SERVER_ERROR'
   | 'MAX_PAGE_DEPTH_REACHED'
   | 'NOT_FOUND'
+  | 'SERVICE_UNAVAILABLE'
   | 'SESSION_INVALIDATED'
   | 'TOO_MANY_REQUESTS'
   | 'UNAPPROVED_UNLINK'
-  | 'UNAUTHORIZED'
+  | 'UNAUTHENTICATED'
   | 'UPGRADE_REQUIRED'
   | 'UPGRADE_SUGGESTED'
   | 'FORBIDDEN'
@@ -16,6 +19,8 @@ type ParabolGraphQLErrorCodes =
   | 'INVALID_REDIRECT_URI'
   | 'MAX_TEAM_UPGRADE_REQUIRED'
   | 'MAX_TEAM_UPGRADE_SUGGESTED'
+  | 'TOO_MANY_INVITEES'
+  | 'UNACCEPTED_INVITATION_LIMIT'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {

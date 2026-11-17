@@ -12,7 +12,9 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import {GQLID} from '../utils/GQLID'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment EndTeamPromptMutation_team on EndTeamPromptSuccess {
@@ -25,15 +27,12 @@ graphql`
     }
     team {
       id
-      activeMeetings {
-        id
-      }
       agendaItems {
         id
       }
     }
     timelineEvent {
-      ...TimelineEventTeamPromptComplete_timelineEvent @relay(mask: false)
+      ...TimelineEventTeamPromptComplete_timelineEvent @relay(mask: false) @alias
     }
   }
 `
@@ -54,8 +53,8 @@ const mutation = graphql`
           message
         }
       }
-      ...EndTeamPromptMutation_team @relay(mask: false)
-      ...EndTeamPromptMutation_meeting @relay(mask: false)
+      ...EndTeamPromptMutation_team @relay(mask: false) @alias
+      ...EndTeamPromptMutation_meeting @relay(mask: false) @alias
     }
   }
 `
@@ -83,6 +82,7 @@ export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team$
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  safeRemoveNodeFromArray(meeting?.getDataID(), payload.getLinkedRecord('team'), 'activeMeetings')
 }
 
 const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMaybeLocalHandler> = (
@@ -103,14 +103,14 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMa
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res?.endTeamPrompt
+      const payload = res?.endTeamPrompt?.EndTeamPromptMutation_team
       if (!payload) return
-      endTeamPromptTeamOnNext(payload as any, {
+      endTeamPromptTeamOnNext(payload, {
         atmosphere,
         navigate
       })
     },
-    onError
+    onError: onError ?? snackOnError(atmosphere)
   })
 }
 

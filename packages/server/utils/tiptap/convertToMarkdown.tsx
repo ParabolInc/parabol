@@ -12,6 +12,8 @@ const NodeTypes = [
   'listItem',
   'codeBlock',
   'blockquote',
+  'callout',
+  'calloutTitle',
   'mention',
   'horizontalRule'
 ]
@@ -56,6 +58,17 @@ const tiptapNodeHandlersLookup: Record<NodeType, NodeTypeHandler> = {
     return `\`\`\`${markdownContent}\`\`\`` // Triple backticks to denote a code block in Slack
   },
   blockquote: ({content = []}) => `> ${content.map((node) => convertToMarkdown(node)).join('')}`,
+  callout: ({content = []}) =>
+    content
+      .map((node) => {
+        const markdown = convertToMarkdown(node)
+        return node.type === 'calloutTitle' && markdown ? `*${markdown}*` : markdown
+      })
+      .join('\n')
+      .split('\n')
+      .map((line) => `> ${line}`)
+      .join('\n'),
+  calloutTitle: ({content = []}) => content.map((node) => convertToMarkdown(node)).join(''),
   mention: ({attrs}) => {
     const {
       /** id - TODO: here our internal Parabol user id would need to bo mapped to Slack user id */

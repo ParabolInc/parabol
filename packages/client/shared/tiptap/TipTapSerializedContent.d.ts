@@ -62,12 +62,18 @@ interface TipTapOrderedListNode {
     start: number
     type: null
   }
-  content: [TipTapListItemNode]
+  content: TipTapListItemNode[]
 }
+
+type TipTapListItemChild =
+  | TipTapParagraphNode
+  | TipTapBulletListNode
+  | TipTapOrderedListNode
+  | TipTapTaskListNode
 
 interface TipTapListItemNode {
   type: 'listItem'
-  content: TipTapParagraphNode[]
+  content: TipTapListItemChild[]
 }
 
 interface TipTapTaskListNode {
@@ -80,7 +86,7 @@ interface TipTapTaskItemNode {
   attrs: {
     checked: boolean
   }
-  content: TipTapParagraphNode[]
+  content: TipTapListItemChild[]
 }
 interface TipTapTaskBlockNode {
   type: 'taskBlock'
@@ -170,6 +176,10 @@ interface TipTapThinkingBlockNode {
   type: 'thinkingBlock'
 }
 
+interface TipTapTableOfContentsNode {
+  type: 'tableOfContents'
+}
+
 export type TipTapContentNode =
   | TiptapHeadingNode
   | TiptapInsightsBlock
@@ -189,5 +199,6 @@ export type TipTapContentNode =
   | TipTapFileUploadNode
   | TipTapResponseBlockNode
   | TipTapThinkingBlockNode
+  | TipTapTableOfContentsNode
 
 type TipTapNode = TiptapDoc | TipTapContentNode

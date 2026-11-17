@@ -1,17 +1,6 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
+import {cn} from '../../ui/cn'
 import Ellipsis from '../Ellipsis/Ellipsis'
-import HelpMenuCopy from './HelpMenuCopy'
-
-const StyledHelpMenuCopy = styled(HelpMenuCopy)<{
-  margin: string | undefined | number
-}>(({margin}) => ({margin}))
-
-const DelayedCopyInner = styled('span')<{show: number; thresh: number}>(({show, thresh}) => ({
-  opacity: show >= thresh ? 1 : 0,
-  transform: show >= thresh ? 'translateY(0)' : 'translateY(10px)',
-  transition: `all 500ms`
-}))
 
 interface Props {
   children: ReactNode
@@ -23,12 +12,17 @@ const DelayedCopy = (props: Props) => {
   const {children, show, thresh, margin} = props
   const showEllipsis = show === thresh - 1
   return (
-    <StyledHelpMenuCopy margin={margin}>
+    <p className='m-0 mb-[1em]' style={margin !== undefined ? {margin} : undefined}>
       {showEllipsis && <Ellipsis />}
-      <DelayedCopyInner show={show} thresh={thresh}>
+      <span
+        className={cn(
+          '[transition:all_500ms]',
+          show >= thresh ? 'translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'
+        )}
+      >
         {children}
-      </DelayedCopyInner>
-    </StyledHelpMenuCopy>
+      </span>
+    </p>
   )
 }
 export default DelayedCopy

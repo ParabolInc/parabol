@@ -1,0 +1,25 @@
+import {gcalIntegrationMeta} from 'parabol-client/integrations/gcal/shared/gcalIntegrationMeta'
+import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
+import {
+  type IntegrationCtx,
+  type ServerIntegrationCapabilities,
+  ServerIntegrationDefinition
+} from '../platform/ServerIntegrationDefinition'
+import listGcalIssues from './listGcalIssues'
+
+export class GcalServerIntegration extends ServerIntegrationDefinition {
+  readonly service = gcalIntegrationMeta.service
+  readonly title = gcalIntegrationMeta.title
+  readonly authStrategy = 'oauth2' as const
+  readonly capabilities: ServerIntegrationCapabilities<never> = {
+    issueList: {listIssues: listGcalIssues}
+  }
+
+  async isAvailable(ctx: IntegrationCtx) {
+    return !!(await this.getGlobalProvider(ctx))
+  }
+
+  async getSharedProviders(): Promise<TIntegrationProvider[]> {
+    return []
+  }
+}

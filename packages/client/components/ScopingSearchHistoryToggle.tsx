@@ -1,33 +1,8 @@
-import styled from '@emotion/styled'
-import {ExpandMore, Search} from '@mui/icons-material'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
+import {ExpandMore, Search} from '~/ui/icons'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
 import PlainButton from './PlainButton/PlainButton'
 import ScopingSearchHistoryMenu, {type SearchQueries} from './ScopingSearchHistoryMenu'
-
-const StyledIcon = styled(Search)({
-  color: PALETTE.SLATE_600,
-  margin: '3px 15px 3px 3px'
-})
-
-const DropdownIcon = styled(ExpandMore)({
-  color: PALETTE.SLATE_700,
-  height: 18,
-  width: 18,
-  marginLeft: -8
-})
-
-const StyledIconDropdown = styled(Search)({
-  color: PALETTE.SLATE_600
-})
-
-const Toggle = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingRight: 8
-})
 
 interface Props {
   searchQueries?: SearchQueries[]
@@ -35,24 +10,24 @@ interface Props {
 
 const ScopingSearchHistoryToggle = (props: Props) => {
   const {searchQueries} = props
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
-    loadingWidth: 200,
-    noClose: true
-  })
 
   if (!searchQueries) {
-    return <StyledIcon />
+    return <Search className='m-[3px] mr-[15px] text-fg-secondary' />
   }
 
   return (
-    <>
-      <Toggle onClick={togglePortal} ref={originRef}>
-        <StyledIconDropdown />
-        <DropdownIcon />
-      </Toggle>
-
-      {menuPortal(<ScopingSearchHistoryMenu searchQueries={searchQueries} menuProps={menuProps} />)}
-    </>
+    <Menu
+      trigger={
+        <PlainButton className='flex items-center justify-center pr-2'>
+          <Search className='text-fg-secondary' />
+          <ExpandMore className='-ml-2 h-[18px] w-[18px] text-fg-primary' />
+        </PlainButton>
+      }
+    >
+      <MenuContent align='start'>
+        <ScopingSearchHistoryMenu searchQueries={searchQueries} />
+      </MenuContent>
+    </Menu>
   )
 }
 

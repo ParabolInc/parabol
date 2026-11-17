@@ -5,6 +5,7 @@ import {pack, unpack} from 'msgpackr'
 import sleep from 'parabol-client/utils/sleep'
 import getRedis from './getRedis'
 import {Logger} from './Logger'
+import {runOutsideOperation} from './vendorWait'
 
 interface CachedEntry<T> {
   rawHash: Buffer
@@ -67,7 +68,12 @@ async function refresh<TRaw extends object, TTransformed>(
     return
   }
   const transformedPayload = await transform(raw)
-  redis.set(key, pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}), 'PX', ttl)
+  await redis.set(
+    key,
+    pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}),
+    'PX',
+    ttl
+  )
   if (onUpdate) await onUpdate(transformedPayload)
 }
 
@@ -129,7 +135,9 @@ export async function redisStoreAndNetwork<TRaw extends object, TTransformed>(
     // Cache hit — unpack the real entry, return immediately, refresh in background if stale
     const entry = unpack(prev) as CachedEntry<TTransformed>
     if (Date.now() - entry.cachedAt > maxAge) {
-      refresh(key, thunk, transform, ttl, entry, onUpdate).catch(Logger.error)
+      runOutsideOperation(() => refresh(key, thunk, transform, ttl, entry, onUpdate)).catch(
+        Logger.error
+      )
     }
     return entry.transformedPayload
   }

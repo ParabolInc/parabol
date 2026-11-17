@@ -1,6 +1,5 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {Add} from '@mui/icons-material'
-import PlainButton from '../../../components/PlainButton/PlainButton'
+import {Add} from '~/ui/icons'
 import {appendRow} from './data'
 import {useFocus, useFocusedCell} from './useFocus'
 
@@ -18,15 +17,16 @@ export const AppendRow = (props: Props) => {
   const {focusProps} = useFocus({provider, key: `${column}:append`})
 
   return (
-    <PlainButton
+    <button
       {...focusProps}
-      className='h-full w-full cursor-pointer hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'
+      type='button'
+      className='-outline-offset-2 block h-full w-full cursor-pointer select-none text-left text-fg-secondary outline-accent hover:bg-surface-hover focus-visible:outline-2'
       onClick={() => appendRow(doc, userId)}
     >
-      <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>
-        <Add />
+      <div className='sticky left-0 flex w-fit items-center gap-1.5 px-3'>
+        <Add className='text-[16px] text-fg-muted' />
         New entry
       </div>
-    </PlainButton>
+    </button>
   )
 }

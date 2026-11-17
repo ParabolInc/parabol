@@ -1,18 +1,17 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 // TODO: TimelineEventPokerComplete is from the deprecated /database directory
 import TimelineEventPokerComplete from '../../../database/types/TimelineEventPokerComplete'
-import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
+import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
+import {meetingsEnded} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import gatherInsights from '../../mutations/helpers/gatherInsights'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -26,22 +25,21 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   context,
   info
 ) => {
-  const {authToken, socketId: mutatorId, dataLoader} = context
+  const {socketId: mutatorId, dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const now = new Date()
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   if (meeting.meetingType !== 'poker') {
-    return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
+    throw new GraphQLError('Meeting is not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
   // VALIDATION
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // RESOLUTION
   const estimatePhase = getPhase(phases, 'ESTIMATE')
@@ -62,12 +60,16 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
     estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
   ).size
   const discussionIds = estimateStages.map((stage) => stage.discussionId)
-  const insights = await gatherInsights(meeting, dataLoader)
-  const commentCounts = (
-    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
-  ).filter(isValid)
-  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-  await getKysely()
+  const [insights, commentCounts, team, teamMembers, removedTaskIds] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    removeEmptyTasks(meetingId)
+  ])
+  const commentCount = commentCounts.filter(isValid).reduce((cumSum, count) => cumSum + count, 0)
+  const pg = getKysely()
+  await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
@@ -80,18 +82,6 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
-  const completedMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  if (completedMeeting.meetingType !== 'poker') {
-    return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
-  }
-  const {templateId} = completedMeeting
-  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId)
-  ])
   const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
   const events = teamMembers.map(
     (teamMember) =>
@@ -102,15 +92,16 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
         meetingId
       })
   )
-  const pg = getKysely()
-  await pg.insertInto('TimelineEvent').values(events).execute()
-  const page = await publishSummaryPage(meetingId, context, info)
-  completedMeeting.summaryPageId = page.id
+  const [page] = await Promise.all([
+    publishSummaryPage(meetingId, context, info),
+    pg.insertInto('TimelineEvent').values(events).execute()
+  ])
+  meeting.summaryPageId = page.id
   const data = {meetingId, teamId, isKill, removedTaskIds}
   publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
-  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
-  analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader).catch(Logger.log)
+  meetingsEnded.inc({meeting_type: meeting.meetingType})
   return data
 }
 

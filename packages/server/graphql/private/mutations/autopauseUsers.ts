@@ -30,6 +30,16 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
       .select(({fn}) => ['userId', fn.agg<string[]>('array_agg', ['orgId']).as('orgIds')])
       .where('userId', 'in', userIdBatch)
       .where('removedAt', 'is', null)
+      // skip anyone who came back since usersToPause was read, so a visit or a PAT request mid-run sticks
+      .where(({exists, selectFrom}) =>
+        exists(
+          selectFrom('User')
+            .select('User.id')
+            .whereRef('User.id', '=', 'OrganizationUser.userId')
+            .where('User.inactive', '=', false)
+            .where('User.lastSeenAt', '<=', activeThresh)
+        )
+      )
       .groupBy('userId')
       .execute()
 

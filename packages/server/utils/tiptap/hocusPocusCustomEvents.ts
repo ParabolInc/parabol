@@ -7,9 +7,16 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
+import {setPageLinkTitles} from './setPageLinkTitles'
+import {toYXmlNodes} from './toYXmlNodes'
 
-const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
-  const conn = await hocuspocus.openDirectConnection(documentName, {})
+const withDoc = async (
+  documentName: string,
+  fn: (doc: Document) => void,
+  context: {userId?: string} = {}
+) => {
+  const conn = await hocuspocus.openDirectConnection(documentName, context)
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
   // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
   try {
@@ -25,15 +32,17 @@ export const addCanonicalPageLink = async (
     title?: string
     pageCode: number
     isDatabase: boolean
+    isSyncedBlock: boolean
     append?: boolean
   }
 ) => {
-  const {title, pageCode, isDatabase, append = false} = payload
+  const {title, pageCode, isDatabase, isSyncedBlock, append = false} = payload
   await withDoc(documentName, (doc) => {
     const pageLinkBlock = createPageLinkElement(
       pageCode,
       title || '<Untitled>',
-      isDatabase
+      isDatabase,
+      isSyncedBlock
     ) as XmlElement
     const frag = doc.getXmlFragment('default')
     const position = append ? frag.length : 1
@@ -66,6 +75,27 @@ export const removeCanonicalPageLinkFromPage = async (
   })
 }
 
+export const markPageLinkCanonical = async (
+  documentName: string,
+  payload: {pageCode: number}
+): Promise<boolean> => {
+  const {pageCode} = payload
+  let isMarked = false
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    for (const node of walker) {
+      ;(node as XmlElement<PageLinkBlockAttrs>).setAttribute('canonical', true)
+      isMarked = true
+      break
+    }
+  })
+  return isMarked
+}
+
 export const removeBacklinkedPageLinkBlocks = async (
   documentName: string,
   payload: {pageCode: number}
@@ -89,19 +119,73 @@ export const removeBacklinkedPageLinkBlocks = async (
   })
 }
 
+export const readPageContent = async (documentName: string, _payload: {}) => {
+  let content: JSONContent = {type: 'doc', content: []}
+  await withDoc(documentName, (doc) => {
+    content = TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
+  })
+  return content
+}
+
+export const replaceSyncedBlockWithContent = async (
+  documentName: string,
+  payload: {pageCode: number; content: JSONContent[] | null}
+) => {
+  const {pageCode, content} = payload
+  const replacements = content ? toYXmlNodes(content) : []
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    const nodes = Array.from(walker)
+    for (const node of nodes) {
+      const parent = node.parent as XmlElement
+      const parentIdx = parent.toArray().findIndex((child) => child === node)
+      if (parentIdx === -1) continue
+      parent.delete(parentIdx)
+      if (replacements.length > 0) {
+        parent.insert(
+          parentIdx,
+          replacements.map((replacement) => replacement.clone())
+        )
+      }
+    }
+  })
+}
+
 export const updateBacklinkedPageLinkTitles = async (
   documentName: string,
   payload: {pageCode: number; title: string}
 ) => {
   const {pageCode, title} = payload
   await withDoc(documentName, (doc) => {
+    setPageLinkTitles(doc.getXmlFragment('default'), pageCode, title)
+  })
+}
+
+export const broadcastSyncedBlockPlacementsChanged = async (documentName: string) => {
+  hocuspocus.documents
+    .get(documentName)
+    ?.broadcastStateless(JSON.stringify({type: 'syncedBlockPlacementsChanged'}))
+}
+
+export const replaceAssetSrc = async (
+  documentName: string,
+  payload: {src: string; hostedSrc: string}
+) => {
+  const {src, hostedSrc} = payload
+  await withDoc(documentName, (doc) => {
     const frag = doc.getXmlFragment('default')
     const walker = frag.createTreeWalker((yxml) => {
-      if (!isPageLink(yxml)) return false
-      return yxml.getAttribute('pageCode') === pageCode
+      if (!(yxml instanceof XmlElement)) return false
+      const attr = PAGE_ASSET_ATTRS.get(yxml.nodeName)
+      return !!attr && yxml.getAttribute(attr) === src
     })
-    for (const node of walker) {
-      ;(node as XmlElement).setAttribute('title', title)
+    for (const node of Array.from(walker) as XmlElement[]) {
+      const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+      if (attr) node.setAttribute(attr, hostedSrc)
     }
   })
 }
@@ -150,16 +234,24 @@ export const updateUserMention = async (
   })
 }
 
-export const replacePageContent = async (documentName: string, payload: {content: JSONContent}) => {
-  const {content} = payload
-  await withDoc(documentName, (doc) => {
-    doc.transact(() => {
-      const frag = doc.getXmlFragment('default')
-      if (frag.length > 0) {
-        frag.delete(0, frag.length)
-      }
+export const replacePageContent = async (
+  documentName: string,
+  payload: {content: JSONContent; userId: string}
+) => {
+  const {content, userId} = payload
+  await withDoc(
+    documentName,
+    (doc) => {
+      // build first: invalid content throws here, before the page is emptied
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
-      applyUpdate(doc, encodeStateAsUpdate(tempDoc))
-    })
-  })
+      doc.transact(() => {
+        const frag = doc.getXmlFragment('default')
+        if (frag.length > 0) {
+          frag.delete(0, frag.length)
+        }
+        applyUpdate(doc, encodeStateAsUpdate(tempDoc))
+      })
+    },
+    {userId}
+  )
 }

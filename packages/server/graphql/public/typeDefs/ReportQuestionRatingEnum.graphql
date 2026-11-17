@@ -1,0 +1,9 @@
+"""
+How the viewer rated the report AI made for their question
+"""
+enum ReportQuestionRatingEnum {
+  "It answered the question"
+  good
+  "It missed what the question asked"
+  bad
+}

@@ -17,7 +17,7 @@ const removePokerTemplateScale: MutationResolvers['removePokerTemplateScale'] = 
 
   // AUTH
   if (!scale || scale.removedAt) {
-    throw new GraphQLError('Scale not found')
+    throw new GraphQLError('Scale not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = scale
   // RESOLUTION

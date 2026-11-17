@@ -52,6 +52,11 @@ type JiraServerIssue implements TaskIntegration {
   summary: String!
 
   """
+  The plaintext title of the issue, same as the summary
+  """
+  title: String!
+
+  """
   The stringified ADF description of the Jira issue
   """
   description: String!
@@ -64,6 +69,11 @@ type JiraServerIssue implements TaskIntegration {
   Names of fields on this issue that can be used for story point estimation
   """
   possibleEstimationFieldNames: [String!]!
+
+  """
+  The issue's current workflow status
+  """
+  status: JiraIssueStatus
 
   """
   The timestamp the issue was last updated

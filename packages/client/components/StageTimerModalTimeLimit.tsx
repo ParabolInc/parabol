@@ -1,21 +1,20 @@
-import styled from '@emotion/styled'
-import {Timer} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Timer} from '~/ui/icons'
 import type {StageTimerModalTimeLimit_stage$key} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
+import {Select} from '../ui/Select/Select'
+import {SelectContent} from '../ui/Select/SelectContent'
+import {SelectItem} from '../ui/Select/SelectItem'
+import {SelectTrigger} from '../ui/Select/SelectTrigger'
+import {SelectValue} from '../ui/Select/SelectValue'
 import plural from '../utils/plural'
-import DropdownMenuToggle from './DropdownMenuToggle'
-import SecondaryButton from './SecondaryButton'
-import StageTimerMinutePicker from './StageTimerMinutePicker'
 import StyledError from './StyledError'
 
 interface Props {
@@ -25,32 +24,7 @@ interface Props {
   stage: StageTimerModalTimeLimit_stage$key
 }
 
-const Toggle = styled(DropdownMenuToggle)({
-  padding: '8px 0 8px 8px',
-  minWidth: 160
-})
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const SetLimit = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '16px 16px 8px'
-})
-
-const StyledIcon = styled(Timer)({
-  color: PALETTE.SLATE_600
-})
-
-const StyledButton = styled(SecondaryButton)({
-  marginTop: 8,
-  minWidth: 192
-})
+const minuteOptions = [...Array(10).keys()].map((n) => n + 1)
 
 const StageTimerModalTimeLimit = (props: Props) => {
   const {closePortal, defaultTimeLimit, meetingId, stage: stageRef} = props
@@ -59,11 +33,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
       fragment StageTimerModalTimeLimit_stage on NewMeetingStage {
         suggestedTimeLimit
         scheduledEndTime
+        localScheduledEndTime
       }
     `,
     stageRef
   )
-  const {suggestedTimeLimit, scheduledEndTime} = stage
+  const {suggestedTimeLimit, scheduledEndTime, localScheduledEndTime} = stage
   const initialTimeLimit =
     scheduledEndTime || !suggestedTimeLimit
       ? defaultTimeLimit
@@ -71,21 +46,13 @@ const StageTimerModalTimeLimit = (props: Props) => {
   // scheduledEndTime means we're editing an existing timer
   const atmosphere = useAtmosphere()
   const [minuteTimeLimit, setMinuteTimeLimit] = useState(initialTimeLimit)
-  const {
-    menuPortal,
-    togglePortal,
-    menuProps: minutePickerProps,
-    originRef
-  } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
-    id: 'StageTimerMinutePicker',
-    isDropdown: true
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps({
+    errorDisplay: 'inline'
   })
-  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const startTimer = () => {
     if (submitting) return
-    const spareTime = scheduledEndTime
-      ? Math.max(0, new Date(scheduledEndTime).getTime() - Date.now())
-      : 0
+    const endTime = localScheduledEndTime ?? scheduledEndTime
+    const spareTime = endTime ? Math.max(0, new Date(endTime).getTime() - Date.now()) : 0
     const timeRemaining = minuteTimeLimit * ms('1m') + spareTime
     submitMutation()
     SetStageTimerMutation(
@@ -101,29 +68,30 @@ const StageTimerModalTimeLimit = (props: Props) => {
   }
 
   return (
-    <SetLimit>
-      <Row>
-        <StyledIcon />
-        <Toggle
-          defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
-          onClick={togglePortal}
-          ref={originRef}
-          size='small'
-          flat
-        />
-      </Row>
-      {menuPortal(
-        <StageTimerMinutePicker
-          minuteTimeLimit={minuteTimeLimit}
-          menuProps={minutePickerProps}
-          setMinuteTimeLimit={setMinuteTimeLimit}
-        />
-      )}
-      <StyledButton onClick={startTimer}>
+    <div className='flex flex-col items-center px-4 pt-4 pb-2'>
+      <div className='flex w-full items-center'>
+        <Timer className='text-fg-secondary' />
+        <Select
+          value={String(minuteTimeLimit)}
+          onValueChange={(value) => setMinuteTimeLimit(Number(value))}
+        >
+          <SelectTrigger className='ml-2 h-9 rounded-sm'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {minuteOptions.map((n) => (
+              <SelectItem key={n} value={String(n)} checkClassName='text-accent-active'>
+                {`${n} ${plural(n, 'minute')}`}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Button variant='outline' size='sm' className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
-      </StyledButton>
+      </Button>
       {error && <StyledError>{error.message}</StyledError>}
-    </SetLimit>
+    </div>
   )
 }
 

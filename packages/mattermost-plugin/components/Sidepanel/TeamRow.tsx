@@ -1,6 +1,6 @@
-import {Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type {TeamRow_team$key} from 'parabol-client/__generated__/TeamRow_team.graphql'
+import {Group} from 'parabol-client/ui/icons'
 import plural from 'parabol-client/utils/plural'
 import {useState} from 'react'
 

@@ -11,6 +11,9 @@ query getProjects($first: Int, $after: String, $ids: [ID!]) {
         __typename
         id
         fullPath
+        group {
+          fullPath
+        }
       }
     }
   }

@@ -18,8 +18,8 @@ graphql`
     }
     notificationsAdded {
       type
-      ...PromoteToBillingLeader_notification @relay(mask: false)
-      ...PaymentRejected_notification @relay(mask: false)
+      ...PromoteToBillingLeader_notification @relay(mask: false) @alias
+      ...PaymentRejected_notification @relay(mask: false) @alias
     }
     updatedOrgMember {
       user {
@@ -38,7 +38,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetOrgUserRoleMutation_organization @relay(mask: false)
+      ...SetOrgUserRoleMutation_organization @relay(mask: false) @alias
     }
   }
 `

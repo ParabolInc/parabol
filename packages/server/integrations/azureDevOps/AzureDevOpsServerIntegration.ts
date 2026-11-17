@@ -1,0 +1,71 @@
+import {azureDevOpsIntegrationMeta} from 'parabol-client/integrations/azureDevOps/shared/azureDevOpsIntegrationMeta'
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import type {AzureDevOpsSearchQueryJson, TeamMemberIntegrationAuth} from '../../postgres/types'
+import {
+  type EstimatePushCapability,
+  type IntegrationCtx,
+  type IssueCreateCapability,
+  type IssueListCapability,
+  type IssueReadCapability,
+  type IssueSearchCapability,
+  type RepoAccessCapability,
+  type RepoListCapability,
+  ServerIntegrationDefinition
+} from '../platform/ServerIntegrationDefinition'
+import buildAzureDevOpsSearchQuery from './buildAzureDevOpsSearchQuery'
+import describeAzureDevOpsDimensionField from './describeAzureDevOpsDimensionField'
+import fetchAvailableAzureDevOpsProjects, {
+  type AzureDevOpsProject
+} from './fetchAvailableAzureDevOpsProjects'
+import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
+import getAzureDevOpsManager from './getAzureDevOpsManager'
+import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
+import listAzureDevOpsIssues from './listAzureDevOpsIssues'
+import parseAzureDevOpsIntegrationHash from './parseAzureDevOpsIntegrationHash'
+import pushEstimateToAzureDevOps from './pushEstimateToAzureDevOps'
+import resolveAzureDevOpsDimensionFieldKey from './resolveAzureDevOpsDimensionFieldKey'
+import resolveAzureDevOpsTaskIntegration from './resolveAzureDevOpsTaskIntegration'
+
+export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
+  readonly service = azureDevOpsIntegrationMeta.service
+  readonly title = azureDevOpsIntegrationMeta.title
+  readonly authStrategy = 'oauth2' as const
+
+  async resolveAuth(ctx: IntegrationCtx): Promise<TeamMemberIntegrationAuth | null> {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+    return auth?.accessToken ? auth : null
+  }
+
+  readonly capabilities: {
+    issueCreate: IssueCreateCapability
+    issueList: IssueListCapability
+    issueRead: IssueReadCapability
+    issueSearch: IssueSearchCapability<AzureDevOpsSearchQueryJson>
+    repoList: RepoListCapability<AzureDevOpsProject>
+    repoAccess: RepoAccessCapability<AzureDevOpsProject>
+    estimatePush: EstimatePushCapability
+  } = {
+    issueCreate: {initManager: getAzureDevOpsManager},
+    issueList: {listIssues: listAzureDevOpsIssues},
+    issueRead: {
+      getIssue: resolveAzureDevOpsTaskIntegration,
+      parseIntegrationHash: parseAzureDevOpsIntegrationHash
+    },
+    issueSearch: {buildQuery: buildAzureDevOpsSearchQuery},
+    repoList: {
+      fetchRepos: fetchAzureDevOpsProjects,
+      integrationRepoId: ({instanceId, projectId}) =>
+        IntegrationRepoId.join({service: 'azureDevOps', instanceId, projectId}),
+      name: ({name}) => name
+    },
+    repoAccess: {fetchAvailableRepos: fetchAvailableAzureDevOpsProjects},
+    estimatePush: {
+      targets: ['comment', 'field'],
+      pushEstimate: pushEstimateToAzureDevOps,
+      resolveDimensionFieldKey: resolveAzureDevOpsDimensionFieldKey,
+      describeDimensionField: describeAzureDevOpsDimensionField,
+      listDimensionFields: listAzureDevOpsDimensionFields
+    }
+  }
+}

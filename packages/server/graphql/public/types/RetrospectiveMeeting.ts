@@ -1,4 +1,8 @@
-import type {RetroMeetingMember} from '../../../postgres/types/Meeting'
+import {selectNewMeetings} from '../../../postgres/select'
+import type {
+  RetroMeetingMember,
+  RetrospectiveMeeting as RetrospectiveMeetingSource
+} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
@@ -7,6 +11,37 @@ import type {RetrospectiveMeetingResolvers} from '../resolverTypes'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),
+  suggestedGrouping: ({id: meetingId}, _args, {dataLoader}) =>
+    dataLoader.get('retroSuggestedGroupingByMeetingId').load(meetingId),
+  prevMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
+    if (!meetingSeriesId) return null
+    const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
+    if (!series || series.cancelledAt) return null
+    const meeting = await selectNewMeetings()
+      .where('meetingSeriesId', '=', meetingSeriesId)
+      .where('meetingType', '=', 'retrospective')
+      .where('createdAt', '<', createdAt)
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .executeTakeFirst()
+    return (meeting as RetrospectiveMeetingSource) || null
+  },
+  prevCompletedMeeting: async ({teamId, createdAt}) => {
+    // finds the id first, so only that meeting's phases are read out of the team's history
+    const meeting = await selectNewMeetings()
+      .where('id', '=', (eb) =>
+        eb
+          .selectFrom('NewMeeting')
+          .select('id')
+          .where('teamId', '=', teamId)
+          .where('meetingType', '=', 'retrospective')
+          .where('endedAt', '<', createdAt)
+          .orderBy('endedAt', 'desc')
+          .limit(1)
+      )
+      .executeTakeFirst()
+    return (meeting as RetrospectiveMeetingSource | undefined) ?? null
+  },
   commentCount: ({commentCount}) => commentCount || 0,
   disableAnonymity: ({disableAnonymity}) => disableAnonymity ?? false,
   meetingMembers: async ({id: meetingId}, _args, {dataLoader}) => {

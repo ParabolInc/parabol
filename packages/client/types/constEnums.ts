@@ -88,10 +88,7 @@ export enum Duration {
   MENU_OPEN_MAX = 188,
   MODAL_OPEN = 200,
   PORTAL_CLOSE = 120,
-  SELECTION_CONTROL = 100,
-  TOOLTIP_DELAY = 400,
-  TOOLTIP_OPEN = 150,
-  TOOLTIP_CLOSE = 75
+  SELECTION_CONTROL = 100
 }
 
 export enum ElementWidth {
@@ -119,6 +116,15 @@ export enum ElementHeight {
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
   MEETING_CARD_IMG = 180,
   MEETING_CARD_MARGIN = 16
+}
+
+// the demos' fake integrations share these identifiers, so the issue links can send visitors to the
+// integration pages instead of a host that does not exist
+export enum DemoIntegration {
+  JIRA_CLOUD_NAME = 'jira-demo',
+  JIRA_ISSUE_URL = 'https://www.parabol.co/integrations/jira/',
+  GITHUB_REPO = 'ParabolInc/ParabolDemo',
+  GITHUB_ISSUE_URL = 'https://www.parabol.co/integrations/github/'
 }
 
 export enum ExternalLinks {
@@ -181,6 +187,7 @@ export enum InvitationTokenError {
 }
 export enum InvoiceItemType {
   ADD_USER = 'addUser',
+  // no longer written; kept for historical Stripe invoice item metadata
   PAUSE_USER = 'pauseUser',
   AUTO_PAUSE_USER = 'autoPauseUser',
   REMOVE_USER = 'removeUser',
@@ -209,7 +216,8 @@ export enum LocalStorageKey {
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
-  ERROR_PRONE_AT = 'errorProneAt'
+  ERROR_PRONE_AT = 'errorProneAt',
+  THEME = 'theme'
 }
 
 export enum LOCKED_MESSAGE {
@@ -294,8 +302,10 @@ export enum Pricing {
 }
 
 export enum Providers {
-  ATLASSIAN_NAME = 'Atlassian',
-  ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol.',
+  JIRA_CLOUD_NAME = 'Jira Cloud',
+  JIRA_CLOUD_DESC = 'Use Jira Cloud issues from within Parabol.',
+  CONFLUENCE_NAME = 'Atlassian Confluence',
+  CONFLUENCE_DESC = 'Export Pages and meeting summaries as native Confluence pages',
   JIRA_SERVER_NAME = 'Jira Data Center',
   JIRA_SERVER_DESC = 'Use Jira Data Center Issues from within Parabol.',
   GITHUB_NAME = 'GitHub',
@@ -319,7 +329,7 @@ export enum Providers {
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export enum Radius {
-  BUTTON_PILL = '10em',
+  BUTTON = 6,
   FIELD = 4,
   DIALOG = 8,
   MENU = 4,
@@ -397,6 +407,7 @@ export enum Threshold {
   MAX_DAILY_PASSWORD_RESETS = 5,
   MAX_DAILY_PASSWORD_ATTEMPTS = 100,
   MAX_REFLECTION_PROMPTS = 12,
+  MAX_STANDUP_PROMPTS = 5,
   MAX_POKER_TEMPLATE_DIMENSIONS = 12,
   MAX_POKER_TEMPLATE_SCALES = 12,
   MAX_POKER_SCALE_VALUES = 30,
@@ -407,8 +418,9 @@ export enum Threshold {
   MAX_STARTER_TIER_TEAMS = 2,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
-  MIN_ACTIVE_TEAM_MEETING_ATTENDEES = 1,
-  ACTIVE_TEAM_LAST_MEETING_TIMEFRAME = 2592000, // 30 days
+  MIN_ACTIVE_TEAM_MEMBERS = 2,
+  MIN_ACTIVE_TEAM_MEETING_ATTENDEES = 2,
+  ACTIVE_TEAM_LAST_MEETING_TIMEFRAME = 2592000000, // 30 days
   STARTER_TIER_LOCK_AFTER_DAYS = 30,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
@@ -417,19 +429,10 @@ export enum Threshold {
   REAUTH_WINDOW_SECONDS = 300 // 5 minutes, in seconds to match JWT iat
 }
 
-// Use these values for easier testing of team limits and usage stats
-export enum ThresholdTest {
-  MIN_STICKY_TEAM_MEETING_ATTENDEES = 0,
-  MAX_STARTER_TIER_TEAMS = 0,
-  STARTER_TIER_LOCK_AFTER_DAYS = 0,
-  STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
-}
-
 export enum Times {
   // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
-  MEETING_CONFIRM_TOOLTIP_DELAY = 0,
   MEETING_CONFIRM_DURATION = 8000,
   REFLECTION_DEAL_CARD_INIT_DELAY = 100,
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
@@ -476,24 +479,14 @@ export enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
-  AZURE_DEVOPS_USERSTORY_FIELD = '__storyPoints',
-  AZURE_DEVOPS_USERSTORY_FIELD_LABEL = 'Story point estimate',
-  AZURE_DEVOPS_TASK_FIELD = '__origEst',
-  AZURE_DEVOPS_TASK_FIELD_LABEL = 'Original Estimate',
-  AZURE_DEVOPS_REMAINING_WORK_FIELD = '__remainingWork',
-  AZURE_DEVOPS_REMAINING_WORK_LABEL = 'Remaining Work',
-  AZURE_DEVOPS_EFFORT_FIELD = '__effort',
-  AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
   SERVICE_FIELD_COMMENT = '__comment',
   SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
-  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
   LINEAR_FIELD_ESTIMATE = '__estimate',
   LINEAR_FIELD_ESTIMATE_LABEL = 'Estimate',
   LINEAR_FIELD_PRIORITY = '__priority',
   LINEAR_FIELD_PRIORITY_LABEL = 'Priority',
-  LINEAR_DEFAULT_QUERY = '',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn\'t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',

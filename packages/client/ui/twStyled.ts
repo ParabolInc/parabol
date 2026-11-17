@@ -1,13 +1,7 @@
-import {
-  createElement,
-  type ElementType,
-  type FunctionComponent,
-  type HTMLAttributes,
-  type ReactHTML
-} from 'react'
+import {createElement, type ElementType, type FunctionComponent, type HTMLAttributes} from 'react'
 import {type ClassValue, cn} from './cn'
 
-type PropsType<E> = E extends keyof ReactHTML
+type PropsType<E> = E extends keyof HTMLElementTagNameMap
   ? HTMLAttributes<ElementType<E>>
   : E extends FunctionComponent<infer P>
     ? P
@@ -30,7 +24,9 @@ type OptionalFun<E extends Record<string, boolean>> = ClassValueFun<E> | ClassVa
  * For VSCode autocomplete, add `twStyled` to the "Tailwind CSS: Class Functions" setting.
  */
 export const twStyled =
-  <P extends PropsType<E>, E extends keyof ReactHTML | FunctionComponent<any>>(element: E) =>
+  <P extends PropsType<E>, E extends keyof HTMLElementTagNameMap | FunctionComponent<any>>(
+    element: E
+  ) =>
   <Extras extends Record<string, boolean> = {}>(
     fun: OptionalFun<Extras>,
     ...classValues: ClassValue[]

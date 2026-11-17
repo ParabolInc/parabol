@@ -1,10 +1,8 @@
-import {Close} from '@mui/icons-material'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import {ArrowDropDown as ArrowDropDownIcon, Close} from '~/ui/icons'
 import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
-import RaisedButton from '../../../../components/RaisedButton'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-import {Elevation} from '../../../../styles/elevation'
+import {Button} from '../../../../ui/Button/Button'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
@@ -22,13 +20,13 @@ const VideoConferencing = (props: Props) => {
   return (
     <div>
       {videoType ? (
-        <div className='flex items-center rounded-sm bg-gray-100 px-2 py-3'>
+        <div className='flex items-center rounded-sm bg-surface-well px-2 py-3'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
-          <span className='h-[38px] py-2 pl-2 font-normal text-base text-gray-500'>
+          <span className='h-[38px] py-2 pl-2 font-normal text-base text-fg-secondary'>
             {selectedOptionLabel}
           </span>
           <Close
-            className='ml-auto cursor-pointer text-gray-500 hover:opacity-50'
+            className='ml-auto cursor-pointer text-fg-secondary hover:opacity-50'
             onClick={() => handleChangeVideoType(null)}
           />
         </div>
@@ -36,16 +34,20 @@ const VideoConferencing = (props: Props) => {
         <div className='py-3'>
           <Menu
             trigger={
-              <RaisedButton className='rounded-sm px-4 py-1.5' elevationHovered={Elevation.Z3}>
+              <Button
+                variant='raised'
+                size='sm'
+                className='h-auto rounded-sm bg-slate-200 px-4 py-1.5 text-slate-700 text-sm'
+              >
                 {'Add Video Conferencing'} <ArrowDropDownIcon />
-              </RaisedButton>
+              </Button>
             }
           >
             <MenuContent className='z-30'>
               <MenuItem onClick={() => handleChangeVideoType('meet')}>
                 <div className='flex items-center p-1'>
                   <GoogleMeetProviderLogo />
-                  <label className='cursor-pointer pl-2 font-normal text-gray-500 text-sm'>
+                  <label className='cursor-pointer pl-2 font-normal text-fg-secondary text-sm'>
                     Google Meet
                   </label>
                 </div>
@@ -53,7 +55,7 @@ const VideoConferencing = (props: Props) => {
               <MenuItem isDisabled>
                 <div className='flex items-center p-1'>
                   <ZoomProviderLogo />
-                  <label className='cursor-not-allowed pl-2 font-normal text-gray-500 text-sm'>
+                  <label className='cursor-not-allowed pl-2 font-normal text-fg-secondary text-sm'>
                     Zoom (Coming Soon!)
                   </label>
                 </div>

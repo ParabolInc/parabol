@@ -3,7 +3,13 @@ import {AriaLabels} from '../types/constEnums'
 export const getActiveElement = () => document.activeElement as HTMLElement
 export const getAriaLabel = (htmlElement: HTMLElement) => htmlElement.getAttribute('aria-label')
 
+const hasUnsentTaskDraft = () =>
+  [...document.querySelectorAll<HTMLElement>('[data-task-draft] [contenteditable="true"]')].some(
+    (editor) => editor.innerText.trim().length > 0
+  )
+
 export const isViewerTyping = () => {
+  if (hasUnsentTaskDraft()) return true
   const activeElement = getActiveElement()
   if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
     return activeElement.value.trim().length > 0

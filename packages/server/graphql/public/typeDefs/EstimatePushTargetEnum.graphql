@@ -1,0 +1,17 @@
+"""
+How a task-integration service can receive a final estimate
+"""
+enum EstimatePushTargetEnum {
+  """
+  A comment on the issue
+  """
+  comment
+  """
+  A field on the issue (story points, original estimate, ...)
+  """
+  field
+  """
+  A label built from a template
+  """
+  label
+}

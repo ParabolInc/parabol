@@ -1,13 +1,12 @@
-import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {MoreVert} from '~/ui/icons'
 import type {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
+import {Menu} from '../../../../ui/Menu/Menu'
 import PromoteTeamMemberModal from '../../../teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
 import RemoveTeamMemberModal from '../../../teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
 import {OrgTeamMemberMenu} from './OrgTeamMemberMenu'
@@ -50,7 +49,6 @@ export const OrgTeamMembersRow = (props: Props) => {
 
   const showMenuButton = (isViewerOrgAdmin && !isLead) || (isViewerLead && !isSelf && !isOrgAdmin)
 
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const [isPromoteOpen, setIsPromoteOpen] = useState(false)
   const [isRemoveOpen, setIsRemoveOpen] = useState(false)
 
@@ -60,42 +58,41 @@ export const OrgTeamMembersRow = (props: Props) => {
         <Avatar className='h-8 w-8' picture={picture} alt={preferredName} />
       </div>
       <div className='flex w-full flex-col gap-y-1 py-1'>
-        <div className='inline-flex items-center gap-x-2 font-bold text-gray-700 text-lg'>
+        <div className='inline-flex items-center gap-x-2 font-bold text-fg-primary text-lg'>
           {preferredName}{' '}
           {teamMember.isLead ? (
-            <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs'>
+            <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs dark:bg-grape-600'>
               Team Lead
             </span>
           ) : null}
         </div>
         <div>
-          <Button asChild variant='link'>
-            <a href={`mailto:${email}`}>{email}</a>
-          </Button>
+          <a
+            href={`mailto:${email}`}
+            className='text-fg-secondary text-sm underline-offset-4 hover:underline'
+          >
+            {email}
+          </a>
         </div>
       </div>
       <div>
         {showMenuButton && (
-          <Button
-            disabled={!showMenuButton}
-            shape='circle'
-            variant='ghost'
-            onClick={togglePortal}
-            ref={originRef}
+          <Menu
+            trigger={
+              <Button shape='icon' variant='ghost'>
+                <MoreVert />
+              </Button>
+            }
           >
-            <MoreVert />
-          </Button>
-        )}
-        {menuPortal(
-          <OrgTeamMemberMenu
-            menuProps={menuProps}
-            isLead={teamMember.isLead}
-            teamMember={teamMember}
-            isViewerLead={isViewerLead}
-            isViewerOrgAdmin={isViewerOrgAdmin}
-            togglePromote={() => setIsPromoteOpen(true)}
-            toggleRemove={() => setIsRemoveOpen(true)}
-          />
+            <OrgTeamMemberMenu
+              isLead={teamMember.isLead}
+              teamMember={teamMember}
+              isViewerLead={isViewerLead}
+              isViewerOrgAdmin={isViewerOrgAdmin}
+              togglePromote={() => setIsPromoteOpen(true)}
+              toggleRemove={() => setIsRemoveOpen(true)}
+            />
+          </Menu>
         )}
       </div>
       <PromoteTeamMemberModal

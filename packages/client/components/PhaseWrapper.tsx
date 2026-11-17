@@ -1,26 +1,18 @@
-import styled from '@emotion/styled'
-import {forwardRef, type ReactNode} from 'react'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import ErrorBoundary from './ErrorBoundary'
-
-const PhaseWrapperStyles = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: 0 // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
-})
 
 interface Props {
   children: ReactNode
 }
 
-const PhaseWrapper = forwardRef((props: Props, ref: any) => {
+const PhaseWrapper = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {children} = props
   return (
     <ErrorBoundary>
-      <PhaseWrapperStyles ref={ref}>{children}</PhaseWrapperStyles>
+      {/* min-h-0 is a FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height */}
+      <div ref={ref} className='flex h-full min-h-0 flex-1 flex-col items-center justify-center'>
+        {children}
+      </div>
     </ErrorBoundary>
   )
 })

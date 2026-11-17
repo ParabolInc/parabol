@@ -1,8 +1,11 @@
-import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import type {SlackNotification} from '../../../../postgres/types'
 import logError from '../../../../utils/logError'
 import type {DataLoaderWorker} from '../../../graphql'
-import type {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
+import type {
+  NotificationIntegration,
+  NotifyResponse,
+  TeamHealthProgress
+} from './NotificationIntegrationHelper'
 
 export type Notifier = {
   startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
@@ -15,6 +18,12 @@ export type Notifier = {
     teamId: string
   ): Promise<void>
   endTimeLimit(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>
+  teamHealthResponseReminder(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    progress: TeamHealthProgress
+  ): Promise<void>
   integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string): Promise<void>
   shareTopic?(
     dataLoader: DataLoaderWorker,
@@ -87,7 +96,9 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const meetingResponses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const meetingResponses = await dataLoader
+      .get('teamPromptMemberResponsesByMeetingId')
+      .load(meetingId)
     const standupResponses = await Promise.all(
       meetingResponses.map(async (response) => {
         const user = await dataLoader.get('users').loadNonNull(response.userId)
@@ -134,6 +145,25 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     fireAndForget(notifiers, (notifier) => notifier.endTimeLimit(meeting, team, user))
   },
 
+  async teamHealthResponseReminder(
+    dataLoader: DataLoaderWorker,
+    meetingId: string,
+    teamId: string,
+    progress: TeamHealthProgress
+  ) {
+    const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team || !user) return
+    const notifiers = await loader(
+      dataLoader,
+      team.id,
+      meeting.facilitatorUserId!,
+      'TEAM_HEALTH_RESPONSE_DUE'
+    )
+    fireAndForget(notifiers, (notifier) =>
+      notifier.teamHealthResponseReminder(meeting, team, user, progress)
+    )
+  },
+
   async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
     const notifiers = await loader(dataLoader, teamId, userId, 'meetingEnd')
     const user = await dataLoader.get('users').load(userId)
@@ -150,7 +180,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     const [{meeting, team}, user, responses] = await Promise.all([
       loadMeetingTeam(dataLoader, meetingId, teamId),
       dataLoader.get('users').load(userId),
-      getTeamPromptResponsesByMeetingId(meetingId)
+      dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
     ])
     const response = responses.find(({userId: responseUserId}) => responseUserId === userId)
     if (!meeting || !team || !response || !user) return

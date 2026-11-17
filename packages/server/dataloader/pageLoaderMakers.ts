@@ -2,7 +2,8 @@ import DataLoader from 'dataloader'
 import type {Selectable} from 'kysely'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import type {PageSectionEnum} from '../graphql/public/resolverTypes'
-import {selectPageAccess, selectPageUserSortOrder} from '../postgres/select'
+import {selectPageAccess, selectPageExports, selectPageUserSortOrder} from '../postgres/select'
+import type {PageExport} from '../postgres/types'
 import type {PageAccess, Pageroleenum} from '../postgres/types/pg'
 import {pageAccessByUserIdBatchFn} from './pageAccessByUserIdBatchFn'
 import type RootDataLoader from './RootDataLoader'
@@ -45,12 +46,55 @@ export const pageAccessByPageIdUserId = (parent: RootDataLoader, dependsOn: Regi
   )
 }
 
+// The role granted to the user directly, through a team or org, or as a guest. Unlike pageAccessByPageIdUserId,
+// it ignores the public link
+export const pageGrantByPageIdUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
+  return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
+    async (keys) => {
+      const res = await selectPageAccess()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map(
+        (key) =>
+          res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)?.role ??
+          null
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+    }
+  )
+}
+
 export const pageAccessByUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('pages')
   return new DataLoader<string, Selectable<PageAccess>[], string>(
     async (userIds) => {
       const res = await selectPageAccess().where('userId', 'in', userIds).execute()
       return userIds.map((userId) => res.filter((r) => r.userId === userId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const pageExportsByPageId = (parent: RootDataLoader) => {
+  return new DataLoader<number, PageExport[], number>(
+    async (pageIds) => {
+      const rows = await selectPageExports()
+        .where('pageId', 'in', pageIds as number[])
+        .orderBy('createdAt', 'desc')
+        .execute()
+      return pageIds.map((pageId) => rows.filter((row) => row.pageId === pageId).slice(0, 10))
     },
     {
       ...parent.dataLoaderOptions

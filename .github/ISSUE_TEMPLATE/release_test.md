@@ -16,7 +16,7 @@ Run through this list at least once at [staging](https://action.parabol.fun):
 - [ ] Smoke tested the [Demo](https://action.parabol.fun/retrospective-demo), unauthenticated
 - [ ] Created an account
 - [ ] Verified invite via mass link works (Team > Invite Button > Invite Link, visit URL in an incognito window)
-- [ ] Verified invite via email works. It will show as [logs in Datadog](https://app.datadoghq.com/logs?query=kube_namespace%3Aparabol%20env%3Astaging%20&cols=host%2Cservice&index=%2A&messageDisplay=inline&refresh_mode=sliding&storage=hot&stream_sort=desc&viz=stream&from_ts=1699266779323&to_ts=1699267679323&live=true).
+- [ ] Verified invite via email works. It will show as [logs in staging](https://console.cloud.google.com/logs/query;query=jsonPayload.message%3D~%22SENDING%20EMAIL%22?project=parabol-saas-staging).
 - [ ] Added Slack, verified meeting notifications (use `#t_product_actiontime`)
 - [ ] Added Mattermost, verified meeting notifications (check the test webhook in [Parabol Mattermost](https://mattermost.parabol.fun/parabol/integrations))
 - [ ] Added GitHub, verified issue created (use `ParabolInc/publictestrepo`)

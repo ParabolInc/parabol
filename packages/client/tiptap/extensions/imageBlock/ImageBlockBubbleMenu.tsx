@@ -1,13 +1,15 @@
-import AspectRatioIcon from '@mui/icons-material/AspectRatio' // Fallback for full width
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
-import DownloadIcon from '@mui/icons-material/FileDownloadOutlined'
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft'
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
-import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import * as Popover from '@radix-ui/react-popover'
 import {type Editor} from '@tiptap/react'
 import {useRef} from 'react'
+import {
+  AspectRatio as AspectRatioIcon,
+  DeleteOutlined as DeleteIcon,
+  FileDownloadOutlined as DownloadIcon,
+  FormatAlignCenter as FormatAlignCenterIcon,
+  FormatAlignLeft as FormatAlignLeftIcon,
+  FormatAlignRight as FormatAlignRightIcon,
+  ImageSearch as ImageSearchIcon
+} from '~/ui/icons'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
@@ -22,7 +24,7 @@ interface Props {
   isOpen: boolean
 }
 
-const Divider = () => <div className='mx-1 h-4 w-px bg-slate-300' />
+const Divider = () => <div className='mx-1 h-4 w-px bg-hairline' />
 const alignButtons = [
   {name: 'left', Icon: FormatAlignLeftIcon},
   {name: 'center', Icon: FormatAlignCenterIcon},
@@ -49,7 +51,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
       <Popover.Anchor className='pointer-events-none absolute top-0 h-full w-full' />
       <Popover.Portal>
         <Popover.Content
-          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-slate-600 border-solid bg-white p-[3px] shadow-sm'
+          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-card p-[3px] shadow-sm'
           sideOffset={8}
           side='top'
           onOpenAutoFocus={(e) => e.preventDefault()}
@@ -83,7 +85,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
           {/* Dimensions */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className='flex cursor-default items-center justify-center px-2 font-mono text-slate-500 text-xs'>
+              <span className='flex cursor-default items-center justify-center px-2 font-mono text-fg-muted text-xs'>
                 {isFullWidth ? '100%' : width ? `${Math.round(width)}px` : 'Auto'}
               </span>
             </TooltipTrigger>
@@ -127,7 +129,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
 
           {/* Delete */}
           <BubbleMenuButton
-            onClick={() => editor.chain().deleteSelection().run()}
+            onClick={() => editor.chain().focus().deleteSelection().run()}
             Icon={DeleteIcon}
             title='Delete image'
           />

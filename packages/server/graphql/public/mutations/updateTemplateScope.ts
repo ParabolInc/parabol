@@ -1,15 +1,14 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {SharingScopeEnum as ESharingScope} from '../../../database/types/MeetingTemplate'
 import PokerTemplate from '../../../database/types/PokerTemplate'
-import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
+import {isPromptTemplateType} from './helpers/promptTemplateRules'
 
 const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   _source,
@@ -23,20 +22,17 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   //AUTH
-  const [template, viewer] = await Promise.all([
-    dataLoader.get('meetingTemplates').load(templateId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
+  const template = await dataLoader.get('meetingTemplates').load(templateId)
   if (!template || !template.isActive) {
-    return {error: {message: `Template not found`}}
+    throw new GraphQLError(`Template not found`, {extensions: {code: 'NOT_FOUND'}})
   }
   const {name, teamId, orgId, scope} = template
   if (
     !isTeamMember(authToken, teamId) &&
     !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
   ) {
-    return standardError(new Error('You are not authorized to update the scope of this template'), {
-      userId: viewerId
+    throw new GraphQLError('You are not authorized to update the scope of this template', {
+      extensions: {code: 'FORBIDDEN'}
     })
   }
   if (context.resourceGrants) {
@@ -45,21 +41,41 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
       context.resourceGrants.hasOrg(orgId)
     ])
     if (!teamOk && !orgOk) {
-      return standardError(new Error('PAT does not grant access to this template'), {
-        userId: viewerId
+      throw new GraphQLError('PAT does not grant access to this template', {
+        extensions: {code: 'FORBIDDEN'}
       })
     }
   }
 
   // VALIDATION
+  if (template.type === 'teamHealth') {
+    throw new GraphQLError('Team health templates are always shared across the organization', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
   if (scope === newScope) {
-    return {error: {message: 'Template scope already set'}}
+    throw new GraphQLError('Template scope already set', {extensions: {code: 'CONFLICT'}})
+  }
+  const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
+  const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
+  if (isDownscope) {
+    const otherTeamSeries = await pg
+      .selectFrom('MeetingSeries')
+      .select('id')
+      .where('templateId', '=', templateId)
+      .where('teamId', '!=', teamId)
+      .where('cancelledAt', 'is', null)
+      .limit(1)
+      .executeTakeFirst()
+    if (otherTeamSeries) {
+      throw new GraphQLError("Another team's recurring meeting uses this template", {
+        extensions: {code: 'CONFLICT'}
+      })
+    }
   }
 
   // RESOLUTION
   template.scope = newScope // mutate the cached record
-  const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
-  const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
   const usedMeeting = isDownscope
     ? await pg
         .selectFrom('NewMeeting')
@@ -72,21 +88,22 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const shouldClone = !!usedMeeting
   let clonedTemplateId: string | undefined
 
-  const cloneReflectTemplate = async () => {
+  const clonePromptTemplate = async () => {
     const pg = getKysely()
-    const clonedTemplate = new ReflectTemplate({
+    const clonedTemplate = {
+      id: generateUID(),
       name,
       teamId,
       orgId,
+      type: template.type,
       scope: newScope,
       parentTemplateId: templateId,
       lastUsedAt: template.lastUsedAt,
       illustrationUrl: template.illustrationUrl,
       mainCategory: template.mainCategory
-    })
+    }
     clonedTemplateId = clonedTemplate.id
-    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
-    const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+    const activePrompts = await dataLoader.get('templatePromptsByTemplateId').load(templateId)
     const promptIds = activePrompts.map(({id}) => id)
     const clonedPrompts = activePrompts.map((prompt) => {
       return {
@@ -109,12 +126,26 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
         qc.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
       )
       .with('RemovePrompts', (qc) =>
-        qc.updateTable('ReflectPrompt').set({removedAt: now}).where('id', 'in', promptIds)
+        qc.updateTable('TemplatePrompt').set({removedAt: now}).where('id', 'in', promptIds)
       )
-      .insertInto('ReflectPrompt')
+      .with('RepointSeries', (qc) =>
+        qc
+          .updateTable('MeetingSeries')
+          .set({templateId: clonedTemplate.id})
+          .where('templateId', '=', templateId)
+          .where('teamId', '=', teamId)
+      )
+      .with('RepointSettings', (qc) =>
+        qc
+          .updateTable('MeetingSettings')
+          .set({selectedTemplateId: clonedTemplate.id})
+          .where('selectedTemplateId', '=', templateId)
+          .where('teamId', '=', teamId)
+      )
+      .insertInto('TemplatePrompt')
       .values(clonedPrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
       .execute()
-    dataLoader.clearAll(['reflectPrompts', 'meetingTemplates'])
+    dataLoader.clearAll(['templatePrompts', 'meetingTemplates', 'meetingSeries', 'meetingSettings'])
   }
 
   const clonePokerTemplate = async () => {
@@ -155,10 +186,10 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
 
   if (shouldClone) {
-    if (template.type === 'retrospective') {
-      cloneReflectTemplate()
+    if (isPromptTemplateType(template.type)) {
+      await clonePromptTemplate()
     } else if (template.type === 'poker') {
-      clonePokerTemplate()
+      await clonePokerTemplate()
     }
   } else {
     await getKysely()
@@ -169,7 +200,6 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
   const data = {templateId, teamId, clonedTemplateId, meetingType: template.type as MeetingTypeEnum}
 
-  analytics.templateMetrics(viewer, {...template, scope: newScope}, 'Template Shared')
   // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
   return data

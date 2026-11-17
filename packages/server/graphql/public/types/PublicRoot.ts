@@ -12,7 +12,7 @@ const PublicRoot: PublicRootResolvers = {
     if (!page) throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
     if (!access)
       throw new GraphQLError('Viewer does not have access to page', {
-        extensions: {code: 'UNAUTHORIZED'}
+        extensions: {code: 'FORBIDDEN'}
       })
     return page
   }

@@ -91,7 +91,11 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
   )
 }
 
-export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamMemberIntegrationAuths')
   return new DataLoader<
     TeamMemberIntegrationAuthServiceTeamUserKey,
     TeamMemberIntegrationAuth | null,
@@ -114,6 +118,41 @@ export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDat
             ({teamId, userId, service}) =>
               key.teamId === teamId && key.userId === userId && key.service === service
           ) || null
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
+    }
+  )
+}
+
+export const integrationAuthExpiredAtByServiceTeamAndUserId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamMemberIntegrationAuths')
+  return new DataLoader<TeamMemberIntegrationAuthServiceTeamUserKey, Date | null, string>(
+    async (keys) => {
+      const results = await getKysely()
+        .selectFrom('TeamMemberIntegrationAuth')
+        .select(['teamId', 'userId', 'service', 'expiredAt'])
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'userId', 'service'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.userId, key.service))
+          )
+        )
+        .where('isActive', '=', false)
+        .where('expiredAt', 'is not', null)
+        .execute()
+      return keys.map(
+        (key) =>
+          results.find(
+            ({teamId, userId, service}) =>
+              key.teamId === teamId && key.userId === userId && key.service === service
+          )?.expiredAt ?? null
       )
     },
     {

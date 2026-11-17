@@ -13,7 +13,7 @@ import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
+import handleRemovePromptTemplate from './handlers/handleRemovePromptTemplate'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
@@ -131,7 +131,7 @@ const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, NavigateLocalH
       const team = payload.getLinkedRecord('team')
       const teamId = team.getValue('id')
       teamTemplateIds?.forEach((templateId) => {
-        handleRemoveReflectTemplate(templateId, teamId, store)
+        handleRemovePromptTemplate(templateId, teamId, store)
       })
       archiveTeamTeamUpdater(payload, {atmosphere, store})
       const removedSuggestedActionIds = payload.getValue('removedSuggestedActionIds')

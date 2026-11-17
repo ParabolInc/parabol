@@ -1,12 +1,10 @@
 import type AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
-import type {TeamMember} from '../../../postgres/types'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import type {CompanyResolvers} from '../resolverTypes'
-import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
 
 export type CompanySource = {id: string}
 
@@ -42,11 +40,13 @@ const getSuggestedTierOrganizations = async (
 
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    // get the organizations
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
-    // get unarchivedTeams
-    const orgIds = organizations.map(({id}) => id)
-    return getActiveTeamCountByOrgIds(orgIds)
+    const activeTeams = (
+      await dataLoader.get('activeTeamsByOrgId').loadMany(organizations.map(({id}) => id))
+    )
+      .filter(isValid)
+      .flat()
+    return activeTeams.length
   },
 
   activeUserCount: async ({id: domain}, {after}, {authToken, dataLoader}) => {
@@ -71,60 +71,13 @@ const Company: CompanyResolvers = {
     return uniqueUserIds.size
   },
   activeOrganizationCount: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    // organizations with at least 1 unarchived team on it, which has at least 2 team members who have logged in within the last 30 days
-
-    // get the organizations
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
-    const allOrgIds = organizations.map(({id}) => id)
-    // get the organizationUsers
-    const activeOrganizationUsers = (
-      await dataLoader.get('activeOrganizationUsersByOrgId').loadMany(allOrgIds)
+    const activeTeams = (
+      await dataLoader.get('activeTeamsByOrgId').loadMany(organizations.map(({id}) => id))
     )
-      .flat()
-      .filter(isValid)
-    // if there aren't 2 active users, abort
-    if (activeOrganizationUsers.length < 2) return 0
-    // get the unarchived teams
-    const unarchivedTeams = (await dataLoader.get('teamsByOrgIds').loadMany(allOrgIds))
       .filter(isValid)
       .flat()
-    // if there aren't any unarchived teams, abort
-    if (unarchivedTeams.length === 0) return 0
-    // create teamMemberIds
-    const teamIds = unarchivedTeams.map(({id}) => id)
-    // get the teamMembers by teamId, userId
-    const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
-      .flat()
-      .filter(isValid)
-    // group by teamId
-    const teamMembersByTeamId = teamMembers.reduce(
-      (obj, teamMember) => {
-        if (obj[teamMember.teamId]) {
-          obj[teamMember.teamId]!.push(teamMember)
-        } else {
-          obj[teamMember.teamId] = [teamMember]
-        }
-        return obj
-      },
-      {} as Record<string, [TeamMember, ...TeamMember[]]>
-    )
-
-    // filter out teams that have less than 2 unremoved team members
-    const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
-      .map((teamMembers) => {
-        return {
-          count: teamMembers.length,
-          team: unarchivedTeams.find((team) => team.id === teamMembers[0].teamId)!
-        }
-      })
-      .filter((agg) => agg.count >= 2)
-      .map((agg) => agg.team)
-    // for each remaining teamId, get the orgId
-    // make a set of the orgIds
-    const orgsIdsWithSufficientTeamMembers = [
-      ...new Set(teamsWithSufficientTeamMembers.map((team) => team.orgId))
-    ]
-    return orgsIdsWithSufficientTeamMembers.length
+    return new Set(activeTeams.map(({orgId}) => orgId)).size
   },
   lastMetAt: async ({id: domain}, _args, {authToken, dataLoader}) => {
     const pg = getKysely()

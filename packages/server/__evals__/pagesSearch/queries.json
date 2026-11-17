@@ -1,0 +1,437 @@
+[
+  {"query": "onbo", "category": "prefix", "relevant": {"onboarding-checklist": 3}},
+  {
+    "query": "retr",
+    "category": "prefix",
+    "relevant": {
+      "retro-sprint-41-platform": 3,
+      "retro-sprint-42-platform": 3,
+      "retro-growth-q4-kickoff": 3,
+      "retro-support-october": 3,
+      "retro-mobile-release-3-8": 3,
+      "retro-design-crit": 3,
+      "retro-q3-product": 3,
+      "retro-notes-es": 2
+    }
+  },
+  {
+    "query": "stand",
+    "category": "prefix",
+    "relevant": {
+      "standup-notes": 3,
+      "standup-platform-oct-12": 2,
+      "standup-platform-oct-13": 2,
+      "standup-growth-oct-13": 2,
+      "standup-mobile-oct-14": 2,
+      "standup-support-oct-15": 2
+    }
+  },
+  {
+    "query": "weekl",
+    "category": "prefix",
+    "relevant": {"weekly-sync-oct-13": 3, "weekly-sync-oct-6": 3}
+  },
+  {"query": "postm", "category": "prefix", "relevant": {"incident-postmortem": 3}},
+  {"query": "vend", "category": "prefix", "relevant": {"vendor-comparison": 3}},
+  {"query": "secur", "category": "prefix", "relevant": {"security-review-checklist": 3}},
+  {"query": "okr", "category": "prefix", "relevant": {"team-okrs": 3}},
+  {"query": "Q3 budget", "category": "title", "relevant": {"q3-budget": 3}},
+  {
+    "query": "Weekly sync - Oct 13",
+    "category": "title",
+    "relevant": {"weekly-sync-oct-13": 3, "weekly-sync-oct-6": 1}
+  },
+  {"query": "Engineering handbook", "category": "title", "relevant": {"engineering-handbook": 3}},
+  {"query": "Platform team charter", "category": "title", "relevant": {"team-charter": 3}},
+  {"query": "Hiring plan 2027", "category": "title", "relevant": {"stub-hiring-plan": 3}},
+  {
+    "query": "Sprint 41 Retro",
+    "category": "title",
+    "relevant": {"retro-sprint-41-platform": 3, "retro-sprint-42-platform": 1}
+  },
+  {
+    "query": "Customer interview synthesis",
+    "category": "title",
+    "relevant": {"stub-customer-interviews": 3}
+  },
+  {
+    "query": "Release checklist",
+    "category": "title",
+    "relevant": {"release-checklist": 3, "launch-checklist": 1}
+  },
+  {"query": "Product roadmap 2027", "category": "title", "relevant": {"product-roadmap": 3}},
+  {
+    "query": "Team Health #3",
+    "category": "title",
+    "relevant": {"team-health-platform-3": 3, "team-health-platform-4": 1}
+  },
+  {
+    "query": "latest weekly sync",
+    "category": "title",
+    "relevant": {"weekly-sync-oct-13": 3, "weekly-sync-oct-6": 1}
+  },
+  {
+    "query": "Platform Standup - Oct 13, 2026",
+    "category": "title",
+    "relevant": {"standup-platform-oct-13": 3, "standup-platform-oct-12": 1}
+  },
+  {"query": "Offsite agenda", "category": "title", "relevant": {"stub-offsite-agenda": 3}},
+  {
+    "query": "laptop setup",
+    "category": "body",
+    "relevant": {"onboarding-checklist": 3, "engineering-handbook": 2}
+  },
+  {
+    "query": "two approvals before merging",
+    "category": "body",
+    "relevant": {"engineering-handbook": 3}
+  },
+  {
+    "query": "no deploys after 2 pm on Fridays",
+    "category": "body",
+    "relevant": {
+      "engineering-handbook": 3,
+      "weekly-sync-oct-6": 2,
+      "retro-sprint-42-platform": 2,
+      "release-checklist": 1
+    }
+  },
+  {"query": "visibility timeout", "category": "body", "relevant": {"incident-postmortem": 3}},
+  {"query": "skip weekends", "category": "body", "relevant": {"product-spec": 3}},
+  {
+    "query": "decision log",
+    "category": "body",
+    "relevant": {"team-charter": 3, "engineering-handbook": 1}
+  },
+  {"query": "learning budget", "category": "body", "relevant": {"engineering-handbook": 3}},
+  {"query": "exit interview", "category": "body", "relevant": {"offboarding-checklist": 3}},
+  {
+    "query": "idempotency key",
+    "category": "body",
+    "relevant": {
+      "incident-postmortem": 3,
+      "retro-sprint-42-platform": 2,
+      "product-spec": 2,
+      "standup-platform-oct-12": 2
+    }
+  },
+  {
+    "query": "office hours on Wednesday",
+    "category": "body",
+    "relevant": {"team-charter": 3, "retro-q3-product": 1}
+  },
+  {
+    "query": "how do new hires get a laptop",
+    "category": "paraphrase",
+    "relevant": {"onboarding-checklist": 3, "engineering-handbook": 3}
+  },
+  {
+    "query": "who do I page when the site is down",
+    "category": "paraphrase",
+    "relevant": {
+      "on-call-rotation": 3,
+      "engineering-handbook": 2,
+      "incident-postmortem": 1,
+      "team-charter": 1
+    }
+  },
+  {
+    "query": "why did customers receive the same invoice email several times",
+    "category": "paraphrase",
+    "relevant": {"incident-postmortem": 3, "retro-sprint-42-platform": 1}
+  },
+  {
+    "query": "how many people need to approve a code change",
+    "category": "paraphrase",
+    "relevant": {"engineering-handbook": 3}
+  },
+  {
+    "query": "when can customers set up automatic monthly billing",
+    "category": "paraphrase",
+    "relevant": {"product-spec": 3, "product-roadmap": 2, "team-okrs": 1}
+  },
+  {
+    "query": "what should I check before shipping a new feature",
+    "category": "paraphrase",
+    "relevant": {
+      "launch-checklist": 3,
+      "release-checklist": 2,
+      "security-review-checklist": 1,
+      "engineering-handbook": 1
+    }
+  },
+  {
+    "query": "what do I need to do when someone leaves the company",
+    "category": "paraphrase",
+    "relevant": {"offboarding-checklist": 3}
+  },
+  {
+    "query": "what is our target for how fast the api responds",
+    "category": "paraphrase",
+    "relevant": {"team-okrs": 3, "team-charter": 2}
+  },
+  {
+    "query": "how quickly should support answer customer tickets",
+    "category": "paraphrase",
+    "relevant": {"team-okrs": 3, "retro-support-october": 1}
+  },
+  {
+    "query": "where are the pictures from the design brainstorm",
+    "category": "paraphrase",
+    "relevant": {"note-whiteboard": 3}
+  },
+  {"query": "whiteboad", "category": "typo", "relevant": {"note-whiteboard": 3}},
+  {
+    "query": "standpu",
+    "category": "typo",
+    "relevant": {
+      "standup-notes": 3,
+      "standup-platform-oct-12": 2,
+      "standup-platform-oct-13": 2,
+      "standup-growth-oct-13": 2,
+      "standup-mobile-oct-14": 2,
+      "standup-support-oct-15": 2
+    }
+  },
+  {"query": "onbaording checklist", "category": "typo", "relevant": {"onboarding-checklist": 3}},
+  {
+    "query": "postmotem duplicate emails",
+    "category": "typo",
+    "relevant": {"incident-postmortem": 3}
+  },
+  {"query": "vendr comparsion", "category": "typo", "relevant": {"vendor-comparison": 3}},
+  {
+    "query": "recuring invoices",
+    "category": "typo",
+    "relevant": {"product-spec": 3, "product-roadmap": 2, "team-okrs": 2}
+  },
+  {"query": "securty review", "category": "typo", "relevant": {"security-review-checklist": 3}},
+  {
+    "query": "weekley sync",
+    "category": "typo",
+    "relevant": {"weekly-sync-oct-13": 3, "weekly-sync-oct-6": 3}
+  },
+  {
+    "query": "retrospectiva del sprint",
+    "category": "nonEnglish",
+    "relevant": {"retro-notes-es": 3}
+  },
+  {
+    "query": "Projektplan Meilensteine",
+    "category": "nonEnglish",
+    "relevant": {"project-plan-de": 3}
+  },
+  {
+    "query": "リリース計画の会議メモ",
+    "category": "nonEnglish",
+    "relevant": {"meeting-notes-ja": 3}
+  },
+  {
+    "query": "lista de verificación para nuevos empleados",
+    "category": "nonEnglish",
+    "relevant": {"onboarding-checklist": 3}
+  },
+  {
+    "query": "wer hat diese Woche Bereitschaftsdienst",
+    "category": "nonEnglish",
+    "relevant": {"on-call-rotation": 3}
+  },
+  {
+    "query": "acciones para acelerar las pruebas automáticas",
+    "category": "nonEnglish",
+    "relevant": {"retro-notes-es": 3}
+  },
+  {
+    "query": "Verantwortlichkeiten für den Rechnungsexport",
+    "category": "nonEnglish",
+    "relevant": {"project-plan-de": 3}
+  },
+  {"query": "marketing budget Q3", "category": "table", "relevant": {"q3-budget": 3}},
+  {
+    "query": "who is on call the week of Nov 9",
+    "category": "table",
+    "relevant": {"on-call-rotation": 3}
+  },
+  {
+    "query": "which vendor supports SAML single sign-on",
+    "category": "table",
+    "relevant": {"vendor-comparison": 3, "security-review-checklist": 1}
+  },
+  {
+    "query": "mobile app offline mode status",
+    "category": "table",
+    "relevant": {"product-roadmap": 3, "standup-mobile-oct-14": 2, "poker-mobile-13": 1}
+  },
+  {
+    "query": "p95 invoice API latency target",
+    "category": "table",
+    "relevant": {"team-okrs": 3, "team-charter": 2}
+  },
+  {
+    "query": "smoke test owner before a release",
+    "category": "table",
+    "relevant": {
+      "release-checklist": 3,
+      "retro-sprint-41-platform": 1,
+      "standup-platform-oct-13": 1
+    }
+  },
+  {"query": "Engineering spend in August", "category": "table", "relevant": {"q3-budget": 3}},
+  {
+    "query": "data retention for each vendor",
+    "category": "table",
+    "relevant": {"vendor-comparison": 3}
+  },
+  {
+    "query": "which stories were estimated at 8 points",
+    "category": "table",
+    "relevant": {"poker-platform-12": 3, "poker-growth-refinement": 3}
+  },
+  {
+    "query": "requirements marked must have for recurring invoices",
+    "category": "table",
+    "relevant": {"product-spec": 3}
+  },
+  {
+    "query": "retro action items about deploys",
+    "category": "summary",
+    "relevant": {
+      "retro-sprint-41-platform": 3,
+      "retro-sprint-42-platform": 2,
+      "retro-mobile-release-3-8": 1
+    }
+  },
+  {
+    "query": "what did the team say about on-call fatigue",
+    "category": "summary",
+    "relevant": {
+      "retro-sprint-41-platform": 3,
+      "team-health-platform-3": 2,
+      "team-health-platform-4": 1
+    }
+  },
+  {
+    "query": "how safe does the team feel speaking up",
+    "category": "summary",
+    "relevant": {
+      "team-health-platform-3": 3,
+      "team-health-platform-4": 3,
+      "team-health-growth": 3,
+      "team-health-mobile-1": 3
+    }
+  },
+  {
+    "query": "standup blocked on the staging database",
+    "category": "summary",
+    "relevant": {
+      "standup-platform-oct-12": 3,
+      "standup-notes": 3,
+      "weekly-sync-oct-6": 2,
+      "retro-sprint-42-platform": 2,
+      "standup-platform-oct-13": 1,
+      "weekly-sync-oct-13": 1,
+      "retro-sprint-41-platform": 1
+    }
+  },
+  {
+    "query": "sprint poker estimates for webhook retries",
+    "category": "summary",
+    "relevant": {
+      "poker-platform-12": 3,
+      "standup-platform-oct-12": 1,
+      "standup-platform-oct-13": 1,
+      "retro-sprint-41-platform": 1
+    }
+  },
+  {
+    "query": "support ticket backlog retro",
+    "category": "summary",
+    "relevant": {
+      "retro-support-october": 3,
+      "standup-support-oct-15": 1,
+      "weekly-sync-oct-6": 1,
+      "weekly-sync-oct-13": 1
+    }
+  },
+  {
+    "query": "app store review delays",
+    "category": "summary",
+    "relevant": {"retro-mobile-release-3-8": 3, "standup-mobile-oct-14": 2}
+  },
+  {
+    "query": "check-in agenda items about holiday coverage",
+    "category": "summary",
+    "relevant": {"checkin-support-18": 3}
+  },
+  {
+    "query": "team health comments about workload",
+    "category": "summary",
+    "relevant": {
+      "team-health-platform-3": 3,
+      "team-health-platform-4": 3,
+      "team-health-growth": 1,
+      "team-health-mobile-1": 1
+    }
+  },
+  {
+    "query": "growth team landing page experiments",
+    "category": "summary",
+    "relevant": {
+      "retro-growth-q4-kickoff": 3,
+      "standup-growth-oct-13": 1,
+      "poker-growth-refinement": 1
+    }
+  },
+  {
+    "query": "crash free sessions",
+    "category": "summary",
+    "relevant": {"retro-mobile-release-3-8": 3, "standup-mobile-oct-14": 1, "poker-mobile-13": 1}
+  },
+  {
+    "query": "who is working on the multi-currency design doc",
+    "category": "summary",
+    "relevant": {"standup-platform-oct-13": 3, "product-roadmap": 2}
+  },
+  {
+    "query": "annual plan toggle decision",
+    "category": "summary",
+    "relevant": {
+      "weekly-sync-oct-13": 3,
+      "standup-growth-oct-13": 2,
+      "poker-growth-refinement": 2,
+      "retro-growth-q4-kickoff": 1
+    }
+  },
+  {
+    "query": "no-meeting Wednesday afternoons",
+    "category": "summary",
+    "relevant": {"retro-q3-product": 3}
+  },
+  {
+    "query": "customer feedback inbox every Friday",
+    "category": "summary",
+    "relevant": {"retro-q3-product": 3}
+  },
+  {
+    "query": "one dashboard for activation instead of five",
+    "category": "summary",
+    "relevant": {"retro-q3-product": 3}
+  },
+  {
+    "query": "retro about cross-team dependencies",
+    "category": "summary",
+    "relevant": {"retro-q3-product": 3}
+  },
+  {"query": "parental leave policy", "category": "noAnswer", "relevant": {}},
+  {"query": "kubernetes cluster autoscaling", "category": "noAnswer", "relevant": {}},
+  {"query": "salesforce renewal contract", "category": "noAnswer", "relevant": {}},
+  {"query": "black friday campaign plan", "category": "noAnswer", "relevant": {}},
+  {"query": "gdpr data deletion request process", "category": "noAnswer", "relevant": {}},
+  {
+    "query": "how to reset a customer's two factor authentication",
+    "category": "noAnswer",
+    "relevant": {}
+  },
+  {"query": "expense report reimbursement", "category": "noAnswer", "relevant": {}},
+  {"query": "quarterly sales pipeline forecast", "category": "noAnswer", "relevant": {}}
+]

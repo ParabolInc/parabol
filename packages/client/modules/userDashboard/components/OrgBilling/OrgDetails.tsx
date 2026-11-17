@@ -69,11 +69,11 @@ const OrgDetails = (props: Props) => {
             <Avatar picture={pictureOrDefault} />
           </div>
         )}
-        <div className='ml-6 flex grow flex-col items-start text-gray-600'>
+        <div className='ml-6 flex grow flex-col items-start text-fg-secondary'>
           {isBillingLeader ? (
             <EditableOrgName organization={organization} />
           ) : (
-            <div className='text-2xl text-gray-700 leading-9'>{orgName}</div>
+            <div className='text-2xl text-fg-primary leading-9'>{orgName}</div>
           )}
           <OrganizationDetails createdAt={createdAt} billingTier={billingTier} tier={tier} />
         </div>

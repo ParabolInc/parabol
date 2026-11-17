@@ -25,16 +25,19 @@ const useAuthRoute = (inOptions: Options = {}) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const options = useDeepEqual(inOptions)
+  const {authObj} = atmosphere
+  const isSignedIn = !!authObj && authObj.exp > Date.now() / 1000
 
   const checkAuth = () => {
-    const {authObj} = atmosphere
     const {role, silent} = options
-    if (authObj) {
+    if (isSignedIn) {
       // User is authenticated, check their authorization
       if (role && role !== authObj.rol) {
         atmosphere.eventEmitter.emit('addSnackbar', unauthorizedDefault)
         navigate('/', {replace: true})
       }
+    } else if (authObj) {
+      atmosphere.invalidateSession('Your session has expired. Please log in again.')
     } else {
       // User is not authenticated, redirect them to sign in
       if (!silent) {
@@ -52,7 +55,8 @@ const useAuthRoute = (inOptions: Options = {}) => {
     }
   }
 
-  useEffect(checkAuth, [atmosphere.authObj, navigate, options])
+  useEffect(checkAuth, [authObj, isSignedIn, navigate, options])
+  return isSignedIn
 }
 
 export default useAuthRoute

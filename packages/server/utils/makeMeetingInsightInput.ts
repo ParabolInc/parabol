@@ -1,15 +1,17 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
-import {getComments} from '../graphql/public/mutations/helpers/getTopics'
+import {getComments} from '../graphql/public/mutations/helpers/getComments'
 import {resolveStoryFinalScore} from '../graphql/resolvers/resolveStoryFinalScore'
 import type {RetroReflection} from '../postgres/types'
 import type {
   AnyMeeting,
   PokerMeeting,
   RetrospectiveMeeting,
+  TeamHealthMeeting,
   TeamPromptMeeting
 } from '../postgres/types/Meeting'
 import getPhase from './getPhase'
+import getTeamHealthDisplayComment from './getTeamHealthDisplayComment'
 import {Logger} from './Logger'
 
 const serializeReflections = async (
@@ -21,7 +23,7 @@ const serializeReflections = async (
     rawReflections.map(async (reflection) => {
       const {promptId, creatorId, plaintextContent} = reflection
       const [prompt, creator] = await Promise.all([
-        dataLoader.get('reflectPrompts').loadNonNull(promptId),
+        dataLoader.get('templatePrompts').loadNonNull(promptId),
         creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
       ])
       const {question} = prompt
@@ -108,7 +110,7 @@ const makeTeamPromptMeetingInsightInput = async (
 ) => {
   const MIN_RESPONSES = 2
   const {id: meetingId, meetingType} = meeting
-  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responses = await dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meetingId)
   if (responses.length < MIN_RESPONSES) return null
   const userIds = responses.map(({userId}) => userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
@@ -118,6 +120,41 @@ const makeTeamPromptMeetingInsightInput = async (
     user: users.find((user) => user.id === response.userId)?.preferredName ?? 'Anonymous'
   }))
   return {meetingType, responses: contentWithUsers}
+}
+
+const makeTeamHealthMeetingInsightInput = async (
+  meeting: TeamHealthMeeting,
+  dataLoader: DataLoaderInstance
+) => {
+  // require enough distinct respondents that no answer can be traced back to an individual
+  const MIN_RESPONSES = 3
+  const {id: meetingId, meetingType} = meeting
+  const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+  const responderCount = new Set(responses.map(({userId}) => userId)).size
+  if (responderCount < MIN_RESPONSES) return null
+
+  const questionIds = [...new Set(responses.map(({questionId}) => questionId))]
+  const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
+    isValid
+  )
+  const questionById = new Map(questions.map((question) => [String(question.id), question]))
+
+  // group responses by question, dropping any user linkage so the data stays anonymous
+  const grouped = new Map<string, {question: string; scores: number[]; comments: string[]}>()
+  for (const response of responses) {
+    const questionId = String(response.questionId)
+    const question = questionById.get(questionId)
+    if (!question) continue
+    let entry = grouped.get(questionId)
+    if (!entry) {
+      entry = {question: question.question, scores: [], comments: []}
+      grouped.set(questionId, entry)
+    }
+    if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
+    const comment = getTeamHealthDisplayComment(response)
+    if (comment) entry.comments.push(comment)
+  }
+  return {meetingType, questions: [...grouped.values()]}
 }
 
 const makePokerMeetingInsightInput = async (
@@ -161,6 +198,8 @@ const makeMeetingInsightPart = async (meeting: AnyMeeting, dataLoader: DataLoade
   switch (meetingType) {
     case 'action':
       return null
+    case 'teamHealth':
+      return makeTeamHealthMeetingInsightInput(meeting, dataLoader)
     case 'poker':
       return makePokerMeetingInsightInput(meeting, dataLoader)
     case 'retrospective':

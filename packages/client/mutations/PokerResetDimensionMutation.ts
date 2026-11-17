@@ -25,7 +25,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PokerResetDimensionMutation_meeting @relay(mask: false)
+      ...PokerResetDimensionMutation_meeting @relay(mask: false) @alias
     }
   }
 `

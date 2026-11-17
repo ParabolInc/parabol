@@ -1,25 +1,26 @@
+import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
-import type {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
-import type {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import useMutationProps from '../../hooks/useMutationProps'
-import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
-import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
+import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
+import type {useAddPromptTemplateMutation$data} from '../../__generated__/useAddPromptTemplateMutation.graphql'
+import type {useAddTeamHealthTemplateMutation$data} from '../../__generated__/useAddTeamHealthTemplateMutation.graphql'
+import useAddPokerTemplateMutation from '../../mutations/useAddPokerTemplateMutation'
+import useAddPromptTemplateMutation from '../../mutations/useAddPromptTemplateMutation'
+import useAddTeamHealthTemplateMutation from '../../mutations/useAddTeamHealthTemplateMutation'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import getMutationError from '../../utils/relay/getMutationError'
 import sortByTier from '../../utils/sortByTier'
-import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
-
-const ACTION_BUTTON_CLASSES =
-  'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
+import TeamPicker from '../TeamPicker/TeamPicker'
 
 interface Props {
   preferredTeamId: string | null | undefined
@@ -40,8 +41,7 @@ const TeamPickerModal = (props: Props) => {
         tier
         name
         orgId
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingTeamPicker_teams
+        ...TeamPicker_teams
       }
     `,
     teamsRef
@@ -51,85 +51,108 @@ const TeamPickerModal = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]
   )
 
-  const atmosphere = useAtmosphere()
-  const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
+  const [error, setError] = useState<string | null>(null)
+  const [executeAddPromptTemplate, promptSubmitting] = useAddPromptTemplateMutation()
+  const [executeAddPokerTemplate, pokerSubmitting] = useAddPokerTemplateMutation()
+  const [executeAddTeamHealthTemplate, teamHealthSubmitting] = useAddTeamHealthTemplateMutation()
+  const submitting = promptSubmitting || pokerSubmitting || teamHealthSubmitting
 
   useEffect(() => {
-    onCompleted()
+    setError(null)
   }, [selectedTeam?.id])
 
   const navigate = useNavigate()
+  const isNavigatingAwayRef = useRef(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      isNavigatingAwayRef.current = false
+    }
+  }, [isOpen])
 
   // user has no teams
   if (!selectedTeam) return null
+
+  const onError = (err: Error) => {
+    setError(getMutationError(err).message)
+  }
+
+  const onTemplateCreated = (templateId: string | undefined) => {
+    if (templateId) {
+      isNavigatingAwayRef.current = true
+    }
+    closeModal()
+    if (templateId) {
+      navigate(`/activity-library/details/${templateId}`, {
+        state: {prevCategory: category, edit: true}
+      })
+    }
+  }
 
   const handleSelectTeam = () => {
     if (submitting) {
       return
     }
 
-    if (type === 'retrospective') {
-      submitMutation()
-      AddReflectTemplateMutation(
-        atmosphere,
-        {teamId: selectedTeam.id, parentTemplateId},
-        {
-          onError,
-          onCompleted: (res: AddReflectTemplateMutation$data) => {
-            closeModal()
-            const templateId = res.addReflectTemplate?.reflectTemplate?.id
-            if (templateId) {
-              navigate(`/activity-library/details/${templateId}`, {
-                state: {prevCategory: category, edit: true}
-              })
-            }
-            onCompleted()
+    const variables = {teamId: selectedTeam.id, parentTemplateId}
+    setError(null)
+    if (type === 'retrospective' || type === 'teamPrompt') {
+      executeAddPromptTemplate({
+        variables: {...variables, type},
+        onError,
+        onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
+          const [firstError] = errors ?? []
+          if (firstError) {
+            setError(firstError.message)
+            return
           }
+          onTemplateCreated(res.addPromptTemplate.template.id)
         }
-      )
+      })
     } else if (type === 'poker') {
-      submitMutation()
-      AddPokerTemplateMutation(
-        atmosphere,
-        {teamId: selectedTeam.id, parentTemplateId},
-        {
-          onError,
-          onCompleted: (res: AddPokerTemplateMutation$data) => {
-            closeModal()
-            const templateId = res.addPokerTemplate?.pokerTemplate?.id
-            if (templateId) {
-              navigate(`/activity-library/details/${templateId}`, {
-                state: {prevCategory: category, edit: true}
-              })
-            }
-            onCompleted()
-          }
-        }
-      )
+      executeAddPokerTemplate({
+        variables,
+        onError,
+        onCompleted: (res: useAddPokerTemplateMutation$data) =>
+          onTemplateCreated(
+            res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
+          )
+      })
+    } else if (type === 'teamHealth') {
+      executeAddTeamHealthTemplate({
+        variables,
+        onError,
+        onCompleted: (res: useAddTeamHealthTemplateMutation$data) =>
+          onTemplateCreated(res.addTeamHealthTemplate?.teamHealthTemplate?.id)
+      })
     }
   }
 
   const handleUpgrade = () => {
-    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'cloneTemplateAL',
-      meetingType: type
-    })
     navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
   return (
     <Dialog isOpen={isOpen} onClose={closeModal}>
-      <DialogContent className='w-[440px] p-6'>
+      <DialogContent
+        className='w-[440px]'
+        onCloseAutoFocus={(e) => {
+          if (isNavigatingAwayRef.current) e.preventDefault()
+        }}
+      >
+        <VisuallyHidden asChild>
+          <DialogTitle>Select a team to clone this template</DialogTitle>
+        </VisuallyHidden>
         <div className='flex flex-col gap-4'>
           <div>
             <b>Select the team</b> to manage this cloned template
           </div>
-          <NewMeetingTeamPicker
+          <TeamPicker
             onSelectTeam={(teamId) => {
               const newTeam = teams.find((team) => team.id === teamId)
               newTeam && setSelectedTeam(newTeam)
             }}
-            selectedTeamRef={selectedTeam}
+            selectedTeamId={selectedTeam.id}
             teamsRef={teams}
           />
           {selectedTeam.tier === 'starter' && (
@@ -138,42 +161,32 @@ const TeamPickerModal = (props: Props) => {
               this team.
             </div>
           )}
-          {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
-          <div className='flex gap-2.5 self-end'>
-            <button
-              className={cn(
-                ACTION_BUTTON_CLASSES,
-                'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-200'
-              )}
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
-            {selectedTeam.tier === 'starter' ? (
-              <button
-                className={cn(
-                  ACTION_BUTTON_CLASSES,
-                  'bg-rose-500 px-4 py-2 text-white hover:bg-rose-600',
-                  submitting && 'cursor-wait'
-                )}
-                onClick={handleUpgrade}
-              >
-                Upgrade Now
-              </button>
-            ) : (
-              <button
-                className={cn(
-                  ACTION_BUTTON_CLASSES,
-                  'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
-                  submitting && 'cursor-wait'
-                )}
-                onClick={handleSelectTeam}
-              >
-                Clone Template
-              </button>
-            )}
-          </div>
+          {error && <div className='w-full text-fg-error'>{error}</div>}
         </div>
+        <DialogActions>
+          <Button variant='outline' size='md' onClick={closeModal}>
+            Cancel
+          </Button>
+          {selectedTeam.tier === 'starter' ? (
+            <Button
+              variant='primary'
+              size='md'
+              className={cn(submitting && 'cursor-wait')}
+              onClick={handleUpgrade}
+            >
+              Upgrade Now
+            </Button>
+          ) : (
+            <Button
+              variant='primary'
+              size='md'
+              className={cn(submitting && 'cursor-wait')}
+              onClick={handleSelectTeam}
+            >
+              Clone Template
+            </Button>
+          )}
+        </DialogActions>
       </DialogContent>
     </Dialog>
   )

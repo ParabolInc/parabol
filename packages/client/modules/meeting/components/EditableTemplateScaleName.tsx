@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EditableTemplateScaleName_scales$key} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
@@ -15,18 +14,6 @@ interface Props {
   isOwner: boolean
 }
 
-const InheritedStyles = styled('div')({
-  flex: 1,
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px',
-  paddingTop: '4px'
-})
-
-const StyledEditableText = styled(EditableText)({
-  lineHeight: '24px'
-})
-
 const EditableTemplateScaleName = (props: Props) => {
   const {name, scaleId, scales: scalesRef, isOwner} = props
   const scales = useFragment(
@@ -39,7 +26,9 @@ const EditableTemplateScaleName = (props: Props) => {
     scalesRef
   )
   const atmosphere = useAtmosphere()
-  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps({
+    errorDisplay: 'inline'
+  })
 
   const handleSubmit = (rawName: string) => {
     if (submitting) return
@@ -75,8 +64,9 @@ const EditableTemplateScaleName = (props: Props) => {
   }
 
   return (
-    <InheritedStyles>
-      <StyledEditableText
+    <div className='flex-1 pt-1 font-semibold text-[20px] leading-6'>
+      <EditableText
+        className='leading-6'
         disabled={!isOwner}
         error={error?.message}
         handleSubmit={handleSubmit}
@@ -85,7 +75,7 @@ const EditableTemplateScaleName = (props: Props) => {
         validate={validate}
         placeholder={'*New Scale'}
       />
-    </InheritedStyles>
+    </div>
   )
 }
 

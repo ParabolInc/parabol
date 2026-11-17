@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -5,12 +6,9 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -36,7 +34,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     .executeTakeFirst()
 
   if (!request) {
-    return standardError(new Error('Request expired'))
+    throw new GraphQLError('Request expired', {extensions: {code: 'CONFLICT'}})
   }
 
   const {createdBy, domain} = request
@@ -48,7 +46,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   )
 
   if (!validTeamMembers.length) {
-    return standardError(new Error('Not a team leader'))
+    throw new GraphQLError('Not a team leader', {extensions: {code: 'FORBIDDEN'}})
   }
 
   const validTeamIds = validTeamMembers.map(({teamId}) => teamId)
@@ -58,7 +56,9 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       validTeamIds.map((id) => context.resourceGrants!.hasTeam(id))
     )
     if (hasAccess.some((v) => !v)) {
-      return standardError(new Error('PAT does not grant access to this team'))
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
@@ -70,13 +70,13 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const validOrgIds = teamOrgs.filter((org) => org.activeDomain === domain).map(({id}) => id)
 
   if (!validOrgIds.length) {
-    return standardError(new Error('Invalid organizations'))
+    throw new GraphQLError('Invalid organizations', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const validTeams = leadTeams.filter((team) => validOrgIds.includes(team.orgId))
 
   if (!validTeams.length) {
-    return standardError(new Error('Invalid teams'))
+    throw new GraphQLError('Invalid teams', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // Avoid race conditions: we make changes based on the data fetched first, see insertNewTeamMember
@@ -84,47 +84,40 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   const redisLock = new RedisLock(`acceptRequestToJoinDomain:${request.id}`, ttl)
   const lockTTL = await redisLock.checkLock()
   if (lockTTL > 0) {
-    return {
-      error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
-    }
+    throw new GraphQLError(`You already called this ${ttl - lockTTL}ms ago!`, {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
 
   const user = await getUserById(createdBy)
   if (!user) {
-    return standardError(new Error('User not found'))
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {id: userId} = user
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
-    const [organizationUser] = await Promise.all([
-      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
-      pg
-        .insertInto('TeamMember')
-        .values({
-          id: TeamMemberId.join(teamId, userId),
-          teamId,
-          userId,
-          openDrawer: 'manageTeam'
-        })
-        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
-        .execute()
-    ])
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({orgId, userId})
 
     if (!organizationUser) {
-      try {
-        await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
-      } catch (e) {
-        Logger.log(e)
-      }
-      const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
-      analytics.identify({
-        userId,
-        email: user.email,
-        highestTier
-      })
+      // join the org before the team, otherwise a failure here leaves a TeamMember who passes
+      // isTeamMember but fails isViewerOnOrg on every org-scoped field. See acceptTeamInvitation
+      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     }
+
+    await pg
+      .insertInto('TeamMember')
+      .values({
+        id: TeamMemberId.join(teamId, userId),
+        teamId,
+        userId,
+        openDrawer: 'manageTeam'
+      })
+      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
+      .execute()
   }
   dataLoader.clearAll(['users', 'teamMembers'])
   await redisLock.unlock()

@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
 import type {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../__generated__/UpdateTemplateCategoryMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment UpdateTemplateCategoryMutation_team on UpdateTemplateCategorySuccess {
@@ -19,7 +20,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateTemplateCategoryMutation_team @relay(mask: false)
+      ...UpdateTemplateCategoryMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -45,6 +46,7 @@ const useTemplateCategoryMutation = () => {
           })
       },
       // allow components to override default handlers
+      onError: snackOnError(atmosphere),
       ...config
     })
   }

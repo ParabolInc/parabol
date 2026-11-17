@@ -1,0 +1,56 @@
+diff --git a/cjs/plugins/use-schema.js b/cjs/plugins/use-schema.js
+index be91ce680e6648c27c8154625b0802534467c57a..ea560d4840bcc432900c49427e31373d4da74a89 100644
+--- a/cjs/plugins/use-schema.js
++++ b/cjs/plugins/use-schema.js
+@@ -61,14 +61,17 @@ const useSchema = (schemaDef) => {
+                 };
+             },
+             onEnveloped({ setSchema, context }) {
+-                if (context?.request == null) {
+-                    throw new Error('Request object is not available in the context. Make sure you use this plugin with GraphQL Yoga.');
++                const schema = context?.request == null ? undefined : schemaByRequest.get(context.request);
++                if (schema != null) {
++                    setSchema(schema);
++                    return;
+                 }
+-                const schema = schemaByRequest.get(context.request);
+-                if (schema == null) {
+-                    throw new Error(`No schema found for this request. Make sure you use this plugin with GraphQL Yoga.`);
++                // getEnveloped was called outside of the request pipeline, e.g. by graphql-ws, so call the factory with its context
++                const schemaFromContext = schemaDef(context ?? {});
++                if (!isGraphQLSchema(schemaFromContext)) {
++                    throw new Error('No schema found for this request. Outside of GraphQL Yoga\'s request pipeline, e.g. in graphql-ws, the factory function must return a GraphQLSchema synchronously.');
+                 }
+-                setSchema(schema);
++                setSchema(schemaFromContext);
+             },
+         };
+     }
+diff --git a/esm/plugins/use-schema.js b/esm/plugins/use-schema.js
+index f727a959e7b897b168ad5652c649c12648d528e5..765bd05cb5597596d3981a1edbca95e11ad5024f 100644
+--- a/esm/plugins/use-schema.js
++++ b/esm/plugins/use-schema.js
+@@ -58,14 +58,17 @@ export const useSchema = (schemaDef) => {
+                 };
+             },
+             onEnveloped({ setSchema, context }) {
+-                if (context?.request == null) {
+-                    throw new Error('Request object is not available in the context. Make sure you use this plugin with GraphQL Yoga.');
++                const schema = context?.request == null ? undefined : schemaByRequest.get(context.request);
++                if (schema != null) {
++                    setSchema(schema);
++                    return;
+                 }
+-                const schema = schemaByRequest.get(context.request);
+-                if (schema == null) {
+-                    throw new Error(`No schema found for this request. Make sure you use this plugin with GraphQL Yoga.`);
++                // getEnveloped was called outside of the request pipeline, e.g. by graphql-ws, so call the factory with its context
++                const schemaFromContext = schemaDef(context ?? {});
++                if (!isGraphQLSchema(schemaFromContext)) {
++                    throw new Error('No schema found for this request. Outside of GraphQL Yoga\'s request pipeline, e.g. in graphql-ws, the factory function must return a GraphQLSchema synchronously.');
+                 }
+-                setSchema(schema);
++                setSchema(schemaFromContext);
+             },
+         };
+     }

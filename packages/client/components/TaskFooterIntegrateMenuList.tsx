@@ -1,23 +1,50 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
+import {Fragment, Suspense, useCallback, useMemo, useState} from 'react'
+import {fetchQuery, useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import {getLinearRepoName} from '~/utils/getLinearRepoName'
+import mergeRepoIntegrationItems from '~/utils/mergeRepoIntegrationItems'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
-import type {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import type {MenuProps} from '../hooks/useMenu'
-import LinearProjectId from '../shared/gqlIds/LinearProjectId'
+import type {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
+import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskFooterIntegrateMenuListRetryQuery.graphql'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
+import {
+  isTaskClientIntegration,
+  listClientIntegrationServices
+} from '../integrations/platform/registry'
+import type {BeginConnect, ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
+import {MenuSearch} from '../ui/Menu/MenuSearch'
+import {MenuSeparator} from '../ui/Menu/MenuSeparator'
+import MenuSkeletonRows from '../ui/Menu/MenuSkeletonRows'
+import menuSectionTitleClass from '../ui/Menu/menuSectionTitleClass'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import Menu from './Menu'
-import MenuItemHR from './MenuItemHR'
-import {SearchMenuItem} from './SearchMenuItem'
+import TaskFooterIntegrateMenuConnectFailed from './TaskFooterIntegrateMenuConnectFailed'
+import TaskFooterIntegrateMenuNeedsReconnect from './TaskFooterIntegrateMenuNeedsReconnect'
+import TaskFooterIntegrateMenuServiceRepos, {
+  type RepoIntegrationItem as Item,
+  type RepoIntegrationService
+} from './TaskFooterIntegrateMenuServiceRepos'
+import TaskFooterIntegrateMenuToolFailure from './TaskFooterIntegrateMenuToolFailure'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
+const retryQuery = graphql`
+  query TaskFooterIntegrateMenuListRetryQuery($teamId: ID!) {
+    viewer {
+      teamMember(teamId: $teamId) {
+        services {
+          ...TaskFooterIntegrateMenuServiceRepos_service
+        }
+      }
+    }
+  }
+`
+
 interface Props {
-  menuProps: MenuProps
+  failure?: Extract<ConnectInMenuState, {phase: 'failed'}>
+  onConnect?: BeginConnect
+  mutationProps: MenuMutationProps
   placeholder: string
-  teamId: string
+  teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
   label?: string
   onPushToIntegration: (
     integrationRepoId: string,
@@ -26,93 +53,94 @@ interface Props {
   ) => void
 }
 
-type Item = NonNullable<
-  NonNullable<
-    TaskFooterIntegrateMenuListLocalQuery['response']['viewer']['teamMember']
-  >['repoIntegrations']['items']
->[0]
+type ReposByService = Partial<Record<RepoIntegrationService, readonly Item[] | null>>
 
-type LinearProjectItem = Item & {__typename: '_xLinearProject'}
-
-const getValue = (item: Item) => {
-  const {service} = item
-  if (service === 'jira' || service === 'azureDevOps' || service === 'jiraServer')
-    return item.name ?? ''
-  else if (service === 'github') return item.nameWithOwner ?? ''
-  else if (service === 'gitlab') return item.fullPath ?? ''
-  else if (service === 'linear' && item.__typename === '_xLinearTeam') return item.displayName ?? ''
-  else if (service === 'linear' && item.__typename === '_xLinearProject')
-    return getLinearRepoName(item as LinearProjectItem)
-  return ''
-}
+const getValue = (item: Item) => item.name
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {menuProps, onPushToIntegration, placeholder, teamId, label} = props
+  const {
+    failure,
+    onConnect,
+    mutationProps,
+    onPushToIntegration,
+    placeholder,
+    teamMemberRef,
+    label
+  } = props
+  const atmosphere = useAtmosphere()
+  const [isRetrying, setIsRetrying] = useState(false)
 
   graphql`
     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
-      __typename
       id
+      integrationRepoId
       service
-      ... on JiraRemoteProject {
-        cloudId
-        key
-        name
-      }
-      ... on _xGitHubRepository {
-        nameWithOwner
-      }
-      ... on _xGitLabProject {
-        fullPath
-      }
-      ... on AzureDevOpsRemoteProject {
-        id
-        name
-        instanceId
-      }
-      ... on JiraServerRemoteProject {
-        name
-      }
-      ... on _xLinearTeam {
-        displayName
-      }
-      ... on _xLinearProject {
-        name
-        teams(first: 1) {
-          nodes {
-            id
-            displayName
-          }
-        }
-      }
+      name
     }
   `
 
-  const [networkOnly, setNetworkOnly] = useState(false)
-  const [keepParentFocus, setKeepParentFocus] = useState(true)
-  const [first, setFirst] = useState(50)
-  const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
+  const [reposByService, setReposByService] = useState<ReposByService>({})
+  const teamMember = useFragment(
     graphql`
-      query TaskFooterIntegrateMenuListLocalQuery(
-        $teamId: ID!
-        $networkOnly: Boolean!
-        $first: Int!
-      ) {
-        viewer {
-          teamMember(teamId: $teamId) {
-            repoIntegrations(first: $first, networkOnly: $networkOnly) {
-              __typename
-              items {
-                ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-              }
-            }
+      fragment TaskFooterIntegrateMenuList_teamMember on TeamMember {
+        ...TaskFooterIntegrateMenuNeedsReconnect_teamMember
+        teamId
+        prevUsedRepoIntegrations(first: 50) {
+          items {
+            ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
+        }
+        services {
+          service
+          title
+          isConnected
+          ...TaskFooterIntegrateMenuServiceRepos_service @defer
         }
       }
     `,
-    {teamId, networkOnly, first}
+    teamMemberRef
   )
-  const items = viewer?.teamMember?.repoIntegrations.items ?? []
+  const services = useMemo(
+    () =>
+      listClientIntegrationServices(teamMember.services)
+        .map(({integrationService}) => integrationService)
+        .filter(({service}) => isTaskClientIntegration(service)),
+    [teamMember.services]
+  )
+  const prevUsedItems = teamMember.prevUsedRepoIntegrations.items ?? []
+  const connectedServices = useMemo(
+    () => services.filter(({isConnected}) => isConnected).map(({service}) => service),
+    [services]
+  )
+  const recentItems = useMemo(
+    () => prevUsedItems.filter(({service}) => connectedServices.includes(service)),
+    [prevUsedItems, connectedServices]
+  )
+  const items = useMemo(
+    () =>
+      mergeRepoIntegrationItems(
+        recentItems,
+        services.map(({service}) => reposByService[service] ?? [])
+      ),
+    [recentItems, services, reposByService]
+  )
+  const failedServices = connectedServices.filter((service) => reposByService[service] === null)
+  const loadingCount =
+    connectedServices.filter((service) => !(service in reposByService)).length +
+    (isRetrying ? failedServices.length : 0)
+  const retry = () => {
+    setIsRetrying(true)
+    const done = () => setIsRetrying(false)
+    fetchQuery<TaskFooterIntegrateMenuListRetryQuery>(
+      atmosphere,
+      retryQuery,
+      {teamId: teamMember.teamId},
+      {fetchPolicy: 'network-only'}
+    ).subscribe({complete: done, error: done})
+  }
+  const onRepos = useCallback((service: RepoIntegrationService, repos: readonly Item[] | null) => {
+    setReposByService((prev) => ({...prev, [service]: repos}))
+  }, [])
   // TODO: make this filter work for Linear type-ahead search
   const {
     query,
@@ -120,147 +148,67 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     onQueryChange
   } = useSearchFilter(items, getValue)
 
-  useEffect(() => {
-    // if searching for a repoIntegration that doesnt exist in the cache, it could be stale so use the network
-    // It is possible that user has a lot of repositories, if nothing was found in initial request, query everything
-    const veryBigNumberOfRepositories = 10000
-    if (!networkOnly && filteredIntegrations.length === 0) {
-      setNetworkOnly(true)
-      setKeepParentFocus(false)
-      setFirst((first) => first + veryBigNumberOfRepositories)
-    }
-  }, [filteredIntegrations.length])
-
   return (
-    <Menu
-      keepParentFocus={keepParentFocus}
-      ariaLabel={'Export the task'}
-      {...menuProps}
-      resetActiveOnChanges={[filteredIntegrations]}
-    >
+    <>
+      {services.map((service) => (
+        <Suspense key={service.service} fallback={null}>
+          <TaskFooterIntegrateMenuServiceRepos serviceRef={service} onRepos={onRepos} />
+        </Suspense>
+      ))}
+      {failure && <TaskFooterIntegrateMenuConnectFailed failure={failure} />}
       {label && (
         <>
-          <div className='p-2 pt-2 pb-0 text-slate-600 text-sm'>{label}</div>
-          <MenuItemHR />
+          <div className='p-2 pt-2 pb-0 text-fg-secondary text-sm'>{label}</div>
+          <MenuSeparator />
         </>
       )}
-      <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
+      <MenuSearch placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && filteredIntegrations.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No integrations found!
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}
-      {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
-        const {id: integrationRepoId, service} = repoIntegration
-        if (service === 'jira' && repoIntegration.name) {
-          return (
+      {filteredIntegrations.slice(0, 10).map((repoIntegration, index, shown) => {
+        const {integrationRepoId, service, name} = repoIntegration
+        if (!isTaskClientIntegration(service)) return null
+        const isRecent = !query && recentItems.includes(repoIntegration)
+        const startsRecent = isRecent && index === 0
+        const startsAll =
+          !query &&
+          recentItems.length > 0 &&
+          !isRecent &&
+          !!shown[index - 1] &&
+          recentItems.includes(shown[index - 1]!)
+        return (
+          <Fragment key={`${service}:${integrationRepoId}`}>
+            {startsRecent && <div className={menuSectionTitleClass}>Recent</div>}
+            {startsAll && <div className={menuSectionTitleClass}>All</div>}
             <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={repoIntegration.name}
-              onClick={() => onPushToIntegration(integrationRepoId, 'jira', repoIntegration.name)}
-              service='jira'
-            />
-          )
-        }
-        if (service === 'jiraServer' && repoIntegration.name) {
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={repoIntegration.name}
-              onClick={() =>
-                onPushToIntegration(integrationRepoId, 'jiraServer', repoIntegration.name)
-              }
-              service='jiraServer'
-            />
-          )
-        }
-        if (service === 'github' && repoIntegration.nameWithOwner) {
-          const {nameWithOwner} = repoIntegration
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={repoIntegration.nameWithOwner}
-              onClick={() =>
-                onPushToIntegration(nameWithOwner, 'github', repoIntegration.nameWithOwner)
-              }
-              service='github'
-            />
-          )
-        }
-        if (service === 'gitlab' && repoIntegration.fullPath) {
-          const {fullPath} = repoIntegration
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={fullPath}
-              onClick={() => onPushToIntegration(fullPath, 'gitlab', fullPath)}
-              service='gitlab'
-            />
-          )
-        }
-        if (service === 'azureDevOps' && repoIntegration.name) {
-          const {name, id: projectId, instanceId} = repoIntegration
-          const integrationRepoId = IntegrationRepoId.join({
-            instanceId: instanceId!,
-            projectId,
-            service: 'azureDevOps'
-          })
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
               query={query}
               label={name}
-              onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
-              service='azureDevOps'
+              onClick={() => onPushToIntegration(integrationRepoId, service, name)}
+              service={service}
             />
-          )
-        }
-        if (
-          service === 'linear' &&
-          repoIntegration.__typename === '_xLinearTeam' &&
-          repoIntegration.displayName
-        ) {
-          const {id: teamId, displayName: teamName} = repoIntegration
-          if (!teamId) return null
-          const integrationRepoId = LinearProjectId.join(teamId)
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={`${teamName}`}
-              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
-              service='linear'
-            />
-          )
-        }
-        if (
-          service === 'linear' &&
-          repoIntegration.__typename === '_xLinearProject' &&
-          repoIntegration.name
-        ) {
-          const {id: projectId, teams} = repoIntegration
-          const {id: teamId} = teams?.nodes?.[0] ?? {}
-          if (!teamId) return null
-          const nameWithTeam = getLinearRepoName(repoIntegration)
-          const integrationRepoId = LinearProjectId.join(teamId, projectId)
-          return (
-            <TaskIntegrationMenuItem
-              key={integrationRepoId}
-              query={query}
-              label={nameWithTeam}
-              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
-              service='linear'
-            />
-          )
-        }
-        return null
+          </Fragment>
+        )
       })}
-    </Menu>
+      {!query && loadingCount > 0 && <MenuSkeletonRows count={Math.min(loadingCount * 2, 4)} />}
+      {!isRetrying && failedServices.length > 0 && (
+        <TaskFooterIntegrateMenuToolFailure
+          titles={services
+            .filter(({service}) => failedServices.includes(service))
+            .map(({title}) => title)}
+          othersWork={failedServices.length < connectedServices.length}
+          onRetry={retry}
+        />
+      )}
+      <TaskFooterIntegrateMenuNeedsReconnect
+        onConnect={onConnect}
+        mutationProps={mutationProps}
+        teamMemberRef={teamMember}
+      />
+    </>
   )
 }
 

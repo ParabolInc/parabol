@@ -1,0 +1,19 @@
+"""
+The outcome of inviting people to a team by email
+"""
+type InviteToTeamSuccess {
+  """
+  The team the invitations are for
+  """
+  team: Team!
+
+  """
+  One result per unique address, in the order they were given
+  """
+  invitees: [TeamInvitee!]!
+
+  """
+  The `invite your team` suggested action that was removed, if any
+  """
+  removedSuggestedActionId: ID
+}

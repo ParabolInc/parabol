@@ -1,0 +1,47 @@
+import graphql from 'babel-plugin-relay/macro'
+
+graphql`
+  fragment findIntegrationService_cloudProvider on IntegrationService {
+    service
+    cloudProvider {
+      id
+      ... on IntegrationProviderOAuth2 {
+        clientId
+        serverBaseUrl
+        tenantId
+      }
+    }
+  }
+`
+
+graphql`
+  fragment findIntegrationService_auth on IntegrationService {
+    service
+    auth {
+      providerId
+    }
+  }
+`
+
+graphql`
+  fragment integrationServiceProviders_service on IntegrationService {
+    cloudProvider {
+      id
+      scope
+      ... on IntegrationProviderOAuth2 {
+        clientId
+        serverBaseUrl
+        tenantId
+      }
+    }
+    sharedProviders {
+      id
+      scope
+      ... on IntegrationProviderOAuth2 {
+        clientId
+        serverBaseUrl
+        tenantId
+      }
+    }
+  }
+`

@@ -1,32 +1,33 @@
 import type FileStoreManager from './FileStoreManager'
-import GCSManager from './GCSManager'
-import LocalFileStoreManager from './LocalFileStoreManager'
-import S3Manager from './S3FileStoreManager'
 
-let fileStoreManager: FileStoreManager
-const managers = {
-  s3: S3Manager,
-  gcs: GCSManager,
-  local: LocalFileStoreManager
+// each store's client is a lot of code, so the first file request evaluates only the configured one
+const managerLoaders = {
+  s3: async () => (await import(/* webpackMode: "eager" */ './S3FileStoreManager')).default,
+  gcs: async () => (await import(/* webpackMode: "eager" */ './GCSManager')).default,
+  local: async () => (await import(/* webpackMode: "eager" */ './LocalFileStoreManager')).default
 }
 
-type ManagersKey = keyof typeof managers
+type ManagersKey = keyof typeof managerLoaders
+
+const makeFileStoreManager = async (): Promise<FileStoreManager> => {
+  const fileStoreProvider = process.env.FILE_STORE_PROVIDER
+  if (!fileStoreProvider) {
+    throw new Error('The env var `FILE_STORE_PROVIDER` must be defined in `.env` file')
+  }
+  if (!(fileStoreProvider in managerLoaders)) {
+    throw new Error('Got invalid value for `FILE_STORE_PROVIDER` env var')
+  }
+  if (fileStoreProvider === 'local' && process.env.CDN_BASE_URL) {
+    throw new Error(`Env Var CDN_BASE_URL must be blank when FILE_STORE_PROVIDER=local`)
+  }
+  const Manager = await managerLoaders[fileStoreProvider as ManagersKey]()
+  return new Manager()
+}
+
+let fileStoreManager: Promise<FileStoreManager> | undefined
 
 export const getFileStoreManager = () => {
-  if (!fileStoreManager) {
-    const fileStoreProvider = process.env.FILE_STORE_PROVIDER
-    if (!fileStoreProvider) {
-      throw new Error('The env var `FILE_STORE_PROVIDER` must be defined in `.env` file')
-    }
-    if (!(fileStoreProvider in managers)) {
-      throw new Error('Got invalid value for `FILE_STORE_PROVIDER` env var')
-    }
-    if (fileStoreProvider === 'local' && process.env.CDN_BASE_URL) {
-      throw new Error(`Env Var CDN_BASE_URL must be blank when FILE_STORE_PROVIDER=local`)
-    }
-    const Manager = managers[fileStoreProvider as ManagersKey]
-    fileStoreManager = new Manager()
-  }
+  fileStoreManager ??= makeFileStoreManager()
   return fileStoreManager
 }
 

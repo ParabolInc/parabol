@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Droppable, type DroppableProvided, type DroppableStateSnapshot} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
@@ -6,58 +5,13 @@ import {useFragment} from 'react-relay'
 import type {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import type {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {BezierCurve, DroppableType} from '../../../../types/constEnums'
-import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
+import {DroppableType} from '../../../../types/constEnums'
+import {cn} from '../../../../ui/cn'
+import {DONE, MEETING, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import ArchiveAllDoneTasksModal from './ArchiveAllDoneTasksModal'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
-
-const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-  background: isDragging ? PALETTE.SLATE_300 : undefined,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  position: 'relative',
-  transition: `background 300ms ${BezierCurve.DECELERATE}`
-}))
-
-const ColumnHeader = styled('div')({
-  color: PALETTE.SLATE_700,
-  display: 'flex !important',
-  lineHeight: '24px',
-  padding: 12,
-  position: 'relative',
-  minWidth: '256px'
-})
-
-const ColumnBody = styled('div')({
-  flex: 1,
-  height: '100%',
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  minHeight: 200,
-  paddingBottom: 8
-})
-
-const StatusLabel = styled('div')({
-  fontWeight: 600,
-  textTransform: 'capitalize'
-})
-
-const TasksCount = styled('div')({
-  color: PALETTE.SLATE_500,
-  marginLeft: 8
-})
-
-const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({userCanAdd}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  fontSize: 16,
-  marginLeft: userCanAdd ? 8 : 16
-}))
 
 interface Props {
   area: AreaEnum
@@ -107,8 +61,13 @@ const TaskColumn = (props: Props) => {
   return (
     <Droppable droppableId={status} type={DroppableType.TASK}>
       {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-        <Column isDragging={dropSnapshot.isDraggingOver}>
-          <ColumnHeader>
+        <div
+          className={cn(
+            'relative flex flex-1 flex-col transition-[background] duration-300 ease-[cubic-bezier(0,0,.2,1)]',
+            dropSnapshot.isDraggingOver && 'bg-surface-well'
+          )}
+        >
+          <div className='flex! relative min-w-[256px] border-hairline border-b-2 p-3 text-fg-primary leading-6'>
             <TaskColumnAddTask
               area={area}
               isViewerMeetingSection={isViewerMeetingSection}
@@ -119,25 +78,31 @@ const TaskColumn = (props: Props) => {
               teamMemberFilterId={teamMemberFilterId || ''}
               teams={teams}
             />
-            <StatusLabelBlock userCanAdd={userCanAdd}>
-              <StatusLabel>{label}</StatusLabel>
-              {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
+            <div
+              className={cn('flex flex-1 items-center text-[16px]', userCanAdd ? 'ml-2' : 'ml-4')}
+            >
+              <div className='font-semibold capitalize'>{label}</div>
+              {tasks.length > 0 && <div className='ml-2 text-fg-muted'>{tasks.length}</div>}
               {status === DONE && (
                 <a
                   onClick={() => setIsArchiveOpen(true)}
-                  className='ml-auto cursor-pointer text-slate-600 text-sm'
+                  className='ml-auto cursor-pointer text-fg-secondary text-sm'
                 >
                   Archive all
                 </a>
               )}
-            </StatusLabelBlock>
+            </div>
             <ArchiveAllDoneTasksModal
               isOpen={isArchiveOpen}
               closeModal={() => setIsArchiveOpen(false)}
               taskIds={tasks.map((t) => t.id)}
             />
-          </ColumnHeader>
-          <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+          </div>
+          <div
+            className='h-full min-h-[200px] flex-1 overflow-y-auto overflow-x-hidden pb-2'
+            {...dropProvided.droppableProps}
+            ref={dropProvided.innerRef}
+          >
             <TaskColumnInner
               area={area}
               tasks={tasks}
@@ -145,8 +110,13 @@ const TaskColumn = (props: Props) => {
               meetingId={meetingId}
             />
             {dropProvided.placeholder}
-          </ColumnBody>
-        </Column>
+            {area === MEETING && status === DONE && tasks.length > 0 && (
+              <div className='px-3 pt-2 text-center text-fg-secondary text-xs'>
+                Archived when this meeting ends
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </Droppable>
   )

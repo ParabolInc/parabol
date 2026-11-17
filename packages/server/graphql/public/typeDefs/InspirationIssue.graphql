@@ -1,0 +1,29 @@
+"""
+An issue one of the viewer's sources matched while drafting their standup
+"""
+type InspirationIssue {
+  """
+  The integration service the issue came from
+  """
+  service: ServiceEnum!
+
+  """
+  The issue's title
+  """
+  title: String!
+
+  """
+  A link to the issue, if it has one
+  """
+  url: String
+
+  """
+  The most recent date tied to the issue: its last update, or when a calendar event starts
+  """
+  updatedAt: DateTime
+
+  """
+  Why the AI left the issue out of the draft. Null if the draft uses it
+  """
+  unusedReason: String
+}

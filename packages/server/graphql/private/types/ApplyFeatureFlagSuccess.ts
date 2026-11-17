@@ -1,16 +1,17 @@
+import {type FeatureFlagName, getFeatureFlag} from '../../../utils/featureFlags'
 import isValid from '../../isValid'
 import type {ApplyFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type ApplyFeatureFlagSuccessSource = {
-  featureFlagId: string
+  featureName: FeatureFlagName
   userIds: string[] | null
   teamIds: string[] | null
   orgIds: string[] | null
 }
 
 const ApplyFeatureFlagSuccess: ApplyFeatureFlagSuccessResolvers = {
-  featureFlag: async ({featureFlagId}, _args, {dataLoader}) => {
-    return dataLoader.get('featureFlags').loadNonNull(featureFlagId)
+  featureFlag: ({featureName}) => {
+    return getFeatureFlag(featureName)
   },
   users: async ({userIds}, _args, {dataLoader}) => {
     if (!userIds) return null

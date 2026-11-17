@@ -7,6 +7,8 @@ Concrete implementations (and the meeting type each belongs to):
 - EstimateStage — Sprint Poker meeting, Estimate phase. One stage per task being pointed.
 - AgendaItemsStage — Check-In meeting, AgendaItems phase. One stage per agenda item.
 - TeamPromptResponseStage — Standup (Team Prompt) meeting, Responses phase. One stage per team member.
+- TeamHealthResponseStage & TeamHealthResultStage — Team Health meeting. One discussion per question,
+  shared by the question's response stage and its result stage.
 
 When querying a stage, check for this interface to determine whether a discussion thread is available.
 Use discussionId as the stable key for subscriptions, mutations (e.g. createComment, editComment),

@@ -3,7 +3,6 @@ import type {StartActivityModalQuery} from 'parabol-client/__generated__/StartAc
 import {Suspense, useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
-import styled from 'styled-components'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import useStartMeeting from '../../hooks/useStartMeeting'
@@ -13,10 +12,6 @@ import Modal from '../Modal'
 import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 import Select from '../Select'
 import MeetingSettings from './MeetingSettings'
-
-const SettingsArea = styled.div!`
-  min-height: 80px;
-`
 
 const StartActivityModal = () => {
   const channel = useCurrentChannel()
@@ -164,7 +159,7 @@ const StartActivityModal = () => {
             value={selectedTemplate}
             onChange={setSelectedTemplate}
           />
-          <SettingsArea>
+          <div className='min-h-[80px]'>
             {selectedTeam &&
               selectedTemplate &&
               ['retrospective', 'action', 'poker'].includes(selectedTemplate.type) && (
@@ -172,7 +167,7 @@ const StartActivityModal = () => {
                   <MeetingSettings teamId={selectedTeam.id} meetingType={selectedTemplate.type} />
                 </Suspense>
               )}
-          </SettingsArea>
+          </div>
         </>
       )}
     </Modal>

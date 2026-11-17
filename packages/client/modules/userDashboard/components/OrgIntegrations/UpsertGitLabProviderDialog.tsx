@@ -1,9 +1,11 @@
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
-import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import PrimaryButton from '../../../../components/PrimaryButton'
+import ProviderLogo from '../../../../components/ProviderLogo'
 import useForm from '../../../../hooks/useForm'
+import {getClientIntegration} from '../../../../integrations/platform/registry'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import linkify from '../../../../utils/linkify'
@@ -63,7 +65,7 @@ const UpsertGitLabProviderDialog = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle className='flex items-center'>
-          <GitLabProviderLogo />
+          <ProviderLogo logo={getClientIntegration('gitlab').logo} />
           <div className='ml-2'>Add GitLab Server</div>
         </DialogTitle>
         <form
@@ -142,11 +144,11 @@ const UpsertGitLabProviderDialog = (props: Props) => {
             </div>
           </div>
           {error && <ErrorAlert message={error.message} />}
-          <div className='flex justify-end pt-6'>
-            <PrimaryButton type='submit' onClick={onSubmit}>
+          <DialogActions>
+            <Button variant='primary' size='md' type='submit' onClick={onSubmit}>
               Save
-            </PrimaryButton>
-          </div>
+            </Button>
+          </DialogActions>
         </form>
       </DialogContent>
     </Dialog>

@@ -16,7 +16,9 @@ import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
+import handleRemoveUserFromMeeting from './handlers/handleRemoveUserFromMeeting'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {snackOnError} from './handlers/snackOnError'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
 graphql`
@@ -39,17 +41,9 @@ graphql`
     id
     isViewerOnTeam
     activeMeetings {
+      id
       facilitatorStageId
       facilitatorUserId
-      meetingMembers {
-        id
-      }
-      phases {
-        stages {
-          id
-          readyUserIds
-        }
-      }
     }
   }
 `
@@ -165,6 +159,10 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
   }
   const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
   handleRemoveTeamMembers(teamMemberId, store)
+  const activeMeetings = payload.getLinkedRecord('team')?.getLinkedRecords('activeMeetings') ?? []
+  activeMeetings.forEach((activeMeeting) => {
+    handleRemoveUserFromMeeting(activeMeeting.getValue('id'), teamMemberId, store)
+  })
 }
 
 export const removeTeamMemberNotificationUpdater: SharedUpdater<
@@ -187,9 +185,16 @@ export const removeTeamMemberNotificationUpdater: SharedUpdater<
   handleRemoveTasks(taskIds, store)
 }
 
-export const removeTeamMemberUpdater: SharedUpdater<any> = (payload, context) => {
+export const removeTeamMemberUpdater: SharedUpdater<
+  TRemoveTeamMemberMutation['response']['removeTeamMember']
+> = (payload, context) => {
   removeTeamMemberTasksUpdater(payload, context)
   removeTeamMemberTeamUpdater(payload, context)
+  const {atmosphere, store} = context
+  const removedUserId = payload.getLinkedRecord('teamMember').getValue('userId')
+  if (removedUserId !== atmosphere.viewerId) return
+  const teamId = payload.getLinkedRecord('team').getValue('id')
+  handleRemoveTeams(teamId, store)
 }
 
 const RemoveTeamMemberMutation: SimpleMutation<TRemoveTeamMemberMutation> = (
@@ -199,6 +204,7 @@ const RemoveTeamMemberMutation: SimpleMutation<TRemoveTeamMemberMutation> = (
   return commitMutation<TRemoveTeamMemberMutation>(atmosphere, {
     mutation,
     variables,
+    onError: snackOnError(atmosphere),
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember')
       if (!payload) return

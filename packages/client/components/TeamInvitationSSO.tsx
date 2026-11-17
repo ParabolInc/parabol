@@ -20,7 +20,7 @@ interface Props {
 
 const TeamInvitationSSO = (props: Props) => {
   const {ssoURL} = props
-  const {onCompleted, submitMutation, onError, error} = useMutationProps()
+  const {onCompleted, submitMutation, onError, error} = useMutationProps({errorDisplay: 'inline'})
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   useEffect(() => {

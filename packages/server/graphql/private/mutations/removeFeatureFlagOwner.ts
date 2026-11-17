@@ -1,40 +1,32 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
+import {getFeatureFlag} from '../../../utils/featureFlags'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = async (
   _source,
   {flagName, subjects},
-  {authToken}
+  _context
 ) => {
   const pg = getKysely()
-
-  const viewerId = getUserId(authToken)
 
   const subjectKeys = Object.keys(subjects)
 
   if (subjectKeys.length === 0) {
-    return standardError(new Error('At least one subject type must be provided'), {
-      userId: viewerId
+    throw new GraphQLError('At least one subject type must be provided', {
+      extensions: {code: 'BAD_USER_INPUT'}
     })
   }
 
-  const featureFlag = await pg
-    .selectFrom('FeatureFlag')
-    .select(['id', 'scope'])
-    .where('featureName', '=', flagName)
-    .executeTakeFirst()
+  const featureFlag = getFeatureFlag(flagName)
 
   if (!featureFlag) {
-    return standardError(new Error('Feature flag not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Feature flag not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
-  const {id: featureFlagId, scope} = featureFlag
+  const {featureName, scope} = featureFlag
 
   const userIds: string[] = []
   const teamIds: string[] = []
@@ -71,34 +63,35 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
   if (scope === 'User' && userIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('userId', 'in', userIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Team' && teamIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('teamId', 'in', teamIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Organization' && orgIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('orgId', 'in', orgIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
   }
 
   if (deletedCount === 0) {
-    return standardError(
-      new Error('No feature flag owners were removed. Check the scope and subjects provided.')
+    throw new GraphQLError(
+      'No feature flag owners were removed. Check the scope and subjects provided.',
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
 
   return {
-    featureFlagId,
+    featureName,
     removedCount: deletedCount,
     userIds: scope === 'User' ? userIds : null,
     teamIds: scope === 'Team' ? teamIds : null,

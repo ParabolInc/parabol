@@ -1,35 +1,26 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {TeamMemberAvatarMenu_teamMember$key} from '../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
-import type {MenuProps} from '../../hooks/useMenu'
-import Menu from '../Menu'
-import MenuItem from '../MenuItem'
-import MenuItemLabel from '../MenuItemLabel'
+import {MenuContent} from '../../ui/Menu/MenuContent'
+import {MenuItem} from '../../ui/Menu/MenuItem'
 
 interface Props {
   isLead: boolean
   isViewerLead: boolean
   isViewerOrgAdmin: boolean
   teamMember: TeamMemberAvatarMenu_teamMember$key
-  menuProps: MenuProps
   handleNavigate?: () => void
   togglePromote: () => void
   toggleRemove: () => void
   toggleLeave: () => void
 }
 
-const StyledLabel = styled(MenuItemLabel)({
-  padding: '4px 16px'
-})
-
 const TeamMemberAvatarMenu = (props: Props) => {
   const {
     isViewerLead,
     isViewerOrgAdmin,
     teamMember: teamMemberRef,
-    menuProps,
     togglePromote,
     toggleRemove,
     toggleLeave
@@ -45,31 +36,19 @@ const TeamMemberAvatarMenu = (props: Props) => {
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const {userId} = teamMember
+  const {userId, isLead} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
 
   return (
-    <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
-      {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
-        <MenuItem
-          key='promote'
-          onClick={togglePromote}
-          label={<StyledLabel>Promote to Team Lead</StyledLabel>}
-        />
+    <MenuContent align='start'>
+      {isViewerTeamAdmin && !isLead && (
+        <MenuItem onClick={togglePromote}>Promote to Team Lead</MenuItem>
       )}
-      {isViewerTeamAdmin && !isSelf && (
-        <MenuItem
-          key='remove'
-          onClick={toggleRemove}
-          label={<StyledLabel>Remove from Team</StyledLabel>}
-        />
-      )}
-      {!isViewerLead && isSelf && (
-        <MenuItem key='leave' onClick={toggleLeave} label={<StyledLabel>Leave Team</StyledLabel>} />
-      )}
-    </Menu>
+      {isViewerTeamAdmin && !isSelf && <MenuItem onClick={toggleRemove}>Remove from Team</MenuItem>}
+      {!isViewerLead && isSelf && <MenuItem onClick={toggleLeave}>Leave Team</MenuItem>}
+    </MenuContent>
   )
 }
 

@@ -1,0 +1,326 @@
+import {randomUUIDv7} from 'crypto'
+import {GraphQLError} from 'graphql'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {meetingsStarted} from '../../../metricsHandler'
+import getKysely from '../../../postgres/getKysely'
+import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
+import publish from '../../../utils/publish'
+import RedisLockQueue from '../../../utils/RedisLockQueue'
+import type {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
+import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
+import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
+import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
+import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
+import safeCreateTeamHealth from '../../mutations/helpers/safeCreateTeamHealth'
+import type {CreateGcalEventInput, MutationResolvers} from '../resolverTypes'
+import assertTemplateAccess from './helpers/assertTemplateAccess'
+import {createMeetingMember} from './joinMeeting'
+import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
+
+const meetingType = 'teamHealth' as const
+
+type SeriesParams = {
+  // shared by every sibling series of a group that covers several teams
+  groupId: string | null
+  // when set, only this user administers the series. See canAdminMeetingSeries
+  ownerUserId: string | null
+  templateId: string
+}
+
+type StartForTeamParams = {
+  teamId: string
+  facilitatorId: string
+  viewerId: string
+  templateId: string
+  name?: string | null
+  rrule: RRuleSet | null
+  seriesParams: SeriesParams
+  gcalInput?: CreateGcalEventInput | null
+  questionIds?: number[]
+}
+
+// A team runs at most one meeting per occurrence, so these are singular. The mutation payload is
+// plural only because one call can cover several teams.
+type StartForTeamResult = {
+  teamId: string
+  meetingId: string | null
+}
+
+// Schedules or starts a single team's health meeting. Returns the started meetingId, or null when
+// only a future series was scheduled (no meeting yet). Returns undefined when nothing could start.
+const startTeamHealthForTeam = async (
+  params: StartForTeamParams,
+  dataLoader: DataLoaderWorker
+): Promise<StartForTeamResult | undefined> => {
+  const {
+    teamId,
+    facilitatorId,
+    viewerId,
+    templateId,
+    name,
+    rrule,
+    seriesParams,
+    gcalInput,
+    questionIds
+  } = params
+  const pg = getKysely()
+  const seriesName = name || 'Team Health'
+
+  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+  if (unpaidError) return undefined
+
+  // Recurring series that starts in the future: create the series only, the meeting is spawned later
+  // by processRecurrence when the rrule fires.
+  if (rrule && !isImmediateOccurrence(rrule)) {
+    const scheduleLock = new RedisLockQueue(`newMeetingSeries:${teamId}`, 3000)
+    try {
+      await scheduleLock.lock(0)
+    } catch {
+      return undefined
+    }
+    const meetingSeries = await createMeetingSeries({
+      meetingType,
+      title: seriesName,
+      recurrenceRule: rrule,
+      teamId,
+      facilitatorId,
+      ...seriesParams
+    })
+    await pg
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId: templateId})
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', meetingType)
+      .execute()
+    // this team's own invite, so the link in it names this team's series & not a sibling's
+    const {gcalSeriesId} = await createGcalEvent({
+      name: seriesName,
+      gcalInput,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      teamId,
+      viewerId,
+      rrule,
+      dataLoader
+    })
+    if (gcalSeriesId) {
+      await pg
+        .updateTable('MeetingSeries')
+        .set({gcalSeriesId})
+        .where('id', '=', meetingSeries.id)
+        .execute()
+    }
+    return {teamId, meetingId: null}
+  }
+
+  const meeting = await safeCreateTeamHealth(
+    {teamId, facilitatorUserId: facilitatorId, templateId, name: name ?? undefined, questionIds},
+    dataLoader
+  )
+  if (!meeting) return undefined
+
+  const meetingId = meeting.id
+  const starterTeamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, facilitatorId))
+  const meetingMember = createMeetingMember(meeting, starterTeamMember)
+  const [meetingSeries] = await Promise.all([
+    rrule && startNewMeetingSeries(meeting, rrule, seriesName, seriesParams),
+    pg
+      .with('TeamUpdates', (qb) =>
+        qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
+      )
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .execute(),
+    pg
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId: templateId})
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', meetingType)
+      .execute(),
+    updateMeetingTemplateLastUsedAt(templateId, teamId)
+  ])
+  dataLoader.get('newMeetings').clear(meetingId)
+  dataLoader.get('activeMeetingsByTeamId').clear(teamId)
+
+  IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
+  meetingsStarted.inc({meeting_type: meeting.meetingType})
+
+  // this team's own invite, so the link in it names this team's series & not a sibling's
+  const {gcalSeriesId} = await createGcalEvent({
+    name: seriesName,
+    gcalInput,
+    meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
+    teamId,
+    viewerId,
+    rrule,
+    dataLoader
+  })
+  if (meetingSeries && gcalSeriesId) {
+    await pg
+      .updateTable('MeetingSeries')
+      .set({gcalSeriesId})
+      .where('id', '=', meetingSeries.id)
+      .execute()
+  }
+
+  return {teamId, meetingId}
+}
+
+const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
+  _source,
+  {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId},
+  {authToken, socketId: mutatorId, dataLoader, resourceGrants}
+) => {
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
+  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
+
+  // AUTH
+  const viewerId = getUserId(authToken)
+  const uniqueTeamIds = [...new Set(teamIds)]
+  if (uniqueTeamIds.length === 0) {
+    throw new GraphQLError('No teams selected', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+
+  const teams = await dataLoader.get('teams').loadMany(uniqueTeamIds)
+  const validTeams = teams.filter(isValid)
+  const template = await dataLoader.get('meetingTemplates').load(templateId)
+  if (!template || template.type !== meetingType) {
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  await assertTemplateAccess(
+    template,
+    validTeams.map(({orgId}) => orgId),
+    authToken,
+    dataLoader
+  )
+  if (rrule && new Set(validTeams.map(({orgId}) => orgId)).size > 1) {
+    // a series group is owned by one org: succession, the paid-tier gate, and tenancy are all
+    // org-scoped. A one-off across orgs creates no series, so it stays allowed
+    throw new GraphQLError(
+      'Pick teams from a single organization to schedule a recurring meeting',
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
+  }
+
+  // Joining an existing group: the new series inherit its id and its owner, so they show up on
+  // the group's card rather than standing up cards of their own.
+  const joinedSeries = joinMeetingSeriesId
+    ? await dataLoader.get('meetingSeries').load(MeetingSeriesId.split(joinMeetingSeriesId))
+    : null
+  if (joinMeetingSeriesId) {
+    if (!joinedSeries || joinedSeries.cancelledAt) {
+      throw new GraphQLError('Meeting series not found', {extensions: {code: 'NOT_FOUND'}})
+    }
+    if (!joinedSeries.groupId) {
+      throw new GraphQLError('That meeting series is not part of a group', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+    if (!(await canAdminMeetingSeries(joinedSeries, authToken, dataLoader, resourceGrants))) {
+      throw new GraphQLError('Viewer cannot administer that meeting series', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
+    // a group is owned by one org, so a team from elsewhere cannot join it
+    const {orgId: groupOrgId} = await dataLoader.get('teams').loadNonNull(joinedSeries.teamId)
+    if (validTeams.some(({orgId}) => orgId !== groupOrgId)) {
+      throw new GraphQLError('Pick teams from the same organization as the group', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+  }
+
+  // A series covering several teams, or one scheduled for a team the viewer is not on, is
+  // administered by its owner alone. A team member scheduling for their own team keeps the
+  // original rule, where anyone on the team may administer it.
+  const isOwnerAdministered =
+    uniqueTeamIds.length > 1 || !isTeamMember(authToken, uniqueTeamIds[0]!)
+  const seriesParams = joinedSeries?.groupId
+    ? ({
+        groupId: joinedSeries.groupId,
+        ownerUserId: joinedSeries.ownerUserId,
+        templateId
+      } as const)
+    : ({
+        groupId: uniqueTeamIds.length > 1 ? randomUUIDv7() : null,
+        ownerUserId: isOwnerAdministered ? viewerId : null,
+        templateId
+      } as const)
+
+  // Every team answers the same questions in an occurrence, so rotate once and share the result.
+  // With no history this is the draw the client previews on its own with the same picker.
+  const questionIds =
+    uniqueTeamIds.length > 1
+      ? await rotateSeriesTeamHealthQuestionIds(templateId, [], dataLoader)
+      : undefined
+
+  // RESOLUTION
+  // one row per team that started, holding at most one meeting & at most one series each
+  const started: StartForTeamResult[] = []
+  for (const teamId of uniqueTeamIds) {
+    const team = validTeams.find((t) => t.id === teamId)
+    if (!team) continue
+
+    // the viewer facilitates the teams they are on; elsewhere the team's default does, since a
+    // facilitator has to be a member of the team whose meeting they run
+    let facilitatorId = viewerId
+    if (!isTeamMember(authToken, teamId)) {
+      const defaultFacilitatorId = await getDefaultTeamFacilitator(teamId, dataLoader)
+      if (!defaultFacilitatorId) continue
+      facilitatorId = defaultFacilitatorId
+    }
+
+    const result = await startTeamHealthForTeam(
+      {
+        teamId,
+        facilitatorId,
+        viewerId,
+        templateId,
+        name,
+        rrule,
+        seriesParams,
+        gcalInput,
+        questionIds
+      },
+      dataLoader
+    )
+    if (!result) continue
+
+    started.push(result)
+  }
+
+  if (started.length === 0) {
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
+  }
+  const startedTeamIds = started.map(({teamId}) => teamId)
+  const meetingIds = started.flatMap(({meetingId}) => (meetingId ? [meetingId] : []))
+
+  dataLoader.clearAll('meetingSeries')
+
+  // Publish after all dataLoader work is done: a dataLoader can't be accessed once publish is called
+  for (const {teamId, meetingId} of started) {
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'StartTeamHealthSuccess',
+      {meetingIds: meetingId ? [meetingId] : [], teamIds: [teamId]},
+      subOptions
+    )
+  }
+
+  return {meetingIds, teamIds: startedTeamIds}
+}
+
+export default startTeamHealth

@@ -1,9 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDrawerTemplateCard_template$key} from '~/__generated__/RetroDrawerTemplateCard_template.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import UpdateMeetingTemplateMutation from '../mutations/UpdateMeetingTemplateMutation'
+import useUpdateMeetingTemplateMutation from '../mutations/useUpdateMeetingTemplateMutation'
 import {ActivityCard, ActivityCardImage} from './ActivityLibrary/ActivityCard'
 import {ActivityLibraryCardDescription} from './ActivityLibrary/ActivityLibraryCardDescription'
 import {CATEGORY_THEMES, type CategoryID} from '././ActivityLibrary/Categories'
@@ -11,13 +9,13 @@ import {CATEGORY_THEMES, type CategoryID} from '././ActivityLibrary/Categories'
 interface Props {
   templateRef: RetroDrawerTemplateCard_template$key
   meetingId: string
+  applyToSeries: boolean
   handleCloseDrawer: () => void
 }
 
 const RetroDrawerTemplateCard = (props: Props) => {
-  const {templateRef, meetingId, handleCloseDrawer} = props
-  const {onError, onCompleted} = useMutationProps()
-  const atmosphere = useAtmosphere()
+  const {templateRef, meetingId, applyToSeries, handleCloseDrawer} = props
+  const [updateMeetingTemplate] = useUpdateMeetingTemplateMutation()
   const template = useFragment(
     graphql`
       fragment RetroDrawerTemplateCard_template on MeetingTemplate {
@@ -32,20 +30,13 @@ const RetroDrawerTemplateCard = (props: Props) => {
   )
 
   const handleClick = () => {
-    UpdateMeetingTemplateMutation(
-      atmosphere,
-      {
-        meetingId: meetingId,
-        templateId: template.id
-      },
-      {onError, onCompleted}
-    )
+    updateMeetingTemplate({variables: {meetingId, templateId: template.id, applyToSeries}})
     handleCloseDrawer()
   }
 
   return (
     <form className='px-4 py-2' onClick={handleClick}>
-      <div className='flex hover:rounded-2xl hover:bg-slate-100 focus:rounded-2xl focus:outline-sky-500'>
+      <div className='flex hover:rounded-2xl hover:bg-surface-hover focus:rounded-2xl focus:outline-accent'>
         <ActivityCard
           className='group aspect-256/160 flex-1 hover:cursor-pointer'
           theme={CATEGORY_THEMES[template.category as CategoryID]}

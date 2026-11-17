@@ -9,10 +9,12 @@ interface Options {
   isPopupFixed?: boolean
 }
 
-export const updatePosition = (editor: Editor, element: HTMLElement) => {
+const getSelectionRect = (editor: Editor) =>
+  posToDOMRect(editor.view, editor.state.selection.from, editor.state.selection.to)
+
+const updatePosition = (editor: Editor, element: HTMLElement, anchorRect?: DOMRect) => {
   const virtualElement = {
-    getBoundingClientRect: () =>
-      posToDOMRect(editor.view, editor.state.selection.from, editor.state.selection.to)
+    getBoundingClientRect: () => anchorRect ?? getSelectionRect(editor)
   }
 
   computePosition(virtualElement, element, {
@@ -31,6 +33,8 @@ const renderSuggestion =
   (Component: ForwardRefExoticComponent<any>, options?: Options): SuggestionOptions['render'] =>
   () => {
     let component: ReactRenderer<any, any> & {element: HTMLElement}
+    let anchorRect: DOMRect | undefined
+    let resizeObserver: ResizeObserver | undefined
     const handlePointerDown = (event: PointerEvent) => {
       const element = component?.element
       // Skip if the element doesn't exist or the event target is inside it
@@ -39,22 +43,28 @@ const renderSuggestion =
     }
     return {
       onStart: (props) => {
+        // A modal Radix dialog sets pointer-events: none on body, which this body-level popup inherits
+        const isInDialog = !!props.editor.view.dom.closest('[role="dialog"]')
         component = new ReactRenderer(Component, {
           props,
           editor: props.editor,
-          className: 'z-10'
+          className: isInDialog ? 'pointer-events-auto z-40' : 'z-10'
         }) as typeof component
         component.element.style.position = 'absolute'
+        component.element.dataset.suggestionPopup = ''
         document.body.appendChild(component.element)
         document.addEventListener('pointerdown', handlePointerDown)
-        updatePosition(props.editor, component.element)
+        if (options?.isPopupFixed) anchorRect = getSelectionRect(props.editor)
+        // Items arrive after onStart and React renders them async, so flip() needs the real height
+        resizeObserver = new ResizeObserver(() =>
+          updatePosition(props.editor, component.element, anchorRect)
+        )
+        resizeObserver.observe(component.element)
       },
 
       onUpdate(props) {
         component?.updateProps(props)
-        if (!options?.isPopupFixed) {
-          updatePosition(props.editor, component.element)
-        }
+        updatePosition(props.editor, component.element, anchorRect)
       },
 
       onKeyDown(props) {
@@ -67,6 +77,7 @@ const renderSuggestion =
       },
 
       onExit() {
+        resizeObserver?.disconnect()
         document.removeEventListener('pointerdown', handlePointerDown)
         component?.element?.remove()
         component?.destroy()

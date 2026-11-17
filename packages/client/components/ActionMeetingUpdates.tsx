@@ -3,7 +3,8 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdates_meeting$key} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import isTaskPrivate from '../utils/isTaskPrivate'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
+import getUpdatesEmptyState from '../utils/getUpdatesEmptyState'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import type {ActionMeetingPhaseProps} from './ActionMeeting'
 import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
@@ -25,11 +26,11 @@ const ActionMeetingUpdates = (props: Props) => {
         endedAt
         showSidebar
         localStage {
-          ...ActionMeetingUpdatesStage @relay(mask: false)
+          ...ActionMeetingUpdatesStage @relay(mask: false) @alias
         }
         phases {
           stages {
-            ...ActionMeetingUpdatesStage @relay(mask: false)
+            ...ActionMeetingUpdatesStage @relay(mask: false) @alias
           }
         }
         team {
@@ -56,20 +57,27 @@ const ActionMeetingUpdates = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
-  const {teamMember} = localStage!
-  const {userId} = teamMember!
-  const teamMemberTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
-  }, [tasks, userId])
+  const stageOwner = localStage?.ActionMeetingUpdatesStage?.teamMember
+  const userId = stageOwner?.userId
+  const teamTasks = useMemo(() => tasks.edges.map(({node}) => node), [tasks])
+  const teamMemberTasks = useMemo(() => getTeamMemberTasks(teamTasks, userId), [teamTasks, userId])
+
+  if (!userId) return null
+  const isViewerStageOwner = userId === viewerId
+  const emptyState = getUpdatesEmptyState(
+    teamTasks,
+    teamMemberTasks.length,
+    stageOwner?.user.preferredName,
+    isViewerStageOwner
+  )
 
   return (
     <MeetingUpdatesContent
       avatarGroup={avatarGroup}
+      emptyState={emptyState}
       endedAt={endedAt}
       headerPrompt={<ActionMeetingUpdatesPrompt meeting={meeting} />}
-      isViewerStageOwner={userId === viewerId}
+      isViewerStageOwner={isViewerStageOwner}
       meetingId={meetingId}
       meetingRef={meeting}
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}
@@ -84,6 +92,9 @@ graphql`
   fragment ActionMeetingUpdatesStage on UpdatesStage {
     teamMember {
       userId
+      user {
+        preferredName
+      }
     }
   }
 `

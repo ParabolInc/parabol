@@ -106,7 +106,7 @@ const LinearIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='flex h-full flex-col gap-y-2 overflow-auto px-4'>
+      <div className='flex flex-col gap-y-2 px-4'>
         {linearIssues && linearIssues.length > 0 ? (
           linearIssues.map((issue) => {
             if (!issue) {
@@ -122,14 +122,14 @@ const LinearIntegrationResults = (props: Props) => {
               src={halloweenRetrospectiveTemplate}
               alt='No results illustration'
             />
-            <div className='mt-7 w-2/3 text-gray-600 text-sm dark:text-gray-400'>
+            <div className='mt-7 w-2/3 text-fg-secondary text-sm'>
               {errors?.[0]?.message
                 ? `Error fetching Linear issues: ${errors[0].message}`
                 : `Looks like no Linear issues match your filter.`}
             </div>
             <Link
               to={`/team/${teamId}/integrations`}
-              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+              className='mt-4 font-semibold text-accent hover:text-sky-400'
             >
               Review Linear integration settings
             </Link>

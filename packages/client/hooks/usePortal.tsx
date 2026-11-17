@@ -16,15 +16,9 @@ export enum PortalStatus {
 
 export type PortalId =
   | 'spotlight'
-  | 'expandedReflectionGroup'
-  | 'phaseItemEditor'
   | 'snackbar'
-  | 'githubFieldMenu'
-  | 'gitlabFieldMenu'
-  | 'linearFieldMenu'
   | 'editGitHubLabel'
   | 'editGitLabLabel'
-  | 'azureDevOpsFieldMenu'
   | 'editAzureDevOpsLabel'
   | 'templateModal'
   | 'scaleDropdown'
@@ -32,13 +26,13 @@ export type PortalId =
   | 'StageTimerModal'
   | 'StageTimerEndTimePicker'
   | 'StageTimerStartTimePicker'
-  | 'StageTimerMinutePicker'
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
   | 'newMeetingRoot'
   | 'newMeetingRecurrenceSettings'
   | 'updateRecurrenceSettingsModal'
   | 'recurrenceStartTimePicker'
+  | 'gcalDateTimePicker'
   | 'endRecurringMeetingModal'
   | 'cancelSeriesConfirmationModal'
   | 'templateTeamPickerModal'
@@ -55,8 +49,6 @@ export interface UsePortalOptions {
   id?: PortalId
   // if you nest portals, this should be the id of the parent portal
   parentId?: PortalId
-  // allow body to scroll while modal is open
-  allowScroll?: boolean
   // ignore click, tap, and ESC handlers
   noClose?: boolean
 }
@@ -74,10 +66,10 @@ const getParent = (parentId: string | undefined) => {
  * To nest multiple portals, the outer one should have id set and the inner one parentId
  */
 const usePortal = (options: UsePortalOptions = {}) => {
-  const portalRef = useRef<HTMLDivElement>()
-  const originRef = useRef<HTMLElement>()
+  const portalRef = useRef<HTMLDivElement>(undefined)
+  const originRef = useRef<HTMLElement>(undefined)
   const timeoutRef = useRef<number | null>(null)
-  const showBodyScroll = useRef<() => void>()
+  const showBodyScroll = useRef<() => void>(undefined)
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
   const contextParentId = useContext(PortalContext)
   const parentId = options.parentId ?? contextParentId
@@ -153,9 +145,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
     const {current: portalStatus} = portalStatusRef
     if (portalStatus <= PortalStatus.Entered) return
 
-    if (!options.allowScroll) {
-      showBodyScroll.current = hideBodyScroll()
-    }
+    showBodyScroll.current = hideBodyScroll()
     if (!options.noClose) {
       document.addEventListener('keydown', handleKeydown)
       document.addEventListener('mousedown', handleDocumentClick)

@@ -1,14 +1,7 @@
-import styled from '@emotion/styled'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'
-
-const StyledWrapper = styled('span')({
-  display: 'block',
-  overflow: 'visible',
-  overflowWrap: 'break-word'
-})
 
 interface Props {
   editors: {preferredName: string}[]
@@ -24,7 +17,7 @@ const useTimeFrom = (timestamp: string) => {
     [timestamp]
   )
   const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
-  const timeoutRef = useRef<number | undefined>()
+  const timeoutRef = useRef<number | undefined>(undefined)
   useEffect(() => {
     timeoutRef.current = window.setTimeout(() => {
       setTimeFrom(makeTimeFrom())
@@ -64,12 +57,12 @@ const EditingStatusText = (props: Props) => {
   if (editors.length === 1) {
     const editor = editorNames[0]
     return (
-      <StyledWrapper>
+      <span className='wrap-break-word block overflow-visible'>
         {editor}
         {' is editing'}
         {isEditing ? ' too' : ''}
         <Ellipsis />
-      </StyledWrapper>
+      </span>
     )
   }
   if (editors.length === 2) {

@@ -1,17 +1,28 @@
-import ms from 'ms'
-import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
-import getKysely from '../../../postgres/getKysely'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import {processJiraImages} from '../../../utils/atlassian/jiraImages'
+import {GraphQLError} from 'graphql'
+import AtlassianIntegrationId from '../../../../client/integrations/jira/shared/AtlassianIntegrationId'
+import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
+import {processJiraImages} from '../../../integrations/jira/jiraImages'
 import {getUserId} from '../../../utils/authorization'
+import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
+import type {DataLoaderWorker} from '../../graphql'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
 
+const loadFreshAccessToken = async (
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string
+) => {
+  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+  return auth?.accessToken ?? null
+}
+
 const AtlassianIntegration: AtlassianIntegrationResolvers = {
-  issues: async ({teamId, userId, accessToken, cloudIds}, args, {authToken}) => {
+  issues: async ({teamId, userId, cloudIds}, args, {authToken, dataLoader}) => {
     const {first, queryString, isJQL, projectKeyFilters, after} = args
     const viewerId = getUserId(authToken)
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
     if (viewerId !== userId || !accessToken) {
       const err = new Error('Cannot access another team members issues')
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
@@ -119,33 +130,77 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   },
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),
 
+  accountId: ({providerUserId}) => providerUserId,
+
   isActive: ({accessToken}) => !!accessToken,
 
-  accessToken: async ({accessToken, userId}, _args, {authToken}) => {
+  scope: ({scope, userId}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
-    return viewerId === userId ? accessToken : null
+    if (viewerId !== userId || !scope) return []
+    return scope.split(' ')
+  },
+
+  confluenceSites: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
+    const manager = new AtlassianServerManager(accessToken)
+    const res = await manager.getAccessibleResources()
+    if (!Array.isArray(res)) return []
+    return res
+      .filter(({scopes}) => scopes.some((scope) => scope.includes('confluence')))
+      .map(({id, name, url}) => ({cloudId: id, name, url}))
+  },
+
+  confluenceSpaces: async ({teamId, userId}, {cloudId, query}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      const spaces = await manager.getSpaces()
+      const normalizedQuery = query?.trim().toLowerCase()
+      return normalizedQuery
+        ? spaces.filter(({name}) => name.toLowerCase().includes(normalizedQuery))
+        : spaces
+    } catch (e) {
+      if (e instanceof ConfluenceApiError && e.errorClass === 'forbidden') {
+        throw new GraphQLError('No permission to list Confluence spaces on this site', {
+          extensions: {code: 'FORBIDDEN'}
+        })
+      }
+      return []
+    }
+  },
+
+  confluencePageSearch: async (
+    {teamId, userId},
+    {cloudId, spaceId, query},
+    {authToken, dataLoader}
+  ) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId) return []
+    const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
+    if (!accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      return await manager.searchPagesInSpace(spaceId, query)
+    } catch {
+      return []
+    }
+  },
+
+  accessToken: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return viewerId === userId ? loadFreshAccessToken(dataLoader, teamId, userId) : null
   },
 
   projects: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) return []
     return dataLoader.get('allJiraProjects').load({teamId, userId})
-  },
-
-  jiraSearchQueries: async ({teamId, userId, jiraSearchQueries}) => {
-    const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh).toISOString()
-    const searchQueries = jiraSearchQueries || []
-    const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-    if (unexpiredQueries.length < searchQueries.length) {
-      await getKysely()
-        .updateTable('AtlassianAuth')
-        .set({jiraSearchQueries: searchQueries.map((jsq) => JSON.stringify(jsq))})
-        .where('teamId', '=', teamId)
-        .where('userId', '=', userId)
-        .execute()
-    }
-    return unexpiredQueries
   }
 }
 

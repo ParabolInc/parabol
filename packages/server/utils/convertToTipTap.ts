@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import {stripUnsafeLinks} from './stripUnsafeLinks'
 
 const emptyDoc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 export const convertToTipTap = (contentStr: string | null | undefined) => {
@@ -9,5 +10,5 @@ export const convertToTipTap = (contentStr: string | null | undefined) => {
   } catch {
     return emptyDoc
   }
-  return parsedContent
+  return stripUnsafeLinks(parsedContent)
 }

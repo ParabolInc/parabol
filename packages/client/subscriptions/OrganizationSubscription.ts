@@ -11,7 +11,7 @@ import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
-import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
+import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateTemplateScopeMutation'
 import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
@@ -23,6 +23,9 @@ const subscription = graphql`
       }
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
+      }
+      DowngradeToStarterPayload {
+        ...DowngradeToStarterMutation_organization @relay(mask: false)
       }
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
@@ -39,11 +42,14 @@ const subscription = graphql`
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
       }
+      ToggleAIFeaturesSuccess {
+        ...ToggleAIFeaturesMutation_organization @relay(mask: false)
+      }
       UpdateIntegrationProviderSuccess {
         ...UpdateIntegrationProviderMutation_organization @relay(mask: false)
       }
       UpdateTemplateScopeSuccess {
-        ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
+        ...UpdateTemplateScopeMutation_organization @relay(mask: false)
       }
 
 

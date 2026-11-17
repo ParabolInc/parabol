@@ -1,6 +1,6 @@
-import {ContentCopy} from '@mui/icons-material'
 import {useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {ContentCopy} from '~/ui/icons'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
@@ -29,7 +29,7 @@ export const CopyServiceProviderURL = (props: Props) => {
           <div className='break-all'>{url}</div>
           <Tooltip open={isOpen}>
             <TooltipTrigger asChild>
-              <ContentCopy className='h-5 w-5 text-sky-500 hover:text-sky-700' />
+              <ContentCopy className='h-5 w-5 text-accent hover:text-fg-primary' />
             </TooltipTrigger>
             <TooltipContent>{tooltip}</TooltipContent>
           </Tooltip>

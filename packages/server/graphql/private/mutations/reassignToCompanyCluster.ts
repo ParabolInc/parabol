@@ -8,7 +8,9 @@ const reassignToCompanyCluster: MutationResolvers['reassignToCompanyCluster'] = 
 ) => {
   // VALIDATION
   if (!orgIds?.length && !domains?.length) {
-    throw new GraphQLError('At least one of orgIds or domains must be provided')
+    throw new GraphQLError('At least one of orgIds or domains must be provided', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const pg = getKysely()
@@ -23,7 +25,9 @@ const reassignToCompanyCluster: MutationResolvers['reassignToCompanyCluster'] = 
         .where('id', '=', Number(targetClusterId))
         .executeTakeFirst()
       if (!cluster) {
-        throw new GraphQLError('Target company cluster not found')
+        throw new GraphQLError('Target company cluster not found', {
+          extensions: {code: 'NOT_FOUND'}
+        })
       }
       targetId = cluster.id
     } else {

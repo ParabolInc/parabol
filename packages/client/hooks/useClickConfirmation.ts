@@ -3,7 +3,7 @@ import {Times} from '../types/constEnums'
 
 const useClickConfirmation = () => {
   const [confirmingButton, setConfirmingButton] = useState('')
-  const timeoutRef = useRef<number>()
+  const timeoutRef = useRef<number>(undefined)
   const setConfirming = useCallback((buttonName: string) => {
     setConfirmingButton(buttonName)
     if (buttonName) {

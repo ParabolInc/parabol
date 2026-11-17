@@ -1,5 +1,4 @@
 import getKysely from '../../../postgres/getKysely'
-import logError from '../../../utils/logError'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
@@ -7,13 +6,9 @@ import canAccessAI from './canAccessAI'
 const generateDiscussionPrompt = async (
   meetingId: string,
   teamId: string,
-  dataLoader: DataLoaderWorker,
-  facilitatorUserId: string
+  dataLoader: DataLoaderWorker
 ) => {
-  const [facilitator, team] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('teams').loadNonNull(teamId)
-  ])
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
   const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return
   const [reflections, reflectionGroups] = await Promise.all([
@@ -22,11 +17,6 @@ const generateDiscussionPrompt = async (
   ])
   const pg = getKysely()
   const manager = new OpenAIServerManager()
-  if (!reflectionGroups.length) {
-    const error = new Error('No reflection groups in generateDiscussionPrompt')
-    logError(error, {userId: facilitator.id, tags: {meetingId}})
-    return
-  }
   await Promise.all(
     reflectionGroups.map(async (group) => {
       const reflectionsByGroupId = reflections.filter(

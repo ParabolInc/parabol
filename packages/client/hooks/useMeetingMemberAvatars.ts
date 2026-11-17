@@ -4,8 +4,12 @@ import {readInlineData} from 'relay-runtime'
 import type {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 import {useConnectedMeetingMembers} from './useConnectedMeetingMembers'
+import useIsSettledOnScreen from './useIsSettledOnScreen'
 
-const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key) => {
+const useMeetingMemberAvatars = (
+  meetingRef: useMeetingMemberAvatars_meeting$key,
+  cardElement: HTMLElement | null
+) => {
   const atmosphere = useAtmosphere()
   const meeting = readInlineData(
     graphql`
@@ -25,7 +29,10 @@ const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key
   )
   const {viewerId} = atmosphere
   const {id: meetingId, meetingMembers} = meeting
-  useConnectedMeetingMembers(meetingId, false)
+  // A dashboard can list hundreds of open meetings, and every meeting doc authenticates on the tab's one Yjs socket each time it reconnects.
+  // Hocuspocus resets a socket with too many docs authenticating at once, so only the cards in view track who is connected
+  const isCardOnScreen = useIsSettledOnScreen(cardElement, 1000)
+  useConnectedMeetingMembers(isCardOnScreen ? meetingId : null, false)
   const connectedMeetingMembers = useMemo(() => {
     return meetingMembers
       .filter((mm) => mm.isConnectedAt)

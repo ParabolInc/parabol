@@ -1,9 +1,9 @@
-import HistoryIcon from '@mui/icons-material/History'
 import type {NodeViewProps} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {History as HistoryIcon} from '~/ui/icons'
 import {Menu} from '~/ui/Menu/Menu'
 import {MenuContent} from '~/ui/Menu/MenuContent'
 import {MenuItem} from '~/ui/Menu/MenuItem'
@@ -76,7 +76,7 @@ export const InsightsBlockPrompt = (props: Props) => {
                       <div className='w-72 overflow-hidden text-ellipsis whitespace-nowrap'>
                         {title}
                       </div>
-                      <div className='font-bold text-slate-600 text-xs'>{subtitle}</div>
+                      <div className='font-bold text-fg-secondary text-xs'>{subtitle}</div>
                       {}
                     </MenuItem>
                   )
@@ -97,7 +97,7 @@ export const InsightsBlockPrompt = (props: Props) => {
           onChange={(e) => {
             updateAttributes({prompt: e.target.value})
           }}
-          className='max-h-96 min-h-14 w-full resize-y rounded-md bg-white p-4 pr-6 outline-hidden focus:ring-2'
+          className='max-h-96 min-h-14 w-full resize-y rounded-md bg-surface-input p-4 pr-6 outline-hidden focus:ring-2'
         ></textarea>
       </div>
     </div>

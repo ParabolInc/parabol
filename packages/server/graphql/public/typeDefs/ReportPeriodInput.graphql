@@ -1,0 +1,7 @@
+"""
+When a report's data comes from: a preset, or a range of days
+"""
+input ReportPeriodInput @oneOf {
+  preset: ReportPeriodPresetEnum
+  range: DateRangeInput
+}

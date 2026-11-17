@@ -56,6 +56,7 @@ test('updateRecurrenceSettings updates the rrule of an active (non-cancelled) Me
       phases: JSON.stringify([phase]),
       facilitatorUserId: userId,
       meetingPrompt: 'What are you working on today?',
+      templateId: 'teamPrompt',
       name: 'Regression Standup #1',
       meetingType: 'teamPrompt',
       facilitatorStageId: phase.stages[0]?.id,

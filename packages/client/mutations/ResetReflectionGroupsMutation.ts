@@ -7,17 +7,21 @@ graphql`
   fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {
     meeting {
       id
+      ...GroupingKanban_meeting
       resetReflectionGroups {
         groupTitle
       }
       reflectionGroups {
         id
         title
+        titleIsUserDefined
+        sortOrder
         promptId
         reflections {
           id
           plaintextContent
           reflectionGroupId
+          sortOrder
         }
       }
     }
@@ -32,7 +36,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
+      ...ResetReflectionGroupsMutation_meeting @relay(mask: false) @alias
     }
   }
 `

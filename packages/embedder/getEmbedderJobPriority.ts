@@ -16,6 +16,8 @@ const jobKindWeights = {
 
 export type JobKind = keyof typeof jobKindWeights
 
+export const FIRST_FILL_PRIORITY = 100_000_000 * jobKindWeights.modelUpdate
+
 const userTierWeights: Record<Tierenum, number> = {
   enterprise: 1,
   team: 2,

@@ -5,15 +5,22 @@ import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import createTeamAndLeader from '../graphql/mutations/helpers/createTeamAndLeader'
-import removeTeamMember from '../graphql/mutations/helpers/removeTeamMember'
+import removeTeamMembers from '../graphql/mutations/helpers/removeTeamMembers'
+import promptTemplateRules from '../graphql/public/mutations/helpers/promptTemplateRules'
+import type {SAMLSource} from '../graphql/public/types/SAML'
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import acceptTeamInvitation from '../safeMutations/acceptTeamInvitation'
 import {Logger} from '../utils/Logger'
+import {getVisibleUserIds} from './getVisibleUserIds'
 import {logSCIMRequest} from './logSCIMRequest'
 import {mapGroupToSCIM} from './mapToSCIM'
 import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
+
+// Limits the whole member list, not the change: a PATCH reaches ingress merged with the group's
+// current members
+const MAX_GROUP_MEMBERS = 100
 
 const createEmptyTeam = async (team: Team) => {
   const pg = getKysely()
@@ -27,7 +34,7 @@ const createEmptyTeam = async (team: Team) => {
         id: generateUID(),
         teamId,
         meetingType: 'retrospective',
-        phaseTypes: ['checkin', 'TEAM_HEALTH', 'reflect', 'group', 'vote', 'discuss'],
+        phaseTypes: ['checkin', 'TEAM_HEALTH', 'updates', 'reflect', 'group', 'vote', 'discuss'],
         disableAnonymity: false,
         maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
         totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
@@ -45,16 +52,24 @@ const createEmptyTeam = async (team: Team) => {
         meetingType: 'poker',
         phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
         selectedTemplateId: 'estimatedEffortTemplate'
+      },
+      {
+        id: generateUID(),
+        teamId,
+        meetingType: 'teamPrompt',
+        phaseTypes: ['RESPONSES'],
+        selectedTemplateId: promptTemplateRules.teamPrompt.defaultTemplateId
       }
     ])
     .execute()
 }
 
-const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderWorker) => {
+const applyMembers = async (
+  group: SCIMMY.Schemas.Group,
+  saml: SAMLSource,
+  dataLoader: DataLoaderWorker
+) => {
   const members = group.members || []
-  if (members.length > 100) {
-    throw new SCIMMY.Types.Error(400, 'invalidValue', 'Too many members')
-  }
 
   const [team, existingMembers] = await Promise.all([
     dataLoader.get('teams').load(group.id),
@@ -63,9 +78,18 @@ const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderW
   if (!team) {
     throw new SCIMMY.Types.Error(404, '', 'Team not found')
   }
-  const toAdd = members.filter((member) => !existingMembers.some((m) => m.userId === member.value))
+  const visibleUserIds = await getVisibleUserIds(
+    [...existingMembers.map(({userId}) => userId), ...members.map(({value}) => value)],
+    saml,
+    dataLoader
+  )
+  const toAdd = members.filter(
+    (member) =>
+      visibleUserIds.includes(member.value) &&
+      !existingMembers.some((m) => m.userId === member.value)
+  )
   const toRemove = existingMembers.filter(
-    (m) => !members!.some((member) => member.value === m.userId)
+    (m) => visibleUserIds.includes(m.userId) && !members.some((member) => member.value === m.userId)
   )
 
   if (existingMembers.length === 0 && toAdd.length > 0) {
@@ -78,15 +102,6 @@ const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderW
   }
 
   await Promise.all(
-    toRemove.map(async (member) => {
-      const res = await removeTeamMember(member.id, {}, dataLoader)
-      if (!res.user) {
-        Logger.error(`Failed to remove team member ${member.id} from team ${group.id}`)
-      }
-    })
-  )
-
-  await Promise.all(
     toAdd.map(async (member) => {
       try {
         await acceptTeamInvitation(team, member.value, dataLoader)
@@ -95,6 +110,16 @@ const applyMembers = async (group: SCIMMY.Schemas.Group, dataLoader: DataLoaderW
       }
     })
   )
+
+  // Add before removing, so replacing every member hands the lead to a new member instead of archiving the team
+  if (toRemove.length > 0) {
+    const userIdsToRemove = toRemove.map(({userId}) => userId)
+    const {removedUserIds} = await removeTeamMembers(group.id, userIdsToRemove, {}, dataLoader)
+    const notRemovedUserIds = userIdsToRemove.filter((userId) => !removedUserIds.includes(userId))
+    if (notRemovedUserIds.length > 0) {
+      Logger.error(`Failed to remove users ${notRemovedUserIds.join(', ')} from team ${group.id}`)
+    }
+  }
 
   dataLoader.get('teamMembersByTeamId').clear(group.id)
   return group
@@ -121,6 +146,14 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
     const {displayName, members} = instance
     if (displayName && displayName.length > USER_PREFERRED_NAME_LIMIT) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'displayName is too long')
+    }
+    // checked before any write, so a group that's too big isn't half created or renamed
+    if (members && members.length > MAX_GROUP_MEMBERS) {
+      throw new SCIMMY.Types.Error(
+        400,
+        'invalidValue',
+        `Too many members: a group can have at most ${MAX_GROUP_MEMBERS}`
+      )
     }
 
     const pg = getKysely()
@@ -156,9 +189,11 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         if (!updatedTeam) {
           throw new SCIMMY.Types.Error(412, '', 'Team update failed')
         }
-        await applyMembers({...instance, id: teamId}, dataLoader)
-        return mapGroupToSCIM(updatedTeam, dataLoader)
+        await applyMembers({...instance, id: teamId}, saml, dataLoader)
+        return mapGroupToSCIM(updatedTeam, saml, dataLoader)
       } catch (error) {
+        // the IdP shows its admin the message, which a 500 would hide
+        if (error instanceof SCIMMY.Types.Error) throw error
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'Team exists')
         }
@@ -170,9 +205,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
       if (!displayName) {
         throw new SCIMMY.Types.Error(400, 'invalidValue', 'displayName is required')
       }
-      const users = (
-        await dataLoader.get('users').loadMany(members?.map((m) => m.value) ?? [])
-      ).filter(isValid)
+      const visibleUserIds = await getVisibleUserIds(
+        members?.map((m) => m.value) ?? [],
+        saml,
+        dataLoader
+      )
+      const users = (await dataLoader.get('users').loadMany(visibleUserIds)).filter(isValid)
 
       try {
         const teamId = generateUID()
@@ -198,11 +236,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
           )
         } else {
           await createTeamAndLeader(teamLead, validNewTeam, dataLoader)
-          await applyMembers({...instance, id: teamId}, dataLoader)
+          await applyMembers({...instance, id: teamId}, saml, dataLoader)
         }
 
-        return mapGroupToSCIM(validNewTeam, dataLoader)
+        return mapGroupToSCIM(validNewTeam, saml, dataLoader)
       } catch (error) {
+        if (error instanceof SCIMMY.Types.Error) throw error
         Logger.error('Failed to create team for SCIM group', {displayName, error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }

@@ -1,43 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {
-  NotificationEnum,
-  popNotificationToast_notification$data
-} from '../../__generated__/popNotificationToast_notification.graphql'
-import type {Snack} from '../../components/Snackbar'
+import type {popNotificationToast_notification$data} from '../../__generated__/popNotificationToast_notification.graphql'
 import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
-import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
-import mapMentionedToToast from './mapMentionedToToast'
-import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
-import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
-import mapResponseMentionedToToast from './mapResponseMentionedToToast'
-import mapResponseRepliedToToast from './mapResponseRepliedToToast'
-import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
-
-const typePicker: Partial<
-  Record<NotificationEnum, (notification: any, context: OnNextNavigateContext) => Snack | null>
-> = {
-  DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
-  RESPONSE_MENTIONED: mapResponseMentionedToToast,
-  MENTIONED: mapMentionedToToast,
-  RESPONSE_REPLIED: mapResponseRepliedToToast,
-  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
-  PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
-}
+import mapNotificationToToast from './mapNotificationToToast'
 
 graphql`
   fragment popNotificationToast_notification on AddedNotification {
     addedNotification {
       type
       id
-      ...mapDiscussionMentionedToToast_notification @relay(mask: false)
-      ...mapResponseMentionedToToast_notification @relay(mask: false)
-      ...mapMentionedToToast_notification @relay(mask: false)
-      ...mapResponseRepliedToToast_notification @relay(mask: false)
-      ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
-      ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
-      ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+      ...mapDiscussionMentionedToToast_notification @relay(mask: false) @alias
+      ...mapResponseMentionedToToast_notification @relay(mask: false) @alias
+      ...mapMentionedToToast_notification @relay(mask: false) @alias
+      ...mapResponseRepliedToToast_notification @relay(mask: false) @alias
+      ...mapTeamsLimitReminderToToast_notification @relay(mask: false) @alias
+      ...mapPromptToJoinOrgToToast_notification @relay(mask: false) @alias
+      ...mapRequestToJoinOrgToToast_notification @relay(mask: false) @alias
+      ...mapTeamHealthResponseDueToToast_notification @relay(mask: false) @alias
+      ...mapTeamInvitationToToast_notification @relay(mask: false) @alias
     }
   }
 `
@@ -47,16 +27,7 @@ export const popNotificationToastOnNext: OnNextHandler<
   OnNextNavigateContext
 > = (payload, {atmosphere, navigate}) => {
   const {addedNotification} = payload
-  const {type} = addedNotification
-  const specificNotificationToastMapper = typePicker[type]
-  if (!specificNotificationToastMapper) {
-    return
-  }
-
-  const notificationSnack = specificNotificationToastMapper(addedNotification, {
-    atmosphere,
-    navigate
-  })
+  const notificationSnack = mapNotificationToToast(addedNotification, {atmosphere, navigate})
 
   if (!notificationSnack) {
     return

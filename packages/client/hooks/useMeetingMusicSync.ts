@@ -9,7 +9,6 @@ import tokyoLofi from '../../../static/sounds/tokyo-lofi.mp3'
 import type {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuery.graphql'
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
 import useAtmosphere from './useAtmosphere'
-import useManualClientSideTrack from './useManualClientSideTrack'
 import useMutationProps from './useMutationProps'
 
 export const availableTracks = [
@@ -24,13 +23,11 @@ const useMeetingMusicSync = (meetingId: string) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation} = useMutationProps()
-  const trackEvent = useManualClientSideTrack()
   const data = useLazyLoadQuery<useMeetingMusicSyncQuery>(
     graphql`
       query useMeetingMusicSyncQuery($meetingId: ID!) {
         viewer {
           id
-          email
           meeting(meetingId: $meetingId) {
             id
             facilitatorUserId
@@ -203,17 +200,6 @@ const useMeetingMusicSync = (meetingId: string) => {
     setVolume(roundedVolume)
     if (audioRef.current) {
       audioRef.current.volume = roundedVolume
-    }
-
-    const track = currentTrackSrc ? currentTrackSrc.split('/').pop()?.replace('.mp3', '') : null
-    if (track) {
-      trackEvent('Music Volume Changed', {
-        meetingId,
-        trackName: track,
-        isFacilitator,
-        volume: roundedVolume,
-        email: data.viewer?.email
-      })
     }
   }
 

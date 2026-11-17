@@ -2,28 +2,57 @@ import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyleKit} from '@tiptap/extension-text-style'
 import {CharacterCount, Focus, Placeholder} from '@tiptap/extensions'
-import {Extension, generateText, useEditor} from '@tiptap/react'
+import {Extension, generateText, type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useEffect, useRef, useState} from 'react'
+import {useMemo, useRef} from 'react'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
-import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
+import {SafeTextStyleKit} from '../shared/tiptap/extensions/SafeTextStyleKit'
+import {SubscriptSuperscriptKit} from '../shared/tiptap/extensions/SubscriptSuperscriptKit'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import type {CommandTitle} from '../tiptap/extensions/slashCommand/slashCommands'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
+import {useTipTapEditorSync} from './useTipTapEditorSync'
+
+const REFLECTION_SLASH_COMMANDS: Record<CommandTitle, boolean> = {
+  Text: true,
+  'To-do list': false,
+  'Heading 1': false,
+  'Heading 2': false,
+  'Heading 3': true,
+  'Bullet list': true,
+  'Numbered list': true,
+  Quote: true,
+  Callout: false,
+  Code: true,
+  'Table of contents': false,
+  Details: false,
+  Table: false,
+  Divider: true,
+  Embed: false,
+  'Link to page': false,
+  'Create page': false,
+  'Synced block': false,
+  Database: false,
+  Insights: false,
+  Image: true,
+  File: false
+}
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
 }
+
+const emptyDoc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 
 export const useTipTapReflectionEditor = (
   content: string,
@@ -33,10 +62,14 @@ export const useTipTapReflectionEditor = (
     readOnly?: boolean
     placeholder?: string
     onModEnter?: () => void
+    autoFocus?: boolean
   }
 ) => {
-  const {atmosphere, teamId, readOnly, placeholder, onModEnter} = options
-  const [contentJSON] = useState(() => (content ? JSON.parse(content) : undefined))
+  const {atmosphere, teamId, readOnly, placeholder, onModEnter, autoFocus} = options
+  const contentJSON = useMemo(
+    () => (content ? (JSON.parse(content) as JSONContent) : emptyDoc),
+    [content]
+  )
   const placeholderRef = useRef(placeholder)
   const [commit] = useUploadUserAsset()
   placeholderRef.current = placeholder
@@ -87,43 +120,25 @@ export const useTipTapReflectionEditor = (
           }
         }),
         SearchAndReplace.configure(),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false,
-          Insights: false,
-          Table: false,
-          Details: false,
-          'Create page': false,
-          Database: false
-        }),
+        SlashCommand.configure({commands: REFLECTION_SLASH_COMMANDS}),
         TaskList,
         TaskItem.configure({
           nested: true
         }),
-        TextStyleKit,
+        SafeTextStyleKit,
         Highlight,
+        SubscriptSuperscriptKit,
         TiptapLinkExtension.configure({
           openOnClick: false
         })
       ].filter(isValid),
-      autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
+      // every reflect column starts empty, so defaulting to "focus when empty" made all of them
+      // grab focus on mount and the last one mounted won. Callers with siblings must opt in
+      autofocus: autoFocus ?? generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
     },
     []
   )
-  useEffect(() => {
-    if (!editor || editor.isDestroyed) return
-    const oldDoc = editor.getJSON()
-    const newDoc = JSON.parse(content)
-    if (isEqualWhenSerialized(oldDoc, newDoc)) return
-    editor.commands.setContent(newDoc)
-  }, [content])
-
-  useEffect(() => {
-    if (!editor || editor.isDestroyed) return
-    editor.setEditable(!readOnly)
-  }, [readOnly])
-
+  useTipTapEditorSync(editor, contentJSON, !readOnly)
   return {editor}
 }

@@ -1,19 +1,21 @@
-import AudioFileIcon from '@mui/icons-material/AudioFile'
-import CodeIcon from '@mui/icons-material/Code'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import FilePresentIcon from '@mui/icons-material/FilePresent'
-import ImageIcon from '@mui/icons-material/Image'
-import InventoryIcon from '@mui/icons-material/Inventory'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import SlideshowIcon from '@mui/icons-material/Slideshow'
-import TableChartIcon from '@mui/icons-material/TableChart'
-import TextSnippetIcon from '@mui/icons-material/TextSnippet'
-import VideoFileIcon from '@mui/icons-material/VideoFile'
-import {useEventCallback} from '@mui/material'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect, useRef, useState} from 'react'
+import useEventCallback from '~/hooks/useEventCallback'
+import {
+  AudioFile as AudioFileIcon,
+  Code as CodeIcon,
+  Description as DescriptionIcon,
+  Edit as EditIcon,
+  FilePresent as FilePresentIcon,
+  Image as ImageIcon,
+  Inventory as InventoryIcon,
+  MoreVert as MoreVertIcon,
+  PictureAsPdf as PictureAsPdfIcon,
+  Slideshow as SlideshowIcon,
+  TableChart as TableChartIcon,
+  TextSnippet as TextSnippetIcon,
+  VideoFile as VideoFileIcon
+} from '~/ui/icons'
 import type {FileBlockAttrs} from '../../../shared/tiptap/extensions/FileBlockBase'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -55,9 +57,15 @@ export const FileBlockView = (props: NodeViewProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [fileName, setFileName] = useState(name)
   const inputRef = useRef<HTMLInputElement>(null)
+  const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
+  const {isPending, isBlocked} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
 
   const onClick = async () => {
     if (isEditing) return
+    if (isBlocked) {
+      if (/^https?:\/\//i.test(src)) window.open(src, '_blank', 'noopener,noreferrer')
+      return
+    }
     const res = await fetch(src)
     const blob = await res.blob()
     const blobUrl = window.URL.createObjectURL(blob)
@@ -94,19 +102,15 @@ export const FileBlockView = (props: NodeViewProps) => {
     setIsEditing(false)
   }
 
-  const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const {isHosted, embedError} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
-  const isLoading = !isHosted && !embedError
-
   return (
     <NodeViewWrapper>
       <div
         contentEditable={false}
         onClick={onClick}
-        data-uploading={isLoading ? '' : undefined}
+        data-uploading={isPending ? '' : undefined}
         className='m-0 block p-0 data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
       >
-        <div className='group flex cursor-pointer items-center rounded-sm bg-slate-200 p-2 text-sm transition-colors hover:bg-slate-300 group-[.ProseMirror-selectednode]:bg-slate-300'>
+        <div className='group flex cursor-pointer items-center rounded-sm bg-surface-raised p-2 text-sm transition-colors hover:bg-surface-hover group-[.ProseMirror-selectednode]:bg-surface-hover'>
           <Icon className='mr-2 size-5' />
           <div className='flex flex-1 items-center'>
             {isEditing ? (
@@ -128,23 +132,23 @@ export const FileBlockView = (props: NodeViewProps) => {
                   }
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className='mr-2 flex-1 rounded-sm border border-slate-400 bg-white px-1 py-0.5 text-sm outline-hidden focus:border-blue-500'
+                className='mr-2 flex-1 rounded-sm border border-hairline-field bg-surface-input px-1 py-0.5 text-sm outline-hidden focus:border-accent'
               />
             ) : (
               <>
                 <span className='mr-2'>{name}</span>
-                <span className='text-slate-600 italic'>{sizelabel}</span>
+                <span className='text-fg-secondary italic'>{sizelabel}</span>
               </>
             )}
           </div>
-          {!isEditing && (
+          {!isEditing && editor.isEditable && (
             <div className='flex items-center' onClick={(e) => e.stopPropagation()}>
               <Menu
                 trigger={
                   <div className='flex items-center'>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button className='flex cursor-pointer items-center justify-center rounded-sm p-1 text-slate-600 hover:bg-slate-400 hover:text-slate-700 focus:bg-slate-400 focus:outline-hidden active:bg-slate-400'>
+                        <button className='flex cursor-pointer items-center justify-center rounded-sm p-1 text-fg-secondary hover:bg-hairline-strong hover:text-fg-primary focus:bg-hairline-strong focus:outline-hidden active:bg-hairline-strong'>
                           <MoreVertIcon className='size-5 opacity-0 transition-opacity group-hover:opacity-100' />
                         </button>
                       </TooltipTrigger>
@@ -160,7 +164,7 @@ export const FileBlockView = (props: NodeViewProps) => {
                       setFileName(name)
                     }}
                   >
-                    <EditIcon className='mr-2 size-4 text-slate-600' />
+                    <EditIcon className='mr-2 size-4 text-fg-secondary' />
                     Rename
                   </MenuItem>
                 </MenuContent>

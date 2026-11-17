@@ -11,7 +11,7 @@ const ResizeObserver = window.ResizeObserver
 
 const useResizeObserver = (
   cb: ResizeObserverCallback,
-  ref?: RefObject<HTMLDivElement | HTMLElement>
+  ref?: RefObject<HTMLDivElement | HTMLElement | null>
 ) => {
   const eventCb = useEventCallback((entries, observer) => {
     requestAnimationFrame(() => {

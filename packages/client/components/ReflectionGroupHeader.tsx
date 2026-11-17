@@ -1,13 +1,11 @@
-import styled from '@emotion/styled'
-import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, type Ref, type RefObject} from 'react'
 import {useFragment} from 'react-relay'
+import {Edit} from '~/ui/icons'
 import type {ReflectionGroupHeader_meeting$key} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import type {ReflectionGroupHeader_reflectionGroup$key} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {PortalStatus} from '../hooks/usePortal'
-import {PALETTE} from '../styles/paletteV3'
-import {ElementWidth, Gutters} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {GROUP, VOTE} from '../utils/constants'
 import plural from '../utils/plural'
 import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
@@ -19,62 +17,15 @@ interface Props {
   reflectionGroup: ReflectionGroupHeader_reflectionGroup$key
   isExpanded?: boolean
   portalStatus: PortalStatus
-  titleInputRef: RefObject<HTMLInputElement>
-  dataCy?: string
+  titleInputRef: RefObject<HTMLInputElement | null>
 }
-
-const GroupHeader = styled('div')<{
-  isExpanded: boolean
-  portalStatus: PortalStatus
-}>(({isExpanded, portalStatus}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexShrink: 1,
-  fontSize: 14,
-  justifyContent: 'space-between',
-  margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
-  maxWidth: ElementWidth.REFLECTION_CARD,
-  minHeight: 32,
-  opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
-  paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
-  paddingRight: 8,
-  position: 'relative',
-  width: '100%'
-}))
-
-const IconGroup = styled('div')({
-  display: 'flex',
-  alignItems: 'center'
-})
-
-const PencilIcon = styled(Edit, {
-  shouldForwardProp: (prop) => !['isExpanded'].includes(prop)
-})<{isExpanded?: boolean}>(({isExpanded}) => ({
-  color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_600,
-  display: 'block',
-  height: 18,
-  width: 18,
-  opacity: 0.5,
-  marginRight: 4,
-  top: 1,
-  '&:hover': {
-    cursor: 'pointer'
-  }
-}))
-
-const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => ({
-  backgroundColor: dialogClosed ? PALETTE.SLATE_600 : '#FFFFFF',
-  color: dialogClosed ? '#FFFFFF' : PALETTE.SLATE_700,
-  marginRight: 4
-}))
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {
     meeting: meetingRef,
     reflectionGroup: reflectionGroupRef,
     titleInputRef,
-    portalStatus,
-    dataCy
+    portalStatus
   } = props
   const meeting = useFragment(
     graphql`
@@ -113,9 +64,17 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
   const onClick = () => {
     titleInputRef.current && titleInputRef.current.select()
   }
+  const dialogClosed = portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting
 
   return (
-    <GroupHeader data-cy={dataCy} portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
+    <div
+      className={cn(
+        'relative flex min-h-8 w-full max-w-74 shrink items-center justify-between pr-2 pl-4 text-[14px]',
+        isExpanded && 'mx-3',
+        !isExpanded && portalStatus !== PortalStatus.Exited && 'opacity-0'
+      )}
+      ref={ref}
+    >
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
         reflectionGroup={reflectionGroup}
@@ -124,14 +83,23 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
         titleInputRef={titleInputRef}
       />
       {phaseType === GROUP && (
-        <IconGroup>
-          {canEdit && <PencilIcon isExpanded={isExpanded} onClick={onClick} />}
-          <StyledTag
-            dialogClosed={
-              portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting
-            }
-          >{`${reflections.length} ${plural(reflections.length, 'Card')}`}</StyledTag>
-        </IconGroup>
+        <div className='flex items-center'>
+          {canEdit && (
+            <Edit
+              className={cn(
+                'top-px mr-1 block h-4.5 w-4.5 select-none opacity-50 hover:cursor-pointer',
+                isExpanded ? 'text-white' : 'text-fg-secondary'
+              )}
+              onClick={onClick}
+            />
+          )}
+          <BaseTag
+            className={cn(
+              'mr-1',
+              dialogClosed ? 'bg-slate-600 text-white' : 'bg-surface-card text-fg-primary'
+            )}
+          >{`${reflections.length} ${plural(reflections.length, 'Card')}`}</BaseTag>
+        </div>
       )}
       {phaseType === VOTE && (
         <ReflectionGroupVoting
@@ -140,7 +108,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
           meeting={meeting}
         />
       )}
-    </GroupHeader>
+    </div>
   )
 })
 

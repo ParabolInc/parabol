@@ -1,12 +1,14 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import TaskIntegrationManagerFactory from '../../../integrations/TaskIntegrationManagerFactory'
+import {getServerIntegration} from '../../../integrations/platform/registry'
 import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
+import getIssueTitleAndBody from '../../mutations/helpers/getIssueTitleAndBody'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async (
@@ -24,40 +26,28 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   // AUTH
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return {error: {message: 'Task not found'}}
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {content: rawContentJSON, teamId, userId} = task
   // VALIDATION
   if (task.integration) {
-    return {
-      error: {message: `That task is already linked to ${(task.integration as any).service}`}
-    }
+    throw new GraphQLError(`That task is already linked to ${task.integration.service}`, {
+      extensions: {code: 'CONFLICT'}
+    })
   }
+
+  const definition = getServerIntegration(integrationProviderService)
+  const issueCreate = definition?.capabilities.issueCreate
+  if (!definition || !issueCreate) {
+    throw new GraphQLError('Unknown integration', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+  const initManager = (accessUserId: string) =>
+    issueCreate.initManager({dataLoader, teamId, userId: accessUserId, context, info})
 
   const [viewerTaskManager, assigneeTaskManager, team, teamMembers, viewer, assigneeUser] =
     await Promise.all([
-      TaskIntegrationManagerFactory.initManager(
-        dataLoader,
-        integrationProviderService,
-        {
-          teamId: teamId,
-          userId: viewerId
-        },
-        context,
-        info
-      ),
-      userId
-        ? TaskIntegrationManagerFactory.initManager(
-            dataLoader,
-            integrationProviderService,
-            {
-              teamId: teamId,
-              userId
-            },
-            context,
-            info
-          )
-        : null,
+      initManager(viewerId),
+      userId ? initManager(userId) : null,
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       dataLoader.get('users').loadNonNull(viewerId),
@@ -69,32 +59,37 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   const teamMember = teamMembers.find(({userId}) => userId === viewerId)
 
   if (!taskIntegrationManager) {
-    return {error: {message: 'No auth exists for a given task!'}}
+    throw new GraphQLError('No auth exists for a given task!', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (!accessUserId) {
-    return {
-      error: {
-        message: `Neither you nor the assignee has access to ${taskIntegrationManager.title}`
-      }
-    }
+    throw new GraphQLError(
+      `Neither you nor the assignee has access to ${taskIntegrationManager.title}`,
+      {extensions: {code: 'FORBIDDEN'}}
+    )
   }
 
   if (!teamMember) {
-    return {error: {message: 'User is not member of the team'}}
+    throw new GraphQLError('User is not member of the team', {extensions: {code: 'FORBIDDEN'}})
   }
 
   const {preferredName: viewerName} = viewer
   const {preferredName: assigneeName = ''} = assigneeUser || {}
 
   const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+  const {title, bodyContent} = await getIssueTitleAndBody(
+    JSON.parse(rawContentJSON),
+    teamId,
+    dataLoader
+  )
   const createTaskResponse = await taskIntegrationManager.createTask({
-    rawContentJSON: JSON.parse(rawContentJSON),
+    title,
+    bodyContent,
     integrationRepoId
   })
 
   if (createTaskResponse instanceof Error) {
-    return {error: {message: createTaskResponse.message}}
+    throw new GraphQLError(createTaskResponse.message, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
 
   const {issueId, ...updateTaskInput} = createTaskResponse
@@ -114,7 +109,13 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     }
   }
 
-  updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
+  updatePrevUsedRepoIntegrationsCache(definition.service, integrationRepoId, {
+    dataLoader,
+    teamId,
+    userId: viewerId,
+    context,
+    info
+  })
   await pg
     .updateTable('Task')
     .set({

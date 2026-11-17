@@ -108,7 +108,8 @@ export const streamContentIntoEditor = (
   }
 
   const tick = () => {
-    if (finished || editor.isDestroyed) return
+    if (finished) return
+    if (editor.isDestroyed) return finish()
     revealed += 1
     if (revealed >= totalWords) {
       finish()

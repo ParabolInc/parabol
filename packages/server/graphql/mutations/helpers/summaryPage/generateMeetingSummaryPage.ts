@@ -3,6 +3,7 @@ import type {InternalContext} from '../../../graphql'
 import {generateCheckinMeetingSummaryPage} from './generateCheckinMeetingSummaryPage'
 import {generatePokerMeetingSummaryPage} from './generatePokerMeetingSummaryPage'
 import {generateRetroMeetingSummaryPage} from './generateRetroMeetingSummaryPage'
+import {generateTeamHealthMeetingSummaryPage} from './generateTeamHealthMeetingSummaryPage'
 import {generateTeamPromptMeetingSummaryPage} from './generateTeamPromptMeetingSummaryPage'
 
 export const generateMeetingSummaryPage = async (
@@ -20,6 +21,8 @@ export const generateMeetingSummaryPage = async (
       return generatePokerMeetingSummaryPage(meetingId, context, info)
     case 'teamPrompt':
       return generateTeamPromptMeetingSummaryPage(meetingId, context)
+    case 'teamHealth':
+      return generateTeamHealthMeetingSummaryPage(meetingId, context)
     case 'action':
       return generateCheckinMeetingSummaryPage(meetingId, context)
     default:

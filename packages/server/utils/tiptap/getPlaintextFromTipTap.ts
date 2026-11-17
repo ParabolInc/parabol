@@ -6,9 +6,10 @@ import {Logger} from '../Logger'
 export const getPlaintextFromTipTap = (content: JSONContent) => {
   let docText = ''
   try {
-    docText = generateText(content, serverTipTapExtensions)
+    // Postgres text columns reject NUL
+    docText = generateText(content, serverTipTapExtensions).replaceAll('\u0000', '')
   } catch (e) {
-    Logger.log((e as Error)?.message || 'Unable to generateText', {extras: JSON.stringify(content)})
+    Logger.log((e as Error)?.message || 'Unable to generateText')
     return {title: '', plaintextContent: ''}
   }
   const {title, contentStartsAt} = getTitleFromPageText(docText)

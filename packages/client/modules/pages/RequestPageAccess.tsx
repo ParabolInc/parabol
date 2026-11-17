@@ -1,6 +1,6 @@
-import LockIcon from '@mui/icons-material/Lock'
 import {useState} from 'react'
 import {useNavigate} from 'react-router'
+import {Lock as LockIcon} from '~/ui/icons'
 import BasicTextArea from '../../components/InputField/BasicTextArea'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useRequestPageAccessMutation} from '../../mutations/useRequestPageAccessMutation'
@@ -10,6 +10,7 @@ import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import getMutationError from '../../utils/relay/getMutationError'
 
 interface Props {
   pageId: string
@@ -29,6 +30,30 @@ export const RequestPageAccess = (props: Props) => {
     navigate('/meetings')
   }
 
+  const showRequestError = (code: unknown) => {
+    if (code === 'NOT_FOUND') {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message: 'Page not found',
+        autoDismiss: 10,
+        key: 'pageNotFound'
+      })
+      return
+    }
+    if (code === 'TOO_MANY_REQUESTS') {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        message: 'You have already requested access recently',
+        autoDismiss: 10,
+        key: 'tooManyRequests'
+      })
+      return
+    }
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      message: 'Error requesting page access',
+      autoDismiss: 10,
+      key: 'errorRequestingPageAccess'
+    })
+  }
+
   const submit = () => {
     if (submitting) return
     execute({
@@ -37,31 +62,11 @@ export const RequestPageAccess = (props: Props) => {
         reason,
         role: 'viewer'
       },
+      onError: (error) => showRequestError(getMutationError(error).code),
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]
         if (firstError) {
-          const code = firstError.extensions?.code
-          if (code === 'NOT_FOUND') {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              message: 'Page not found',
-              autoDismiss: 10,
-              key: 'pageNotFound'
-            })
-            return
-          }
-          if (code === 'TOO_MANY_REQUESTS') {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              message: 'You have already requested access recently',
-              autoDismiss: 10,
-              key: 'tooManyRequests'
-            })
-            return
-          }
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: 'Error requesting page access',
-            autoDismiss: 10,
-            key: 'errorRequestingPageAccess'
-          })
+          showRequestError(firstError.extensions?.code)
           return
         }
         atmosphere.eventEmitter.emit('addSnackbar', {
@@ -82,7 +87,7 @@ export const RequestPageAccess = (props: Props) => {
           noClose
         >
           <DialogTitle className='flex w-full flex-col items-center justify-center'>
-            <div className='h-12 w-12 rounded-full bg-slate-300 p-3 text-slate-600'>
+            <div className='h-12 w-12 rounded-full bg-surface-well p-3 text-fg-secondary'>
               <LockIcon />
             </div>
             <div>Request Access</div>
@@ -91,7 +96,7 @@ export const RequestPageAccess = (props: Props) => {
             Ask a page owner to share the page with you.
             <BasicTextArea
               autoFocus
-              className='mt-6 resize-none border-slate-500 px-3 py-2.5'
+              className='mt-6 resize-none border-hairline-field px-3 py-2.5'
               name='reason'
               onChange={(e) => setReason(e.target.value)}
               placeholder='Optional message...'
@@ -100,10 +105,10 @@ export const RequestPageAccess = (props: Props) => {
             />
           </DialogDescription>
           <DialogActions className='mt-0 flex w-full justify-between gap-4'>
-            <Button shape='pill' variant='outline' className='p-3 px-6' onClick={cancel}>
+            <Button variant='outline' size='md' onClick={cancel}>
               Cancel
             </Button>
-            <Button shape='pill' variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
+            <Button variant='primary' size='md' className='grow' onClick={submit}>
               Request Access
             </Button>
           </DialogActions>

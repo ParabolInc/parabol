@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useAcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useAcceptRequestToJoinDomainMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
+import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
@@ -21,13 +21,12 @@ const mutation = graphql`
           message
         }
       }
-      ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId)
+      ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId) @alias
     }
   }
 `
 type Handlers = {
   onSuccess?: () => void
-  onError?: () => void
 }
 const useAcceptRequestToJoinDomainMutation = () => {
   const [commit, submitting] = useMutation<TAcceptRequestToJoinDomainMutation>(mutation)
@@ -36,7 +35,6 @@ const useAcceptRequestToJoinDomainMutation = () => {
     config: UseMutationConfig<TAcceptRequestToJoinDomainMutation>,
     handlers?: Handlers
   ) => {
-    const {variables} = config
     return commit({
       onCompleted: (res) => {
         const error = res.acceptRequestToJoinDomain.error
@@ -47,10 +45,6 @@ const useAcceptRequestToJoinDomainMutation = () => {
             autoDismiss: 5,
             key: 'acceptRequestToJoinDomainSuccess'
           })
-          SendClientSideEvent(atmosphere, 'Join Request Reviewed', {
-            action: 'accept',
-            teamIds: variables.teamIds
-          })
           handlers?.onSuccess && handlers.onSuccess()
         } else {
           atmosphere.eventEmitter.emit('addSnackbar', {
@@ -58,9 +52,9 @@ const useAcceptRequestToJoinDomainMutation = () => {
             autoDismiss: 5,
             key: 'acceptRequestToJoinDomainError'
           })
-          handlers?.onError && handlers.onError()
         }
       },
+      onError: snackOnError(atmosphere, 'acceptRequestToJoinDomainError'),
       // allow components to override default handlers
       ...config
     })

@@ -11,14 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
-      contents: "write"
+      contents: "read"
       id-token: "write"
-      pull-requests: "write"
     steps:
-      - name: Checkout production
-        uses: actions/checkout@v4
-        with:
-          ref: production
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup environment variables
@@ -39,94 +34,36 @@ jobs:
           gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
-      - name: Push Version Commit to Staging Server
-        run: |
-          COMMIT_ID=$(curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
-            --request POST \
-            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}' \
-            --form "branch=main" \
-            --form "commit_message=release v${{ env.ACTION_VERSION }}" \
-            --form "actions[][action]=update" \
-            --form "actions[][file_path]=version.yaml" \
-            --form "actions[][content]=
-          # Change it to use a valid docker tag, which are the same of the GitHub tags. Ex: v6.110.0
-          applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
-
-          global:
-            image:
-              tag: *applicationVersion" | jq .id)
-          echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
-      - name: Poll for new pipeline
+      # Staging's predeploy is the first pull of each release. GKE image streaming imports an image
+      # into its cache on its first pull, which takes as long as a normal pull, so import it now,
+      # in about 15 s, while Kargo starts the promotion. The release mustn't wait for or fail on it.
+      # Only the status is printed, since the response names the project and this log is public.
+      - name: "Prewarm the image for GKE image streaming"
+        continue-on-error: true
         env:
-          STAGING_JOB: staging-release
-          PRODUCTION_JOB: prod-release
-        uses: nick-fields/retry@v2
+          IMAGE: ${{ secrets.GCP_AR_PARABOL }}
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |-
+          IFS=/ read -r HOST PROJECT REPOSITORY PACKAGE <<< "${IMAGE}"
+          PARENT="projects/${PROJECT}/locations/${HOST%-docker.pkg.dev}/repositories/${REPOSITORY}"
+          curl --fail --silent --show-error --max-time 30 --retry 3 --output /dev/null --write-out 'HTTP %{http_code}\n' \
+          --header "Authorization: Bearer ${TOKEN}" --header "Content-Type: application/json" \
+          --data "{\"tag\": \"${PARENT}/packages/${PACKAGE}/tags/v${ACTION_VERSION}\"}" \
+          "https://artifactregistry.googleapis.com/v1/${PARENT}:prewarmArtifact"
+      - id: "iap"
+        name: "Get a token for the IAP in front of Kargo's webhooks"
+        uses: "google-github-actions/auth@v2"
         with:
-          timeout_minutes: 10
-          max_attempts: 100
-          retry_wait_seconds: 5
-          command: |
-            echo ${{ env.COMMIT_ID }}
-            PIPELINES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines" \
-              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
-            PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"${{ env.COMMIT_ID }}\")" | jq .id)
-            [ -z "$PIPELINE_ID" ] && exit 1
-            JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs?per_page=100" \
-              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
-            JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
-            PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
-            echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
-            echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
-      - name: Push to staging
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 5
-          max_attempts: 100
-          retry_wait_seconds: 5
-          # If the job isn't created yet, will return {"message":"400 Bad request - Unplayable Job"}
-          command: |
-            RES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}/play" \
-              --request POST \
-              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
-            echo $RES
-            JOB_ID_DONE=$(echo $RES | jq '.id // empty')
-            [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
-      - name: Poll Staging Release
-        timeout-minutes: 30
-        run: |
-          while true; do
-            STATUS=$(curl -s "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}" --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}' | jq -r '.status')
-            echo "Current status: $STATUS"
-            if [ "$STATUS" == "success" ]; then
-              echo "Job completed successfully."
-              exit 0
-            elif [[ "$STATUS" == "failed" || "$STATUS" == "canceled" ]]; then
-              echo "Job failed or was canceled."
-              exit 1
-            fi
-            sleep 15
-          done
-      - name: Open PR to Push to Prod
-        env:
-          GH_TOKEN: ${{ github.token }}
-        # gh cli does not interpret \n, so we first write to a file
-        run: |
-          BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
-          TEMPLATE=$(tail -n +12 .github/ISSUE_TEMPLATE/release_test.md)
-          CHANGES=$(perl -0777ne 'print "$1\n" and exit if m/\n##\s[^\n]*\n+(.*?\n)##?\s|$/gs;' CHANGELOG.md)
-          echo -e "${BACKLINK}\n\n${TEMPLATE}\n\n\n${CHANGES}" > BODY
-          export BODY=$(cat BODY)
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git checkout -b "release/v${{ env.ACTION_VERSION }}" origin/production
-          git merge origin/master --allow-unrelated-histories -X theirs -m "chore(release): v${{ env.ACTION_VERSION }}"
-          git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
-          gh pr create \
-            --assignee ${{ github.actor }} \
-            --base production \
-            --head release/v${{ env.ACTION_VERSION }} \
-            --title "chore(release): Test and deploy to Production v${{ env.ACTION_VERSION }}" \
-            --body "$BODY"
+          token_format: "access_token"
+          access_token_scopes: "openid,https://www.googleapis.com/auth/userinfo.email"
+          create_credentials_file: false
+          workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+      - name: "Tell Kargo about the new image"
+        run: |-
+          curl --fail-with-body --silent --show-error --max-time 30 --retry 3 --data '' --write-out '\n' \
+          --header "Authorization: Bearer ${{ steps.iap.outputs.access_token }}" \
+          "${{ secrets.KARGO_WEBHOOK_URL }}"
 
       - name: Report Status
         if: failure()

@@ -1,64 +1,66 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
-import {useFragment} from 'react-relay'
-import taskFooterIntegrateMenuQuery, {
-  type TaskFooterIntegrateMenuQuery
-} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {type PreloadedQuery, useFragment} from 'react-relay'
+import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import type {TaskFooterIntegrateMenuRoot_task$key} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
-import type {MenuProps} from '../hooks/useMenu'
+import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
-import {LoaderSize} from '../types/constEnums'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
+import MenuSkeletonRows from '../ui/Menu/MenuSkeletonRows'
 import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
 
 interface Props {
-  menuProps: MenuProps
-  loadingDelay: number
-  loadingWidth: number
   mutationProps: MenuMutationProps
+  queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery> | null | undefined
   task: TaskFooterIntegrateMenuRoot_task$key
   useTaskChild: UseTaskChild
 }
 
 const TaskFooterIntegrateMenuRoot = (props: Props) => {
-  const {menuProps, loadingDelay, loadingWidth, mutationProps, task: taskRef, useTaskChild} = props
+  const {mutationProps, queryRef, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuRoot_task on Task {
+        id
         teamId
-        userId
-        ...TaskFooterIntegrateMenu_task
       }
     `,
     taskRef
   )
-  const {teamId, userId} = task
+  const atmosphere = useAtmosphere()
   useTaskChild('integrate')
-  const queryRef = useQueryLoaderNow<TaskFooterIntegrateMenuQuery>(taskFooterIntegrateMenuQuery, {
-    teamId,
-    userId: userId || ''
-  })
+  const pushToIntegration = (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum
+  ) => {
+    const {submitMutation, onError, onCompleted} = mutationProps
+    submitMutation()
+    CreateTaskIntegrationMutation(
+      atmosphere,
+      {integrationRepoId, taskId: task.id, integrationProviderService},
+      {onError, onCompleted}
+    )
+  }
+  const skeleton = (
+    <div aria-busy='true' aria-label='Loading where this task can be sent'>
+      <div className='mx-4 mt-3 mb-2 h-3 w-1/2 animate-pulse rounded-sm bg-surface-well' />
+      <div className='mx-2 my-2 h-8 animate-pulse rounded-md bg-surface-well' />
+      <MenuSkeletonRows count={3} />
+    </div>
+  )
   return (
-    <Suspense
-      fallback={
-        <LoadingComponent
-          delay={loadingDelay}
-          spinnerSize={LoaderSize.MENU}
-          height={loadingWidth ? LoaderSize.MENU : undefined}
-          width={loadingWidth}
-          showAfter={loadingWidth ? 0 : undefined}
-        />
-      }
-    >
-      {queryRef && (
+    <Suspense fallback={skeleton}>
+      {queryRef ? (
         <TaskFooterIntegrateMenu
           queryRef={queryRef}
-          menuProps={menuProps}
           mutationProps={mutationProps}
-          task={task}
+          teamId={task.teamId}
+          onPushToIntegration={pushToIntegration}
         />
+      ) : (
+        skeleton
       )}
     </Suspense>
   )

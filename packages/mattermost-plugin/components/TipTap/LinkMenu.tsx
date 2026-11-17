@@ -22,13 +22,15 @@ interface Props {
 export const LinkMenu = (props: Props) => {
   const {editor, useLinkEditor} = props
   const [linkState, _setLinkState] = useState<LinkMenuState>(null)
+  const openStateRef = useRef<LinkMenuState>(null)
 
-  const setLinkState: typeof _setLinkState = (linkState) => {
-    if (!linkState) {
-      // closing the menu by hitting Esc should refocus on the editor
+  const setLinkState = (nextLinkState: LinkMenuState) => {
+    const menuWasOpen = openStateRef.current !== null
+    openStateRef.current = nextLinkState
+    _setLinkState(nextLinkState)
+    if (!nextLinkState && menuWasOpen) {
       editor.commands.focus()
     }
-    _setLinkState(linkState)
   }
 
   useEffect(() => {

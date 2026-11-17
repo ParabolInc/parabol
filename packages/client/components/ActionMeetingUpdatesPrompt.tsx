@@ -1,8 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdatesPrompt_meeting$key} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
 import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
+import getTeamMemberTasks from '../utils/getTeamMemberTasks'
 import Avatar from './Avatar/Avatar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
@@ -10,22 +10,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 interface Props {
   meeting: ActionMeetingUpdatesPrompt_meeting$key
 }
-
-const StyledPrompt = styled('div')({
-  display: 'flex'
-})
-
-const PromptText = styled('div')({
-  marginLeft: 16,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center'
-})
-
-const StyledHeader = styled(PhaseHeaderTitle)({
-  fontSize: 18,
-  overflowWrap: 'break-word'
-})
 
 const getQuestion = (isConnected: boolean, taskCount: number, preferredName: string) => {
   if (isConnected) {
@@ -46,6 +30,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
             edges {
               node {
                 id
+                tags
+                userId
               }
             }
           }
@@ -60,15 +46,16 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
           teamMember {
             id
             isSelf
+            userId
           }
         }
         phases {
           stages {
-            ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+            ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
           }
         }
         localStage {
-          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
         }
       }
     `,
@@ -77,22 +64,26 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const {localStage, team, meetingMembers} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
-    (meetingMember) => meetingMember.teamMember.id === localStage.teamMemberId
+    (meetingMember) =>
+      meetingMember.teamMember.id === localStage.ActionMeetingUpdatesPromptLocalStage?.teamMemberId
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember
-  const {isSelf: isViewerMeetingSection} = teamMember
+  const {isSelf: isViewerMeetingSection, userId} = teamMember
   const {picture, preferredName} = user
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
-  const taskCount = tasks.edges.length
+  const taskCount = getTeamMemberTasks(
+    tasks.edges.map(({node}) => node),
+    userId
+  ).length
   return (
-    <StyledPrompt>
+    <div className='flex'>
       <Avatar picture={picture} className={'h-16 w-16'} />
-      <PromptText>
-        <StyledHeader className='max-w-full'>
+      <div className='ml-4 flex flex-col justify-center'>
+        <PhaseHeaderTitle className='max-w-full break-words text-[18px] xl:text-[18px]'>
           {prefix}
           <i>{getQuestion(!!isConnectedAt, taskCount, preferredName)}</i>
-        </StyledHeader>
+        </PhaseHeaderTitle>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
           {isViewerMeetingSection &&
@@ -102,8 +93,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
             <ActionMeetingUpdatesPromptTeamHelpText currentMeetingMember={currentMeetingMember} />
           )}
         </PhaseHeaderDescription>
-      </PromptText>
-    </StyledPrompt>
+      </div>
+    </div>
   )
 }
 

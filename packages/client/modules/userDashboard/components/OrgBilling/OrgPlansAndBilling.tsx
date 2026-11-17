@@ -29,7 +29,12 @@ const OrgPlansAndBilling = (props: Props) => {
   const {organizationRef, queryRef} = props
   const data = usePreloadedQuery<OrgPlansAndBillingQuery>(
     graphql`
-      query OrgPlansAndBillingQuery($orgId: ID!, $first: Int!, $after: DateTime) {
+      query OrgPlansAndBillingQuery(
+        $orgId: ID!
+        $first: Int!
+        $after: DateTime
+        $isBillingLeader: Boolean!
+      ) {
         ...OrgPlansAndBilling_query
       }
     `,
@@ -42,7 +47,7 @@ const OrgPlansAndBilling = (props: Props) => {
     graphql`
       fragment OrgPlansAndBilling_query on Query
       @refetchable(queryName: "OrgPlansAndBillingRefetchQuery") {
-        ...OrgBillingInvoices_query
+        ...OrgBillingInvoices_query @include(if: $isBillingLeader)
       }
     `,
     data
@@ -72,11 +77,17 @@ const OrgPlansAndBilling = (props: Props) => {
     cardNumberRef.current?.focus()
   }
   const prevTierRef = useRef(billingTier)
+  const prevIsBillingLeaderRef = useRef(isBillingLeader)
   useEffect(() => {
-    if (billingTier === prevTierRef.current) return
+    if (billingTier === prevTierRef.current && isBillingLeader === prevIsBillingLeaderRef.current)
+      return
     prevTierRef.current = billingTier
-    refetchInvoices({orgId, first: 3}, {fetchPolicy: 'network-only'})
-  }, [billingTier])
+    prevIsBillingLeaderRef.current = isBillingLeader
+    refetchInvoices(
+      {orgId, first: 4, isBillingLeader: !!isBillingLeader},
+      {fetchPolicy: 'network-only'}
+    )
+  }, [billingTier, isBillingLeader])
   if (billingTier === 'starter') {
     return (
       <Suspense fallback={''}>

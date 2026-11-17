@@ -3,7 +3,6 @@ import {readInlineData} from 'relay-runtime'
 import type {useMeeting_meeting$key} from '~/__generated__/useMeeting_meeting.graphql'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {Breakpoint} from '../types/constEnums'
-import useAutoCheckIn from './useAutoCheckIn'
 import useBreakpoint from './useBreakpoint'
 import useDemoMeeting from './useDemoMeeting'
 import useDocumentTitle from './useDocumentTitle'
@@ -25,7 +24,6 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
         ...useGotoNext_meeting
         ...useGotoPrev_meeting
         ...useMeetingLocalState_meeting
-        ...useAutoCheckIn_meeting
         id
         meetingType
         name
@@ -54,7 +52,6 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
-  useAutoCheckIn(meeting)
   return {
     demoPortal,
     handleGotoNext,

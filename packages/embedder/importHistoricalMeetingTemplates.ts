@@ -1,37 +1,30 @@
-import getKysely from 'parabol-server/postgres/getKysely'
-import {Logger} from 'parabol-server/utils/Logger'
-import {addEmbeddingsMetadataForMeetingTemplate} from './addEmbeddingsMetadataForMeetingTemplate'
+import type {Kysely} from 'kysely'
+import getKysely from '../server/postgres/getKysely'
+import type {DB} from '../server/postgres/types/pg'
+import {Logger} from '../server/utils/Logger'
+import {insertMeetingTemplatesIntoMetadataAndQueue} from './insertMeetingTemplatesIntoMetadataAndQueue'
 
-// Check to see if the oldest discussion topic exists in the metadata table
-// If not, get the date of the oldest discussion topic in the metadata table and import all items before that date
-export const importHistoricalMeetingTemplates = async () => {
-  const pg = getKysely()
-  const isEarliestMetadataImported = await pg
-    .selectFrom('EmbeddingsMetadata')
-    .select('id')
-    .where(({eb, selectFrom}) =>
-      eb(
-        'EmbeddingsMetadata.refId',
-        '=',
-        selectFrom('MeetingTemplate')
-          .select('MeetingTemplate.id')
-          .orderBy('updatedAt')
-          .orderBy('id')
-          .limit(1)
+const BATCH_SIZE = 10_000
+
+export const importHistoricalMeetingTemplates = async (db: Kysely<DB> = getKysely()) => {
+  const templates = await db
+    .selectFrom('MeetingTemplate')
+    .select(['id', 'teamId', 'updatedAt'])
+    .where('isActive', '=', true)
+    .where(({not, exists, selectFrom}) =>
+      not(
+        exists(
+          selectFrom('EmbeddingsMetadata')
+            .select('EmbeddingsMetadata.id')
+            .where('objectType', '=', 'meetingTemplate')
+            .whereRef('refId', '=', 'MeetingTemplate.id')
+        )
       )
     )
-    .limit(1)
-    .executeTakeFirst()
-
-  if (isEarliestMetadataImported) return
-  const earliestImportedTemplate = await pg
-    .selectFrom('EmbeddingsMetadata')
-    .select(['id', 'refUpdatedAt', 'refId'])
-    .where('objectType', '=', 'meetingTemplate')
-    .orderBy('refUpdatedAt')
-    .limit(1)
-    .executeTakeFirst()
-  const endAt = earliestImportedTemplate?.refUpdatedAt ?? undefined
-  Logger.log(`Importing meeting template history up to ${endAt || 'now'}`)
-  return addEmbeddingsMetadataForMeetingTemplate({endAt})
+    .execute()
+  if (templates.length === 0) return
+  Logger.log(`Importing ${templates.length} meeting templates`)
+  for (let i = 0; i < templates.length; i += BATCH_SIZE) {
+    await insertMeetingTemplatesIntoMetadataAndQueue(templates.slice(i, i + BATCH_SIZE), db)
+  }
 }

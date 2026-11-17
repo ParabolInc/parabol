@@ -2,10 +2,11 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>
-  rule('hasProviderAccess', {cache: 'strict'})(async (source, args, context) => {
+  rule('hasProviderAccess', {cache: 'strict'})(async (source, args, context: RuleContext) => {
     const providerIdArg = getResolverDotPath(dotPath, source, args)
     if (!providerIdArg) {
       return true
@@ -20,7 +21,9 @@ export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>
       return true
     }
 
-    if (!(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
+    const isGranted =
+      !context.resourceGrants || (await context.resourceGrants.hasOrg(provider.orgId))
+    if (!isGranted || !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
       return new GraphQLError('Insufficient permission', {
         extensions: {
           code: 'FORBIDDEN'

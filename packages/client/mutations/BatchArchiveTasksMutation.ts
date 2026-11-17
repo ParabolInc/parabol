@@ -25,7 +25,7 @@ const mutation = graphql`
           message
         }
       }
-      ...BatchArchiveTasksMutation_tasks @relay(mask: false)
+      ...BatchArchiveTasksMutation_tasks @relay(mask: false) @alias
     }
   }
 `

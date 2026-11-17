@@ -7,8 +7,6 @@ import generateUID from '../generateUID'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 import type {Team} from '../postgres/types'
-import {analytics} from '../utils/analytics/analytics'
-import {Logger} from '../utils/Logger'
 
 const handleFirstAcceptedInvitation = async (
   team: Team,
@@ -73,6 +71,17 @@ const acceptTeamInvitation = async (
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
   const {email} = user
+  const isNewToOrg = !organizationUser
+  if (isNewToOrg) {
+    // Join the org before the team. A TeamMember without an OrganizationUser passes isTeamMember
+    // but fails isViewerOnOrg, which breaks every org-scoped field (e.g. Team.organization) with
+    // no way for the user to self-heal. Letting this reject leaves them on neither, which is
+    // recoverable by retrying the invitation.
+    // clear the cache, adjustUserCount will mutate these
+    dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
+    dataLoader.get('users').clear(userId)
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+  }
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
   const invitationNotifications = await pg
     .with('TeamMemberInsert', (qc) =>
@@ -103,23 +112,6 @@ const acceptTeamInvitation = async (
     .returning('id')
     .execute()
   dataLoader.clearAll(['teamMembers', 'users', 'notifications'])
-  if (!organizationUser) {
-    // clear the cache, adjustUserCount will mutate these
-    dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
-    dataLoader.get('users').clear(userId)
-    try {
-      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
-    } catch (e) {
-      Logger.log(e)
-    }
-
-    const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
-    analytics.identify({
-      userId,
-      email: user.email,
-      highestTier
-    })
-  }
   const invitationNotificationIds = invitationNotifications.map(({id}) => id)
   // if accepted to team, don't count it towards the global denial count
   await pg

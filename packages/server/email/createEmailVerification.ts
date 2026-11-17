@@ -25,16 +25,15 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
     invitationToken,
     redirectTo
   })
-  const success = await getMailManager().sendEmail({
+  const mailManager = await getMailManager()
+  const success = await mailManager.sendEmail({
     to: email,
     subject,
     body,
     html,
     tags: ['type:emailVerification']
   })
-  if (!success) {
-    return {error: {message: 'Unable to send verification email'}}
-  }
+  if (!success) return false
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const pg = getKysely()
   await pg
@@ -48,7 +47,7 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
       expiration: new Date(Date.now() + Threshold.EMAIL_VERIFICATION_LIFESPAN)
     })
     .execute()
-  return {error: {message: 'Verification required. Check your inbox.'}}
+  return true
 }
 
 export default createEmailVerification

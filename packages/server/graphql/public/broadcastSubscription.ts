@@ -1,3 +1,4 @@
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import type SubscriptionIterator from '../../utils/SubscriptionIterator'
 import getDataLoader from '../getDataLoader'
 import type {InternalContext} from '../graphql'
@@ -21,10 +22,14 @@ export const broadcastSubscription = (iter: SubscriptionIterator, context: Inter
         }
         const {mutatorId, operationId} = sourceIter.value
         if (mutatorId === context.socketId) continue
-        // use the same dataloader that the mutation used to avoid hitting the DB
         if (operationId) {
-          // operationId could be null if a mutation purposefully wants to send to self (e.g. new auth token)
+          // use the same dataloader that the mutation used to avoid hitting the DB
           context.dataLoader = await getDataLoader(operationId)
+        } else {
+          // published outside a mutation (e.g. a socket disconnecting) or to self (e.g. a new auth token)
+          // dispose only drops it from the cache that shares dataloaders by id, which nothing needs for this one
+          context.dataLoader = getNewDataLoader('broadcastSubscription')
+          context.dataLoader.dispose()
         }
         return {done: false, value: sourceIter.value.rootValue}
       }

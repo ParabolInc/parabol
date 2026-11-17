@@ -1,86 +1,23 @@
-import styled from '@emotion/styled'
-import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
+import {Button} from '~/ui/Button/Button'
+import {Settings as SettingsIcon} from '~/ui/icons'
 import Avatar from '../../../../components/Avatar/Avatar'
-import FlatButton from '../../../../components/FlatButton'
 import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useTooltip from '../../../../hooks/useTooltip'
-import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {Breakpoint} from '../../../../types/constEnums'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import plural from '../../../../utils/plural'
-
-const RowInner = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  flexWrap: 'wrap'
-})
-
-const OrgAvatar = styled('div')({
-  cursor: 'pointer',
-  display: 'none',
-  width: '2.75rem',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    display: 'block',
-    marginRight: 16
-  }
-})
-
-const Name = styled(RowInfoHeading)({
-  cursor: 'pointer'
-})
-
-const StyledTagBlock = styled(TagBlock)({
-  display: 'block'
-})
-
-const StyledButton = styled(SecondaryButton)({
-  height: 36,
-  marginLeft: 8,
-  padding: 0,
-  width: 36
-})
-
-const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
-  height: 18,
-  width: 18,
-  svg: {
-    fontSize: 18
-  }
-})
-
-const StyledRowInfo = styled(RowInfo)({
-  paddingLeft: 0
-})
-
-const StyledFlatButton = styled(FlatButton)({
-  height: 36,
-  paddingLeft: 8,
-  paddingRight: 8,
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    paddingLeft: 16,
-    paddingRight: 16
-  }
-})
-
-const StyledRowInfoCopy = styled(RowInfoCopy)({
-  alignItems: 'center',
-  display: 'flex'
-})
 
 interface Props {
   organization: OrganizationRow_organization$key
@@ -115,53 +52,58 @@ const OrganizationRow = (props: Props) => {
   } = organization
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
-    closeTooltip()
     navigate(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = billingTier === 'starter'
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER
-  )
   return (
     <Row>
-      <OrgAvatar onClick={onRowClick}>
+      <div
+        className='sidebar-left:mr-4 sidebar-left:block hidden w-11 cursor-pointer'
+        onClick={onRowClick}
+      >
         <Avatar className='h-11 w-11' picture={orgAvatar} />
-      </OrgAvatar>
-      <RowInner>
-        <StyledRowInfo>
+      </div>
+      <div className='flex flex-1 flex-wrap items-center'>
+        <RowInfo className='pl-0'>
           <RowInfoHeader>
-            <Name onClick={onRowClick}>{name}</Name>
+            <RowInfoHeading className='cursor-pointer' onClick={onRowClick}>
+              {name}
+            </RowInfoHeading>
             {tier !== 'starter' && (
-              <StyledTagBlock>
+              <TagBlock className='block'>
                 <TierTag tier={tier} billingTier={billingTier} />
-              </StyledTagBlock>
+              </TagBlock>
             )}
           </RowInfoHeader>
-          <StyledRowInfoCopy>
+          <RowInfoCopy className='flex items-center'>
             {`${totalUsers} ${plural(totalUsers, 'User')}`}
             {billingTier !== 'enterprise' && ` (${activeUserCount} Active)`}
-          </StyledRowInfoCopy>
-        </StyledRowInfo>
+          </RowInfoCopy>
+        </RowInfo>
         <RowActions>
           {showUpgradeCTA && (
-            <StyledFlatButton onClick={onRowClick} palette={'blue'}>
+            <Button
+              variant='flat'
+              size='sm'
+              className='h-9 px-2 sidebar-left:px-4 text-sky-500 text-sm'
+              onClick={onRowClick}
+            >
               {'Upgrade'}
-            </StyledFlatButton>
+            </Button>
           )}
-          <StyledButton
-            onClick={onRowClick}
-            onMouseEnter={openTooltip}
-            onMouseLeave={closeTooltip}
-            ref={originRef}
-          >
-            <StyledIcon>
-              <SettingsIcon />
-            </StyledIcon>
-          </StyledButton>
-          {tooltipPortal('Settings')}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='outline' size='sm' className='ml-2 h-9 w-9 p-0' onClick={onRowClick}>
+                <div className='h-[18px] w-[18px] text-fg-secondary'>
+                  <SettingsIcon className='text-[18px]' />
+                </div>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>Settings</TooltipContent>
+          </Tooltip>
         </RowActions>
-      </RowInner>
+      </div>
     </Row>
   )
 }
