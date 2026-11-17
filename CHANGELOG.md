@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.0.0](https://github.com/ParabolInc/parabol/compare/v15.39.0...v16.0.0) (2026-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **server:** require a valid license to start, and sign usage reports ([#14001](https://github.com/ParabolInc/parabol/issues/14001))
+
+### Added
+
+* **server:** require a valid license to start, and sign usage reports ([#14001](https://github.com/ParabolInc/parabol/issues/14001)) ([13e6258](https://github.com/ParabolInc/parabol/commit/13e6258f566d26cbb457ee9ab87014199a09698b))
+* **server:** return mutation payloads directly as non-null XPayload types ([#14265](https://github.com/ParabolInc/parabol/issues/14265)) ([98249f3](https://github.com/ParabolInc/parabol/commit/98249f333777c527d3f426129c662d7e6e013cb8))
+
+
+### Changed
+
+* relicense under the BSL and ship images with the commercial license ([#14271](https://github.com/ParabolInc/parabol/issues/14271)) ([4aaeb8c](https://github.com/ParabolInc/parabol/commit/4aaeb8c5ed02db2b65c6d914aa831677dc77eb49))
+
 ## [15.39.0](https://github.com/ParabolInc/parabol/compare/v15.38.0...v15.39.0) (2026-11-17)
 
 
