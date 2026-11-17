@@ -46,7 +46,7 @@ const rotateOAuthRefreshToken = async (refreshToken: string, clientId: string) =
         .updateTable('OAuthAPIGrant')
         .set({lastUsedAt: sql`now()`})
         .where('id', '=', grantId)
-        .returning(['userId', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
+        .returning(['userId', 'resource', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
         .executeTakeFirstOrThrow()
       const nextRefreshToken = await insertOAuthRefreshToken(trx, grantId)
       return {grantId, ...grant, refreshToken: nextRefreshToken}

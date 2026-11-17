@@ -29,6 +29,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('scopes', sql`"OAuthScopeEnum"[]`, (col) => col.notNull())
     .addColumn('grantedOrgIds', sql`varchar(100)[]`)
+    .addColumn('resource', 'varchar(2048)')
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn('lastUsedAt', 'timestamptz')
     .addColumn('revokedAt', 'timestamptz')

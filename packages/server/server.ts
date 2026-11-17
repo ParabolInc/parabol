@@ -16,7 +16,9 @@ import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
 import {requireInstanceLicense} from './license/instanceLicense'
 import listenHandler from './listenHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
+import authorizationServerMetadataHandler from './oauth2/authorizationServerMetadataHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
+import protectedResourceMetadataHandler from './oauth2/protectedResourceMetadataHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
 import {schemaProxyHandler} from './schemaProxyHandler'
@@ -106,6 +108,18 @@ const app = uws
   .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))
   .post('/oauth/token', traceHttpRoute('/oauth/token', tokenHandler))
+  .get(
+    '/.well-known/oauth-authorization-server',
+    traceHttpRoute('/.well-known/oauth-authorization-server', authorizationServerMetadataHandler)
+  )
+  .get(
+    '/.well-known/oauth-protected-resource',
+    traceHttpRoute('/.well-known/oauth-protected-resource', protectedResourceMetadataHandler)
+  )
+  .get(
+    '/.well-known/oauth-protected-resource/mcp',
+    traceHttpRoute('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
+  )
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 registerSCIMHandlers(app, '/scim')

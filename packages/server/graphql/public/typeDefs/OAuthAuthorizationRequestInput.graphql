@@ -26,4 +26,8 @@ input OAuthAuthorizationRequestInput {
   The PKCE code challenge method. Only S256 is supported
   """
   codeChallengeMethod: String
+  """
+  The RFC 8707 resource indicator the token is for. Only <origin>/mcp is served
+  """
+  resource: String
 }

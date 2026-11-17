@@ -7,9 +7,10 @@ interface Input {
   userId: string
   scopes: Oauthscopeenum[]
   grantedOrgIds: string[] | null
+  resource: string | null
 }
 
-const upsertOAuthAPIGrant = async ({clientId, userId, scopes, grantedOrgIds}: Input) =>
+const upsertOAuthAPIGrant = async ({clientId, userId, scopes, grantedOrgIds, resource}: Input) =>
   getKysely()
     .transaction()
     .execute(async (trx) => {
@@ -21,11 +22,12 @@ const upsertOAuthAPIGrant = async ({clientId, userId, scopes, grantedOrgIds}: In
         .execute()
       const {id: grantId} = await trx
         .insertInto('OAuthAPIGrant')
-        .values({clientId, userId, scopes, grantedOrgIds})
+        .values({clientId, userId, scopes, grantedOrgIds, resource})
         .onConflict((oc) =>
           oc.columns(['clientId', 'userId']).doUpdateSet((eb) => ({
             scopes: eb.ref('excluded.scopes'),
-            grantedOrgIds: eb.ref('excluded.grantedOrgIds')
+            grantedOrgIds: eb.ref('excluded.grantedOrgIds'),
+            resource: eb.ref('excluded.resource')
           }))
         )
         .returning('id')

@@ -74,6 +74,7 @@ export const devServer: DevServerConfiguration = {
       'saml/',
       'scim',
       'oauth',
+      '.well-known',
       'zoom',
       'client-errors',
       'client-metrics'

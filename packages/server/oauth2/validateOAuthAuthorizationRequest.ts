@@ -1,3 +1,4 @@
+import appOrigin from '../appOrigin'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import {selectOAuthAPIProvider} from '../postgres/select'
 import type {OAuthAPIProvider} from '../postgres/types'
@@ -10,11 +11,14 @@ export interface OAuthAuthorizationRequestParams {
   state: string
   codeChallenge?: string | null
   codeChallengeMethod?: string | null
+  resource?: string | null
 }
 
 type ValidationResult =
   | {error: string; code: 'BAD_USER_INPUT' | 'FORBIDDEN'}
   | {provider: OAuthAPIProvider; scopes: Oauthscopeenum[]}
+
+export const MCP_RESOURCE = `${appOrigin}/mcp`
 
 // base64url(SHA-256(code_verifier)) is always 43 characters
 const S256_CODE_CHALLENGE = /^[A-Za-z0-9_-]{43}$/
@@ -24,7 +28,8 @@ export const validateOAuthAuthorizationRequest = async (
   userId: string,
   dataLoader: DataLoaderWorker
 ): Promise<ValidationResult> => {
-  const {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod} = request
+  const {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod, resource} =
+    request
   const provider = await selectOAuthAPIProvider()
     .where('clientId', '=', clientId)
     .executeTakeFirst()
@@ -59,6 +64,9 @@ export const validateOAuthAuthorizationRequest = async (
     if (!codeChallenge || !S256_CODE_CHALLENGE.test(codeChallenge)) {
       return {error: 'Invalid code_challenge', code: 'BAD_USER_INPUT'}
     }
+  }
+  if (resource && resource !== MCP_RESOURCE) {
+    return {error: 'Invalid resource: only <origin>/mcp is served', code: 'BAD_USER_INPUT'}
   }
   const organizationUser = await dataLoader
     .get('organizationUsersByUserIdOrgId')

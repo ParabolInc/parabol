@@ -17,7 +17,7 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
     throw new GraphQLError(authorization.error, {extensions: {code: authorization.code}})
   }
   const {provider, scopes} = authorization
-  const {redirectUri, state, codeChallenge} = request
+  const {redirectUri, state, codeChallenge, resource} = request
   const code = crypto.randomBytes(32).toString('hex')
   await getKysely()
     .insertInto('OAuthAPICode')
@@ -28,6 +28,7 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
       userId: viewerId,
       scopes,
       codeChallenge,
+      resource,
       expiresAt: new Date(Date.now() + ms('10m'))
     })
     .execute()
