@@ -343,3 +343,52 @@ test("narrowing an app's scopes takes effect on the next request", async () => {
     extensions: {code: 'FORBIDDEN'}
   })
 })
+
+test("a refresh after narrowing an app's scopes only carries the scopes it still allows", async () => {
+  const admin = await createOrgAdmin()
+  const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
+  const created = await sendPublic({
+    query: CREATE_OAUTH_API_PROVIDER,
+    variables: {
+      orgId: admin.orgId,
+      name: 'Narrowing test app',
+      redirectUris: [redirectUri],
+      scopes: ['USERS_READ', 'TEAMS_READ']
+    },
+    cookie: admin.cookie
+  })
+  expect(created.errors).toBeUndefined()
+  const {clientId, clientSecret, provider} = created.data.createOAuthAPIProvider
+  const app = {cookie: admin.cookie, providerId: provider.id, clientId, clientSecret, redirectUri}
+  const approved = await sendPublic({
+    query: CREATE_OAUTH_API_CODE,
+    variables: {request: {clientId, redirectUri, scope: 'users:read teams:read', state: 'xyz'}},
+    cookie: admin.cookie
+  })
+  expect(approved.errors).toBeUndefined()
+  const code = new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
+  const first = await (
+    await postToken({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      client_id: clientId,
+      client_secret: clientSecret
+    })
+  ).json()
+  expect(first.scope).toBe('users:read teams:read')
+
+  const narrowed = await sendPublic({
+    query: UPDATE_OAUTH_API_PROVIDER_SCOPES,
+    variables: {providerId: app.providerId, scopes: ['TEAMS_READ']},
+    cookie: app.cookie
+  })
+  expect(narrowed.errors).toBeUndefined()
+
+  const refreshed = await refresh(app, first.refresh_token)
+  expect(refreshed.status).toBe(200)
+  const second = await refreshed.json()
+  expect(second.scope).toBe('teams:read')
+  const authToken = getVerifiedAuthToken(second.access_token, true, 'action-oauth2')!
+  expect(authToken.scope).toEqual(['teams:read'])
+})
