@@ -39,8 +39,8 @@ export const PageAccessComboboxControl = (props: Props) => {
     <Menu
       trigger={
         <MenuLabelTrigger
-          className='border border-hairline-field bg-surface-input'
-          labelClassName={'pr-0 text-md font-medium text-fg-primary'}
+          className='shrink-0 border border-hairline-field bg-surface-input'
+          labelClassName='whitespace-nowrap pr-0 text-md font-medium text-fg-primary'
         >
           {roleLabel}
         </MenuLabelTrigger>

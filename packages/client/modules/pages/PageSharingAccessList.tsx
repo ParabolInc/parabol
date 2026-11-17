@@ -141,7 +141,7 @@ export const PageSharingAccessList = (props: Props) => {
             <div className='flex items-center justify-between' key={email}>
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-10 w-10' teamId={email} teamName={email} />
-                <div className='flex flex-col'>
+                <div className='wrap-anywhere flex flex-col'>
                   <div className='font-medium text-fg-primary text-sm'>{email}</div>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export const PageSharingAccessList = (props: Props) => {
             <div className='flex items-center justify-between' key={userId}>
               <div className='flex items-center gap-3 pr-2'>
                 <Avatar className='h-10 w-10' picture={picture} />
-                <div className='flex flex-col'>
+                <div className='wrap-anywhere flex flex-col'>
                   <div className='font-medium text-fg-primary text-sm'>{name}</div>
                   <div className='text-fg-primary text-xs'>{email}</div>
                 </div>
@@ -181,7 +181,7 @@ export const PageSharingAccessList = (props: Props) => {
             <div className='flex items-center justify-between' key={teamId}>
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-10 w-10' teamId={teamId} teamName={teamName} />
-                <div className='flex flex-col'>
+                <div className='wrap-anywhere flex flex-col'>
                   <div className='font-medium text-fg-primary text-sm'>{teamName}</div>
                 </div>
               </div>
@@ -204,7 +204,7 @@ export const PageSharingAccessList = (props: Props) => {
                 ) : (
                   <TeamAvatar className='h-8 w-8' teamId={orgId} teamName={orgName} />
                 )}
-                <div className='flex flex-col'>
+                <div className='wrap-anywhere flex flex-col'>
                   <div className='font-medium text-fg-primary text-sm'>{orgName}</div>
                 </div>
               </div>
