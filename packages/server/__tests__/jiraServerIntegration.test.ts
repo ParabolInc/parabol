@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import http from 'http'
 import type {AddressInfo} from 'net'
 import {getUserOrgs, getUserTeams, sendIntranet, sendPublic, signUp} from './common'
@@ -48,7 +49,12 @@ const setOrgUserRole = async (orgId: string, userId: string, role: string) => {
   return setOrgUserRole
 }
 
-const addJiraServerProvider = (orgId: string, cookie: string, serverBaseUrl: string) =>
+const addJiraServerProvider = (
+  orgId: string,
+  cookie: string,
+  serverBaseUrl: string,
+  secret = consumerSecret
+) =>
   sendPublic({
     query: `
       mutation AddIntegrationProvider($input: AddIntegrationProviderInput!) {
@@ -77,7 +83,7 @@ const addJiraServerProvider = (orgId: string, cookie: string, serverBaseUrl: str
         oAuth1ProviderMetadataInput: {
           serverBaseUrl,
           consumerKey,
-          consumerSecret
+          consumerSecret: secret
         }
       }
     },
@@ -234,3 +240,56 @@ test('an OAuth1 authorize URL is refused for a team outside the provider’s org
   })
   expect(requestTokenCount).toBe(requestTokenCountBefore)
 })
+
+const {privateKey: ecPrivateKey} = crypto.generateKeyPairSync('ec', {
+  namedCurve: 'prime256v1',
+  privateKeyEncoding: {type: 'pkcs8', format: 'pem'},
+  publicKeyEncoding: {type: 'spki', format: 'pem'}
+})
+const {privateKey: encryptedRSAPrivateKey, publicKey: rsaPublicKey} = crypto.generateKeyPairSync(
+  'rsa',
+  {
+    modulusLength: 2048,
+    privateKeyEncoding: {type: 'pkcs8', format: 'pem', cipher: 'aes-256-cbc', passphrase: 'secret'},
+    publicKeyEncoding: {type: 'spki', format: 'pem'}
+  }
+)
+
+test.each([
+  ['a shared secret', 'not-a-private-key'],
+  ['an EC private key', ecPrivateKey],
+  ['an encrypted RSA private key', encryptedRSAPrivateKey],
+  ['an RSA public key', rsaPublicKey]
+])(
+  'a provider with %s as its consumer secret is refused and leaves the existing one working',
+  async (_label, secret) => {
+    const {cookie, orgId, teamId} = await signUpOrgAdmin()
+    const added = await addJiraServerProvider(orgId, cookie, jiraServerUrl)
+    const providerId = added.data.addIntegrationProvider.provider.id
+
+    const refused = await addJiraServerProvider(orgId, cookie, jiraServerUrl, secret)
+    expect(refused).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'consumerSecret must be an unencrypted PEM RSA private key',
+          extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})
+        })
+      ]
+    })
+
+    const res = await sendPublic({
+      query: CREATE_OAUTH1_AUTHORIZE_URL,
+      variables: {providerId, teamId},
+      cookie
+    })
+    expect(res).toEqual({
+      data: {
+        createOAuth1AuthorizeUrl: {
+          error: null,
+          url: `${jiraServerUrl}/plugins/servlet/oauth/authorize?oauth_token=requestToken1`
+        }
+      }
+    })
+  }
+)
