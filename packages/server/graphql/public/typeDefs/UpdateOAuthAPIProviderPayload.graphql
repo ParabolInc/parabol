@@ -6,4 +6,6 @@ type UpdateOAuthAPIProviderPayload {
   provider: OAuthAPIProvider!
   "The organization that owns the provider"
   organization: Organization!
+  "The new client secret, returned only when the provider was switched to CONFIDENTIAL"
+  clientSecret: String
 }

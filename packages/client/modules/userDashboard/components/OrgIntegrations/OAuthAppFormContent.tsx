@@ -180,7 +180,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           const payload = response.createOAuthAPIProvider
           if (payload) {
             setClientId(payload.clientId)
-            setClientSecret(payload.clientSecret)
+            setClientSecret(payload.clientSecret ?? '')
             setShowSecret(true)
           }
         },
