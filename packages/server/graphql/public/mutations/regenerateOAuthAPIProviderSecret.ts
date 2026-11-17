@@ -9,28 +9,29 @@ const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIPro
     const [providerId] = CipherId.fromClient(args.providerId)
 
     const pg = getKysely()
-
-    const provider = await pg
-      .selectFrom('OAuthAPIProvider')
-      .select('clientType')
-      .where('id', '=', providerId)
-      .executeTakeFirstOrThrow()
-    if (provider.clientType === 'public') {
-      throw new GraphQLError('A public client has no secret to regenerate', {
-        extensions: {code: 'BAD_USER_INPUT'}
-      })
-    }
-
     const newSecret = generateOAuthClientSecret()
 
     const updatedProvider = await pg
       .updateTable('OAuthAPIProvider')
-      .set({
-        clientSecret: newSecret
-      })
+      .set({clientSecret: newSecret})
       .where('id', '=', providerId)
+      .where('clientType', '=', 'confidential')
       .returningAll()
-      .executeTakeFirstOrThrow()
+      .executeTakeFirst()
+
+    if (!updatedProvider) {
+      const provider = await pg
+        .selectFrom('OAuthAPIProvider')
+        .select('id')
+        .where('id', '=', providerId)
+        .executeTakeFirst()
+      if (!provider) {
+        throw new GraphQLError('Provider not found', {extensions: {code: 'NOT_FOUND'}})
+      }
+      throw new GraphQLError('A public client has no secret to regenerate', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
 
     return {clientSecret: newSecret, provider: updatedProvider}
   }

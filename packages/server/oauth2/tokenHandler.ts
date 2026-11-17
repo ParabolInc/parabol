@@ -156,6 +156,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       res,
       issueOAuthTokens({
         ...rotated,
+        scopes: rotated.scopes.filter((scope) => provider.scopes.includes(scope)),
         clientId: provider.clientId,
         resource: rotated.resource || undefined
       })
