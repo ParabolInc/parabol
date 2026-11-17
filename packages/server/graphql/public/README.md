@@ -3,14 +3,7 @@
 New GraphQL features can be added using the schema definition language (SDL).
 All new schema additions should be added in this directory.
 
-### How to add a new mutation (preferred)
-
-1. `pnpm newMutation <mutationName> -s <subscriptionChannel>`
-   This will create all the boilerplate you need.
-   If you don't need to publish to a subscription channel, leave off the -s flag.
-   To learn more, type `pnpm newMutation --help`
-
-### How to manually add a new mutation
+### How to add a new mutation
 
 1. Write a new `.graphql` typeDef
    For mutations, a typeDef typically consists of the following:
