@@ -171,6 +171,12 @@ const permissionMap: PermissionMap<Resolvers> = {
         isTeamMember<'Mutation.createPage'>('args.teamId')
       )
     ),
+    duplicatePage: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.duplicatePage'>('args.pageId', 'viewer', {ignorePublicLink: true}),
+      hasPageAccess<'Mutation.duplicatePage'>('args.parentPageId', 'editor'),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
     createStripeSubscription: isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),

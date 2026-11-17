@@ -9,8 +9,10 @@ import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
+import type {DuplicateExecute} from '../../mutations/useDuplicatePageMutation'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
+import {runDuplicatePage} from '../../utils/runDuplicatePage'
 import {endBlockDrag, startBlockDrag} from '../blockMove/blockDragSession'
 import {prepareBlockDrag} from '../blockMove/prepareBlockDrag'
 import type {TrackedRange} from '../blockMove/trackRange'
@@ -25,6 +27,7 @@ import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
 import {listItemDropPointPlugin} from './listItemDropPoint'
 import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
+import {getCopyablePage} from './pageLinkBlock/getCopyablePage'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -186,6 +189,8 @@ type Options = {
   atmosphere: Atmosphere
   pageId: string
   isNested?: boolean
+  duplicatePage: DuplicateExecute
+  navigate: (path: string) => void
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',
@@ -205,6 +210,18 @@ export const PageDragHandle = Extension.create<Options>({
     return {
       'Mod-d': ({editor}) => {
         const {selection} = editor.state
+        const {atmosphere, pageId, duplicatePage, navigate} = this.options
+        const pageToDuplicate = getCopyablePage(atmosphere, editor.state, {selection: true})
+        if (pageToDuplicate) {
+          runDuplicatePage({
+            ...pageToDuplicate,
+            destination: {kind: 'nextToSource', source: {parentPageId: pageId}},
+            execute: duplicatePage,
+            atmosphere,
+            navigate
+          })
+          return true
+        }
         if (
           isNodeSelection(selection) &&
           selection.node.type.name === 'pageLinkBlock' &&
@@ -332,7 +349,6 @@ export const PageDragHandle = Extension.create<Options>({
           anchorElement: dragHandleElement,
           canCreateSubPage,
           selection,
-          atmosphere,
           pageId
         }
       })

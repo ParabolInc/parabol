@@ -1,6 +1,7 @@
 import type {Editor} from '@tiptap/core'
 import {ReactRenderer} from '@tiptap/react'
 import type Atmosphere from '../../Atmosphere'
+import plural from '../../utils/plural'
 import type {BlockRange} from '../blockSelection/blockUnits'
 import MoveToPageMenu from '../extensions/moveToPage/MoveToPageMenu'
 import {getBlockDragState} from './blockDragSession'
@@ -69,7 +70,7 @@ export const openMoveToPageMenu = ({editor, range, anchorRect, pageId, atmospher
     editor,
     props: {
       anchorRect,
-      count: session.count,
+      heading: `Move ${session.count} ${plural(session.count, 'block')} to`,
       drag: getBlockDragState(session, refusal),
       onClose: cancel,
       onPick: pick

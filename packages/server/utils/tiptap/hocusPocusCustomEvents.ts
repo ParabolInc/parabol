@@ -7,6 +7,7 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
+import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
 import {toYXmlNodes} from './toYXmlNodes'
@@ -34,9 +35,10 @@ export const addCanonicalPageLink = async (
     isDatabase: boolean
     isSyncedBlock: boolean
     append?: boolean
+    afterPageCode?: number
   }
 ) => {
-  const {title, pageCode, isDatabase, isSyncedBlock, append = false} = payload
+  const {title, pageCode, isDatabase, isSyncedBlock, append, afterPageCode} = payload
   await withDoc(documentName, (doc) => {
     const pageLinkBlock = createPageLinkElement(
       pageCode,
@@ -44,9 +46,7 @@ export const addCanonicalPageLink = async (
       isDatabase,
       isSyncedBlock
     ) as XmlElement
-    const frag = doc.getXmlFragment('default')
-    const position = append ? frag.length : 1
-    frag.insert(position, [pageLinkBlock])
+    insertCanonicalLink(doc.getXmlFragment('default'), pageLinkBlock, {append, afterPageCode})
   })
 }
 
@@ -125,6 +125,14 @@ export const readPageContent = async (documentName: string, _payload: {}) => {
     content = TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
   })
   return content
+}
+
+export const readPageState = async (
+  documentName: string,
+  _payload: {}
+): Promise<string | undefined> => {
+  const doc: Document | undefined = hocuspocus.documents.get(documentName)
+  return doc ? Buffer.from(encodeStateAsUpdate(doc)).toString('base64') : undefined
 }
 
 export const replaceSyncedBlockWithContent = async (

@@ -4,7 +4,6 @@ import {Document} from '@tiptap/extension-document'
 import {Focus} from '@tiptap/extensions'
 import {act} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import type Atmosphere from '../../../../Atmosphere'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {happyWindow} from '../../__tests__/installHappyDom'
 import DragHandleMenu from '../../DragHandleMenu'
@@ -14,6 +13,13 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
   default: () => null
 }))
 jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
+jest.mock('../../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
+jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('../../../../mutations/useDuplicatePageMutation', () => ({
+  useDuplicatePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/usePageViewerAccess', () => ({lookupPageViewerGrant: () => undefined}))
 
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
@@ -95,7 +101,6 @@ const openMenu = async (
         onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
-        atmosphere={{} as Atmosphere}
         pageId='page:1'
       />
     )

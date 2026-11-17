@@ -641,12 +641,11 @@ describe('many blocks', () => {
       expect(menuProps()?.selection).toBeNull()
     })
 
-    test('hands the menu the page and atmosphere so it can offer Move to…', () => {
+    test('hands the menu the page so it can offer Move to…', () => {
       const activeEditor = makeEditor(p('one'), p('two'))
       hover(activeEditor, 'two')
       clickHandle(activeEditor)
       expect(menuProps()?.pageId).toBe('page:1')
-      expect(menuProps()?.atmosphere).toBe(mockAtmosphere)
     })
 
     test('on the one selected block opens the menu for that block', () => {
