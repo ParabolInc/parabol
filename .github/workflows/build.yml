@@ -50,6 +50,8 @@ jobs:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
           username: "oauth2accesstoken"
           password: "${{ steps.auth.outputs.access_token }}"
+      - name: Ship the commercial license as the image's LICENSE
+        run: cp docs/alternative-licenses/commercial-self-hosted/LICENSE LICENSE
       - name: Push build to dev
         uses: docker/build-push-action@v6
         with:
