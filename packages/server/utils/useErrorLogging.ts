@@ -161,12 +161,11 @@ export const useErrorLogging = (): Plugin<LoggableContext> => ({
           }
         })
       },
-      onSubscribeResult() {
-        return {
-          onNext({result}) {
-            enterLogContext(logContext, () => logResultErrors(args, result.errors))
-          }
-        }
+      // a single result instead of a stream means subscribing failed, e.g. the viewer may not listen
+      onSubscribeResult(payload) {
+        return handleStreamOrSingleExecutionResult(payload, ({result}) => {
+          enterLogContext(logContext, () => logResultErrors(args, result.errors))
+        })
       }
     }
   }
