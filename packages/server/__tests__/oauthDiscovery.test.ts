@@ -309,3 +309,52 @@ test('a superuser JWT in the authorization header does not unlock a cookie users
   expect(body.data?.viewer?.id).toBeUndefined()
   expect(body.errors).toBeDefined()
 })
+
+const expire = (accessToken: string) => {
+  const authToken = getVerifiedAuthToken(accessToken, true, 'action-oauth2')!
+  return encodeAuthToken({...authToken, exp: Math.floor(Date.now() / 1000) - 60})
+}
+
+test('an expired OAuth access token is told it expired on a non-persisted query', async () => {
+  const app = await createApp()
+  const expiredToken = expire(await getAccessToken(app))
+  const body = await queryRaw({authorization: `Bearer ${expiredToken}`})
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors?.[0]).toMatchObject({
+    message: 'OAuth access token expired',
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+})
+
+test('an expired OAuth access token is told it expired on a persisted query', async () => {
+  const app = await createApp()
+  const expiredToken = expire(await getAccessToken(app))
+  const body = await sendPublic({
+    query: 'query ExpiredViewer { viewer { id } }',
+    bearerToken: expiredToken
+  })
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors?.[0]).toMatchObject({
+    message: 'OAuth access token expired',
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+})
+
+test('an expired OAuth access token beside a cookie does not borrow the cookie session', async () => {
+  const app = await createApp()
+  const other = await createApp()
+  const expiredToken = expire(await getAccessToken(app))
+  const body = await queryRaw({authorization: `Bearer ${expiredToken}`, cookie: other.cookie})
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
+})
+
+test('the Bearer scheme is case-insensitive', async () => {
+  const app = await createApp()
+  const accessToken = await getAccessToken(app)
+  for (const scheme of ['bearer', 'BEARER']) {
+    const body = await queryRaw({authorization: `${scheme} ${accessToken}`})
+    expect(body.errors).toBeUndefined()
+    expect(body.data.viewer.id).toBe(app.userId)
+  }
+})

@@ -10,8 +10,8 @@ interface RequestHeaders {
 
 export type RequestCredential = {kind: 'oauth' | 'pat' | 'session'; token: string} | {kind: 'none'}
 
-const getBearerToken = (header: string | null | undefined) =>
-  header?.startsWith('Bearer ') ? header.slice(7) : undefined
+export const getBearerToken = (header: string | null | undefined) =>
+  header && /^bearer /i.test(header) ? header.slice(7) : undefined
 
 const getRequestCredential = ({
   cookie,
@@ -25,7 +25,7 @@ const getRequestCredential = ({
   ].filter((token): token is string => !!token)
   for (const token of bearerTokens) {
     if (token.startsWith(PAT_PREFIX)) return {kind: 'pat', token}
-    if (getVerifiedAuthToken(token, false, 'action-oauth2')) return {kind: 'oauth', token}
+    if (getVerifiedAuthToken(token, false, 'action-oauth2', true)) return {kind: 'oauth', token}
   }
   const sessionToken = getAuthTokenFromCookie(cookie ?? null) || bearerTokens[0]
   return sessionToken ? {kind: 'session', token: sessionToken} : {kind: 'none'}
