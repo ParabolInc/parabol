@@ -400,7 +400,7 @@ test('Create app and token', async () => {
   expect(tokenBody).toMatchObject({
     access_token: expect.any(String),
     token_type: 'Bearer',
-    expires_in: expect.any(Number),
+    expires_in: 3600,
     scope: 'users:read users:write'
   })
 
@@ -461,7 +461,7 @@ test('Request less scope than allowed succeeds', async () => {
   expect(tokenBody).toMatchObject({
     access_token: expect.any(String),
     token_type: 'Bearer',
-    expires_in: expect.any(Number),
+    expires_in: 3600,
     scope: 'users:write'
   })
 

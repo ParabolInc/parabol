@@ -8,6 +8,7 @@ import {PAT_PREFIX} from '../graphql/public/applyScopeDirective'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
 import getKysely from '../postgres/getKysely'
 import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/select'
+import {CipherId} from './CipherId'
 import checkBlacklistJWT from './checkBlacklistJWT'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
 import hashPersonalAccessToken from './hashPersonalAccessToken'
@@ -20,6 +21,7 @@ export interface APIGrant {
   resourceGrants: ResourceGrants
   personalAccessTokenId?: string
   clientId?: string
+  grantId?: number
 }
 
 const PREFIX_LENGTH = 8
@@ -80,30 +82,57 @@ const getPersonalAccessTokenGrant = async (
   }
 }
 
+const throwInvalidOAuthToken = (): never => {
+  throw new GraphQLError('Invalid or revoked OAuth access token', {
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+}
+
 const getOAuthAccessTokenGrant = async (
   jwt: string,
   dataLoader: DataLoaderWorker
 ): Promise<APIGrant | null> => {
   const accessToken = getVerifiedAuthToken(jwt, false, 'action-oauth2')
   if (!accessToken) return null
-  const [isBlacklisted, provider] = await Promise.all([
+  const {client_id: clientId, grant_id: grantCode, sub: userId} = accessToken
+  if (!clientId || grantCode === undefined) return throwInvalidOAuthToken()
+  const grantId = CipherId.decrypt(grantCode)
+  const [isBlacklisted, provider, grant] = await Promise.all([
     checkBlacklistJWT(accessToken),
-    accessToken.client_id
-      ? selectOAuthAPIProvider().where('clientId', '=', accessToken.client_id).executeTakeFirst()
-      : undefined
+    selectOAuthAPIProvider().where('clientId', '=', clientId).executeTakeFirst(),
+    dataLoader.get('oauthAPIGrants').load(grantId)
   ])
-  if (isBlacklisted || !provider) {
-    throw new GraphQLError('Invalid or revoked OAuth access token', {
-      extensions: {code: 'UNAUTHENTICATED'}
-    })
+  if (
+    isBlacklisted ||
+    !provider ||
+    !grant ||
+    grant.revokedAt ||
+    grant.clientId !== clientId ||
+    grant.userId !== userId
+  ) {
+    return throwInvalidOAuthToken()
+  }
+  if (!grant.lastUsedAt || Date.now() - grant.lastUsedAt.getTime() > ms('5m')) {
+    getKysely()
+      .updateTable('OAuthAPIGrant')
+      .set({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', grant.id)
+      .execute()
+      .catch(Logger.error)
   }
   return {
-    userId: accessToken.sub,
-    scopes: accessToken.scope ?? [],
+    userId,
+    scopes: (accessToken.scope ?? []).filter((scope) => grant.scopes.includes(scope)),
     aud: 'action-oauth2',
-    clientId: accessToken.client_id,
-    // The app reaches only the data of the organization that registered it
-    resourceGrants: new ResourceGrants(accessToken.sub, [provider.orgId], [], null, dataLoader)
+    clientId,
+    grantId: grant.id,
+    resourceGrants: new ResourceGrants(
+      userId,
+      grant.grantedOrgIds ?? [provider.orgId],
+      [],
+      null,
+      dataLoader
+    )
   }
 }
 
