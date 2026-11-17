@@ -225,7 +225,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       async allowArbitraryOperations(request) {
         const {headers} = request
         const authHeader = headers.get('authorization')
-        const headerToken = authHeader?.slice(7)
+        const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
         const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
         const token = headerToken || cookieToken
         const authToken = getVerifiedAuthToken(token, false)

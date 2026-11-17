@@ -70,7 +70,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   const {grant_type, code, redirect_uri, client_id, client_secret, code_verifier, refresh_token} =
     body
-  const requestedResource = body.resource
+  const requestedResource = body.resource || null
 
   // SCIM OAuth client credentials
   if (grant_type === 'client_credentials') {
@@ -157,7 +157,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       issueOAuthTokens({
         ...rotated,
         clientId: provider.clientId,
-        resource: rotated.resource ?? undefined
+        resource: rotated.resource || undefined
       })
     )
     return
@@ -224,7 +224,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     userId,
     scopes,
     grantedOrgIds: [provider.orgId],
-    resource
+    resource: resource || null
   })
   writeTokens(
     res,
@@ -233,7 +233,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       userId,
       scopes,
       clientId: provider.clientId,
-      resource: resource ?? undefined,
+      resource: resource || undefined,
       refreshToken
     })
   )

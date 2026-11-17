@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import faker from 'faker'
+import getKysely from '../postgres/getKysely'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 
@@ -208,4 +209,71 @@ test('an unauthenticated request still cannot run a query that is not persisted'
   })
   const body = await response.json()
   expect(body.errors).toBeDefined()
+})
+
+const queryRaw = (headers: Record<string, string>) =>
+  fetch(`${ORIGIN}/graphql`, {
+    method: 'POST',
+    headers: {'content-type': 'application/json', ...headers},
+    body: JSON.stringify({query: '{viewer{id}}'})
+  }).then((response) => response.json())
+
+const getAccessToken = async (app: App) => {
+  const code = await getCode(app, MCP_RESOURCE)
+  return (await (await exchange(app, code, MCP_RESOURCE)).json()).access_token as string
+}
+
+test('a session cookie does not lend its authority to an OAuth bearer on a non-persisted query', async () => {
+  const app = await createApp()
+  const other = await createApp()
+  const accessToken = await getAccessToken(app)
+  const body = await queryRaw({authorization: `Bearer ${accessToken}`, cookie: other.cookie})
+  expect(body.data?.viewer?.id).not.toBe(other.userId)
+  expect(body.data?.viewer?.id).toBe(app.userId)
+})
+
+test('an OAuth token with a revoked grant cannot run a non-persisted query', async () => {
+  const app = await createApp()
+  const accessToken = await getAccessToken(app)
+  await getKysely()
+    .updateTable('OAuthAPIGrant')
+    .set({revokedAt: new Date()})
+    .where('clientId', '=', app.clientId)
+    .execute()
+  const body = await queryRaw({authorization: `Bearer ${accessToken}`})
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors).toBeDefined()
+})
+
+test('a revoked OAuth token alongside a cookie cannot run a non-persisted query', async () => {
+  const app = await createApp()
+  const other = await createApp()
+  const accessToken = await getAccessToken(app)
+  await getKysely()
+    .updateTable('OAuthAPIGrant')
+    .set({revokedAt: new Date()})
+    .where('clientId', '=', app.clientId)
+    .execute()
+  const body = await queryRaw({authorization: `Bearer ${accessToken}`, cookie: other.cookie})
+  expect(body.data?.viewer?.id).toBeUndefined()
+})
+
+test('a malformed authorization scheme is refused a non-persisted query', async () => {
+  const app = await createApp()
+  const accessToken = await getAccessToken(app)
+  for (const authorization of [`Xearer ${accessToken}`, 'Xearer pat_x']) {
+    const body = await queryRaw({authorization})
+    expect(body.errors).toBeDefined()
+    expect(body.data?.viewer?.id).toBeUndefined()
+  }
+})
+
+test('an empty resource is treated as no resource', async () => {
+  const app = await createApp()
+  const code = await getCode(app, '')
+  const response = await exchange(app, code, '')
+  expect(response.status).toBe(200)
+  const tokens = await response.json()
+  const authToken = getVerifiedAuthToken(tokens.access_token, true, 'action-oauth2')!
+  expect(authToken.resource).toBeUndefined()
 })

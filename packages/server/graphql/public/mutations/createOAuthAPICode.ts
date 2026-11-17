@@ -28,7 +28,7 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
       userId: viewerId,
       scopes,
       codeChallenge,
-      resource,
+      resource: resource || null,
       expiresAt: new Date(Date.now() + ms('10m'))
     })
     .execute()
