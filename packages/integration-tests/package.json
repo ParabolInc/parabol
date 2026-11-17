@@ -2,7 +2,7 @@
   "name": "integration-tests",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "BUSL-1.1",
-  "version": "15.39.0",
+  "version": "16.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
