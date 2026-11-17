@@ -3,6 +3,7 @@ import {getServerIntegration} from '../../integrations/platform/registry'
 import type {Task} from '../../postgres/types'
 import {getUserId} from '../../utils/authorization'
 import type {InternalContext} from '../graphql'
+import toNestedEndpointInfo from '../nestedSchema/toNestedEndpointInfo'
 
 export const resolveTaskIntegration = async (
   task: Task,
@@ -20,7 +21,7 @@ export const resolveTaskIntegration = async (
     teamId,
     userId: integration.accessUserId,
     context,
-    info,
+    info: toNestedEndpointInfo(info),
     task,
     viewerId,
     fieldsToFetch
