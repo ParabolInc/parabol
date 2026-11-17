@@ -21,6 +21,7 @@ import type {AtlassianAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
+import {redisStoreOrNetwork} from '../utils/redisStoreOrNetwork'
 import type RootDataLoader from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
 
@@ -370,19 +371,18 @@ export const atlassianCloudName = (
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({cloudId, teamId, userId}) => {
-          const result = await redisStoreAndNetwork(
+        keys.map(({cloudId, teamId, userId}) =>
+          redisStoreOrNetwork(
             `atlassian:cloudName:${cloudId}`,
             async () => {
               const lookup = await parent.get('atlassianCloudNameLookup').load({teamId, userId})
               const name = lookup[cloudId]
-              return name ? {name} : new Error('Atlassian site is not accessible')
+              if (!name) throw new Error('Atlassian site is not accessible')
+              return name
             },
-            ({name}) => name,
-            {maxAge: ms('1h')}
+            ms('1d')
           )
-          return result instanceof Error ? '' : result
-        })
+        )
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : ''))
     },
