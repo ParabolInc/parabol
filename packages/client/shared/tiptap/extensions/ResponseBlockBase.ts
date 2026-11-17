@@ -1,5 +1,6 @@
 import {createBlockMarkdownSpec, generateText} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
+import {emptyBlockContent} from '../emptyBlockContent'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
 export interface ResponseBlockAttrs {
@@ -49,7 +50,7 @@ export const ResponseBlockBase = Node.create({
   parseHTML() {
     return [
       {
-        tag: `div[data-type="${this.name}"]`
+        tag: `div[data-type="${this.name}"][content]`
       }
     ]
   },
@@ -59,7 +60,10 @@ export const ResponseBlockBase = Node.create({
   renderText({node}) {
     const attrs = node.attrs as ResponseBlockAttrs
     const {content, preferredName} = attrs
-    const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
+    const plaintextContent = generateText(
+      JSON.parse(content || emptyBlockContent),
+      serverTipTapExtensions
+    )
     return `${preferredName}: ${plaintextContent}`
   },
   ...createBlockMarkdownSpec({

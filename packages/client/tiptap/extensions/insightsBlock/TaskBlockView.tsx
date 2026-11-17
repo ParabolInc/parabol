@@ -3,13 +3,14 @@ import type {TaskStatusEnum} from '../../../__generated__/CreateTaskMutation.gra
 import Avatar from '../../../components/Avatar/Avatar'
 import {useTipTapTaskEditor} from '../../../hooks/useTipTapTaskEditor'
 import TaskCardStatusIndicator from '../../../modules/taskCard/components/TaskCardStatusIndicator/TaskCardStatusIndicator'
+import {emptyBlockContent} from '../../../shared/tiptap/emptyBlockContent'
 import type {TaskBlockAttrs} from '../../../shared/tiptap/extensions/TaskBlockBase'
 export const TaskBlockView = (props: NodeViewProps) => {
   const {node} = props
   const attrs = node.attrs as TaskBlockAttrs
   const {content, status, preferredName, avatar} = attrs
   // the task card should be one giant read-only block, so we render a read-only editor
-  const {editor} = useTipTapTaskEditor(content, {readOnly: true})
+  const {editor} = useTipTapTaskEditor(content || emptyBlockContent, {readOnly: true})
   return (
     <NodeViewWrapper data-type='taskBlock'>
       <div className='w-[268px] min-w-64 rounded bg-surface-card p-4 shadow-[var(--shadow-card)]'>
