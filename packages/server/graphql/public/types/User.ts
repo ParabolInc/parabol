@@ -20,6 +20,7 @@ import {
 } from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
+import AuthToken from '../../../database/types/AuthToken'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
 import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
@@ -29,6 +30,7 @@ import {
   selectPersonalAccessToken,
   selectTasks
 } from '../../../postgres/select'
+import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -585,9 +587,21 @@ const User: ReqResolvers<'User'> = {
     return {teamInvitation, teamId, meetingId}
   },
 
-  teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader, resourceGrants}) => {
+  teams: async ({id: userId}, {includeArchived}, context) => {
+    const {authToken, dataLoader, resourceGrants} = context
     const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
+    // a token issued before the viewer joined a team, like one from another session, can't read that team's fields
+    if (
+      viewerId === userId &&
+      !resourceGrants &&
+      allTms.some((teamId) => !authToken.tms.includes(teamId))
+    ) {
+      context.authToken = new AuthToken({...authToken, tms: allTms})
+      if (context.request) {
+        setAuthCookie(context, context.authToken)
+      }
+    }
     const activeTeamIds =
       viewerId === userId || isSuperUser(authToken)
         ? allTms
