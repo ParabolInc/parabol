@@ -21,6 +21,8 @@ interface Input {
   jti?: string
   act?: Actor
   client_id?: string
+  grant_id?: number
+  resource?: string
 }
 
 export default class AuthToken {
@@ -36,8 +38,24 @@ export default class AuthToken {
   jti: string
   act?: Actor
   client_id?: string
+  grant_id?: number
+  resource?: string
   constructor(input: Input) {
-    const {act, bet, rol, sub, tms, lifespan_ms, exp, scope, aud, jti, client_id} = input
+    const {
+      act,
+      bet,
+      rol,
+      sub,
+      tms,
+      lifespan_ms,
+      exp,
+      scope,
+      aud,
+      jti,
+      client_id,
+      grant_id,
+      resource
+    } = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
@@ -51,6 +69,8 @@ export default class AuthToken {
     this.scope = scope
     this.jti = jti ?? randomUUID()
     this.client_id = client_id
+    this.grant_id = grant_id
+    this.resource = resource
 
     if (bet) {
       this.bet = bet
