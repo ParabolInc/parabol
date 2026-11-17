@@ -7,6 +7,31 @@ import {
 } from '../../../../../client/shared/sortOrder'
 import getKysely from '../../../../postgres/getKysely'
 
+const selectTopLevelPeers = (viewerId: string, isPrivate: boolean, teamId: string | null) => {
+  const query = getKysely().selectFrom('Page').select('sortOrder').where('deletedBy', 'is', null)
+  if (teamId) return query.where('teamId', '=', teamId)
+  return query
+    .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+    .where('teamId', 'is', null)
+    .where('parentPageId', 'is', null)
+    .where('PageAccess.userId', '=', viewerId)
+    .where('isPrivate', '=', isPrivate)
+}
+
+export const getPageSortOrderAfter = async (
+  afterSortOrder: string,
+  viewerId: string,
+  isPrivate: boolean,
+  teamId: string | null
+) => {
+  const next = await selectTopLevelPeers(viewerId, isPrivate, teamId)
+    .where('sortOrder', '>', afterSortOrder)
+    .orderBy('sortOrder')
+    .limit(1)
+    .executeTakeFirst()
+  return next ? positionBetween(afterSortOrder, next.sortOrder) : positionAfter(afterSortOrder)
+}
+
 // the sortOrder coming from the client can't be trusted, so we verify there are no conflicts
 // this isn't part of the transaction, so although rare, there could still be a conflict
 export const getPageNextSortOrder = async (
@@ -56,21 +81,7 @@ export const getPageNextSortOrder = async (
       : positionAfter(sortOrder)
   }
 
-  const buildPeers = () => {
-    const query = pg.selectFrom('Page').select('sortOrder')
-    if (!teamId) {
-      return query
-        .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
-        .where('teamId', 'is', null)
-        .where('parentPageId', 'is', null)
-        .where('PageAccess.userId', '=', viewerId)
-        .where('isPrivate', '=', isPrivate)
-        .where('deletedBy', 'is', null)
-    }
-    return query
-      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-      .where('deletedBy', 'is', null)
-  }
+  const buildPeers = () => selectTopLevelPeers(viewerId, isPrivate, teamId)
 
   if (sortOrder === __END__) {
     // the __END__ sentinel is used when the client doesn't know the sortOrder, it just wants to insert at the end

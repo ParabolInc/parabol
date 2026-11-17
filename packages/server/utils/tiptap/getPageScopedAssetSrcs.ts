@@ -1,25 +1,21 @@
 import * as Y from 'yjs'
-import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
+import appOrigin from '../../appOrigin'
+import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
+import {getPageAssetAttr} from './getPageAssetAttr'
 
-export const getAssetAttr = (node: unknown) =>
-  node instanceof Y.XmlElement ? PAGE_ASSET_ATTRS.get(node.nodeName) : undefined
-
-const isPageScopedSrc = (src: string, pageCode: number) => {
-  try {
-    return new URL(src).pathname.startsWith(`/assets/Page/${pageCode}/`)
-  } catch {
-    return false
-  }
-}
+const isPageScopedSrc = (src: string, pageCode: number) =>
+  isParabolHostedAsset(src) &&
+  new URL(src, appOrigin).pathname.startsWith(`/assets/Page/${pageCode}/`)
 
 export const getPageScopedAssetSrcs = (state: Uint8Array, pageCode: number): string[] => {
   const doc = new Y.Doc()
   Y.applyUpdate(doc, state)
   const srcs = new Set<string>()
-  for (const node of doc
+  const assetNodes = doc
     .getXmlFragment('default')
-    .createTreeWalker((yxml) => !!getAssetAttr(yxml))) {
-    const attr = getAssetAttr(node)
+    .createTreeWalker((node) => !!getPageAssetAttr(node))
+  for (const node of assetNodes) {
+    const attr = getPageAssetAttr(node)
     if (!attr || !(node instanceof Y.XmlElement)) continue
     const src = node.getAttribute(attr)
     if (typeof src === 'string' && isPageScopedSrc(src, pageCode)) srcs.add(src)

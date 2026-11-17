@@ -12,6 +12,7 @@ import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
 import type {DuplicateExecute} from '../../mutations/useDuplicatePageMutation'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
+import {runDuplicatePage} from '../../utils/runDuplicatePage'
 import {endBlockDrag, startBlockDrag} from '../blockMove/blockDragSession'
 import {prepareBlockDrag} from '../blockMove/prepareBlockDrag'
 import type {TrackedRange} from '../blockMove/trackRange'
@@ -26,8 +27,7 @@ import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
 import {listItemDropPointPlugin} from './listItemDropPoint'
 import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
-import {getPageToDuplicate} from './pageLinkBlock/getPageToDuplicate'
-import {runDuplicatePage} from './pageLinkBlock/runDuplicatePage'
+import {getCopyablePage} from './pageLinkBlock/getCopyablePage'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -211,14 +211,11 @@ export const PageDragHandle = Extension.create<Options>({
       'Mod-d': ({editor}) => {
         const {selection} = editor.state
         const {atmosphere, pageId, duplicatePage, navigate} = this.options
-        const pageToDuplicate = getPageToDuplicate(editor.state, {selection: true})
-        if (
-          pageToDuplicate &&
-          lookupPageViewerGrant(atmosphere, pageToDuplicate.pageCode) !== null
-        ) {
+        const pageToDuplicate = getCopyablePage(atmosphere, editor.state, {selection: true})
+        if (pageToDuplicate) {
           runDuplicatePage({
             ...pageToDuplicate,
-            currentPageId: pageId,
+            destination: {kind: 'nextToSource', source: {parentPageId: pageId}},
             execute: duplicatePage,
             atmosphere,
             navigate
@@ -353,9 +350,7 @@ export const PageDragHandle = Extension.create<Options>({
           canCreateSubPage,
           selection,
           atmosphere,
-          pageId,
-          duplicatePage: this.options.duplicatePage,
-          navigate: this.options.navigate
+          pageId
         }
       })
 

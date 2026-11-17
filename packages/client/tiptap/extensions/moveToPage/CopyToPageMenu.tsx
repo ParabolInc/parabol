@@ -1,8 +1,8 @@
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useDuplicatePageMutation} from '../../../mutations/useDuplicatePageMutation'
 import {GQLID} from '../../../utils/GQLID'
+import {runDuplicatePage} from '../../../utils/runDuplicatePage'
 import type {MoveToPageAnchorRect} from '../../blockMove/openMoveToPageMenu'
-import {runDuplicatePage} from '../pageLinkBlock/runDuplicatePage'
 import {getCopyDragState} from './getCopyDragState'
 import MoveToPageMenu from './MoveToPageMenu'
 
@@ -29,7 +29,7 @@ const CopyToPageMenu = (props: Props) => {
         runDuplicatePage({
           pageCode,
           title,
-          copyTo: {parentPageId: targetId, title: targetTitle},
+          destination: {kind: 'copyTo', parentPageId: targetId, title: targetTitle},
           execute,
           atmosphere,
           navigate

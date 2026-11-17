@@ -6,6 +6,7 @@ import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTap
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
 import getKysely from '../../postgres/getKysely'
+import {insertNewPageAccess} from '../../postgres/insertNewPageAccess'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {publishPageNotification} from '../publishPageNotification'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
@@ -17,33 +18,26 @@ type CreateNewPageOptions = {
   isSyncedBlock?: boolean
   isMeetingTOC?: boolean
   content: TipTapSerializedPageContent
-  yDoc?: Uint8Array
-  sortOrder?: string
   teamId?: string | null
   summaryMeetingId?: string | null
   userId: string
-  isAnnounced?: boolean
 }
 
 export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: string | null) => {
   const {
     content,
-    yDoc: givenYDoc,
-    sortOrder: sortOrderHint,
     parentPageId,
     isDatabase,
     isSyncedBlock,
     isMeetingTOC,
     teamId,
     summaryMeetingId,
-    userId,
-    isAnnounced = true
+    userId
   } = options
 
   const pg = getKysely()
   const yDoc = Buffer.from(
-    givenYDoc ??
-      encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
+    encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
   )
   const {plaintextContent, title} = getPlaintextFromTipTap(content)
 
@@ -56,13 +50,7 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
     isPrivate = parentPage.isPrivate
     ancestorIds = parentPage.ancestorIds.concat(parentPageId)
   } else {
-    sortOrder = await getPageNextSortOrder(
-      sortOrderHint ?? __START__,
-      false,
-      userId,
-      isPrivate,
-      teamId ?? null
-    )
+    sortOrder = await getPageNextSortOrder(__START__, false, userId, isPrivate, teamId ?? null)
   }
 
   const page = await pg
@@ -86,71 +74,14 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
     .executeTakeFirstOrThrow()
   const {id: pageId} = page
 
-  const ownerInsert = pg
-    .insertInto('PageUserAccess')
-    .values({userId, pageId, role: 'owner'})
-    .execute()
-
-  const accessInserts: Promise<unknown>[] = [ownerInsert]
-
-  if (parentPageId) {
-    accessInserts.push(
-      pg
-        .insertInto('PageUserAccess')
-        .columns(['userId', 'pageId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('PageUserAccess')
-            .select((eb) => ['userId', eb.val(pageId).as('pageId'), 'role'])
-            .where('pageId', '=', parentPageId)
-            .where('userId', '!=', userId)
-        )
-        .execute(),
-      pg
-        .insertInto('PageTeamAccess')
-        .columns(['teamId', 'pageId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('PageTeamAccess')
-            .select((eb) => ['teamId', eb.val(pageId).as('pageId'), 'role'])
-            .where('pageId', '=', parentPageId)
-        )
-        .execute(),
-      pg
-        .insertInto('PageOrganizationAccess')
-        .columns(['orgId', 'pageId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('PageOrganizationAccess')
-            .select((eb) => ['orgId', eb.val(pageId).as('pageId'), 'role'])
-            .where('pageId', '=', parentPageId)
-        )
-        .execute(),
-      pg
-        .insertInto('PageExternalAccess')
-        .columns(['email', 'pageId', 'role', 'invitedBy'])
-        .expression((eb) =>
-          eb
-            .selectFrom('PageExternalAccess')
-            .select((eb) => ['email', eb.val(pageId).as('pageId'), 'role', 'invitedBy'])
-            .where('pageId', '=', parentPageId)
-        )
-        .execute()
-    )
-  } else if (teamId) {
-    accessInserts.push(
-      pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
-    )
-  }
+  await insertNewPageAccess(pg, {pageIds: [pageId], ownerId: userId, parentPageId, teamId})
   const dataLoader = getNewDataLoader('createNewPage')
   const operationId = dataLoader.share()
-  await Promise.all(accessInserts)
-
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}
-  if (!isSyncedBlock && isAnnounced) {
+  if (!isSyncedBlock) {
     await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
   }
   dataLoader.dispose()

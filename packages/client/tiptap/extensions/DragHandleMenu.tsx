@@ -1,16 +1,17 @@
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
+import {useNavigate} from 'react-router'
 import {AddToPhotos, ArrowForward, Autorenew, ContentCopy, DeleteOutlined} from '~/ui/icons'
 import type Atmosphere from '../../Atmosphere'
-import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
-import type {DuplicateExecute} from '../../mutations/useDuplicatePageMutation'
+import {useDuplicatePageMutation} from '../../mutations/useDuplicatePageMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON, MenuItem} from '../../ui/Menu/MenuItem'
 import menuSectionTitleClass from '../../ui/Menu/menuSectionTitleClass'
 import {modKey} from '../../utils/platform'
 import plural from '../../utils/plural'
+import {runDuplicatePage} from '../../utils/runDuplicatePage'
 import {canMoveBlockRange, moveBlockRange} from '../blockMove/moveBlocksBy'
 import {openMoveToPageMenu} from '../blockMove/openMoveToPageMenu'
 import {getSelectedBlockRange} from '../blockSelection/blockSelectionState'
@@ -20,8 +21,7 @@ import {deleteBlocks, duplicateBlocks} from './BlockSelection'
 import {CalloutStyleSubMenu} from './callout/CalloutStyleSubMenu'
 import {openCopyToPageMenu} from './moveToPage/openCopyToPageMenu'
 import {findSyncedLinkNear} from './pageLinkBlock/findSyncedLinkNear'
-import {getPageToDuplicate} from './pageLinkBlock/getPageToDuplicate'
-import {runDuplicatePage} from './pageLinkBlock/runDuplicatePage'
+import {getCopyablePage} from './pageLinkBlock/getCopyablePage'
 import {SyncedBlockMenuContent} from './pageLinkBlock/SyncedBlockMenuContent'
 import {getNestedEditor} from './pageLinkBlock/syncedBlockFocus'
 import {
@@ -42,8 +42,6 @@ interface DragHandleMenuProps {
   selection?: {range: BlockRange; count: number} | null
   atmosphere: Atmosphere
   pageId: string
-  duplicatePage: DuplicateExecute
-  navigate: (path: string) => void
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
@@ -56,10 +54,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     canCreateSubPage,
     selection,
     atmosphere,
-    pageId,
-    duplicatePage,
-    navigate
+    pageId
   } = props
+  const [duplicatePage] = useDuplicatePageMutation()
+  const navigate = useNavigate()
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const isCanonicalPageLink = node.type.name === 'pageLinkBlock' && node.attrs.canonical === true
@@ -79,11 +77,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     canCreateSubPage &&
     !turnIntoCurrent &&
     !!getSyncedBlockConversion(editor, getSyncedBlockRange())
-  const linkedPage = selection ? null : getPageToDuplicate(editor.state, {pos})
-  const pageToDuplicate =
-    linkedPage && lookupPageViewerGrant(atmosphere, linkedPage.pageCode) !== null
-      ? linkedPage
-      : null
+  const pageToDuplicate = selection ? null : getCopyablePage(atmosphere, editor.state, {pos})
   const blocks = plural(selection?.count ?? 1, 'block')
   const getMoveRange = () => selection?.range ?? getBlockRange(editor, node, pos)
   const moveRange = showMoveTo ? getMoveRange() : null
@@ -111,7 +105,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
     if (pageToDuplicate) {
       runDuplicatePage({
         ...pageToDuplicate,
-        currentPageId: pageId,
+        destination: {kind: 'nextToSource', source: {parentPageId: pageId}},
         execute: duplicatePage,
         atmosphere,
         navigate

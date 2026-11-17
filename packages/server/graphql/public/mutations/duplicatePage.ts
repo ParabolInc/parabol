@@ -1,9 +1,9 @@
 import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {duplicatePageTree} from '../../../utils/tiptap/duplicatePageTree'
 import type {MutationResolvers} from '../resolverTypes'
-import {getDuplicatePlacement} from './helpers/getDuplicatePlacement'
+import {duplicatePageTree} from './helpers/duplicatePage/duplicatePageTree'
+import {getDuplicatePlacement} from './helpers/duplicatePage/getDuplicatePlacement'
 
 const duplicatePage: MutationResolvers['duplicatePage'] = async (
   _source,
@@ -20,6 +20,11 @@ const duplicatePage: MutationResolvers['duplicatePage'] = async (
   if (!source) throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
   if (source.isMeetingTOC) {
     throw new GraphQLError('Meeting Summaries pages cannot be duplicated', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (source.isSyncedBlock) {
+    throw new GraphQLError('Synced blocks cannot be duplicated', {
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
@@ -46,7 +51,7 @@ const duplicatePage: MutationResolvers['duplicatePage'] = async (
   const placement = await getDuplicatePlacement({
     viewerId,
     source,
-    destinationPageId,
+    destination: destination ?? null,
     dataLoader,
     resourceGrants
   })
@@ -54,6 +59,7 @@ const duplicatePage: MutationResolvers['duplicatePage'] = async (
     viewerId,
     authToken,
     dataLoader,
+    resourceGrants,
     sourcePageId,
     placement,
     mutatorId

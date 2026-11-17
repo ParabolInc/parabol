@@ -2,14 +2,16 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import * as Y from 'yjs'
-import AuthToken from '../../../database/types/AuthToken'
-import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
-import generateUID from '../../../generateUID'
-import getKysely from '../../../postgres/getKysely'
-import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
-import {CipherId} from '../../CipherId'
-import getPubSub from '../../getPubSub'
-import getRedis from '../../getRedis'
+import appOrigin from '../../../../../../appOrigin'
+import AuthToken from '../../../../../../database/types/AuthToken'
+import {getNewDataLoader} from '../../../../../../dataloader/getNewDataLoader'
+import generateUID from '../../../../../../generateUID'
+import getKysely from '../../../../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../../../../postgres/updatePageAccessTable'
+import {CipherId} from '../../../../../../utils/CipherId'
+import getPubSub from '../../../../../../utils/getPubSub'
+import getRedis from '../../../../../../utils/getRedis'
+import {ResourceGrants} from '../../../../ResourceGrants'
 import {duplicatePageTree} from '../duplicatePageTree'
 
 const mockAddedLinks: {documentName: string; payload: unknown}[] = []
@@ -37,21 +39,21 @@ const mockHandleEvent = async (
   return undefined
 }
 
-jest.mock('../../../hocusPocus', () => ({
+jest.mock('../../../../../../hocusPocus', () => ({
   redisHocusPocus: {
     handleEvent: (name: string, documentName: string, payload: unknown, onlyIfOpen?: boolean) =>
       mockHandleEvent(name, documentName, payload, onlyIfOpen)
   }
 }))
-jest.mock('../../publishPageNotification', () => ({
+jest.mock('../../../../../../utils/publishPageNotification', () => ({
   publishPageNotification: async (pageId: number, type: string) => {
     mockSideEffects.push(`${type}:${pageId}`)
   }
 }))
-jest.mock('../../../graphql/mutations/helpers/publishToEmbedder', () => ({
+jest.mock('../../../../../../graphql/mutations/helpers/publishToEmbedder', () => ({
   publishToEmbedder: async () => {}
 }))
-jest.mock('../../../graphql/public/mutations/helpers/hostUserAsset', () => ({
+jest.mock('../../hostUserAsset', () => ({
   hostUserAsset: async (
     parsedUrl: URL,
     _authToken: unknown,
@@ -212,10 +214,21 @@ const duplicate = (
     viewerId,
     authToken,
     dataLoader,
+    resourceGrants: null,
     sourcePageId,
     placement: privatePlacement,
     ...overrides
   })
+
+const placeUnder = async (parentId: number, afterPageCode: number | null = null) => ({
+  kind: 'parent' as const,
+  parent: await pg
+    .selectFrom('Page')
+    .select(['id', 'ancestorIds', 'isPrivate'])
+    .where('id', '=', parentId)
+    .executeTakeFirstOrThrow(),
+  afterPageCode
+})
 
 test('copies a three-level tree and maps canonical links', async () => {
   const {rootId} = await makeThreeLevelTree()
@@ -289,6 +302,30 @@ test('skips sub-pages the viewer has no access to', async () => {
   ])
 }, 30_000)
 
+test('a token with no team or page grants only copies what it can open', async () => {
+  const orgId = `duplicatePageTree|${generateUID()}`
+  await pg.insertInto('Organization').values({id: orgId, name: 'Duplicate Org'}).execute()
+  const rootId = await insertPage(null)
+  const childId = await insertPage(rootId)
+  await pg
+    .insertInto('PageOrganizationAccess')
+    .values({pageId: rootId, orgId, role: 'viewer'})
+    .execute()
+  await setDoc(rootId, [heading('A'), pageLink(childId)])
+  await setDoc(childId, [heading('Private child')])
+  const resourceGrants = new ResourceGrants(viewerId, null, [], null, dataLoader)
+  const before = await countViewerPages()
+
+  const copy = await duplicate(rootId, {resourceGrants})
+
+  expect(await countViewerPages()).toBe(before + 1)
+  expect(await readLinks(copy.id)).toEqual([
+    {pageCode: CipherId.encrypt(childId), canonical: false}
+  ])
+  await pg.deleteFrom('PageOrganizationAccess').where('orgId', '=', orgId).execute()
+  await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
+}, 30_000)
+
 test('skips trashed and synced-block descendants', async () => {
   const rootId = await insertPage(null)
   const trashedId = await insertPage(rootId, {isTrashed: true})
@@ -341,10 +378,10 @@ test('keeps database rows', async () => {
 test('re-hosts page-scoped images', async () => {
   const rootId = await insertPage(null)
   const sourceCode = CipherId.encrypt(rootId)
-  const userScopedSrc = `https://example.com/assets/User/${viewerId}/assets/avatar.png`
+  const userScopedSrc = `${appOrigin}/assets/User/${viewerId}/assets/avatar.png`
   await setDoc(rootId, [
     heading('A'),
-    image(`https://example.com/assets/Page/${sourceCode}/assets/pic.png`),
+    image(`${appOrigin}/assets/Page/${sourceCode}/assets/pic.png`),
     image(userScopedSrc)
   ])
 
@@ -354,7 +391,7 @@ test('re-hosts page-scoped images', async () => {
     .filter((node) => node.type === 'imageBlock')
     .map((node) => node.attrs?.src)
   expect(srcs).toEqual([
-    `https://example.com/assets/Page/${CipherId.encrypt(copy.id)}/assets/pic.png`,
+    `${appOrigin}/assets/Page/${CipherId.encrypt(copy.id)}/assets/pic.png`,
     userScopedSrc
   ])
 }, 30_000)
@@ -368,16 +405,11 @@ test('places after the source link', async () => {
   await setDoc(childId, [heading('B')])
 
   const copy = await duplicate(sourceId, {
-    placement: {kind: 'parent', parentPageId: parentId, afterPageCode: CipherId.encrypt(sourceId)}
+    placement: await placeUnder(parentId, CipherId.encrypt(sourceId))
   })
 
   expect(copy.parentPageId).toBe(parentId)
-  const [childCopy] = await selectChildren(copy.id)
-  expect(mockSideEffects).toEqual([
-    'addCanonicalPageLink',
-    `CreatePagePayload:${copy.id}`,
-    `CreatePagePayload:${childCopy!.id}`
-  ])
+  expect(mockSideEffects).toEqual(['addCanonicalPageLink', `CreatePagePayload:${copy.id}`])
   expect(mockAddedLinks).toEqual([
     {
       documentName: CipherId.toClient(parentId, 'page'),
@@ -398,39 +430,45 @@ test('refuses trees over the cap', async () => {
   const before = await countViewerPages()
 
   await expect(duplicate(rootId, {maxPages: 2})).rejects.toThrow(
-    'This page has more than 500 pages inside it. Copy a smaller part of it.'
+    'This page has more than 2 pages inside it. Copy a smaller part of it.'
   )
   expect(await countViewerPages()).toBe(before)
 }, 30_000)
 
-test('cleans up when a later step fails', async () => {
-  const parentId = await insertPage(null)
-  const {rootId} = await makeThreeLevelTree()
-  await setDoc(parentId, [heading('Parent')])
-  mockAddLinkError = new Error('Parent doc unavailable')
-  const before = await countViewerPages()
-
-  await expect(
-    duplicate(rootId, {placement: {kind: 'parent', parentPageId: parentId, afterPageCode: null}})
-  ).rejects.toThrow('Parent doc unavailable')
-  expect(mockSideEffects).toEqual(['addCanonicalPageLink'])
-  expect(await countViewerPages()).toBe(before)
-}, 30_000)
-
-test('keeps the copies when placing the link times out', async () => {
+test('keeps the copies when linking them into the parent fails', async () => {
   const parentId = await insertPage(null)
   const {rootId} = await makeThreeLevelTree()
   await setDoc(parentId, [heading('Parent')])
   mockAddLinkError = new Error('TIMEOUT')
   const before = await countViewerPages()
 
-  const copy = await duplicate(rootId, {
-    placement: {kind: 'parent', parentPageId: parentId, afterPageCode: null}
-  })
+  const copy = await duplicate(rootId, {placement: await placeUnder(parentId)})
 
   expect(copy.parentPageId).toBe(parentId)
   expect(await countViewerPages()).toBe(before + 3)
   expect(mockSideEffects).toContain(`CreatePagePayload:${copy.id}`)
+}, 30_000)
+
+test('skips sub-pages outside the token grant', async () => {
+  const rootId = await insertPage(null)
+  const childId = await insertPage(rootId)
+  await setDoc(rootId, [heading('A'), pageLink(childId)])
+  await setDoc(childId, [heading('Not granted')])
+  const resourceGrants = new ResourceGrants(
+    viewerId,
+    [],
+    [],
+    [CipherId.toClient(rootId, 'page')],
+    dataLoader
+  )
+  const before = await countViewerPages()
+
+  const copy = await duplicate(rootId, {resourceGrants})
+
+  expect(await countViewerPages()).toBe(before + 1)
+  expect(await readLinks(copy.id)).toEqual([
+    {pageCode: CipherId.encrypt(childId), canonical: false}
+  ])
 }, 30_000)
 
 test('reads closed pages from the database without saving them', async () => {

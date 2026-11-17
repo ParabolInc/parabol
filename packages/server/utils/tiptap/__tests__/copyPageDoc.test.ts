@@ -2,6 +2,7 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import * as Y from 'yjs'
+import appOrigin from '../../../appOrigin'
 import {copyPageDoc} from '../copyPageDoc'
 import {getPageScopedAssetSrcs} from '../getPageScopedAssetSrcs'
 
@@ -81,8 +82,8 @@ describe('copyPageDoc', () => {
     ).toEqual([{pageCode: 13, canonical: false}])
   })
   test('rewrites page-scoped asset srcs', () => {
-    const src = 'https://localhost:3000/assets/Page/11/assets/a.png'
-    const hosted = 'https://localhost:3000/assets/Page/99/assets/a.png'
+    const src = `${appOrigin}/assets/Page/11/assets/a.png`
+    const hosted = `${appOrigin}/assets/Page/99/assets/a.png`
     const source = makeDoc([heading('Plan'), image(src)])
     expect(
       readImageSrcs(
@@ -109,13 +110,13 @@ describe('copyPageDoc', () => {
     ).toEqual({c1: 'Alpha'})
   })
   test('getPageScopedAssetSrcs only returns this page’s uploads', () => {
-    const mine = 'https://localhost:3000/assets/Page/11/assets/a.png'
-    const team = 'https://localhost:3000/assets/Team/t1/assets/b.png'
+    const mine = `${appOrigin}/assets/Page/11/assets/a.png`
+    const team = `${appOrigin}/assets/Team/t1/assets/b.png`
     expect(getPageScopedAssetSrcs(makeDoc([image(mine), image(team)]), 11)).toEqual([mine])
   })
   test('copies a link card’s hosted thumbnail', () => {
-    const thumbnail = 'https://localhost:3000/assets/Page/11/assets/card.png'
-    const hosted = 'https://localhost:3000/assets/Page/99/assets/card.png'
+    const thumbnail = `${appOrigin}/assets/Page/11/assets/card.png`
+    const hosted = `${appOrigin}/assets/Page/99/assets/card.png`
     const card: JSONContent = {
       type: 'embedBlock',
       attrs: {url: 'https://example.com', thumbnailUrl: thumbnail}

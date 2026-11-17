@@ -1,13 +1,13 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {__START__, positionBetween} from 'parabol-client/shared/sortOrder'
-import {getNewDataLoader} from '../../../../../dataloader/getNewDataLoader'
-import generateUID from '../../../../../generateUID'
-import getKysely from '../../../../../postgres/getKysely'
-import {updatePageAccessTable} from '../../../../../postgres/updatePageAccessTable'
-import {CipherId} from '../../../../../utils/CipherId'
-import getPubSub from '../../../../../utils/getPubSub'
-import getRedis from '../../../../../utils/getRedis'
-import {ResourceGrants} from '../../../ResourceGrants'
+import {getNewDataLoader} from '../../../../../../dataloader/getNewDataLoader'
+import generateUID from '../../../../../../generateUID'
+import getKysely from '../../../../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../../../../postgres/updatePageAccessTable'
+import {CipherId} from '../../../../../../utils/CipherId'
+import getPubSub from '../../../../../../utils/getPubSub'
+import getRedis from '../../../../../../utils/getRedis'
+import {ResourceGrants} from '../../../../ResourceGrants'
 import {getDuplicatePlacement} from '../getDuplicatePlacement'
 
 const pg = getKysely()
@@ -71,7 +71,7 @@ const makePage = async ({
   return {id, parentPageId, teamId, isPrivate, userId, sortOrder}
 }
 
-const place = (
+const place = async (
   source: Awaited<ReturnType<typeof makePage>>,
   destinationPageId: number | null = null,
   grantedPageIds: number[] | null = null
@@ -86,7 +86,19 @@ const place = (
         dataLoader
       )
     : null
-  return getDuplicatePlacement({viewerId, source, destinationPageId, dataLoader, resourceGrants})
+  const destination = destinationPageId
+    ? await pg
+        .selectFrom('Page')
+        .select(['id', 'ancestorIds', 'isPrivate'])
+        .where('id', '=', destinationPageId)
+        .executeTakeFirstOrThrow()
+    : null
+  return getDuplicatePlacement({viewerId, source, destination, dataLoader, resourceGrants})
+}
+
+const expectTopOfPrivate = (placement: Awaited<ReturnType<typeof place>>) => {
+  expect(placement.kind).toBe('private')
+  expect(placement.kind === 'private' && placement.sortOrder).not.toBe(__START__)
 }
 
 beforeAll(async () => {
@@ -131,9 +143,9 @@ test('explicit destination wins', async () => {
   const parent = await makePage({viewerRole: 'editor'})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
   const destination = await makePage({viewerRole: 'editor'})
-  expect(await place(source, destination.id)).toEqual({
+  expect(await place(source, destination.id)).toMatchObject({
     kind: 'parent',
-    parentPageId: destination.id,
+    parent: {id: destination.id},
     afterPageCode: null
   })
 })
@@ -141,9 +153,9 @@ test('explicit destination wins', async () => {
 test('editable parent -> after the source link', async () => {
   const parent = await makePage({viewerRole: 'editor'})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
-  expect(await place(source)).toEqual({
+  expect(await place(source)).toMatchObject({
     kind: 'parent',
-    parentPageId: parent.id,
+    parent: {id: parent.id},
     afterPageCode: CipherId.encrypt(source.id)
   })
 })
@@ -151,21 +163,21 @@ test('editable parent -> after the source link', async () => {
 test('read-only parent -> top of Private', async () => {
   const parent = await makePage({viewerRole: 'viewer'})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'viewer'})
-  expect(await place(source)).toEqual({kind: 'private', sortOrder: __START__})
+  expectTopOfPrivate(await place(source))
 })
 
 test('parent not granted to the token -> top of Private', async () => {
   const parent = await makePage({viewerRole: 'editor'})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
-  expect(await place(source, null, [source.id])).toEqual({kind: 'private', sortOrder: __START__})
+  expectTopOfPrivate(await place(source, null, [source.id]))
 })
 
 test('parent granted to the token -> after the source link', async () => {
   const parent = await makePage({viewerRole: 'editor'})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
-  expect(await place(source, null, [source.id, parent.id])).toEqual({
+  expect(await place(source, null, [source.id, parent.id])).toMatchObject({
     kind: 'parent',
-    parentPageId: parent.id,
+    parent: {id: parent.id},
     afterPageCode: CipherId.encrypt(source.id)
   })
 })
@@ -173,13 +185,13 @@ test('parent granted to the token -> after the source link', async () => {
 test('trashed parent -> top of Private', async () => {
   const parent = await makePage({viewerRole: 'editor', isTrashed: true})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
-  expect(await place(source)).toEqual({kind: 'private', sortOrder: __START__})
+  expectTopOfPrivate(await place(source))
 })
 
 test('meeting summary -> top of Private', async () => {
   const parent = await makePage({viewerRole: 'editor', isMeetingTOC: true})
   const source = await makePage({parentPageId: parent.id, viewerRole: 'editor'})
-  expect(await place(source)).toEqual({kind: 'private', sortOrder: __START__})
+  expectTopOfPrivate(await place(source))
 })
 
 test('own team top-level -> same team, just after source', async () => {
@@ -196,7 +208,7 @@ test('own team top-level -> same team, just after source', async () => {
 
 test('other team top-level -> top of Private', async () => {
   const source = await makePage({teamId: otherTeamId, viewerRole: 'editor'})
-  expect(await place(source)).toEqual({kind: 'private', sortOrder: __START__})
+  expectTopOfPrivate(await place(source))
 })
 
 test('own private top-level -> just after source', async () => {

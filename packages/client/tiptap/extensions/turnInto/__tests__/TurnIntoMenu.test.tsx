@@ -15,6 +15,10 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
 }))
 jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
 jest.mock('../../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
+jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('../../../../mutations/useDuplicatePageMutation', () => ({
+  useDuplicatePageMutation: () => [jest.fn(), false]
+}))
 jest.mock('../../../../hooks/usePageViewerAccess', () => ({lookupPageViewerGrant: () => undefined}))
 
 type Json = Record<string, unknown>
@@ -99,8 +103,6 @@ const openMenu = async (
         canCreateSubPage={canCreateSubPage}
         atmosphere={{} as Atmosphere}
         pageId='page:1'
-        duplicatePage={jest.fn()}
-        navigate={jest.fn()}
       />
     )
     await tick()

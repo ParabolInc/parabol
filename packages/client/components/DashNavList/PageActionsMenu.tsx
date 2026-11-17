@@ -9,12 +9,11 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDuplicatePageMutation} from '../../mutations/useDuplicatePageMutation'
 import type {MoveToPageAnchorRect} from '../../tiptap/blockMove/openMoveToPageMenu'
 import CopyToPageMenu from '../../tiptap/extensions/moveToPage/CopyToPageMenu'
-import {runDuplicatePage} from '../../tiptap/extensions/pageLinkBlock/runDuplicatePage'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {GQLID} from '../../utils/GQLID'
-import {getSidebarDuplicateLanding} from './getSidebarDuplicateLanding'
+import {runDuplicatePage} from '../../utils/runDuplicatePage'
 import {PageActionsTrigger} from './PageActionsTrigger'
 import {useArchivePageWithUndo} from './useArchivePageWithUndo'
 
@@ -45,7 +44,7 @@ export const PageActionsMenu = (props: Props) => {
     runDuplicatePage({
       pageCode,
       title: title ?? '',
-      resolveLanding: (copy) => getSidebarDuplicateLanding({parentPageId, isPrivate}, copy),
+      destination: {kind: 'nextToSource', source: {parentPageId, isPrivate}},
       execute: executeDuplicate,
       atmosphere,
       navigate
