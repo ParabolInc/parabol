@@ -122,7 +122,9 @@ const getOAuthAccessTokenGrant = async (
   }
   return {
     userId,
-    scopes: (accessToken.scope ?? []).filter((scope) => grant.scopes.includes(scope)),
+    scopes: (accessToken.scope ?? []).filter(
+      (scope) => grant.scopes.includes(scope) && provider.scopes.includes(scope)
+    ),
     aud: 'action-oauth2',
     clientId,
     grantId: grant.id,

@@ -29,8 +29,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('scopes', sql`"OAuthScopeEnum"[]`, (col) => col.notNull())
     .addColumn('grantedOrgIds', sql`varchar(100)[]`)
-    .addColumn('refreshTokenHash', 'varchar(64)', (col) => col.notNull())
-    .addColumn('refreshTokenExpiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn('lastUsedAt', 'timestamptz')
     .addColumn('revokedAt', 'timestamptz')
@@ -41,9 +39,26 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on('OAuthAPIGrant')
     .column('userId')
     .execute()
+  await db.schema
+    .createTable('OAuthAPIRefreshToken')
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('grantId', 'integer', (col) =>
+      col.notNull().references('OAuthAPIGrant.id').onDelete('cascade')
+    )
+    .addColumn('tokenHash', 'varchar(64)', (col) => col.notNull().unique())
+    .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
+    .addColumn('rotatedAt', 'timestamptz')
+    .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
+    .execute()
+  await db.schema
+    .createIndex('idx_OAuthAPIRefreshToken_grantId')
+    .on('OAuthAPIRefreshToken')
+    .column('grantId')
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable('OAuthAPIRefreshToken').execute()
   await db.schema.dropTable('OAuthAPIGrant').execute()
   await db.schema.alterTable('OAuthAPICode').dropColumn('resource').execute()
   await db.deleteFrom('OAuthAPIProvider').where('clientType', '=', 'public').execute()
