@@ -4,10 +4,8 @@ import {sendPublic, signUp} from './common'
 const START_CHECK_IN = `
   mutation StartCheckIn($teamId: ID!) {
     startCheckIn(teamId: $teamId) {
-      ... on StartCheckInSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -16,9 +14,6 @@ const START_CHECK_IN = `
 const ADD_AGENDA_ITEM = `
   mutation AddAgendaItem($newAgendaItem: CreateAgendaItemInput!) {
     addAgendaItem(newAgendaItem: $newAgendaItem) {
-      error {
-        message
-      }
       agendaItem {
         meetingId
         teamMember {
@@ -93,7 +88,7 @@ test('an agenda item cannot be attributed to a member of another team', async ()
   expect(res.errors).toEqual([
     expect.objectContaining({extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})})
   ])
-  expect(res.data.addAgendaItem).toBeNull()
+  expect(res.data).toBeNull()
 })
 
 test('a team member adds an agenda item to their own check-in', async () => {
@@ -104,7 +99,6 @@ test('a team member adds an agenda item to their own check-in', async () => {
 
   expect(res.errors).toBeUndefined()
   expect(res.data.addAgendaItem).toEqual({
-    error: null,
     agendaItem: {meetingId, teamMember: {userId: owner.userId}}
   })
   expect(await getAgendaItems(meetingId, owner.cookie)).toEqual([{content: 'Hiring plan'}])
@@ -117,7 +111,6 @@ test('a team member queues an agenda item before any meeting starts', async () =
 
   expect(res.errors).toBeUndefined()
   expect(res.data.addAgendaItem).toEqual({
-    error: null,
     agendaItem: {meetingId: null, teamMember: {userId: owner.userId}}
   })
 })

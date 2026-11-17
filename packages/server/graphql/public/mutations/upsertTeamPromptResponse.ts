@@ -85,7 +85,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'UpsertTeamPromptResponseSuccess',
+      'UpsertTeamPromptResponsePayload',
       data,
       subOptions
     )

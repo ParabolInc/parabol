@@ -1,4 +1,9 @@
 """
-Return value for toggleFeatureFlag mutation
+Success result for toggleFeatureFlag mutation
 """
-union ToggleFeatureFlagPayload = ErrorPayload | ToggleFeatureFlagSuccess
+type ToggleFeatureFlagPayload {
+  """
+  The feature flag that was toggled
+  """
+  featureFlag: OwnedFeatureFlag!
+}

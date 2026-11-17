@@ -1,4 +1,6 @@
-"""
-Return value for requestToJoinDomain, which could be an error
-"""
-union RequestToJoinDomainPayload = ErrorPayload | RequestToJoinDomainSuccess
+type RequestToJoinDomainPayload {
+  """
+  Was the request created successfully
+  """
+  success: Boolean!
+}

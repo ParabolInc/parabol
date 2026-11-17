@@ -14,14 +14,7 @@ test('a paid user can upload a file of the maximum allowed size', async () => {
     query: `
       mutation UploadUserAssetMutation($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
         uploadUserAsset(file: $file, scope: $scope, scopeKey: $scopeKey) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on UploadUserAssetSuccess {
-            size
-          }
+          size
         }
       }
     `,

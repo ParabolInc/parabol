@@ -1,6 +1,0 @@
-type MovePokerTemplateScaleValueSuccess {
-  """
-  The scale after values are moved
-  """
-  scale: TemplateScale!
-}

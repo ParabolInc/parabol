@@ -7,10 +7,8 @@ const startRetro = async (teamId: string, cookie: string) => {
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!) {
         startRetrospective(teamId: $teamId) {
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-            }
+          meeting {
+            id
           }
         }
       }
@@ -66,9 +64,6 @@ test('a task from a retro topic whose reflection group no longer exists still lo
     query: `
       mutation CreateTaskMutation($newTask: CreateTaskInput!) {
         createTask(newTask: $newTask) {
-          error {
-            message
-          }
           task {
             id
           }
@@ -78,7 +73,7 @@ test('a task from a retro topic whose reflection group no longer exists still lo
     variables: {newTask: {teamId, userId, meetingId, discussionId, status: 'active'}},
     cookie
   })
-  expect(created.data.createTask.error).toBeNull()
+  expect(created.errors).toBeUndefined()
   const taskId = created.data.createTask.task.id
 
   const res = await sendPublic({

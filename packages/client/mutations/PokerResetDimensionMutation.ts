@@ -4,7 +4,7 @@ import type {PokerResetDimensionMutation as TPokerResetDimensionMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment PokerResetDimensionMutation_meeting on PokerResetDimensionSuccess {
+  fragment PokerResetDimensionMutation_meeting on PokerResetDimensionPayload {
     stage {
       isVoting
       scores {
@@ -20,11 +20,6 @@ graphql`
 const mutation = graphql`
   mutation PokerResetDimensionMutation($meetingId: ID!, $stageId: ID!) {
     pokerResetDimension(meetingId: $meetingId, stageId: $stageId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PokerResetDimensionMutation_meeting @relay(mask: false) @alias
     }
   }

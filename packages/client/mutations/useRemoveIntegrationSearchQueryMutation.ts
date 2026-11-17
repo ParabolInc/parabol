@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useRemoveIntegrationSearchQueryMutation_notification on RemoveIntegrationSearchQuerySuccess {
+  fragment useRemoveIntegrationSearchQueryMutation_notification on RemoveIntegrationSearchQueryPayload {
     service {
       ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
     }

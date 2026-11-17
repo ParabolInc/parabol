@@ -1,4 +1,9 @@
 """
-Return object for VoteForPokerStoryPayload
+Success result for voteForPokerStory mutation
 """
-union VoteForPokerStoryPayload = ErrorPayload | VoteForPokerStorySuccess
+type VoteForPokerStoryPayload {
+  """
+  The stage that holds the updated scores
+  """
+  stage: EstimateStage!
+}

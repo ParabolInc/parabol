@@ -1,12 +1,9 @@
 import type {RenamePokerTemplateDimensionPayloadResolvers} from '../resolverTypes'
 
-export type RenamePokerTemplateDimensionPayloadSource =
-  | {dimensionId: string}
-  | {error: {message: string}}
+export type RenamePokerTemplateDimensionPayloadSource = {dimensionId: string}
 
 const RenamePokerTemplateDimensionPayload: RenamePokerTemplateDimensionPayloadResolvers = {
   dimension: (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
     return dataLoader.get('templateDimensions').loadNonNull(source.dimensionId)
   }
 }

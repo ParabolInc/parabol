@@ -16,9 +16,6 @@ graphql`
 const mutation = graphql`
   mutation SetNotificationStatusMutation($notificationId: ID!, $status: NotificationStatusEnum!) {
     setNotificationStatus(notificationId: $notificationId, status: $status) {
-      error {
-        message
-      }
       ...SetNotificationStatusMutation_notification @relay(mask: false)
     }
   }

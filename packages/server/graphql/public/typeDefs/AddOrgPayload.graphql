@@ -7,8 +7,6 @@ type AddOrgPayload {
   """
   organization: Organization
 
-  error: StandardMutationError
-
   """
   The first team created inside the new organization. Every new org starts with exactly one team.
   """

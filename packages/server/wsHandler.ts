@@ -167,8 +167,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as
       | {
+          fieldName?: string
           AuthTokenPayload?: {id: string}
-          InvalidateSessionsPayload?: any
         }
       | undefined
     const jwt = notificationSub?.AuthTokenPayload?.id
@@ -183,7 +183,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
           resubscribe[key]!()
         })
       }, 1000)
-    } else if (notificationSub?.InvalidateSessionsPayload) {
+    } else if (notificationSub?.fieldName === 'InvalidateSessionsPayload') {
+      // keyed on fieldName so a payload that fails to resolve, like a hard-deleted user's, still ends the session
       throw new GraphQLError('Session invalidated', {
         extensions: {
           code: 'SESSION_INVALIDATED'

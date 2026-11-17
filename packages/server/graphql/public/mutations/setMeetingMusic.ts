@@ -16,7 +16,7 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
     isPlaying: !!isPlaying
   }
 
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetMeetingMusicSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetMeetingMusicPayload', data, subOptions)
 
   return data
 }

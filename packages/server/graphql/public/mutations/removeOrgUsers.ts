@@ -102,20 +102,20 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
   })
 
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUsersSuccess', data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUsersPayload', data, subOptions)
 
   data.affectedTeamIds.forEach((teamId) => {
-    publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUsersSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUsersPayload', data, subOptions)
   })
 
   removedUsers.forEach(({userId}) => {
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUsersSuccess', data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUsersPayload', data, subOptions)
   })
 
   data.removedTeamMemberIds.map(async (removedTeamMemberId) => {
     const teamMember = await dataLoader.get('teamMembers').load(removedTeamMemberId)
     if (!teamMember) return
-    publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUsersSuccess', data, subOptions)
+    publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUsersPayload', data, subOptions)
   })
 
   return data

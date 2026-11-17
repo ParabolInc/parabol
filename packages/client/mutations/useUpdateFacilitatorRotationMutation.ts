@@ -8,7 +8,7 @@ import type {OnNextHandler} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useUpdateFacilitatorRotationMutation_team on UpdateFacilitatorRotationSuccess {
+  fragment useUpdateFacilitatorRotationMutation_team on UpdateFacilitatorRotationPayload {
     team {
       id
       autoAssignFacilitator
@@ -26,7 +26,7 @@ graphql`
 `
 
 graphql`
-  fragment useUpdateFacilitatorRotationMutation_meeting on UpdateFacilitatorRotationSuccess {
+  fragment useUpdateFacilitatorRotationMutation_meeting on UpdateFacilitatorRotationPayload {
     meeting {
       facilitatorUserId
       facilitator {

@@ -39,9 +39,6 @@ graphql`
 const mutation = graphql`
   mutation ResetRetroMeetingToGroupStageMutation($meetingId: ID!) {
     resetRetroMeetingToGroupStage(meetingId: $meetingId) {
-      error {
-        message
-      }
       ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
     }
   }

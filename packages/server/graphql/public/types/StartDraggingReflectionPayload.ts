@@ -7,17 +7,18 @@ type RemoteDrag = {
   isSpotlight?: boolean | null
 }
 
-export type StartDraggingReflectionPayloadSource =
-  | {teamId: string; meetingId: string; reflectionId: string; remoteDrag: RemoteDrag}
-  | {error: {message: string}}
+export type StartDraggingReflectionPayloadSource = {
+  teamId: string
+  meetingId: string
+  reflectionId: string
+  remoteDrag: RemoteDrag
+}
 
 const StartDraggingReflectionPayload: StartDraggingReflectionPayloadResolvers = {
   meeting: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
     return (await dataLoader.get('newMeetings').load(source.meetingId)) ?? null
   },
   reflection: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
     return (await dataLoader.get('retroReflections').load(source.reflectionId)) ?? null
   }
 }

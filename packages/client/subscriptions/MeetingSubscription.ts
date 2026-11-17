@@ -33,64 +33,64 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       fieldName
-      AddTranscriptionBotSuccess {
+      AddTranscriptionBotPayload {
         ...AddTranscriptionBotMutation_meeting
       }
-      AutogroupSuccess {
+      AutogroupPayload {
         ...AutogroupMutation_meeting @relay(mask: false)
       }
-      ResetReflectionGroupsSuccess {
+      ResetReflectionGroupsPayload {
         ...ResetReflectionGroupsMutation_meeting @relay(mask: false)
       }
-      AcceptSuggestedGroupsSuccess {
+      AcceptSuggestedGroupsPayload {
         ...useAcceptSuggestedGroupsMutation_meeting @relay(mask: false)
       }
-      UngroupReflectionSuccess {
+      UngroupReflectionPayload {
         ...UngroupReflectionMutation_meeting @relay(mask: false)
       }
-      SuggestedGroupsSuccess {
+      SuggestedGroupsPayload {
         ...useGenerateSuggestedGroupsMutation_meeting @relay(mask: false)
       }
-      SetTaskEstimateSuccess {
+      SetTaskEstimatePayload {
         ...SetTaskEstimateMutation_meeting @relay(mask: false)
       }
-      SetPokerSpectateSuccess {
+      SetPokerSpectatePayload {
         ...SetPokerSpectateMutation_team @relay(mask: false)
       }
-      JoinMeetingSuccess {
+      JoinMeetingPayload {
         ...JoinMeetingMutation_meeting @relay(mask: false)
       }
-      PokerAnnounceDeckHoverSuccess {
+      PokerAnnounceDeckHoverPayload {
         ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
       }
-      PokerResetDimensionSuccess {
+      PokerResetDimensionPayload {
         ...PokerResetDimensionMutation_meeting @relay(mask: false)
       }
-      PokerRevealVotesSuccess {
+      PokerRevealVotesPayload {
         ...PokerRevealVotesMutation_meeting @relay(mask: false)
       }
-      VoteForPokerStorySuccess {
+      VoteForPokerStoryPayload {
         ...VoteForPokerStoryMutation_meeting @relay(mask: false)
       }
-      AddReactjiToReactableSuccess {
+      AddReactjiToReactablePayload {
         ...AddReactjiToReactableMutation_meeting @relay(mask: false)
       }
-      AddCommentSuccess {
+      AddCommentPayload {
         ...AddCommentMutation_meeting @relay(mask: false)
       }
-      CreatePollSuccess {
+      CreatePollPayload {
         ...CreatePollMutation_meeting @relay(mask: false)
       }
       CreateReflectionPayload {
         ...CreateReflectionMutation_meeting @relay(mask: false)
       }
-      DeleteCommentSuccess {
+      DeleteCommentPayload {
         ...DeleteCommentMutation_meeting @relay(mask: false)
       }
       DragDiscussionTopicPayload {
         ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       }
-      EditCommentingSuccess {
+      EditCommentingPayload {
         ...EditCommentingMutation_meeting @relay(mask: false)
       }
       EditReflectionPayload {
@@ -99,19 +99,19 @@ const subscription = graphql`
       EndDraggingReflectionPayload {
         ...EndDraggingReflectionMutation_meeting @relay(mask: false)
       }
-      EndRetrospectiveSuccess {
+      EndRetrospectivePayload {
         ...EndRetrospectiveMutation_meeting @relay(mask: false)
       }
-      EndTeamPromptSuccess {
+      EndTeamPromptPayload {
         ...EndTeamPromptMutation_meeting @relay(mask: false)
       }
-      EndTeamHealthSuccess {
+      EndTeamHealthPayload {
         ...useEndTeamHealthMutation_meeting @relay(mask: false)
       }
-      FlagReadyToAdvanceSuccess {
+      FlagReadyToAdvancePayload {
         ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       }
-      UpdateFacilitatorRotationSuccess {
+      UpdateFacilitatorRotationPayload {
         ...useUpdateFacilitatorRotationMutation_meeting @relay(mask: false)
       }
       RemoveReflectionPayload {
@@ -120,7 +120,7 @@ const subscription = graphql`
       ResetRetroMeetingToGroupStagePayload {
         ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
       }
-      RevealTeamHealthVotesSuccess {
+      RevealTeamHealthVotesPayload {
         ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
       }
       SetPhaseFocusPayload {
@@ -129,37 +129,37 @@ const subscription = graphql`
       SetStageTimerPayload {
         ...SetStageTimerMutation_meeting @relay(mask: false)
       }
-      SetTeamHealthVoteSuccess {
+      SetTeamHealthVotePayload {
         ...SetTeamHealthVoteMutation_meeting @relay(mask: false)
       }
-      DragEstimatingTaskSuccess {
+      DragEstimatingTaskPayload {
         ...DragEstimatingTaskMutation_meeting @relay(mask: false)
       }
-      DragTeamHealthResultStageSuccess {
+      DragTeamHealthResultStagePayload {
         ...useDragTeamHealthResultStageMutation_meeting @relay(mask: false)
       }
-      SetTeamHealthResponseSuccess {
+      SetTeamHealthResponsePayload {
         ...useSetTeamHealthResponseMutation_meeting @relay(mask: false)
       }
-      SetTeamHealthSpectateSuccess {
+      SetTeamHealthSpectatePayload {
         ...useSetTeamHealthSpectateMutation_meeting @relay(mask: false)
       }
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)
       }
-      TeamHealthCategorySummarySuccess {
+      TeamHealthCategorySummaryPayload {
         stage {
           id
           ...TeamHealthResultCard_stage
         }
       }
-      SetMeetingMusicSuccess {
+      SetMeetingMusicPayload {
         ...SetMeetingMusicMutation_meeting @relay(mask: false)
       }
-      SetTaskHighlightSuccess {
+      SetTaskHighlightPayload {
         ...SetTaskHighlightMutation_meeting @relay(mask: false)
       }
-      UpdateCommentContentSuccess {
+      UpdateCommentContentPayload {
         ...UpdateCommentContentMutation_meeting @relay(mask: false)
       }
       UpdateNewCheckInQuestionPayload {
@@ -168,7 +168,7 @@ const subscription = graphql`
       UpdateDragLocationPayload {
         ...UpdateDragLocationMutation_meeting @relay(mask: false)
       }
-      UpdatePokerScopeSuccess {
+      UpdatePokerScopePayload {
         ...useUpdatePokerScopeMutation_meeting @relay(mask: false)
       }
       UpdateReflectionContentPayload {
@@ -177,19 +177,19 @@ const subscription = graphql`
       UpdateReflectionGroupTitlePayload {
         ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
       }
-      UpdateRetroMaxVotesSuccess {
+      UpdateRetroMaxVotesPayload {
         ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       }
-      UpdateMeetingTemplateSuccess {
+      UpdateMeetingTemplatePayload {
         ...useUpdateMeetingTemplateMutation_meeting @relay(mask: false)
       }
       VoteForReflectionGroupPayload {
         ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
       }
-      UpsertTeamPromptResponseSuccess {
+      UpsertTeamPromptResponsePayload {
         ...useUpsertTeamPromptResponseMutation_meeting @relay(mask: false)
       }
-      ShareTeamPromptResponsesSuccess {
+      ShareTeamPromptResponsesPayload {
         ...useShareTeamPromptResponsesMutation_meeting @relay(mask: false)
       }
     }
@@ -197,29 +197,29 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
-  AcceptSuggestedGroupsSuccess: acceptSuggestedGroupsMeetingOnNext,
+  AcceptSuggestedGroupsPayload: acceptSuggestedGroupsMeetingOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
-  UpdateFacilitatorRotationSuccess: updateFacilitatorRotationMeetingOnNext
+  UpdateFacilitatorRotationPayload: updateFacilitatorRotationMeetingOnNext
 } as const
 
 const updateHandlers = {
-  CreatePollSuccess: createPollMeetingUpdater,
-  AddCommentSuccess: addCommentMeetingUpdater,
+  CreatePollPayload: createPollMeetingUpdater,
+  AddCommentPayload: addCommentMeetingUpdater,
   CreateReflectionPayload: createReflectionMeetingUpdater,
-  DeleteCommentSuccess: deleteCommentMeetingUpdater,
+  DeleteCommentPayload: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
-  JoinMeetingSuccess: joinMeetingMeetingUpdater,
+  JoinMeetingPayload: joinMeetingMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
-  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
-  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseMeetingUpdater,
-  ShareTeamPromptResponsesSuccess: shareTeamPromptResponsesMeetingUpdater,
-  SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater,
-  SuggestedGroupsSuccess: suggestedGroupsMeetingUpdater
+  PokerAnnounceDeckHoverPayload: pokerAnnounceDeckHoverMeetingUpdater,
+  UpsertTeamPromptResponsePayload: upsertTeamPromptResponseMeetingUpdater,
+  ShareTeamPromptResponsesPayload: shareTeamPromptResponsesMeetingUpdater,
+  SetMeetingMusicPayload: setMeetingMusicMeetingUpdater,
+  SuggestedGroupsPayload: suggestedGroupsMeetingUpdater
 } as const
 
 const invalidator = (environment: Atmosphere, variables: MeetingSubscription$variables) => {

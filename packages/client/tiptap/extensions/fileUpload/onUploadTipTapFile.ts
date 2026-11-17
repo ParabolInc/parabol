@@ -84,14 +84,13 @@ export const onUploadTipTapFile =
         uploadables: {file: file},
         onError: (error) => failUpload(getMutationError(error).message),
         onCompleted: (res, errors) => {
-          const {uploadUserAsset} = res
-          const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
+          const message = errors?.[0]?.message
           if (message) {
             failUpload(message)
             return
           }
           const {state, view} = editor
-          const src = uploadUserAsset!.url!
+          const src = res.uploadUserAsset.url
           state.doc.descendants((node, pos) => {
             if (node.type.name === nodeType && node.attrs.src === localSrc) {
               const tr = state.tr

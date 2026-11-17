@@ -24,9 +24,6 @@ graphql`
 const mutation = graphql`
   mutation ChangeTaskTeamMutation($taskId: ID!, $teamId: ID!) {
     changeTaskTeam(taskId: $taskId, teamId: $teamId) {
-      error {
-        message
-      }
       ...ChangeTaskTeamMutation_task @relay(mask: false)
     }
   }

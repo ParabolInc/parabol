@@ -1,4 +1,7 @@
 """
-Return value for updateUserTheme mutation
+Success result for updateUserTheme mutation
 """
-union UpdateUserThemePayload = ErrorPayload | UpdateUserThemeSuccess
+type UpdateUserThemePayload {
+  "The user whose theme preference was updated"
+  user: User!
+}

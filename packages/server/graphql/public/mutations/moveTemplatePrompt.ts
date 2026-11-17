@@ -21,7 +21,7 @@ const moveTemplatePrompt: MutationResolvers['moveTemplatePrompt'] = async (
   await pg.updateTable('TemplatePrompt').set({sortOrder}).where('id', '=', promptId).execute()
   dataLoader.clearAll('templatePrompts')
   const data = {promptId}
-  publish(SubscriptionChannel.TEAM, teamId, 'MoveTemplatePromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'MoveTemplatePromptPayload', data, subOptions)
   return data
 }
 

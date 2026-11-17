@@ -159,7 +159,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
     meetingId,
     hasGcalError: !!error?.message
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerPayload', data, subOptions)
   return data
 }
 

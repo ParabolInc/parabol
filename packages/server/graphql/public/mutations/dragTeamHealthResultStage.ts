@@ -38,7 +38,7 @@ const dragTeamHealthResultStage: MutationResolvers['dragTeamHealthResultStage'] 
   publish(
     SubscriptionChannel.MEETING,
     meetingId,
-    'DragTeamHealthResultStageSuccess',
+    'DragTeamHealthResultStagePayload',
     data,
     subOptions
   )

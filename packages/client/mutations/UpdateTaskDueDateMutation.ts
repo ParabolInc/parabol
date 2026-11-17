@@ -16,9 +16,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateTaskDueDateMutation($taskId: ID!, $dueDate: DateTime) @raw_response_type {
     updateTaskDueDate(taskId: $taskId, dueDate: $dueDate) {
-      error {
-        message
-      }
       ...UpdateTaskDueDateMutation_task @relay(mask: false)
     }
   }

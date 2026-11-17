@@ -4,7 +4,7 @@ import type {ToggleAIFeaturesMutation as TToggleAIFeaturesMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleAIFeaturesMutation_organization on ToggleAIFeaturesSuccess {
+  fragment ToggleAIFeaturesMutation_organization on ToggleAIFeaturesPayload {
     organization {
       id
       useAI
@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleAIFeaturesMutation($orgId: ID!) {
     toggleAIFeatures(orgId: $orgId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleAIFeaturesMutation_organization @relay(mask: false) @alias
     }
   }

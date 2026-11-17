@@ -37,15 +37,8 @@ export async function sendIntranet(req: {query: string; variables?: Record<strin
 const PROCESS_RECURRENCE = `
   mutation {
     processRecurrence {
-      ... on ProcessRecurrenceSuccess {
-        meetingsStarted
-        meetingsEnded
-      }
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      meetingsStarted
+      meetingsEnded
     }
   }
 `
@@ -53,9 +46,7 @@ const PROCESS_RECURRENCE = `
 // processRecurrence refuses to run while another call holds its lock, e.g. one from a suite running in parallel
 export const processRecurrence = async () => {
   let res = await sendIntranet({query: PROCESS_RECURRENCE})
-  while (
-    res.data?.processRecurrence?.error?.message === 'Mutation processRecurrence is already running'
-  ) {
+  while (res.errors?.[0]?.message === 'Mutation processRecurrence is already running') {
     await new Promise((resolve) => setTimeout(resolve, 100))
     res = await sendIntranet({query: PROCESS_RECURRENCE})
   }
@@ -173,8 +164,8 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
     $params: String!
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, pseudoId: $pseudoId, params: $params) {
-      error {
-        message
+      userErrors {
+        code
       }
       user {
         tms
@@ -192,9 +183,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
-      }
       meetingId
       team {
         id
@@ -231,8 +219,8 @@ const completeEmailVerification = async (
         $verificationToken: ID!
       ) {
         verifyEmail(verificationToken: $verificationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
           user {
             tms
@@ -260,7 +248,7 @@ const completeEmailVerification = async (
     cookie: expect.anything(),
     data: {
       verifyEmail: {
-        error: null,
+        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -303,9 +291,7 @@ export const signUpWithPasswordMutation = async (emailInput: string) => {
   expect(signUp).toMatchObject({
     data: {
       signUpWithPassword: {
-        error: {
-          message: 'Verification required. Check your inbox.'
-        },
+        userErrors: [{code: 'EMAIL_VERIFICATION_REQUIRED'}],
         user: null
       }
     }
@@ -356,11 +342,6 @@ export const createOrgAdmin = async (email: string) => {
       mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
         setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `,
@@ -374,7 +355,7 @@ export const createOrgAdmin = async (email: string) => {
   expect(promoteToOrgAdmin).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })

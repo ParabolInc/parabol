@@ -1,18 +1,16 @@
 """
-Returned by the deleteUser mutation. Represents the outcome of a request to
-permanently soft-delete a user account. A successful deletion removes the user
-from all teams and organizations, blacklists their JWT, clears their auth
-cookie (when a user deletes their own account), and broadcasts a mention update
-to replace any in-progress references to that user. On success all fields are
-null. On failure only error is populated.
+Returned by the deleteUser mutation. A deletion soft-deletes the account: it
+removes the user from all teams and organizations, blacklists their JWT, clears
+their auth cookie (when a user deletes their own account), and broadcasts a
+mention update to replace any in-progress references to that user. The mutation
+throws BAD_USER_INPUT when given both or neither of userId and email, FORBIDDEN
+when deleting someone else without super-user privileges, and UNAUTHENTICATED
+when a user deleting their own account signed in too long ago and must sign in
+again.
 """
 type DeleteUserPayload {
   """
-  Populated when the mutation fails. Common failure reasons: supplying both
-  userId and email (mutually exclusive), supplying neither, attempting to
-  delete a different user without super-user privileges, or calling the
-  mutation outside the re-authentication window required for self-deletion.
-  Null on success.
+  The deleted user
   """
-  error: StandardMutationError
+  user: User!
 }

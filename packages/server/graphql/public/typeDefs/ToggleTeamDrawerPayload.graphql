@@ -1,4 +1,7 @@
 """
-Return value for toggleTeamDrawer mutation
+Success result for toggleTeamDrawer mutation
 """
-union ToggleTeamDrawerPayload = ErrorPayload | ToggleTeamDrawerSuccess
+type ToggleTeamDrawerPayload {
+  "The team member with the updated open drawer state"
+  teamMember: TeamMember!
+}

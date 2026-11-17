@@ -1,4 +1,17 @@
 """
-The result of the addTranscriptionBot mutation, which attaches a Recall.ai transcription bot to an active Zoom video meeting linked to a retrospective. On success, returns AddTranscriptionBotSuccess containing the updated meeting (with the videoMeetingURL and recallBotId populated). On failure, returns ErrorPayload describing what went wrong (e.g. meeting not found, meeting type is not retrospective).
+Returned when addTranscriptionBot succeeds. Confirms that a Recall.ai bot has
+been dispatched to the video call identified by videoMeetingURL and that the
+retrospective meeting record has been updated with that URL. The bot will
+join the call, capture a transcript, and store it on the meeting once the
+call ends. Use the returned meeting to read the updated videoMeetingURL and,
+after the call concludes, the transcription field.
 """
-union AddTranscriptionBotPayload = ErrorPayload | AddTranscriptionBotSuccess
+type AddTranscriptionBotPayload {
+  """
+  The retrospective meeting that was updated with the video meeting URL and
+  the Recall.ai bot assignment. Query videoMeetingURL to confirm the URL that
+  was stored, or transcription to retrieve the transcript once the bot has
+  finished processing the recording.
+  """
+  meeting: RetrospectiveMeeting!
+}

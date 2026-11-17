@@ -4,7 +4,7 @@ import type {AutogroupMutation as TAutogroupMutation} from '../__generated__/Aut
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AutogroupMutation_meeting on AutogroupSuccess {
+  fragment AutogroupMutation_meeting on AutogroupPayload {
     meeting {
       id
       reflectionGroups {
@@ -23,11 +23,6 @@ graphql`
 const mutation = graphql`
   mutation AutogroupMutation($meetingId: ID!) {
     autogroup(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AutogroupMutation_meeting @relay(mask: false) @alias
     }
   }

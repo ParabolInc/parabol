@@ -1,4 +1,9 @@
 """
-Return value for toggleTeamPrivacy, which could be an error
+Success result for toggleTeamPrivacy mutation
 """
-union ToggleTeamPrivacyPayload = ErrorPayload | ToggleTeamPrivacySuccess
+type ToggleTeamPrivacyPayload {
+  """
+  The team with the updated privacy setting
+  """
+  team: Team!
+}

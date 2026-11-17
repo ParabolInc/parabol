@@ -13,8 +13,8 @@ const joinPayload = (userNumber: number, sortOrder: string) => {
   const user = {id: userId, picture: 'p.png', preferredName: `Joiner ${userNumber}`}
   return {
     meetingSubscription: {
-      fieldName: 'JoinMeetingSuccess',
-      JoinMeetingSuccess: {
+      fieldName: 'JoinMeetingPayload',
+      JoinMeetingPayload: {
         meeting: {__typename: 'RetrospectiveMeeting', id: 'meeting1'},
         meetingMember: {
           __typename: 'RetrospectiveMeetingMember',
@@ -92,7 +92,7 @@ const createTestAtmosphere = (payloads: ReturnType<typeof joinPayload>[]) => {
 const refsOf = (atmosphere: Atmosphere, dataID: string, field: string) =>
   (atmosphere.getStore().getSource().get(dataID)?.[field] as {__refs: string[]}).__refs
 
-describe('JoinMeetingSuccess on the meeting subscription', () => {
+describe('JoinMeetingPayload on the meeting subscription', () => {
   let errorSpy: jest.SpyInstance
   beforeEach(() => {
     errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})

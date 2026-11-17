@@ -1,9 +1,0 @@
-"""
-The result of modifying the check-in question for a meeting
-"""
-type ModifyCheckInQuestionSuccess {
-  """
-  The updated check-in question text, null if unchanged
-  """
-  modifiedCheckInQuestion: String
-}

@@ -7,7 +7,7 @@ import type {OnNextHandler} from '../types/relayMutations'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useAcceptSuggestedGroupsMutation_meeting on AcceptSuggestedGroupsSuccess {
+  fragment useAcceptSuggestedGroupsMutation_meeting on AcceptSuggestedGroupsPayload {
     acceptedCount
     meeting {
       id

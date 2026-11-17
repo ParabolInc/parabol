@@ -3,11 +3,6 @@ The result of reordering a dimension within a Poker template
 """
 type MovePokerTemplateDimensionPayload {
   """
-  Error information if the mutation failed
-  """
-  error: StandardMutationError
-
-  """
   The reordered dimension
   """
   dimension: TemplateDimension

@@ -40,7 +40,7 @@ const removeTeamHealthTemplateQuestion: MutationResolvers['removeTeamHealthTempl
     publish(
       SubscriptionChannel.TEAM,
       template.teamId,
-      'RemoveTeamHealthTemplateQuestionSuccess',
+      'RemoveTeamHealthTemplateQuestionPayload',
       data,
       subOptions
     )

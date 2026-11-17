@@ -3,7 +3,7 @@ The result of invalidating all active sessions for a user, forcing them to log i
 """
 type InvalidateSessionsPayload {
   """
-  Error information if the mutation failed
+  The user whose sessions were invalidated
   """
-  error: StandardMutationError
+  user: User!
 }

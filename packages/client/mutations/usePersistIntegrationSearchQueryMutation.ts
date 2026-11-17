@@ -17,7 +17,7 @@ graphql`
 `
 
 graphql`
-  fragment usePersistIntegrationSearchQueryMutation_notification on PersistIntegrationSearchQuerySuccess {
+  fragment usePersistIntegrationSearchQueryMutation_notification on PersistIntegrationSearchQueryPayload {
     service {
       ...usePersistIntegrationSearchQueryMutation_service @relay(mask: false)
     }

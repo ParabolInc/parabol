@@ -1,4 +1,9 @@
+import type {ReflectPhase as ReflectPhaseDB} from '../../../postgres/types/NewMeetingPhase'
 import type {ReflectPhaseResolvers} from '../resolverTypes'
+
+export interface ReflectPhaseSource extends ReflectPhaseDB {
+  meetingId: string
+}
 
 const ReflectPhase: ReflectPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'reflect',

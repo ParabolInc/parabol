@@ -70,7 +70,7 @@ const ungroupReflection: MutationResolvers['ungroupReflection'] = async (
   }
 
   const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'UngroupReflectionSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'UngroupReflectionPayload', data, subOptions)
   return data
 }
 

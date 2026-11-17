@@ -32,9 +32,6 @@ graphql`
 const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Email!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
-      error {
-        message
-      }
       invitees {
         email
         status

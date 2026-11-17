@@ -44,7 +44,7 @@ const eventLookup = {
       query: `
         mutation UpgradeToTeamTier($invoiceId: ID!, $userId: ID) {
           upgradeToTeamTier(invoiceId: $invoiceId, userId: $userId) {
-            ... on UpgradeToTeamTierSuccess {
+            ... on UpgradeToTeamTierPayload {
               organization {
                 id
               }

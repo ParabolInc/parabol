@@ -28,15 +28,8 @@ const createSAMLForOrg = async (orgId: string, domain: string) => {
     query: `
       mutation VerifyDomain($slug: ID!, $addDomains: [ID!], $orgId: ID!) {
         verifyDomain(slug: $slug, addDomains: $addDomains, orgId: $orgId) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on VerifyDomainSuccess {
-            saml {
-              id
-            }
+          saml {
+            id
           }
         }
       }

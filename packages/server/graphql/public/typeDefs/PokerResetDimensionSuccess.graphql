@@ -1,9 +1,0 @@
-"""
-Successfully reset votes for a Poker dimension
-"""
-type PokerResetDimensionSuccess {
-  """
-  The stage that holds the updated isVoting step
-  """
-  stage: EstimateStage!
-}

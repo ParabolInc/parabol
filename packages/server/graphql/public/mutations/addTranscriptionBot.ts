@@ -22,7 +22,7 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   meeting.videoMeetingURL = videoMeetingURL
 
   const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'AddTranscriptionBotSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'AddTranscriptionBotPayload', data, subOptions)
 
   return {meetingId}
 }

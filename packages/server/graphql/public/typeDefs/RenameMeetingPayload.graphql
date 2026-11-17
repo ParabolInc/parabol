@@ -1,4 +1,6 @@
-"""
-Result of renaming a meeting
-"""
-union RenameMeetingPayload = ErrorPayload | RenameMeetingSuccess
+type RenameMeetingPayload {
+  """
+  the renamed meeting
+  """
+  meeting: NewMeeting!
+}

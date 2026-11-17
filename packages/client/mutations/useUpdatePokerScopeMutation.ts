@@ -11,7 +11,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useUpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
+  fragment useUpdatePokerScopeMutation_meeting on UpdatePokerScopePayload {
     newStages {
       ...useMakeStageSummaries_stages
       ...PokerEstimateHeaderCard_stage

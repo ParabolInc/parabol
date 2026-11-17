@@ -14,15 +14,8 @@ const verifyDomain = (slug: string, domain: string, orgId: string) =>
     query: `
       mutation VerifyDomain($slug: ID!, $addDomains: [ID!], $orgId: ID!) {
         verifyDomain(slug: $slug, addDomains: $addDomains, orgId: $orgId) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on VerifyDomainSuccess {
-            saml {
-              id
-            }
+          saml {
+            id
           }
         }
       }
@@ -264,9 +257,6 @@ test('downgrading to Starter disconnects every identity provider and revokes its
     query: `
       mutation DowngradeToStarter($orgId: ID!) {
         downgradeToStarter(orgId: $orgId) {
-          error {
-            message
-          }
           organization {
             billingTier
           }
@@ -275,7 +265,7 @@ test('downgrading to Starter disconnects every identity provider and revokes its
     `,
     variables: {orgId}
   })
-  expect(res.data.downgradeToStarter).toEqual({error: null, organization: {billingTier: 'starter'}})
+  expect(res.data.downgradeToStarter).toEqual({organization: {billingTier: 'starter'}})
 
   const rows = await pg
     .selectFrom('SAML')

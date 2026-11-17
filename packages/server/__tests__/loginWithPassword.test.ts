@@ -11,8 +11,8 @@ test('Login after signup', async () => {
         $invitationToken: ID! = ""
       ) {
         loginWithPassword(email: $email, password: $password) {
-          error {
-            message
+          userErrors {
+            code
           }
           authToken
           user {
@@ -27,9 +27,6 @@ test('Login after signup', async () => {
         }
         acceptTeamInvitation(invitationToken: $invitationToken) {
           authToken
-          error {
-            message
-          }
           meetingId
           team {
             id
@@ -51,7 +48,7 @@ test('Login after signup', async () => {
     cookie: expect.anything(),
     data: {
       loginWithPassword: {
-        error: null,
+        userErrors: [],
         user: {
           id: expect.anything(),
           email

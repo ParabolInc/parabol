@@ -5,18 +5,13 @@ import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment InvalidateSessionsMutation_notification on InvalidateSessionsPayload {
-    error {
-      message
-    }
+    __typename
   }
 `
 
 const mutation = graphql`
   mutation InvalidateSessionsMutation {
     invalidateSessions {
-      error {
-        message
-      }
       ...InvalidateSessionsMutation_notification @relay(mask: false)
     }
   }

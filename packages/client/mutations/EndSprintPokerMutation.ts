@@ -19,7 +19,7 @@ import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
-  fragment EndSprintPokerMutation_team on EndSprintPokerSuccess {
+  fragment EndSprintPokerMutation_team on EndSprintPokerPayload {
     isKill
     meeting {
       id
@@ -58,11 +58,6 @@ graphql`
 const mutation = graphql`
   mutation EndSprintPokerMutation($meetingId: ID!) {
     endSprintPoker(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...EndSprintPokerMutation_team @relay(mask: false) @alias
     }
   }

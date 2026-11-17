@@ -43,7 +43,7 @@ const movePokerTemplateScaleValue: MutationResolvers['movePokerTemplateScaleValu
   publish(
     SubscriptionChannel.TEAM,
     scale.teamId,
-    'MovePokerTemplateScaleValueSuccess',
+    'MovePokerTemplateScaleValuePayload',
     data,
     subOptions
   )

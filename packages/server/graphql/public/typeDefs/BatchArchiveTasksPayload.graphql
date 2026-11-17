@@ -1,6 +1,21 @@
 """
-The result of the batchArchiveTasks mutation. Returns BatchArchiveTasksSuccess when at least the
-archive operation completes (even if some tasks were skipped due to permission checks), or
-ErrorPayload if the operation could not proceed at all (e.g. authentication failure).
+Returned when batchArchiveTasks succeeds. Contains only the tasks that were
+actually archived — tasks the viewer lacked permission to archive (neither the
+task creator nor a member of the task's team) are silently excluded from both
+lists.
 """
-union BatchArchiveTasksPayload = ErrorPayload | BatchArchiveTasksSuccess
+type BatchArchiveTasksPayload {
+  """
+  IDs of the tasks that were successfully archived. May be a subset of the
+  input taskIds if the viewer did not have permission to archive every requested
+  task.
+  """
+  archivedTaskIds: [ID!]
+
+  """
+  Full Task objects for every successfully archived task. Populated when the
+  caller needs task details beyond IDs (e.g. to update local UI state). Null
+  when the resolver returns only IDs via the team subscription broadcast.
+  """
+  archivedTasks: [Task!]
+}

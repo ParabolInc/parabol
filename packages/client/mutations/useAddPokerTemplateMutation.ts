@@ -11,7 +11,7 @@ import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useAddPokerTemplateMutation_team on AddPokerTemplateSuccess {
+  fragment useAddPokerTemplateMutation_team on AddPokerTemplatePayload {
     user {
       freeCustomPokerTemplatesRemaining
     }
@@ -27,11 +27,6 @@ graphql`
 const mutation = graphql`
   mutation useAddPokerTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addPokerTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useAddPokerTemplateMutation_team @relay(mask: false) @alias
     }
   }

@@ -50,7 +50,7 @@ const publishComment = async (
 ) => {
   const data = {commentId, meetingId}
   const operationId = dataLoader.share()
-  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, {
+  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentPayload', data, {
     operationId
   })
 }

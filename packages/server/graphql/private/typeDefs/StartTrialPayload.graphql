@@ -1,4 +1,6 @@
-"""
-Return value for startTrial, which could be an error
-"""
-union StartTrialPayload = ErrorPayload | StartTrialSuccess
+type StartTrialPayload {
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

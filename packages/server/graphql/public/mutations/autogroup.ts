@@ -43,7 +43,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
   )
   legacyAutogroups.inc()
   const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'AutogroupPayload', data, subOptions)
   return data
 }
 

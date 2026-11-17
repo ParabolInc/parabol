@@ -1,6 +1,0 @@
-type SetTeamLimitAtSuccess {
-  """
-  The updated team
-  """
-  team: Team!
-}

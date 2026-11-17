@@ -76,7 +76,7 @@ const startRecurringMeeting = async (
         }
       }
       const data = {teamId, meetingId: meeting.id}
-      publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptPayload', data, subOptions)
       return meeting
     } else if (meetingSeries.meetingType === 'retrospective') {
       // Field-by-field fallback: prior meeting > MeetingSettings (nullable, may be missing) > defaults.
@@ -132,7 +132,7 @@ const startRecurringMeeting = async (
         }
       }
       const data = {teamId, meetingId: meeting.id}
-      publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectivePayload', data, subOptions)
       return meeting
     } else if (meetingSeries.meetingType === 'teamHealth') {
       // Field-by-field fallback: prior meeting > MeetingSettings (nullable) > default.
@@ -163,7 +163,7 @@ const startRecurringMeeting = async (
       publish(
         SubscriptionChannel.TEAM,
         teamId,
-        'StartTeamHealthSuccess',
+        'StartTeamHealthPayload',
         {meetingIds: [meeting.id], teamIds: [teamId]},
         subOptions
       )

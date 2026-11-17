@@ -1,4 +1,13 @@
 """
-Return object for SetTaskHighlightPayload
+Success result for setTaskHighlight mutation
 """
-union SetTaskHighlightPayload = ErrorPayload | SetTaskHighlightSuccess
+type SetTaskHighlightPayload {
+  "ID of the meeting where the task is highlighted"
+  meetingId: ID!
+
+  "ID of the task whose highlight changed"
+  taskId: ID!
+
+  "The task whose highlight changed"
+  task: Task!
+}

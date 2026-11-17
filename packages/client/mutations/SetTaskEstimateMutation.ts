@@ -4,7 +4,7 @@ import type {SetTaskEstimateMutation as TSetTaskEstimateMutation} from '../__gen
 import type {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetTaskEstimateMutation_meeting on SetTaskEstimateSuccess {
+  fragment SetTaskEstimateMutation_meeting on SetTaskEstimatePayload {
     stage {
       finalScore
     }
@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation SetTaskEstimateMutation($taskEstimate: TaskEstimateInput!) {
     setTaskEstimate(taskEstimate: $taskEstimate) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTaskEstimateMutation_meeting @relay(mask: false) @alias
     }
   }

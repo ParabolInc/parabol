@@ -40,10 +40,6 @@ test('Draft enterprise invoice payload', async () => {
     query: `
       mutation DraftEnterpriseInvoice($orgId: ID!, $quantity: Int!, $email: ID!) {
         draftEnterpriseInvoice(orgId: $orgId, quantity: $quantity, email: $email) {
-          error {
-            title
-            message
-          }
           organization {
             id
             tier
@@ -72,7 +68,6 @@ test('Draft enterprise invoice payload', async () => {
   expect(invoice).toMatchObject({
     data: {
       draftEnterpriseInvoice: {
-        error: null,
         organization: {
           id: orgId,
           organizationUsers: {

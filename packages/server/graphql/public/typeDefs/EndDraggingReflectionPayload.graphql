@@ -3,8 +3,6 @@ The payload returned after a team member stops dragging a reflection card during
 Describes where the reflection landed, which groups were affected, and who performed the drag.
 """
 type EndDraggingReflectionPayload {
-  error: StandardMutationError
-
   """
   The unique identifier for this drag interaction, used to correlate start and end drag events
   """

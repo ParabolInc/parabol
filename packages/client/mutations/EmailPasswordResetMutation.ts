@@ -14,11 +14,9 @@ export enum ForgotPasswordResType {
 const mutation = graphql`
   mutation EmailPasswordResetMutation($email: ID!) {
     emailPasswordReset(email: $email) {
-      ... on EmailPasswordResetSuccess {
-        userErrors {
-          code
-          message
-        }
+      userErrors {
+        code
+        message
       }
     }
   }

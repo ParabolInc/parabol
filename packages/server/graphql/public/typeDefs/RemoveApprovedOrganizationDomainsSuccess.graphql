@@ -1,9 +1,0 @@
-"""
-Successfully removed one or more approved email domains from an organization
-"""
-type RemoveApprovedOrganizationDomainsSuccess {
-  """
-  The organization with updated restrictions
-  """
-  organization: Organization!
-}

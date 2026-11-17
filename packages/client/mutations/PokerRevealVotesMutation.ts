@@ -4,7 +4,7 @@ import type {PokerRevealVotesMutation as TPokerRevealVotesMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment PokerRevealVotesMutation_meeting on PokerRevealVotesSuccess {
+  fragment PokerRevealVotesMutation_meeting on PokerRevealVotesPayload {
     stage {
       isVoting
       scores {
@@ -18,11 +18,6 @@ graphql`
 const mutation = graphql`
   mutation PokerRevealVotesMutation($meetingId: ID!, $stageId: ID!, $ignoreSuggestedUpgrade: Boolean) {
     pokerRevealVotes(meetingId: $meetingId, stageId: $stageId, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PokerRevealVotesMutation_meeting @relay(mask: false) @alias
     }
   }

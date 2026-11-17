@@ -1,4 +1,6 @@
-"""
-Return object for UpdateWatchlistPayload
-"""
-union UpdateWatchlistPayload = ErrorPayload | UpdateWatchlistSuccess
+type UpdateWatchlistPayload {
+  """
+  true if the mutation was successfully executed
+  """
+  success: Boolean
+}

@@ -1,4 +1,12 @@
 """
-The result of the addReactjiToReactable mutation, which adds or removes an emoji reaction on a reactable item (such as a reflection or comment). Returns the updated reactable on success, or an error if the operation failed (e.g. item not found, user lacks permission).
+Returned when an emoji reaction (reactji) has been successfully added to a reactable item
+(a comment, reflection, or response). Use the reactable field to read the updated list of
+reactjis and re-render the reaction bar on the item.
 """
-union AddReactjiToReactablePayload = AddReactjiToReactableSuccess | ErrorPayload
+type AddReactjiToReactablePayload {
+  """
+  The item that received the reactji, with its reactjis list updated to include the new reaction.
+  Cast to the concrete type (Comment, RetroReflection, or Poll Response) to access type-specific fields.
+  """
+  reactable: Reactable!
+}

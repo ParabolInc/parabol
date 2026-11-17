@@ -78,7 +78,7 @@ const shareTeamPromptResponses: MutationResolvers['shareTeamPromptResponses'] = 
   publish(
     SubscriptionChannel.MEETING,
     meetingId,
-    'ShareTeamPromptResponsesSuccess',
+    'ShareTeamPromptResponsesPayload',
     data,
     subOptions
   )

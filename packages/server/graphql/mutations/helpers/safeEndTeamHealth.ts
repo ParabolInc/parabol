@@ -111,11 +111,11 @@ const safeEndTeamHealth = async ({
   publish(
     SubscriptionChannel.MEETING,
     meeting.id,
-    'EndTeamHealthSuccess',
+    'EndTeamHealthPayload',
     {meetingId},
     {operationId}
   )
-  publish(SubscriptionChannel.TEAM, teamId, 'EndTeamHealthSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'EndTeamHealthPayload', data, subOptions)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   return data

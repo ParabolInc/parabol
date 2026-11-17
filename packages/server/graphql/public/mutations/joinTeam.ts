@@ -57,7 +57,7 @@ const joinTeam: MutationResolvers['joinTeam'] = async (_source, {teamId}, contex
   })
 
   // Tell the rest of the team about the new team member
-  publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamPayload', data, subOptions)
 
   return {
     teamId,

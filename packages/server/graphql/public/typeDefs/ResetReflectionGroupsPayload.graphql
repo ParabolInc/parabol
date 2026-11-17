@@ -1,4 +1,9 @@
 """
-Return value for resetReflectionGroups, which could be an error
+Successfully reset reflection groups to their state before AI autogrouping was applied
 """
-union ResetReflectionGroupsPayload = ErrorPayload | ResetReflectionGroupsSuccess
+type ResetReflectionGroupsPayload {
+  """
+  The retrospective meeting with restored reflection groups
+  """
+  meeting: RetrospectiveMeeting!
+}

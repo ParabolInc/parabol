@@ -1,4 +1,21 @@
 """
-Return object for uploadUserAsset
+Success result for uploadUserAsset mutation
 """
-union UploadUserAssetPayload = ErrorPayload | UploadUserAssetSuccess
+type UploadUserAssetPayload {
+  """
+  The URL for the newly uploaded asset
+  """
+  url: String!
+  """
+  The name of the newly uploaded asset
+  """
+  name: String!
+  """
+  The MIME type of the newly uploaded asset
+  """
+  type: String!
+  """
+  The size of the newly uploaded asset in bytes
+  """
+  size: Int!
+}

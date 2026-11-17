@@ -7,16 +7,9 @@ import {snackOnError} from './handlers/snackOnError'
 const mutation = graphql`
   mutation useUpdateUserThemeMutation($theme: UserThemeEnum!) {
     updateUserTheme(theme: $theme) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateUserThemeSuccess {
-        user {
-          id
-          theme
-        }
+      user {
+        id
+        theme
       }
     }
   }
@@ -26,21 +19,9 @@ const useUpdateUserThemeMutation = () => {
   const [commit, submitting] = useMutation<TUpdateUserThemeMutation>(mutation)
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TUpdateUserThemeMutation>) => {
-    const {onCompleted, ...rest} = config
     return commit({
       onError: snackOnError(atmosphere),
-      ...rest,
-      onCompleted: (res, errors) => {
-        const error = res.updateUserTheme.error
-        if (error) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'updateUserThemeError'
-          })
-        }
-        onCompleted?.(res, errors)
-      }
+      ...config
     })
   }
   return [execute, submitting] as const

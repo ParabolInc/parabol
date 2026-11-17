@@ -1,0 +1,6 @@
+"""
+Return value for submitErrorFeedback
+"""
+type SubmitErrorFeedbackPayload {
+  success: Boolean!
+}

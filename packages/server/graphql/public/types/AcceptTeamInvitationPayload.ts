@@ -4,7 +4,6 @@ import isValid from '../../isValid'
 import type {AcceptTeamInvitationPayloadResolvers, UserError} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
-  error?: {message: string}
   userErrors?: UserError[]
   meetingId?: string | null
   teamId?: string

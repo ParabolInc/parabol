@@ -1,6 +1,0 @@
-type UpdateSAMLSuccess {
-  """
-  Updated SAML record
-  """
-  saml: SAML!
-}

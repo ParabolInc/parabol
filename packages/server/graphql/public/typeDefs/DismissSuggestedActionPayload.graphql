@@ -3,11 +3,6 @@ The payload returned after a user dismisses a suggested action, removing it from
 """
 type DismissSuggestedActionPayload {
   """
-  Present if an error occurred during the mutation; null on success.
-  """
-  error: StandardMutationError
-
-  """
   The user that dismissed the action
   """
   user: User

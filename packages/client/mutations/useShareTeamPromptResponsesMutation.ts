@@ -8,7 +8,7 @@ import handleUpsertTeamPromptResponses from './handlers/handleUpsertTeamPromptRe
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useShareTeamPromptResponsesMutation_meeting on ShareTeamPromptResponsesSuccess {
+  fragment useShareTeamPromptResponsesMutation_meeting on ShareTeamPromptResponsesPayload {
     meeting {
       id
       responseCount
