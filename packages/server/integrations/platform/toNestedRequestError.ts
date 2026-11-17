@@ -20,8 +20,10 @@ const toNestedRequestError = (errors: readonly NestedRequestError[] | null | und
   if (type === PROVIDER_UNAVAILABLE) {
     return new GraphQLError(message, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
-  // Linear's flag for an error the request caused, like an id that no longer resolves
-  if (extensions?.userError === true) return new NestedRequestRefusedError(message)
+  // GitHub's type & Linear's flag for an error the request caused, like an id that no longer resolves
+  if (type === 'NOT_FOUND' || extensions?.userError === true) {
+    return new NestedRequestRefusedError(message)
+  }
   return new Error(message)
 }
 
