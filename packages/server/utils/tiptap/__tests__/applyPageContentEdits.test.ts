@@ -1,5 +1,6 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {tipTapToMarkdown} from '../../../../client/shared/tiptap/tipTapToMarkdown'
@@ -28,7 +29,15 @@ const applyPageContentEdits = (
   doc: Y.Doc,
   edits: PageContentEditInput[],
   canChangePageLinks = true
-) => applyEdits(doc, edits, {canChangePageLinks})
+) => {
+  try {
+    applyEdits(doc, edits, {canChangePageLinks})
+    return null
+  } catch (e) {
+    if (!(e instanceof GraphQLError)) throw e
+    return {code: e.extensions.code, message: e.message}
+  }
+}
 
 const blocksOf = (doc: Y.Doc) => doc.getXmlFragment('default').toArray()
 

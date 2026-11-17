@@ -8,6 +8,7 @@ import {
   type onLoadDocumentPayload,
   type WebSocketLike
 } from '@hocuspocus/server'
+import {GraphQLError, type GraphQLErrorExtensions} from 'graphql'
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
 import {Logger} from '../Logger'
@@ -59,6 +60,7 @@ export type RSAMessageCustomEventComplete = {
   type: 'customEventComplete'
   replyId: number
   payload: any
+  error?: {message: string; code?: GraphQLErrorExtensions['code']}
 }
 
 export type RSAMessage =
@@ -168,7 +170,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private instance!: Hocuspocus
   private customEvents: TCE
   private replyIdCounter = 0
-  private pendingReplies: Record<number, PromiseWithResolvers<any>['resolve']> = {}
+  private pendingReplies: Record<number, Pick<PromiseWithResolvers<any>, 'resolve' | 'reject'>> = {}
   private deriveContext: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
   constructor(configuration: Configuration<TCE>) {
     const {
@@ -291,25 +293,40 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     }
     if (type === 'customEventStart') {
       const {documentName, eventName, payload, replyTo, replyId} = msg
-      const res = await this.handleEventLocally(
-        eventName as Extract<keyof TCE, string>,
-        documentName,
-        payload
-      )
       const reply: RSAMessageCustomEventComplete = {
         type: 'customEventComplete',
         replyId,
-        payload: res
+        payload: null
+      }
+      try {
+        reply.payload = await this.handleEventLocally(
+          eventName as Extract<keyof TCE, string>,
+          documentName,
+          payload
+        )
+      } catch (e) {
+        if (e instanceof GraphQLError) {
+          reply.error = {message: e.message, code: e.extensions.code}
+        } else {
+          Logger.error(`RedisServerAffinity: ${eventName} failed on ${documentName}`, e)
+          reply.error = {message: e instanceof Error ? e.message : String(e)}
+        }
       }
       this.pub.publish(`${replyTo}`, this.pack(reply)).catch(Logger.error)
       return
     }
     if (type === 'customEventComplete') {
-      const {replyId, payload} = msg
-      const resolveFn = this.pendingReplies[replyId]
-      if (!resolveFn) return
+      const {replyId, payload, error} = msg
+      const pendingReply = this.pendingReplies[replyId]
+      if (!pendingReply) return
       delete this.pendingReplies[replyId]
-      resolveFn(payload)
+      if (!error) {
+        pendingReply.resolve(payload)
+      } else if (error.code) {
+        pendingReply.reject(new GraphQLError(error.message, {extensions: {code: error.code}}))
+      } else {
+        pendingReply.reject(new Error(error.message))
+      }
       return
     }
     const {socketId} = msg
@@ -393,7 +410,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       const msg = this.pack(proxyMessage)
       this.pub.publish(`${this.msgChannel}:${proxyTo}`, msg).catch(Logger.error)
       const {promise, resolve, reject} = Promise.withResolvers()
-      this.pendingReplies[replyId] = resolve
+      this.pendingReplies[replyId] = {resolve, reject}
       setTimeout(() => {
         delete this.pendingReplies[replyId]
         reject(new Error('TIMEOUT'))

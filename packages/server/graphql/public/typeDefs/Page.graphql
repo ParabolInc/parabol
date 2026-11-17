@@ -20,7 +20,7 @@ type Page {
   title: String
 
   """
-  The page content, including edits not yet saved, null if the viewer cannot open the page. In markdown, top-level blocks are separated by a blank line
+  The page content, including edits not yet saved. In markdown, top-level blocks are separated by a blank line
   """
   content("The format to return the content in" format: PageContentFormatEnum! = markdown): String
     @scope(name: PAGES_READ)

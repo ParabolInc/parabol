@@ -8,7 +8,6 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {hocuspocus} from '../../hocusPocus'
-import logError from '../logError'
 import {applyPageContentEdits} from './applyPageContentEdits'
 import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
@@ -93,7 +92,8 @@ export const markPageLinkCanonical = async (
   payload: {pageCode: number}
 ): Promise<boolean> => {
   const {pageCode} = payload
-  return withDoc(documentName, (doc) => {
+  let isMarked = false
+  await withDoc(documentName, (doc) => {
     const frag = doc.getXmlFragment('default')
     const walker = frag.createTreeWalker((yxml) => {
       if (!isPageLink(yxml)) return false
@@ -101,10 +101,11 @@ export const markPageLinkCanonical = async (
     })
     for (const node of walker) {
       ;(node as XmlElement<PageLinkBlockAttrs>).setAttribute('canonical', true)
-      return true
+      isMarked = true
+      break
     }
-    return false
   })
+  return isMarked
 }
 
 export const removeBacklinkedPageLinkBlocks = async (
@@ -275,15 +276,7 @@ export const patchPageContent = async (
   payload: {edits: PageContentEditInput[]; userId: string; canChangePageLinks: boolean}
 ) => {
   const {edits, userId, canChangePageLinks} = payload
-  // A throw on the server that owns the doc never sends a reply, so the caller would only see a TIMEOUT
-  try {
-    return await withDoc(
-      documentName,
-      (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}),
-      {userId}
-    )
-  } catch (e) {
-    logError(e instanceof Error ? e : new Error(String(e)), {userId, tags: {documentName}})
-    return {code: 'INTERNAL_SERVER_ERROR' as const, message: 'The edits could not be applied'}
-  }
+  await withDoc(documentName, (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}), {
+    userId
+  })
 }

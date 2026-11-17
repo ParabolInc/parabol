@@ -1,6 +1,6 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {Editor, type JSONContent} from '@tiptap/core'
-import type {GraphQLErrorExtensions} from 'graphql'
+import {GraphQLError} from 'graphql'
 import type * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
@@ -10,11 +10,6 @@ const BLOCK_SEPARATOR = '\n\n'
 const MAX_PAGE_MARKDOWN_LENGTH = 1_000_000
 const MAX_REWRITE_MARKDOWN_LENGTH = 100_000
 const MAX_REWRITES = 500
-
-interface PageContentEditError {
-  code: NonNullable<GraphQLErrorExtensions['code']>
-  message: string
-}
 
 interface Block {
   node: JSONContent
@@ -53,24 +48,20 @@ const getBlockStarts = (blocks: Block[]) => {
 const groupMatches = (blocks: Block[], matchStarts: number[], matchLength: number) => {
   const blockStarts = getBlockStarts(blocks)
   const groups: MatchGroup[] = []
+  let firstIdx = 0
   for (const spanStart of matchStarts) {
     const spanEnd = spanStart + matchLength
-    const coveredIdxs = blocks.flatMap(({markdown}, idx) => {
-      const blockStart = blockStarts[idx]!
-      const blockEnd = blockStart + markdown.length
-      const isCovered =
-        markdown.length > 0
-          ? blockStart < spanEnd && spanStart < blockEnd
-          : spanStart < blockStart && blockEnd < spanEnd
-      return isCovered ? [idx] : []
-    })
-    const firstCoveredIdx = coveredIdxs[0]
-    const nextIdx = blockStarts.findIndex((start) => start >= spanEnd)
-    const insertIdx = nextIdx === -1 ? blocks.length : nextIdx
-    const firstIdx = firstCoveredIdx ?? insertIdx
-    const lastIdx = coveredIdxs.at(-1) ?? insertIdx - 1
+    while (
+      firstIdx < blocks.length &&
+      blockStarts[firstIdx]! + blocks[firstIdx]!.markdown.length <= spanStart
+    ) {
+      firstIdx++
+    }
+    let nextIdx = firstIdx
+    while (nextIdx < blocks.length && blockStarts[nextIdx]! < spanEnd) nextIdx++
+    const lastIdx = nextIdx - 1
     const previous = groups.at(-1)
-    if (previous && firstCoveredIdx !== undefined && firstIdx <= previous.lastIdx) {
+    if (previous && lastIdx >= firstIdx && firstIdx <= previous.lastIdx) {
       previous.lastIdx = Math.max(previous.lastIdx, lastIdx)
       previous.spanEnd = spanEnd
     } else {
@@ -129,7 +120,7 @@ const rewriteGroup = (
   {firstIdx, lastIdx, spanStart, spanEnd}: MatchGroup,
   {oldText, newText}: PageContentEditInput,
   canChangePageLinks: boolean
-): Block[] | PageContentEditError => {
+): Block[] => {
   const rangeStart = Math.min(spanStart, blockStarts[firstIdx] ?? spanStart)
   const lastBlock = blocks[lastIdx]
   const rangeEnd =
@@ -144,16 +135,18 @@ const rewriteGroup = (
     text.slice(spanEnd, rangeEnd)
   ).replace(/^\n+|\n+$/g, '')
   if (rangeMarkdown.length > MAX_REWRITE_MARKDOWN_LENGTH) {
-    return {
-      code: 'BAD_USER_INPUT',
-      message: 'The edit rewrites too much of the page at once. Split it into smaller edits'
-    }
+    throw new GraphQLError(
+      'The edit rewrites too much of the page at once. Split it into smaller edits',
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   let parsedNodes: JSONContent[]
   try {
     parsedNodes = parseMarkdown(editor, rangeMarkdown)
   } catch {
-    return {code: 'BAD_USER_INPUT', message: 'newText could not be parsed as Markdown'}
+    throw new GraphQLError('newText could not be parsed as Markdown', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const oldBlocks = blocks.slice(firstIdx, lastIdx + 1)
   const newBlocks = parsedNodes.map((node) => toBlock(editor, node))
@@ -177,10 +170,10 @@ const rewriteGroup = (
   const created = newBlocks.slice(keptPrefix, newBlocks.length - keptSuffix)
   const unsafeBlock = findUnsafeRemoval(editor, removed, created.length > 0)
   if (unsafeBlock) {
-    return {
-      code: 'BAD_USER_INPUT',
-      message: `The edit would change a ${unsafeBlock.node.type} block that Markdown cannot fully represent. Leave it out of oldText, or use editPageContent with the json format`
-    }
+    throw new GraphQLError(
+      `The edit would change a ${unsafeBlock.node.type} block that Markdown cannot fully represent. Leave it out of oldText, or use editPageContent with the json format`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (
     !canChangePageLinks &&
@@ -189,10 +182,10 @@ const rewriteGroup = (
       collectCanonicalPageCodes(created.map(({node}) => node))
     )
   ) {
-    return {
-      code: 'FORBIDDEN',
-      message: 'A token limited to specific pages cannot add or remove sub-page links'
-    }
+    throw new GraphQLError(
+      'A token limited to specific pages cannot add or remove sub-page links',
+      {extensions: {code: 'FORBIDDEN'}}
+    )
   }
   return [
     ...blocks.slice(0, firstIdx),
@@ -209,41 +202,42 @@ const applyEdit = (
   edit: PageContentEditInput,
   canChangePageLinks: boolean,
   rewriteBudget: number
-): {blocks: Block[]; rewriteCount: number} | PageContentEditError => {
+) => {
   const {oldText, newText, replaceAll} = edit
-  if (!oldText) return {code: 'BAD_USER_INPUT', message: 'oldText must not be empty'}
+  if (!oldText)
+    throw new GraphQLError('oldText must not be empty', {extensions: {code: 'BAD_USER_INPUT'}})
   const text = blocks.map(({markdown}) => markdown).join(BLOCK_SEPARATOR)
   const matchStarts = findMatchStarts(text, oldText)
   if (matchStarts.length === 0) {
-    return {
-      code: 'CONFLICT',
-      message: 'oldText was not found in the page. Read the page content again and retry'
-    }
+    throw new GraphQLError(
+      'oldText was not found in the page. Read the page content again and retry',
+      {extensions: {code: 'CONFLICT'}}
+    )
   }
   if (matchStarts.length > 1 && !replaceAll) {
-    return {
-      code: 'BAD_USER_INPUT',
-      message: `oldText appears ${matchStarts.length} times. Include more surrounding text to pick one, or set replaceAll`
-    }
+    throw new GraphQLError(
+      `oldText appears ${matchStarts.length} times. Include more surrounding text to pick one, or set replaceAll`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (
     text.length + matchStarts.length * (newText.length - oldText.length) >
     MAX_PAGE_MARKDOWN_LENGTH
   ) {
-    return {code: 'BAD_USER_INPUT', message: 'The page would be too long'}
+    throw new GraphQLError('The page would be too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (oldText === newText) return {blocks, rewriteCount: 0}
   const {groups, blockStarts} = groupMatches(blocks, matchStarts, oldText.length)
   if (groups.length > rewriteBudget) {
-    return {
-      code: 'BAD_USER_INPUT',
-      message: `The edits change more than ${MAX_REWRITES} places. Use editPageContent to rewrite the page`
-    }
+    throw new GraphQLError(
+      `The edits change more than ${MAX_REWRITES} places. Use editPageContent to rewrite the page`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   let nextBlocks = blocks
   // Right to left, so rewriting a group never moves the blocks or offsets of the groups before it
   for (const group of groups.reverse()) {
-    const result = rewriteGroup(
+    nextBlocks = rewriteGroup(
       editor,
       nextBlocks,
       text,
@@ -252,8 +246,6 @@ const applyEdit = (
       edit,
       canChangePageLinks
     )
-    if (!Array.isArray(result)) return result
-    nextBlocks = result
   }
   return {blocks: nextBlocks, rewriteCount: groups.length}
 }
@@ -265,10 +257,9 @@ const writeBlocks = (doc: Y.Doc, blocks: Block[]) => {
   const createdElements =
     createdNodes.length > 0 ? toYXmlNodes(createdNodes.map(({node}) => node)) : []
   if (createdElements.length !== createdNodes.length) {
-    return {
-      code: 'INTERNAL_SERVER_ERROR' as const,
-      message: 'Edited blocks did not convert to Yjs one-to-one'
-    }
+    throw new GraphQLError('Edited blocks did not convert to Yjs one-to-one', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
   doc.transact(() => {
     for (let idx = fragment.length - 1; idx >= 0; idx--) {
@@ -280,7 +271,6 @@ const writeBlocks = (doc: Y.Doc, blocks: Block[]) => {
       fragment.insert(position, [createdElements[createdIdx++]!.clone()])
     })
   })
-  return null
 }
 
 const isTitle = (node: JSONContent | undefined) =>
@@ -290,7 +280,7 @@ export const applyPageContentEdits = (
   doc: Y.Doc,
   edits: PageContentEditInput[],
   {canChangePageLinks}: {canChangePageLinks: boolean}
-): PageContentEditError | null => {
+) => {
   const editor = new Editor({
     element: undefined,
     content: {type: 'doc', content: [{type: 'paragraph'}]},
@@ -299,7 +289,9 @@ export const applyPageContentEdits = (
   try {
     const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
     if (nodes.length !== doc.getXmlFragment('default').length) {
-      return {code: 'INTERNAL_SERVER_ERROR', message: 'Page blocks do not match its Yjs fragment'}
+      throw new GraphQLError('Page blocks do not match its Yjs fragment', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     }
     let blocks: Block[] = nodes.map((node, fragmentIndex) => ({
       ...toBlock(editor, node),
@@ -307,21 +299,26 @@ export const applyPageContentEdits = (
     }))
     let rewriteBudget = MAX_REWRITES
     for (const [idx, edit] of edits.entries()) {
-      const result = applyEdit(editor, blocks, edit, canChangePageLinks, rewriteBudget)
-      if ('code' in result) return {...result, message: `Edit ${idx + 1}: ${result.message}`}
-      blocks = result.blocks
-      rewriteBudget -= result.rewriteCount
+      try {
+        const result = applyEdit(editor, blocks, edit, canChangePageLinks, rewriteBudget)
+        blocks = result.blocks
+        rewriteBudget -= result.rewriteCount
+      } catch (e) {
+        if (!(e instanceof GraphQLError)) throw e
+        throw new GraphQLError(`Edit ${idx + 1}: ${e.message}`, {
+          extensions: {code: e.extensions.code}
+        })
+      }
     }
     if (isTitle(nodes[0]) && !isTitle(blocks[0]?.node)) {
-      return {
-        code: 'BAD_USER_INPUT',
-        message: 'The page must still start with its title as a level-1 heading'
-      }
+      throw new GraphQLError('The page must still start with its title as a level-1 heading', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     const isUnchanged =
       blocks.length === nodes.length &&
       blocks.every(({fragmentIndex}, idx) => fragmentIndex === idx)
-    return isUnchanged ? null : writeBlocks(doc, blocks)
+    if (!isUnchanged) writeBlocks(doc, blocks)
   } finally {
     editor.destroy()
   }

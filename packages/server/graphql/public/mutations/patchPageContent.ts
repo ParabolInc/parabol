@@ -38,16 +38,11 @@ const patchPageContent: MutationResolvers['patchPageContent'] = async (
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  const error = await redisHocusPocus.handleEvent(
-    'patchPageContent',
-    CipherId.toClient(dbPageId, 'page'),
-    {
-      edits,
-      userId: viewerId,
-      canChangePageLinks: !resourceGrants || resourceGrants.isUnrestricted()
-    }
-  )
-  if (error) throw new GraphQLError(error.message, {extensions: {code: error.code}})
+  await redisHocusPocus.handleEvent('patchPageContent', CipherId.toClient(dbPageId, 'page'), {
+    edits,
+    userId: viewerId,
+    canChangePageLinks: !resourceGrants || resourceGrants.isUnrestricted()
+  })
   dataLoader.get('pages').clear(dbPageId)
   return {page: await dataLoader.get('pages').loadNonNull(dbPageId)}
 }

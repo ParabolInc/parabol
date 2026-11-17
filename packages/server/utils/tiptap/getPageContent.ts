@@ -8,7 +8,6 @@ import {redisHocusPocus} from '../../hocusPocus'
 import {CipherId} from '../CipherId'
 
 const readPageJSON = async (pageId: number, dataLoader: DataLoaderWorker) => {
-  // An open page can hold edits that aren't stored yet
   const liveContent = await redisHocusPocus.handleEvent(
     'readPageContent',
     CipherId.toClient(pageId, 'page'),
