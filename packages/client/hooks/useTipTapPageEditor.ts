@@ -25,6 +25,10 @@ import type {
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {useArchivePageMutation} from '../mutations/useArchivePageMutation'
+import {
+  type DuplicateExecute,
+  useDuplicatePageMutation
+} from '../mutations/useDuplicatePageMutation'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {CalloutTitleBase} from '../shared/tiptap/extensions/CalloutTitleBase'
@@ -106,6 +110,9 @@ export const useTipTapPageEditor = (
   const navigate = useNavigate()
   const {hash} = useLocation()
   const [executeArchive] = useArchivePageMutation()
+  const [executeDuplicate] = useDuplicatePageMutation()
+  const duplicatePage: DuplicateExecute = useEventCallback((config) => executeDuplicate(config))
+  const navigateToPath = useEventCallback((path: string) => navigate(path))
   const onSyncedBlockRemoved = useEventCallback(
     (removal: SyncedBlockRemoval, removedFrom: Editor) => {
       showSyncedBlockRemovalSnack({
@@ -173,7 +180,13 @@ export const useTipTapPageEditor = (
         }),
         IndentHandler,
         LoomExtension,
-        PageDragHandle.configure({pageId, atmosphere, isNested: !!nested}),
+        PageDragHandle.configure({
+          pageId,
+          atmosphere,
+          isNested: !!nested,
+          duplicatePage,
+          navigate: navigateToPath
+        }),
         SyncedBlockDrops.configure({pageId, isNested: !!nested, onBlockDrop: moveDroppedBlocks}),
         BlockSelection,
         BlockMoveKeys.configure({atmosphere, pageId}),

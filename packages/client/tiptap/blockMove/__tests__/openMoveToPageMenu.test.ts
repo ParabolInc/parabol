@@ -36,7 +36,7 @@ jest.mock('../prepareBlockMove', () => {
 
 type MenuProps = {
   anchorRect: {top: number; left: number; width: number; height: number}
-  count: number
+  heading: string
   drag: BlockDragState
   onClose: (returnFocus: boolean) => void
   onPick: (pageId: string, title: string, navigate: (path: string) => void) => void
@@ -83,9 +83,15 @@ test('mounts the picker with the block count and drag state at the anchor', () =
   expect(renderer.element.isConnected).toBe(true)
   expect(renderer.props).toMatchObject({
     anchorRect,
-    count: 2,
+    heading: 'Move 2 blocks to',
     drag: {sourcePageId: 'page:1', childPageIds: [], refusal: null}
   })
+})
+
+test('the heading is singular for one block', () => {
+  const editor = makeEditor(p('a'), p('b'))
+  const {renderer} = open(editor, {...rangeOf(editor, 'paragraph', 0), depth: 0})
+  expect(renderer.props.heading).toBe('Move 1 block to')
 })
 
 test('closing the picker without a pick stops tracking and restores focus', async () => {

@@ -40,7 +40,7 @@ let root: Root | undefined
 let onClose: jest.Mock
 let onPick: jest.Mock
 
-const render = async () => {
+const render = async (confirmVerb?: string) => {
   onClose = jest.fn()
   onPick = jest.fn()
   const host = document.body.appendChild(document.createElement('div'))
@@ -49,8 +49,9 @@ const render = async () => {
     root.render(
       <MoveToPageMenu
         anchorRect={{top: 10, left: 10, width: 1, height: 20}}
-        count={2}
+        heading='Copy "Plan" to'
         drag={{sourcePageId: 'page:0', childPageIds: [], refusal: null}}
+        confirmVerb={confirmVerb}
         onClose={onClose}
         onPick={onPick}
       />
@@ -105,6 +106,20 @@ afterAll(async () => {
 test('the search box has focus when the picker opens', async () => {
   await render()
   expect(document.activeElement).toBe(input())
+})
+
+test('the heading comes from the prop', async () => {
+  await render()
+  expect(content().textContent).toContain('Copy "Plan" to')
+})
+
+test('the footer names the move by default and the copy when asked', async () => {
+  await render()
+  expect(content().textContent).toContain('Enter move')
+  await act(async () => root?.unmount())
+  document.body.replaceChildren()
+  await render('copy')
+  expect(content().textContent).toContain('Enter copy')
 })
 
 test('Enter in the search box moves to the first allowed row', async () => {

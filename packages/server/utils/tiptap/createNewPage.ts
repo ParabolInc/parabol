@@ -17,26 +17,33 @@ type CreateNewPageOptions = {
   isSyncedBlock?: boolean
   isMeetingTOC?: boolean
   content: TipTapSerializedPageContent
+  yDoc?: Uint8Array
+  sortOrder?: string
   teamId?: string | null
   summaryMeetingId?: string | null
   userId: string
+  isAnnounced?: boolean
 }
 
 export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: string | null) => {
   const {
     content,
+    yDoc: givenYDoc,
+    sortOrder: sortOrderHint,
     parentPageId,
     isDatabase,
     isSyncedBlock,
     isMeetingTOC,
     teamId,
     summaryMeetingId,
-    userId
+    userId,
+    isAnnounced = true
   } = options
 
   const pg = getKysely()
   const yDoc = Buffer.from(
-    encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
+    givenYDoc ??
+      encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
   )
   const {plaintextContent, title} = getPlaintextFromTipTap(content)
 
@@ -49,7 +56,13 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
     isPrivate = parentPage.isPrivate
     ancestorIds = parentPage.ancestorIds.concat(parentPageId)
   } else {
-    sortOrder = await getPageNextSortOrder(__START__, false, userId, isPrivate, teamId ?? null)
+    sortOrder = await getPageNextSortOrder(
+      sortOrderHint ?? __START__,
+      false,
+      userId,
+      isPrivate,
+      teamId ?? null
+    )
   }
 
   const page = await pg
@@ -137,7 +150,7 @@ export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: s
 
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}
-  if (!isSyncedBlock) {
+  if (!isSyncedBlock && isAnnounced) {
     await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
   }
   dataLoader.dispose()

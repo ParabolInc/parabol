@@ -1,0 +1,64 @@
+import {GraphQLError} from 'graphql'
+import {getUserId} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
+import {duplicatePageTree} from '../../../utils/tiptap/duplicatePageTree'
+import type {MutationResolvers} from '../resolverTypes'
+import {getDuplicatePlacement} from './helpers/getDuplicatePlacement'
+
+const duplicatePage: MutationResolvers['duplicatePage'] = async (
+  _source,
+  {pageId, parentPageId},
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
+) => {
+  const viewerId = getUserId(authToken)
+  const [sourcePageId] = CipherId.fromClient(pageId)
+  const destinationPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
+  const [source, destination] = await Promise.all([
+    dataLoader.get('pages').load(sourcePageId),
+    destinationPageId ? dataLoader.get('pages').load(destinationPageId) : null
+  ])
+  if (!source) throw new GraphQLError('Invalid pageId', {extensions: {code: 'BAD_USER_INPUT'}})
+  if (source.isMeetingTOC) {
+    throw new GraphQLError('Meeting Summaries pages cannot be duplicated', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (source.deletedAt) {
+    throw new GraphQLError('Restore this page from the Trash before copying it', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (destinationPageId) {
+    if (
+      !destination ||
+      destination.deletedAt ||
+      destination.isDatabase ||
+      destination.isMeetingTOC ||
+      destination.isSyncedBlock ||
+      destination.id === sourcePageId ||
+      destination.ancestorIds.includes(sourcePageId)
+    ) {
+      throw new GraphQLError("You can't copy a page there", {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+  }
+  const placement = await getDuplicatePlacement({
+    viewerId,
+    source,
+    destinationPageId,
+    dataLoader,
+    resourceGrants
+  })
+  const page = await duplicatePageTree({
+    viewerId,
+    authToken,
+    dataLoader,
+    sourcePageId,
+    placement,
+    mutatorId
+  })
+  return {page}
+}
+
+export default duplicatePage
