@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.39.0](https://github.com/ParabolInc/parabol/compare/v15.38.0...v15.39.0) (2026-11-17)
+
+
+### Added
+
+* let agents read and patch Page content through the API ([#14262](https://github.com/ParabolInc/parabol/issues/14262)) ([34455d7](https://github.com/ParabolInc/parabol/commit/34455d7a37b8ca8cd2577ef69bd26b2155bdde4c))
+
+
+### Fixed
+
+* **billing:** only Parabol can downgrade an Enterprise organization ([#14267](https://github.com/ParabolInc/parabol/issues/14267)) ([63a8681](https://github.com/ParabolInc/parabol/commit/63a86818a0495231d251c04b5ac6e5070e7c10f4))
+* **billing:** stop Enterprise orgs changing plan through card and subscription mutations ([#14269](https://github.com/ParabolInc/parabol/issues/14269)) ([5cf2100](https://github.com/ParabolInc/parabol/commit/5cf2100fa0efa7016e11f6bde0abd214b27d528f))
+* **client:** report a query the ended session fails as a warning, not an error ([#14163](https://github.com/ParabolInc/parabol/issues/14163)) ([3cfc5e0](https://github.com/ParabolInc/parabol/commit/3cfc5e025db1e179bb54132b1475970461abbfdc))
+* **client:** show the task send button only on card hover ([#14266](https://github.com/ParabolInc/parabol/issues/14266)) ([0d7080d](https://github.com/ParabolInc/parabol/commit/0d7080daba26db04afa21f4542983f7c0226205a))
+* **client:** square filter buttons and full-width composer tabs in the discussion panel ([#14268](https://github.com/ParabolInc/parabol/issues/14268)) ([d782cce](https://github.com/ParabolInc/parabol/commit/d782ccef87318517838f9eb3376d3e8d54f94a72))
+* **pages:** never parse task or response blocks out of HTML that lacks their content ([#14139](https://github.com/ParabolInc/parabol/issues/14139)) ([74e9ae8](https://github.com/ParabolInc/parabol/commit/74e9ae8e19108c632af8e56bcca84ade9927077b))
+* **server:** keep fragments spread inside other fragments when nesting GitHub, GitLab and Linear ([#14270](https://github.com/ParabolInc/parabol/issues/14270)) ([1e65724](https://github.com/ParabolInc/parabol/commit/1e657243ab36c29070545a6c2f0a9f609559109a))
+* **server:** refuse to update a removed integration provider and resolve a missing join request to null ([#14219](https://github.com/ParabolInc/parabol/issues/14219)) ([1aca941](https://github.com/ParabolInc/parabol/commit/1aca941a1b03d5ad494eaf26e84ca576dadb727a))
+* **server:** treat page ids that can't be a database row as missing pages ([#14102](https://github.com/ParabolInc/parabol/issues/14102)) ([a0a197a](https://github.com/ParabolInc/parabol/commit/a0a197aca587b999e2b70940b511ff1d781f4585))
+
 ## [15.38.0](https://github.com/ParabolInc/parabol/compare/v15.37.1...v15.38.0) (2026-11-17)
 
 
