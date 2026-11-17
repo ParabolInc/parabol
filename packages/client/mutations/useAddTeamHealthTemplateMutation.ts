@@ -8,7 +8,7 @@ import {snackOnError} from './handlers/snackOnError'
 import {putTemplateInConnection} from './UpdatePokerTemplateScopeMutation'
 
 graphql`
-  fragment useAddTeamHealthTemplateMutation_team on AddTeamHealthTemplateSuccess {
+  fragment useAddTeamHealthTemplateMutation_team on AddTeamHealthTemplatePayload {
     teamHealthTemplate {
       ...ActivityDetails_template
       id

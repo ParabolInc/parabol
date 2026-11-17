@@ -4,7 +4,7 @@ import type {UpdateCommentContentMutation as TUpdateCommentContentMutation} from
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateCommentContentMutation_meeting on UpdateCommentContentSuccess {
+  fragment UpdateCommentContentMutation_meeting on UpdateCommentContentPayload {
     comment {
       id
       content

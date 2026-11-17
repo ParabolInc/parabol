@@ -9,7 +9,7 @@ import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import type {MutationResolvers} from '../resolverTypes'
 
 // included here to codegen has access to it
-export type UpgradeToTeamTierSuccessSource = {
+export type UpgradeToTeamTierPayloadSource = {
   orgId: string
   teamIds: string[]
 }

@@ -4,7 +4,7 @@ import type {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateCreditCardMutation_organization on UpdateCreditCardSuccess {
+  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
     organization {
       id
       isPaid

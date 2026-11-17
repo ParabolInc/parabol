@@ -4,7 +4,7 @@ import type {SetTeamHealthVoteMutation as TSetTeamHealthVoteMutation} from '../_
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetTeamHealthVoteMutation_meeting on SetTeamHealthVoteSuccess {
+  fragment SetTeamHealthVoteMutation_meeting on SetTeamHealthVotePayload {
     stage {
       id
       labels

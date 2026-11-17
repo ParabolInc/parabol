@@ -1,0 +1,7 @@
+"""
+Success result for toggleSummaryEmail mutation
+"""
+type ToggleSummaryEmailPayload {
+  "The user whose meeting summary email preference was updated"
+  user: User!
+}

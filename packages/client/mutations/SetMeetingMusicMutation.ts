@@ -14,7 +14,7 @@ const mutation = graphql`
 `
 
 graphql`
-  fragment SetMeetingMusicMutation_meeting on SetMeetingMusicSuccess {
+  fragment SetMeetingMusicMutation_meeting on SetMeetingMusicPayload {
     meetingId
     trackSrc
     isPlaying

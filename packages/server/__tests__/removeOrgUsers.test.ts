@@ -16,8 +16,8 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
         }
       }
@@ -25,7 +25,7 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     variables: {invitationToken: token},
     cookie: invitee.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.error).toBeNull()
+  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
   const authToken = accepted.cookie.split('__Host-Http-authToken=')[1].split(';')[0]
   return {...invitee, cookie: `__Host-Http-authToken=${authToken}`}
 }
@@ -98,7 +98,7 @@ const removeOrgUsers = async (cookie: string, orgId: string, userIds: string[]) 
     variables: {orgId, userIds},
     cookie
   })
-  expect(removed.data.removeOrgUsers.__typename).toBe('RemoveOrgUsersSuccess')
+  expect(removed.data.removeOrgUsers.__typename).toBe('RemoveOrgUsersPayload')
 }
 
 test('Removing the lead with another member hands the lead and their tasks to a member who stays', async () => {

@@ -1,0 +1,7 @@
+"""
+Success result for toggleAIFeatures mutation
+"""
+type ToggleAIFeaturesPayload {
+  "The organization with the updated AI features setting"
+  organization: Organization!
+}

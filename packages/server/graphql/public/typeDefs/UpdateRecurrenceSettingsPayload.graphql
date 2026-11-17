@@ -1,0 +1,9 @@
+"""
+Success result for updateRecurrenceSettings mutation
+"""
+type UpdateRecurrenceSettingsPayload {
+  """
+  The updated meeting
+  """
+  meeting: NewMeeting!
+}

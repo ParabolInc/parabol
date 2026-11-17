@@ -4,7 +4,7 @@ import type {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutati
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateRecurrenceSettingsMutation_team on UpdateRecurrenceSettingsSuccess {
+  fragment UpdateRecurrenceSettingsMutation_team on UpdateRecurrenceSettingsPayload {
     meeting {
       id
       meetingSeriesId

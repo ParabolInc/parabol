@@ -4,7 +4,7 @@ import type {RemoveTeamMemberIntegrationAuthMutation as TRemoveTeamMemberIntegra
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
+  fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthPayload {
     teamMember {
       ...useIsIntegrated_teamMember
       services {

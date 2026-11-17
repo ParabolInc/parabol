@@ -4,7 +4,7 @@ import type {AutogroupMutation as TAutogroupMutation} from '../__generated__/Aut
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AutogroupMutation_meeting on AutogroupSuccess {
+  fragment AutogroupMutation_meeting on AutogroupPayload {
     meeting {
       id
       reflectionGroups {

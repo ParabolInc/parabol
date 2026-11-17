@@ -4,7 +4,7 @@ import type {UpdateRetroMaxVotesMutation as TUpdateRetroMaxVotesMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateRetroMaxVotesMutation_meeting on UpdateRetroMaxVotesSuccess {
+  fragment UpdateRetroMaxVotesMutation_meeting on UpdateRetroMaxVotesPayload {
     meeting {
       totalVotes
       maxVotesPerGroup

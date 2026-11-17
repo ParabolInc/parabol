@@ -159,8 +159,8 @@ const VIEWER_PERSONAL_ACCESS_TOKENS = `
 const ACCEPT_TEAM_INVITATION = `
   mutation AcceptTeamInvitation($invitationToken: ID!) {
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
+      userErrors {
+        code
       }
     }
   }
@@ -200,7 +200,7 @@ const createOrgAdmin = async () => {
   expect(promoteToOrgAdmin).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })

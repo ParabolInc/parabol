@@ -1,0 +1,19 @@
+"""
+Success result for updateTemplateScope mutation
+"""
+type UpdateTemplateScopePayload {
+  """
+  The updated template; if downscoped, may not reflect the full sharing state
+  """
+  template: MeetingTemplate!
+
+  """
+  If downscoping a previously used template, this will be the replacement
+  """
+  clonedTemplate: MeetingTemplate
+
+  """
+  The settings that contain the teamTemplates array that was modified
+  """
+  settings: TeamMeetingSettings!
+}

@@ -12,7 +12,7 @@ import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
 graphql`
-  fragment SetOrgUserRoleMutation_organization on SetOrgUserRoleSuccess {
+  fragment SetOrgUserRoleMutation_organization on SetOrgUserRolePayload {
     organization {
       ...CompleteOrganizationFrag @relay(mask: false)
     }

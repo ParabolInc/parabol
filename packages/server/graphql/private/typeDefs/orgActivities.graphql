@@ -12,10 +12,10 @@ extend type Query {
     the end date for the query
     """
     endDate: DateTime
-  ): OrgActivitiesSuccess!
+  ): OrgActivitiesPayload!
 }
 
-type OrgActivitiesSuccess {
+type OrgActivitiesPayload {
   """
   The rows of the report
   """

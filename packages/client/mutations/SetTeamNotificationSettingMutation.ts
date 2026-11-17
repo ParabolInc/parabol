@@ -7,7 +7,7 @@ import type {
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingSuccess {
+  fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingPayload {
     teamNotificationSettings {
       id
       events

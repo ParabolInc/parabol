@@ -4,7 +4,7 @@ import type {UpdateIntegrationProviderMutation as TUpdateIntegrationProviderMuta
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateIntegrationProviderMutation_organization on UpdateIntegrationProviderSuccess {
+  fragment UpdateIntegrationProviderMutation_organization on UpdateIntegrationProviderPayload {
     provider {
       id
       ... on IntegrationProviderWebhook {

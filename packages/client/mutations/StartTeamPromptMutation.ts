@@ -4,7 +4,7 @@ import type {StartTeamPromptMutation as TStartTeamPromptMutation} from '../__gen
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartTeamPromptMutation_team on StartTeamPromptSuccess {
+  fragment StartTeamPromptMutation_team on StartTeamPromptPayload {
     meeting {
       id
       ...TeamPromptMeetingStatus_meeting

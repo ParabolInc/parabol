@@ -1,0 +1,14 @@
+"""
+The result of flagging a participant as ready to advance to the next meeting stage
+"""
+type FlagReadyToAdvancePayload {
+  """
+  the meeting with the updated readyUserIds
+  """
+  meeting: NewMeeting!
+
+  """
+  the stage with the updated readyUserIds
+  """
+  stage: NewMeetingStage!
+}

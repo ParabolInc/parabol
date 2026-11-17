@@ -1,0 +1,9 @@
+"""
+Successfully reset reflection groups to their state before AI autogrouping was applied
+"""
+type ResetReflectionGroupsPayload {
+  """
+  The retrospective meeting with restored reflection groups
+  """
+  meeting: RetrospectiveMeeting!
+}

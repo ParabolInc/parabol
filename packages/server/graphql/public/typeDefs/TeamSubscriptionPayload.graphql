@@ -6,54 +6,54 @@ type TeamSubscriptionPayload {
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddAgendaItemPayload: AddAgendaItemPayload
   ArchiveTeamPayload: ArchiveTeamPayload
-  BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
+  BatchArchiveTasksSuccess: BatchArchiveTasksPayload
   DenyPushInvitationPayload: DenyPushInvitationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
-  EndCheckInSuccess: EndCheckInSuccess
-  EndRetrospectiveSuccess: EndRetrospectiveSuccess
-  EndSprintPokerSuccess: EndSprintPokerSuccess
-  EndTeamHealthSuccess: EndTeamHealthSuccess
-  EndTeamPromptSuccess: EndTeamPromptSuccess
-  AddTeamHealthTemplateQuestionSuccess: AddTeamHealthTemplateQuestionSuccess
-  RemoveTeamHealthTemplateQuestionSuccess: RemoveTeamHealthTemplateQuestionSuccess
+  EndCheckInSuccess: EndCheckInPayload
+  EndRetrospectiveSuccess: EndRetrospectivePayload
+  EndSprintPokerSuccess: EndSprintPokerPayload
+  EndTeamHealthSuccess: EndTeamHealthPayload
+  EndTeamPromptSuccess: EndTeamPromptPayload
+  AddTeamHealthTemplateQuestionSuccess: AddTeamHealthTemplateQuestionPayload
+  RemoveTeamHealthTemplateQuestionSuccess: RemoveTeamHealthTemplateQuestionPayload
   NavigateMeetingPayload: NavigateMeetingPayload
   PushInvitationPayload: PushInvitationPayload
   PromoteToTeamLeadPayload: PromoteToTeamLeadPayload
   RemoveAgendaItemPayload: RemoveAgendaItemPayload
-  RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
+  RemoveOrgUsersSuccess: RemoveOrgUsersPayload
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
-  RenameMeetingSuccess: RenameMeetingSuccess
+  RenameMeetingSuccess: RenameMeetingPayload
   SelectTemplatePayload: SelectTemplatePayload
-  SetTeamNotificationSettingSuccess: SetTeamNotificationSettingSuccess
-  StartCheckInSuccess: StartCheckInSuccess
-  StartRetrospectiveSuccess: StartRetrospectiveSuccess
-  StartTeamHealthSuccess: StartTeamHealthSuccess
-  StartSprintPokerSuccess: StartSprintPokerSuccess
-  StartTeamPromptSuccess: StartTeamPromptSuccess
+  SetTeamNotificationSettingSuccess: SetTeamNotificationSettingPayload
+  StartCheckInSuccess: StartCheckInPayload
+  StartRetrospectiveSuccess: StartRetrospectivePayload
+  StartTeamHealthSuccess: StartTeamHealthPayload
+  StartSprintPokerSuccess: StartSprintPokerPayload
+  StartTeamPromptSuccess: StartTeamPromptPayload
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
-  UpdateCreditCardPayload: UpdateCreditCardSuccess
-  UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
+  UpdateCreditCardPayload: UpdateCreditCardPayload
+  UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
-  AddPromptTemplateSuccess: AddPromptTemplateSuccess
-  AddPokerTemplateSuccess: AddPokerTemplateSuccess
-  AddTeamHealthTemplateSuccess: AddTeamHealthTemplateSuccess
-  AddTemplatePromptSuccess: AddTemplatePromptSuccess
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierPayload
+  AddPromptTemplateSuccess: AddPromptTemplatePayload
+  AddPokerTemplateSuccess: AddPokerTemplatePayload
+  AddTeamHealthTemplateSuccess: AddTeamHealthTemplatePayload
+  AddTemplatePromptSuccess: AddTemplatePromptPayload
   AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayload
   AddPokerTemplateScalePayload: AddPokerTemplateScalePayload
   AddPokerTemplateScaleValuePayload: AddPokerTemplateScaleValuePayload
-  MoveTemplatePromptSuccess: MoveTemplatePromptSuccess
+  MoveTemplatePromptSuccess: MoveTemplatePromptPayload
   MovePokerTemplateDimensionPayload: MovePokerTemplateDimensionPayload
-  UpdateTemplatePromptDescriptionSuccess: UpdateTemplatePromptDescriptionSuccess
+  UpdateTemplatePromptDescriptionSuccess: UpdateTemplatePromptDescriptionPayload
   PokerTemplateDimensionUpdateDescriptionPayload: PokerTemplateDimensionUpdateDescriptionPayload
-  UpdateTemplatePromptGroupColorSuccess: UpdateTemplatePromptGroupColorSuccess
-  RemovePromptTemplateSuccess: RemovePromptTemplateSuccess
+  UpdateTemplatePromptGroupColorSuccess: UpdateTemplatePromptGroupColorPayload
+  RemovePromptTemplateSuccess: RemovePromptTemplatePayload
   RemovePokerTemplatePayload: RemovePokerTemplatePayload
-  RemoveTemplatePromptSuccess: RemoveTemplatePromptSuccess
+  RemoveTemplatePromptSuccess: RemoveTemplatePromptPayload
   RemovePokerTemplateDimensionPayload: RemovePokerTemplateDimensionPayload
   RemovePokerTemplateScalePayload: RemovePokerTemplateScalePayload
   RenameMeetingTemplatePayload: RenameMeetingTemplatePayload
-  RenameTemplatePromptSuccess: RenameTemplatePromptSuccess
+  RenameTemplatePromptSuccess: RenameTemplatePromptPayload
   RenamePokerTemplateDimensionPayload: RenamePokerTemplateDimensionPayload
   RenamePokerTemplateScalePayload: RenamePokerTemplateScalePayload
   RemovePokerTemplateScaleValuePayload: RemovePokerTemplateScaleValuePayload
@@ -61,12 +61,12 @@ type TeamSubscriptionPayload {
   UpdatePokerTemplateDimensionScalePayload: UpdatePokerTemplateDimensionScalePayload
   UpdatePokerTemplateScaleValuePayload: UpdatePokerTemplateScaleValuePayload
   UpdateUserProfilePayload: UpdateUserProfilePayload
-  MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValueSuccess
-  SetDefaultSlackChannelSuccess: SetDefaultSlackChannelSuccess
-  UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
-  UpdateMeetingSeriesSuccess: UpdateMeetingSeriesSuccess
-  UpdateIntegrationDimensionFieldSuccess: UpdateIntegrationDimensionFieldSuccess
-  UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
-  JoinTeamSuccess: JoinTeamSuccess
+  MovePokerTemplateScaleValueSuccess: MovePokerTemplateScaleValuePayload
+  SetDefaultSlackChannelSuccess: SetDefaultSlackChannelPayload
+  UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsPayload
+  UpdateMeetingSeriesSuccess: UpdateMeetingSeriesPayload
+  UpdateIntegrationDimensionFieldSuccess: UpdateIntegrationDimensionFieldPayload
+  UpdateTemplateCategorySuccess: UpdateTemplateCategoryPayload
+  JoinTeamSuccess: JoinTeamPayload
   SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload
 }

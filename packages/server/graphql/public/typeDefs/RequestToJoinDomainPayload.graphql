@@ -1,0 +1,6 @@
+type RequestToJoinDomainPayload {
+  """
+  Was the request created successfully
+  """
+  success: Boolean!
+}

@@ -1,0 +1,6 @@
+type UpdateTemplateCategoryPayload {
+  """
+  The template with the updated mainCategory
+  """
+  template: MeetingTemplate!
+}

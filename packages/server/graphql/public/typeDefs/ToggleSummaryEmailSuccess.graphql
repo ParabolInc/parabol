@@ -1,7 +1,0 @@
-"""
-Success result for toggleSummaryEmail mutation
-"""
-type ToggleSummaryEmailSuccess {
-  "The user whose meeting summary email preference was updated"
-  user: User!
-}

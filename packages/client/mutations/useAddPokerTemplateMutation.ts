@@ -11,7 +11,7 @@ import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useAddPokerTemplateMutation_team on AddPokerTemplateSuccess {
+  fragment useAddPokerTemplateMutation_team on AddPokerTemplatePayload {
     user {
       freeCustomPokerTemplatesRemaining
     }

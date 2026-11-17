@@ -1,0 +1,6 @@
+type RemoveAuthIdentityPayload {
+  """
+  The users who had their auth identity removed
+  """
+  users: [User!]!
+}

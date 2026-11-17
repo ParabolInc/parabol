@@ -1,0 +1,9 @@
+"""
+Success result for updateRetroMaxVotes mutation
+"""
+type UpdateRetroMaxVotesPayload {
+  """
+  The meeting with the updated max votes
+  """
+  meeting: RetrospectiveMeeting!
+}

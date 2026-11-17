@@ -4,7 +4,7 @@ import type {RevealTeamHealthVotesMutation as TRevealTeamHealthVotesMutation} fr
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RevealTeamHealthVotesMutation_meeting on RevealTeamHealthVotesSuccess {
+  fragment RevealTeamHealthVotesMutation_meeting on RevealTeamHealthVotesPayload {
     stage {
       ...TeamHealthLocalStage
     }

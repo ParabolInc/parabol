@@ -8,7 +8,7 @@ import {useMutation} from 'react-relay'
 import type {RecordSourceProxy} from 'relay-runtime'
 
 graphql`
-  fragment useStartMeeting_retrospective on StartRetrospectiveSuccess {
+  fragment useStartMeeting_retrospective on StartRetrospectivePayload {
     meeting {
       id
     }
@@ -19,7 +19,7 @@ graphql`
 `
 
 graphql`
-  fragment useStartMeeting_checkIn on StartCheckInSuccess {
+  fragment useStartMeeting_checkIn on StartCheckInPayload {
     meeting {
       id
     }
@@ -30,7 +30,7 @@ graphql`
 `
 
 graphql`
-  fragment useStartMeeting_sprintPoker on StartSprintPokerSuccess {
+  fragment useStartMeeting_sprintPoker on StartSprintPokerPayload {
     meeting {
       id
     }
@@ -41,7 +41,7 @@ graphql`
 `
 
 graphql`
-  fragment useStartMeeting_teamPrompt on StartTeamPromptSuccess {
+  fragment useStartMeeting_teamPrompt on StartTeamPromptPayload {
     meeting {
       id
     }

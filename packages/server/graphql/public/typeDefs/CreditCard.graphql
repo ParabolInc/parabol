@@ -6,7 +6,7 @@ payment method. The field is null when the org is on a free plan or has no card 
 
 To update the card, call the `updateCreditCard` mutation (requires `ORGS_WRITE` scope / billing
 leader role), passing the Stripe `paymentMethodId` obtained from the client-side Stripe Elements
-flow. On success, `UpdateCreditCardSuccess` returns the updated `Organization` (with a fresh
+flow. On success, `UpdateCreditCardPayload` returns the updated `Organization` (with a fresh
 `CreditCard` here) plus a `stripeSubscriptionClientSecret` for confirming the payment intent.
 
 No sensitive data (full card number, CVV) is ever stored or returned — only the brand, expiry,

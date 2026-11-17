@@ -1,9 +1,0 @@
-"""
-Success result for updateMeetingSeries mutation
-"""
-type UpdateMeetingSeriesSuccess {
-  """
-  The updated meeting series
-  """
-  meetingSeries: MeetingSeries!
-}

@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainSuccess
+  fragment useAcceptRequestToJoinDomainMutation_success on AcceptRequestToJoinDomainPayload
   @argumentDefinitions(requestId: {type: "ID!"}) {
     viewer {
       ...ReviewRequestToJoinOrgModal_viewer @arguments(requestId: $requestId)

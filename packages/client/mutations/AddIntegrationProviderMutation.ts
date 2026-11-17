@@ -4,7 +4,7 @@ import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} 
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddIntegrationProviderMutation_organization on AddIntegrationProviderSuccess {
+  fragment AddIntegrationProviderMutation_organization on AddIntegrationProviderPayload {
     provider {
       id
       teamId

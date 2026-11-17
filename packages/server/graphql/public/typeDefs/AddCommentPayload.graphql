@@ -1,0 +1,14 @@
+"""
+Successful result of addComment. The comment has been added to the specified discussion thread.
+"""
+type AddCommentPayload {
+  """
+  The comment that was just created
+  """
+  comment: Comment!
+
+  """
+  The ID of the meeting where the comment was added
+  """
+  meetingId: ID!
+}

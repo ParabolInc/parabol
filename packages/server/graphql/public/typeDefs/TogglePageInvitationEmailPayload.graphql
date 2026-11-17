@@ -1,0 +1,7 @@
+"""
+Success result for togglePageInvitationEmail mutation
+"""
+type TogglePageInvitationEmailPayload {
+  "The user whose page invitation email preference was updated"
+  user: User!
+}

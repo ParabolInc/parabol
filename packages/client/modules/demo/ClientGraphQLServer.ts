@@ -513,7 +513,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         thread.edges.push(new DemoThreadableEdge(newComment))
       }
       const data = {
-        __typename: 'AddCommentSuccess',
+        __typename: 'AddCommentPayload',
         error: null,
         meetingId: RetroDemo.MEETING_ID,
         comment: newComment
@@ -586,7 +586,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       const data = {
-        __typename: 'AddReactjiToReactableSuccess',
+        __typename: 'AddReactjiToReactablePayload',
         reactable
       }
       if (userId !== demoViewerId) {
@@ -823,7 +823,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const data = {
         discussionId,
         discussion,
-        __typename: 'EditCommentingSuccess'
+        __typename: 'EditCommentingPayload'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
@@ -859,7 +859,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         : readyUserIds.filter((id) => id !== userId)
 
       const data = {
-        __typename: 'FlagReadyToAdvanceSuccess',
+        __typename: 'FlagReadyToAdvancePayload',
         stage,
         meeting
       }
@@ -979,7 +979,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         0
       )
       const data = {
-        __typename: 'UpdateRetroMaxVotesSuccess',
+        __typename: 'UpdateRetroMaxVotesPayload',
         meeting
       }
       return {updateRetroMaxVotes: data}
@@ -1064,7 +1064,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const meeting = this.db.newMeeting
       meeting.name = name
       const data = {
-        __typename: 'RenameMeetingSuccess',
+        __typename: 'RenameMeetingPayload',
         meeting
       }
       if (userId !== demoViewerId) {
@@ -1162,7 +1162,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }) => {
       return {
         setMeetingMusic: {
-          __typename: 'SetMeetingMusicSuccess',
+          __typename: 'SetMeetingMusicPayload',
           meetingId,
           trackSrc,
           isPlaying
@@ -1368,7 +1368,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
       return {
         ungroupReflection: {
-          __typename: 'UngroupReflectionSuccess',
+          __typename: 'UngroupReflectionPayload',
           meeting: this.db.newMeeting
         }
       }
@@ -1597,7 +1597,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       const data = {
-        __typename: 'DeleteCommentSuccess',
+        __typename: 'DeleteCommentPayload',
         error: null,
         comment
       }
@@ -1772,7 +1772,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         removedSuggestedActionId: null,
         timelineEvent: null,
         updatedTasks: this.db.tasks,
-        __typename: 'EndRetrospectiveSuccess'
+        __typename: 'EndRetrospectivePayload'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.TEAM, data)
@@ -1800,7 +1800,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.content = content
 
       const data = {
-        __typename: 'UpdateCommentContentSuccess',
+        __typename: 'UpdateCommentContentPayload',
         error: null,
         comment
       }

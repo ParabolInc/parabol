@@ -69,19 +69,17 @@ When a mutation returns IDs (not full objects), the payload type source needs cu
 - Add a mapper entry in `codegen.json`
 - Use `loadNonNull` when the SDL field is non-nullable (e.g. `meeting: NewMeeting`), `load` when nullable
 
-A legacy union payload (don't add new ones) resolves its error branch like this:
+For example:
 ```ts
-export type FooPayloadSource = {orgId: string; teamIds: string[]} | {error: {message: string}}
+export type FooPayloadSource = {orgId: string; teamIds: string[]}
 
 const FooPayload: FooPayloadResolvers = {
-  organization: (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
-    return dataLoader.get('organizations').loadNonNull(source.orgId)
+  organization: ({orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('organizations').loadNonNull(orgId)
   },
   // loadMany returns (T | Error)[] — always filter with isValid and make the resolver async
-  teams: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
-    return (await dataLoader.get('teams').loadMany(source.teamIds)).filter(isValid)
+  teams: async ({teamIds}, _args, {dataLoader}) => {
+    return (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
   }
 }
 ```
@@ -94,7 +92,7 @@ const maxAllowed = new Date(Date.now() + ms('60d'))
 ```
 
 ### Mutation return types and errors
-New mutations return an `XPayload` object type directly, non-null (`startFoo(...): StartFooPayload!`). Don't add a `union *Payload = ErrorPayload | *Success` or a new `*Success` name: both are being migrated away.
+New mutations return an `XPayload` object type directly, non-null (`startFoo(...): StartFooPayload!`), never a union or a `*Success` name. A new subscription payload field is named after its type (`StartFooPayload: StartFooPayload`); the older `*Success` field names stay because open tabs key their handlers on them.
 
 A failure throws `new GraphQLError(message, {extensions: {code}})`. `scripts/biome/requireGraphQLErrorCode.grit` rejects a `GraphQLError` without a code, and `ParabolGraphQLErrorCodes` in `packages/types/augments/index.d.ts` types it. API clients see the message and `extensions`, so keep internals and upstream error objects out of both. Pick the code by what the caller should do next:
 - `UNAUTHENTICATED`: no valid session or token

@@ -1,0 +1,9 @@
+"""
+Success result for setTeamNotificationSetting mutation
+"""
+type SetTeamNotificationSettingPayload {
+  """
+  The updated settings
+  """
+  teamNotificationSettings: TeamNotificationSettings!
+}

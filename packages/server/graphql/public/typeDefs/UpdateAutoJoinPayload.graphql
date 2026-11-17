@@ -1,0 +1,9 @@
+"""
+Success result for updateAutoJoin mutation
+"""
+type UpdateAutoJoinPayload {
+  """
+  The teams that were updated
+  """
+  updatedTeams: [Team!]!
+}

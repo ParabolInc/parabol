@@ -8,7 +8,7 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
-  fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksSuccess {
+  fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksPayload {
     archivedTasks {
       id
       content

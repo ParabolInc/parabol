@@ -22,7 +22,7 @@ graphql`
 `
 
 graphql`
-  fragment useUpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponseSuccess {
+  fragment useUpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponsePayload {
     meeting {
       id
       responseCount

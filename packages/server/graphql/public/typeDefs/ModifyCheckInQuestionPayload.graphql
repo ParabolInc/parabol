@@ -1,0 +1,9 @@
+"""
+The result of modifying the check-in question for a meeting
+"""
+type ModifyCheckInQuestionPayload {
+  """
+  The updated check-in question text, null if unchanged
+  """
+  modifiedCheckInQuestion: String
+}

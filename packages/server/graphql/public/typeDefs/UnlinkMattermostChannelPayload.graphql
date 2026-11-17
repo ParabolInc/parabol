@@ -1,0 +1,13 @@
+"""
+Success result for unlinkMattermostChannel mutation
+"""
+type UnlinkMattermostChannelPayload {
+  "The team whose Mattermost channel was unlinked"
+  teamId: ID!
+  "The remaining linked Mattermost channel IDs for the team"
+  linkedChannels: [ID!]!
+  """
+  The id of the team notification settings that were removed
+  """
+  teamNotificationSettingsId: ID!
+}

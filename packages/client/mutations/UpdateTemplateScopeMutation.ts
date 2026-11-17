@@ -18,7 +18,7 @@ import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`
-  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
+  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopePayload {
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template

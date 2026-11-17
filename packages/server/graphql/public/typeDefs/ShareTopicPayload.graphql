@@ -1,0 +1,7 @@
+"""
+Success result for shareTopic mutation
+"""
+type ShareTopicPayload {
+  "The meeting containing the shared topic"
+  meeting: NewMeeting
+}

@@ -1,0 +1,6 @@
+type StartTrialPayload {
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

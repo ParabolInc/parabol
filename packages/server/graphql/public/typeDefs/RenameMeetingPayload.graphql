@@ -1,0 +1,6 @@
+type RenameMeetingPayload {
+  """
+  the renamed meeting
+  """
+  meeting: NewMeeting!
+}

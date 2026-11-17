@@ -4,7 +4,7 @@ import type {StartSprintPokerMutation as TStartSprintPokerMutation} from '../__g
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {
+  fragment StartSprintPokerMutation_team on StartSprintPokerPayload {
     meeting {
       id
     }

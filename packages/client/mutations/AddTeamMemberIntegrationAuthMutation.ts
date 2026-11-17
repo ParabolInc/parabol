@@ -4,7 +4,7 @@ import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAu
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
+  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthPayload {
     teamMember {
       ...useIsIntegrated_teamMember
       services {

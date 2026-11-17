@@ -1,0 +1,6 @@
+type UpdateSAMLPayload {
+  """
+  Updated SAML record
+  """
+  saml: SAML!
+}

@@ -1,0 +1,9 @@
+"""
+Success result for toggleTeamPrivacy mutation
+"""
+type ToggleTeamPrivacyPayload {
+  """
+  The team with the updated privacy setting
+  """
+  team: Team!
+}

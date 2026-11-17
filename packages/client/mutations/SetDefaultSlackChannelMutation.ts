@@ -5,7 +5,7 @@ import type {SetDefaultSlackChannelMutation as TSetDefaultSlackChannelMutation} 
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetDefaultSlackChannelMutation_team on SetDefaultSlackChannelSuccess {
+  fragment SetDefaultSlackChannelMutation_team on SetDefaultSlackChannelPayload {
     teamMember {
       integrations {
         slack {

@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useModifyCheckInQuestionMutation_success on ModifyCheckInQuestionSuccess {
+  fragment useModifyCheckInQuestionMutation_success on ModifyCheckInQuestionPayload {
     modifiedCheckInQuestion
   }
 `

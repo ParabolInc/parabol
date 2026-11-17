@@ -1,0 +1,14 @@
+"""
+Success result for upgradeToTeamTier mutation
+"""
+type UpgradeToTeamTierPayload {
+  """
+  The new org on the team tier
+  """
+  organization: Organization!
+
+  """
+  The updated teams under the org
+  """
+  teams: [Team!]!
+}

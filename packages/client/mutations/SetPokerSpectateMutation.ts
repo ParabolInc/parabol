@@ -4,7 +4,7 @@ import type {SetPokerSpectateMutation as TSetPokerSpectateMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetPokerSpectateMutation_team on SetPokerSpectateSuccess {
+  fragment SetPokerSpectateMutation_team on SetPokerSpectatePayload {
     meetingMember {
       isSpectating
     }

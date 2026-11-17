@@ -1,0 +1,6 @@
+type AssignSAMLIdToOrgPayload {
+  """
+  Updated organization
+  """
+  organization: Organization!
+}

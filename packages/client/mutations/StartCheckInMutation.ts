@@ -4,7 +4,7 @@ import type {StartCheckInMutation as TStartCheckInMutation} from '../__generated
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartCheckInMutation_team on StartCheckInSuccess {
+  fragment StartCheckInMutation_team on StartCheckInPayload {
     meeting {
       id
     }

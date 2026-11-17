@@ -1,0 +1,9 @@
+"""
+Success result for toggleFeatureFlag mutation
+"""
+type ToggleFeatureFlagPayload {
+  """
+  The feature flag that was toggled
+  """
+  featureFlag: OwnedFeatureFlag!
+}

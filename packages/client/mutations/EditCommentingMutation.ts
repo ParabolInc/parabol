@@ -5,7 +5,7 @@ import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment EditCommentingMutation_meeting on EditCommentingSuccess {
+  fragment EditCommentingMutation_meeting on EditCommentingPayload {
     discussion {
       commentors {
         id

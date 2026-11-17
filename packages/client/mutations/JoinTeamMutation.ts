@@ -5,7 +5,7 @@ import type {JoinTeamMutation_team$data} from '../__generated__/JoinTeamMutation
 import type {OnNextHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment JoinTeamMutation_team on JoinTeamSuccess {
+  fragment JoinTeamMutation_team on JoinTeamPayload {
     viewer {
       teams {
         id

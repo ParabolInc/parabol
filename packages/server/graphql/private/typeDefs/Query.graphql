@@ -144,5 +144,5 @@ type Query {
     the domain to get the SAML record for
     """
     domain: String!
-  ): GetSAMLForDomainSuccess
+  ): GetSAMLForDomainPayload
 }

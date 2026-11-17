@@ -4,7 +4,7 @@ import type {StartRetrospectiveMutation as TStartRetrospectiveMutation} from '..
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {
+  fragment StartRetrospectiveMutation_team on StartRetrospectivePayload {
     meeting {
       id
     }

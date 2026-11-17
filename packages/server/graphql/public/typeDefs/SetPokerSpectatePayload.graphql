@@ -1,0 +1,19 @@
+"""
+Success result for setPokerSpectate mutation
+"""
+type SetPokerSpectatePayload {
+  "The meeting the spectating change applies to"
+  meetingId: ID!
+  "The user whose spectating status changed"
+  userId: ID!
+
+  """
+  The meeting member with the updated isSpectating value
+  """
+  meetingMember: PokerMeetingMember!
+
+  """
+  The stages that were updated if the viewer voted and then changed to spectating
+  """
+  updatedStages: [EstimateStage!]!
+}

@@ -19,7 +19,7 @@ import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
-  fragment EndSprintPokerMutation_team on EndSprintPokerSuccess {
+  fragment EndSprintPokerMutation_team on EndSprintPokerPayload {
     isKill
     meeting {
       id

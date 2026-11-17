@@ -143,7 +143,7 @@ export default class TeamHealthDemoDb {
     this.setDiscussion({...discussion, thread: {...discussion.thread, edges}})
     return {
       addComment: {
-        __typename: 'AddCommentSuccess',
+        __typename: 'AddCommentPayload',
         meetingId: TeamHealthDemo.MEETING_ID,
         comment
       }
@@ -187,7 +187,7 @@ export default class TeamHealthDemoDb {
     const {comment: reactable} = found
     return {
       addReactjiToReactable: {
-        __typename: 'AddReactjiToReactableSuccess',
+        __typename: 'AddReactjiToReactablePayload',
         reactable: {__typename: 'Comment', id: reactable.id, reactjis: reactable.reactjis}
       }
     }
@@ -199,7 +199,7 @@ export default class TeamHealthDemoDb {
     if (!found) throw new Error('Comment not found')
     return {
       updateCommentContent: {
-        __typename: 'UpdateCommentContentSuccess',
+        __typename: 'UpdateCommentContentPayload',
         comment: {id: commentId, content, updatedAt}
       }
     }
@@ -215,7 +215,7 @@ export default class TeamHealthDemoDb {
     const {discussion, parent, comment} = found
     return {
       deleteComment: {
-        __typename: 'DeleteCommentSuccess',
+        __typename: 'DeleteCommentPayload',
         comment: {
           id: commentId,
           isActive: false,
@@ -233,7 +233,7 @@ export default class TeamHealthDemoDb {
     if (!discussion) throw new Error('Discussion not found')
     return {
       editCommenting: {
-        __typename: 'EditCommentingSuccess',
+        __typename: 'EditCommentingPayload',
         discussion: {id: discussionId, commentors: discussion.commentors}
       }
     }
@@ -355,7 +355,7 @@ export default class TeamHealthDemoDb {
     this.updateTask(taskId, (task) => ({...task, isHighlighted}))
     return {
       setTaskHighlight: {
-        __typename: 'SetTaskHighlightSuccess',
+        __typename: 'SetTaskHighlightPayload',
         task: {__typename: 'Task', id: taskId, isHighlighted}
       }
     }

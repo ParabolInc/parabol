@@ -10,7 +10,7 @@ import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventSuccess {
+  fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventPayload {
     timelineEvent {
       id
       isActive

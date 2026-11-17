@@ -1,0 +1,9 @@
+"""
+Success result for updateIntegrationProvider mutation
+"""
+type UpdateIntegrationProviderPayload {
+  """
+  The provider that was updated
+  """
+  provider: IntegrationProvider!
+}

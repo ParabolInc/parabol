@@ -95,9 +95,6 @@ test('An expired reset token comes back as a user error', async () => {
     query: `
       mutation ResetPassword($token: ID!, $newPassword: String!) {
         resetPassword(token: $token, newPassword: $newPassword) {
-          error {
-            message
-          }
           userErrors {
             code
             message
@@ -112,7 +109,6 @@ test('An expired reset token comes back as a user error', async () => {
   expect(result).toEqual({
     data: {
       resetPassword: {
-        error: {message: 'Reset token expired'},
         userErrors: [{code: 'TOKEN_EXPIRED', message: 'Reset token expired'}],
         userId: null
       }

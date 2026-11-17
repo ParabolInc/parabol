@@ -1,0 +1,9 @@
+"""
+Success result for updateCommentContent mutation
+"""
+type UpdateCommentContentPayload {
+  """
+  the comment with updated content
+  """
+  comment: Comment!
+}

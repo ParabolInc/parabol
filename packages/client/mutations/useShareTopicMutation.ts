@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useShareTopicMutation_meeting on ShareTopicSuccess {
+  fragment useShareTopicMutation_meeting on ShareTopicPayload {
     meeting {
       name
       id

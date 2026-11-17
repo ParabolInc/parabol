@@ -5,7 +5,7 @@ import type {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
-  fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
+  fragment VoteForPokerStoryMutation_meeting on VoteForPokerStoryPayload {
     stage {
       scores {
         ...PokerVotingRow_scores

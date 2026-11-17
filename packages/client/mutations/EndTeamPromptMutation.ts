@@ -17,7 +17,7 @@ import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment EndTeamPromptMutation_team on EndTeamPromptSuccess {
+  fragment EndTeamPromptMutation_team on EndTeamPromptPayload {
     meeting {
       id
       endedAt
@@ -38,7 +38,7 @@ graphql`
 `
 
 graphql`
-  fragment EndTeamPromptMutation_meeting on EndTeamPromptSuccess {
+  fragment EndTeamPromptMutation_meeting on EndTeamPromptPayload {
     meeting {
       ...WholeMeetingSummary_meeting
     }

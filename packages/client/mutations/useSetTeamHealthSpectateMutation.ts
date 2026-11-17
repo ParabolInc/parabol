@@ -6,7 +6,7 @@ import {snackOnError} from './handlers/snackOnError'
 
 // selected by both the mutation payload and MeetingSubscription. Relay merges by meeting member id
 graphql`
-  fragment useSetTeamHealthSpectateMutation_meeting on SetTeamHealthSpectateSuccess {
+  fragment useSetTeamHealthSpectateMutation_meeting on SetTeamHealthSpectatePayload {
     meetingMember {
       id
       isSpectating

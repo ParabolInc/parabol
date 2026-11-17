@@ -1,7 +1,0 @@
-"""
-Success result for shareTopic mutation
-"""
-type ShareTopicSuccess {
-  "The meeting containing the shared topic"
-  meeting: NewMeeting
-}

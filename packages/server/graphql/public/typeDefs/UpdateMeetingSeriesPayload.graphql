@@ -1,0 +1,9 @@
+"""
+Success result for updateMeetingSeries mutation
+"""
+type UpdateMeetingSeriesPayload {
+  """
+  The updated meeting series
+  """
+  meetingSeries: MeetingSeries!
+}

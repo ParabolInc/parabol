@@ -5,7 +5,7 @@ import type {SimpleMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvanceSuccess {
+  fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvancePayload {
     stage {
       isViewerReady
       readyUserIds

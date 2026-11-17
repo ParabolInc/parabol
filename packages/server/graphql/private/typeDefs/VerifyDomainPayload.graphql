@@ -1,0 +1,6 @@
+type VerifyDomainPayload {
+  """
+  Updated SAML record
+  """
+  saml: SAML!
+}

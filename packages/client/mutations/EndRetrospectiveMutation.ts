@@ -22,7 +22,7 @@ import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
-  fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
+  fragment EndRetrospectiveMutation_team on EndRetrospectivePayload {
     isKill
     meeting {
       id
@@ -49,13 +49,13 @@ graphql`
 `
 
 graphql`
-  fragment EndRetrospectiveMutation_notification on EndRetrospectiveSuccess {
+  fragment EndRetrospectiveMutation_notification on EndRetrospectivePayload {
     removedSuggestedActionId
   }
 `
 
 graphql`
-  fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
+  fragment EndRetrospectiveMutation_meeting on EndRetrospectivePayload {
     meeting {
       ...WholeMeetingSummary_meeting
       taskCount

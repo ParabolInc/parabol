@@ -4,7 +4,7 @@ import type {RenameMeetingMutation as TRenameMeetingMutation} from '../__generat
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RenameMeetingMutation_team on RenameMeetingSuccess {
+  fragment RenameMeetingMutation_team on RenameMeetingPayload {
     meeting {
       name
     }

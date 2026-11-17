@@ -1,0 +1,6 @@
+type RateReportQuestionPayload {
+  """
+  The question with its new rating
+  """
+  reportQuestion: ReportQuestion!
+}

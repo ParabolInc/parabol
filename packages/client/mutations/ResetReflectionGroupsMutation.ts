@@ -4,7 +4,7 @@ import type {ResetReflectionGroupsMutation as TResetReflectionGroupsMutation} fr
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {
+  fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsPayload {
     meeting {
       id
       ...GroupingKanban_meeting

@@ -28,7 +28,7 @@ import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleTasksForRemovedUsers from './handlers/handleTasksForRemovedUsers'
 
 graphql`
-  fragment RemoveOrgUsersMutation_organization on RemoveOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_organization on RemoveOrgUsersPayload {
     affectedOrganizationId
     affectedOrganizationName
     removedOrgMemberIds
@@ -37,7 +37,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveOrgUsersMutation_notification on RemoveOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_notification on RemoveOrgUsersPayload {
     affectedOrganizationId
     affectedOrganizationName
     kickOutNotifications {
@@ -52,7 +52,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveOrgUsersMutation_team on RemoveOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_team on RemoveOrgUsersPayload {
     removedTeamMemberIds
     removedUserIds
     affectedTeamIds
@@ -70,7 +70,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveOrgUsersMutation_task on RemoveOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_task on RemoveOrgUsersPayload {
     affectedTasks {
       ...CompleteTaskFrag @relay(mask: false)
     }

@@ -9,8 +9,8 @@ const signUpVerified = async (email: string) => {
     query: `
       mutation SignUpWithPassword($email: ID!, $password: String!) {
         signUpWithPassword(email: $email, password: $password, params: "") {
-          error {
-            message
+          userErrors {
+            code
           }
         }
       }
@@ -117,7 +117,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
   expect(autoJoin).toMatchObject({
     data: {
       updateAutoJoin: {
-        __typename: 'UpdateAutoJoinSuccess'
+        __typename: 'UpdateAutoJoinPayload'
       }
     }
   })
@@ -139,7 +139,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
   expect(approveDomains).toMatchObject({
     data: {
       addApprovedOrganizationDomains: {
-        __typename: 'AddApprovedOrganizationDomainsSuccess'
+        __typename: 'AddApprovedOrganizationDomainsPayload'
       }
     }
   })

@@ -22,7 +22,7 @@ import {snackOnError} from './handlers/snackOnError'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
-  fragment EndCheckInMutation_team on EndCheckInSuccess {
+  fragment EndCheckInMutation_team on EndCheckInPayload {
     isKill
     meeting {
       id
@@ -57,7 +57,7 @@ graphql`
 `
 
 graphql`
-  fragment EndCheckInMutation_notification on EndCheckInSuccess {
+  fragment EndCheckInMutation_notification on EndCheckInPayload {
     removedSuggestedActionId
   }
 `

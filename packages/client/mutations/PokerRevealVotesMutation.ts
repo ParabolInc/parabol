@@ -4,7 +4,7 @@ import type {PokerRevealVotesMutation as TPokerRevealVotesMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment PokerRevealVotesMutation_meeting on PokerRevealVotesSuccess {
+  fragment PokerRevealVotesMutation_meeting on PokerRevealVotesPayload {
     stage {
       isVoting
       scores {

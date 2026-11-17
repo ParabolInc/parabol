@@ -9,7 +9,7 @@ import safePutNodeInConn from './handlers/safePutNodeInConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment CreatePollMutation_meeting on CreatePollSuccess {
+  fragment CreatePollMutation_meeting on CreatePollPayload {
     poll {
       ...ThreadedItem_threadable
       discussionId

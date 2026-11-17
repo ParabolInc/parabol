@@ -60,8 +60,8 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
         }
       }
@@ -69,7 +69,7 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     variables: {invitationToken: invitation.token},
     cookie: joiner.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.error).toBeNull()
+  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
   const orgMemberCookie = toCookieHeader(accepted.cookie)
 
   const joined = await sendPublic({

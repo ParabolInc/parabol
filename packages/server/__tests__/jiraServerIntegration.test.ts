@@ -40,7 +40,7 @@ const setOrgUserRole = async (orgId: string, userId: string, role: string) => {
   expect(setOrgUserRole).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })
@@ -127,7 +127,7 @@ test('Add integration provider', async () => {
   expect(addIntegrationProvider).toMatchObject({
     data: {
       addIntegrationProvider: {
-        __typename: 'AddIntegrationProviderSuccess',
+        __typename: 'AddIntegrationProviderPayload',
         provider: {
           id: expect.anything(),
           isActive: true,

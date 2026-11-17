@@ -164,8 +164,8 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
     $params: String!
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, pseudoId: $pseudoId, params: $params) {
-      error {
-        message
+      userErrors {
+        code
       }
       user {
         tms
@@ -183,9 +183,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
-      }
       meetingId
       team {
         id
@@ -222,8 +219,8 @@ const completeEmailVerification = async (
         $verificationToken: ID!
       ) {
         verifyEmail(verificationToken: $verificationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
           user {
             tms
@@ -251,7 +248,7 @@ const completeEmailVerification = async (
     cookie: expect.anything(),
     data: {
       verifyEmail: {
-        error: null,
+        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -294,9 +291,7 @@ export const signUpWithPasswordMutation = async (emailInput: string) => {
   expect(signUp).toMatchObject({
     data: {
       signUpWithPassword: {
-        error: {
-          message: 'Verification required. Check your inbox.'
-        },
+        userErrors: [{code: 'EMAIL_VERIFICATION_REQUIRED'}],
         user: null
       }
     }
@@ -360,7 +355,7 @@ export const createOrgAdmin = async (email: string) => {
   expect(promoteToOrgAdmin).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })

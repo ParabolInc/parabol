@@ -5,7 +5,7 @@ import type {StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`
-  fragment ToggleTeamDrawerMutation_teamMember on ToggleTeamDrawerSuccess {
+  fragment ToggleTeamDrawerMutation_teamMember on ToggleTeamDrawerPayload {
     teamMember {
       openDrawer
     }

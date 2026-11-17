@@ -11,7 +11,7 @@ import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment DeleteCommentMutation_meeting on DeleteCommentSuccess {
+  fragment DeleteCommentMutation_meeting on DeleteCommentPayload {
     comment {
       id
       isActive

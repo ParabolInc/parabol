@@ -12,7 +12,7 @@ import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
-  fragment AddCommentMutation_meeting on AddCommentSuccess {
+  fragment AddCommentMutation_meeting on AddCommentPayload {
     comment {
       ...ThreadedItem_threadable
       ... on Comment {

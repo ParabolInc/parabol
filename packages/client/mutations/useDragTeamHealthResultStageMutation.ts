@@ -8,7 +8,7 @@ import {snackOnError} from './handlers/snackOnError'
 // selected by both the mutation payload and MeetingSubscription so the store stays in sync. The
 // server returns the stages in their new order, so no updater is needed outside the optimistic one
 graphql`
-  fragment useDragTeamHealthResultStageMutation_meeting on DragTeamHealthResultStageSuccess {
+  fragment useDragTeamHealthResultStageMutation_meeting on DragTeamHealthResultStagePayload {
     meeting {
       id
       phases {

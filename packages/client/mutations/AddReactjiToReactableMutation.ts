@@ -5,7 +5,7 @@ import type {AddReactjiToReactableMutation as TAddReactjiToReactableMutation} fr
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddReactjiToReactableMutation_meeting on AddReactjiToReactableSuccess {
+  fragment AddReactjiToReactableMutation_meeting on AddReactjiToReactablePayload {
     reactable {
       reactjis {
         id

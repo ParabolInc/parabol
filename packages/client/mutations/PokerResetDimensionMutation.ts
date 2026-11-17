@@ -4,7 +4,7 @@ import type {PokerResetDimensionMutation as TPokerResetDimensionMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment PokerResetDimensionMutation_meeting on PokerResetDimensionSuccess {
+  fragment PokerResetDimensionMutation_meeting on PokerResetDimensionPayload {
     stage {
       isVoting
       scores {

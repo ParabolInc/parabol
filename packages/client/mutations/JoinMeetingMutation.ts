@@ -6,7 +6,7 @@ import type {JoinMeetingMutation_meeting$data} from '../__generated__/JoinMeetin
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment JoinMeetingMutation_meeting on JoinMeetingSuccess {
+  fragment JoinMeetingMutation_meeting on JoinMeetingPayload {
     meeting {
       id
     }

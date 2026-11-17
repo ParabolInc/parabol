@@ -4,7 +4,7 @@ import type {CreateStripeSubscriptionMutation as TCreateStripeSubscriptionMutati
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment CreateStripeSubscriptionMutation_organization on CreateStripeSubscriptionSuccess {
+  fragment CreateStripeSubscriptionMutation_organization on CreateStripeSubscriptionPayload {
     stripeSubscriptionClientSecret
   }
 `

@@ -5,7 +5,7 @@ import {useMutation} from 'react-relay'
 import {useCurrentChannel} from './useCurrentChannel'
 
 graphql`
-  fragment useLinkTeam_success on LinkMattermostChannelSuccess {
+  fragment useLinkTeam_success on LinkMattermostChannelPayload {
     teamId
     linkedChannels
   }

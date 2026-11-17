@@ -4,7 +4,7 @@ import type {ToggleSummaryEmailMutation as TToggleSummaryEmailMutation} from '..
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleSummaryEmailMutation_team on ToggleSummaryEmailSuccess {
+  fragment ToggleSummaryEmailMutation_team on ToggleSummaryEmailPayload {
     user {
       sendSummaryEmail
     }

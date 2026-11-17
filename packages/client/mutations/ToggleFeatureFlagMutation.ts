@@ -4,7 +4,7 @@ import type {ToggleFeatureFlagMutation as TToggleFeatureFlagMutation} from '../_
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleFeatureFlagMutation_notification on ToggleFeatureFlagSuccess {
+  fragment ToggleFeatureFlagMutation_notification on ToggleFeatureFlagPayload {
     featureFlag {
       featureName
       enabled

@@ -1,0 +1,6 @@
+type GetSAMLForDomainPayload {
+  """
+  The SAML configuration
+  """
+  saml: SAML!
+}

@@ -1,0 +1,6 @@
+type MovePokerTemplateScaleValuePayload {
+  """
+  The scale after values are moved
+  """
+  scale: TemplateScale!
+}
