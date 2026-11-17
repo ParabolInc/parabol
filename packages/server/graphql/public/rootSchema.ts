@@ -16,6 +16,7 @@ import {Logger} from '../../utils/Logger'
 // Resolvers from SDL first definitions
 import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
+import inlineNestedFragments from '../nestedSchema/inlineNestedFragments'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import schemaBuildOptions from '../schemaBuildOptions'
 import {applyScopeDirective} from './applyScopeDirective'
@@ -31,9 +32,9 @@ const parabolTypeDefs = mergeSchemas({
   ...schemaBuildOptions
 })
 
-const github = nestGitHub()
-const gitlab = nestGitLab()
-const linear = nestLinear()
+const github = inlineNestedFragments(nestGitHub())
+const gitlab = inlineNestedFragments(nestGitLab())
+const linear = inlineNestedFragments(nestLinear())
 export const nestedEndpoints = [github, gitlab, linear]
 const nestedPrefixes = nestedEndpoints.map(({prefix}) => prefix)
 
