@@ -7,6 +7,8 @@ import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {toYXmlNodes} from './toYXmlNodes'
 
 const BLOCK_SEPARATOR = '\n\n'
+const MAX_EDITS = 20
+const MAX_EDIT_TEXT_LENGTH = 50_000
 const MAX_PAGE_MARKDOWN_LENGTH = 1_000_000
 const MAX_REWRITE_MARKDOWN_LENGTH = 100_000
 const MAX_REWRITES = 500
@@ -22,6 +24,25 @@ interface MatchGroup {
   lastIdx: number
   spanStart: number
   spanEnd: number
+}
+
+export const validatePageContentEdits = (edits: PageContentEditInput[]) => {
+  if (edits.length === 0 || edits.length > MAX_EDITS) {
+    throw new GraphQLError(`Provide between 1 and ${MAX_EDITS} edits`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (
+    edits.some(
+      ({oldText, newText}) =>
+        oldText.length > MAX_EDIT_TEXT_LENGTH || newText.length > MAX_EDIT_TEXT_LENGTH
+    )
+  ) {
+    throw new GraphQLError(
+      `oldText and newText are limited to ${MAX_EDIT_TEXT_LENGTH} characters`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
+  }
 }
 
 const findMatchStarts = (text: string, search: string) => {

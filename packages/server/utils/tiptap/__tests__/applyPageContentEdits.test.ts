@@ -5,7 +5,10 @@ import * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {tipTapToMarkdown} from '../../../../client/shared/tiptap/tipTapToMarkdown'
 import type {PageContentEditInput} from '../../../graphql/public/resolverTypes'
-import {applyPageContentEdits as applyEdits} from '../applyPageContentEdits'
+import {
+  applyPageContentEdits as applyEdits,
+  validatePageContentEdits
+} from '../applyPageContentEdits'
 
 const text = (value: string, marks?: JSONContent['marks']): JSONContent => ({
   type: 'text',
@@ -344,5 +347,31 @@ describe('applyPageContentEdits', () => {
     const [, , pageLink] = blocksOf(doc)
     expect(applyPageContentEdits(doc, [{oldText: 'Intro', newText: 'Overview'}])).toBeNull()
     expect(blocksOf(doc)[2]).toBe(pageLink)
+  })
+})
+
+describe('validatePageContentEdits', () => {
+  const edit = {oldText: 'a', newText: 'b'}
+  const codeOf = (edits: PageContentEditInput[]) => {
+    try {
+      validatePageContentEdits(edits)
+      return null
+    } catch (e) {
+      return e instanceof GraphQLError ? e.extensions.code : e
+    }
+  }
+
+  test('accepts between 1 and 20 edits', () => {
+    expect(codeOf([edit])).toBeNull()
+    expect(codeOf(Array(20).fill(edit))).toBeNull()
+    expect(codeOf([])).toBe('BAD_USER_INPUT')
+    expect(codeOf(Array(21).fill(edit))).toBe('BAD_USER_INPUT')
+  })
+
+  test('refuses oldText or newText over 50,000 characters', () => {
+    const long = 'x'.repeat(50_001)
+    expect(codeOf([{oldText: 'x'.repeat(50_000), newText: 'b'}])).toBeNull()
+    expect(codeOf([{oldText: long, newText: 'b'}])).toBe('BAD_USER_INPUT')
+    expect(codeOf([edit, {oldText: 'a', newText: long}])).toBe('BAD_USER_INPUT')
   })
 })
