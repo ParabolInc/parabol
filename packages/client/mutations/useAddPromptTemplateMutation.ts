@@ -10,7 +10,7 @@ import handleAddMeetingTemplate from './handlers/handleAddMeetingTemplate'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useAddPromptTemplateMutation_team on AddPromptTemplateSuccess {
+  fragment useAddPromptTemplateMutation_team on AddPromptTemplatePayload {
     user {
       freeCustomRetroTemplatesRemaining
       freeCustomStandupTemplatesRemaining

@@ -1,26 +1,18 @@
 import type {AddOrgPayloadResolvers, TeamInvitee} from '../resolverTypes'
 
-export type AddOrgPayloadSource =
-  | {
-      error?: {message: string}
-    }
-  | {
-      orgId: string
-      teamId: string
-      teamMemberId: string
-      removedSuggestedActionId?: string
-      invitees?: TeamInvitee[] | null
-    }
+export type AddOrgPayloadSource = {
+  orgId: string
+  teamId: string
+  teamMemberId: string
+  removedSuggestedActionId?: string
+  invitees?: TeamInvitee[] | null
+}
 
 const AddOrgPayload: AddOrgPayloadResolvers = {
-  team: (source, _args, {dataLoader}) => {
-    if (!('teamId' in source)) return null
-    const {teamId} = source
+  team: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
-  teamMember: (source, _args, {dataLoader}) => {
-    if (!('teamMemberId' in source)) return null
-    const {teamMemberId} = source
+  teamMember: ({teamMemberId}, _args, {dataLoader}) => {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   }
 }

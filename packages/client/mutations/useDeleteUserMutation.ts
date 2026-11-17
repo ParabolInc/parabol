@@ -7,8 +7,8 @@ import {snackOnError} from './handlers/snackOnError'
 const mutation = graphql`
   mutation useDeleteUserMutation($userId: ID!, $reason: String) {
     deleteUser(userId: $userId, reason: $reason) {
-      error {
-        message
+      user {
+        id
       }
     }
   }

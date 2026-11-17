@@ -4,7 +4,7 @@ import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} 
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddIntegrationProviderMutation_organization on AddIntegrationProviderSuccess {
+  fragment AddIntegrationProviderMutation_organization on AddIntegrationProviderPayload {
     provider {
       id
       teamId
@@ -31,11 +31,6 @@ graphql`
 const mutation = graphql`
   mutation AddIntegrationProviderMutation($input: AddIntegrationProviderInput!) {
     addIntegrationProvider(input: $input) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddIntegrationProviderMutation_organization @relay(mask: false) @alias
     }
   }

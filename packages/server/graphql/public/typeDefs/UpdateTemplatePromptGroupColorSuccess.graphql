@@ -1,9 +1,0 @@
-"""
-Returned when updateTemplatePromptGroupColor succeeds
-"""
-type UpdateTemplatePromptGroupColorSuccess {
-  """
-  The prompt with its new group color
-  """
-  prompt: TemplatePrompt!
-}

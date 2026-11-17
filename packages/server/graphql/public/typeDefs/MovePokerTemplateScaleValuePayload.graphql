@@ -1,4 +1,6 @@
-"""
-Return object for MovePokerTemplateScaleValuePayload
-"""
-union MovePokerTemplateScaleValuePayload = ErrorPayload | MovePokerTemplateScaleValueSuccess
+type MovePokerTemplateScaleValuePayload {
+  """
+  The scale after values are moved
+  """
+  scale: TemplateScale!
+}

@@ -108,9 +108,6 @@ const mutation = graphql`
       completedStageId: $completedStageId
       facilitatorStageId: $facilitatorStageId
     ) {
-      error {
-        message
-      }
       ...NavigateMeetingMutation_team @relay(mask: false)
     }
   }

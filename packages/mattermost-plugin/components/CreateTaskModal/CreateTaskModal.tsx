@@ -73,9 +73,6 @@ const CreateTaskModal = () => {
         task {
           id
         }
-        error {
-          message
-        }
       }
     }
   `)
@@ -120,11 +117,7 @@ const CreateTaskModal = () => {
             }
           },
           onCompleted: (data) => {
-            if (data.createTask.error) {
-              reject(data.createTask.error.message)
-            } else {
-              resolve(data.createTask.task?.id)
-            }
+            resolve(data.createTask.task?.id)
           },
           onError: reject
         })

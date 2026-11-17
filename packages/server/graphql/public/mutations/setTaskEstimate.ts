@@ -158,7 +158,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       .execute()
 
     const data = {meetingId, stageId, taskId, exportCount}
-    publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimatePayload', data, subOptions)
     return data
   } else {
     throw new GraphQLError(errorMessage ?? 'Unknown error', {

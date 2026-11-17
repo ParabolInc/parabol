@@ -6,7 +6,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useUpdateIntegrationDimensionFieldMutation_team on UpdateIntegrationDimensionFieldSuccess {
+  fragment useUpdateIntegrationDimensionFieldMutation_team on UpdateIntegrationDimensionFieldPayload {
     meeting {
       phases {
         ... on EstimatePhase {

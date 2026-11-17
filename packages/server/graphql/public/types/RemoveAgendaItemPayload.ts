@@ -1,11 +1,9 @@
 import type {RemoveAgendaItemPayloadResolvers} from '../resolverTypes'
 
-export type RemoveAgendaItemPayloadSource =
-  | {
-      agendaItemId: string
-      meetingId?: string | null
-    }
-  | {error: {message: string}}
+export type RemoveAgendaItemPayloadSource = {
+  agendaItemId: string
+  meetingId?: string | null
+}
 
 const RemoveAgendaItemPayload: RemoveAgendaItemPayloadResolvers = {
   agendaItem: (source, _args, {dataLoader}) => {

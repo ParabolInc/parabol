@@ -2,8 +2,6 @@
 Return value for setStageTimer mutation
 """
 type SetStageTimerPayload {
-  error: StandardMutationError
-
   """
   The updated stage
   """

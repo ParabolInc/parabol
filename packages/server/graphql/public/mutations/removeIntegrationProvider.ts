@@ -83,7 +83,7 @@ const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] 
     publish(
       SubscriptionChannel.ORGANIZATION,
       orgId,
-      'RemoveIntegrationProviderSuccess',
+      'RemoveIntegrationProviderPayload',
       data,
       subOptions
     )

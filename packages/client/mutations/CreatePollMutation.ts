@@ -9,7 +9,7 @@ import safePutNodeInConn from './handlers/safePutNodeInConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment CreatePollMutation_meeting on CreatePollSuccess {
+  fragment CreatePollMutation_meeting on CreatePollPayload {
     poll {
       ...ThreadedItem_threadable
       discussionId
@@ -26,11 +26,6 @@ graphql`
 const mutation = graphql`
   mutation CreatePollMutation($newPoll: CreatePollInput!) {
     createPoll(newPoll: $newPoll) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...CreatePollMutation_meeting @relay(mask: false) @alias
     }
   }

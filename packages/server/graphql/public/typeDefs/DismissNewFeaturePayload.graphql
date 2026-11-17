@@ -4,7 +4,7 @@ announcement for the authenticated user by setting their newFeatureId to null.
 """
 type DismissNewFeaturePayload {
   """
-  Present when the dismissal failed; null on success.
+  The viewer, whose newFeature is now null
   """
-  error: StandardMutationError
+  user: User!
 }

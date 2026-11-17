@@ -7,7 +7,7 @@ import {snackOnError} from './handlers/snackOnError'
 import useAddTeamHealthTemplateQuestionMutation from './useAddTeamHealthTemplateQuestionMutation'
 
 graphql`
-  fragment useAddTeamHealthQuestionMutation_question on AddTeamHealthQuestionSuccess {
+  fragment useAddTeamHealthQuestionMutation_question on AddTeamHealthQuestionPayload {
     question {
       id
     }

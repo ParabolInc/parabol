@@ -1,4 +1,9 @@
 """
-Return value for updateRecurrenceSettings, which could be an error
+Success result for updateRecurrenceSettings mutation
 """
-union UpdateRecurrenceSettingsPayload = UpdateRecurrenceSettingsSuccess | ErrorPayload
+type UpdateRecurrenceSettingsPayload {
+  """
+  The updated meeting
+  """
+  meeting: NewMeeting!
+}

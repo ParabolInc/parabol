@@ -5,11 +5,11 @@ export type UserLogInPayloadSource =
       userId: string
       isNewUser: boolean
     }
-  | {error: {message: string}; userErrors: UserError[]}
+  | {userErrors: UserError[]}
 
 const UserLogInPayload: UserLogInPayloadResolvers = {
   user: (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
+    if ('userErrors' in source) return null
     const {userId} = source
     return dataLoader.get('users').loadNonNull(userId)
   },

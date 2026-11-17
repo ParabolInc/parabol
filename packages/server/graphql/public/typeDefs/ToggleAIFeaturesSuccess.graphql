@@ -1,7 +1,0 @@
-"""
-Success result for toggleAIFeatures mutation
-"""
-type ToggleAIFeaturesSuccess {
-  "The organization with the updated AI features setting"
-  organization: Organization!
-}

@@ -13,10 +13,8 @@ type Auth = {cookie?: string; bearerToken?: string}
 const START_RETRO = `
   mutation StartRetrospective($teamId: ID!) {
     startRetrospective(teamId: $teamId) {
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -25,10 +23,8 @@ const START_RETRO = `
 const START_CHECK_IN = `
   mutation StartCheckIn($teamId: ID!) {
     startCheckIn(teamId: $teamId) {
-      ... on StartCheckInSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -37,11 +33,7 @@ const START_CHECK_IN = `
 const JOIN_MEETING = `
   mutation JoinMeeting($meetingId: ID!) {
     joinMeeting(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      __typename
     }
   }
 `
@@ -100,7 +92,6 @@ const start = async (query: string, field: string, cookie: string, teamId: strin
 const join = async (auth: Auth, meetingId: string) => {
   const res = await sendPublic({query: JOIN_MEETING, variables: {meetingId}, ...auth})
   expect(res.errors).toBeUndefined()
-  expect(res.data.joinMeeting.error).toBeUndefined()
 }
 
 const getPhases = async (meetingId: string) => {

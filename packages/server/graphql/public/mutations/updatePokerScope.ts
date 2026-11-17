@@ -169,7 +169,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
     }
     dataLoader.clearAll(['newMeetings'])
     const data = {meetingId, newStageIds}
-    publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopePayload', data, subOptions)
     return data
   } finally {
     await redisLock.unlock()

@@ -2,7 +2,6 @@
 Result of deleting a reflection during the reflect phase of a retrospective
 """
 type RemoveReflectionPayload {
-  error: StandardMutationError
   """
   The meeting the reflection was removed from
   """

@@ -1,4 +1,9 @@
 """
-Return for setTeamNotificationSetting mutation
+Success result for setTeamNotificationSetting mutation
 """
-union SetTeamNotificationSettingPayload = ErrorPayload | SetTeamNotificationSettingSuccess
+type SetTeamNotificationSettingPayload {
+  """
+  The updated settings
+  """
+  teamNotificationSettings: TeamNotificationSettings!
+}

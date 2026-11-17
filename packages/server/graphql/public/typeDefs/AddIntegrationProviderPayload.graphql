@@ -1,4 +1,19 @@
 """
-Return value for addIntegrationProvider mutation. Returns either an error or the newly registered integration provider configuration.
+Successful result of addIntegrationProvider. The integration provider has been registered and is now available for use by teams or org members.
 """
-union AddIntegrationProviderPayload = ErrorPayload | AddIntegrationProviderSuccess
+type AddIntegrationProviderPayload {
+  """
+  The newly registered integration provider
+  """
+  provider: IntegrationProvider!
+
+  """
+  The updated set of organization-level integration providers, if the new provider affects org scope
+  """
+  orgIntegrationProviders: OrgIntegrationProviders
+
+  """
+  Updated team member integrations, if the new provider affects team scope
+  """
+  teamMemberIntegrations: TeamMemberIntegrations
+}

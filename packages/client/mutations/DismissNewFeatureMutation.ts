@@ -6,8 +6,11 @@ import type {StandardMutation} from '../types/relayMutations'
 const mutation = graphql`
   mutation DismissNewFeatureMutation {
     dismissNewFeature {
-      error {
-        title
+      user {
+        id
+        newFeature {
+          id
+        }
       }
     }
   }
@@ -21,10 +24,6 @@ const DismissNewFeatureMutation: StandardMutation<TDismissNewFeatureMutation> = 
   return commitMutation<TDismissNewFeatureMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')
-      viewer?.setValue(null, 'newFeature')
-    },
     optimisticUpdater: (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       viewer?.setValue(null, 'newFeature')

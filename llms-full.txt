@@ -63,23 +63,16 @@ Requires: `meetings:write`
 ```graphql
 mutation StartRetro($teamId: ID!) {
   startRetrospective(teamId: $teamId) {
-    ... on StartRetrospectiveSuccess {
-      meeting {
-        id
-        name
-        meetingType
-        phases {
-          phaseType
-          stages {
-            id
-            isComplete
-          }
+    meeting {
+      id
+      name
+      meetingType
+      phases {
+        phaseType
+        stages {
+          id
+          isComplete
         }
-      }
-    }
-    ... on ErrorPayload {
-      error {
-        message
       }
     }
   }
@@ -112,9 +105,6 @@ mutation CreateReflection($input: CreateReflectionInput!) {
         content
         promptId
       }
-    }
-    error {
-      message
     }
   }
 }
@@ -152,9 +142,6 @@ mutation AddAgendaItem($newAgendaItem: CreateAgendaItemInput!) {
       pinned
       teamMemberId
     }
-    error {
-      message
-    }
   }
 }
 ```
@@ -187,9 +174,6 @@ mutation AddTeam($newTeam: NewTeamInput!) {
       name
       orgId
     }
-    error {
-      message
-    }
   }
 }
 ```
@@ -216,17 +200,10 @@ Sprint Poker is Parabol's estimation meeting type where the team collectively si
 ```graphql
 mutation StartSprintPoker($teamId: ID!) {
   startSprintPoker(teamId: $teamId) {
-    ... on StartSprintPokerSuccess {
-      meeting {
-        id
-        name
-        meetingType
-      }
-    }
-    ... on ErrorPayload {
-      error {
-        message
-      }
+    meeting {
+      id
+      name
+      meetingType
     }
   }
 }
@@ -253,9 +230,6 @@ mutation CreateTask($newTask: CreateTaskInput!) {
       content
       status
       teamId
-    }
-    error {
-      message
     }
   }
 }
@@ -365,18 +339,11 @@ A standup asks every member the prompts of the team's selected standup template 
 ```graphql
 mutation StartStandup($teamId: ID!) {
   startTeamPrompt(teamId: $teamId) {
-    ... on StartTeamPromptSuccess {
-      meeting {
+    meeting {
+      id
+      prompts {
         id
-        prompts {
-          id
-          question
-        }
-      }
-    }
-    ... on ErrorPayload {
-      error {
-        message
+        question
       }
     }
   }
@@ -421,16 +388,22 @@ Variables:
 
 ## Error Handling
 
-Older mutations return either a payload type with an optional `error` field or a `*Success | ErrorPayload` union (select fields with inline fragments, as in the start-meeting examples); newer ones (e.g. `startTeamHealth`, `setTeamHealthResponse`, `upsertTeamPromptResponse`, `shareTeamPromptResponses`, `addPromptTemplate`) return a `*Success` type directly and surface failures as GraphQL errors.
+A mutation returns its payload or fails with a GraphQL error in the response's `errors` array. Every error carries a machine-readable `extensions.code`:
 
-```graphql
-type StandardMutationError {
-  title: String!
-  message: String!
-}
-```
+- `BAD_USER_INPUT`: an argument is invalid, whatever the current state
+- `CONFLICT`: the arguments are valid, but the current state rules them out (e.g. the meeting already ended)
+- `UNAUTHENTICATED`: the token is missing, expired or revoked
+- `FORBIDDEN`: the token lacks the required scope, or the user lacks access
+- `NOT_FOUND`: the object doesn't exist or the user can't see it
+- `TOO_MANY_REQUESTS`: a rate limit or quota was reached; retry later
+- `UPGRADE_REQUIRED`: the feature needs a paid plan
+- `SERVICE_UNAVAILABLE`: an integration or AI provider failed; retrying may succeed
+- `NOT_IMPLEMENTED`: the feature isn't enabled on this server
+- `INTERNAL_SERVER_ERROR`: a bug on our side; quote the error's `extensions.traceId` when reporting it
 
-Always check `error` on the payload alongside your expected data fields. If the token lacks the required scope, the API returns a GraphQL error (not a payload error).
+Mutation fields are non-null, so when a mutation fails `data` is `null` and any mutation after it in the same operation doesn't run. Send one mutation per operation.
+
+A few sign-in and invitation flows return expected, user-fixable outcomes as data in a `userErrors` list instead (e.g. `acceptTeamInvitation` with an expired token). Integration issue lists (e.g. Jira issues) report a failed fetch in an `error` field on the list rather than failing the query.
 
 ## Pagination
 

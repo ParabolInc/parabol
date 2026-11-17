@@ -12,7 +12,7 @@ interface Handlers extends BaseLocalHandlers {
 }
 
 graphql`
-  fragment AddTemplatePromptMutation_team on AddTemplatePromptSuccess {
+  fragment AddTemplatePromptMutation_team on AddTemplatePromptPayload {
     prompt {
       ...AddTemplatePrompt_prompts @relay(mask: false)
       ...TemplatePromptList_prompts @relay(mask: false)

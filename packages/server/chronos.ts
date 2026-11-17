@@ -116,7 +116,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
         const query = `
           mutation ProcessRecurrence {
             processRecurrence{
-              ... on ProcessRecurrenceSuccess {
+              ... on ProcessRecurrencePayload {
                 meetingsStarted
                 meetingsEnded
                 remindersSent

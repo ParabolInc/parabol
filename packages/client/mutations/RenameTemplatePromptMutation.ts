@@ -4,7 +4,7 @@ import type {RenameTemplatePromptMutation as TRenameTemplatePromptMutation} from
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RenameTemplatePromptMutation_team on RenameTemplatePromptSuccess {
+  fragment RenameTemplatePromptMutation_team on RenameTemplatePromptPayload {
     prompt {
       id
       question

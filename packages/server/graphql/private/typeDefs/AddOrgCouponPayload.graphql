@@ -1,0 +1,6 @@
+type AddOrgCouponPayload {
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

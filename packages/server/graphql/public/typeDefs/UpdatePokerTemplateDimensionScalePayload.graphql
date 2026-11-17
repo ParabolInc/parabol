@@ -2,7 +2,6 @@
 Return value for updatePokerTemplateDimensionScale mutation
 """
 type UpdatePokerTemplateDimensionScalePayload {
-  error: StandardMutationError
   "The updated template dimension"
   dimension: TemplateDimension
 }

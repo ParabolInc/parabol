@@ -4,13 +4,14 @@ import type {UpdateTaskPayloadResolvers} from '../resolverTypes'
 
 type PartialNotification = {id: string; userId: string}
 
-export type UpdateTaskPayloadSource =
-  | {taskId: string; isPrivatized: boolean; notificationsToAdd?: PartialNotification[]}
-  | {error: {message: string}}
+export type UpdateTaskPayloadSource = {
+  taskId: string
+  isPrivatized: boolean
+  notificationsToAdd?: PartialNotification[]
+}
 
 const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
   task: async (source, _args, {authToken, dataLoader}) => {
-    if ('error' in source) return null
     const {taskId} = source
     const taskDoc = await dataLoader.get('tasks').load(taskId)
     if (!taskDoc) return null
@@ -21,13 +22,11 @@ const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
   },
 
   privatizedTaskId: (source) => {
-    if ('error' in source) return null
     const {taskId, isPrivatized} = source
     return isPrivatized ? taskId : null
   },
 
   addedNotification: async (source, _args, {authToken, dataLoader}) => {
-    if ('error' in source) return null
     const {notificationsToAdd} = source
     const viewerId = getUserId(authToken)
     const partial =

@@ -89,7 +89,7 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
     }
   }
 
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthVoteSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthVotePayload', data, subOptions)
 
   return data
 }

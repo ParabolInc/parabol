@@ -1,4 +1,11 @@
 """
-Return value for setMeetingMusic, which could be an error
+Success result for setMeetingMusic mutation
 """
-union SetMeetingMusicPayload = ErrorPayload | SetMeetingMusicSuccess
+type SetMeetingMusicPayload {
+  "The meeting whose music setting was updated"
+  meetingId: ID!
+  "URL of the audio track, or null if music was disabled"
+  trackSrc: String
+  "Whether music is currently playing"
+  isPlaying: Boolean!
+}

@@ -15,7 +15,7 @@ import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 
 graphql`
-  fragment UpdatePokerTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
+  fragment UpdatePokerTemplateScopeMutation_organization on UpdateTemplateScopePayload {
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template
@@ -34,11 +34,6 @@ graphql`
 const mutation = graphql`
   mutation UpdatePokerTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdatePokerTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }

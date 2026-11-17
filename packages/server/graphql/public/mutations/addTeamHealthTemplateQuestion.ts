@@ -52,7 +52,7 @@ const addTeamHealthTemplateQuestion: MutationResolvers['addTeamHealthTemplateQue
   publish(
     SubscriptionChannel.TEAM,
     template.teamId,
-    'AddTeamHealthTemplateQuestionSuccess',
+    'AddTeamHealthTemplateQuestionPayload',
     data,
     subOptions
   )

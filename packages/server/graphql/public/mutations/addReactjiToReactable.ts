@@ -107,7 +107,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'AddReactjiToReactableSuccess',
+      'AddReactjiToReactablePayload',
       data,
       subOptions
     )

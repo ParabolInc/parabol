@@ -18,7 +18,7 @@ const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       fieldName
-      AddIntegrationProviderSuccess {
+      AddIntegrationProviderPayload {
         ...AddIntegrationProviderMutation_organization @relay(mask: false)
       }
       ArchiveOrganizationPayload {
@@ -30,25 +30,25 @@ const subscription = graphql`
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
       }
-      UpgradeToTeamTierSuccess {
+      UpgradeToTeamTierPayload {
         ...UpgradeToTeamTierFrag_organization @relay(mask: false)
       }
-      RemoveIntegrationProviderSuccess {
+      RemoveIntegrationProviderPayload {
         ...RemoveIntegrationProviderMutation_organization @relay(mask: false)
       }
-      RemoveOrgUsersSuccess {
+      RemoveOrgUsersPayload {
         ...RemoveOrgUsersMutation_organization @relay(mask: false)
       }
-      SetOrgUserRoleSuccess {
+      SetOrgUserRolePayload {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
       }
-      ToggleAIFeaturesSuccess {
+      ToggleAIFeaturesPayload {
         ...ToggleAIFeaturesMutation_organization @relay(mask: false)
       }
-      UpdateIntegrationProviderSuccess {
+      UpdateIntegrationProviderPayload {
         ...UpdateIntegrationProviderMutation_organization @relay(mask: false)
       }
-      UpdateTemplateScopeSuccess {
+      UpdateTemplateScopePayload {
         ...UpdateTemplateScopeMutation_organization @relay(mask: false)
       }
 
@@ -72,15 +72,15 @@ const subscription = graphql`
 
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
-  RemoveOrgUsersSuccess: removeOrgUsersOrganizationOnNext,
-  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
+  RemoveOrgUsersPayload: removeOrgUsersOrganizationOnNext,
+  SetOrgUserRolePayload: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
 const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
-  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  RemoveOrgUsersPayload: removeOrgUsersOrganizationUpdater,
+  SetOrgUserRolePayload: setOrgUserRoleAddedOrganizationUpdater,
+  UpdateTemplateScopePayload: updateTemplateScopeOrganizationUpdater
 } as const
 
 export default createSubscription(subscription, onNextHandlers, updateHandlers)

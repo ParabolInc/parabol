@@ -4,7 +4,7 @@ import type {UngroupReflectionMutation as TUngroupReflectionMutation} from '../_
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UngroupReflectionMutation_meeting on UngroupReflectionSuccess {
+  fragment UngroupReflectionMutation_meeting on UngroupReflectionPayload {
     meeting {
       id
       ...GroupingKanban_meeting

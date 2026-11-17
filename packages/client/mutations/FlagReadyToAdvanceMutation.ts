@@ -5,7 +5,7 @@ import type {SimpleMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvanceSuccess {
+  fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvancePayload {
     stage {
       isViewerReady
       readyUserIds
@@ -16,11 +16,6 @@ graphql`
 const mutation = graphql`
   mutation FlagReadyToAdvanceMutation($stageId: ID!, $meetingId: ID!, $isReady: Boolean!) {
     flagReadyToAdvance(stageId: $stageId, meetingId: $meetingId, isReady: $isReady) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false) @alias
     }
   }

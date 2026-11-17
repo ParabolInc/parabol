@@ -1,4 +1,6 @@
-"""
-Return value for removeAuthIdentity, which could be an error
-"""
-union RemoveAuthIdentityPayload = ErrorPayload | RemoveAuthIdentitySuccess
+type RemoveAuthIdentityPayload {
+  """
+  The users who had their auth identity removed
+  """
+  users: [User!]!
+}

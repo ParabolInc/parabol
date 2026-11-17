@@ -8,9 +8,6 @@ import type {BaseLocalHandlers} from '../types/relayMutations'
 const mutation = graphql`
   mutation UploadOrgImageMutation($file: File!, $orgId: ID!) {
     uploadOrgImage(file: $file, orgId: $orgId) {
-      error {
-        message
-      }
       organization {
         picture
       }

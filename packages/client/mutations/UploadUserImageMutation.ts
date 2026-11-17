@@ -8,9 +8,6 @@ import type {BaseLocalHandlers} from '../types/relayMutations'
 const mutation = graphql`
   mutation UploadUserImageMutation($file: File!) {
     uploadUserImage(file: $file) {
-      error {
-        message
-      }
       user {
         id
         picture

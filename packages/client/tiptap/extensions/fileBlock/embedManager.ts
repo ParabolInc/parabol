@@ -124,15 +124,12 @@ const executeEmbed = (
     onCompleted: (res, errors) => {
       // Guard: clearEmbedEntries may have reset activeCount while in-flight
       if (activeCount > 0) activeCount--
-      const {embedUserAsset} = res
-      const errorMessage = embedUserAsset?.error?.message ?? errors?.[0]?.message
-
-      if (!embedUserAsset || errorMessage) {
+      if (errors?.length) {
         scheduleRetryOrFail(entry, src, scope, scopeKey, atmosphere, editor)
         return
       }
 
-      const hostedUrl = embedUserAsset.url
+      const hostedUrl = res.embedUserAsset.url
       if (!hostedUrl) {
         entry.status = 'error'
         notifyListeners()

@@ -7,14 +7,7 @@ import {snackOnError} from './handlers/snackOnError'
 const mutation = graphql`
   mutation useUploadUserAssetMutation($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
     uploadUserAsset(file: $file, scope: $scope, scopeKey: $scopeKey) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UploadUserAssetSuccess {
-        url
-      }
+      url
     }
   }
 `

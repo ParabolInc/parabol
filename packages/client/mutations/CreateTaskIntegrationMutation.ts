@@ -157,9 +157,6 @@ const mutation = graphql`
       integrationRepoId: $integrationRepoId
       taskId: $taskId
     ) {
-      error {
-        message
-      }
       ...CreateTaskIntegrationMutation_task @relay(mask: false)
     }
   }

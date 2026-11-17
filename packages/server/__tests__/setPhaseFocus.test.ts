@@ -3,14 +3,12 @@ import {sendPublic, signUp} from './common'
 const START_RETROSPECTIVE = `
   mutation StartRetrospective($teamId: ID!) {
     startRetrospective(teamId: $teamId) {
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          id
-          phases {
-            ... on ReflectPhase {
-              reflectPrompts {
-                id
-              }
+      meeting {
+        id
+        phases {
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
             }
           }
         }
@@ -34,9 +32,6 @@ const ADD_PROMPT_TEMPLATE = `
 const SET_PHASE_FOCUS = `
   mutation SetPhaseFocus($meetingId: ID!, $focusedPromptId: ID) {
     setPhaseFocus(meetingId: $meetingId, focusedPromptId: $focusedPromptId) {
-      error {
-        message
-      }
       reflectPhase {
         focusedPrompt {
           id
@@ -73,7 +68,7 @@ test('a facilitator cannot focus a prompt from another team’s template', async
   const res = await setPhaseFocus(meetingId, foreignPromptId, facilitator.cookie)
 
   expect(res).toEqual({
-    data: {setPhaseFocus: null},
+    data: null,
     errors: [
       expect.objectContaining({extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})})
     ]
@@ -87,11 +82,11 @@ test('a facilitator focuses and unfocuses one of the meeting’s own prompts', a
 
   const focused = await setPhaseFocus(meetingId, promptId, facilitator.cookie)
   expect(focused).toEqual({
-    data: {setPhaseFocus: {error: null, reflectPhase: {focusedPrompt: {id: promptId}}}}
+    data: {setPhaseFocus: {reflectPhase: {focusedPrompt: {id: promptId}}}}
   })
 
   const unfocused = await setPhaseFocus(meetingId, null, facilitator.cookie)
   expect(unfocused).toEqual({
-    data: {setPhaseFocus: {error: null, reflectPhase: {focusedPrompt: null}}}
+    data: {setPhaseFocus: {reflectPhase: {focusedPrompt: null}}}
   })
 })

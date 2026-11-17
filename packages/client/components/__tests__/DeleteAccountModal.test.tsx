@@ -6,6 +6,7 @@ import {RelayEnvironmentProvider} from 'react-relay'
 import {Environment, Network, Observable, RecordSource, Store} from 'relay-runtime'
 import type {DeleteAccountModal_viewer$key} from '../../__generated__/DeleteAccountModal_viewer.graphql'
 import {happyWindow} from '../../tiptap/extensions/__tests__/installHappyDom'
+import GraphQLServerError from '../../utils/relay/GraphQLServerError'
 import DeleteAccountModal from '../DeleteAccountModal'
 
 jest.mock('babel-plugin-relay/macro', () => ({
@@ -33,20 +34,14 @@ jest.mock('../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => ({viewerId: 'user1', eventEmitter: new EventEmitter()})
 }))
+jest.mock('../DeleteAccountReAuthStep', () => ({
+  __esModule: true,
+  default: () => null
+}))
 
 let root: Root
 
-afterEach(async () => {
-  await act(async () => root.unmount())
-})
-
-afterAll(async () => {
-  await happyWindow.happyDOM.close()
-})
-
-test('a user who clicks Goodbye forever again while their account is being deleted sends one deletion', async () => {
-  // the server is still deleting the account, so the request never answers
-  const fetchDeletion = jest.fn(() => Observable.create(() => {}))
+const renderModal = async (fetchDeletion: () => Observable<never>) => {
   const environment = new Environment({
     network: Network.create(fetchDeletion),
     store: new Store(new RecordSource())
@@ -65,7 +60,6 @@ test('a user who clicks Goodbye forever again while their account is being delet
       </RelayEnvironmentProvider>
     )
   )
-
   const reason = happyWindow.document.querySelector('textarea')!
   const setReason = Object.getOwnPropertyDescriptor(
     happyWindow.HTMLTextAreaElement.prototype,
@@ -75,13 +69,46 @@ test('a user who clicks Goodbye forever again while their account is being delet
     setReason.call(reason, 'not really')
     reason.dispatchEvent(new happyWindow.Event('input', {bubbles: true}))
   })
-  const goodbye = [...happyWindow.document.querySelectorAll('button')].find(
+  return [...happyWindow.document.querySelectorAll('button')].find(
     (button) => button.textContent === 'Goodbye forever'
   )!
+}
+
+afterEach(async () => {
+  await act(async () => root.unmount())
+})
+
+afterAll(async () => {
+  await happyWindow.happyDOM.close()
+})
+
+test('a user who clicks Goodbye forever again while their account is being deleted sends one deletion', async () => {
+  // the server is still deleting the account, so the request never answers
+  const fetchDeletion = jest.fn(() => Observable.create<never>(() => {}))
+  const goodbye = await renderModal(fetchDeletion)
   for (let click = 0; click < 3; click++) {
     await act(async () => goodbye.click())
   }
 
   expect(fetchDeletion).toHaveBeenCalledTimes(1)
   expect(goodbye.disabled).toBe(true)
+})
+
+test('a user who signed in too long ago is asked to verify their identity', async () => {
+  const goodbye = await renderModal(() =>
+    Observable.create<never>((sink) => {
+      sink.error(
+        new GraphQLServerError([
+          {
+            name: 'GraphQLError',
+            message: 'Please re-authenticate before deleting your account',
+            extensions: {code: 'UNAUTHENTICATED'}
+          }
+        ])
+      )
+    })
+  )
+  await act(async () => goodbye.click())
+
+  expect(happyWindow.document.body.textContent).toContain('Verify your identity')
 })

@@ -42,7 +42,7 @@ const updateTemplateCategory: MutationResolvers['updateTemplateCategory'] = asyn
   dataLoader.get('meetingTemplates').clear(templateId)
   const {teamId} = template
   const data = {templateId}
-  publish(SubscriptionChannel.TEAM, teamId, 'UpdateTemplateCategorySuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'UpdateTemplateCategoryPayload', data, subOptions)
   return data
 }
 

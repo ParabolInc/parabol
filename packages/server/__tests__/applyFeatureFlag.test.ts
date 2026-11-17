@@ -6,15 +6,8 @@ const applyDatabasesFlag = (orgIds: string[]) =>
     query: `
       mutation ApplyFeatureFlag($orgIds: [ID!]) {
         applyFeatureFlag(flagName: "Databases", subjects: {orgIds: $orgIds}) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on ApplyFeatureFlagSuccess {
-            organizations {
-              id
-            }
+          organizations {
+            id
           }
         }
       }

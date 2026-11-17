@@ -1,10 +1,8 @@
 import type {DraftEnterpriseInvoicePayloadResolvers} from '../resolverTypes'
 
-export type DraftEnterpriseInvoicePayloadSource =
-  | {
-      orgId: string
-    }
-  | {error: {message: string}}
+export type DraftEnterpriseInvoicePayloadSource = {
+  orgId: string
+}
 
 const DraftEnterpriseInvoicePayload: DraftEnterpriseInvoicePayloadResolvers = {
   organization: (source, _args, {dataLoader}) => {

@@ -4,7 +4,7 @@ import type {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutati
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateRecurrenceSettingsMutation_team on UpdateRecurrenceSettingsSuccess {
+  fragment UpdateRecurrenceSettingsMutation_team on UpdateRecurrenceSettingsPayload {
     meeting {
       id
       meetingSeriesId
@@ -24,11 +24,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateRecurrenceSettingsMutation($meetingId: ID!, $name: String, $rrule: RRule) {
     updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateRecurrenceSettingsMutation_team @relay(mask: false) @alias
     }
   }

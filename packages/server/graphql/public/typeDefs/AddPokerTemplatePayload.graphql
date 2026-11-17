@@ -1,9 +1,16 @@
 """
-The result of the addPokerTemplate mutation, which creates a new Sprint Poker template for a team.
-A template can be created from scratch (with a single default dimension) or cloned from an existing
-template (copies all dimensions from the parent). Returns either a success object containing the
-new template and the creating user, or an ErrorPayload if the operation failed (e.g. the team was
-not found, the user has exhausted their free custom template allowance on the starter tier, or the
-parent template is not accessible to the viewer).
+Returned when the addPokerTemplate mutation succeeds. Contains the newly created (or cloned) poker
+template and the user who triggered the operation. Use this to update the client's template list and
+reflect the creator's identity without a separate query.
 """
-union AddPokerTemplatePayload = ErrorPayload | AddPokerTemplateSuccess
+type AddPokerTemplatePayload {
+  """
+  The poker template that was created
+  """
+  pokerTemplate: PokerTemplate!
+
+  """
+  The user that created the template
+  """
+  user: User!
+}

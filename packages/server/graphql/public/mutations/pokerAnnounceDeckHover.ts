@@ -62,7 +62,7 @@ const pokerAnnounceDeckHover: MutationResolvers['pokerAnnounceDeckHover'] = asyn
   }
 
   const data = {meetingId, stageId, userId: viewerId, isHover}
-  publish(SubscriptionChannel.MEETING, meetingId, 'PokerAnnounceDeckHoverSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'PokerAnnounceDeckHoverPayload', data, subOptions)
   return data
 }
 

@@ -1,4 +1,9 @@
 """
-Return value for updateAutoJoin, which could be an error
+Success result for updateAutoJoin mutation
 """
-union UpdateAutoJoinPayload = ErrorPayload | UpdateAutoJoinSuccess
+type UpdateAutoJoinPayload {
+  """
+  The teams that were updated
+  """
+  updatedTeams: [Team!]!
+}

@@ -50,7 +50,7 @@ describe('setTeamNotificationSetting', () => {
     expect(publish.mock.calls[0]!.slice(0, 3)).toEqual([
       SubscriptionChannel.TEAM,
       teamId,
-      'SetTeamNotificationSettingSuccess'
+      'SetTeamNotificationSettingPayload'
     ])
   })
 })

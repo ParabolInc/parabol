@@ -27,9 +27,6 @@ const mutation = graphql`
       reasonsForLeaving: $reasonsForLeaving
       otherTool: $otherTool
     ) {
-      error {
-        message
-      }
       ...DowngradeToStarterMutation_organization @relay(mask: false)
     }
   }

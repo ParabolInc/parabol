@@ -21,10 +21,8 @@ const startRetro = async (teamId: string, cookie: string) => {
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!) {
         startRetrospective(teamId: $teamId) {
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-            }
+          meeting {
+            id
           }
         }
       }

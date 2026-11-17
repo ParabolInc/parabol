@@ -8,7 +8,7 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
-  fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksSuccess {
+  fragment BatchArchiveTasksMutation_tasks on BatchArchiveTasksPayload {
     archivedTasks {
       id
       content
@@ -20,11 +20,6 @@ graphql`
 const mutation = graphql`
   mutation BatchArchiveTasksMutation($taskIds: [ID!]!) {
     batchArchiveTasks(taskIds: $taskIds) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...BatchArchiveTasksMutation_tasks @relay(mask: false) @alias
     }
   }

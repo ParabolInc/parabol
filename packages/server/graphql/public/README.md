@@ -3,14 +3,7 @@
 New GraphQL features can be added using the schema definition language (SDL).
 All new schema additions should be added in this directory.
 
-### How to add a new mutation (preferred)
-
-1. `pnpm newMutation <mutationName> -s <subscriptionChannel>`
-   This will create all the boilerplate you need.
-   If you don't need to publish to a subscription channel, leave off the -s flag.
-   To learn more, type `pnpm newMutation --help`
-
-### How to manually add a new mutation
+### How to add a new mutation
 
 1. Write a new `.graphql` typeDef
    For mutations, a typeDef typically consists of the following:
@@ -19,7 +12,7 @@ All new schema additions should be added in this directory.
 - Adding a new mutation payload, which is the return type of your mutation. _Try to make sure each field is non-null!_.
   - Non-null fields mean the client doesn't have to write fallbacks in case the field comes up null.
   - If 2 nullable fields are mutually exclusive, consider breaking it into 2+ types and returning the union
-- For nullable fields, e.g. if the mutation can return an error, make sure the payload is a union type. e.g. `type StartFunPayload = ErrorPayload | StartFunSuccess`
+- Make the mutation field non-null, e.g. `startFun(...): StartFunPayload!`. A failure throws a `GraphQLError` with a code from `ParabolGraphQLErrorCodes` instead of returning an error in the payload
 
 2. Write the mutation resolver
    If you need to write to the DB, add a DB query in [postgres/queries](../../postgres/queries)

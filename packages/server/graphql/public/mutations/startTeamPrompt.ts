@@ -83,7 +83,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       meetingSeriesId: meetingSeries.id,
       hasGcalError: !!gcalError?.message
     }
-    publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptPayload', data, subOptions)
     return data
   }
 
@@ -134,7 +134,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     hasGcalError: !!error?.message
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptPayload', data, subOptions)
   return data
 }
 

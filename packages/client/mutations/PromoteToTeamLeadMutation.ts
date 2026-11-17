@@ -22,9 +22,6 @@ graphql`
 const mutation = graphql`
   mutation PromoteToTeamLeadMutation($teamId: ID!, $userId: ID!) {
     promoteToTeamLead(teamId: $teamId, userId: $userId) {
-      error {
-        message
-      }
       ...PromoteToTeamLeadMutation_team
     }
   }

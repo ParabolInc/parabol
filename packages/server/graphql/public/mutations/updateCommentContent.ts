@@ -52,7 +52,7 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
 
   const data = {commentId}
   if (meetingId) {
-    publish(SubscriptionChannel.MEETING, meetingId, 'UpdateCommentContentSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'UpdateCommentContentPayload', data, subOptions)
   }
   return data
 }

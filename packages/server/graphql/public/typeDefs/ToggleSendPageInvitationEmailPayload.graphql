@@ -1,4 +1,0 @@
-"""
-Return value for togglePageInvitationEmail mutation
-"""
-union TogglePageInvitationEmailPayload = ErrorPayload | TogglePageInvitationEmailSuccess

@@ -1,0 +1,9 @@
+"""
+Success result for updateMeetingTemplate mutation
+"""
+type UpdateMeetingTemplatePayload {
+  """
+  The updated meeting
+  """
+  meeting: NewMeeting!
+}

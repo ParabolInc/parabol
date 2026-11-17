@@ -26,9 +26,6 @@ const mutation = graphql`
       scheduledEndTime: $scheduledEndTime
       timeRemaining: $timeRemaining
     ) {
-      error {
-        message
-      }
       ...SetStageTimerMutation_meeting @relay(mask: false)
     }
   }

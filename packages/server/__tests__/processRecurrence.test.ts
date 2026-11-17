@@ -29,7 +29,7 @@ const selectSeriesMeetings = (meetingSeriesId: number) =>
 
 const runProcessRecurrence = async () => {
   const res = await processRecurrence()
-  expect(res.data.processRecurrence.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 }
 
 const assertIdempotency = async () => {

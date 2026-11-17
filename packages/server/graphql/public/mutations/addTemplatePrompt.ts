@@ -48,7 +48,7 @@ const addTemplatePrompt: MutationResolvers['addTemplatePrompt'] = async (
 
   dataLoader.clearAll('templatePrompts')
   const data = {promptId: prompt.id}
-  publish(SubscriptionChannel.TEAM, teamId, 'AddTemplatePromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'AddTemplatePromptPayload', data, subOptions)
   return data
 }
 

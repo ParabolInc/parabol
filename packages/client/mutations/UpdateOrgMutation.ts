@@ -17,9 +17,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateOrgMutation($updatedOrg: UpdateOrgInput!) {
     updateOrg(updatedOrg: $updatedOrg) {
-      error {
-        message
-      }
       ...UpdateOrgMutation_organization @relay(mask: false)
     }
   }

@@ -56,7 +56,7 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
     }
   }
 
-  publish(SubscriptionChannel.MEETING, meetingId, 'RevealTeamHealthVotesSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'RevealTeamHealthVotesPayload', data, subOptions)
 
   return data
 }

@@ -96,7 +96,7 @@ const updateRetroMaxVotes: MutationResolvers['updateRetroMaxVotes'] = async (
   })
   dataLoader.get('newMeetings').clear(meetingId)
   const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesPayload', data, subOptions)
   return data
 }
 

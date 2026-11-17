@@ -47,7 +47,7 @@ const setTaskHighlight: MutationResolvers['setTaskHighlight'] = async (
 
   // RESOLUTION
   const data = {meetingId, taskId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskHighlightSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskHighlightPayload', data, subOptions)
   return data
 }
 

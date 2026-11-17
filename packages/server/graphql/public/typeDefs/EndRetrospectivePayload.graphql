@@ -1,4 +1,41 @@
 """
-The result of ending a retrospective meeting. Returns either a success payload with the concluded meeting details or an error describing why the operation failed.
+The result of successfully ending a retrospective meeting. Contains the final
+state of the meeting, the team it belonged to, any cleanup side-effects (removed
+tasks and suggested actions), and a timeline event surfaced to the viewer.
 """
-union EndRetrospectivePayload = ErrorPayload | EndRetrospectiveSuccess
+type EndRetrospectivePayload {
+  """
+  True if the meeting was force-ended (killed) before reaching the last stage; false if it completed normally through all stages.
+  """
+  isKill: Boolean!
+
+  """
+  The team that hosted the retrospective meeting
+  """
+  team: Team!
+
+  """
+  The retrospective meeting that was ended, including all phases, reflections, and action items
+  """
+  meeting: RetrospectiveMeeting!
+
+  """
+  The ID of the suggested action to try a retrospective meeting that was removed because the meeting was completed, if one existed.
+  """
+  removedSuggestedActionId: ID
+
+  """
+  IDs of tasks that were removed as part of ending the meeting (e.g. orphaned tasks with no assignee)
+  """
+  removedTaskIds: [ID!]!
+
+  """
+  IDs of tasks that were updated when the meeting ended (e.g. Done tasks archived because the Review Tasks phase ran)
+  """
+  updatedTaskIds: [ID!]
+
+  """
+  The timeline event created for this ended meeting, surfaced in the viewer's activity feed.
+  """
+  timelineEvent: TimelineEvent!
+}

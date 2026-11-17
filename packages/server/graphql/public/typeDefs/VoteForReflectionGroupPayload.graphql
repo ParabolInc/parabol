@@ -2,7 +2,6 @@
 Return value for voteForReflectionGroup mutation
 """
 type VoteForReflectionGroupPayload {
-  error: StandardMutationError
   "The meeting where the vote occurred"
   meeting: RetrospectiveMeeting
   "The meeting member who voted"

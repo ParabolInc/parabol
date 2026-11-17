@@ -76,7 +76,7 @@ const renameTemplatePrompt: MutationResolvers['renameTemplatePrompt'] = async (
   }
   dataLoader.clearAll('templatePrompts')
   const data = {promptId: renamedPromptId}
-  publish(SubscriptionChannel.TEAM, teamId, 'RenameTemplatePromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'RenameTemplatePromptPayload', data, subOptions)
   return data
 }
 

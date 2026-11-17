@@ -91,7 +91,7 @@ const generateDefaultSuggestedGroups = async (
       publish(
         SubscriptionChannel.MEETING,
         meetingId,
-        'SuggestedGroupsSuccess',
+        'SuggestedGroupsPayload',
         {meetingId, isUserInitiated: false},
         {operationId}
       )

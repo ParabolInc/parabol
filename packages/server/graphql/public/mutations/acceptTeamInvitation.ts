@@ -29,7 +29,7 @@ const invitationTokenUserError = {
 
 const invitationTokenErrorResult = (tokenError: InvitationTokenError) => {
   const [code, message] = invitationTokenUserError[tokenError]
-  return userErrorResult(code, message, {legacyMessage: tokenError})
+  return userErrorResult(code, message)
 }
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (

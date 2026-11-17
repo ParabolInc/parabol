@@ -1,4 +1,14 @@
 """
-Return object for FlagReadyToAdvancePayload
+The result of flagging a participant as ready to advance to the next meeting stage
 """
-union FlagReadyToAdvancePayload = ErrorPayload | FlagReadyToAdvanceSuccess
+type FlagReadyToAdvancePayload {
+  """
+  the meeting with the updated readyUserIds
+  """
+  meeting: NewMeeting!
+
+  """
+  the stage with the updated readyUserIds
+  """
+  stage: NewMeetingStage!
+}

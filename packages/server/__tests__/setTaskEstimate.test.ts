@@ -3,9 +3,7 @@ import {sendPublic, signUp} from './common'
 const START_SPRINT_POKER = `
   mutation StartSprintPoker($teamId: ID!) {
     startSprintPoker(teamId: $teamId) {
-      ... on StartSprintPokerSuccess {
-        meetingId
-      }
+      meetingId
     }
   }
 `
@@ -36,16 +34,9 @@ const UPDATE_POKER_SCOPE = `
 const SET_TASK_ESTIMATE = `
   mutation SetTaskEstimate($taskEstimate: TaskEstimateInput!) {
     setTaskEstimate(taskEstimate: $taskEstimate) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on SetTaskEstimateSuccess {
-        stage {
-          id
-          finalScore
-        }
+      stage {
+        id
+        finalScore
       }
     }
   }

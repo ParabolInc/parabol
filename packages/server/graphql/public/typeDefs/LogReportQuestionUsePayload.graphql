@@ -1,0 +1,6 @@
+type LogReportQuestionUsePayload {
+  """
+  The question, now first in the viewer's recent questions
+  """
+  reportQuestion: ReportQuestion!
+}

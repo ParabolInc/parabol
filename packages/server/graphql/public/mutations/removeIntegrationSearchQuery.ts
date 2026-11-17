@@ -34,7 +34,7 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,
-    'RemoveIntegrationSearchQuerySuccess',
+    'RemoveIntegrationSearchQueryPayload',
     data,
     subOptions
   )

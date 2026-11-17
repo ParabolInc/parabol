@@ -2,7 +2,6 @@
 Return value for setMeetingSettings mutation
 """
 type SetMeetingSettingsPayload {
-  error: StandardMutationError
   "The updated meeting settings"
   settings: TeamMeetingSettings
 }

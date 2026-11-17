@@ -4,7 +4,7 @@ import type {CreateStripeSubscriptionMutation as TCreateStripeSubscriptionMutati
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment CreateStripeSubscriptionMutation_organization on CreateStripeSubscriptionSuccess {
+  fragment CreateStripeSubscriptionMutation_organization on CreateStripeSubscriptionPayload {
     stripeSubscriptionClientSecret
   }
 `
@@ -12,11 +12,6 @@ graphql`
 const mutation = graphql`
   mutation CreateStripeSubscriptionMutation($orgId: ID!, $paymentMethodId: ID!) {
     createStripeSubscription(orgId: $orgId, paymentMethodId: $paymentMethodId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...CreateStripeSubscriptionMutation_organization @relay(mask: false) @alias
     }
   }

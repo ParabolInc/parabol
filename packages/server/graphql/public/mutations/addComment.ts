@@ -116,7 +116,7 @@ const addComment: MutationResolvers['addComment'] = async (
   }
 
   const data = {commentId, meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentPayload', data, subOptions)
   return data
 }
 

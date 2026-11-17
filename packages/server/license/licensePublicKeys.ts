@@ -1,0 +1,37 @@
+/*
+The public halves of the keys Parabol signs licenses with, by key ID (a license's `kid`). The private halves never
+leave Parabol. Add a key here before signing with it, and keep a retired key while licenses it signed are in use.
+*/
+export const licensePublicKeys: Record<string, string> = {
+  '2026-11-ml-dsa-44': `-----BEGIN PUBLIC KEY-----
+MIIFMjALBglghkgBZQMEAxEDggUhALj76dT9By6H4NwZpFRId1a6Zdv35UXPbytx
+D15UQ4Sua7jhxe8BShuGR8mJ9r3/PeC5/m1CDSo/HMuwjxhmDWuQS79dr0CIE4P+
+9Va8BtNSEU2RqzeWI9xeSCAKBNbV13FIIbnb2k73L2B6hRtXWszXdWdIDQHIDT32
++gt/ghFlD9ggRLtSaFYl+b8nMwwN3jSvy89OAt8emkhv8QVrhKfzEkZdaOfzzkMv
+kjjgiYe6kg+y0OxWfumvtdis3ryspJ0AWiTkGhUHuy8YgEpS0ycFldkKElv/63QV
+jZyCUM2gMPl7v1+VTevqJx5C2erYThsgIZOr2kFFjny/PAQXccZXkK45WLMQcwW0
+9zNyDon3TP2xJiZneSu59XpTVusQG5jI/D6MZl+/tB3Xib12xTfb4dczVLQ9vw1w
+PCQqJ5bFjYldaCWVaZTWIcf5UWwbLFPI4G/ykTyM5MukhOsuxHsxyawFYcT+szJd
+G5q99K2qe5A4OpNW9UxGGT05Iu2qhVcxJXk+PbE52BNLkCAZ00Yucdwbu4KiCtF7
+xYMWs57+jLVvFH3wDiRX0dRfDOUJq/GWp30EeXb3Vk8M7MDuOJ67ucG0hB+hQTYV
+f1uFuouEZEjmJ9uPz4j4NszUIo+lsddLHvNTjBIAHy6s/8a9z/yy6wNu+eLIAAod
+Nfs4Rtz54xDMo1tvvQvJHlJY3/6b2pgYRLjWBMzXaOgi4q8V88Rm6nS5uvp/YaLh
+LQvLDF0KTRSqcv+1qov81Icetpruh+TvBb1c4zpvaeMj/3RlPIzTtdF0MuW+Bbsu
+se9FQd9NyZ916ZlXMtrbyCQ3rAv4zrHpebTCio08U2l1gEuFCREAEEZojsjwVIm7
+LO1JmTYXw+3bfIWDevonQWQR+FgvWqF42QoEdCKiMj8ZLrfM7w2ArB98XpCGNILR
+fFuz1NtQLsiwCswSBgNAoFJiMUCeLQ1L2vWu23j+0i7n29frIxgyBPnTJkbUFfxv
+PsFquP7GIKwgcFxWc7lFmyoLwKgsKPmF4Wq1lODug3uTEk+P8g8jsj26EBByZmUq
+XaL8HS2cqxn1GOcSahVwJZf6Z8R5eF8ekg84a76Tzlib2HQ0TRd//5jLstTZY6A1
+xt/9r1DyZ6OIdlRyoc3nv8OwW8x0PwR8X87XMy4yUdogmVxKgS6gbr9rlnnkWyLa
+dW+N/1iBQFDzma3L9hJRWPIuwrCUbKdp2yyxkBvG0vcAirjDL8c9RDnHcXB8widA
+H4+ZBkR8EzCv5yvYDjbdvApQYI6gX3zahWZsVlHRL/Oz0BzHA0e3ZOo7lttA1ToM
+ge4Vqx8e6Uo6GwFfn9CJLXLoRYfNZZQihOT0RCF+fnGnUfzw3df2TC6ATiacnO9E
+lyZlXv5YIyojubRzHQaHorMYHsoSYAoMKlRn67rPnkDAyE7mVBV3G5yqSZTBpoT7
+ANCD7Eh90vubbuq6UOVR+NDEZvqJ3fR5ig6Y0IRDD9cCdtHYRBq2q3ggcIqMs+/s
+/dHpAFVeng3S7dJTxQ6Nk4YhYoJ/zMFMUcos4xEIazirNdlbkmiaYmHWTV0K3TFO
+zLVSEXibj5tGaRMMoIcNZmpMo+B7IsYTNW84zPP2vg96X502RPXmjT2+pxxMVM3V
+ZRJ5OvqhqQSq5O7QDo4GRv4wSG67SRxNzZkK5UoNDzgNbhGQOl0OoX8NJl+QXgZc
+YuLL31xxwm5KPrik0OEXQ/UpFe7DiS5m5X4ygWUSAIWblyFvLxc=
+-----END PUBLIC KEY-----
+`
+}

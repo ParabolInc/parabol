@@ -89,15 +89,10 @@ const BillingForm = (props: Props) => {
     }
 
     const handleCompletedSubscription = async (res: CreateStripeSubscriptionMutation$data) => {
-      const {createStripeSubscription} = res
-      const stripeSubscriptionClientSecret =
-        createStripeSubscription?.CreateStripeSubscriptionMutation_organization
-          ?.stripeSubscriptionClientSecret
-      if (createStripeSubscription.error || !stripeSubscriptionClientSecret) {
-        const newErrMsg =
-          createStripeSubscription.error?.message ??
-          'Something went wrong. Please try again or contact support.'
-        onError(new Error(newErrMsg))
+      const {stripeSubscriptionClientSecret} =
+        res.createStripeSubscription.CreateStripeSubscriptionMutation_organization
+      if (!stripeSubscriptionClientSecret) {
+        onError(new Error('Something went wrong. Please try again or contact support.'))
         return
       }
       const {error} = await stripe.confirmCardPayment(stripeSubscriptionClientSecret)

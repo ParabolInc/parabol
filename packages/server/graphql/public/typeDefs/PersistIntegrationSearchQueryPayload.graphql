@@ -1,0 +1,9 @@
+"""
+Successfully saved an integration search query
+"""
+type PersistIntegrationSearchQueryPayload {
+  """
+  The service whose saved queries changed. Select searchQueries to pick up the saved query
+  """
+  service: IntegrationService!
+}

@@ -1,9 +1,0 @@
-"""
-Success result for updateRetroMaxVotes mutation
-"""
-type UpdateRetroMaxVotesSuccess {
-  """
-  The meeting with the updated max votes
-  """
-  meeting: RetrospectiveMeeting!
-}

@@ -185,7 +185,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     publish(
       SubscriptionChannel.ORGANIZATION,
       orgId,
-      'UpdateIntegrationProviderSuccess',
+      'UpdateIntegrationProviderPayload',
       data,
       subOptions
     )

@@ -11,10 +11,8 @@ const addGitLabProvider = async (teamId: string, cookie: string) => {
     query: `
       mutation AddIntegrationProvider($input: AddIntegrationProviderInput!) {
         addIntegrationProvider(input: $input) {
-          ... on AddIntegrationProviderSuccess {
-            provider {
-              id
-            }
+          provider {
+            id
           }
         }
       }
@@ -50,7 +48,7 @@ const removeProvider = async (providerId: string, cookie: string) => {
     cookie
   })
   expect(res).toEqual({
-    data: {removeIntegrationProvider: {__typename: 'RemoveIntegrationProviderSuccess'}}
+    data: {removeIntegrationProvider: {__typename: 'RemoveIntegrationProviderPayload'}}
   })
 }
 
@@ -59,18 +57,11 @@ const updateProvider = (providerId: string, cookie: string) =>
     query: `
       mutation UpdateIntegrationProvider($provider: UpdateIntegrationProviderInput!) {
         updateIntegrationProvider(provider: $provider) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on UpdateIntegrationProviderSuccess {
-            provider {
-              id
-              ... on IntegrationProviderOAuth2 {
-                clientId
-                serverBaseUrl
-              }
+          provider {
+            id
+            ... on IntegrationProviderOAuth2 {
+              clientId
+              serverBaseUrl
             }
           }
         }
@@ -121,11 +112,13 @@ test('Updating a removed provider is refused and leaves it untouched', async () 
 
   const res = await updateProvider(providerId, cookie)
   expect(res).toEqual({
-    data: {
-      updateIntegrationProvider: {
-        error: {message: 'Invalid provider ID'}
-      }
-    }
+    data: null,
+    errors: [
+      expect.objectContaining({
+        message: 'Invalid provider ID',
+        extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})
+      })
+    ]
   })
   expect(await selectProvider(providerId)).toEqual({
     clientId: 'original-client',

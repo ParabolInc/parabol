@@ -33,6 +33,12 @@ type Organization {
   isBillingLeader: Boolean!
 
   """
+  true if the viewer can download a signed usage report for this Parabol instance from this organization: its
+  PRIVATE_LICENSE_KEY has a private usage key, and the viewer is a billing leader, an org admin or a super user
+  """
+  canSignUsageReport: Boolean! @scope(name: REPORTS_READ)
+
+  """
   true if the viewer holds the the org admin role on the org
   """
   isOrgAdmin: Boolean!

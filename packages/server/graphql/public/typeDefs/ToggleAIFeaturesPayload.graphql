@@ -1,4 +1,7 @@
 """
-Return value for toggleAIFeatures mutation
+Success result for toggleAIFeatures mutation
 """
-union ToggleAIFeaturesPayload = ErrorPayload | ToggleAIFeaturesSuccess
+type ToggleAIFeaturesPayload {
+  "The organization with the updated AI features setting"
+  organization: Organization!
+}

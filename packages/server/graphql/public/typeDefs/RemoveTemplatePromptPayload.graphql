@@ -1,0 +1,9 @@
+"""
+Returned when removeTemplatePrompt succeeds
+"""
+type RemoveTemplatePromptPayload {
+  """
+  The prompt that was soft-removed from its template
+  """
+  prompt: TemplatePrompt!
+}

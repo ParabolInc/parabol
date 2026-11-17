@@ -16,12 +16,10 @@ const startStandup = async (cookie: string, teamId: string) => {
     query: `
       mutation StartTeamPrompt($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
-          ... on StartTeamPromptSuccess {
-            meeting {
+          meeting {
+            id
+            prompts {
               id
-              prompts {
-                id
-              }
             }
           }
         }
@@ -35,9 +33,7 @@ const startStandup = async (cookie: string, teamId: string) => {
     query: `
       mutation JoinMeeting($meetingId: ID!) {
         joinMeeting(meetingId: $meetingId) {
-          ... on JoinMeetingSuccess {
-            meetingId
-          }
+          meetingId
         }
       }
     `,
@@ -87,10 +83,8 @@ const addComment = async (cookie: string, meetingId: string) => {
     query: `
       mutation AddComment($comment: AddCommentInput!) {
         addComment(comment: $comment) {
-          ... on AddCommentSuccess {
-            comment {
-              id
-            }
+          comment {
+            id
           }
         }
       }
@@ -106,14 +100,12 @@ const createReflection = async (cookie: string, teamId: string) => {
     query: `
       mutation StartRetrospective($teamId: ID!) {
         startRetrospective(teamId: $teamId) {
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-              phases {
-                ... on ReflectPhase {
-                  reflectPrompts {
-                    id
-                  }
+          meeting {
+            id
+            phases {
+              ... on ReflectPhase {
+                reflectPrompts {
+                  id
                 }
               }
             }
@@ -154,10 +146,8 @@ const react = (cookie: string, meetingId: string, reactableId: string, reactable
           reactableType: $reactableType
           reactji: "heart"
         ) {
-          ... on AddReactjiToReactableSuccess {
-            reactable {
-              id
-            }
+          reactable {
+            id
           }
         }
       }
