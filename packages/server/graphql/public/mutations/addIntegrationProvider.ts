@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
@@ -18,55 +19,49 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
 
   // INPUT VALIDATION
   if (scope === 'global' && (teamId || orgId)) {
-    return {
-      error: {
-        message: 'Global providers must not have an `orgId` nor `teamId`'
-      }
-    }
+    throw new GraphQLError('Global providers must not have an `orgId` nor `teamId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (scope === 'org' && (!orgId || teamId)) {
-    return {
-      error: {
-        message: 'Org providers must have an `orgId` and no `teamId`'
-      }
-    }
+    throw new GraphQLError('Org providers must have an `orgId` and no `teamId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (scope === 'team' && (!teamId || orgId)) {
-    return {
-      error: {
-        message: 'Team providers must have a `teamId` and no `orgId`'
-      }
-    }
+    throw new GraphQLError('Team providers must have a `teamId` and no `orgId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // AUTH
   if (!isSuperUser(authToken)) {
     if (scope === 'global') {
-      return {
-        error: {message: 'Must be a super user to add a global provider'}
-      }
+      throw new GraphQLError('Must be a super user to add a global provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
-      return {
-        error: {
-          message:
-            'Must be an organization admin to add an integration provider on organization level'
-        }
-      }
+      throw new GraphQLError(
+        'Must be an organization admin to add an integration provider on organization level',
+        {extensions: {code: 'FORBIDDEN'}}
+      )
     }
     if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
-      return {
-        error: {
-          message: 'Must be on the team for the integration provider'
-        }
-      }
+      throw new GraphQLError('Must be on the team for the integration provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
   if (context.resourceGrants) {
     if (scope === 'org' && !(await context.resourceGrants.hasOrg(orgId!))) {
-      return {error: {message: 'PAT does not grant access to this organization'}}
+      throw new GraphQLError('PAT does not grant access to this organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     } else if (scope === 'team' && !(await context.resourceGrants.hasTeam(teamId!))) {
-      return {error: {message: 'PAT does not grant access to this team'}}
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
@@ -81,25 +76,19 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
   } = input
 
   if (authStrategy === 'oauth1' && !oAuth1ProviderMetadataInput) {
-    return {
-      error: {
-        message: 'Auth strategy oauth1 requires oAuth1ProviderMetadataInput'
-      }
-    }
+    throw new GraphQLError('Auth strategy oauth1 requires oAuth1ProviderMetadataInput', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (authStrategy === 'oauth2' && !oAuth2ProviderMetadataInput) {
-    return {
-      error: {
-        message: 'Auth strategy oauth2 requires oAuth2ProviderMetadataInput'
-      }
-    }
+    throw new GraphQLError('Auth strategy oauth2 requires oAuth2ProviderMetadataInput', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (authStrategy === 'webhook' && !webhookProviderMetadataInput) {
-    return {
-      error: {
-        message: 'Auth strategy webhook requires webhookProviderMetadataInput'
-      }
-    }
+    throw new GraphQLError('Auth strategy webhook requires webhookProviderMetadataInput', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (
     [
@@ -109,7 +98,9 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
       sharedSecretMetadataInput
     ].filter(isNotNull).length !== 1
   ) {
-    return {error: {message: 'Exactly 1 metadata provider is expected'}}
+    throw new GraphQLError('Exactly 1 metadata provider is expected', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

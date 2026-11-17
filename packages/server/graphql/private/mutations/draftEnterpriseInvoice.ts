@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -60,30 +61,30 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
 
   // VALIDATION
   if (quantity < 1) {
-    return {error: {message: 'quantity must be a positive integer'}}
+    throw new GraphQLError('quantity must be a positive integer', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const org = await dataLoader.get('organizations').load(orgId)
   if (!org) {
-    return {error: {message: 'Invalid orgId'}}
+    throw new GraphQLError('Invalid orgId', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const {stripeId, stripeSubscriptionId, tier} = org
   if (tier === 'enterprise') {
-    return {error: {message: 'Org is already enterprise'}}
+    throw new GraphQLError('Org is already enterprise', {extensions: {code: 'CONFLICT'}})
   }
   // TODO handle upgrade from PRO to ENTERPRISE
   if (tier !== 'starter') {
-    return {
-      error: {message: 'Upgrading from Team not supported. requires PR'}
-    }
+    throw new GraphQLError('Upgrading from Team not supported. requires PR', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (stripeSubscriptionId) {
-    return {
-      error: {
-        message: 'Tier not Team but subscription ID found. Big Error.'
-      }
-    }
+    throw new GraphQLError('Tier not Team but subscription ID found. Big Error.', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
 
   // RESOLUTION
@@ -92,10 +93,10 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     user = await getBillingLeaderUser(email, orgId, dataLoader)
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unable to get billing leader user'
-    return {error: {message}}
+    throw new GraphQLError(message, {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
   }
   if (!user) {
-    return {error: {message: 'User not found'}}
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const manager = getStripeManager()
   let customerId

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {TimelineEventEnum} from '../../../database/types/TimelineEvent'
 import type TimelineEventCheckinComplete from '../../../database/types/TimelineEventCheckinComplete'
@@ -5,9 +6,8 @@ import type TimelineEventPokerComplete from '../../../database/types/TimelineEve
 import type TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import type TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
@@ -18,17 +18,16 @@ const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
   const {authToken, dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   const timelineEvent = await dataLoader.get('timelineEvents').load(timelineEventId)
   if (!timelineEvent) {
-    return {error: {message: 'Timeline Event not found'}}
+    throw new GraphQLError('Timeline Event not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {isActive, type} = timelineEvent
   if (!isActive) {
-    return {error: {message: 'Timeline Event not found'}}
+    throw new GraphQLError('Timeline Event not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const meetingTypes: TimelineEventEnum[] = [
@@ -45,10 +44,12 @@ const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
       | TimelineEventPokerComplete
       | TimelineEventTeamPromptComplete
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-      return standardError(new Error('PAT does not grant access to this team'), {userId: viewerId})
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     const meetingTimelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
     const eventIds = meetingTimelineEvents.map(({id}) => id)

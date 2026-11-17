@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
@@ -7,7 +8,7 @@ import updateGroupTitle from '../updateGroupTitle'
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const pg = getKysely()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
-  if (!reflection) throw new Error('Reflection not found')
+  if (!reflection) throw new GraphQLError('Reflection not found', {extensions: {code: 'NOT_FOUND'}})
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
   const [meetingReflectionGroups] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)

@@ -1,7 +1,7 @@
+import {GraphQLError} from 'graphql'
 import type DiscussStage from '../../../database/types/DiscussStage'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
-import standardError from '../../../utils/standardError'
 import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -25,7 +25,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   }
 
   if (stage === null) {
-    return standardError(new Error('Stage not found'), {userId: viewerId})
+    throw new GraphQLError('Stage not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {reflectionGroupId} = stage as DiscussStage
@@ -41,10 +41,9 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   )
 
   if (typeof res === 'object' && 'error' in res) {
-    return standardError(
-      new Error('Error sharing topic. If the problem persists, please re-integrate'),
-      {userId: viewerId}
-    )
+    throw new GraphQLError('Error sharing topic. If the problem persists, please re-integrate', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
 
   const data = {meetingId}

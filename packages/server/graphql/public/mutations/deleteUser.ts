@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {Threshold} from 'parabol-client/types/constEnums'
 import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -36,10 +37,10 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   const {authToken, dataLoader} = context
   // AUTH
   if (userId && email) {
-    return {error: {message: 'Provide userId XOR email'}}
+    throw new GraphQLError('Provide userId XOR email', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (!userId && !email) {
-    return {error: {message: 'Provide a userId or email'}}
+    throw new GraphQLError('Provide a userId or email', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const su = isSuperUser(authToken)
   const viewerId = getUserId(authToken)
@@ -48,14 +49,16 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
 
   if (!su) {
     if (!user || userId !== viewerId) {
-      return {error: {message: 'Cannot delete someone else'}}
+      throw new GraphQLError('Cannot delete someone else', {extensions: {code: 'FORBIDDEN'}})
     }
     const now = toEpochSeconds(new Date())
     if (now - authToken.iat > Threshold.REAUTH_WINDOW_SECONDS) {
-      return {error: {message: 'Please re-authenticate before deleting your account'}}
+      throw new GraphQLError('Please re-authenticate before deleting your account', {
+        extensions: {code: 'UNAUTHENTICATED'}
+      })
     }
   } else if (!user) {
-    return {error: {message: 'User not found'}}
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {id: userIdToDelete} = user
   const pageIds = (await dataLoader.get('pageAccessByUserId').load(userIdToDelete)).map(

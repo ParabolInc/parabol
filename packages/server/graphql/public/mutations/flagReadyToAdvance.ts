@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getKysely from '../../../postgres/getKysely'
@@ -17,25 +18,29 @@ const flagReadyToAdvance: MutationResolvers['flagReadyToAdvance'] = async (
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return {error: {message: 'Meeting not found'}}
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {endedAt, phases} = meeting
-  if (endedAt) return {error: {message: 'Meeting already ended'}}
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
 
   // VALIDATION
   const stageRes = findStageById(phases, stageId)
-  if (!stageRes) return {error: {message: 'Invalid meeting stage'}}
+  if (!stageRes)
+    throw new GraphQLError('Invalid meeting stage', {extensions: {code: 'BAD_USER_INPUT'}})
   const {stage} = stageRes
   stage.readyToAdvance = stage.readyToAdvance || []
   const {isNavigable, readyToAdvance} = stage
 
-  if (!isNavigable) return {error: {message: 'Stage is not ready yet'}}
+  if (!isNavigable)
+    throw new GraphQLError('Stage is not ready yet', {extensions: {code: 'CONFLICT'}})
 
   if (isReady) {
-    if (readyToAdvance.includes(viewerId)) return {error: {message: 'user is already ready'}}
+    if (readyToAdvance.includes(viewerId))
+      throw new GraphQLError('user is already ready', {extensions: {code: 'CONFLICT'}})
     readyToAdvance.push(viewerId)
   } else {
     const userIdIdx = readyToAdvance.indexOf(viewerId)
-    if (userIdIdx === -1) return {error: {message: 'user already not ready'}}
+    if (userIdIdx === -1)
+      throw new GraphQLError('user already not ready', {extensions: {code: 'CONFLICT'}})
     readyToAdvance.splice(userIdIdx, 1)
   }
 

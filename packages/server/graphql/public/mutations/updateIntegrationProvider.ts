@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
@@ -30,7 +31,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   // INPUT VALIDATION
   const providerDbId = IntegrationProviderId.split(providerId)
   if (!Number.isInteger(providerDbId)) {
-    return {error: {message: 'Invalid provider ID'}}
+    throw new GraphQLError('Invalid provider ID', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const currentProvider = await pg
     .selectFrom('IntegrationProvider')
@@ -38,7 +39,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     .where('id', '=', providerDbId)
     .executeTakeFirst()
   if (!currentProvider) {
-    return {error: {message: 'Invalid provider ID'}}
+    throw new GraphQLError('Invalid provider ID', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {teamId: oldTeamId, orgId: oldOrgId, scope: oldScope, authStrategy} = currentProvider
 
@@ -48,40 +49,36 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   ])
 
   if (newScope === 'global' && (newTeamId || newOrgId)) {
-    return {
-      error: {
-        message: 'Global providers must not have an `orgId` nor `teamId`'
-      }
-    }
+    throw new GraphQLError('Global providers must not have an `orgId` nor `teamId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (newScope === 'org' && (!newOrgId || newTeamId)) {
-    return {
-      error: {
-        message: 'Organization providers must have an `orgId` and no `teamId`'
-      }
-    }
+    throw new GraphQLError('Organization providers must have an `orgId` and no `teamId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (newScope === 'team' && !newTeamId) {
-    return {error: {message: 'Team providers must have a `teamId`'}}
+    throw new GraphQLError('Team providers must have a `teamId`', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // AUTH
   if (!isSuperUser(authToken)) {
     if (oldScope === 'global' || newScope === 'global') {
-      return {
-        error: {message: 'Must be a super user to add a global provider'}
-      }
+      throw new GraphQLError('Must be a super user to add a global provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (
       (oldScope === 'org' && !(await isUserOrgAdmin(viewerId, oldOrgId!, dataLoader))) ||
       (newScope === 'org' && !(await isUserOrgAdmin(viewerId, newOrgId!, dataLoader)))
     ) {
-      return {
-        error: {
-          message:
-            'Must be an organization admin to add an integration provider on organization level'
-        }
-      }
+      throw new GraphQLError(
+        'Must be an organization admin to add an integration provider on organization level',
+        {extensions: {code: 'FORBIDDEN'}}
+      )
     }
     if (
       (oldScope === 'team' &&
@@ -91,11 +88,9 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
         !isTeamMember(authToken, newTeamId!) &&
         !(await isUserOrgAdmin(viewerId, newTeam!.orgId, dataLoader)))
     ) {
-      return {
-        error: {
-          message: 'Must be on the team for the integration provider'
-        }
-      }
+      throw new GraphQLError('Must be on the team for the integration provider', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
   if (context.resourceGrants) {
@@ -112,27 +107,33 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
       Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
     ])
     if (orgAccess.some((v) => !v)) {
-      return {error: {message: 'PAT does not grant access to this organization'}}
+      throw new GraphQLError('PAT does not grant access to this organization', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
     if (teamAccess.some((v) => !v)) {
-      return {error: {message: 'PAT does not grant access to this team'}}
+      throw new GraphQLError('PAT does not grant access to this team', {
+        extensions: {code: 'FORBIDDEN'}
+      })
     }
   }
 
   // VALIDATION
   if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
-    return {error: {message: 'Provided 2 metadata types, expected 1'}}
+    throw new GraphQLError('Provided 2 metadata types, expected 1', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (authStrategy === 'webhook') {
     if (!webhookProviderMetadataInput) {
-      return {error: {message: 'Expected webhook metadata'}}
+      throw new GraphQLError('Expected webhook metadata', {extensions: {code: 'BAD_USER_INPUT'}})
     }
   } else if (authStrategy === 'oauth2') {
     if (!oAuth2ProviderMetadataInput) {
-      return {error: {message: 'Expected OAuth2 metadata'}}
+      throw new GraphQLError('Expected OAuth2 metadata', {extensions: {code: 'BAD_USER_INPUT'}})
     }
   } else {
-    return {error: {message: 'Unsupported authStrategy'}}
+    throw new GraphQLError('Unsupported authStrategy', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const teamId = newTeamId || oldTeamId

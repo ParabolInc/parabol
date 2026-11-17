@@ -1,11 +1,10 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import type Team from '../../../database/types/Team'
 import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import removeAllUsersFromOrg from '../../mutations/helpers/removeAllUsersFromOrg'
 import type {MutationResolvers} from '../resolverTypes'
@@ -13,17 +12,16 @@ import type {MutationResolvers} from '../resolverTypes'
 const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   _source,
   {orgId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  const viewerId = getUserId(authToken)
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier} = organization
   if (tier !== 'starter') {
-    return standardError(new Error('You must first downgrade before archiving'), {
-      userId: viewerId
+    throw new GraphQLError('You must first downgrade before archiving', {
+      extensions: {code: 'CONFLICT'}
     })
   }
 

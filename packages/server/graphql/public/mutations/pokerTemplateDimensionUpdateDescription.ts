@@ -1,21 +1,19 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const pokerTemplateDimensionUpdateDescription: MutationResolvers['pokerTemplateDimensionUpdateDescription'] =
-  async (_source, {dimensionId, description}, {authToken, dataLoader, socketId: mutatorId}) => {
+  async (_source, {dimensionId, description}, {dataLoader, socketId: mutatorId}) => {
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!dimension || dimension.removedAt) {
-      return standardError(new Error('Dimension not found'), {userId: viewerId})
+      throw new GraphQLError('Dimension not found', {extensions: {code: 'NOT_FOUND'}})
     }
     // VALIDATION
     const {teamId} = dimension

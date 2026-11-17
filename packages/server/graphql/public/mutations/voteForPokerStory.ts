@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
@@ -71,14 +72,14 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
   //AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (meeting.meetingType !== 'poker') {
-    return {error: {message: 'Not a poker meeting'}}
+    throw new GraphQLError('Not a poker meeting', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {endedAt, phases, templateRefId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting has ended'}}
+    throw new GraphQLError('Meeting has ended', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
@@ -86,7 +87,7 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
   const {stages} = estimatePhase
   const stage = stages.find((stage) => stage.id === stageId)
   if (!stage) {
-    return {error: {message: 'Invalid stageId provided'}}
+    throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION
@@ -101,7 +102,9 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
     // validate the score is a value on the scale
     const scoreValue = values.find((value) => value.label === score)
     if (!scoreValue) {
-      return {error: {message: 'Score does not exist in scale'}}
+      throw new GraphQLError('Score does not exist in scale', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     const userScore = new EstimateUserScore({
       userId: viewerId,

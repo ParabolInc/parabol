@@ -1,19 +1,17 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateTeamName: MutationResolvers['updateTeamName'] = async (
   _source,
   {updatedTeam},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   const teamId = updatedTeam.id
@@ -22,7 +20,7 @@ const updateTeamName: MutationResolvers['updateTeamName'] = async (
   const orgTeams = await dataLoader.get('teamsByOrgIds').load(team.orgId)
   const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
   const {error, value: name} = teamNameValidation(newName, orgTeamNames)
-  if (error) return standardError(new Error('Failed validation'), {userId: viewerId})
+  if (error) throw new GraphQLError('Failed validation', {extensions: {code: 'BAD_USER_INPUT'}})
 
   // RESOLUTION
   const cachedTeam = orgTeams.find((team) => team.id === teamId)!

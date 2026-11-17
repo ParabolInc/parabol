@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
@@ -5,7 +6,6 @@ import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitatio
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const joinTeam: MutationResolvers['joinTeam'] = async (_source, {teamId}, context) => {
@@ -15,13 +15,15 @@ const joinTeam: MutationResolvers['joinTeam'] = async (_source, {teamId}, contex
   const viewerId = getUserId(authToken)
 
   if (isTeamMember(authToken, teamId)) {
-    return standardError(new Error('You are already a member of this team'))
+    throw new GraphQLError('You are already a member of this team', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
 
   if (!team.isPublic) {
-    return standardError(new Error('This team is not public'))
+    throw new GraphQLError('This team is not public', {extensions: {code: 'FORBIDDEN'}})
   }
 
   await acceptTeamInvitationSafe(team, viewerId, dataLoader)
