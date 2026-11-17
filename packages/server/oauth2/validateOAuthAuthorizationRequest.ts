@@ -43,6 +43,12 @@ export const validateOAuthAuthorizationRequest = async (
     }
   }
   if (!state) return {error: 'Invalid state: state is required', code: 'BAD_USER_INPUT'}
+  if (provider.clientType === 'public' && !codeChallenge) {
+    return {
+      error: 'Invalid code_challenge: public clients must use PKCE',
+      code: 'BAD_USER_INPUT'
+    }
+  }
   if (codeChallenge || codeChallengeMethod) {
     if (codeChallengeMethod !== 'S256') {
       return {

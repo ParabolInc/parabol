@@ -57,6 +57,10 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "enumValues": {
+          "OAuthClientTypeEnum": {
+            "CONFIDENTIAL": "confidential",
+            "PUBLIC": "public"
+          },
           "OAuthScopeEnum": {
             "MEETINGS_READ": "meetings:read",
             "MEETINGS_WRITE": "meetings:write",
@@ -225,6 +229,7 @@
           "ExportPagesToConfluencePayload": "./types/ExportPagesToConfluencePayload#ExportPagesToConfluencePayloadSource",
           "OAuthAPIProvider": "../../postgres/types/index#OAuthAPIProvider as OAuthAPIProviderDB",
           "OAuthAuthorizationRequest": "./types/OAuthAuthorizationRequest#OAuthAuthorizationRequestSource",
+          "OAuthClientTypeEnum": "../../postgres/types/pg#Oauthclienttypeenum",
           "OAuthScopeEnum": "../../postgres/types/pg#Oauthscopeenum",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",

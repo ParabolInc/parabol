@@ -100,7 +100,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  if (!code || !redirect_uri || !client_id || !client_secret) {
+  if (!code || !redirect_uri || !client_id) {
     res.writeStatus('400 Bad Request')
     res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_request'}))
@@ -113,7 +113,12 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     .selectAll()
     .where('clientId', '=', client_id)
     .executeTakeFirst()
-  if (!provider || !isEqualSecret(provider.clientSecret, client_secret)) {
+  const isClientAuthenticated =
+    provider &&
+    (provider.clientType === 'public'
+      ? !client_secret
+      : !!client_secret && isEqualSecret(provider.clientSecret, client_secret))
+  if (!provider || !isClientAuthenticated) {
     res.writeStatus('401 Unauthorized')
     res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_client'}))
@@ -166,7 +171,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     ? !!code_verifier &&
       CODE_VERIFIER.test(code_verifier) &&
       isEqualSecret(codeChallenge, createHash('sha256').update(code_verifier).digest('base64url'))
-    : !code_verifier
+    : provider.clientType === 'confidential' && !code_verifier
   if (!isCodeVerifierValid) {
     res.writeStatus('400 Bad Request')
     res.writeHeader('Content-Type', 'application/json')

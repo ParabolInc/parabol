@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
@@ -10,7 +11,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
   args,
   context
 ) => {
-  const {name, redirectUris, scopes} = args
+  const {name, redirectUris, scopes, clientType} = args
   const [providerId] = CipherId.fromClient(args.providerId)
   const {dataLoader, socketId} = context
 
@@ -18,7 +19,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
 
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
-    .select('orgId')
+    .select(['orgId', 'clientType'])
     .where('id', '=', providerId)
     .executeTakeFirst()
 
@@ -30,12 +31,17 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     throw new GraphQLError('Must select at least one scope', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
+  const isChangingClientType = !!clientType && clientType !== provider.clientType
+  const clientSecret =
+    isChangingClientType && clientType === 'confidential' ? generateOAuthClientSecret() : null
+
   await pg
     .updateTable('OAuthAPIProvider')
     .set({
       name: name ?? undefined,
       redirectUris: redirectUris ?? undefined,
-      scopes: scopes || undefined
+      scopes: scopes || undefined,
+      ...(isChangingClientType ? {clientType, clientSecret} : {})
     })
     .where('id', '=', providerId)
     .execute()
@@ -50,7 +56,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     mutatorId: socketId
   })
 
-  return data
+  return {...data, clientSecret}
 }
 
 export default updateOAuthAPIProvider

@@ -224,6 +224,7 @@ type Mutation {
     name: String!
     redirectUris: [RedirectURI!]!
     scopes: [OAuthScopeEnum!]!
+    clientType: OAuthClientTypeEnum! = CONFIDENTIAL
   ): CreateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
@@ -234,6 +235,11 @@ type Mutation {
     name: String
     redirectUris: [RedirectURI!]
     scopes: [OAuthScopeEnum!]
+
+    """
+    Switching to PUBLIC deletes the client secret; switching to CONFIDENTIAL issues a new one
+    """
+    clientType: OAuthClientTypeEnum
   ): UpdateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """

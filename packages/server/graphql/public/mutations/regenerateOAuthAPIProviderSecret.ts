@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
@@ -8,6 +9,17 @@ const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIPro
     const [providerId] = CipherId.fromClient(args.providerId)
 
     const pg = getKysely()
+
+    const provider = await pg
+      .selectFrom('OAuthAPIProvider')
+      .select('clientType')
+      .where('id', '=', providerId)
+      .executeTakeFirstOrThrow()
+    if (provider.clientType === 'public') {
+      throw new GraphQLError('A public client has no secret to regenerate', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
 
     const newSecret = generateOAuthClientSecret()
 

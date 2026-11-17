@@ -503,6 +503,7 @@ export const selectOAuthAPIProvider = () => {
       'id',
       'clientId',
       'clientSecret',
+      'clientType',
       'createdAt',
       'name',
       'orgId',
