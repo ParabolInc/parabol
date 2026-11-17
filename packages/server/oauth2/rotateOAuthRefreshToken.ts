@@ -1,52 +1,56 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import type {Oauthscopeenum} from '../postgres/types/pg'
-import {
-  formatOAuthRefreshToken,
-  generateOAuthRefreshSecret,
-  hashOAuthRefreshSecret,
-  oauthRefreshTokenExpiresAt,
-  parseOAuthRefreshToken
-} from './credentials'
+import {hashOAuthRefreshToken, isOAuthRefreshToken} from './credentials'
+import insertOAuthRefreshToken from './insertOAuthRefreshToken'
 
 const rotateOAuthRefreshToken = async (refreshToken: string, clientId: string) => {
-  const parsed = parseOAuthRefreshToken(refreshToken)
-  if (!parsed) return null
-  const {grantId} = parsed
-  const presentedHash = hashOAuthRefreshSecret(parsed.secret)
-  const {secret, secretHash} = generateOAuthRefreshSecret()
-  const pg = getKysely()
-  const rotated = await pg
-    .updateTable('OAuthAPIGrant')
-    .set({
-      refreshTokenHash: secretHash,
-      refreshTokenExpiresAt: oauthRefreshTokenExpiresAt,
-      lastUsedAt: sql`now()`
+  if (!isOAuthRefreshToken(refreshToken)) return null
+  const tokenHash = hashOAuthRefreshToken(refreshToken)
+  return getKysely()
+    .transaction()
+    .execute(async (trx) => {
+      const rotated = await trx
+        .updateTable('OAuthAPIRefreshToken')
+        .set({rotatedAt: sql`now()`})
+        .where('tokenHash', '=', tokenHash)
+        .where('rotatedAt', 'is', null)
+        .where('expiresAt', '>', sql<Date>`now()`)
+        .where('grantId', 'in', (eb) =>
+          eb
+            .selectFrom('OAuthAPIGrant')
+            .select('id')
+            .where('clientId', '=', clientId)
+            .where('revokedAt', 'is', null)
+        )
+        .returning('grantId')
+        .executeTakeFirst()
+      if (!rotated) {
+        await trx
+          .updateTable('OAuthAPIGrant')
+          .set({revokedAt: sql`now()`})
+          .where('clientId', '=', clientId)
+          .where('revokedAt', 'is', null)
+          .where('id', 'in', (eb) =>
+            eb
+              .selectFrom('OAuthAPIRefreshToken')
+              .select('grantId')
+              .where('tokenHash', '=', tokenHash)
+              .where('rotatedAt', 'is not', null)
+          )
+          .execute()
+        return null
+      }
+      const {grantId} = rotated
+      const grant = await trx
+        .updateTable('OAuthAPIGrant')
+        .set({lastUsedAt: sql`now()`})
+        .where('id', '=', grantId)
+        .returning(['userId', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
+        .executeTakeFirstOrThrow()
+      const nextRefreshToken = await insertOAuthRefreshToken(trx, grantId)
+      return {grantId, ...grant, refreshToken: nextRefreshToken}
     })
-    .where('id', '=', grantId)
-    .where('clientId', '=', clientId)
-    .where('refreshTokenHash', '=', presentedHash)
-    .where('revokedAt', 'is', null)
-    .where('refreshTokenExpiresAt', '>', sql<Date>`now()`)
-    .returning(['userId', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
-    .executeTakeFirst()
-  if (rotated) {
-    return {
-      grantId,
-      userId: rotated.userId,
-      scopes: rotated.scopes,
-      refreshToken: formatOAuthRefreshToken(grantId, secret)
-    }
-  }
-  await pg
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: sql`now()`})
-    .where('id', '=', grantId)
-    .where('clientId', '=', clientId)
-    .where('refreshTokenHash', '!=', presentedHash)
-    .where('revokedAt', 'is', null)
-    .execute()
-  return null
 }
 
 export default rotateOAuthRefreshToken

@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import faker from 'faker'
 import ms from 'ms'
 import AuthToken from '../database/types/AuthToken'
@@ -21,8 +22,21 @@ const CREATE_OAUTH_API_PROVIDER = `
       redirectUris: $redirectUris
       scopes: $scopes
     ) {
+      provider {
+        id
+      }
       clientId
       clientSecret
+    }
+  }
+`
+
+const UPDATE_OAUTH_API_PROVIDER_SCOPES = `
+  mutation UpdateOAuthAPIProviderScopes($providerId: ID!, $scopes: [OAuthScopeEnum!]) {
+    updateOAuthAPIProvider(providerId: $providerId, scopes: $scopes) {
+      provider {
+        id
+      }
     }
   }
 `
@@ -61,6 +75,7 @@ const createOrgAdmin = async () => {
 
 interface App {
   cookie: string
+  providerId: string
   clientId: string
   clientSecret: string
   redirectUri: string
@@ -75,8 +90,8 @@ const createApp = async (admin: {cookie: string; orgId: string}): Promise<App> =
     cookie
   })
   expect(created.errors).toBeUndefined()
-  const {clientId, clientSecret} = created.data.createOAuthAPIProvider
-  return {cookie, clientId, clientSecret, redirectUri}
+  const {clientId, clientSecret, provider} = created.data.createOAuthAPIProvider
+  return {cookie, providerId: provider.id, clientId, clientSecret, redirectUri}
 }
 
 const postToken = (params: Record<string, string>) =>
@@ -254,4 +269,77 @@ test('an access token from before grants existed is refused', async () => {
     })
   )
   expect(await getViewerErrorCode(legacyToken)).toBe('UNAUTHENTICATED')
+})
+
+test('two devices consenting to the same client keep independent refresh tokens', async () => {
+  const admin = await createOrgAdmin()
+  const app = await createApp(admin)
+  const firstDevice = await consent(app)
+  const secondDevice = await consent(app)
+
+  const firstRefresh = await refresh(app, firstDevice.refresh_token)
+  expect(firstRefresh.status).toBe(200)
+  const secondRefresh = await refresh(app, secondDevice.refresh_token)
+  expect(secondRefresh.status).toBe(200)
+
+  const [grant] = await getGrants(app.clientId)
+  expect(grant!.revokedAt).toBeNull()
+  const {access_token} = await firstRefresh.json()
+  expect(await getViewerErrorCode(access_token)).toBeUndefined()
+})
+
+test('a made-up refresh token never revokes anything', async () => {
+  const admin = await createOrgAdmin()
+  const app = await createApp(admin)
+  const {refresh_token} = await consent(app)
+
+  const madeUp = await refresh(app, `prt_${crypto.randomBytes(32).toString('base64url')}`)
+  expect(madeUp.status).toBe(400)
+  expect(await madeUp.json()).toMatchObject({error: 'invalid_grant'})
+  const [grant] = await getGrants(app.clientId)
+  expect(grant!.revokedAt).toBeNull()
+
+  const legitimate = await refresh(app, refresh_token)
+  expect(legitimate.status).toBe(200)
+})
+
+test('reconnecting after a revocation does not revive old access tokens', async () => {
+  const admin = await createOrgAdmin()
+  const app = await createApp(admin)
+  const before = await consent(app)
+  const [revokedGrant] = await getGrants(app.clientId)
+  await getKysely()
+    .updateTable('OAuthAPIGrant')
+    .set({revokedAt: new Date()})
+    .where('clientId', '=', app.clientId)
+    .execute()
+
+  const after = await consent(app)
+  expect(await getViewerErrorCode(before.access_token)).toBe('UNAUTHENTICATED')
+  expect(await getViewerErrorCode(after.access_token)).toBeUndefined()
+  const grants = await getGrants(app.clientId)
+  expect(grants).toHaveLength(1)
+  expect(grants[0]!.id).not.toBe(revokedGrant!.id)
+  expect(grants[0]!.revokedAt).toBeNull()
+  expect((await refresh(app, before.refresh_token)).status).toBe(400)
+})
+
+test("narrowing an app's scopes takes effect on the next request", async () => {
+  const admin = await createOrgAdmin()
+  const app = await createApp(admin)
+  const {access_token} = await consent(app)
+  expect(await getViewerErrorCode(access_token)).toBeUndefined()
+
+  const narrowed = await sendPublic({
+    query: UPDATE_OAUTH_API_PROVIDER_SCOPES,
+    variables: {providerId: app.providerId, scopes: ['TEAMS_READ']},
+    cookie: app.cookie
+  })
+  expect(narrowed.errors).toBeUndefined()
+
+  const viewer = await sendPublic({query: VIEWER_ID, bearerToken: access_token})
+  expect(viewer.errors?.[0]).toMatchObject({
+    message: 'Access token is missing required scope: users:read',
+    extensions: {code: 'FORBIDDEN'}
+  })
 })

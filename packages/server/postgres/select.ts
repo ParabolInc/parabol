@@ -516,16 +516,7 @@ export const selectOAuthAPIProvider = () => {
 export const selectOAuthAPIGrant = () => {
   return getKysely()
     .selectFrom('OAuthAPIGrant')
-    .select([
-      'id',
-      'clientId',
-      'createdAt',
-      'grantedOrgIds',
-      'lastUsedAt',
-      'refreshTokenExpiresAt',
-      'revokedAt',
-      'userId'
-    ])
+    .select(['id', 'clientId', 'createdAt', 'grantedOrgIds', 'lastUsedAt', 'revokedAt', 'userId'])
     .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
 }
 
