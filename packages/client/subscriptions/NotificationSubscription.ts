@@ -87,7 +87,7 @@ const subscription = graphql`
         ...updateNotificationToast_notification @relay(mask: false)
       }
 
-      RemoveIntegrationSearchQuerySuccess {
+      RemoveIntegrationSearchQueryPayload {
         ...useRemoveIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
       AddOrgPayload {
@@ -96,10 +96,10 @@ const subscription = graphql`
       AddTeamPayload {
         ...AddTeamMutation_notification @relay(mask: false)
       }
-      AddTeamMemberIntegrationAuthSuccess {
+      AddTeamMemberIntegrationAuthPayload {
         ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
       }
-      ArchiveTimelineEventSuccess {
+      ArchiveTimelineEventPayload {
         ...ArchiveTimelineEventMutation_notification @relay(mask: false)
       }
       SetNotificationStatusPayload {
@@ -108,13 +108,13 @@ const subscription = graphql`
       CreateTaskPayload {
         ...CreateTaskMutation_notification @relay(mask: false)
       }
-      EndCheckInSuccess {
+      EndCheckInPayload {
         ...EndCheckInMutation_notification @relay(mask: false)
       }
-      EndRetrospectiveSuccess {
+      EndRetrospectivePayload {
         ...EndRetrospectiveMutation_notification @relay(mask: false)
       }
-      RemoveOrgUsersSuccess {
+      RemoveOrgUsersPayload {
         ...RemoveOrgUsersMutation_notification @relay(mask: false)
       }
       RemoveTeamMemberPayload {
@@ -123,7 +123,7 @@ const subscription = graphql`
       InvalidateSessionsPayload {
         ...InvalidateSessionsMutation_notification @relay(mask: false)
       }
-      PersistIntegrationSearchQuerySuccess {
+      PersistIntegrationSearchQueryPayload {
         ...usePersistIntegrationSearchQueryMutation_notification @relay(mask: false)
       }
 
@@ -175,13 +175,13 @@ const subscription = graphql`
         ...azureDevOpsSharedProjects_service
       }
 
-      ToggleFeatureFlagSuccess {
+      ToggleFeatureFlagPayload {
         featureFlag {
           featureName
           enabled
         }
       }
-      UpdateUserThemeSuccess {
+      UpdateUserThemePayload {
         user {
           id
           theme
@@ -196,7 +196,7 @@ const subscription = graphql`
       UpdatePageAccessPayload {
         ...useUpdatePageAccessMutation_notification @relay(mask: false)
       }
-      ExportPagesToConfluenceSuccess {
+      ExportPagesToConfluencePayload {
         ...useExportPagesToConfluenceMutation_notification @relay(mask: false)
       }
     }
@@ -327,19 +327,19 @@ const updateHandlers = {
   CreatePagePayload: createPageNotificationUpdater,
   UpdatePagePayload: updatePageNotificationUpdater,
   UpdatePageAccessPayload: updatePageAccessNotificationUpdater,
-  EndCheckInSuccess: endCheckInNotificationUpdater,
-  EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
+  EndCheckInPayload: endCheckInNotificationUpdater,
+  EndRetrospectivePayload: endRetrospectiveNotificationUpdater,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
-  RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
+  RemoveOrgUsersPayload: removeOrgUsersNotificationUpdater,
   RemoveTeamMemberPayload: removeTeamMemberNotificationUpdater,
   StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
-  ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
+  ArchiveTimelineEventPayload: archiveTimelineEventNotificationUpdater
 } as const
 
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
-  RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,
+  RemoveOrgUsersPayload: removeOrgUsersNotificationOnNext,
   RemoveTeamMemberPayload: removeTeamMemberNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,

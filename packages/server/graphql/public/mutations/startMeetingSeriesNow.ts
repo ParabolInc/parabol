@@ -138,7 +138,7 @@ const startMeetingSeriesNow: MutationResolvers['startMeetingSeriesNow'] = async 
   return {
     meetingId: joinableMeeting?.id ?? null,
     // the team whose dash the client refreshes, so it has to be the one the meeting is on. Other
-    // teams in the group refresh from their own StartTeamHealthSuccess subscription
+    // teams in the group refresh from their own StartTeamHealthPayload subscription
     teamId: joinableMeeting?.teamId ?? meetingSeries.teamId
   }
 }

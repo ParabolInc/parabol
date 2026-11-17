@@ -128,7 +128,7 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     publish(
       SubscriptionChannel.ORGANIZATION,
       orgId,
-      'AddIntegrationProviderSuccess',
+      'AddIntegrationProviderPayload',
       data,
       subOptions
     )

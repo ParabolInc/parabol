@@ -118,7 +118,7 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
   dataLoader.get('newMeetings').clear(meetingId)
 
   const data = {meetingId, stageId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'VoteForPokerStorySuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'VoteForPokerStoryPayload', data, subOptions)
   return data
 }
 

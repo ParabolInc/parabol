@@ -88,8 +88,8 @@ const INVALIDATE_SESSIONS = `
 const DELETE_USER = `
   mutation DeleteUser($userId: ID!) {
     deleteUser(userId: $userId) {
-      error {
-        message
+      user {
+        id
       }
     }
   }

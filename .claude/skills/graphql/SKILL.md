@@ -92,7 +92,7 @@ const maxAllowed = new Date(Date.now() + ms('60d'))
 ```
 
 ### Mutation return types and errors
-New mutations return an `XPayload` object type directly, non-null (`startFoo(...): StartFooPayload!`), never a union or a `*Success` name. A new subscription payload field is named after its type (`StartFooPayload: StartFooPayload`); the older `*Success` field names stay because open tabs key their handlers on them.
+New mutations return an `XPayload` object type directly, non-null (`startFoo(...): StartFooPayload!`), never a union or a `*Success` name. A subscription payload field is named after its type (`StartFooPayload: StartFooPayload`), and `publish` passes that name.
 
 A failure throws `new GraphQLError(message, {extensions: {code}})`. `scripts/biome/requireGraphQLErrorCode.grit` rejects a `GraphQLError` without a code, and `ParabolGraphQLErrorCodes` in `packages/types/augments/index.d.ts` types it. API clients see the message and `extensions`, so keep internals and upstream error objects out of both. Pick the code by what the caller should do next:
 - `UNAUTHENTICATED`: no valid session or token

@@ -65,7 +65,7 @@ const setPokerSpectate: MutationResolvers['setPokerSpectate'] = async (
     }
   })
   const data = {meetingId, userId: viewerId, dirtyStages, teamId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectatePayload', data, subOptions)
   return data
 }
 

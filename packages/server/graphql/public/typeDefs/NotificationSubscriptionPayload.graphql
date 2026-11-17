@@ -4,17 +4,17 @@ type NotificationSubscriptionPayload {
   AddNewFeaturePayload: AddNewFeaturePayload
   AddOrgPayload: AddOrgPayload
   AddTeamPayload: AddTeamPayload
-  AddTeamMemberIntegrationAuthSuccess: AddTeamMemberIntegrationAuthPayload
-  ArchiveTimelineEventSuccess: ArchiveTimelineEventPayload
+  AddTeamMemberIntegrationAuthPayload: AddTeamMemberIntegrationAuthPayload
+  ArchiveTimelineEventPayload: ArchiveTimelineEventPayload
   SetNotificationStatusPayload: SetNotificationStatusPayload
   CreateTaskPayload: CreateTaskPayload
   DeleteTaskPayload: DeleteTaskPayload
   DisconnectSocketPayload: DisconnectSocketPayload
-  EndCheckInSuccess: EndCheckInPayload
-  EndRetrospectiveSuccess: EndRetrospectivePayload
+  EndCheckInPayload: EndCheckInPayload
+  EndRetrospectivePayload: EndRetrospectivePayload
   InvalidateSessionsPayload: InvalidateSessionsPayload
   MeetingStageTimeLimitPayload: MeetingStageTimeLimitPayload
-  RemoveOrgUsersSuccess: RemoveOrgUsersPayload
+  RemoveOrgUsersPayload: RemoveOrgUsersPayload
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   StripeFailPaymentPayload: StripeFailPaymentPayload
   User: User
@@ -24,13 +24,13 @@ type NotificationSubscriptionPayload {
   JiraIssue: JiraIssue
   IntegrationService: IntegrationService
   UpdatedNotification: UpdatedNotification
-  RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQueryPayload
-  PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQueryPayload
-  ToggleFeatureFlagSuccess: ToggleFeatureFlagPayload
+  RemoveIntegrationSearchQueryPayload: RemoveIntegrationSearchQueryPayload
+  PersistIntegrationSearchQueryPayload: PersistIntegrationSearchQueryPayload
+  ToggleFeatureFlagPayload: ToggleFeatureFlagPayload
   ArchivePagePayload: ArchivePagePayload
   CreatePagePayload: CreatePagePayload
   UpdatePagePayload: UpdatePagePayload
   UpdatePageAccessPayload: UpdatePageAccessPayload
-  UpdateUserThemeSuccess: UpdateUserThemePayload
-  ExportPagesToConfluenceSuccess: ExportPagesToConfluencePayload
+  UpdateUserThemePayload: UpdateUserThemePayload
+  ExportPagesToConfluencePayload: ExportPagesToConfluencePayload
 }

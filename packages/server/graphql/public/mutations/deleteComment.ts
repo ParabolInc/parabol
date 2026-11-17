@@ -46,7 +46,7 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
   const data = {commentId}
 
   if (meetingId) {
-    publish(SubscriptionChannel.MEETING, meetingId, 'DeleteCommentSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'DeleteCommentPayload', data, subOptions)
   }
   return data
 }

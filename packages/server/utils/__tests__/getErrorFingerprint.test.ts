@@ -58,9 +58,9 @@ test('replaces generated ids that have no digit and keeps identifiers', () => {
   )
   expect(
     normalizeErrorMessage(
-      'Notification Subscription Payload received without field: DragEstimatingTaskSuccess'
+      'Notification Subscription Payload received without field: DragEstimatingTaskPayload'
     )
-  ).toBe('Notification Subscription Payload received without field: DragEstimatingTaskSuccess')
+  ).toBe('Notification Subscription Payload received without field: DragEstimatingTaskPayload')
   expect(normalizeErrorMessage('getElementById failed on innerHTML of existingIDs')).toBe(
     'getElementById failed on innerHTML of existingIDs'
   )
@@ -70,7 +70,7 @@ test.each([
   ['UZoObZMXvy', true],
   ['RJGnNXvvShY', true],
   ['FPoKiGQzbSQ', true],
-  ['DragEstimatingTaskSuccess', false],
+  ['DragEstimatingTaskPayload', false],
   ['getElementById', false],
   ['toAssigneeId', false],
   ['GraphQLHttpError', false],

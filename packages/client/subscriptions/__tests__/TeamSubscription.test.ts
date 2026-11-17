@@ -160,8 +160,8 @@ describe('TeamSubscription', () => {
     const otherTemplateId = 'template2'
     const atmosphere = createTestAtmosphere({
       teamSubscription: {
-        fieldName: 'RemovePromptTemplateSuccess',
-        RemovePromptTemplateSuccess: {
+        fieldName: 'RemovePromptTemplatePayload',
+        RemovePromptTemplatePayload: {
           template: {id: templateId, teamId},
           meetingSettings: {
             __typename: 'RetrospectiveMeetingSettings',
@@ -185,8 +185,8 @@ describe('TeamSubscription', () => {
     const atmosphere = createTestAtmosphere(
       {
         teamSubscription: {
-          fieldName: 'EndRetrospectiveSuccess',
-          EndRetrospectiveSuccess: {
+          fieldName: 'EndRetrospectivePayload',
+          EndRetrospectivePayload: {
             isKill: false,
             updatedTaskIds: [],
             timelineEvent: null,

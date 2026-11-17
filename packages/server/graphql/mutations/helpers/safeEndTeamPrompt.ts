@@ -98,11 +98,11 @@ const safeEndTeamPrompt = async ({
   publish(
     SubscriptionChannel.MEETING,
     meeting.id,
-    'EndTeamPromptSuccess',
+    'EndTeamPromptPayload',
     {meetingId},
     {operationId}
   )
-  publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptPayload', data, subOptions)
   // the AI summary can take seconds, so the meeting ends without it, like a retro does
   summarizeTeamPrompt(meeting, context).catch((e) => {
     logError(e instanceof Error ? e : new Error(`summarizeTeamPrompt failed: ${e}`), {

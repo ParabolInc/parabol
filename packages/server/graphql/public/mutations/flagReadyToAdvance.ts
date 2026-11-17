@@ -52,7 +52,7 @@ const flagReadyToAdvance: MutationResolvers['flagReadyToAdvance'] = async (
     .execute()
   dataLoader.clearAll('newMeetings')
   const data = {meetingId, stageId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'FlagReadyToAdvanceSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'FlagReadyToAdvancePayload', data, subOptions)
   return data
 }
 

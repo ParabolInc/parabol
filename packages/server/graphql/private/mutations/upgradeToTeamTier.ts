@@ -86,7 +86,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
   const data = {orgId, teamIds}
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)
 
   return data
 }

@@ -46,13 +46,13 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       fieldName
-      UpdateRecurrenceSettingsSuccess {
+      UpdateRecurrenceSettingsPayload {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }
-      UpdateIntegrationDimensionFieldSuccess {
+      UpdateIntegrationDimensionFieldPayload {
         ...useUpdateIntegrationDimensionFieldMutation_team @relay(mask: false)
       }
-      MovePokerTemplateScaleValueSuccess {
+      MovePokerTemplateScaleValuePayload {
         ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
       }
       AcceptTeamInvitationPayload {
@@ -70,19 +70,19 @@ const subscription = graphql`
       AddPokerTemplateScaleValuePayload {
         ...AddPokerTemplateScaleValueMutation_scale @relay(mask: false)
       }
-      AddTeamHealthTemplateSuccess {
+      AddTeamHealthTemplatePayload {
         ...useAddTeamHealthTemplateMutation_team @relay(mask: false)
       }
-      AddPromptTemplateSuccess {
+      AddPromptTemplatePayload {
         ...useAddPromptTemplateMutation_team @relay(mask: false)
       }
-      AddPokerTemplateSuccess {
+      AddPokerTemplatePayload {
         ...useAddPokerTemplateMutation_team @relay(mask: false)
       }
-      AddTemplatePromptSuccess {
+      AddTemplatePromptPayload {
         ...AddTemplatePromptMutation_team @relay(mask: false)
       }
-      BatchArchiveTasksSuccess {
+      BatchArchiveTasksPayload {
         ...BatchArchiveTasksMutation_tasks @relay(mask: false)
       }
       ArchiveTeamPayload {
@@ -94,28 +94,28 @@ const subscription = graphql`
       DowngradeToStarterPayload {
         ...DowngradeToStarterMutation_organization @relay(mask: false)
       }
-      EndCheckInSuccess {
+      EndCheckInPayload {
         ...EndCheckInMutation_team @relay(mask: false)
       }
-      EndRetrospectiveSuccess {
+      EndRetrospectivePayload {
         ...EndRetrospectiveMutation_team @relay(mask: false)
       }
-      EndSprintPokerSuccess {
+      EndSprintPokerPayload {
         ...EndSprintPokerMutation_team @relay(mask: false)
       }
-      EndTeamPromptSuccess {
+      EndTeamPromptPayload {
         ...EndTeamPromptMutation_team @relay(mask: false)
       }
-      EndTeamHealthSuccess {
+      EndTeamHealthPayload {
         ...useEndTeamHealthMutation_team @relay(mask: false)
       }
-      JoinTeamSuccess {
+      JoinTeamPayload {
         ...JoinTeamMutation_team @relay(mask: false)
       }
       MovePokerTemplateDimensionPayload {
         ...MovePokerTemplateDimensionMutation_team @relay(mask: false)
       }
-      MoveTemplatePromptSuccess {
+      MoveTemplatePromptPayload {
         ...MoveTemplatePromptMutation_team @relay(mask: false)
       }
       NavigateMeetingPayload {
@@ -133,13 +133,13 @@ const subscription = graphql`
       PushInvitationPayload {
         ...PushInvitationMutation_team @relay(mask: false)
       }
-      UpdateTemplatePromptGroupColorSuccess {
+      UpdateTemplatePromptGroupColorPayload {
         ...UpdateTemplatePromptGroupColorMutation_team @relay(mask: false)
       }
       RemoveAgendaItemPayload {
         ...RemoveAgendaItemMutation_team @relay(mask: false)
       }
-      RemoveOrgUsersSuccess {
+      RemoveOrgUsersPayload {
         ...RemoveOrgUsersMutation_team @relay(mask: false)
       }
       RemovePokerTemplatePayload {
@@ -151,16 +151,16 @@ const subscription = graphql`
       RemovePokerTemplateScalePayload {
         ...RemovePokerTemplateScaleMutation_team @relay(mask: false)
       }
-      RemovePromptTemplateSuccess {
+      RemovePromptTemplatePayload {
         ...RemovePromptTemplateMutation_team @relay(mask: false)
       }
-      RemoveTemplatePromptSuccess {
+      RemoveTemplatePromptPayload {
         ...RemoveTemplatePromptMutation_team @relay(mask: false)
       }
       RemoveTeamMemberPayload {
         ...RemoveTeamMemberMutation_team @relay(mask: false)
       }
-      RenameMeetingSuccess {
+      RenameMeetingPayload {
         ...RenameMeetingMutation_team @relay(mask: false)
       }
       RenameMeetingTemplatePayload {
@@ -172,7 +172,7 @@ const subscription = graphql`
       RenamePokerTemplateScalePayload {
         ...RenamePokerTemplateScaleMutation_scale @relay(mask: false)
       }
-      RenameTemplatePromptSuccess {
+      RenameTemplatePromptPayload {
         ...RenameTemplatePromptMutation_team @relay(mask: false)
       }
       SelectTemplatePayload {
@@ -181,28 +181,28 @@ const subscription = graphql`
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
       }
-      SetTeamNotificationSettingSuccess {
+      SetTeamNotificationSettingPayload {
         ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
       }
-      StartCheckInSuccess {
+      StartCheckInPayload {
         ...StartCheckInMutation_team @relay(mask: false)
       }
-      StartRetrospectiveSuccess {
+      StartRetrospectivePayload {
         ...StartRetrospectiveMutation_team @relay(mask: false)
       }
-      StartSprintPokerSuccess {
+      StartSprintPokerPayload {
         ...StartSprintPokerMutation_team @relay(mask: false)
       }
-      StartTeamPromptSuccess {
+      StartTeamPromptPayload {
         ...StartTeamPromptMutation_team @relay(mask: false)
       }
-      StartTeamHealthSuccess {
+      StartTeamHealthPayload {
         ...useStartTeamHealthMutation_success @relay(mask: false)
       }
-      AddTeamHealthTemplateQuestionSuccess {
+      AddTeamHealthTemplateQuestionPayload {
         ...useAddTeamHealthTemplateQuestionMutation_team @relay(mask: false)
       }
-      RemoveTeamHealthTemplateQuestionSuccess {
+      RemoveTeamHealthTemplateQuestionPayload {
         ...useRemoveTeamHealthTemplateQuestionMutation_team @relay(mask: false)
       }
       UpdateAgendaItemPayload {
@@ -211,10 +211,10 @@ const subscription = graphql`
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_organization @relay(mask: false) @alias
       }
-      UpdateFacilitatorRotationSuccess {
+      UpdateFacilitatorRotationPayload {
         ...useUpdateFacilitatorRotationMutation_team @relay(mask: false)
       }
-      UpdateMeetingSeriesSuccess {
+      UpdateMeetingSeriesPayload {
         ...UpdateMeetingSeriesMutation_series @relay(mask: false)
       }
       UpdatePokerTemplateDimensionScalePayload {
@@ -226,10 +226,10 @@ const subscription = graphql`
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
       }
-      UpdateTemplateCategorySuccess {
+      UpdateTemplateCategoryPayload {
         ...UpdateTemplateCategoryMutation_team @relay(mask: false)
       }
-      UpdateTemplatePromptDescriptionSuccess {
+      UpdateTemplatePromptDescriptionPayload {
         ...UpdateTemplatePromptDescriptionMutation_team @relay(mask: false)
       }
       UpdateUserProfilePayload {
@@ -248,11 +248,11 @@ const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
-  EndCheckInSuccess: endCheckInTeamOnNext,
-  EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
-  EndSprintPokerSuccess: endSprintPokerTeamOnNext,
-  JoinTeamSuccess: joinTeamTeamOnNext,
-  RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
+  EndCheckInPayload: endCheckInTeamOnNext,
+  EndRetrospectivePayload: endRetrospectiveTeamOnNext,
+  EndSprintPokerPayload: endSprintPokerTeamOnNext,
+  JoinTeamPayload: joinTeamTeamOnNext,
+  RemoveOrgUsersPayload: removeOrgUsersTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
 } as const
 
@@ -263,25 +263,25 @@ const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
   AddPokerTemplateDimensionPayload: addPokerTemplateDimensionTeamUpdater,
   AddPokerTemplateScalePayload: addPokerTemplateScaleTeamUpdater,
-  AddTeamHealthTemplateSuccess: addTeamHealthTemplateTeamUpdater,
-  AddPromptTemplateSuccess: addPromptTemplateTeamUpdater,
-  AddPokerTemplateSuccess: addPokerTemplateTeamUpdater,
-  AddTemplatePromptSuccess: addTemplatePromptTeamUpdater,
+  AddTeamHealthTemplatePayload: addTeamHealthTemplateTeamUpdater,
+  AddPromptTemplatePayload: addPromptTemplateTeamUpdater,
+  AddPokerTemplatePayload: addPokerTemplateTeamUpdater,
+  AddTemplatePromptPayload: addTemplatePromptTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
-  BatchArchiveTasksSuccess: batchArchiveTasksTaskUpdater,
-  EndCheckInSuccess: endCheckInTeamUpdater,
-  EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
-  EndSprintPokerSuccess: endSprintPokerTeamUpdater,
-  EndTeamPromptSuccess: endTeamPromptTeamUpdater,
-  EndTeamHealthSuccess: endTeamHealthTeamUpdater,
+  BatchArchiveTasksPayload: batchArchiveTasksTaskUpdater,
+  EndCheckInPayload: endCheckInTeamUpdater,
+  EndRetrospectivePayload: endRetrospectiveTeamUpdater,
+  EndSprintPokerPayload: endSprintPokerTeamUpdater,
+  EndTeamPromptPayload: endTeamPromptTeamUpdater,
+  EndTeamHealthPayload: endTeamHealthTeamUpdater,
   MovePokerTemplateDimensionPayload: movePokerTemplateDimensionTeamUpdater,
-  MoveTemplatePromptSuccess: moveTemplatePromptTeamUpdater,
+  MoveTemplatePromptPayload: moveTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
-  RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
+  RemoveOrgUsersPayload: removeOrgUsersTeamUpdater,
   RemovePokerTemplatePayload: removePokerTemplateTeamUpdater,
   RemovePokerTemplateDimensionPayload: removePokerTemplateDimensionTeamUpdater,
-  RemovePromptTemplateSuccess: removePromptTemplateTeamUpdater,
-  RemoveTemplatePromptSuccess: removeTemplatePromptTeamUpdater,
+  RemovePromptTemplatePayload: removePromptTemplateTeamUpdater,
+  RemoveTemplatePromptPayload: removeTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
 } as const
 

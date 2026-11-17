@@ -97,7 +97,7 @@ const switchTeamPromptTemplate = async (options: Options) => {
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'AddCommentSuccess',
+      'AddCommentPayload',
       {commentId, meetingId},
       {operationId: options.operationId}
     )

@@ -314,7 +314,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
     publish(
       SubscriptionChannel.TEAM,
       teamId,
-      'StartTeamHealthSuccess',
+      'StartTeamHealthPayload',
       {meetingIds: meetingId ? [meetingId] : [], teamIds: [teamId]},
       subOptions
     )

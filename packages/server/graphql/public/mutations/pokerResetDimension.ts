@@ -64,7 +64,7 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   dataLoader.clearAll('newMeetings')
 
   const data = {meetingId, stageId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionPayload', data, subOptions)
   return data
 }
 

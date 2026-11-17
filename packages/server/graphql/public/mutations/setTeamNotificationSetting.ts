@@ -56,7 +56,7 @@ const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'
     : setting.events.filter((e: any) => e !== event)
 
   const data = {id}
-  publish(SubscriptionChannel.TEAM, teamId, 'SetTeamNotificationSettingSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'SetTeamNotificationSettingPayload', data, subOptions)
   return data
 }
 

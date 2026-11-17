@@ -76,7 +76,9 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
     unsetAuthCookie(context)
   }
 
-  return {}
+  dataLoader.clearAll('users')
+  const deletedUser = await dataLoader.get('users').loadNonNull(userIdToDelete)
+  return {user: deletedUser}
 }
 
 export default deleteUser

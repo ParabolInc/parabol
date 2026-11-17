@@ -307,7 +307,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
 
   // RESOLUTION
   const data = {meetingId}
-  publish(SubscriptionChannel.TEAM, teamId, 'UpdateRecurrenceSettingsSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'UpdateRecurrenceSettingsPayload', data, subOptions)
   return data
 }
 

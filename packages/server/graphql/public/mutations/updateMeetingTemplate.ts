@@ -87,7 +87,7 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
   dataLoader.clearAll(['newMeetings', 'meetingSeries'])
 
   const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateMeetingTemplateSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateMeetingTemplatePayload', data, subOptions)
   return data
 }
 

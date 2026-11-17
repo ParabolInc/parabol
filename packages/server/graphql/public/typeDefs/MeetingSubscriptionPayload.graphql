@@ -3,65 +3,65 @@ A discriminated union of all possible meeting subscription event payloads
 """
 type MeetingSubscriptionPayload {
   fieldName: String!
-  AddTranscriptionBotSuccess: AddTranscriptionBotPayload
-  AutogroupSuccess: AutogroupPayload
+  AddTranscriptionBotPayload: AddTranscriptionBotPayload
+  AutogroupPayload: AutogroupPayload
     @deprecated(
       reason: "Superseded by SuggestedGroupsPayload. Still selected by current clients so they re-render the board when a client loaded before the SuggestedGroups release calls the deprecated autogroup mutation. Delete with that mutation."
     )
-  AddCommentSuccess: AddCommentPayload
-  CreatePollSuccess: CreatePollPayload
-  AddReactjiToReactableSuccess: AddReactjiToReactablePayload
+  AddCommentPayload: AddCommentPayload
+  CreatePollPayload: CreatePollPayload
+  AddReactjiToReactablePayload: AddReactjiToReactablePayload
   CreateReflectionPayload: CreateReflectionPayload
-  DeleteCommentSuccess: DeleteCommentPayload
+  DeleteCommentPayload: DeleteCommentPayload
   DragDiscussionTopicPayload: DragDiscussionTopicPayload
-  DragEstimatingTaskSuccess: DragEstimatingTaskPayload
-  DragTeamHealthResultStageSuccess: DragTeamHealthResultStagePayload
-  EditCommentingSuccess: EditCommentingPayload
+  DragEstimatingTaskPayload: DragEstimatingTaskPayload
+  DragTeamHealthResultStagePayload: DragTeamHealthResultStagePayload
+  EditCommentingPayload: EditCommentingPayload
   EditReflectionPayload: EditReflectionPayload
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
-  EndRetrospectiveSuccess: EndRetrospectivePayload
-  EndTeamHealthSuccess: EndTeamHealthPayload
-  EndTeamPromptSuccess: EndTeamPromptPayload
-  FlagReadyToAdvanceSuccess: FlagReadyToAdvancePayload
-  GenerateGroupsSuccess: GenerateGroupsPayload
+  EndRetrospectivePayload: EndRetrospectivePayload
+  EndTeamHealthPayload: EndTeamHealthPayload
+  EndTeamPromptPayload: EndTeamPromptPayload
+  FlagReadyToAdvancePayload: FlagReadyToAdvancePayload
+  GenerateGroupsPayload: GenerateGroupsPayload
     @deprecated(
       reason: "Superseded by SuggestedGroupsPayload. Nothing publishes this any more: it announced the reflect-phase pre-warm, which was removed so AI grouping is only computed when a user asks for it. Safe to delete along with the GenerateGroupsPayload type once clients loaded before the SuggestedGroups release have drained."
     )
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
-  UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationPayload
+  UpdateFacilitatorRotationPayload: UpdateFacilitatorRotationPayload
   RemoveReflectionPayload: RemoveReflectionPayload
-  ResetReflectionGroupsSuccess: ResetReflectionGroupsPayload
-  AcceptSuggestedGroupsSuccess: AcceptSuggestedGroupsPayload
+  ResetReflectionGroupsPayload: ResetReflectionGroupsPayload
+  AcceptSuggestedGroupsPayload: AcceptSuggestedGroupsPayload
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
-  UngroupReflectionSuccess: UngroupReflectionPayload
-  RevealTeamHealthVotesSuccess: RevealTeamHealthVotesPayload
-  SetMeetingMusicSuccess: SetMeetingMusicPayload
+  UngroupReflectionPayload: UngroupReflectionPayload
+  RevealTeamHealthVotesPayload: RevealTeamHealthVotesPayload
+  SetMeetingMusicPayload: SetMeetingMusicPayload
   SetPhaseFocusPayload: SetPhaseFocusPayload
   SetStageTimerPayload: SetStageTimerPayload
-  SetTaskHighlightSuccess: SetTaskHighlightPayload
-  SetTeamHealthVoteSuccess: SetTeamHealthVotePayload
-  SetTeamHealthResponseSuccess: SetTeamHealthResponsePayload
-  SetTeamHealthSpectateSuccess: SetTeamHealthSpectatePayload
+  SetTaskHighlightPayload: SetTaskHighlightPayload
+  SetTeamHealthVotePayload: SetTeamHealthVotePayload
+  SetTeamHealthResponsePayload: SetTeamHealthResponsePayload
+  SetTeamHealthSpectatePayload: SetTeamHealthSpectatePayload
   StartDraggingReflectionPayload: StartDraggingReflectionPayload
-  TeamHealthCategorySummarySuccess: TeamHealthCategorySummaryPayload
-  UpdateCommentContentSuccess: UpdateCommentContentPayload
+  TeamHealthCategorySummaryPayload: TeamHealthCategorySummaryPayload
+  UpdateCommentContentPayload: UpdateCommentContentPayload
   UpdateDragLocationPayload: UpdateDragLocationPayload
   UpdateNewCheckInQuestionPayload: UpdateNewCheckInQuestionPayload
   UpdatedNotification: UpdatedNotification
   UpdateReflectionContentPayload: UpdateReflectionContentPayload
   UpdateReflectionGroupTitlePayload: UpdateReflectionGroupTitlePayload
-  UpdateRetroMaxVotesSuccess: UpdateRetroMaxVotesPayload
-  UpdatePokerScopeSuccess: UpdatePokerScopePayload
+  UpdateRetroMaxVotesPayload: UpdateRetroMaxVotesPayload
+  UpdatePokerScopePayload: UpdatePokerScopePayload
   VoteForReflectionGroupPayload: VoteForReflectionGroupPayload
-  VoteForPokerStorySuccess: VoteForPokerStoryPayload
-  PokerRevealVotesSuccess: PokerRevealVotesPayload
-  PokerResetDimensionSuccess: PokerResetDimensionPayload
-  PokerAnnounceDeckHoverSuccess: PokerAnnounceDeckHoverPayload
-  JoinMeetingSuccess: JoinMeetingPayload
-  SetPokerSpectateSuccess: SetPokerSpectatePayload
-  SetTaskEstimateSuccess: SetTaskEstimatePayload
-  UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponsePayload
-  ShareTeamPromptResponsesSuccess: ShareTeamPromptResponsesPayload
-  UpdateMeetingTemplateSuccess: UpdateMeetingTemplatePayload
-  SuggestedGroupsSuccess: SuggestedGroupsPayload
+  VoteForPokerStoryPayload: VoteForPokerStoryPayload
+  PokerRevealVotesPayload: PokerRevealVotesPayload
+  PokerResetDimensionPayload: PokerResetDimensionPayload
+  PokerAnnounceDeckHoverPayload: PokerAnnounceDeckHoverPayload
+  JoinMeetingPayload: JoinMeetingPayload
+  SetPokerSpectatePayload: SetPokerSpectatePayload
+  SetTaskEstimatePayload: SetTaskEstimatePayload
+  UpsertTeamPromptResponsePayload: UpsertTeamPromptResponsePayload
+  ShareTeamPromptResponsesPayload: ShareTeamPromptResponsesPayload
+  UpdateMeetingTemplatePayload: UpdateMeetingTemplatePayload
+  SuggestedGroupsPayload: SuggestedGroupsPayload
 }

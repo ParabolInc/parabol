@@ -42,7 +42,7 @@ const editCommenting: MutationResolvers['editCommenting'] = async (
   }
 
   const data = {discussionId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
   return data
 }
 

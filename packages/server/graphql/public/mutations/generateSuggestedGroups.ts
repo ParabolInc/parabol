@@ -110,7 +110,7 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
 
     const operationId = dataLoader.share()
     const data = {meetingId, isUserInitiated: true}
-    publish(SubscriptionChannel.MEETING, meetingId, 'SuggestedGroupsSuccess', data, {
+    publish(SubscriptionChannel.MEETING, meetingId, 'SuggestedGroupsPayload', data, {
       operationId,
       mutatorId
     })

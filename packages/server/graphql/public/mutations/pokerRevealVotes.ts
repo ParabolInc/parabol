@@ -106,7 +106,7 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   generatePokerAIEstimate({stage, meetingId, teamId}).catch(Logger.error)
 
   const data = {meetingId, stageId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesPayload', data, subOptions)
   return data
 }
 

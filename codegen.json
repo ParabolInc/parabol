@@ -180,6 +180,7 @@
           "IntegrationProviderOAuth2": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "IntegrationProviderWebhook": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "InspirationItem": "../../postgres/types/index#InspirationItem as InspirationItemDB",
+          "InvalidateSessionsPayload": "./types/InvalidateSessionsPayload#InvalidateSessionsPayloadSource",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",

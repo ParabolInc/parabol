@@ -127,7 +127,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     dataLoader.clearAll(['users', 'userDetails', 'meetingTemplates', 'templateDimensions'])
     data = {templateId}
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)
   return data
 }
 

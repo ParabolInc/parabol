@@ -16,7 +16,7 @@ const invalidateSessions: MutationResolvers['invalidateSessions'] = async (
   }
   const {iat} = authToken
   await blacklistJWT(viewerId, iat, socketId)
-  return {}
+  return {userId: viewerId}
 }
 
 export default invalidateSessions

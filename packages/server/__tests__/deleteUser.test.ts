@@ -3,9 +3,8 @@ import {sendIntranet, sendPublic, signUp} from './common'
 const DELETE_USER_MUTATION = `
   mutation DeleteUser($userId: ID, $email: ID) {
     deleteUser(userId: $userId, email: $email) {
-      error {
-        title
-        message
+      user {
+        id
       }
     }
   }
@@ -59,7 +58,7 @@ test('Delete user', async () => {
   expect(deleteUser).toMatchObject({
     data: {
       deleteUser: {
-        error: null
+        user: {id: userId}
       }
     }
   })
