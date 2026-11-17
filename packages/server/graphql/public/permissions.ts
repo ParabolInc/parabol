@@ -1,4 +1,4 @@
-import {allow, and, chain, not, or} from 'graphql-shield'
+import {allow, and, not, or} from 'graphql-shield'
 import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
@@ -770,7 +770,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   Page: {
     '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
     access: allow,
-    content: chain(
+    content: and(
       hasPageAccess<'Page.content'>('source.id', 'viewer'),
       rateLimit({perMinute: 100, perHour: 1000, cache: 'strict'})
     ),
