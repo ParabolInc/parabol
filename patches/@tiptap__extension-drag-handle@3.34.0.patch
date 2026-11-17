@@ -1,0 +1,76 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 68918b0008d27d2548b002ce98cb4b43e9ae87cd..28ddba77bb9ecd67e0f13026fb926564ff7b2ed2 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -243,15 +243,18 @@ function findBestDragTarget(view, coords, options) {
+ 			dom: view.nodeDOM(nodePos)
+ 		};
+ 	}).filter((candidate) => candidate !== null);
+-	const nodeAfter = $pos.nodeAfter;
++	const insideNode = posInfo.inside >= 0 ? doc.nodeAt(posInfo.inside) : null;
++	const atomPos = insideNode && insideNode.isAtom && !insideNode.isInline ? posInfo.inside : posInfo.pos;
++	const $atomPos = atomPos === posInfo.pos ? $pos : doc.resolve(atomPos);
++	const nodeAfter = $atomPos.nodeAfter;
+ 	if (nodeAfter && nodeAfter.isAtom && !nodeAfter.isInline) {
+-		const nodePos = posInfo.pos;
+-		const depth = $pos.depth + 1;
+-		const parent = $pos.parent;
+-		const index = $pos.index();
++		const nodePos = atomPos;
++		const depth = $atomPos.depth + 1;
++		const parent = $atomPos.parent;
++		const index = $atomPos.index();
+ 		const siblingCount = parent.childCount;
+ 		let inAllowedContainer = true;
+-		if (options.allowedContainers) inAllowedContainer = hasAncestorOfType($pos, depth, options.allowedContainers);
++		if (options.allowedContainers) inAllowedContainer = hasAncestorOfType($atomPos, depth, options.allowedContainers);
+ 		if (inAllowedContainer) {
+ 			const score = calculateScore({
+ 				node: nodeAfter,
+@@ -261,7 +264,7 @@ function findBestDragTarget(view, coords, options) {
+ 				index,
+ 				isFirst: index === 0,
+ 				isLast: index === siblingCount - 1,
+-				$pos,
++				$pos: $atomPos,
+ 				view
+ 			}, rules, options.edgeDetection, coords);
+ 			if (score >= 0) {
+diff --git a/dist/index.js b/dist/index.js
+index 260b9cce27da1eeab3772c703300a52d29dde06c..c6b84e30b3f9860e0919247a44359a2fa1f8864e 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -239,15 +239,18 @@ function findBestDragTarget(view, coords, options) {
+ 			dom: view.nodeDOM(nodePos)
+ 		};
+ 	}).filter((candidate) => candidate !== null);
+-	const nodeAfter = $pos.nodeAfter;
++	const insideNode = posInfo.inside >= 0 ? doc.nodeAt(posInfo.inside) : null;
++	const atomPos = insideNode && insideNode.isAtom && !insideNode.isInline ? posInfo.inside : posInfo.pos;
++	const $atomPos = atomPos === posInfo.pos ? $pos : doc.resolve(atomPos);
++	const nodeAfter = $atomPos.nodeAfter;
+ 	if (nodeAfter && nodeAfter.isAtom && !nodeAfter.isInline) {
+-		const nodePos = posInfo.pos;
+-		const depth = $pos.depth + 1;
+-		const parent = $pos.parent;
+-		const index = $pos.index();
++		const nodePos = atomPos;
++		const depth = $atomPos.depth + 1;
++		const parent = $atomPos.parent;
++		const index = $atomPos.index();
+ 		const siblingCount = parent.childCount;
+ 		let inAllowedContainer = true;
+-		if (options.allowedContainers) inAllowedContainer = hasAncestorOfType($pos, depth, options.allowedContainers);
++		if (options.allowedContainers) inAllowedContainer = hasAncestorOfType($atomPos, depth, options.allowedContainers);
+ 		if (inAllowedContainer) {
+ 			const score = calculateScore({
+ 				node: nodeAfter,
+@@ -257,7 +260,7 @@ function findBestDragTarget(view, coords, options) {
+ 				index,
+ 				isFirst: index === 0,
+ 				isLast: index === siblingCount - 1,
+-				$pos,
++				$pos: $atomPos,
+ 				view
+ 			}, rules, options.edgeDetection, coords);
+ 			if (score >= 0) {
