@@ -621,6 +621,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     isOrgAdmin: allow,
     name: allow,
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
+    oauthApplications: hasOrgRole<'Organization.oauthApplications'>('source.id', 'ORG_ADMIN'),
     picture: allow,
     report: and(
       or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),

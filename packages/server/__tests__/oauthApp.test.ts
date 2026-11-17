@@ -868,3 +868,44 @@ test('An OAuth access token cannot take a team or its user out of another organi
   const teams = await getUserTeams(userId)
   expect(teams).toContainEqual({id: otherTeamId})
 })
+
+const ORG_OAUTH_APPLICATIONS = `
+  query OrgOAuthApplications($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        oauthApplications {
+          id
+        }
+      }
+    }
+  }
+`
+
+test('Only an org admin can list the organization’s OAuth applications', async () => {
+  const admin = await createOrgAdmin()
+  await createAppWithScope({orgId: admin.orgId, cookie: admin.cookie, scopes: ['USERS_READ']})
+  const member = await signUp()
+
+  const asAdmin = await sendPublic({
+    query: ORG_OAUTH_APPLICATIONS,
+    variables: {orgId: admin.orgId},
+    cookie: admin.cookie
+  })
+  expect(asAdmin.errors).toBeUndefined()
+  expect(asAdmin.data.viewer.organization.oauthApplications).toHaveLength(1)
+
+  const asMember = await sendPublic({
+    query: ORG_OAUTH_APPLICATIONS,
+    variables: {orgId: member.orgId},
+    cookie: member.cookie
+  })
+  expect(asMember.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(asMember.data?.viewer?.organization?.oauthApplications).toBeUndefined()
+
+  const asOutsider = await sendPublic({
+    query: ORG_OAUTH_APPLICATIONS,
+    variables: {orgId: admin.orgId},
+    cookie: member.cookie
+  })
+  expect(asOutsider.data?.viewer?.organization?.oauthApplications).toBeUndefined()
+})
