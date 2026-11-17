@@ -349,7 +349,6 @@ export const PageDragHandle = Extension.create<Options>({
           anchorElement: dragHandleElement,
           canCreateSubPage,
           selection,
-          atmosphere,
           pageId
         }
       })

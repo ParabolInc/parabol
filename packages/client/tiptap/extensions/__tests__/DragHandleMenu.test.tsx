@@ -110,7 +110,6 @@ const openMenuOnSelection = async (
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
         selection={{range, count: countBlocks(doc, range)}}
-        atmosphere={atmosphere}
         pageId='page:1'
       />
     )
@@ -276,7 +275,6 @@ describe('the menu on a synced block', () => {
           anchorElement={anchor}
           canCreateSubPage
           selection={null}
-          atmosphere={atmosphere}
           pageId='page:1'
         />
       )
@@ -496,7 +494,6 @@ const openMenuOnBlock = async (
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
         selection={null}
-        atmosphere={atmosphere}
         pageId='page:1'
       />
     )

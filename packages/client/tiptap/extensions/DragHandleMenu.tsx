@@ -3,7 +3,7 @@ import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
 import {useNavigate} from 'react-router'
 import {AddToPhotos, ArrowForward, Autorenew, ContentCopy, DeleteOutlined} from '~/ui/icons'
-import type Atmosphere from '../../Atmosphere'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDuplicatePageMutation} from '../../mutations/useDuplicatePageMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -40,22 +40,12 @@ interface DragHandleMenuProps {
   anchorElement: HTMLElement
   canCreateSubPage: boolean
   selection?: {range: BlockRange; count: number} | null
-  atmosphere: Atmosphere
   pageId: string
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
-  const {
-    editor,
-    node,
-    pos,
-    onClose,
-    anchorElement,
-    canCreateSubPage,
-    selection,
-    atmosphere,
-    pageId
-  } = props
+  const {editor, node, pos, onClose, anchorElement, canCreateSubPage, selection, pageId} = props
+  const atmosphere = useAtmosphere()
   const [duplicatePage] = useDuplicatePageMutation()
   const navigate = useNavigate()
   const triggerRef = useRef<HTMLButtonElement>(null)
