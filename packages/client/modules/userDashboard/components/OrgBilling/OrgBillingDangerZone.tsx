@@ -64,10 +64,10 @@ const OrgBillingDangerZone = (props: Props) => {
           </div>
         ) : (
           <div className='flex items-center justify-center text-fg-primary'>
-            <span>{'Need to cancel? It’s painless. '}</span>
+            <span>{'Need to cancel your Enterprise plan? '}</span>
             <a
-              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
-              title='Instant Unsubscribe from Team Plan'
+              href='mailto:love@parabol.co?subject=Cancel Enterprise Plan'
+              title='Email us to cancel your Enterprise plan'
               className='mr-1 ml-1 flex items-center text-accent'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>

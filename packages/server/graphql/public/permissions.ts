@@ -198,7 +198,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
       isSuperUser,
-      isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
+      and(
+        isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId'),
+        not(isOrgTier<'Mutation.downgradeToStarter'>('args.orgId', 'enterprise'))
+      )
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragTeamHealthResultStage:
