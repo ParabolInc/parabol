@@ -1,0 +1,267 @@
+Parabol Commercial Self-Hosted License
+Version 1.0 (November 2026)
+
+Copyright (c) 2016-present Parabol, Inc. All rights reserved.
+
+Licensor:       Parabol, Inc. ("Parabol")
+                1111 6th Ave., Ste 550, PMB 73201
+                San Diego, CA 92101, USA
+                love@parabol.co
+
+Licensed Work:  The Parabol application, including the source code published
+                at https://github.com/ParabolInc/parabol and any builds,
+                container images, deployment templates, license keys, and
+                documentation that Parabol delivers to Licensee for a
+                self-hosted deployment (the "Software").
+
+-------------------------------------------------------------------------------
+READ THIS FIRST
+-------------------------------------------------------------------------------
+
+The public Parabol source code is licensed under the Business Source License
+1.1 (the "BSL"). See the LICENSE file at the root of the Parabol repository.
+The BSL permits non-production use only. Any production use of the Software
+requires a commercial license from Parabol.
+
+This file is that commercial license. It applies only to an organization that
+has signed an Order Form with Parabol for a self-hosted deployment of the
+Software. If you have not, this file grants you no rights, and your rights in
+the Software are only those the BSL gives you.
+
+-------------------------------------------------------------------------------
+1. DEFINITIONS
+-------------------------------------------------------------------------------
+
+Capitalized terms used but not defined in this License have the meanings given
+to them in the Agreement.
+
+"Agreement" means the Order Form(s) between Parabol and Licensee, together
+with Parabol's Enterprise Terms of Service (currently published at
+https://www.parabol.co/terms-of-service/terms/) as incorporated into those
+Order Forms, including any changes the parties have negotiated in writing
+(the "Terms").
+
+"Licensee" means the Customer named in an Order Form that identifies a
+self-hosted deployment of the Software (a "Self-Hosted Order Form").
+
+"Affiliate" means an entity that controls, is controlled by, or is under
+common control with Licensee, where "control" means owning more than 50% of
+the voting interests of an entity.
+
+"Authorized Persons" means employees of Licensee and its Affiliates, and
+contractors acting on Licensee's behalf.
+
+"Licensed Users" means the number of users, and any other limits on use
+(together with Licensed Users, the "Service Capacity"), stated in the
+Self-Hosted Order Form.
+
+"Licensee Infrastructure" means computing environments owned or controlled by
+Licensee or its Affiliates, including cloud accounts they control. It does not
+include environments operated by a third party that offers the Software, or
+software like it, as a hosted service.
+
+"Modifications" means changes to, or works based on, the Software that are
+made by or for Licensee.
+
+"Production Use" means any use of the Software other than evaluation,
+development, testing, staging, or disaster-recovery standby.
+
+"Subscription Term" means the term of the Self-Hosted Order Form, including
+any renewals.
+
+-------------------------------------------------------------------------------
+2. LICENSE GRANT
+-------------------------------------------------------------------------------
+
+Subject to Licensee's compliance with the Agreement and this License,
+including payment of the Fees, Parabol grants Licensee, during the
+Subscription Term, a non-exclusive, non-sublicensable license, which is
+non-transferable except as the Agreement permits, to:
+
+  (a) install, run, and use the Software, including for Production Use, on
+      Licensee Infrastructure, for the internal business purposes of Licensee
+      and its Affiliates, by no more than the number of Licensed Users;
+
+  (b) access, view, copy, and compile the source code of the Software as
+      reasonably needed to exercise the rights in Section 2(a), including for
+      security review and to run non-production instances (development,
+      testing, staging, and disaster-recovery standby), which do not count
+      toward Licensed Users;
+
+  (c) make Modifications for the purposes in Sections 2(a) and 2(b); and
+
+  (d) allow Authorized Persons to exercise these rights on Licensee's behalf.
+
+Licensee is responsible for the acts and omissions of its Affiliates and
+Authorized Persons as if they were Licensee's own. Use by Affiliates counts
+toward Licensee's Service Capacity.
+
+-------------------------------------------------------------------------------
+3. MODIFICATIONS
+-------------------------------------------------------------------------------
+
+  (a) Licensee may use Modifications only as Section 2 permits, and may not
+      distribute Modifications to anyone other than Authorized Persons.
+
+  (b) Parabol has no obligation to support, maintain, or warrant
+      Modifications, or any problem caused by them. Parabol may ask Licensee
+      to reproduce an issue on unmodified Software before providing support.
+      Parabol's indemnification obligations under the Terms do not apply to
+      Modifications or to claims arising from them.
+
+  (c) Nothing in this License changes Section 5 (Proprietary Rights) of the
+      Terms.
+
+  (d) If Licensee submits Modifications to Parabol (for example, as a pull
+      request or with a support request), they are Feedback under Section 5.4
+      of the Terms.
+
+-------------------------------------------------------------------------------
+4. RESTRICTIONS
+-------------------------------------------------------------------------------
+
+Licensee will not, and will not permit anyone else to:
+
+  (a) use the Software beyond the Service Capacity without first buying
+      additional capacity from Parabol;
+
+  (b) offer the Software or any Modification to third parties as a hosted or
+      managed service, or otherwise use it for timesharing or service bureau
+      purposes or for the benefit of third parties;
+
+  (c) sell, sublicense, lend, distribute, or publish the Software,
+      Modifications, or license keys, except that source code Parabol makes
+      publicly available under the BSL may be shared as the BSL allows;
+
+  (d) remove, alter, or obscure any copyright, license, or trademark notice in
+      the Software;
+
+  (e) disable, circumvent, or interfere with any license key, user count, or
+      other usage control in the Software; or
+
+  (f) use the Software to build a product or service that competes with
+      Parabol.
+
+The restrictions in this Section 4 are part of Section 4 (Restrictions and
+Responsibilities) of the Terms for all purposes of the Agreement, including
+Section 11 (Limitation of Liability).
+
+-------------------------------------------------------------------------------
+5. HOW THE TERMS APPLY TO SELF-HOSTED DEPLOYMENTS
+-------------------------------------------------------------------------------
+
+The Terms were written mainly for products that Parabol hosts. For the
+Software deployed under this License:
+
+  (a) Source access and modification. Sections 4.1(i) and 4.1(ii) of the
+      Terms do not prohibit anything that Section 2 or Section 3 of this
+      License permits.
+
+  (b) Operations. Licensee, not Parabol, operates Licensee Infrastructure.
+      Uptime commitments, service credits, hosting, and backup obligations in
+      Section 2 (Support and Service Levels) of the Terms or in any Order Form
+      do not apply unless the Self-Hosted Order Form expressly says otherwise.
+      Support commitments stated in the Self-Hosted Order Form still apply.
+
+  (c) Customer Data. Customer Data stays on Licensee Infrastructure. Parabol
+      receives Customer Data only if Licensee sends it, for example in a
+      support request or through integrations, telemetry, or AI features that
+      Licensee chooses to enable. Section 5 of the Terms applies to any
+      Customer Data that Parabol does receive. Licensee is responsible for
+      securing and backing up data on Licensee Infrastructure and for
+      complying with laws that apply to it. Section 7.3 of the Terms (account
+      deactivation and deletion) does not apply to data on Licensee
+      Infrastructure.
+
+  (d) Third-party services. Any service that Licensee connects to the
+      Software (for example, an identity provider, AI model provider, email
+      service, or integration) is a Third Party Service under Section 8 of the
+      Terms.
+
+  (e) Parabol Products. References in the Terms to the "Parabol Products" and
+      the "Software" include the Software as licensed under this License.
+
+-------------------------------------------------------------------------------
+6. USAGE VERIFICATION
+-------------------------------------------------------------------------------
+
+Within fourteen (30) days after Parabol's written request, made no more than
+twice in any twelve (12) month period, Licensee will certify in writing the
+peak number of Licensed Users during the preceding twelve (12) months. If
+usage exceeded the Service Capacity, Licensee will pay for the excess at the
+rates in the Self-Hosted Order Form (or, if none are stated, Parabol's
+then-current list price), prorated from the date the excess began.
+
+-------------------------------------------------------------------------------
+7. UPDATES AND SUPPORT
+-------------------------------------------------------------------------------
+
+During the Subscription Term, Parabol will make updates to the Software
+available to Licensee as described in the Self-Hosted Order Form. Licensee is
+responsible for installing updates. Unless the Self-Hosted Order Form says
+otherwise, Parabol may limit support to versions of the Software released in
+the preceding twelve (12) months.
+
+-------------------------------------------------------------------------------
+8. TERM AND TERMINATION
+-------------------------------------------------------------------------------
+
+  (a) This License lasts for the Subscription Term. It ends automatically,
+      without notice, when the Self-Hosted Order Form or the Agreement expires
+      or is terminated.
+
+  (b) Within thirty (30) days after this License ends, Licensee will (i) stop
+      all Production Use of the Software and Modifications, and (ii) stop
+      using, and delete, any license keys and any non-public materials that
+      Parabol delivered (for example, private builds or container images). On
+      request, Licensee will certify in writing that it has done so.
+
+  (c) Licensee may export its Customer Data from the Software during that
+      thirty (30) day period. After it, Licensee may continue to use publicly
+      available Parabol source code only as the BSL allows.
+
+  (d) Sections 3(b)-(d), 4, 6 (for amounts accrued during the Subscription
+      Term), 8, 9, 10, and 11 survive the end of this License.
+
+-------------------------------------------------------------------------------
+9. THIRD-PARTY COMPONENTS
+-------------------------------------------------------------------------------
+
+The Software includes open-source components owned by third parties. Each of
+those components is licensed under its own license, which governs that
+component. Nothing in this License limits Licensee's rights under those
+licenses.
+
+-------------------------------------------------------------------------------
+10. TRADEMARKS
+-------------------------------------------------------------------------------
+
+This License grants no rights in Parabol's names, logos, or other trademarks,
+except to identify the Software accurately within Licensee's organization. The
+'Parabol' name and logos are reserved for use by Parabol, and use of them is
+subject to Parabol's trademark policies.
+
+-------------------------------------------------------------------------------
+11. GENERAL
+-------------------------------------------------------------------------------
+
+  (a) Order of precedence. If there is a conflict, the Self-Hosted Order Form
+      controls over this License, and this License controls over the Terms.
+
+  (b) Other terms. Warranties and disclaimers, limitations of liability,
+      indemnities, confidentiality, governing law, dispute resolution,
+      assignment, and notices are as set out in the Agreement.
+
+  (c) Rights preserved. Nothing in this License limits any right Licensee has
+      under the BSL, under the BSL's Change License for any version of the
+      Software that has reached its Change Date, or under a third-party
+      license described in Section 9.
+
+  (d) New versions. Parabol may publish new versions of this License. A new
+      version applies to Licensee only from Licensee's next renewal or with
+      Licensee's written agreement.
+
+  (e) Reservation of rights. All rights not expressly granted in this License
+      or the Agreement are reserved by Parabol.
+
+Questions about this License: love@parabol.co
