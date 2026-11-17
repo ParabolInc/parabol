@@ -179,7 +179,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
-    createStripeSubscription: isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+    createStripeSubscription: and(
+      isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+      not(isOrgTier<'Mutation.createStripeSubscription'>('args.orgId', 'enterprise'))
+    ),
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
@@ -468,7 +471,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'agendaItems'
     ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
-    updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+    updateCreditCard: and(
+      isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+      not(isOrgTier<'Mutation.updateCreditCard'>('args.orgId', 'enterprise'))
+    ),
     // A drag update is a broadcast that must not touch Postgres or a dataloader, so this checks
     // only the teams in the auth token, not that meetingId belongs to teamId. A user who knows
     // another team's meetingId can broadcast fake drag positions into that meeting. The payload is
