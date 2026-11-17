@@ -17,7 +17,6 @@ import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import {getFullSchema} from './graphql/private/rootSchema'
-import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
 import {useLicenseReadOnly} from './license/useLicenseReadOnly'
@@ -25,7 +24,7 @@ import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {TRACING_ENABLED} from './tracing/initTracing'
 import {useTracing} from './tracing/useTracing'
-import {getAuthTokenFromCookie} from './utils/authCookie'
+import getRequestCredential from './utils/getRequestCredential'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import maskErrorWithTraceId from './utils/maskErrorWithTraceId'
@@ -224,16 +223,14 @@ export const yoga = createYoga<ServerContext, UserContext>({
     usePersistedOperations({
       async allowArbitraryOperations(request) {
         const {headers} = request
-        const authHeader = headers.get('authorization')
-        const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
-        const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
-        const token = headerToken || cookieToken
-        const authToken = getVerifiedAuthToken(token, false)
-
-        const isSuperUser = authToken?.rol === 'su'
-        const isPAT = headerToken?.startsWith(PAT_PREFIX) ?? false
-        const isOAuthAccessToken = !!getVerifiedAuthToken(headerToken, false, 'action-oauth2')
-        return isSuperUser || isPAT || isOAuthAccessToken
+        const credential = getRequestCredential({
+          cookie: headers.get('cookie'),
+          authorization: headers.get('authorization'),
+          applicationAuthorization: headers.get('x-application-authorization')
+        })
+        if (credential.kind === 'pat' || credential.kind === 'oauth') return true
+        if (credential.kind === 'none') return false
+        return getVerifiedAuthToken(credential.token, false)?.rol === 'su'
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,

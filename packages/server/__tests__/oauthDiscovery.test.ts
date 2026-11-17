@@ -1,6 +1,8 @@
 import crypto from 'crypto'
 import faker from 'faker'
+import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
+import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 
@@ -276,4 +278,34 @@ test('an empty resource is treated as no resource', async () => {
   const tokens = await response.json()
   const authToken = getVerifiedAuthToken(tokens.access_token, true, 'action-oauth2')!
   expect(authToken.resource).toBeUndefined()
+})
+
+test('a PAT-shaped bearer beside a mismatched application header cannot borrow the cookie session', async () => {
+  const app = await createApp()
+  const body = await queryRaw({
+    cookie: app.cookie,
+    'x-application-authorization': 'x',
+    authorization: 'Bearer pat_x'
+  })
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors).toBeDefined()
+})
+
+test('a session JWT in the application header cannot borrow a PAT-shaped bearer', async () => {
+  const app = await createApp()
+  const sessionToken = app.cookie.split(';')[0]!.split('=').slice(1).join('=')
+  const body = await queryRaw({
+    'x-application-authorization': `Bearer ${sessionToken}`,
+    authorization: 'Bearer pat_x'
+  })
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors).toBeDefined()
+})
+
+test('a superuser JWT in the authorization header does not unlock a cookie users arbitrary operations', async () => {
+  const app = await createApp()
+  const superUserToken = encodeAuthToken(new AuthToken({sub: 'parabolAIUser', tms: [], rol: 'su'}))
+  const body = await queryRaw({cookie: app.cookie, authorization: `Bearer ${superUserToken}`})
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors).toBeDefined()
 })
