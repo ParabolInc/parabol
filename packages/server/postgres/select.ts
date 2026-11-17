@@ -320,7 +320,6 @@ export const selectNewMeetings = () => {
       'scheduledEndTime',
       'summary',
       'sentimentScore',
-      'slackTs',
       'engagement',
       'totalVotes',
       'maxVotesPerGroup',

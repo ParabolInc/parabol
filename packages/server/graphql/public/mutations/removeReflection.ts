@@ -1,36 +1,34 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeReflection: MutationResolvers['removeReflection'] = async (
   _source,
   {reflectionId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
 
   if (!reflection) {
-    return standardError(new Error('Reflection not found'), {userId: viewerId})
+    throw new GraphQLError('Reflection not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {meetingId, reflectionGroupId} = reflection
 
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases} = meeting
 
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (isPhaseComplete('group', phases)) {
-    return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+    throw new GraphQLError('Meeting phase already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION

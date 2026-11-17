@@ -54,13 +54,14 @@ const updateUrlWithSlug = (
     store.get(`page:${pageCode}`)?.setValue(title, 'title')
   })
   const pageSlug = getPageSlug(pageCode, title)
-  const {pathname} = location
+  const {pathname, search, hash} = location
   if (pathname.endsWith(pageSlug)) return
   const sluggedPageCodeIdx = pathname.lastIndexOf('-')
   const pageCodeIdx = sluggedPageCodeIdx === -1 ? pathname.lastIndexOf('/') : sluggedPageCodeIdx
   const currentRoutePageCode = Number(pathname.slice(pageCodeIdx + 1))
   if (currentRoutePageCode === pageCode) {
-    navigate(`/pages/${pageSlug}`, {replace: true})
+    const nextSearch = new URLSearchParams(search).has('share') ? '?share' : ''
+    navigate(`/pages/${pageSlug}${nextSearch}${hash}`, {replace: true})
   }
 }
 

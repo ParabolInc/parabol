@@ -1,0 +1,19 @@
+"""
+A problem the user can fix, such as a wrong password or an expired link. Unlike a thrown error, it comes back with the payload, so a form can show it
+"""
+type UserError {
+  """
+  What went wrong, for clients that react to it
+  """
+  code: UserErrorCode!
+
+  """
+  A sentence to show the user
+  """
+  message: String!
+
+  """
+  The argument that needs fixing, if the error is about one
+  """
+  field: String
+}

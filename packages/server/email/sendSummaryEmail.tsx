@@ -44,7 +44,8 @@ export const sendSummaryEmail = async (
     .map(({email}) => email)
 
   if (!emailAddresses.length) return
-  await getMailManager().sendEmail({
+  const mailManager = await getMailManager()
+  await mailManager.sendEmail({
     to: emailAddresses,
     subject: `${teamName} ${meetingName} Summary`,
     body: `Hello, ${teamName}. Here is your ${meetingName} summary`,

@@ -25,6 +25,7 @@ import socketDrainSchedule from './socketDrainSchedule'
 import {createStaticFileHandler} from './staticFileHandler'
 import {flushTracing} from './tracing/initTracing'
 import traceHttpRoute from './tracing/traceHttpRoute'
+import traceOutboundHttp from './tracing/traceOutboundHttp'
 import getReqAuth from './utils/getReqAuth'
 import {Logger, setAccountLogContextLoader} from './utils/Logger'
 import loadAccountLogContext from './utils/loadAccountLogContext'
@@ -53,6 +54,8 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
 registerFatalErrorHandlers()
+// metrics time every vendor request, so this runs with tracing off too
+traceOutboundHttp()
 setAccountLogContextLoader(loadAccountLogContext)
 logProcessWarnings()
 logHocuspocusWarnings()

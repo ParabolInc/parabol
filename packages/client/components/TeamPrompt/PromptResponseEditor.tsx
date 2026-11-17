@@ -14,6 +14,7 @@ import {SlashCommand} from '../../tiptap/extensions/slashCommand/SlashCommand'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
+import setStorageItem from '../../utils/setStorageItem'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
@@ -101,7 +102,7 @@ const PromptResponseEditor = (props: Props) => {
       setEditing(true)
       setIsEditorEmpty(editor.isEmpty)
       if (draftStorageKey) {
-        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
+        setStorageItem('localStorage', draftStorageKey, JSON.stringify(editor.getJSON()))
       }
       onChangeRef.current?.(editor)
     },
@@ -112,7 +113,7 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(false)
     editor?.commands.setContent(content)
     if (draftStorageKey) {
-      window.localStorage.setItem(draftStorageKey, JSON.stringify(content))
+      setStorageItem('localStorage', draftStorageKey, JSON.stringify(content))
     }
   }
 

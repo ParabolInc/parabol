@@ -1,4 +1,5 @@
 import {useCallback, useState} from 'react'
+import setStorageItem from '../../../utils/setStorageItem'
 
 export type TeamLayout = 'grid' | 'feed' | 'byQuestion'
 const STORAGE_KEY = 'standup:teamLayout'
@@ -14,7 +15,7 @@ const useTeamLayoutPreference = () => {
   const setLayout = useCallback(
     (next: TeamLayout) => {
       if (next === layout) return
-      window.localStorage.setItem(STORAGE_KEY, next)
+      setStorageItem('localStorage', STORAGE_KEY, next)
       setLayoutState(next)
     },
     [layout]

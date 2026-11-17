@@ -2,6 +2,7 @@ import parseSessionId from './parseSessionId'
 
 export const MAX_CLIENT_ERROR_REPORTS = 10
 const MAX_BREADCRUMBS = 30
+const MAX_CAUSES = 3
 const MAX_REPEAT_COUNT = 1000
 const TRACE_ID = /^[0-9a-f]{32}$/
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
@@ -15,11 +16,18 @@ export interface ClientErrorBreadcrumb {
   traceId?: string
 }
 
+export interface ClientErrorCause {
+  name: string
+  message: string
+  stack?: string
+}
+
 export interface ClientErrorReport {
   level: 'error' | 'warn'
   name: string
   message: string
   stack?: string
+  causes?: ClientErrorCause[]
   componentStack?: string
   eventId?: string
   traceId?: string
@@ -55,16 +63,32 @@ const parseBreadcrumb = (value: unknown): ClientErrorBreadcrumb | undefined => {
   return {time, type, message, ...(traceId && {traceId})}
 }
 
+const parseCause = (value: unknown): ClientErrorCause | undefined => {
+  if (!isRecord(value)) return undefined
+  return {
+    name: readString(value.name, 100) ?? 'Error',
+    message: readString(value.message, 1000) ?? '',
+    stack: readString(value.stack, 16_000)
+  }
+}
+
 const parseReport = (value: unknown): ClientErrorReport | undefined => {
   if (!isRecord(value)) return undefined
   const message = readString(value.message, 1000)
   if (!message) return undefined
   const breadcrumbs = Array.isArray(value.breadcrumbs) ? value.breadcrumbs : []
+  const causes = Array.isArray(value.causes)
+    ? value.causes
+        .slice(0, MAX_CAUSES)
+        .map(parseCause)
+        .filter((cause): cause is ClientErrorCause => !!cause)
+    : []
   return {
     level: value.level === 'warn' ? 'warn' : 'error',
     name: readString(value.name, 100) ?? 'Error',
     message,
     stack: readString(value.stack, 16_000),
+    ...(causes.length > 0 && {causes}),
     componentStack: readString(value.componentStack, 8_000),
     eventId: readMatch(value.eventId, EVENT_ID),
     traceId: readMatch(value.traceId, TRACE_ID),

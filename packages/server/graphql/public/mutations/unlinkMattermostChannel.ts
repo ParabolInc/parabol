@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import TeamNotificationSettingsId from '../../../../client/shared/gqlIds/TeamNotificationSettingsId'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
@@ -16,7 +17,7 @@ const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = as
     .get('sharedIntegrationProviders')
     .load({service: 'mattermost', orgIds: [], teamIds: []})
   if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') {
-    return {error: {message: 'Mattermost integration not found'}}
+    throw new GraphQLError('Mattermost integration not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {id: providerId} = mattermostProvider
 
@@ -30,7 +31,7 @@ const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = as
     .executeTakeFirst()
 
   if (!teamNotificationSettings) {
-    return {error: {message: 'Channel not found'}}
+    throw new GraphQLError('Channel not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const settings = await dataLoader

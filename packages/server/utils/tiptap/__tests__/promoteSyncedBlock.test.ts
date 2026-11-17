@@ -135,6 +135,12 @@ test('re-parents under the host placed first and keeps every access row', async 
   expect(mockHandleEvent).toHaveBeenCalledWith('markPageLinkCanonical', `page:${firstCopyHost}`, {
     pageCode: block
   })
+  expect(mockHandleEvent).toHaveBeenCalledWith(
+    'broadcastSyncedBlockPlacementsChanged',
+    `page:${block}`,
+    {},
+    true
+  )
 }, 30_000)
 
 test('skips a host whose editors cannot see the block', async () => {
@@ -258,4 +264,18 @@ test('trashPageUnderParent leaves an already-trashed page alone', async () => {
   await trashPageUnderParent(block, originalHost, viewerId)
   expect(await pageRow(block)).toMatchObject({deletedAt: trashedAt, deletedBy: strangerId})
   expect(mockHandleEvent).not.toHaveBeenCalled()
+}, 30_000)
+
+test('prefers an ordinary page over a block page host', async () => {
+  const otherBlock = await makePage(true, originalHost)
+  await linkBack(otherBlock, block, '2025-12-01T00:00:00Z')
+  expect(await selectPromotionHost(pg, block, [originalHost])).toBe(firstCopyHost)
+}, 30_000)
+
+test('still promotes onto a block page when no other host is left', async () => {
+  const otherBlock = await makePage(true, originalHost)
+  await linkBack(otherBlock, block, '2025-12-01T00:00:00Z')
+  await trash(firstCopyHost)
+  await trash(secondCopyHost)
+  expect(await selectPromotionHost(pg, block, [originalHost])).toBe(otherBlock)
 }, 30_000)

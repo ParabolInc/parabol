@@ -47,7 +47,7 @@ export const fetchAssetBuffer = async (
   const [role] = await pageAccessByUserIdBatchFn([{pageId: parsed.pageId, userId: viewerId}])
   if (!role) return null
   try {
-    const manager = getFileStoreManager()
+    const manager = await getFileStoreManager()
     const presignedUrl = await manager.presignUrl(parsed.partialPath)
     const res = await fetch(presignedUrl)
     if (!res.ok) return null

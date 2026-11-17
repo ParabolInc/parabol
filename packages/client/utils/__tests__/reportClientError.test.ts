@@ -65,6 +65,32 @@ test('an error that repeats before its batch goes out is counted, not sent again
   expect(reports).toEqual([expect.objectContaining({message: 'render loop', count: 3})])
 })
 
+test('the error React recovered from by rendering again is sent with the error that wraps it', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  const rootCause = new TypeError('the error that broke the render')
+  const wrapper = new Error('Minified React error #520', {cause: rootCause})
+  const loop: Error & {cause?: unknown} = new Error('a cause that points back')
+  loop.cause = loop
+  rootCause.cause = loop
+  reportClientError(wrapper)
+  flushClientErrors()
+  const [report] = await readSentReports()
+  expect(report.message).toBe('Minified React error #520')
+  expect(report.causes).toEqual([
+    {name: 'TypeError', message: 'the error that broke the render', stack: rootCause.stack},
+    {name: 'Error', message: 'a cause that points back', stack: loop.stack}
+  ])
+})
+
+test('an error without an error for a cause is sent without causes', async () => {
+  const {default: reportClientError, flushClientErrors} = await loadReporter()
+  reportClientError(new Error('no cause'))
+  reportClientError(new Error('a plain cause', {cause: {secret: 'user text'}}))
+  flushClientErrors()
+  const reports = await readSentReports()
+  expect(reports.map((report) => report.causes)).toEqual([undefined, undefined])
+})
+
 test('a third report sends the batch at once', async () => {
   const {default: reportClientError} = await loadReporter()
   reportClientError(new Error('one'))

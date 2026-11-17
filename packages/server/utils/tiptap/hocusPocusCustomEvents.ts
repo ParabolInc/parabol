@@ -7,6 +7,9 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
+import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
+import {setPageLinkTitles} from './setPageLinkTitles'
+import {toYXmlNodes} from './toYXmlNodes'
 
 const withDoc = async (
   documentName: string,
@@ -116,21 +119,56 @@ export const removeBacklinkedPageLinkBlocks = async (
   })
 }
 
+export const readPageContent = async (documentName: string, _payload: {}) => {
+  let content: JSONContent = {type: 'doc', content: []}
+  await withDoc(documentName, (doc) => {
+    content = TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
+  })
+  return content
+}
+
+export const replaceSyncedBlockWithContent = async (
+  documentName: string,
+  payload: {pageCode: number; content: JSONContent[] | null}
+) => {
+  const {pageCode, content} = payload
+  const replacements = content ? toYXmlNodes(content) : []
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('synced') === true
+    })
+    const nodes = Array.from(walker)
+    for (const node of nodes) {
+      const parent = node.parent as XmlElement
+      const parentIdx = parent.toArray().findIndex((child) => child === node)
+      if (parentIdx === -1) continue
+      parent.delete(parentIdx)
+      if (replacements.length > 0) {
+        parent.insert(
+          parentIdx,
+          replacements.map((replacement) => replacement.clone())
+        )
+      }
+    }
+  })
+}
+
 export const updateBacklinkedPageLinkTitles = async (
   documentName: string,
   payload: {pageCode: number; title: string}
 ) => {
   const {pageCode, title} = payload
   await withDoc(documentName, (doc) => {
-    const frag = doc.getXmlFragment('default')
-    const walker = frag.createTreeWalker((yxml) => {
-      if (!isPageLink(yxml)) return false
-      return yxml.getAttribute('pageCode') === pageCode
-    })
-    for (const node of walker) {
-      ;(node as XmlElement).setAttribute('title', title)
-    }
+    setPageLinkTitles(doc.getXmlFragment('default'), pageCode, title)
   })
+}
+
+export const broadcastSyncedBlockPlacementsChanged = async (documentName: string) => {
+  hocuspocus.documents
+    .get(documentName)
+    ?.broadcastStateless(JSON.stringify({type: 'syncedBlockPlacementsChanged'}))
 }
 
 export const replaceAssetSrc = async (
@@ -142,11 +180,12 @@ export const replaceAssetSrc = async (
     const frag = doc.getXmlFragment('default')
     const walker = frag.createTreeWalker((yxml) => {
       if (!(yxml instanceof XmlElement)) return false
-      if (yxml.nodeName !== 'imageBlock' && yxml.nodeName !== 'fileBlock') return false
-      return yxml.getAttribute('src') === src
+      const attr = PAGE_ASSET_ATTRS.get(yxml.nodeName)
+      return !!attr && yxml.getAttribute(attr) === src
     })
-    for (const node of Array.from(walker)) {
-      ;(node as XmlElement).setAttribute('src', hostedSrc)
+    for (const node of Array.from(walker) as XmlElement[]) {
+      const attr = PAGE_ASSET_ATTRS.get(node.nodeName)
+      if (attr) node.setAttribute(attr, hostedSrc)
     }
   })
 }

@@ -14,7 +14,7 @@ import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {usePageViewerAccess} from '../../../hooks/usePageViewerAccess'
+import {usePageIsMeetingTOC, usePageViewerAccess} from '../../../hooks/usePageViewerAccess'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {PageNoAccessLock} from '../../../modules/pages/PageNoAccessLock'
 import {snackOnError} from '../../../mutations/handlers/snackOnError'
@@ -30,6 +30,7 @@ import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {GQLID} from '../../../utils/GQLID'
 import {getPageEmoji, stripPageEmoji} from '../../../utils/getPageEmoji'
+import {getBlockDropRefusal} from '../../blockMove/getBlockDropRefusal'
 import {getPageSlug} from '../../getPageSlug'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
@@ -49,11 +50,18 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const atmosphere = useAtmosphere()
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
+  const {
+    draggingPageId,
+    draggingPageViewerAccess,
+    draggingBlocksSourcePageId,
+    draggingBlocksChildPageIds,
+    draggingBlocksRefusal
+  } = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
-  const viewerAccess = usePageViewerAccess(pageCode)
-  const isLocked = viewerAccess === null
+  const viewerRole = usePageViewerAccess(pageCode)
+  const isLocked = viewerRole === null
+  const isMeetingTOC = usePageIsMeetingTOC(pageCode)
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return
@@ -98,7 +106,19 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   // doesn't fetch access for drop targets, but pops an error snack on drop
   // tbh, that UI is probably better because then the user knows why they can't drop on it
   // undefined access means the server never returned this page (optimistic, or pasted from another instance), so it would refuse the doc
-  const canDropIn = draggingPageId && !isSelf && hasDragAccess && viewerAccess !== undefined
+  const isReturned = viewerRole !== undefined
+  const canDropIn = draggingPageId && !isSelf && hasDragAccess && isReturned
+  const isBlockTarget = !!draggingBlocksSourcePageId && !isLocked && !isOptimistic && isReturned
+  const blockRefusal = isBlockTarget
+    ? getBlockDropRefusal(
+        {pageId: pageKey, viewerRole, isDatabase: database, isMeetingTOC},
+        {
+          sourcePageId: draggingBlocksSourcePageId,
+          childPageIds: draggingBlocksChildPageIds ?? [],
+          refusal: draggingBlocksRefusal ?? null
+        }
+      )
+    : null
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper
@@ -106,7 +126,11 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
         'group rounded-sm p-1 transition-colors hover:bg-surface-hover group-[.ProseMirror-selectednode]:bg-surface-hover'
       }
     >
-      <PageDropTarget data-drop-in={canDropIn ? pageKey : undefined}>
+      <PageDropTarget
+        data-drop-in={canDropIn || (isBlockTarget && !blockRefusal) ? pageKey : undefined}
+        data-drop-refused={blockRefusal ?? undefined}
+        data-drop-title={title || '<Untitled>'}
+      >
         <Link
           draggable={false}
           to={`/pages/${pageSlug}`}

@@ -56,7 +56,7 @@ const resolveEstimates = (issueLabelNames: string[], repoTaskIds: string[]) => {
   const loaders: Record<string, unknown> = {
     githubAuth: {load: async () => ({accessToken: 'token'})},
     latestTaskEstimates: {load: async () => [commentPushedEstimate], clear: () => {}},
-    taskIdsByTeamAndGitHubRepo: {load: async () => repoTaskIds}
+    taskIdsByTeamAndIntegration: {load: async () => repoTaskIds}
   }
   const context = {
     authToken: {sub: 'viewer1'},

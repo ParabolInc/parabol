@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {convertTiptapToADF} from '../../../../client/shared/tiptap/convertTipTapToADF'
@@ -9,7 +10,6 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
 import publishChangeNotifications from '../../mutations/helpers/publishChangeNotifications'
 import type {MutationResolvers} from '../resolverTypes'
@@ -35,12 +35,12 @@ const updateTask: MutationResolvers['updateTask'] = async (
     dataLoader.get('tasks').load(taskId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  if (!task) return {error: {message: 'Task not found'}}
+  if (!task) throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   const {teamId, userId} = task
   const nextUserId = inputUserId === undefined ? userId : inputUserId
   if (teamId || inputUserId) {
     const error = await validateTaskUserIsTeamMember(nextUserId, teamId, dataLoader)
-    if (error) return standardError(new Error('Invalid user ID'), {userId: viewerId})
+    if (error) throw new GraphQLError('Invalid user ID', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // RESOLUTION
@@ -58,7 +58,7 @@ const updateTask: MutationResolvers['updateTask'] = async (
     .where('id', '=', taskId)
     .executeTakeFirst()
   if (Number(updateRes.numChangedRows) === 0) {
-    return standardError(new Error('Already updated task'), {userId: viewerId})
+    throw new GraphQLError('Already updated task', {extensions: {code: 'CONFLICT'}})
   }
   // If the task has a Jira integration and content was updated, sync the description to Jira
   if (content && task.integration?.service === 'jira') {

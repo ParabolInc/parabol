@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import {rehostExternalAssets} from '../rehostExternalAssets'
+import {rehostExternalAssets, rehostSeededAssets} from '../rehostExternalAssets'
 
 const mockPageRoles = new Map<string, string>()
 const mockPublicRoles = new Map<number, string>()
@@ -154,6 +154,15 @@ const makeImage = (src: string) => {
   const image = new Y.XmlElement('imageBlock')
   image.setAttribute('src', src)
   return image
+}
+
+const EXTERNAL_THUMBNAIL = 'https://claude.example/og.png'
+const EXTERNAL_FAVICON = 'https://claude.example/favicon.png'
+
+const makeEmbed = (attrs: Record<string, string>) => {
+  const embed = new Y.XmlElement('embedBlock')
+  Object.entries(attrs).forEach(([key, value]) => embed.setAttribute(key, value))
+  return embed
 }
 
 const getSrcs = (frag: Y.XmlFragment) =>
@@ -313,4 +322,94 @@ test('skips assets already hosted in the page and server writes with no user', a
   })
   await flush()
   expect(mockCharges).toEqual([[INSERTER_ID, 5]])
+})
+
+test('hosts the images a seed carries, nested or not, on the quota of the user who seeded it', async () => {
+  const {frag} = makePage()
+  const hostedSrc = 'https://parabol.test/assets/Page/10/assets/uploaded.png'
+  frag.insert(0, [makeImage(EXTERNAL_SRC), makeImage(hostedSrc)])
+  rehostSeededAssets(
+    PAGE_ID,
+    [
+      {type: 'paragraph'},
+      {
+        type: 'bulletList',
+        content: [{type: 'listItem', content: [{type: 'imageBlock', attrs: {src: EXTERNAL_SRC}}]}]
+      },
+      {type: 'imageBlock', attrs: {src: hostedSrc}}
+    ],
+    INSERTER_ID
+  )
+  await flush()
+  expect(mockFetchedUrls).toEqual([EXTERNAL_SRC])
+  expect(mockCharges).toEqual([[INSERTER_ID, 5]])
+})
+
+test("hosts an embed card's thumbnail, not its favicon, on the quota of the editor who added it", async () => {
+  const {doc, frag} = makePage()
+  const embed = makeEmbed({
+    url: 'https://claude.example/artifact',
+    thumbnailUrl: EXTERNAL_THUMBNAIL,
+    faviconUrl: EXTERNAL_FAVICON
+  })
+  doc.transact(() => frag.insert(0, [embed]), asConnection(INSERTER_ID).origin)
+  await flush()
+  expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL])
+  expect(mockCharges).toEqual([[INSERTER_ID, 5]])
+  expect(embed.getAttribute('url')).toBe('https://claude.example/artifact')
+  expect(embed.getAttribute('thumbnailUrl')).toMatch(HOSTED_SRC)
+  expect(embed.getAttribute('faviconUrl')).toBe(EXTERNAL_FAVICON)
+})
+
+test("does not fetch a planted thumbnail when another editor's client stamps the card", async () => {
+  const {doc, frag} = makePage()
+  const embed = makeEmbed({
+    url: 'https://claude.example/artifact',
+    thumbnailUrl: EXTERNAL_THUMBNAIL
+  })
+  doc.transact(() => frag.insert(0, [embed]), asConnection(undefined).origin)
+  const reader = asConnection(READER_ID)
+  doc.transact(() => embed.setAttribute('fetchedAt', new Date().toISOString()), reader.origin)
+  await flush()
+  expect(mockFetchedUrls).toEqual([])
+  expect(mockCharges).toEqual([])
+  expect(reader.sendStateless).not.toHaveBeenCalled()
+})
+
+test('hosts the thumbnail a resolve sets on an existing card, but not one a server write sets', async () => {
+  const {doc, frag} = makePage()
+  const embed = makeEmbed({url: 'https://claude.example/artifact'})
+  doc.transact(() => frag.insert(0, [embed]), asConnection(INSERTER_ID).origin)
+  doc.transact(() => embed.setAttribute('thumbnailUrl', EXTERNAL_THUMBNAIL), {
+    source: 'local',
+    context: {}
+  })
+  await flush()
+  expect(mockFetchedUrls).toEqual([])
+
+  doc.transact(
+    () => embed.setAttribute('thumbnailUrl', 'https://claude.example/new.png'),
+    asConnection(INSERTER_ID).origin
+  )
+  await flush()
+  expect(mockFetchedUrls).toEqual(['https://claude.example/new.png'])
+  expect(embed.getAttribute('thumbnailUrl')).toMatch(HOSTED_SRC)
+})
+
+test('hosts the embed thumbnails a seed carries', async () => {
+  const {frag} = makePage()
+  frag.insert(0, [makeEmbed({thumbnailUrl: EXTERNAL_THUMBNAIL})])
+  rehostSeededAssets(
+    PAGE_ID,
+    [
+      {
+        type: 'embedBlock',
+        attrs: {url: 'https://claude.example/a', thumbnailUrl: EXTERNAL_THUMBNAIL}
+      }
+    ],
+    INSERTER_ID
+  )
+  await flush()
+  expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL])
+  expect((frag.get(0) as Y.XmlElement).getAttribute('thumbnailUrl')).toMatch(HOSTED_SRC)
 })

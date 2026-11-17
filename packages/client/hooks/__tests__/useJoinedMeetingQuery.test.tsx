@@ -1,13 +1,14 @@
 import {Window} from 'happy-dom'
 import {createRoot} from 'react-dom/client'
 import {MemoryRouter} from 'react-router'
+import {getBreadcrumbs} from '../../utils/clientBreadcrumbs'
 import useJoinedMeetingQuery from '../useJoinedMeetingQuery'
 
 type JoinHandlers = {onCompleted: (response: unknown) => void; onError: () => void}
 
 const mockEvents: string[] = []
 const mockJoin: {handlers?: JoinHandlers} = {}
-const mockFetch: {complete?: () => void} = {}
+const mockFetch: {next?: () => void; complete?: () => void} = {}
 function mockGetKey(name: string, variables: unknown) {
   return JSON.stringify({name, variables})
 }
@@ -44,8 +45,9 @@ jest.mock('../../mutations/JoinMeetingMutation', () => ({
 jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   fetchQuery: () => ({
-    subscribe: ({complete}: {complete: () => void}) => {
+    subscribe: ({next, complete}: {next: () => void; complete: () => void}) => {
       mockEvents.push('fetch')
+      mockFetch.next = next
       mockFetch.complete = complete
     }
   }),
@@ -108,6 +110,22 @@ test('a viewer not yet in the meeting subscribes after joining, then fetches onc
   root.unmount()
 })
 
+test('each step of loading the meeting leaves a breadcrumb', async () => {
+  const root = await renderJoinedMeeting()
+  mockJoin.handlers!.onCompleted(joined)
+  await tick()
+  await acknowledgeSubscription()
+  mockFetch.complete!()
+  expect(getBreadcrumbs().map(({message}) => message)).toEqual(
+    expect.arrayContaining([
+      'JoinMeetingMutation joined',
+      'MeetingSubscription acknowledged',
+      'MeetingSelectorQuery fetched, loaded from the store'
+    ])
+  )
+  root.unmount()
+})
+
 test('a viewer the store has in the meeting subscribes while joining, then fetches once both are done', async () => {
   mockAtmosphere.records.meeting1 = {viewerMeetingMember: {__ref: 'user1::meeting1'}}
   const root = await renderJoinedMeeting()
@@ -129,4 +147,17 @@ test('leaving before the join lands hands over the held messages without fetchin
   root.unmount()
   await tick()
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold', 'release'])
+})
+
+test('the meeting loads from its first payload and holds subscription messages until the last', async () => {
+  const root = await renderJoinedMeeting()
+  mockJoin.handlers!.onCompleted(joined)
+  await tick()
+  await acknowledgeSubscription()
+  mockFetch.next!()
+  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load'])
+  mockFetch.next!()
+  mockFetch.complete!()
+  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load', 'release'])
+  root.unmount()
 })

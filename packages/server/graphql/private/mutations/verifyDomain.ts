@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
@@ -15,7 +16,8 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (
 
   // VALIDATION
   const slugName = normalizeSlugName(slug)
-  if (slugName instanceof Error) return {error: {message: slugName.message}}
+  if (slugName instanceof Error)
+    throw new GraphQLError(slugName.message, {extensions: {code: 'BAD_USER_INPUT'}})
   await pg.transaction().execute(async (trx) => {
     // upsert the record with orgId
     await trx

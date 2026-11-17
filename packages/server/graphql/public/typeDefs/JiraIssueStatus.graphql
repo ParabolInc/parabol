@@ -1,0 +1,9 @@
+"""
+The workflow status of a Jira issue, as Jira names it
+"""
+type JiraIssueStatus {
+  """
+  The status name (e.g. "In Review")
+  """
+  name: String!
+}

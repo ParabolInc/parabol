@@ -26,7 +26,7 @@ export const SearchDialogResultsList = (props: Props) => {
           node {
             ... on Page {
               id
-              title
+              ...getSearchResultHref_page
             }
           }
         }

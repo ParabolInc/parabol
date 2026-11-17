@@ -1,9 +1,9 @@
 import type {Kysely} from 'kysely'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 
-const getTemplateIllustrationUrl = (filename: string) => {
+const getTemplateIllustrationUrl = async (filename: string) => {
   const cdnType = process.env.FILE_STORE_PROVIDER as string | undefined
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
 
   const partialPath = `Organization/aGhostOrg/template/${filename}`
   if (cdnType === 'local') {
@@ -28,7 +28,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       type: 'retrospective',
       isStarter: true,
       isFree: true,
-      illustrationUrl: getTemplateIllustrationUrl('iLikeIWishIWonderTemplate.png'),
+      illustrationUrl: await getTemplateIllustrationUrl('iLikeIWishIWonderTemplate.png'),
       mainCategory: 'retrospective'
     })
     .execute()

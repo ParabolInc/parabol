@@ -31,6 +31,7 @@ const createJiraIssue = (taskId: string, issueKey: string, summary: string): Dem
   summary,
   descriptionHTML: '',
   extraFields: [],
+  jiraStatus: {name: 'To Do'},
   url: DemoIntegration.JIRA_ISSUE_URL
 })
 
@@ -41,6 +42,7 @@ const createGitHubIssue = (taskId: string, number: number, title: string): DemoG
   number,
   title,
   bodyHTML: '',
+  githubState: 'OPEN',
   repository: {id: `github:${GITHUB_REPO}`, nameWithOwner: GITHUB_REPO},
   ghUrl: DemoIntegration.GITHUB_ISSUE_URL
 })

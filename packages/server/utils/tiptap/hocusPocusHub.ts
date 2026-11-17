@@ -29,6 +29,12 @@ export const updateAllBacklinkedPageLinkTitles = async ({
   title: string
 }) => {
   const pg = getKysely()
+  const page = await pg
+    .selectFrom('Page')
+    .select('isSyncedBlock')
+    .where('id', '=', pageId)
+    .executeTakeFirst()
+  if (page?.isSyncedBlock) return
   const backLinks = await pg
     .selectFrom('PageBacklink')
     .select('fromPageId')
@@ -61,6 +67,13 @@ export const broadcastUserMentionUpdate = async (
     const payload = {userId, preferredName}
     redisHocusPocus.handleEvent('updateUserMention', documentName, payload, true).catch(Logger.log)
   })
+}
+
+export const publishSyncedBlockPlacementsChanged = (blockPageId: number) => {
+  const documentName = CipherId.toClient(blockPageId, 'page')
+  redisHocusPocus
+    .handleEvent('broadcastSyncedBlockPlacementsChanged', documentName, {}, true)
+    .catch(Logger.log)
 }
 
 export const replacePageAssetSrc = async (pageId: number, src: string, hostedSrc: string) => {

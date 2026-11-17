@@ -6,16 +6,17 @@ import type DiscussStage from '../../../database/types/DiscussStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {Comment} from '../../../postgres/types/pg'
-import {generateJSON} from '../../../utils/tiptap/generateJSON'
+import loadHTMLConverters from '../../../utils/tiptap/loadHTMLConverters'
 import type {DataLoaderWorker} from '../../graphql'
 
-export const buildCommentContentBlock = (
+export const buildCommentContentBlock = async (
   title: string,
   contentHTML: string,
   explainerText?: string
 ) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
   const html = `${explainerBlock}<p><b>${title}</b></p>${contentHTML}`
+  const {generateJSON} = await loadHTMLConverters()
   return generateJSON(html, serverTipTapExtensions) as JSONContent
 }
 
@@ -42,7 +43,7 @@ const addAIGeneratedContentToThreads = async (
     if (group.discussionPromptQuestion) {
       const topicSummaryComment = createAIComment(
         discussionId,
-        buildCommentContentBlock(
+        await buildCommentContentBlock(
           '🤖 Discussion Question',
           `<p>${group.discussionPromptQuestion}</p>`
         ),

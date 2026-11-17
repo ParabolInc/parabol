@@ -26,6 +26,12 @@ export interface SnackAction {
   callback: () => void
 }
 
+export interface SnackLink {
+  label: string
+  suffix: string
+  callback: () => void
+}
+
 export interface Snack {
   key: string // string following format: `type` OR `type:variable`
   message: string
@@ -36,6 +42,7 @@ export interface Snack {
   onShow?: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
+  link?: SnackLink
   showDismissButton?: boolean
 }
 
@@ -163,6 +170,7 @@ const Snackbar = memo(() => {
               >
                 <SnackbarMessage
                   message={snack.message}
+                  link={snack.link}
                   action={snack.action}
                   secondaryAction={snack.secondaryAction}
                   dismissSnack={dismiss}

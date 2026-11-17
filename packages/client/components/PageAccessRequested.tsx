@@ -33,6 +33,7 @@ const PageAccessRequested = (props: Props) => {
         page {
           id
           title
+          isSyncedBlock
         }
         role
       }
@@ -40,7 +41,7 @@ const PageAccessRequested = (props: Props) => {
     notificationRef
   )
   const {name, email, picture, page, role} = notification
-  const {id: pageId, title} = page
+  const {id: pageId, title, isSyncedBlock} = page
   const pageAccess = pageRoles[role] ?? 'view'
 
   const goThere = () => {
@@ -52,9 +53,15 @@ const PageAccessRequested = (props: Props) => {
     <NotificationTemplate
       avatar={picture}
       message={
-        <>
-          {name}({email}) has requested to <b>{pageAccess}</b> the page <b>{title}</b>
-        </>
+        isSyncedBlock ? (
+          <>
+            {name} wants to view the synced block <b>{title || '<Untitled>'}</b>.
+          </>
+        ) : (
+          <>
+            {name}({email}) has requested to <b>{pageAccess}</b> the page <b>{title}</b>
+          </>
+        )
       }
       notification={notification}
       action={<NotificationAction label={'Review permissions'} onClick={goThere} />}

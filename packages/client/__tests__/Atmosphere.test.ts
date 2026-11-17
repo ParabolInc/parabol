@@ -1,5 +1,6 @@
 import type {Client} from 'graphql-ws'
 import type {GraphQLResponse, RequestParameters} from 'relay-runtime'
+import type {AuthToken} from '../types/AuthToken'
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 
@@ -60,9 +61,7 @@ const fetchOverHTTP = async (
   global.fetch = jest.fn(async () => response)
   const {default: Atmosphere} = await import('../Atmosphere')
   const atmosphere = new Atmosphere()
-  const fetchResult = atmosphere.fetchFunction(makeRequest(operationKind), {}, {}, undefined)
-  if (!('subscribe' in fetchResult)) throw new Error('Expected an observable')
-  return collectPayloads(fetchResult)
+  return collectPayloads(atmosphere.getNetwork().execute(makeRequest(operationKind), {}, {}))
 }
 
 type SocketSink = {next: (value: object) => void; error: (error: unknown) => void}
@@ -78,7 +77,9 @@ const fetchOverSocket = async (
     return () => {}
   }
   atmosphere.subscriptionClient = {subscribe} as unknown as Client
-  return collectPayloads(atmosphere.fetchOrSubscribe(makeRequest(operationKind), {}, {}))
+  atmosphere.authObj = {sub: 'user1'} as AuthToken
+  atmosphere.isSocketConnected = true
+  return collectPayloads(atmosphere.getNetwork().execute(makeRequest(operationKind), {}, {}))
 }
 
 const notFound = {message: 'Team not found', extensions: {code: 'NOT_FOUND'}}
@@ -187,6 +188,27 @@ describe('Atmosphere', () => {
         sink.complete()
       })
       await expect(result).resolves.toEqual([])
+    })
+  })
+
+  describe('responses that end early', () => {
+    it('fails a query whose multipart response ends before its last part', async () => {
+      const initial = {data: {node: {id: 'node1'}}, hasNext: true}
+      await expect(
+        fetchOverHTTP(multipartResponse(`${part(initial)}\r\n-----\r\n`))
+      ).rejects.toThrow('TestQuery ended before its last payload')
+    })
+
+    it('fails a query whose multipart response ends inside its first part', async () => {
+      const initial = {data: {node: {id: 'node1', name: 'A long enough name to split'}}}
+      await expect(fetchOverHTTP(multipartResponse(part(initial)))).rejects.toThrow(
+        'TestQuery ended before its last payload'
+      )
+    })
+
+    it('fails a query the socket ends without a result', async () => {
+      const result = fetchOverSocket('query', (sink) => sink.complete())
+      await expect(result).rejects.toThrow('TestQuery ended before its last payload')
     })
   })
 })

@@ -110,7 +110,7 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
 
   const partialPath = decodeURIComponent(rawPath)
-  const manager = getFileStoreManager()
+  const manager = await getFileStoreManager()
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,
     () => manager.presignUrl(partialPath as PartialPath),

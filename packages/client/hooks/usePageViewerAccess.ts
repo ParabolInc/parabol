@@ -13,6 +13,7 @@ import useAtmosphere from './useAtmosphere'
 
 const pageFragment = getFragment(graphql`
   fragment usePageViewerAccess_page on Page {
+    isMeetingTOC
     access {
       viewer
       public
@@ -25,19 +26,20 @@ const getPageSelector = (pageCode: number) =>
   createReaderSelector(pageFragment, `page:${pageCode}`, {}, owner)
 
 type PageAccess = NonNullable<usePageViewerAccess_page$data['access']>
-const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
+export const getStrongestRole = ({viewer, public: publicRole}: PageAccess) => {
   if (viewer && publicRole) return hasMinPageRole(publicRole, viewer) ? viewer : publicRole
   if (viewer || publicRole) return viewer || publicRole
   return viewer === null && publicRole === null ? null : undefined
 }
 
-const lookupPageAccess = (environment: IEnvironment, pageCode: number) => {
-  const page = environment.lookup(getPageSelector(pageCode)).data as
+const lookupPage = (environment: IEnvironment, pageCode: number) =>
+  environment.lookup(getPageSelector(pageCode)).data as
     | usePageViewerAccess_page$data
     | null
     | undefined
-  return page?.access
-}
+
+const lookupPageAccess = (environment: IEnvironment, pageCode: number) =>
+  lookupPage(environment, pageCode)?.access
 
 // The viewer's strongest role on a page: null when they cannot open it, undefined when it isn't loaded
 export const lookupPageViewerAccess = (environment: IEnvironment, pageCode: number) => {
@@ -58,11 +60,22 @@ export const subscribeToPageViewerAccess = (
   return () => disposable.dispose()
 }
 
-export const usePageViewerAccess = (pageCode: number) => {
+const usePageSubscription = (pageCode: number) => {
   const atmosphere = useAtmosphere()
-  const subscribe = useCallback(
+  return useCallback(
     (onChange: () => void) => subscribeToPageViewerAccess(atmosphere, pageCode, onChange),
     [atmosphere, pageCode]
   )
+}
+
+export const usePageViewerAccess = (pageCode: number) => {
+  const atmosphere = useAtmosphere()
+  const subscribe = usePageSubscription(pageCode)
   return useSyncExternalStore(subscribe, () => lookupPageViewerAccess(atmosphere, pageCode))
+}
+
+export const usePageIsMeetingTOC = (pageCode: number) => {
+  const atmosphere = useAtmosphere()
+  const subscribe = usePageSubscription(pageCode)
+  return useSyncExternalStore(subscribe, () => !!lookupPage(atmosphere, pageCode)?.isMeetingTOC)
 }

@@ -10,6 +10,7 @@ import * as freshAuthLoaders from './freshAuthLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as integrationDimensionFieldMapLoaders from './integrationDimensionFieldMapLoaders'
+import * as integrationIssueLoaders from './integrationIssueLoaders'
 import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
 import * as integrationUsageLoaders from './integrationUsageLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
@@ -37,6 +38,7 @@ const loaderMakers = {
   ...freshAuthLoaders,
   ...integrationAuthLoaders,
   ...integrationDimensionFieldMapLoaders,
+  ...integrationIssueLoaders,
   ...integrationSearchQueryLoaders,
   ...integrationUsageLoaders,
   ...pollLoaders,

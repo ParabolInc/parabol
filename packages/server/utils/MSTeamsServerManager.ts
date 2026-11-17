@@ -1,6 +1,4 @@
-import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import {postUntrusted} from './fetchUntrusted'
-import logError from './logError'
+import postWebhook from './postWebhook'
 
 // MS Teams is a server-only integration for now, unlike the Slack integration
 
@@ -21,27 +19,13 @@ class MSTeamsServerManager {
   }
 
   async post(payload: string) {
-    const res = await postUntrusted(this.webhookUrl, {
+    return postWebhook('MS Teams', this.webhookUrl, {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json;charset=utf-8'
       },
-      body: payload,
-      signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      body: payload
     })
-    if (!res) {
-      const error = new Error('MS Teams webhook request failed')
-      logError(error)
-      return error
-    }
-    if (res.status < 200 || res.status >= 300) {
-      if (res.headers.get('content-type') === 'application/json') {
-        const {message: error} = await res.json()
-        return new Error(`${res.status}: ${error}`)
-      }
-      return new Error(`${res.status}: ${res.statusText}`)
-    }
-    return res
   }
 }
 

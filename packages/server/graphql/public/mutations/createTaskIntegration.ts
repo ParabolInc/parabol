@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
@@ -25,20 +26,20 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   // AUTH
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
-    return {error: {message: 'Task not found'}}
+    throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {content: rawContentJSON, teamId, userId} = task
   // VALIDATION
   if (task.integration) {
-    return {
-      error: {message: `That task is already linked to ${task.integration.service}`}
-    }
+    throw new GraphQLError(`That task is already linked to ${task.integration.service}`, {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   const definition = getServerIntegration(integrationProviderService)
   const issueCreate = definition?.capabilities.issueCreate
   if (!definition || !issueCreate) {
-    return {error: {message: 'Unknown integration'}}
+    throw new GraphQLError('Unknown integration', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const initManager = (accessUserId: string) =>
     issueCreate.initManager({dataLoader, teamId, userId: accessUserId, context, info})
@@ -58,19 +59,18 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   const teamMember = teamMembers.find(({userId}) => userId === viewerId)
 
   if (!taskIntegrationManager) {
-    return {error: {message: 'No auth exists for a given task!'}}
+    throw new GraphQLError('No auth exists for a given task!', {extensions: {code: 'NOT_FOUND'}})
   }
 
   if (!accessUserId) {
-    return {
-      error: {
-        message: `Neither you nor the assignee has access to ${taskIntegrationManager.title}`
-      }
-    }
+    throw new GraphQLError(
+      `Neither you nor the assignee has access to ${taskIntegrationManager.title}`,
+      {extensions: {code: 'FORBIDDEN'}}
+    )
   }
 
   if (!teamMember) {
-    return {error: {message: 'User is not member of the team'}}
+    throw new GraphQLError('User is not member of the team', {extensions: {code: 'FORBIDDEN'}})
   }
 
   const {preferredName: viewerName} = viewer
@@ -89,7 +89,7 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
   })
 
   if (createTaskResponse instanceof Error) {
-    return {error: {message: createTaskResponse.message}}
+    throw new GraphQLError(createTaskResponse.message, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
 
   const {issueId, ...updateTaskInput} = createTaskResponse

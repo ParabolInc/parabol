@@ -3,6 +3,7 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import type {IntegrationScopingPanel_meeting$key} from '../__generated__/IntegrationScopingPanel_meeting.graphql'
+import {useDebouncedSearch} from '../hooks/useDebouncedSearch'
 import findIntegrationService from '../integrations/platform/findIntegrationService'
 import {getClientIntegration, type TaskClientIntegration} from '../integrations/platform/registry'
 import {EMPTY_SCOPING_SEARCH_STATE} from '../integrations/platform/ScopingSearchState'
@@ -48,6 +49,10 @@ const IntegrationScopingPanel = (props: Props) => {
     meetingRef
   )
   const scoping = getClientIntegration(service).capabilities.scoping
+  const state =
+    meeting.scopingSearchQueries.find((searchQuery) => searchQuery.service === service) ??
+    EMPTY_SCOPING_SEARCH_STATE
+  const {debouncedSearch} = useDebouncedSearch(state.queryString)
   const services = meeting.viewerMeetingMember?.teamMember.services ?? []
   const integrationService = findIntegrationService(services, service)
   const providerId = integrationService?.auth?.providerId
@@ -55,9 +60,7 @@ const IntegrationScopingPanel = (props: Props) => {
   const {id: meetingId, teamId, phases} = meeting
   const {Results} = scoping
   const context = {meetingId, teamId, providerId}
-  const state =
-    meeting.scopingSearchQueries.find((searchQuery) => searchQuery.service === service) ??
-    EMPTY_SCOPING_SEARCH_STATE
+  const searchedState = {...state, queryString: debouncedSearch}
   const savedQueries = integrationService.searchQueries.map(({id, queryString, meta}) => ({
     id,
     queryString,
@@ -74,14 +77,14 @@ const IntegrationScopingPanel = (props: Props) => {
         savedQueries={savedQueries}
       />
       <Suspense fallback={<MockScopingList />}>
-        <Results state={state} context={context}>
+        <Results state={searchedState} context={context}>
           {(results) => (
             <IntegrationScopingResults
               results={results}
               scoping={scoping}
               service={service}
               context={context}
-              state={state}
+              state={searchedState}
               savedQueries={savedQueries}
               estimatePhaseRef={estimatePhase?.useGetUsedServiceTaskIds_phase ?? null}
             />

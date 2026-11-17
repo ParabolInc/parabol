@@ -32,8 +32,9 @@ export default class LocalFileStoreManager extends FileStoreManager {
   async copyFile(oldKey: PartialPath, newKey: PartialPath) {
     const oldFullPath = this.prependPath(oldKey)
     const newFullPath = this.prependPath(newKey)
+    await fs.promises.mkdir(path.dirname(newFullPath), {recursive: true})
     await fs.promises.copyFile(oldFullPath, newFullPath)
-    return makeAppURL(appOrigin, newFullPath)
+    return makeAppURL(appOrigin, `/assets/${newKey}`)
   }
 
   async moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void> {

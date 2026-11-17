@@ -104,7 +104,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   )
   redis.disconnect()
   if (fileMoves.length === 0) return
-  const fileManager = getFileStoreManager()
+  const fileManager = await getFileStoreManager()
 
   const cloneFileAtNewLocation = async (from: PartialPath, to: PartialPath) => {
     console.warn('Attempting to clone duplicate image', {from, to})

@@ -181,7 +181,7 @@ describe('runConfluenceExport', () => {
     mockConfluence.failByTitle.set('Child 7', new ConfluenceApiError(413, 'too big', 'tooLarge'))
 
     const dataLoader = getNewDataLoader('test')
-    await runConfluenceExport(exportId, dataLoader)
+    await runConfluenceExport(exportId, dataLoader, {isTokenScoped: false})
     dataLoader.dispose()
 
     const row = await selectPageExports().where('id', '=', exportId).executeTakeFirstOrThrow()
@@ -221,7 +221,7 @@ describe('runConfluenceExport', () => {
       .returning('id')
       .executeTakeFirstOrThrow()
     const secondLoader = getNewDataLoader('test')
-    await runConfluenceExport(secondExportId, secondLoader)
+    await runConfluenceExport(secondExportId, secondLoader, {isTokenScoped: false})
     secondLoader.dispose()
 
     const second = await selectPageExports()

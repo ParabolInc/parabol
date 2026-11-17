@@ -26,7 +26,7 @@ export const StarterActions = (props: Props) => {
   if (!isEmpty) return null
 
   return (
-    <div className='w-full px-6'>
+    <div data-starter-actions className='w-full px-6'>
       <Button
         variant='outline'
         className='text-fg-secondary text-sm'

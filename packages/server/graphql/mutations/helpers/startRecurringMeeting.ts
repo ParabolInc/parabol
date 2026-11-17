@@ -12,7 +12,7 @@ import logError from '../../../utils/logError'
 import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
-import getActiveStandupTemplateId from './getActiveStandupTemplateId'
+import getValidPromptTemplateId from './getValidPromptTemplateId'
 import isStartMeetingLocked from './isStartMeetingLocked'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import safeCreateRetrospective from './safeCreateRetrospective'
@@ -58,7 +58,11 @@ const startRecurringMeeting = async (
   const meetingName = meetingSeries.title
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
-      const templateId = await getActiveStandupTemplateId(meetingSeries.templateId, dataLoader)
+      const templateId = await getValidPromptTemplateId(
+        meetingSeries.templateId,
+        'teamPrompt',
+        dataLoader
+      )
       const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
         scheduledEndTime,
         meetingSeriesId: meetingSeries.id,
@@ -85,11 +89,11 @@ const startRecurringMeeting = async (
         seriesTemplate?.isActive && seriesTemplate.type === 'retrospective'
           ? seriesTemplate.id
           : null
-      const templateId =
-        seriesTemplateId ??
-        retroLastMeeting?.templateId ??
-        meetingSettings?.selectedTemplateId ??
-        'workingStuckTemplate'
+      const templateId = await getValidPromptTemplateId(
+        seriesTemplateId ?? retroLastMeeting?.templateId ?? meetingSettings?.selectedTemplateId,
+        'retrospective',
+        dataLoader
+      )
       const totalVotes =
         retroLastMeeting?.totalVotes ??
         meetingSettings?.totalVotes ??

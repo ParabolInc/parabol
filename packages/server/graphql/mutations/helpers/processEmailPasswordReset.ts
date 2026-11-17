@@ -49,7 +49,8 @@ const processEmailPasswordReset = async (
   const {subject, body, html} = resetPasswordEmailCreator({
     resetPasswordToken
   })
-  const success = await getMailManager().sendEmail({
+  const mailManager = await getMailManager()
+  const success = await mailManager.sendEmail({
     to: email,
     subject,
     body,

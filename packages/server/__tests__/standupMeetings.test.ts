@@ -359,8 +359,15 @@ test('a template scoped to another org cannot be selected or started', async () 
     cookie: owner.cookie
   })
   const {id: templateId} = created.data.addPromptTemplate.template
-  const selected = await selectTemplate({cookie: attacker.cookie}, attacker.teamId, templateId)
-  expect(selected.error.message).toBe('Template is scoped to organization')
+  const selected = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {teamId: attacker.teamId, selectedTemplateId: templateId},
+    cookie: attacker.cookie
+  })
+  expect(selected.errors?.[0]).toMatchObject({
+    message: 'Template is scoped to organization',
+    extensions: {code: 'FORBIDDEN'}
+  })
   const {meeting} = await startStandup({cookie: attacker.cookie}, attacker.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
@@ -375,6 +382,18 @@ test('startTeamPrompt records the template on a recurring series', async () => {
     .where('id', '=', MeetingSeriesId.split(meetingSeries.id))
     .executeTakeFirstOrThrow()
   expect(series.templateId).toBe(ENTERPRISE_TEMPLATE_ID)
+})
+
+test('a recurring standup started on its first occurrence runs until the next one', async () => {
+  const {teamId, cookie} = await signUp()
+  const {meeting} = await startStandup({cookie}, teamId, immediateRrule())
+  const {scheduledEndTime} = await getKysely()
+    .selectFrom('NewMeeting')
+    .select('scheduledEndTime')
+    .where('id', '=', meeting.id)
+    .executeTakeFirstOrThrow()
+  // the rule recurs weekly, so the next occurrence is a week out
+  expect(scheduledEndTime).toBeAfter(dayjs().add(6, 'day').toDate())
 })
 
 test('a recurring standup inherits the series template and skips an inactive one', async () => {
@@ -1166,8 +1185,15 @@ test('a template downscoped to another team cannot be selected or started', asyn
   })
   expect(downscoped.data.updateTemplateScope.template.scope).toBe('TEAM')
 
-  const selected = await selectTemplate({cookie: outsider.cookie}, outsider.teamId, templateId)
-  expect(selected.error.message).toBe('Template is scoped to team')
+  const selected = await sendPublic({
+    query: SELECT_TEMPLATE,
+    variables: {teamId: outsider.teamId, selectedTemplateId: templateId},
+    cookie: outsider.cookie
+  })
+  expect(selected.errors?.[0]).toMatchObject({
+    message: 'Template is scoped to team',
+    extensions: {code: 'FORBIDDEN'}
+  })
   const {meeting} = await startStandup({cookie: outsider.cookie}, outsider.teamId)
   expect(meeting.template.id).toBe(ENTERPRISE_TEMPLATE_ID)
 })
