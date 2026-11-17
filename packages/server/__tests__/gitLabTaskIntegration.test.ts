@@ -84,10 +84,8 @@ const connectGitLab = async ({userId, teamId, cookie}: Awaited<ReturnType<typeof
     query: `
       mutation AddIntegrationProvider($input: AddIntegrationProviderInput!) {
         addIntegrationProvider(input: $input) {
-          ... on AddIntegrationProviderSuccess {
-            provider {
-              id
-            }
+          provider {
+            id
           }
         }
       }
