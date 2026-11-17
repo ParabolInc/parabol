@@ -70,6 +70,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   const {grant_type, code, redirect_uri, client_id, client_secret, code_verifier, refresh_token} =
     body
+  const requestedResource = body.resource
 
   // SCIM OAuth client credentials
   if (grant_type === 'client_credentials') {
@@ -153,7 +154,11 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     }
     writeTokens(
       res,
-      issueOAuthTokens({...rotated, clientId: provider.clientId, resource: undefined})
+      issueOAuthTokens({
+        ...rotated,
+        clientId: provider.clientId,
+        resource: rotated.resource ?? undefined
+      })
     )
     return
   }
@@ -210,11 +215,16 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   }
 
   const {scopes, userId, resource} = oauthCode
+  if (requestedResource && requestedResource !== resource) {
+    writeJSON(res, '400 Bad Request', {error: 'invalid_target'})
+    return
+  }
   const {grantId, refreshToken} = await upsertOAuthAPIGrant({
     clientId: provider.clientId,
     userId,
     scopes,
-    grantedOrgIds: [provider.orgId]
+    grantedOrgIds: [provider.orgId],
+    resource
   })
   writeTokens(
     res,

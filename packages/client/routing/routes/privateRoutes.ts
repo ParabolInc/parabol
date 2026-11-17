@@ -252,7 +252,8 @@ export const authorizeAppRoute = createRoute({
       scope: searchParams.get('scope'),
       state: searchParams.get('state') ?? '',
       codeChallenge: searchParams.get('code_challenge'),
-      codeChallengeMethod: searchParams.get('code_challenge_method')
+      codeChallengeMethod: searchParams.get('code_challenge_method'),
+      resource: searchParams.get('resource')
     }
     const queryRef = await queryRefs.load<OAuthAuthorizeQuery>(
       oAuthAuthorizeQuery,

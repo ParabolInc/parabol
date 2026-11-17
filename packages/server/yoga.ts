@@ -232,7 +232,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
 
         const isSuperUser = authToken?.rol === 'su'
         const isPAT = headerToken?.startsWith(PAT_PREFIX) ?? false
-        return isSuperUser || isPAT
+        const isOAuthAccessToken = !!getVerifiedAuthToken(headerToken, false, 'action-oauth2')
+        return isSuperUser || isPAT || isOAuthAccessToken
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
