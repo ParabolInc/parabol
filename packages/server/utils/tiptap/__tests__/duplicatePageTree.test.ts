@@ -269,6 +269,26 @@ test('leaves unlinked sub-pages behind as references', async () => {
   expect(backlink).toBeDefined()
 }, 30_000)
 
+test('skips sub-pages the viewer has no access to', async () => {
+  const rootId = await insertPage(null)
+  const hiddenId = await insertPage(rootId)
+  await pg
+    .deleteFrom('PageAccess')
+    .where('pageId', '=', hiddenId)
+    .where('userId', '=', viewerId)
+    .execute()
+  await setDoc(rootId, [heading('A'), pageLink(hiddenId)])
+  await setDoc(hiddenId, [heading('Hidden')])
+  const before = await countViewerPages()
+
+  const copy = await duplicate(rootId)
+
+  expect(await countViewerPages()).toBe(before + 1)
+  expect(await readLinks(copy.id)).toEqual([
+    {pageCode: CipherId.encrypt(hiddenId), canonical: false}
+  ])
+}, 30_000)
+
 test('skips trashed and synced-block descendants', async () => {
   const rootId = await insertPage(null)
   const trashedId = await insertPage(rootId, {isTrashed: true})

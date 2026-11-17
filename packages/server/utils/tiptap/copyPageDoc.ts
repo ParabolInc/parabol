@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
-import {isAssetBlock} from './getPageScopedAssetSrcs'
+import {getAssetAttr} from './getPageScopedAssetSrcs'
 
 export type CopyPageDocRewrite = {
   childCodes: ReadonlyMap<number, number>
@@ -14,18 +14,20 @@ export const copyPageDoc = (sourceState: Uint8Array, rewrite: CopyPageDocRewrite
   Y.applyUpdate(doc, sourceState)
   const fragment = doc.getXmlFragment('default')
   doc.transact(() => {
-    const walker = fragment.createTreeWalker((yxml) => isPageLink(yxml) || isAssetBlock(yxml))
+    const walker = fragment.createTreeWalker((yxml) => isPageLink(yxml) || !!getAssetAttr(yxml))
     for (const node of walker) {
       if (isPageLink(node)) {
         if (node.getAttribute('canonical') !== true) continue
         const copyCode = childCodes.get(Number(node.getAttribute('pageCode')))
         if (copyCode === undefined) node.setAttribute('canonical', false)
         else node.setAttribute('pageCode', copyCode)
-      } else if (isAssetBlock(node)) {
-        const src = node.getAttribute('src')
-        const copySrc = src ? assetSrcs.get(src) : undefined
-        if (copySrc) node.setAttribute('src', copySrc)
+        continue
       }
+      const attr = getAssetAttr(node)
+      if (!attr || !(node instanceof Y.XmlElement)) continue
+      const src = node.getAttribute(attr)
+      const copySrc = typeof src === 'string' ? assetSrcs.get(src) : undefined
+      if (copySrc) node.setAttribute(attr, copySrc)
     }
     if (rootTitle !== undefined) {
       const rootHeading = fragment

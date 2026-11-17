@@ -113,4 +113,18 @@ describe('copyPageDoc', () => {
     const team = 'https://localhost:3000/assets/Team/t1/assets/b.png'
     expect(getPageScopedAssetSrcs(makeDoc([image(mine), image(team)]), 11)).toEqual([mine])
   })
+  test('copies a link card’s hosted thumbnail', () => {
+    const thumbnail = 'https://localhost:3000/assets/Page/11/assets/card.png'
+    const hosted = 'https://localhost:3000/assets/Page/99/assets/card.png'
+    const card: JSONContent = {
+      type: 'embedBlock',
+      attrs: {url: 'https://example.com', thumbnailUrl: thumbnail}
+    }
+    const source = makeDoc([heading('Plan'), card])
+    expect(getPageScopedAssetSrcs(source, 11)).toEqual([thumbnail])
+    const copied = readContent(
+      copyPageDoc(source, {childCodes: new Map(), assetSrcs: new Map([[thumbnail, hosted]])})
+    ).find((node) => node.type === 'embedBlock')
+    expect(copied?.attrs?.thumbnailUrl).toBe(hosted)
+  })
 })

@@ -63,10 +63,13 @@ const mapInFlight = async <T, R>(items: readonly T[], fn: (item: T) => Promise<R
   return results
 }
 
-const selectLevelsToCopy = async (sourcePageId: number) => {
+const selectLevelsToCopy = async (sourcePageId: number, viewerId: string) => {
   const rows = await selectDescendantPages(getKysely(), sourcePageId)
     .selectFrom('descendants')
     .innerJoin('Page', 'Page.id', 'descendants.id')
+    .innerJoin('PageAccess', (join) =>
+      join.onRef('PageAccess.pageId', '=', 'Page.id').on('PageAccess.userId', '=', viewerId)
+    )
     .select([
       'Page.id',
       'Page.parentPageId',
@@ -191,7 +194,7 @@ const announceCopies = async (copiedPages: CopiedPageRow[], mutatorId: string | 
 export const duplicatePageTree = async (params: Params): Promise<Page> => {
   const {viewerId, authToken, dataLoader, sourcePageId, placement, mutatorId} = params
   const maxPages = params.maxPages ?? MAX_DUPLICATE_PAGES
-  const levels = await selectLevelsToCopy(sourcePageId)
+  const levels = await selectLevelsToCopy(sourcePageId, viewerId)
   const sources = levels.flat()
   if (sources.length > maxPages) {
     throw new GraphQLError(
