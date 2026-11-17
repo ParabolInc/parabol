@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import ms from 'ms'
 import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
@@ -20,6 +21,7 @@ import type {AtlassianAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
 import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
+import {redisStoreOrNetwork} from '../utils/redisStoreOrNetwork'
 import type RootDataLoader from './RootDataLoader'
 import settleOrLogRejection from './settleOrLogRejection'
 
@@ -369,10 +371,18 @@ export const atlassianCloudName = (
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({cloudId, teamId, userId}) => {
-          const lookup = await parent.get('atlassianCloudNameLookup').load({teamId, userId})
-          return lookup[cloudId] ?? ''
-        })
+        keys.map(({cloudId, teamId, userId}) =>
+          redisStoreOrNetwork(
+            `atlassian:cloudName:${cloudId}`,
+            async () => {
+              const lookup = await parent.get('atlassianCloudNameLookup').load({teamId, userId})
+              const name = lookup[cloudId]
+              if (!name) throw new Error('Atlassian site is not accessible')
+              return name
+            },
+            ms('1d')
+          )
+        )
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : ''))
     },
