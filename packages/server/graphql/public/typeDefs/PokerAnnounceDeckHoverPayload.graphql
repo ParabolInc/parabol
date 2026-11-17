@@ -1,4 +1,27 @@
 """
-Result of a user hovering over or leaving the voting deck in a Poker meeting
+Broadcast data when a participant hovers over or leaves the voting deck in a Poker meeting
 """
-union PokerAnnounceDeckHoverPayload = ErrorPayload | PokerAnnounceDeckHoverSuccess
+type PokerAnnounceDeckHoverPayload {
+  """
+  The Poker meeting where the hover occurred
+  """
+  meetingId: ID!
+  """
+  The estimate stage where the hover occurred
+  """
+  stageId: ID!
+  """
+  The user who is hovering over the deck
+  """
+  userId: ID!
+  user: User!
+  """
+  True if the user is currently hovering, false if they left
+  """
+  isHover: Boolean!
+
+  """
+  The stage that holds the updated scores
+  """
+  stage: EstimateStage!
+}

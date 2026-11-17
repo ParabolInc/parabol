@@ -171,7 +171,7 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
 
   const data = {meetingId, userId: viewerId}
   if (wasInserted || stagesAdded.includes(true)) {
-    publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingPayload', data, subOptions)
   }
   return data
 }

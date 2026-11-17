@@ -38,7 +38,7 @@ const renameMeeting: MutationResolvers['renameMeeting'] = async (
   IntegrationNotifier.updateMeeting?.(dataLoader, meetingId, teamId).catch(() => {
     // The message may not exist
   })
-  publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingPayload', data, subOptions)
 
   return data
 }

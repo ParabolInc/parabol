@@ -5,7 +5,7 @@ import type {SimpleMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment DragEstimatingTaskMutation_meeting on DragEstimatingTaskSuccess {
+  fragment DragEstimatingTaskMutation_meeting on DragEstimatingTaskPayload {
     meeting {
       phases {
         stages {

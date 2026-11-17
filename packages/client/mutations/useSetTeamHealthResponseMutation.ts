@@ -7,7 +7,7 @@ import {snackOnError} from './handlers/snackOnError'
 // selected by both the mutation payload and MeetingSubscription so the store stays in sync.
 // Relay merges these fields by record id, so no manual updater is needed
 graphql`
-  fragment useSetTeamHealthResponseMutation_meeting on SetTeamHealthResponseSuccess {
+  fragment useSetTeamHealthResponseMutation_meeting on SetTeamHealthResponsePayload {
     meeting {
       id
       respondentCount

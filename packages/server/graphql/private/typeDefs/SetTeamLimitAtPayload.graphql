@@ -1,0 +1,6 @@
+type SetTeamLimitAtPayload {
+  """
+  The updated team
+  """
+  team: Team!
+}

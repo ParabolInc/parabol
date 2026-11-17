@@ -1,4 +1,18 @@
 """
-Return value for joinTeam, which could be an error
+The result of a user successfully joining a team
 """
-union JoinTeamPayload = ErrorPayload | JoinTeamSuccess
+type JoinTeamPayload {
+  """
+  The viewer who just joined the team
+  """
+  viewer: User!
+  """
+  The team that was joined
+  """
+  team: Team!
+
+  """
+  The newly created team member
+  """
+  teamMember: TeamMember!
+}

@@ -2,7 +2,6 @@ import type {SelectTemplatePayloadResolvers} from '../resolverTypes'
 
 export type SelectTemplatePayloadSource = {
   meetingSettingsId?: string
-  error?: {message: string}
 }
 
 const SelectTemplatePayload: SelectTemplatePayloadResolvers = {

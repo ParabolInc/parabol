@@ -5,7 +5,7 @@ import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment EditCommentingMutation_meeting on EditCommentingSuccess {
+  fragment EditCommentingMutation_meeting on EditCommentingPayload {
     discussion {
       commentors {
         id
@@ -20,11 +20,6 @@ const mutation = graphql`
   mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) @raw_response_type {
     editCommenting(isCommenting: $isCommenting, discussionId: $discussionId) {
       ...EditCommentingMutation_meeting @relay(mask: false) @alias
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
     }
   }
 `

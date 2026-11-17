@@ -181,7 +181,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,
-    'AddTeamMemberIntegrationAuthSuccess',
+    'AddTeamMemberIntegrationAuthPayload',
     data,
     subOptions
   )

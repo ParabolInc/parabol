@@ -1,4 +1,14 @@
 """
-Return value for addComment mutation. Returns either an error or the newly created comment along with the meeting it belongs to.
+Successful result of addComment. The comment has been added to the specified discussion thread.
 """
-union AddCommentPayload = ErrorPayload | AddCommentSuccess
+type AddCommentPayload {
+  """
+  The comment that was just created
+  """
+  comment: Comment!
+
+  """
+  The ID of the meeting where the comment was added
+  """
+  meetingId: ID!
+}

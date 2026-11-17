@@ -1,8 +1,7 @@
 """
-Return value for addAgendaItem mutation. On success, contains the newly created agenda item and the updated meeting. On failure, contains a StandardMutationError.
+Return value for addAgendaItem mutation. Contains the newly created agenda item and the updated meeting.
 """
 type AddAgendaItemPayload {
-  error: StandardMutationError
   """
   The newly created agenda item
   """

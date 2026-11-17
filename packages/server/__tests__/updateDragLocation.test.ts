@@ -3,10 +3,8 @@ import {sendPublic, signUp} from './common'
 const START_RETROSPECTIVE = `
   mutation StartRetrospective($teamId: ID!) {
     startRetrospective(teamId: $teamId) {
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -47,7 +45,7 @@ test('a drag location cannot be sent for a team the viewer is not on', async () 
   const res = await updateDragLocation(owner.teamId, meetingId, outsider.cookie)
 
   expect(res).toEqual({
-    data: {updateDragLocation: null},
+    data: null,
     errors: [expect.objectContaining({message: 'Viewer is not on team'})]
   })
 })

@@ -4,7 +4,7 @@ import type {MovePokerTemplateScaleValueMutation as TMovePokerTemplateScaleValue
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment MovePokerTemplateScaleValueMutation_team on MovePokerTemplateScaleValueSuccess {
+  fragment MovePokerTemplateScaleValueMutation_team on MovePokerTemplateScaleValuePayload {
     scale {
       ...TemplateScaleValueList_scale
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation MovePokerTemplateScaleValueMutation($scaleId: ID!, $label: String!, $index: Int!) {
     movePokerTemplateScaleValue(scaleId: $scaleId, label: $label, index: $index) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...MovePokerTemplateScaleValueMutation_team @relay(mask: false) @alias
     }
   }

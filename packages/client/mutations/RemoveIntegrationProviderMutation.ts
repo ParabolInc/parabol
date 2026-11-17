@@ -4,7 +4,7 @@ import type {RemoveIntegrationProviderMutation as TRemoveIntegrationProviderMuta
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RemoveIntegrationProviderMutation_organization on RemoveIntegrationProviderSuccess {
+  fragment RemoveIntegrationProviderMutation_organization on RemoveIntegrationProviderPayload {
     teamMemberIntegrations {
       ...MattermostProviderRowTeamMemberIntegrations @relay(mask: false)
       ...MSTeamsProviderRowTeamMemberIntegrations @relay(mask: false)
@@ -19,11 +19,6 @@ const mutation = graphql`
   mutation RemoveIntegrationProviderMutation($providerId: ID!) {
     removeIntegrationProvider(providerId: $providerId) {
       ...RemoveIntegrationProviderMutation_organization @alias
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
     }
   }
 `

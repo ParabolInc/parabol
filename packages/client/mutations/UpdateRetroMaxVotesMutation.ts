@@ -4,7 +4,7 @@ import type {UpdateRetroMaxVotesMutation as TUpdateRetroMaxVotesMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateRetroMaxVotesMutation_meeting on UpdateRetroMaxVotesSuccess {
+  fragment UpdateRetroMaxVotesMutation_meeting on UpdateRetroMaxVotesPayload {
     meeting {
       totalVotes
       maxVotesPerGroup
@@ -27,11 +27,6 @@ const mutation = graphql`
       totalVotes: $totalVotes
       maxVotesPerGroup: $maxVotesPerGroup
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false) @alias
     }
   }

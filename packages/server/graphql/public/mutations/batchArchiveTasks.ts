@@ -54,7 +54,7 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
     publish(
       SubscriptionChannel.TEAM,
       teamId,
-      'BatchArchiveTasksSuccess',
+      'BatchArchiveTasksPayload',
       {archivedTaskIds},
       subOptions
     )

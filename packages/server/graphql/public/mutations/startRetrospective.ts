@@ -97,7 +97,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       meetingSeriesId: meetingSeries.id,
       hasGcalError: !!gcalError?.message
     }
-    publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectivePayload', data, subOptions)
     return data
   }
 
@@ -168,7 +168,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     hasGcalError: !!error?.message
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectivePayload', data, subOptions)
   return data
 }
 

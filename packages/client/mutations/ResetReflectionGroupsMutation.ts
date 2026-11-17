@@ -4,7 +4,7 @@ import type {ResetReflectionGroupsMutation as TResetReflectionGroupsMutation} fr
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {
+  fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsPayload {
     meeting {
       id
       ...GroupingKanban_meeting
@@ -31,11 +31,6 @@ graphql`
 const mutation = graphql`
   mutation ResetReflectionGroupsMutation($meetingId: ID!) {
     resetReflectionGroups(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ResetReflectionGroupsMutation_meeting @relay(mask: false) @alias
     }
   }

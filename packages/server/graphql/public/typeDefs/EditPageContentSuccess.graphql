@@ -1,7 +1,0 @@
-"""
-Return value for editPageContent mutation
-"""
-type EditPageContentSuccess {
-  "The updated page"
-  page: Page!
-}

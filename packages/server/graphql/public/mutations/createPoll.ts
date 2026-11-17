@@ -95,7 +95,7 @@ const createPoll: MutationResolvers['createPoll'] = async (
   const {pollId} = insertPollResult[0]!
 
   const data = {pollId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollPayload', data, subOptions)
   return data
 }
 

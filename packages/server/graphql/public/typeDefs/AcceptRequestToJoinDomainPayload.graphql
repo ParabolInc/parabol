@@ -1,4 +1,9 @@
 """
-Return value for acceptRequestToJoinDomain mutation. Returns either an error or the updated viewer after a pending domain-join request has been approved by an org admin.
+Successful result of acceptRequestToJoinDomain. The requesting user has been added to the organization that owns the verified email domain.
 """
-union AcceptRequestToJoinDomainPayload = ErrorPayload | AcceptRequestToJoinDomainSuccess
+type AcceptRequestToJoinDomainPayload {
+  """
+  The current authenticated user, now a member of the organization that accepted their domain-join request
+  """
+  viewer: User!
+}

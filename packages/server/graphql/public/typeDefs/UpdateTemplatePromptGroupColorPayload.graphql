@@ -1,0 +1,9 @@
+"""
+Returned when updateTemplatePromptGroupColor succeeds
+"""
+type UpdateTemplatePromptGroupColorPayload {
+  """
+  The prompt with its new group color
+  """
+  prompt: TemplatePrompt!
+}

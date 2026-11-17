@@ -4,7 +4,7 @@ import type {UpdateCommentContentMutation as TUpdateCommentContentMutation} from
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateCommentContentMutation_meeting on UpdateCommentContentSuccess {
+  fragment UpdateCommentContentMutation_meeting on UpdateCommentContentPayload {
     comment {
       id
       content
@@ -16,11 +16,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID!) @raw_response_type {
     updateCommentContent(commentId: $commentId, content: $content, meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateCommentContentMutation_meeting @relay(mask: false) @alias
     }
   }

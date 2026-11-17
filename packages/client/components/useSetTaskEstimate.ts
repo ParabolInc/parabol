@@ -46,21 +46,17 @@ const useSetTaskEstimate = () => {
           return
         }
       }
-      const {setTaskEstimate} = res
-      const {error} = setTaskEstimate
-      if (!error) {
-        // Check if exportCount exceeds limit (soft prompt)
-        const exportCount = setTaskEstimate.SetTaskEstimateMutation_meeting?.exportCount ?? 0
-        if (
-          exportCount > MAX_FREE_JIRA_EXPORTS &&
-          !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
-        ) {
-          setUpgradeExportCount(exportCount)
-          setIsHardBlock(false)
-          setShowUpgradeModal(true)
-        }
-        onSuccess && onSuccess()
+      // Check if exportCount exceeds limit (soft prompt)
+      const exportCount = res.setTaskEstimate.SetTaskEstimateMutation_meeting.exportCount
+      if (
+        exportCount > MAX_FREE_JIRA_EXPORTS &&
+        !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
+      ) {
+        setUpgradeExportCount(exportCount)
+        setIsHardBlock(false)
+        setShowUpgradeModal(true)
       }
+      onSuccess && onSuccess()
     }
 
     const handleError = (error: Error) => {

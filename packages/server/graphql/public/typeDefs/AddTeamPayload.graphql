@@ -3,11 +3,6 @@ Return payload for the addTeam mutation. Returned when a user creates a new team
 """
 type AddTeamPayload {
   """
-  Non-null if the mutation failed. Contains an error name and message describing what went wrong.
-  """
-  error: StandardMutationError
-
-  """
   The newly created team.
   """
   team: Team

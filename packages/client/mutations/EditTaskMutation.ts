@@ -24,9 +24,6 @@ graphql`
 const mutation = graphql`
   mutation EditTaskMutation($taskId: ID!, $isEditing: Boolean!) @raw_response_type {
     editTask(taskId: $taskId, isEditing: $isEditing) {
-      error {
-        message
-      }
       ...EditTaskMutation_task @relay(mask: false)
     }
   }

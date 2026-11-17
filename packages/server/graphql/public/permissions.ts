@@ -95,6 +95,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
+    signUsageReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.signUsageReport'>('args.orgId')),
+      rateLimit({perMinute: 5, perHour: 30})
+    ),
     addOrg: and(
       hasUnrestrictedGrant,
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),

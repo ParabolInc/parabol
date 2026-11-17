@@ -201,7 +201,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   const data = {templateId, teamId, clonedTemplateId, meetingType: template.type as MeetingTypeEnum}
 
   // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopePayload', data, subOptions)
   return data
 }
 

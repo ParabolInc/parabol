@@ -1,4 +1,9 @@
 """
-Return object for UpdateRetroMaxVotesPayload
+Success result for updateRetroMaxVotes mutation
 """
-union UpdateRetroMaxVotesPayload = ErrorPayload | UpdateRetroMaxVotesSuccess
+type UpdateRetroMaxVotesPayload {
+  """
+  The meeting with the updated max votes
+  """
+  meeting: RetrospectiveMeeting!
+}

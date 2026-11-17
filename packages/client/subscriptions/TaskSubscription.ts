@@ -29,7 +29,7 @@ const subscription = graphql`
       EditTaskPayload {
         ...EditTaskMutation_task @relay(mask: false)
       }
-      RemoveOrgUsersSuccess {
+      RemoveOrgUsersPayload {
         ...RemoveOrgUsersMutation_task @relay(mask: false)
       }
       UpdateTaskPayload {
@@ -51,7 +51,7 @@ const updateHandlers = {
   CreateTaskPayload: createTaskTaskUpdater,
   DeleteTaskPayload: deleteTaskTaskUpdater,
   EditTaskPayload: editTaskTaskUpdater,
-  RemoveOrgUsersSuccess: removeOrgUsersTaskUpdater,
+  RemoveOrgUsersPayload: removeOrgUsersTaskUpdater,
   UpdateTaskPayload: updateTaskTaskUpdater
 } as const
 

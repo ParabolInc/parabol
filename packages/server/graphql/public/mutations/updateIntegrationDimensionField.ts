@@ -66,7 +66,7 @@ const updateIntegrationDimensionField: MutationResolvers['updateIntegrationDimen
     publish(
       SubscriptionChannel.TEAM,
       teamId,
-      'UpdateIntegrationDimensionFieldSuccess',
+      'UpdateIntegrationDimensionFieldPayload',
       data,
       subOptions
     )

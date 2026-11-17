@@ -4,7 +4,7 @@ import type {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddTranscriptionBotMutation_meeting on AddTranscriptionBotSuccess {
+  fragment AddTranscriptionBotMutation_meeting on AddTranscriptionBotPayload {
     meeting {
       videoMeetingURL
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation AddTranscriptionBotMutation($meetingId: ID!, $videoMeetingURL: String!) {
     addTranscriptionBot(meetingId: $meetingId, videoMeetingURL: $videoMeetingURL) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddTranscriptionBotMutation_meeting @relay(mask: false) @alias
     }
   }

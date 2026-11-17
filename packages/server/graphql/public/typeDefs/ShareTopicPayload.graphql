@@ -1,4 +1,7 @@
 """
-Return value for shareTopic, which could be an error
+Success result for shareTopic mutation
 """
-union ShareTopicPayload = ErrorPayload | ShareTopicSuccess
+type ShareTopicPayload {
+  "The meeting containing the shared topic"
+  meeting: NewMeeting
+}

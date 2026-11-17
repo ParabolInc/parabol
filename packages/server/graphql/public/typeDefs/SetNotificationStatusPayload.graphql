@@ -2,8 +2,6 @@
 Return value for setNotificationStatus mutation
 """
 type SetNotificationStatusPayload {
-  error: StandardMutationError
-
   """
   The updated notification
   """

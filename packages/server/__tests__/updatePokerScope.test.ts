@@ -3,9 +3,7 @@ import {sendPublic, signUp} from './common'
 const START_SPRINT_POKER = `
   mutation StartSprintPoker($teamId: ID!) {
     startSprintPoker(teamId: $teamId) {
-      ... on StartSprintPokerSuccess {
-        meetingId
-      }
+      meetingId
     }
   }
 `

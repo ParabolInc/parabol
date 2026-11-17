@@ -4,7 +4,7 @@ import type {RenameMeetingMutation as TRenameMeetingMutation} from '../__generat
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RenameMeetingMutation_team on RenameMeetingSuccess {
+  fragment RenameMeetingMutation_team on RenameMeetingPayload {
     meeting {
       name
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RenameMeetingMutation($name: String!, $meetingId: ID!) {
     renameMeeting(name: $name, meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...RenameMeetingMutation_team @relay(mask: false) @alias
     }
   }

@@ -1,0 +1,7 @@
+"""
+Success result for toggleFavoriteTemplate mutation
+"""
+type ToggleFavoriteTemplatePayload {
+  "The user whose favorite templates were updated"
+  user: User!
+}

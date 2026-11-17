@@ -5,7 +5,7 @@ import {useMutation} from 'react-relay'
 import {useCurrentChannel} from './useCurrentChannel'
 
 graphql`
-  fragment useLinkTeam_success on LinkMattermostChannelSuccess {
+  fragment useLinkTeam_success on LinkMattermostChannelPayload {
     teamId
     linkedChannels
   }
@@ -17,11 +17,6 @@ export const useLinkTeam = () => {
   const [mutation, isLoading] = useMutation<useLinkTeamMutation>(graphql`
     mutation useLinkTeamMutation($teamId: ID!, $channelId: ID!) {
       linkMattermostChannel(teamId: $teamId, channelId: $channelId) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
         ...useLinkTeam_success @alias
       }
     }
@@ -55,9 +50,6 @@ export const useLinkTeam = () => {
               ?.setValue(linkedChannels, 'linkedChannels')
           },
           onCompleted: (data) => {
-            if (data.linkMattermostChannel?.error) {
-              reject(data.linkMattermostChannel.error.message)
-            }
             resolve(data)
           },
           onError: (error) => reject(error)

@@ -1,6 +1,0 @@
-type RateReportQuestionSuccess {
-  """
-  The question with its new rating
-  """
-  reportQuestion: ReportQuestion!
-}

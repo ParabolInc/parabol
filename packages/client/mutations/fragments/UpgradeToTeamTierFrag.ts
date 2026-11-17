@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 
 graphql`
-  fragment UpgradeToTeamTierFrag_organization on UpgradeToTeamTierSuccess {
+  fragment UpgradeToTeamTierFrag_organization on UpgradeToTeamTierPayload {
     organization {
       ...BillingLeaders_organization
       creditCard {

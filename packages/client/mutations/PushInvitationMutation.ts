@@ -25,10 +25,7 @@ graphql`
 const mutation = graphql`
   mutation PushInvitationMutation($teamId: ID!, $meetingId: ID) {
     pushInvitation(teamId: $teamId, meetingId: $meetingId) {
-      error {
-        message
-        title
-      }
+      meetingId
     }
   }
 `

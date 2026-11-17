@@ -11,7 +11,7 @@ interface Context {
 }
 
 graphql`
-  fragment MoveTemplatePromptMutation_team on MoveTemplatePromptSuccess {
+  fragment MoveTemplatePromptMutation_team on MoveTemplatePromptPayload {
     prompt {
       sortOrder
       templateId

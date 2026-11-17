@@ -98,7 +98,7 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   ])
   meeting.summaryPageId = page.id
   const data = {meetingId, teamId, isKill, removedTaskIds}
-  publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerPayload', data, subOptions)
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
   meetingsEnded.inc({meeting_type: meeting.meetingType})

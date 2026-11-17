@@ -1,5 +1,22 @@
 """
-The result of reordering a task within the estimate phase of a Poker meeting.
-Returns an error if the meeting is not found, has already ended, or the requested position is out of range.
+Returned when a task is successfully reordered in the estimating sidebar of a Poker meeting.
+Contains the affected meeting and the full ordered list of estimate stages after the drag.
 """
-union DragEstimatingTaskPayload = ErrorPayload | DragEstimatingTaskSuccess
+type DragEstimatingTaskPayload {
+  """
+  The ID of the Poker meeting in which the task was reordered
+  """
+  meetingId: ID!
+  """
+  The Poker meeting in which the task was reordered
+  """
+  meeting: PokerMeeting!
+  """
+  The ordered IDs of all estimate stages in the meeting after the reorder
+  """
+  stageIds: [ID!]!
+  """
+  The ordered list of all estimate stages in the meeting after the reorder
+  """
+  stages: [EstimateStage!]!
+}

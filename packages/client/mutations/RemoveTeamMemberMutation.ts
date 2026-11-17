@@ -93,9 +93,6 @@ graphql`
 const mutation = graphql`
   mutation RemoveTeamMemberMutation($teamId: ID!, $userId: ID!) {
     removeTeamMember(teamId: $teamId, userId: $userId) {
-      error {
-        message
-      }
       ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
     }

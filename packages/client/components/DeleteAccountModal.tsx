@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {DeleteAccountModal_viewer$key} from '../__generated__/DeleteAccountModal_viewer.graphql'
+import {snackOnError} from '../mutations/handlers/snackOnError'
 import useDeleteUserMutation from '../mutations/useDeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
@@ -11,6 +12,7 @@ import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import getMutationError from '../utils/relay/getMutationError'
 import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
 import BasicTextArea from './InputField/BasicTextArea'
 
@@ -41,11 +43,14 @@ const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
     if (submitting) return
     deleteUser({
       variables: {userId: atmosphere.viewerId, reason: validReason},
-      onCompleted: (res) => {
-        if (res.deleteUser.error?.message?.includes('re-authenticate')) {
+      onCompleted: () => {
+        window.location.href = ExternalLinks.RESOURCES
+      },
+      onError: (error) => {
+        if (getMutationError(error).code === 'UNAUTHENTICATED') {
           setStep('reauth')
         } else {
-          window.location.href = ExternalLinks.RESOURCES
+          snackOnError(atmosphere)(error)
         }
       }
     })

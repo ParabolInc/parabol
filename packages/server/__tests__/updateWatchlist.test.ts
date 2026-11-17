@@ -3,15 +3,7 @@ import {sendIntranet, signUp} from './common'
 const UPDATE_WATCHLIST = `
   mutation UpdateWatchlist($emails: [String!], $domain: String, $includeInWatchlist: Boolean!) {
     updateWatchlist(emails: $emails, domain: $domain, includeInWatchlist: $includeInWatchlist) {
-      ... on ErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-      ... on UpdateWatchlistSuccess {
-        success
-      }
+      success
     }
   }
 `

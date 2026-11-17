@@ -438,7 +438,7 @@ type Mutation {
     The Stripe coupon ID (e.g. "50PCT_6MO"). Must exist and be valid in Stripe.
     """
     couponId: ID!
-  ): AddOrgCouponSuccess!
+  ): AddOrgCouponPayload!
 
   """
   Starts a free trial for the org iff the org is on a free tier.
@@ -551,7 +551,7 @@ type Mutation {
     The cluster to move the items into. If null, a new cluster will be created.
     """
     targetClusterId: ID
-  ): ReassignToCompanyClusterSuccess!
+  ): ReassignToCompanyClusterPayload!
 
   """
   Set the maxTeamTrialExpiresAt on a team. Must be between now and 60 days in the future.
@@ -566,5 +566,5 @@ type Mutation {
     The new trial expiry date/time. Must be in the future and no more than 60 days out.
     """
     maxTeamLimitAt: DateTime!
-  ): SetTeamLimitAtSuccess!
+  ): SetTeamLimitAtPayload!
 }

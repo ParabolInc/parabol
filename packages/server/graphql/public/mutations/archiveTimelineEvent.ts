@@ -64,7 +64,7 @@ const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
       publish(
         SubscriptionChannel.NOTIFICATION,
         userId,
-        'ArchiveTimelineEventSuccess',
+        'ArchiveTimelineEventPayload',
         {timelineEventId},
         subOptions
       )

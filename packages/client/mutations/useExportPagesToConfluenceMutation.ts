@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useExportPagesToConfluenceMutation_notification on ExportPagesToConfluenceSuccess {
+  fragment useExportPagesToConfluenceMutation_notification on ExportPagesToConfluencePayload {
     pageExport {
       ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
     }

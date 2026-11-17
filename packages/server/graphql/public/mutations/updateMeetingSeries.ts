@@ -42,7 +42,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
 
   const data = {meetingSeriesId: numericId}
   for (const seriesTeamId of seriesTeamIds) {
-    publish(SubscriptionChannel.TEAM, seriesTeamId, 'UpdateMeetingSeriesSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, seriesTeamId, 'UpdateMeetingSeriesPayload', data, subOptions)
   }
   return data
 }

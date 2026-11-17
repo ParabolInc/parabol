@@ -23,7 +23,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   }
 
   await hardDeleteUserHelper(user, dataLoader)
-  return {}
+  return {user}
 }
 
 export default hardDeleteUser

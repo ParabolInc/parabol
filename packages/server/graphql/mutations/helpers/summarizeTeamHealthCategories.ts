@@ -48,7 +48,7 @@ const publishFresh = (
 }
 
 const publishSummary = (meetingId: string, categoryId: number) => {
-  publishFresh(meetingId, 'TeamHealthCategorySummarySuccess', {meetingId, categoryId})
+  publishFresh(meetingId, 'TeamHealthCategorySummaryPayload', {meetingId, categoryId})
 }
 
 const addConversationStarter = async (
@@ -69,7 +69,7 @@ const addConversationStarter = async (
     threadSortOrder
   )
   await getKysely().insertInto('Comment').values(comment).execute()
-  publishFresh(meetingId, 'AddCommentSuccess', {commentId: comment.id, meetingId})
+  publishFresh(meetingId, 'AddCommentPayload', {commentId: comment.id, meetingId})
 }
 
 const logSummaryError = (meetingId: string, e: unknown) => {

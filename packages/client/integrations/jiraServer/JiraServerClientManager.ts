@@ -29,8 +29,8 @@ class JiraServerClientManager {
 
     const onUrlCompleted = (result: TCreateOAuth1AuthorizeUrlMutation['response']) => {
       if (popup) {
-        if (!result.createOAuth1AuthorizeUrl?.url) {
-          onError(result.createOAuth1AuthorizeUrl?.error)
+        if (!result.createOAuth1AuthorizeUrl.url) {
+          onError(new Error('Unable to start the Jira Server authorization'))
           popup.close()
           return
         }

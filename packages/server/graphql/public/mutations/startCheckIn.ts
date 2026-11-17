@@ -91,7 +91,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     dataLoader
   })
   const data = {teamId, meetingId, hasGcalError: !!error?.message}
-  publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInPayload', data, subOptions)
   return data
 }
 

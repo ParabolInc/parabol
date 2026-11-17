@@ -18,7 +18,7 @@ import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`
-  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
+  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopePayload {
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template
@@ -39,11 +39,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }

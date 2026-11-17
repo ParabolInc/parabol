@@ -7,7 +7,7 @@ import type {SharedUpdater} from '../types/relayMutations'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useGenerateSuggestedGroupsMutation_meeting on SuggestedGroupsSuccess {
+  fragment useGenerateSuggestedGroupsMutation_meeting on SuggestedGroupsPayload {
     isUserInitiated
     meeting {
       id

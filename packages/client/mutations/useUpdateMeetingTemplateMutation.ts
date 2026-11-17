@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import GraphQLServerError from '../utils/relay/GraphQLServerError'
 
 graphql`
-  fragment useUpdateMeetingTemplateMutation_meeting on UpdateMeetingTemplateSuccess {
+  fragment useUpdateMeetingTemplateMutation_meeting on UpdateMeetingTemplatePayload {
     meeting {
       ... on RetrospectiveMeeting {
         id

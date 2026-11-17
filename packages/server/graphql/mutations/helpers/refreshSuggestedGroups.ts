@@ -84,7 +84,7 @@ const refreshSuggestedGroups = async (meetingId: string) => {
       publish(
         SubscriptionChannel.MEETING,
         meetingId,
-        'SuggestedGroupsSuccess',
+        'SuggestedGroupsPayload',
         {meetingId, isUserInitiated: false},
         {operationId}
       )

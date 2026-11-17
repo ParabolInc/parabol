@@ -1,9 +1,0 @@
-"""
-Successful result of acceptRequestToJoinDomain. The requesting user has been added to the organization that owns the verified email domain.
-"""
-type AcceptRequestToJoinDomainSuccess {
-  """
-  The current authenticated user, now a member of the organization that accepted their domain-join request
-  """
-  viewer: User!
-}

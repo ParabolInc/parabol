@@ -24,9 +24,6 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     query: `
       mutation AddTeam($newTeam: NewTeamInput!) {
         addTeam(newTeam: $newTeam) {
-          error {
-            message
-          }
           team {
             id
           }
@@ -36,7 +33,7 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     variables: {newTeam: {name: 'Public team', orgId: owner.orgId, isPublic: true}},
     cookie: owner.cookie
   })
-  expect(publicTeam.data.addTeam.error).toBeNull()
+  expect(publicTeam.errors).toBeUndefined()
   const publicTeamId = publicTeam.data.addTeam.team.id
 
   const invited = await sendPublic({
@@ -63,8 +60,8 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
         }
       }
@@ -72,22 +69,15 @@ test('Joining a public team over HTTP sets a cookie that is on the team', async 
     variables: {invitationToken: invitation.token},
     cookie: joiner.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.error).toBeNull()
+  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
   const orgMemberCookie = toCookieHeader(accepted.cookie)
 
   const joined = await sendPublic({
     query: `
       mutation JoinTeam($teamId: ID!) {
         joinTeam(teamId: $teamId) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on JoinTeamSuccess {
-            team {
-              id
-            }
+          team {
+            id
           }
         }
       }

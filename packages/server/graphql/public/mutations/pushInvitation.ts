@@ -69,7 +69,7 @@ const pushInvitation: MutationResolvers['pushInvitation'] = async (
 
   const data = {userId: viewerId, teamId, meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'PushInvitationPayload', data, subOptions)
-  return null
+  return data
 }
 
 export default pushInvitation

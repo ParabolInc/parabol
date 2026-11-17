@@ -7,7 +7,7 @@ import type {
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingSuccess {
+  fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingPayload {
     teamNotificationSettings {
       id
       events
@@ -22,11 +22,6 @@ const mutation = graphql`
     $isEnabled: Boolean!
   ) {
     setTeamNotificationSetting(id: $id, event: $event, isEnabled: $isEnabled) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTeamNotificationSettingMutation_settings @relay(mask: false) @alias
     }
   }

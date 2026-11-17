@@ -4,7 +4,7 @@ import type {StartRetrospectiveMutation as TStartRetrospectiveMutation} from '..
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {
+  fragment StartRetrospectiveMutation_team on StartRetrospectivePayload {
     meeting {
       id
     }
@@ -42,17 +42,10 @@ const mutation = graphql`
       gcalInput: $gcalInput
       ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartRetrospectiveMutation_team @relay(mask: false) @alias

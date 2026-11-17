@@ -11,7 +11,7 @@ import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment DeleteCommentMutation_meeting on DeleteCommentSuccess {
+  fragment DeleteCommentMutation_meeting on DeleteCommentPayload {
     comment {
       id
       isActive
@@ -25,11 +25,6 @@ graphql`
 const mutation = graphql`
   mutation DeleteCommentMutation($commentId: ID!, $meetingId: ID!) @raw_response_type {
     deleteComment(commentId: $commentId, meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...DeleteCommentMutation_meeting @relay(mask: false) @alias
     }
   }

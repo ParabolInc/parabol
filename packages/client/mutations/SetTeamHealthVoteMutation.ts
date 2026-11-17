@@ -4,7 +4,7 @@ import type {SetTeamHealthVoteMutation as TSetTeamHealthVoteMutation} from '../_
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetTeamHealthVoteMutation_meeting on SetTeamHealthVoteSuccess {
+  fragment SetTeamHealthVoteMutation_meeting on SetTeamHealthVotePayload {
     stage {
       id
       labels
@@ -18,11 +18,6 @@ graphql`
 const mutation = graphql`
   mutation SetTeamHealthVoteMutation($meetingId: ID!, $stageId: ID!, $label: String!) {
     setTeamHealthVote(meetingId: $meetingId, stageId: $stageId, label: $label) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTeamHealthVoteMutation_meeting @relay(mask: false) @alias
     }
   }

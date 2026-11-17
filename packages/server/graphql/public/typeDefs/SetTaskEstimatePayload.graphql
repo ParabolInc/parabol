@@ -1,4 +1,17 @@
 """
-Return object for SetTaskEstimatePayload
+Success result for setTaskEstimate mutation
 """
-union SetTaskEstimatePayload = ErrorPayload | SetTaskEstimateSuccess
+type SetTaskEstimatePayload {
+  "The task with the updated estimate"
+  task: Task!
+
+  """
+  The stage that holds the updated finalScore, if meetingId was provided
+  """
+  stage: EstimateStage
+
+  """
+  The number of Jira exports for this cloudId. 0 for non-Jira integrations.
+  """
+  exportCount: Int!
+}

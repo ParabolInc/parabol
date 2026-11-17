@@ -18,9 +18,6 @@ graphql`
 const mutation = graphql`
   mutation AddSlackAuthMutation($code: ID!, $teamId: ID!) {
     addSlackAuth(code: $code, teamId: $teamId) {
-      error {
-        message
-      }
       ...AddSlackAuthMutation_team @relay(mask: false)
     }
   }

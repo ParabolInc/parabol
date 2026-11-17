@@ -4,7 +4,7 @@ import type {ToggleFavoriteTemplateMutation as TToggleFavoriteTemplateMutation} 
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleFavoriteTemplateMutation_viewer on ToggleFavoriteTemplateSuccess {
+  fragment ToggleFavoriteTemplateMutation_viewer on ToggleFavoriteTemplatePayload {
     user {
       id
       ...ActivityCardFavorite_user

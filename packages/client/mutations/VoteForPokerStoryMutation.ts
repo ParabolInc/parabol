@@ -5,7 +5,7 @@ import type {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
-  fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
+  fragment VoteForPokerStoryMutation_meeting on VoteForPokerStoryPayload {
     stage {
       scores {
         ...PokerVotingRow_scores
@@ -19,11 +19,6 @@ graphql`
 const mutation = graphql`
   mutation VoteForPokerStoryMutation($meetingId: ID!, $stageId: ID!, $score: String) {
     voteForPokerStory(meetingId: $meetingId, stageId: $stageId, score: $score) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...VoteForPokerStoryMutation_meeting @relay(mask: false) @alias
     }
   }

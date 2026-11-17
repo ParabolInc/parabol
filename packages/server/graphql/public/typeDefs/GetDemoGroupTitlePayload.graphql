@@ -1,4 +1,9 @@
 """
-Return value for getDemoGroupTitle, which could be an error
+The AI-generated title for a demo reflection group
 """
-union GetDemoGroupTitlePayload = ErrorPayload | GetDemoGroupTitleSuccess
+type GetDemoGroupTitlePayload {
+  """
+  The suggested title for the reflection group
+  """
+  title: String!
+}

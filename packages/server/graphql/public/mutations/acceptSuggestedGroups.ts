@@ -42,7 +42,7 @@ const acceptSuggestedGroups: MutationResolvers['acceptSuggestedGroups'] = async 
     }
     const data = {meetingId, acceptedCount}
     const operationId = dataLoader.share()
-    publish(SubscriptionChannel.MEETING, meetingId, 'AcceptSuggestedGroupsSuccess', data, {
+    publish(SubscriptionChannel.MEETING, meetingId, 'AcceptSuggestedGroupsPayload', data, {
       operationId,
       mutatorId
     })

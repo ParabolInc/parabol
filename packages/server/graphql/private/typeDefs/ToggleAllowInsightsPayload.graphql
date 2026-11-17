@@ -1,4 +1,6 @@
-"""
-Return value for toggleAllowInsights, which could be an error
-"""
-union ToggleAllowInsightsPayload = ErrorPayload | ToggleAllowInsightsSuccess
+type ToggleAllowInsightsPayload {
+  """
+  How many records were updated
+  """
+  organizationUsersAffected: Int!
+}

@@ -7,12 +7,7 @@ import {sendPublic, signUp} from './common'
 const UPDATE_RECURRENCE_SETTINGS = `
   mutation UpdateRecurrenceSettings($meetingId: ID!, $name: String, $rrule: RRule) {
     updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
-      ... on ErrorPayload {
-        error { message }
-      }
-      ... on UpdateRecurrenceSettingsSuccess {
-        meeting { id }
-      }
+      meeting { id }
     }
   }
 `
@@ -70,7 +65,7 @@ test('updateRecurrenceSettings updates the rrule of an active (non-cancelled) Me
     cookie
   })
 
-  expect(res.data.updateRecurrenceSettings.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')

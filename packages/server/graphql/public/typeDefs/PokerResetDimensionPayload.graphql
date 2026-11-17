@@ -1,4 +1,9 @@
 """
-Result of resetting votes for a Poker dimension so voting can restart
+Successfully reset votes for a Poker dimension
 """
-union PokerResetDimensionPayload = ErrorPayload | PokerResetDimensionSuccess
+type PokerResetDimensionPayload {
+  """
+  The stage that holds the updated isVoting step
+  """
+  stage: EstimateStage!
+}

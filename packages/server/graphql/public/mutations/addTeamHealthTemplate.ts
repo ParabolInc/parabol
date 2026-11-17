@@ -35,7 +35,7 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
     })
     await pg.insertInto('MeetingTemplate').values(newTemplate).execute()
     const data = {templateId: newTemplate.id}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplatePayload', data, subOptions)
     return data
   }
   const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
@@ -94,7 +94,7 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   }
 
   const data = {templateId: newTemplate.id}
-  publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplateSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'AddTeamHealthTemplatePayload', data, subOptions)
   return data
 }
 

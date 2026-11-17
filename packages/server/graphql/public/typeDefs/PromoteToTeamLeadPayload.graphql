@@ -2,7 +2,6 @@
 Result of transferring team lead status to another team member
 """
 type PromoteToTeamLeadPayload {
-  error: StandardMutationError
   team: Team
   """
   The team member who was previously the team lead

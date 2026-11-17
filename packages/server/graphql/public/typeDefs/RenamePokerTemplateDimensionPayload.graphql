@@ -2,6 +2,5 @@
 Result of renaming a dimension in a Poker template
 """
 type RenamePokerTemplateDimensionPayload {
-  error: StandardMutationError
   dimension: TemplateDimension
 }

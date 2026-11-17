@@ -32,7 +32,7 @@ const removeTemplatePrompt: MutationResolvers['removeTemplatePrompt'] = async (
     .execute()
   dataLoader.clearAll('templatePrompts')
   const data = {promptId}
-  publish(SubscriptionChannel.TEAM, teamId, 'RemoveTemplatePromptSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'RemoveTemplatePromptPayload', data, subOptions)
   return data
 }
 

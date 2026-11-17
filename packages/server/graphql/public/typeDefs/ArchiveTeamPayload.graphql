@@ -5,11 +5,8 @@ the IDs of any homepage suggested-action cards that were removed, and the IDs of
 templates owned by the team so clients can remove them from local caches.
 """
 type ArchiveTeamPayload {
-  error: StandardMutationError
-
   """
   The team that was archived (or deleted). Inspect team.isArchived to distinguish the two cases.
-  Null when the operation fails.
   """
   team: Team
 

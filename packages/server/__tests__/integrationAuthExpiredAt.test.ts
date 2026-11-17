@@ -19,11 +19,7 @@ const SERVICES_QUERY = `
 const REMOVE_AUTH = `
   mutation RemoveAuth($teamId: ID!) {
     removeTeamMemberIntegrationAuth(service: linear, teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      __typename
     }
   }
 `

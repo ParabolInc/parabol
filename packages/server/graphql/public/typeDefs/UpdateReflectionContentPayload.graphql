@@ -2,7 +2,6 @@
 Return value for updateReflectionContent mutation
 """
 type UpdateReflectionContentPayload {
-  error: StandardMutationError
   "The meeting containing the updated reflection"
   meeting: NewMeeting
   "The updated reflection"

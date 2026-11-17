@@ -51,15 +51,8 @@ const NotificationSettings = (props: Props) => {
       $isEnabled: Boolean!
     ) {
       setTeamNotificationSetting(id: $id, event: $event, isEnabled: $isEnabled) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
-        ... on SetTeamNotificationSettingSuccess {
-          teamNotificationSettings {
-            ...NotificationSettings_teamSettings
-          }
+        teamNotificationSettings {
+          ...NotificationSettings_teamSettings
         }
       }
     }

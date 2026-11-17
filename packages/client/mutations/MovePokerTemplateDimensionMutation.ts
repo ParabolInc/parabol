@@ -18,9 +18,6 @@ graphql`
 const mutation = graphql`
   mutation MovePokerTemplateDimensionMutation($dimensionId: ID!, $sortOrder: String!) {
     movePokerTemplateDimension(dimensionId: $dimensionId, sortOrder: $sortOrder) {
-      error {
-        message
-      }
       ...MovePokerTemplateDimensionMutation_team @relay(mask: false)
     }
   }

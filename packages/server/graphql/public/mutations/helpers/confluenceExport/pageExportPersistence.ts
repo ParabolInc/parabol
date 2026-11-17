@@ -28,7 +28,7 @@ export const createPageExportPersistence = (input: {
     publish(
       SubscriptionChannel.NOTIFICATION,
       userId,
-      'ExportPagesToConfluenceSuccess',
+      'ExportPagesToConfluencePayload',
       {pageExportId},
       subOptions
     )

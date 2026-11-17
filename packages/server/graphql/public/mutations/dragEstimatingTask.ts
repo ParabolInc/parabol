@@ -65,7 +65,7 @@ const dragEstimatingTask: MutationResolvers['dragEstimatingTask'] = async (
     .execute()
   dataLoader.clearAll('newMeetings')
   const data = {meetingId, stageIds}
-  publish(SubscriptionChannel.MEETING, meetingId, 'DragEstimatingTaskSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'DragEstimatingTaskPayload', data, subOptions)
   return data
 }
 

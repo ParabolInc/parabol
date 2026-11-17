@@ -41,10 +41,16 @@ export const isExtensionError = ({name, stack}: Error) => {
   return name === 'NotFoundError' || isThrownOutsideApp(stack)
 }
 
-export const isIgnoredError = (error: Error) => {
-  return isNetworkError(error) || isOldBrowserError(error) || isExtensionError(error)
-}
-
+// the session ended, as when another tab signed out, and the app signs this one out when it sees the error
 export const isNotSignedInError = ({message}: Error) => {
   return message.includes('Not signed in')
+}
+
+export const isIgnoredError = (error: Error) => {
+  return (
+    isNetworkError(error) ||
+    isOldBrowserError(error) ||
+    isExtensionError(error) ||
+    isNotSignedInError(error)
+  )
 }

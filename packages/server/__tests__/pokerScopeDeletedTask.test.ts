@@ -3,14 +3,7 @@ import {getUserTeams, sendPublic, signUp} from './common'
 const START_SPRINT_POKER = `
   mutation StartSprintPoker($teamId: ID!) {
     startSprintPoker(teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartSprintPokerSuccess {
-        meetingId
-      }
+      meetingId
     }
   }
 `
@@ -28,9 +21,7 @@ const UPDATE_POKER_SCOPE = `
 const DELETE_TASK = `
   mutation DeleteTask($taskId: ID!) {
     deleteTask(taskId: $taskId) {
-      error {
-        message
-      }
+      __typename
     }
   }
 `

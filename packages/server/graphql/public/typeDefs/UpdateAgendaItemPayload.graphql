@@ -10,5 +10,4 @@ type UpdateAgendaItemPayload {
   The meeting with the updated agenda item, if any
   """
   meeting: NewMeeting
-  error: StandardMutationError
 }

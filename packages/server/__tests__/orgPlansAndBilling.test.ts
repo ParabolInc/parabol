@@ -17,8 +17,8 @@ const INVITE_TO_TEAM_MUTATION = `
 const ACCEPT_TEAM_INVITATION_MUTATION = `
   mutation AcceptTeamInvitation($invitationToken: ID!) {
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
+      userErrors {
+        code
       }
       team {
         id
@@ -54,7 +54,7 @@ const signUpOrgMember = async () => {
     cookie: member.cookie
   })
   expect(acceptResult).toMatchObject({
-    data: {acceptTeamInvitation: {error: null, team: {id: owner.teamId}}}
+    data: {acceptTeamInvitation: {userErrors: [], team: {id: owner.teamId}}}
   })
   return {owner, member}
 }

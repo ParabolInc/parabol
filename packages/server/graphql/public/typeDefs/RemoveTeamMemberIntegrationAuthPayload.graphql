@@ -1,4 +1,11 @@
-"""
-Result of removing a team member's integration authentication
-"""
-union RemoveTeamMemberIntegrationAuthPayload = ErrorPayload | RemoveTeamMemberIntegrationAuthSuccess
+type RemoveTeamMemberIntegrationAuthPayload {
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}

@@ -1,14 +1,21 @@
 """
-Return value for the createStripeSubscription mutation, which creates a new Stripe subscription
-for an organization that does not yet have one. The caller provides an orgId and a Stripe
-paymentMethodId. On success the mutation creates (or reuses) a Stripe customer, attaches the
-payment method, and creates a team subscription billed by the number of active org members,
-applying any pending coupon before clearing it from the org record.
+Returned by the createStripeSubscription mutation when a new Stripe subscription has been
+successfully created for the given organization. The caller must use the
+stripeSubscriptionClientSecret to confirm payment on the client side (e.g. via
+stripe.confirmCardPayment) before the subscription becomes active.
 
-Success: returns CreateStripeSubscriptionSuccess with a client secret the client must use to
-confirm payment via the Stripe.js SDK (e.g. stripe.confirmCardPayment).
-
-Failure: returns ErrorPayload. Common error cases include the organization already having an
-active subscription, or Stripe rejecting the customer or payment method creation.
+Failure cases fail the mutation with a GraphQL error instead:
+- The organization already has an active Stripe subscription (stripeSubscriptionId is set).
+- Creating or retrieving the Stripe customer fails.
+- Attaching the payment method to an existing customer fails.
 """
-union CreateStripeSubscriptionPayload = ErrorPayload | CreateStripeSubscriptionSuccess
+type CreateStripeSubscriptionPayload {
+  """
+  The client secret from the Stripe PaymentIntent on the subscription's latest invoice.
+  Pass this to stripe.confirmCardPayment (or equivalent) on the client using the
+  Stripe publishable key to complete 3DS / SCA payment confirmation and activate the
+  subscription. This value is single-use and short-lived; confirm payment immediately
+  after receiving it.
+  """
+  stripeSubscriptionClientSecret: String!
+}

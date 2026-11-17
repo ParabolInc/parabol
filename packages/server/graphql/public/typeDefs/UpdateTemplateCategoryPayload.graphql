@@ -1,4 +1,6 @@
-"""
-Return value for updateTemplateCategory, which could be an error
-"""
-union UpdateTemplateCategoryPayload = ErrorPayload | UpdateTemplateCategorySuccess
+type UpdateTemplateCategoryPayload {
+  """
+  The template with the updated mainCategory
+  """
+  template: MeetingTemplate!
+}

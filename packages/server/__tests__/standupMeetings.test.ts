@@ -51,26 +51,19 @@ const EMPTY_DOC = JSON.stringify({type: 'doc', content: []})
 const START_TEAM_PROMPT = `
   mutation StartTeamPrompt($teamId: ID!, $rrule: RRule) {
     startTeamPrompt(teamId: $teamId, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
+      meeting {
+        id
+        meetingPrompt
+        template {
+          id
+        }
+        prompts {
+          id
+          question
         }
       }
-      ... on StartTeamPromptSuccess {
-        meeting {
-          id
-          meetingPrompt
-          template {
-            id
-          }
-          prompts {
-            id
-            question
-          }
-        }
-        meetingSeries {
-          id
-        }
+      meetingSeries {
+        id
       }
     }
   }
@@ -79,14 +72,7 @@ const START_TEAM_PROMPT = `
 const JOIN_MEETING = `
   mutation JoinMeeting($meetingId: ID!) {
     joinMeeting(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on JoinMeetingSuccess {
-        meetingId
-      }
+      meetingId
     }
   }
 `
@@ -126,11 +112,7 @@ const ADD_REACTJI = `
       reactableType: RESPONSE
       reactji: "heart"
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      __typename
     }
   }
 `
@@ -171,15 +153,8 @@ const MEETING_RESPONSES = `
 const END_TEAM_PROMPT = `
   mutation EndTeamPrompt($meetingId: ID!) {
     endTeamPrompt(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on EndTeamPromptSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -219,19 +194,12 @@ const ADD_TEAM_PROMPT_TEMPLATE = `
 const UPDATE_TEMPLATE_SCOPE = `
   mutation UpdateTemplateScope($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
+      template {
+        id
+        scope
       }
-      ... on UpdateTemplateScopeSuccess {
-        template {
-          id
-          scope
-        }
-        clonedTemplate {
-          id
-        }
+      clonedTemplate {
+        id
       }
     }
   }
@@ -240,9 +208,7 @@ const UPDATE_TEMPLATE_SCOPE = `
 const SELECT_TEMPLATE = `
   mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
     selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
-      error {
-        message
-      }
+      __typename
     }
   }
 `
@@ -301,7 +267,7 @@ const selectTemplate = async (
 
 const joinMeeting = async (auth: {cookie?: string; bearerToken?: string}, meetingId: string) => {
   const res = await sendPublic({query: JOIN_MEETING, variables: {meetingId}, ...auth})
-  expect(res.data.joinMeeting.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 }
 
 const waitForSummaryText = async (meetingId: string, lastExpectedText: string) => {
@@ -344,8 +310,7 @@ test('startTeamPrompt uses the template selected for the team', async () => {
     cookie
   })
   const {id: customTemplateId} = created.data.addPromptTemplate.template
-  const selected = await selectTemplate({cookie}, teamId, customTemplateId)
-  expect(selected.error).toBeNull()
+  await selectTemplate({cookie}, teamId, customTemplateId)
   const {meeting} = await startStandup({cookie}, teamId)
   expect(meeting.template.id).toBe(customTemplateId)
   expect(meeting.prompts).toHaveLength(3)
@@ -790,7 +755,6 @@ test('a draft never leaves the meeting: the count and the summary page only see 
     cookie: owner.cookie
   })
   expect(ended.errors).toBeUndefined()
-  expect(ended.data.endTeamPrompt.error).toBeUndefined()
 
   const summaryText = await waitForSummaryText(meeting.id, 'Waiting on the vendor sandbox')
   expect(summaryText).toContain('Shipped the billing fix')
@@ -830,7 +794,6 @@ test('a draft cannot be reacted to until it is shared', async () => {
   await sendPublic({query: SHARE, variables: {meetingId: meeting.id}, cookie: owner.cookie})
   const onShared = await react()
   expect(onShared.errors).toBeUndefined()
-  expect(onShared.data.addReactjiToReactable.error).toBeUndefined()
 })
 
 const UPDATE_MEETING_TEMPLATE = `

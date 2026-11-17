@@ -201,7 +201,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
       publish(
         SubscriptionChannel.NOTIFICATION,
         teamLeadUserId,
-        'EndCheckInSuccess',
+        'EndCheckInPayload',
         {removedSuggestedActionId},
         subOptions
       )
@@ -222,7 +222,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
     updatedTaskIds,
     removedTaskIds
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInPayload', data, subOptions)
   sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
   meetingsEnded.inc({meeting_type: meeting.meetingType})

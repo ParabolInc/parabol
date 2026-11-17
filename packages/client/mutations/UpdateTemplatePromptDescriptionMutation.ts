@@ -4,7 +4,7 @@ import type {UpdateTemplatePromptDescriptionMutation as TUpdateTemplatePromptDes
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateTemplatePromptDescriptionMutation_team on UpdateTemplatePromptDescriptionSuccess {
+  fragment UpdateTemplatePromptDescriptionMutation_team on UpdateTemplatePromptDescriptionPayload {
     prompt {
       description
     }

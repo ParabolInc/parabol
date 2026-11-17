@@ -125,7 +125,7 @@ const safeEndRetrospective = async ({
       publish(
         SubscriptionChannel.NOTIFICATION,
         teamLeadUserId,
-        'EndRetrospectiveSuccess',
+        'EndRetrospectivePayload',
         {removedSuggestedActionId},
         subOptions
       )
@@ -151,7 +151,7 @@ const safeEndRetrospective = async ({
     removedTaskIds,
     updatedTaskIds
   }
-  publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectivePayload', data, subOptions)
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await these, but put them after both "publish" calls so the dataloader has the same data
   summarizeRetroMeeting(meeting, context).catch(Logger.log)

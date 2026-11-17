@@ -2,7 +2,6 @@
 Return value for updateTeamName mutation
 """
 type UpdateTeamNamePayload {
-  error: StandardMutationError
   "The team with the updated name"
   team: Team
 }

@@ -157,16 +157,3 @@ test('a thrown refusal is shown to the viewer', async () => {
   )
   expect(mockNavigate).not.toHaveBeenCalled()
 })
-
-test('an error in the payload is shown to the viewer', async () => {
-  const {onCompleted} = await shareOnlyWithTeam()
-
-  await act(async () =>
-    onCompleted({updateTemplateScope: {error: {message: 'Template not found'}}}, null)
-  )
-
-  expect(mockEmit).toHaveBeenCalledWith(
-    'addSnackbar',
-    expect.objectContaining({message: 'Template not found'})
-  )
-})

@@ -28,9 +28,6 @@ const mutation = graphql`
       oldScaleValue: $oldScaleValue
       newScaleValue: $newScaleValue
     ) {
-      error {
-        message
-      }
       ...UpdatePokerTemplateScaleValueMutation_scale @relay(mask: false)
     }
   }

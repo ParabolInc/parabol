@@ -15,12 +15,7 @@ extend type Query {
   ): OrgActivitiesPayload!
 }
 
-"""
-Return value for orgActivities, which could be an error
-"""
-union OrgActivitiesPayload = ErrorPayload | OrgActivitiesSuccess
-
-type OrgActivitiesSuccess {
+type OrgActivitiesPayload {
   """
   The rows of the report
   """

@@ -99,7 +99,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   dataLoader.clearAll(['newMeetings', 'retroReflections', 'retroReflectionGroups'])
   const data = {meetingId}
   const operationId = dataLoader.share()
-  publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, {
+  publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsPayload', data, {
     operationId,
     mutatorId
   })

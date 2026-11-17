@@ -97,7 +97,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   publish(
     SubscriptionChannel.NOTIFICATION,
     viewerId,
-    'PersistIntegrationSearchQuerySuccess',
+    'PersistIntegrationSearchQueryPayload',
     data,
     subOptions
   )

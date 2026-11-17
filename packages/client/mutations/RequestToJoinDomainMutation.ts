@@ -8,14 +8,7 @@ import promptToJoinOrgSuccessToast from './toasts/promptToJoinOrgSuccessToast'
 const mutation = graphql`
   mutation RequestToJoinDomainMutation {
     requestToJoinDomain {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on RequestToJoinDomainSuccess {
-        success
-      }
+      success
     }
   }
 `
@@ -28,17 +21,8 @@ const RequestToJoinDomainMutation: SimpleMutation<TRequestToJoinDomainMutation> 
     mutation,
     variables,
     onError: snackOnError(atmosphere),
-    onCompleted: (res) => {
-      const error = res.requestToJoinDomain.error
-      if (!error) {
-        atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
-      } else {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          message: error.message,
-          autoDismiss: 5,
-          key: 'promptToJoinOrgError'
-        })
-      }
+    onCompleted: () => {
+      atmosphere.eventEmitter.emit('addSnackbar', promptToJoinOrgSuccessToast)
     }
   })
 }

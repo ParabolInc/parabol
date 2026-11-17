@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useAddTeamHealthTemplateQuestionMutation_team on AddTeamHealthTemplateQuestionSuccess {
+  fragment useAddTeamHealthTemplateQuestionMutation_team on AddTeamHealthTemplateQuestionPayload {
     template {
       id
       questions {

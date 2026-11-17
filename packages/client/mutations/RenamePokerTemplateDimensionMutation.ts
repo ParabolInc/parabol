@@ -14,9 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RenamePokerTemplateDimensionMutation($dimensionId: ID!, $name: String!) {
     renamePokerTemplateDimension(dimensionId: $dimensionId, name: $name) {
-      error {
-        message
-      }
       ...RenamePokerTemplateDimensionMutation_dimension @relay(mask: false)
     }
   }

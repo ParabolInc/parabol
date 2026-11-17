@@ -1,3 +1,0 @@
-/*
-  @name MUTATION_NAMEQuery
-*/
