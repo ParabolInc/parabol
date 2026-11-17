@@ -586,12 +586,10 @@ const User: ReqResolvers<'User'> = {
   },
 
   teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader, resourceGrants}) => {
-    const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
-    const activeTeamIds =
-      viewerId === userId || isSuperUser(authToken)
-        ? allTms
-        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const activeTeamIds = isSuperUser(authToken)
+      ? allTms
+      : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
     let teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
