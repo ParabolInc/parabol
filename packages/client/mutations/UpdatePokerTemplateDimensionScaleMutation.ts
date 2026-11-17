@@ -14,9 +14,6 @@ graphql`
 const mutation = graphql`
   mutation UpdatePokerTemplateDimensionScaleMutation($dimensionId: ID!, $scaleId: ID!) {
     updatePokerTemplateDimensionScale(dimensionId: $dimensionId, scaleId: $scaleId) {
-      error {
-        message
-      }
       ...UpdatePokerTemplateDimensionScaleMutation_dimension @relay(mask: false)
     }
   }

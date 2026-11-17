@@ -18,11 +18,6 @@ graphql`
 const mutation = graphql`
   mutation SetTeamHealthVoteMutation($meetingId: ID!, $stageId: ID!, $label: String!) {
     setTeamHealthVote(meetingId: $meetingId, stageId: $stageId, label: $label) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTeamHealthVoteMutation_meeting @relay(mask: false) @alias
     }
   }

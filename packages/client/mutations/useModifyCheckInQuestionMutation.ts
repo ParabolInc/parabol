@@ -21,11 +21,6 @@ const mutation = graphql`
       checkInQuestion: $checkInQuestion
       modifyType: $modifyType
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useModifyCheckInQuestionMutation_success @relay(mask: false) @alias
     }
   }

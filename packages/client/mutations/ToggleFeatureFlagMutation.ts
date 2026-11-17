@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleFeatureFlagMutation($featureName: String!, $orgId: ID, $teamId: ID, $userId: ID) {
     toggleFeatureFlag(featureName: $featureName, orgId: $orgId, teamId: $teamId, userId: $userId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleFeatureFlagMutation_notification @relay(mask: false) @alias
     }
   }

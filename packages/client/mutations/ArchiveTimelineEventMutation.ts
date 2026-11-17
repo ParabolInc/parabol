@@ -21,11 +21,6 @@ graphql`
 const mutation = graphql`
   mutation ArchiveTimelineEventMutation($timelineEventId: ID!) {
     archiveTimelineEvent(timelineEventId: $timelineEventId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ArchiveTimelineEventMutation_notification @relay(mask: false) @alias
     }
   }

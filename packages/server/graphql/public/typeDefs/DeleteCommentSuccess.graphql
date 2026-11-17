@@ -4,14 +4,14 @@ The comment record is retained so that reply threading is preserved, but its con
 is replaced with tombstone text and isActive is set to false on the Comment object.
 
 Mutation signature:
-  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
+  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentSuccess!
 
 Success conditions:
   - The comment exists and is still active (isActive true).
   - The comment belongs to a discussion whose meetingId matches the supplied meetingId.
   - The viewer is the comment author, OR the comment was posted by the Parabol AI user.
 
-Failure conditions (returns ErrorPayload instead):
+Failure conditions (the mutation fails with a GraphQL error instead):
   - Comment does not exist or was already deleted.
   - The comment's discussion is not associated with the provided meetingId.
   - The viewer is not the comment author and the comment was not posted by the Parabol AI.

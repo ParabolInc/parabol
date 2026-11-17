@@ -4,7 +4,7 @@ successfully created for the given organization. The caller must use the
 stripeSubscriptionClientSecret to confirm payment on the client side (e.g. via
 stripe.confirmCardPayment) before the subscription becomes active.
 
-Failure cases surfaced as ErrorPayload instead:
+Failure cases fail the mutation with a GraphQL error instead:
 - The organization already has an active Stripe subscription (stripeSubscriptionId is set).
 - Creating or retrieving the Stripe customer fails.
 - Attaching the payment method to an existing customer fails.

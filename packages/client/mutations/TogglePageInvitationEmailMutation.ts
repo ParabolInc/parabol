@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation TogglePageInvitationEmailMutation {
     togglePageInvitationEmail {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...TogglePageInvitationEmailMutation_team @relay(mask: false) @alias
     }
   }

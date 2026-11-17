@@ -106,9 +106,6 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
       mutation AutoJoin($teamIds: [ID!]!) {
         updateAutoJoin(teamIds: $teamIds, autoJoin: true) {
           __typename
-          ... on ErrorPayload {
-            error { message }
-          }
         }
       }
     `,
@@ -131,9 +128,6 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
       mutation ApprovedDomains($orgId: ID!, $emailDomains: [String!]!) {
         addApprovedOrganizationDomains(orgId: $orgId, emailDomains: $emailDomains) {
           __typename
-          ... on ErrorPayload {
-            error { message }
-          }
         }
       }
     `,

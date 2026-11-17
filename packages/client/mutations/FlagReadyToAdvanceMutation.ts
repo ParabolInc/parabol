@@ -16,11 +16,6 @@ graphql`
 const mutation = graphql`
   mutation FlagReadyToAdvanceMutation($stageId: ID!, $meetingId: ID!, $isReady: Boolean!) {
     flagReadyToAdvance(stageId: $stageId, meetingId: $meetingId, isReady: $isReady) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false) @alias
     }
   }

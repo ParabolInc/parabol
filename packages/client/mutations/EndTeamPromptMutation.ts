@@ -48,11 +48,6 @@ graphql`
 const mutation = graphql`
   mutation EndTeamPromptMutation($meetingId: ID!) {
     endTeamPrompt(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...EndTeamPromptMutation_team @relay(mask: false) @alias
       ...EndTeamPromptMutation_meeting @relay(mask: false) @alias
     }

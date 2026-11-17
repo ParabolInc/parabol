@@ -22,17 +22,10 @@ const mutation = graphql`
     $ignoreSuggestedUpgrade: Boolean
   ) {
     startCheckIn(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartCheckInSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartCheckInMutation_team @relay(mask: false) @alias

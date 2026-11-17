@@ -37,15 +37,8 @@ export async function sendIntranet(req: {query: string; variables?: Record<strin
 const PROCESS_RECURRENCE = `
   mutation {
     processRecurrence {
-      ... on ProcessRecurrenceSuccess {
-        meetingsStarted
-        meetingsEnded
-      }
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      meetingsStarted
+      meetingsEnded
     }
   }
 `
@@ -53,9 +46,7 @@ const PROCESS_RECURRENCE = `
 // processRecurrence refuses to run while another call holds its lock, e.g. one from a suite running in parallel
 export const processRecurrence = async () => {
   let res = await sendIntranet({query: PROCESS_RECURRENCE})
-  while (
-    res.data?.processRecurrence?.error?.message === 'Mutation processRecurrence is already running'
-  ) {
+  while (res.errors?.[0]?.message === 'Mutation processRecurrence is already running') {
     await new Promise((resolve) => setTimeout(resolve, 100))
     res = await sendIntranet({query: PROCESS_RECURRENCE})
   }
@@ -356,11 +347,6 @@ export const createOrgAdmin = async (email: string) => {
       mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
         setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `,

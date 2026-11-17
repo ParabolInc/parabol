@@ -62,11 +62,6 @@ const useStartMeeting = () => {
         }
         startRetrospective(teamId: $teamId) {
           ...useStartMeeting_retrospective @relay(mask: false) @alias
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `)
@@ -75,15 +70,8 @@ const useStartMeeting = () => {
     mutation useStartMeetingCheckInMutation($teamId: ID!) {
       startCheckIn(teamId: $teamId) {
         ...useStartMeeting_checkIn @relay(mask: false) @alias
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
-        ... on StartCheckInSuccess {
-          meeting {
-            id
-          }
+        meeting {
+          id
         }
       }
     }
@@ -99,11 +87,6 @@ const useStartMeeting = () => {
         }
         startSprintPoker(teamId: $teamId) {
           ...useStartMeeting_sprintPoker @relay(mask: false) @alias
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `)
@@ -113,11 +96,6 @@ const useStartMeeting = () => {
       mutation useStartMeetingTeamPromptMutation($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
           ...useStartMeeting_teamPrompt @relay(mask: false) @alias
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `
@@ -140,9 +118,6 @@ const useStartMeeting = () => {
             onError,
             updater,
             onCompleted: (data) => {
-              if (data.startRetrospective?.error) {
-                reject(data.startRetrospective.error.message)
-              }
               resolve(data.startRetrospective?.useStartMeeting_retrospective?.meeting?.id)
             }
           })
@@ -152,9 +127,6 @@ const useStartMeeting = () => {
             onError,
             updater,
             onCompleted: (data) => {
-              if (data.startCheckIn?.error) {
-                reject(data.startCheckIn.error.message)
-              }
               resolve(data.startCheckIn?.useStartMeeting_checkIn?.meeting?.id)
             }
           })
@@ -164,9 +136,6 @@ const useStartMeeting = () => {
             onError,
             updater,
             onCompleted: (data) => {
-              if (data.startSprintPoker?.error) {
-                reject(data.startSprintPoker.error.message)
-              }
               resolve(data.startSprintPoker?.useStartMeeting_sprintPoker?.meeting?.id)
             }
           })
@@ -176,9 +145,6 @@ const useStartMeeting = () => {
             onError,
             updater,
             onCompleted: (data) => {
-              if (data.startTeamPrompt?.error) {
-                reject(data.startTeamPrompt.error.message)
-              }
               resolve(data.startTeamPrompt?.useStartMeeting_teamPrompt?.meeting?.id)
             }
           })

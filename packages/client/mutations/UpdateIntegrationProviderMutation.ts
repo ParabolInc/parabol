@@ -22,11 +22,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateIntegrationProviderMutation($provider: UpdateIntegrationProviderInput!) {
     updateIntegrationProvider(provider: $provider) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateIntegrationProviderMutation_organization @relay(mask: false) @alias
     }
   }

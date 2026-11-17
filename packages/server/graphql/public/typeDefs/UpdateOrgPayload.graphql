@@ -2,8 +2,6 @@
 Return value for updateOrg mutation
 """
 type UpdateOrgPayload {
-  error: StandardMutationError
-
   """
   The updated org
   """

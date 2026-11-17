@@ -966,12 +966,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         totalVotes < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT ||
         maxVotesPerGroup < MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
       ) {
-        return {
-          updateRetroMaxVotes: {
-            __typename: 'ErrorPayload',
-            error: {message: 'Your team has already spent their votes'}
-          }
-        }
+        throw new Error('Your team has already spent their votes')
       }
       const totalDiff = totalVotes - (meeting as any).totalVotes
       meeting.totalVotes = totalVotes

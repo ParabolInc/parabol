@@ -1,4 +1,0 @@
-"""
-Return value for updateCommentContent mutation
-"""
-union UpdateCommentContentPayload = ErrorPayload | UpdateCommentContentSuccess

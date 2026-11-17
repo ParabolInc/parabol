@@ -22,11 +22,6 @@ const mutation = graphql`
     $isEnabled: Boolean!
   ) {
     setTeamNotificationSetting(id: $id, event: $event, isEnabled: $isEnabled) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTeamNotificationSettingMutation_settings @relay(mask: false) @alias
     }
   }

@@ -36,19 +36,14 @@ const startRetro = async (teamId: string, cookie: string) => {
     query: `
       mutation StartRetro($teamId: ID!) {
         startRetrospective(teamId: $teamId) {
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-              phases {
-                phaseType
-                stages {
-                  id
-                }
+          meeting {
+            id
+            phases {
+              phaseType
+              stages {
+                id
               }
             }
-          }
-          ... on ErrorPayload {
-            error { message }
           }
         }
       }
@@ -119,9 +114,6 @@ const resetRetroMeeting = async (meetingId: string, cookie: string) => {
                 phaseType
               }
             }
-          }
-          ... on ErrorPayload {
-            error { message }
           }
         }
       }

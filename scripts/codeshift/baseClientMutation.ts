@@ -4,7 +4,7 @@ import type {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__gen
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment PASCAL_MUTATIONMutation_LCASE_SUB on PASCAL_MUTATIONSuccess {
+  fragment PASCAL_MUTATIONMutation_LCASE_SUB on PASCAL_MUTATIONPayload {
     successField
   }
 `
@@ -12,11 +12,6 @@ graphql`
 const mutation = graphql`
   mutation PASCAL_MUTATIONMutation($arg1: ID!) {
     MUTATION_NAME(arg1: $arg1) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PASCAL_MUTATIONMutation_LCASE_SUB @relay(mask: false)
     }
   }

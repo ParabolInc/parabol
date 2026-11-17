@@ -31,11 +31,6 @@ graphql`
 const mutation = graphql`
   mutation AddIntegrationProviderMutation($input: AddIntegrationProviderInput!) {
     addIntegrationProvider(input: $input) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddIntegrationProviderMutation_organization @relay(mask: false) @alias
     }
   }

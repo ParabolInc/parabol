@@ -31,11 +31,6 @@ graphql`
 const mutation = graphql`
   mutation ResetReflectionGroupsMutation($meetingId: ID!) {
     resetReflectionGroups(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ResetReflectionGroupsMutation_meeting @relay(mask: false) @alias
     }
   }

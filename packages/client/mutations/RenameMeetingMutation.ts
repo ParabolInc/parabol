@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RenameMeetingMutation($name: String!, $meetingId: ID!) {
     renameMeeting(name: $name, meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...RenameMeetingMutation_team @relay(mask: false) @alias
     }
   }

@@ -1,4 +1,0 @@
-"""
-Return value for removeOrgUsers, which could be an error
-"""
-union RemoveOrgUsersPayload = ErrorPayload | RemoveOrgUsersSuccess

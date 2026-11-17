@@ -81,11 +81,6 @@ graphql`
 const mutation = graphql`
   mutation RemoveOrgUsersMutation($userIds: [ID!]!, $orgId: ID!) {
     removeOrgUsers(userIds: $userIds, orgId: $orgId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...RemoveOrgUsersMutation_organization @relay(mask: false) @alias
       ...RemoveOrgUsersMutation_team @relay(mask: false) @alias
       ...RemoveOrgUsersMutation_task @relay(mask: false) @alias

@@ -7,7 +7,6 @@ import publicSchema, {
   getPublicSchemaWithAllNestedTypes,
   hasEveryNestedType
 } from '../public/rootSchema'
-import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import schemaBuildOptions from '../schemaBuildOptions'
 import {typeDefs} from './importedTypeDefs'
 import permissions from './permissions'
@@ -15,13 +14,11 @@ import resolvers from './resolvers'
 
 let privateSchema: GraphQLSchema | undefined
 const getPrivateSchema = () => {
-  privateSchema ??= resolveTypesForMutationPayloads(
-    makeExecutableSchema({
-      typeDefs: typeDefs.concat(publicTypeDefs),
-      resolvers: composeResolvers(resolvers, permissions),
-      ...schemaBuildOptions
-    })
-  )
+  privateSchema ??= makeExecutableSchema({
+    typeDefs: typeDefs.concat(publicTypeDefs),
+    resolvers: composeResolvers(resolvers, permissions),
+    ...schemaBuildOptions
+  })
   return privateSchema
 }
 

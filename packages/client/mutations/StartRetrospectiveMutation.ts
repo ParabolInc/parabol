@@ -42,17 +42,10 @@ const mutation = graphql`
       gcalInput: $gcalInput
       ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartRetrospectiveMutation_team @relay(mask: false) @alias

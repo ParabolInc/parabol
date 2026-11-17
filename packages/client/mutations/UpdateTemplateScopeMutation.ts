@@ -39,11 +39,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }

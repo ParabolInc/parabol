@@ -62,11 +62,6 @@ const mutation = graphql`
     $teamId: ID!
   ) {
     removeTeamMemberIntegrationAuth(service: $service, teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
 
       ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false) @alias
     }

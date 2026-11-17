@@ -2,7 +2,6 @@
 Return value for updateUserProfile mutation
 """
 type UpdateUserProfilePayload {
-  error: StandardMutationError
   "The user with the updated profile"
   user: User
 }

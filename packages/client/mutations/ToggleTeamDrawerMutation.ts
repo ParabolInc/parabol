@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleTeamDrawerMutation($teamId: ID!, $teamDrawerType: TeamDrawer) {
     toggleTeamDrawer(teamId: $teamId, teamDrawerType: $teamDrawerType) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleTeamDrawerMutation_teamMember @relay(mask: false) @alias
     }
   }

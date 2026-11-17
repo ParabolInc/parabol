@@ -1,4 +1,0 @@
-"""
-Return object for SetPokerSpectatePayload
-"""
-union SetPokerSpectatePayload = ErrorPayload | SetPokerSpectateSuccess

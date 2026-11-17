@@ -1,4 +1,0 @@
-"""
-Result of a user hovering over or leaving the voting deck in a Poker meeting
-"""
-union PokerAnnounceDeckHoverPayload = ErrorPayload | PokerAnnounceDeckHoverSuccess

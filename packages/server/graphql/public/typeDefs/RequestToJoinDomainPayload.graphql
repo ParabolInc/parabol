@@ -1,4 +1,0 @@
-"""
-Return value for requestToJoinDomain, which could be an error
-"""
-union RequestToJoinDomainPayload = ErrorPayload | RequestToJoinDomainSuccess

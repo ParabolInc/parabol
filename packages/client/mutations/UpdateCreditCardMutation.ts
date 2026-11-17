@@ -21,14 +21,7 @@ graphql`
 const mutation = graphql`
   mutation UpdateCreditCardMutation($orgId: ID!, $paymentMethodId: ID!) {
     updateCreditCard(orgId: $orgId, paymentMethodId: $paymentMethodId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateCreditCardSuccess {
-        stripeSubscriptionClientSecret
-      }
+      stripeSubscriptionClientSecret
       ...UpdateCreditCardMutation_organization @relay(mask: false) @alias
     }
   }

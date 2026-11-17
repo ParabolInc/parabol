@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateTemplateCategoryMutation($templateId: ID!, $mainCategory: String!) {
     updateTemplateCategory(templateId: $templateId, mainCategory: $mainCategory) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateTemplateCategoryMutation_team @relay(mask: false) @alias
     }
   }
@@ -35,15 +30,6 @@ const useTemplateCategoryMutation = () => {
       optimisticUpdater: (store) => {
         const template = store.get(templateId)
         template?.setValue(mainCategory, 'mainCategory')
-      },
-      onCompleted: (res) => {
-        const message = res.updateTemplateCategory.error?.message
-        message &&
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'updateCategory',
-            message,
-            autoDismiss: 5
-          })
       },
       // allow components to override default handlers
       onError: snackOnError(atmosphere),

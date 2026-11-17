@@ -1,4 +1,0 @@
-"""
-Result of revealing all hidden votes in a Poker meeting stage
-"""
-union PokerRevealVotesPayload = ErrorPayload | PokerRevealVotesSuccess

@@ -1,4 +1,0 @@
-"""
-Return object for RemoveAllSlackAuthsPayload
-"""
-union RemoveAllSlackAuthsPayload = ErrorPayload | RemoveAllSlackAuthsSuccess

@@ -1,6 +1,5 @@
 """
-The success payload returned by the createPoll mutation. Use this type (as opposed to ErrorPayload)
-when the union CreatePollPayload resolves successfully. It gives you both the stable identifier of
+The success payload returned by the createPoll mutation. It gives you both the stable identifier of
 the newly created poll and the full Poll object so you can immediately display or interact with the
 poll without a follow-up query.
 """

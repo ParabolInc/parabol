@@ -26,11 +26,6 @@ graphql`
 const mutation = graphql`
   mutation CreatePollMutation($newPoll: CreatePollInput!) {
     createPoll(newPoll: $newPoll) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...CreatePollMutation_meeting @relay(mask: false) @alias
     }
   }

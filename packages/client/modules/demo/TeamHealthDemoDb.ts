@@ -33,14 +33,13 @@ import {
   type TeamHealthDemoMeetingResponse,
   type TeamHealthDemoThreadResponse
 } from './teamHealthDemoFixtureTypes'
+import {TeamHealthDemo} from './teamHealthDemoIds'
 import {createTeamHealthDemoMeetingResponse} from './teamHealthDemoMeetingFixture'
 import {createDemoTask, demoTeamMemberId, toTaskContent} from './teamHealthDemoTaskFixture'
 import {demoTeammates, demoViewer} from './teamHealthDemoTeammates'
 import {createTeamHealthDemoThreadResponse} from './teamHealthDemoThreadFixture'
 
 type Resolver<T extends OperationType> = (variables: T['variables']) => T['rawResponse']
-
-const notFound = (message: string) => ({__typename: 'ErrorPayload' as const, error: {message}})
 
 type CommentUpdate = <T extends DemoComment | DemoReply>(comment: T) => T
 
@@ -109,7 +108,7 @@ export default class TeamHealthDemoDb {
   addComment: Resolver<AddCommentMutation> = ({comment: input}) => {
     const {content, discussionId, isAnonymous, threadParentId, threadSortOrder} = input
     const discussion = this.getThread(discussionId).viewer.discussion
-    if (!discussion) return {addComment: notFound('Discussion not found')}
+    if (!discussion) throw new Error('Discussion not found')
     const id = `teamHealthDemoVisitorComment_${this.commentCount++}`
     const now = new Date().toJSON()
     const author = isAnonymous
@@ -145,7 +144,7 @@ export default class TeamHealthDemoDb {
     return {
       addComment: {
         __typename: 'AddCommentSuccess',
-        meetingId: this.meeting.viewer.meeting?.id ?? null,
+        meetingId: TeamHealthDemo.MEETING_ID,
         comment
       }
     }
@@ -184,7 +183,7 @@ export default class TeamHealthDemoDb {
       }
       return {...comment, reactjis}
     })
-    if (!found) return {addReactjiToReactable: notFound('Comment not found')}
+    if (!found) throw new Error('Comment not found')
     const {comment: reactable} = found
     return {
       addReactjiToReactable: {
@@ -197,7 +196,7 @@ export default class TeamHealthDemoDb {
   updateCommentContent: Resolver<UpdateCommentContentMutation> = ({commentId, content}) => {
     const updatedAt = new Date().toJSON()
     const found = this.updateComment(commentId, (comment) => ({...comment, content, updatedAt}))
-    if (!found) return {updateCommentContent: notFound('Comment not found')}
+    if (!found) throw new Error('Comment not found')
     return {
       updateCommentContent: {
         __typename: 'UpdateCommentContentSuccess',
@@ -212,7 +211,7 @@ export default class TeamHealthDemoDb {
       isActive: false,
       updatedAt: new Date().toJSON()
     }))
-    if (!found) return {deleteComment: notFound('Comment not found')}
+    if (!found) throw new Error('Comment not found')
     const {discussion, parent, comment} = found
     return {
       deleteComment: {
@@ -231,7 +230,7 @@ export default class TeamHealthDemoDb {
   // commentors is the live "is typing" list, which the viewer is always filtered out of
   editCommenting: Resolver<EditCommentingMutation> = ({discussionId}) => {
     const discussion = this.getThread(discussionId).viewer.discussion
-    if (!discussion) return {editCommenting: notFound('Discussion not found')}
+    if (!discussion) throw new Error('Discussion not found')
     return {
       editCommenting: {
         __typename: 'EditCommentingSuccess',

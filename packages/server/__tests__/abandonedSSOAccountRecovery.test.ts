@@ -18,15 +18,8 @@ const REMOVE_AUTH_IDENTITY_MUTATION = `
       addLocal: $addLocal
       sendEmail: $sendEmail
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on RemoveAuthIdentitySuccess {
-        users {
-          id
-        }
+      users {
+        id
       }
     }
   }
@@ -46,14 +39,7 @@ test('emailPasswordReset succeeds for abandoned SSO user with no local identity'
     query: `
       mutation EmailPasswordReset($email: ID!) {
         emailPasswordReset(email: $email) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on EmailPasswordResetSuccess {
-            success
-          }
+          success
         }
       }
     `,

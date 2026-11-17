@@ -12,13 +12,8 @@ extend type Query {
     the end date for the query
     """
     endDate: DateTime
-  ): OrgActivitiesPayload!
+  ): OrgActivitiesSuccess!
 }
-
-"""
-Return value for orgActivities, which could be an error
-"""
-union OrgActivitiesPayload = ErrorPayload | OrgActivitiesSuccess
 
 type OrgActivitiesSuccess {
   """

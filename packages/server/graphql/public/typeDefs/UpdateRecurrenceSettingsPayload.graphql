@@ -1,4 +1,0 @@
-"""
-Return value for updateRecurrenceSettings, which could be an error
-"""
-union UpdateRecurrenceSettingsPayload = UpdateRecurrenceSettingsSuccess | ErrorPayload

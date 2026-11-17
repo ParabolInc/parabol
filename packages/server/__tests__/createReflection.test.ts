@@ -5,14 +5,12 @@ const startRetro = async (teamId: string, cookie: string) => {
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!) {
         startRetrospective(teamId: $teamId) {
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-              phases {
-                ... on ReflectPhase {
-                  reflectPrompts {
-                    id
-                  }
+          meeting {
+            id
+            phases {
+              ... on ReflectPhase {
+                reflectPrompts {
+                  id
                 }
               }
             }
@@ -86,9 +84,7 @@ test('createReflection blocks adding a reflection when viewer is not a member of
   })
 
   expect(createReflectionRes).toEqual({
-    data: {
-      createReflection: null
-    },
+    data: null,
     errors: [
       expect.objectContaining({
         message: expect.stringMatching('Viewer is not on team')

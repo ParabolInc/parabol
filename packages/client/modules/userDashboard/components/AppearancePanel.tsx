@@ -20,12 +20,7 @@ const AppearancePanel = () => {
     setPreference(next)
     execute({
       variables: {theme: next},
-      onError: () => setPreference(previous),
-      onCompleted: (res) => {
-        if (res.updateUserTheme.error) {
-          setPreference(previous)
-        }
-      }
+      onError: () => setPreference(previous)
     })
   }
 

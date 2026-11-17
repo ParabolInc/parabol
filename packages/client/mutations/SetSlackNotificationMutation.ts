@@ -32,9 +32,6 @@ const mutation = graphql`
       slackChannelId: $slackChannelId
       teamId: $teamId
     ) {
-      error {
-        message
-      }
       ...SetSlackNotificationMutation_team @relay(mask: false)
     }
   }

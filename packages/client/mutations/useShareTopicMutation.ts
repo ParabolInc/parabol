@@ -16,11 +16,6 @@ graphql`
 const mutation = graphql`
   mutation useShareTopicMutation($stageId: ID!, $meetingId: ID!, $channelId: ID!) {
     shareTopic(stageId: $stageId, meetingId: $meetingId, channelId: $channelId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useShareTopicMutation_meeting @relay(mask: false) @alias
     }
   }
@@ -33,17 +28,8 @@ const useShareTopicMutation = () => {
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TShareTopicMutation>, handlers?: Handlers) => {
     return commit({
-      onCompleted: (res) => {
-        const error = res.shareTopic.error
-        if (!error) {
-          handlers?.onSuccess?.()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'shareTopicError'
-          })
-        }
+      onCompleted: () => {
+        handlers?.onSuccess?.()
       },
       onError: snackOnError(atmosphere, 'shareTopicError'),
       // allow components to override default handlers

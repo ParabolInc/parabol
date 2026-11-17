@@ -1,4 +1,0 @@
-"""
-Return value for endTrial, which could be an error
-"""
-union EndTrialPayload = ErrorPayload | EndTrialSuccess

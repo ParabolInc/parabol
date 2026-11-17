@@ -294,6 +294,7 @@
           "OrgStructureValue": "./types/OrgStructureValue#OrgStructureValueSource",
           "SetOrgStructureSuccess": "./types/SetOrgStructureSuccess#SetOrgStructureSuccessSource",
           "PlaceTeamSuccess": "./types/PlaceTeamSuccess#PlaceTeamSuccessSource",
+          "ReflectPhase": "./types/ReflectPhase#ReflectPhaseSource",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",

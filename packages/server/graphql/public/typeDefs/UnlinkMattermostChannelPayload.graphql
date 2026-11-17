@@ -1,4 +1,0 @@
-"""
-Return value for unlinkMattermostChannel mutation
-"""
-union UnlinkMattermostChannelPayload = ErrorPayload | UnlinkMattermostChannelSuccess

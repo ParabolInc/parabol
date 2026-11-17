@@ -18,9 +18,6 @@ graphql`
 const mutation = graphql`
   mutation CreateImposterTokenMutation($userId: ID, $email: Email) {
     createImposterToken(userId: $userId, email: $email) {
-      error {
-        message
-      }
       ...CreateImposterTokenMutation_agendaItem @relay(mask: false)
     }
   }

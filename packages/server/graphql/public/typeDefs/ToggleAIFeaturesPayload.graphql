@@ -1,4 +1,0 @@
-"""
-Return value for toggleAIFeatures mutation
-"""
-union ToggleAIFeaturesPayload = ErrorPayload | ToggleAIFeaturesSuccess

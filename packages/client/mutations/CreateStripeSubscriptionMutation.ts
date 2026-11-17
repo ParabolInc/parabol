@@ -12,11 +12,6 @@ graphql`
 const mutation = graphql`
   mutation CreateStripeSubscriptionMutation($orgId: ID!, $paymentMethodId: ID!) {
     createStripeSubscription(orgId: $orgId, paymentMethodId: $paymentMethodId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...CreateStripeSubscriptionMutation_organization @relay(mask: false) @alias
     }
   }

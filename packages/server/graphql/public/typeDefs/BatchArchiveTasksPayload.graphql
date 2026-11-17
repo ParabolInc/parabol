@@ -1,6 +1,0 @@
-"""
-The result of the batchArchiveTasks mutation. Returns BatchArchiveTasksSuccess when at least the
-archive operation completes (even if some tasks were skipped due to permission checks), or
-ErrorPayload if the operation could not proceed at all (e.g. authentication failure).
-"""
-union BatchArchiveTasksPayload = ErrorPayload | BatchArchiveTasksSuccess

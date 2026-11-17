@@ -38,11 +38,6 @@ graphql`
 const mutation = graphql`
   mutation JoinTeamMutation($teamId: ID!) {
     joinTeam(teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...JoinTeamMutation_team @relay(mask: false) @alias
     }
   }

@@ -34,11 +34,6 @@ graphql`
 const mutation = graphql`
   mutation UpdatePokerTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdatePokerTemplateScopeMutation_organization @relay(mask: false) @alias
     }
   }

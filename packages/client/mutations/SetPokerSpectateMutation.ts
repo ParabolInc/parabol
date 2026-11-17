@@ -19,11 +19,6 @@ graphql`
 const mutation = graphql`
   mutation SetPokerSpectateMutation($meetingId: ID!, $isSpectating: Boolean!) {
     setPokerSpectate(meetingId: $meetingId, isSpectating: $isSpectating) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetPokerSpectateMutation_team @relay(mask: false) @alias
     }
   }

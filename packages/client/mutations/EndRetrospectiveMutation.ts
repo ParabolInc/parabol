@@ -66,11 +66,6 @@ graphql`
 const mutation = graphql`
   mutation EndRetrospectiveMutation($meetingId: ID!) {
     endRetrospective(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...EndRetrospectiveMutation_notification @relay(mask: false) @alias
       ...EndRetrospectiveMutation_team @relay(mask: false) @alias
       ...EndRetrospectiveMutation_meeting @relay(mask: false) @alias

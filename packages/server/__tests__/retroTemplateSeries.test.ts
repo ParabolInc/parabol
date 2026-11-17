@@ -14,17 +14,10 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=${WEEKDAY_CODES[start.day()]}`
 const START_RETRO = `
   mutation StartRetro($teamId: ID!, $rrule: RRule) {
     startRetrospective(teamId: $teamId, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartRetrospectiveSuccess {
-        meeting {
+      meeting {
+        id
+        meetingSeries {
           id
-          meetingSeries {
-            id
-          }
         }
       }
     }
@@ -44,11 +37,7 @@ const UPDATE_MEETING_TEMPLATE = `
 const END_RETRO = `
   mutation EndRetro($meetingId: ID!) {
     endRetrospective(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      __typename
     }
   }
 `

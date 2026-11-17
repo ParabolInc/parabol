@@ -22,17 +22,10 @@ const mutation = graphql`
     $ignoreSuggestedUpgrade: Boolean
   ) {
     startSprintPoker(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartSprintPokerSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartSprintPokerMutation_team @relay(mask: false) @alias

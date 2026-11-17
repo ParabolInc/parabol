@@ -1,4 +1,0 @@
-"""
-Return object for uploadUserAsset
-"""
-union UploadUserAssetPayload = ErrorPayload | UploadUserAssetSuccess

@@ -1,13 +1,11 @@
 import isValid from '../../isValid'
 import type {ArchiveOrganizationPayloadResolvers} from '../resolverTypes'
 
-export type ArchiveOrganizationPayloadSource =
-  | {
-      orgId: string
-      teamIds: string[]
-      removedSuggestedActionIds: string[]
-    }
-  | {error: {message: string}}
+export type ArchiveOrganizationPayloadSource = {
+  orgId: string
+  teamIds: string[]
+  removedSuggestedActionIds: string[]
+}
 
 const ArchiveOrganizationPayload: ArchiveOrganizationPayloadResolvers = {
   teams: async (source, _args, {dataLoader}) => {

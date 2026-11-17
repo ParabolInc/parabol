@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleTeamPrivacyMutation($teamId: ID!) {
     toggleTeamPrivacy(teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleTeamPrivacyMutation_team @relay(mask: false) @alias
     }
   }

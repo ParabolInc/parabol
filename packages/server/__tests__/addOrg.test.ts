@@ -23,9 +23,6 @@ test('Adding an org over HTTP sets a cookie that is on the new team', async () =
     query: `
       mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
         addOrg(newTeam: $newTeam, orgName: $orgName) {
-          error {
-            message
-          }
           team {
             id
           }
@@ -35,7 +32,7 @@ test('Adding an org over HTTP sets a cookie that is on the new team', async () =
     variables: {newTeam: {name: 'Second team', orgId: '', isPublic: false}, orgName: 'Second org'},
     cookie
   })
-  expect(added.data.addOrg.error).toBeNull()
+  expect(added.errors).toBeUndefined()
   const newTeamId = added.data.addOrg.team.id
 
   const teams = await sendPublic({

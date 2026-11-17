@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation SetTaskEstimateMutation($taskEstimate: TaskEstimateInput!) {
     setTaskEstimate(taskEstimate: $taskEstimate) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetTaskEstimateMutation_meeting @relay(mask: false) @alias
     }
   }

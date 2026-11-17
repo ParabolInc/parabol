@@ -11,7 +11,7 @@ type Mutation {
     The subjects to which the feature flag will be applied
     """
     subjects: SubjectsInput!
-  ): ApplyFeatureFlagPayload!
+  ): ApplyFeatureFlagSuccess!
 
   """
   Remove a feature flag from specified subjects (users, teams, or organizations)
@@ -25,7 +25,7 @@ type Mutation {
     The subjects from which the feature flag will be removed
     """
     subjects: SubjectsInput!
-  ): RemoveFeatureFlagOwnerPayload!
+  ): RemoveFeatureFlagOwnerSuccess!
   """
   Updates the user email
   """
@@ -164,12 +164,12 @@ type Mutation {
     The slack message that will be sent to all Slack users
     """
     message: String!
-  ): MessageAllSlackUsersPayload!
+  ): MessageAllSlackUsersSuccess!
 
   """
   Remove Slack integrations for all users
   """
-  removeAllSlackAuths: RemoveAllSlackAuthsPayload!
+  removeAllSlackAuths: RemoveAllSlackAuthsSuccess!
 
   """
   schedule upcoming jobs to be run
@@ -288,7 +288,7 @@ type Mutation {
     Optional for the transition period while we still might receive events without it.
     """
     userId: ID
-  ): UpgradeToTeamTierPayload!
+  ): UpgradeToTeamTierSuccess!
 
   """
   add/remove user(s) to/from the watchlist so that we start/stop recording their sessions
@@ -308,7 +308,7 @@ type Mutation {
     true if the user should be added to the watchlist, false if not
     """
     includeInWatchlist: Boolean!
-  ): UpdateWatchlistPayload!
+  ): UpdateWatchlistSuccess!
 
   """
   Updates Atlassian OAuth tokens that haven't been updated since the date specified in input
@@ -333,7 +333,7 @@ type Mutation {
     The new domain that we're changing to
     """
     newDomain: String!
-  ): ChangeEmailDomainPayload!
+  ): ChangeEmailDomainSuccess!
 
   """
   Ends the trial for an org iff there is an active trial.
@@ -343,7 +343,7 @@ type Mutation {
     ID of the org on which to end the trial
     """
     orgId: ID!
-  ): EndTrialPayload!
+  ): EndTrialSuccess!
 
   """
   add/remove a flag on a user saying they are over the free tier
@@ -378,7 +378,7 @@ type Mutation {
   """
   Processes recurrence for meetings that should start and end.
   """
-  processRecurrence: ProcessRecurrencePayload!
+  processRecurrence: ProcessRecurrenceSuccess!
 
   """
   Remove the auth identity for users with a specific domain. Example use case: signed up with Gmail but they're deleting their Google account
@@ -413,7 +413,7 @@ type Mutation {
     Send an email to the user to let them know their auth identity has been removed and they need to reset their password. Defaults to true.
     """
     sendEmail: Boolean
-  ): RemoveAuthIdentityPayload!
+  ): RemoveAuthIdentitySuccess!
 
   """
   Set the isFree tier on a meeting template to determine if it's accessible to free users
@@ -422,7 +422,7 @@ type Mutation {
     isFree: Boolean!
     templateIds: [ID!]
     templateNames: [String!]
-  ): SetIsFreeMeetingTemplatePayload!
+  ): SetIsFreeMeetingTemplateSuccess!
 
   """
   Assign a Stripe coupon to an organization, to be applied automatically when they upgrade.
@@ -448,7 +448,7 @@ type Mutation {
     ID of the org on which to start the trial
     """
     orgId: ID!
-  ): StartTrialPayload!
+  ): StartTrialSuccess!
 
   """
   When stripe tells us an invoice is paid (inside or outside of stripe), update it in our DB
@@ -478,7 +478,7 @@ type Mutation {
     emails to give the insights priviledge to
     """
     emails: [String!]!
-  ): ToggleAllowInsightsPayload!
+  ): ToggleAllowInsightsSuccess!
 
   """
   Verify domains for an organization. The organization controls these domains.
@@ -504,7 +504,7 @@ type Mutation {
     A list of domains to remove from the control of the org. Useful if you previously added the incorrect domains
     """
     removeDomains: [ID!]
-  ): VerifyDomainPayload!
+  ): VerifyDomainSuccess!
 
   """
   update the SAML Org attribute
@@ -518,7 +518,7 @@ type Mutation {
     The full attribute name used to provision users to specific orgs. Will be removed if null.
     """
     samlOrgAttribute: ID
-  ): UpdateSAMLPayload!
+  ): UpdateSAMLSuccess!
 
   assignSAMLIdToOrg(
     orgId: ID!
@@ -527,7 +527,7 @@ type Mutation {
     The new SAML Org Attribute value which should map to this org. Null will unset it.
     """
     samlId: ID
-  ): AssignSAMLIdToOrgPayload!
+  ): AssignSAMLIdToOrgSuccess!
 
   pruneFailedEmbeddingJobs(before: DateTime!): Int
   buildEmbeddings(input: BuildEmbeddingsInput!): Int

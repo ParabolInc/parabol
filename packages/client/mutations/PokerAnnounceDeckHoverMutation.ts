@@ -26,11 +26,6 @@ graphql`
 const mutation = graphql`
   mutation PokerAnnounceDeckHoverMutation($meetingId: ID!, $stageId: ID!, $isHover: Boolean!) {
     pokerAnnounceDeckHover(meetingId: $meetingId, stageId: $stageId, isHover: $isHover) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false) @alias
     }
   }

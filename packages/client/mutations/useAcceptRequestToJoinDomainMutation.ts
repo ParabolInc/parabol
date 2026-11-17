@@ -16,11 +16,6 @@ graphql`
 const mutation = graphql`
   mutation useAcceptRequestToJoinDomainMutation($requestId: ID!, $teamIds: [ID!]!) {
     acceptRequestToJoinDomain(requestId: $requestId, teamIds: $teamIds) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useAcceptRequestToJoinDomainMutation_success @arguments(requestId: $requestId) @alias
     }
   }
@@ -36,23 +31,13 @@ const useAcceptRequestToJoinDomainMutation = () => {
     handlers?: Handlers
   ) => {
     return commit({
-      onCompleted: (res) => {
-        const error = res.acceptRequestToJoinDomain.error
-
-        if (!error) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: '🎉 Success! User added',
-            autoDismiss: 5,
-            key: 'acceptRequestToJoinDomainSuccess'
-          })
-          handlers?.onSuccess && handlers.onSuccess()
-        } else {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'acceptRequestToJoinDomainError'
-          })
-        }
+      onCompleted: () => {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          message: '🎉 Success! User added',
+          autoDismiss: 5,
+          key: 'acceptRequestToJoinDomainSuccess'
+        })
+        handlers?.onSuccess && handlers.onSuccess()
       },
       onError: snackOnError(atmosphere, 'acceptRequestToJoinDomainError'),
       // allow components to override default handlers

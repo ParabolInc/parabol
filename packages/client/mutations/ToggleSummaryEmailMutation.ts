@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleSummaryEmailMutation {
     toggleSummaryEmail {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleSummaryEmailMutation_team @relay(mask: false) @alias
     }
   }

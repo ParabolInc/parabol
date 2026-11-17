@@ -17,11 +17,6 @@ export const useUnlinkTeam = () => {
   const [mutation, isLoading] = useMutation<useUnlinkTeamMutation>(graphql`
     mutation useUnlinkTeamMutation($teamId: ID!, $channelId: ID!) {
       unlinkMattermostChannel(teamId: $teamId, channelId: $channelId) {
-        ... on ErrorPayload {
-          error {
-            message
-          }
-        }
         ...useUnlinkTeam_success @alias
       }
     }
@@ -55,9 +50,6 @@ export const useUnlinkTeam = () => {
               ?.setValue(linkedChannels, 'linkedChannels')
           },
           onCompleted: (data) => {
-            if (data.unlinkMattermostChannel?.error) {
-              reject(data.unlinkMattermostChannel.error.message)
-            }
             resolve(data)
           },
           onError: (error) => reject(error)

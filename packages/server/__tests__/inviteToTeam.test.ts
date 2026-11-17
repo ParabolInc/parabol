@@ -553,9 +553,7 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
     query: `
       mutation RemoveTeamMember($teamMemberId: ID!) {
         removeTeamMember(teamMemberId: $teamMemberId) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
@@ -603,7 +601,6 @@ test('Pending invites are invalidated when user is removed from org', async () =
     query: `
       mutation AddTeam($newTeam: NewTeamInput!, $invitees: [Email!]) {
         addTeam(newTeam: $newTeam, invitees: $invitees) {
-          error { message }
           team { id }
         }
       }
@@ -620,12 +617,7 @@ test('Pending invites are invalidated when user is removed from org', async () =
     query: `
       mutation RemoveOrgUsers($userIds: [ID!]!, $orgId: ID!) {
         removeOrgUsers(userIds: $userIds, orgId: $orgId) {
-          ... on RemoveOrgUsersSuccess {
-            removedUserIds
-          }
-          ... on ErrorPayload {
-            error { message }
-          }
+          removedUserIds
         }
       }
     `,

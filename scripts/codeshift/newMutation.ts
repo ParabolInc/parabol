@@ -10,7 +10,6 @@ const PROJECT_ROOT = path.join(__dirname, '../../')
 
 const toPascal = (camelStr: string) => camelStr[0].toUpperCase() + camelStr.slice(1)
 const toPayloadName = (str: string) => `${toPascal(str)}Payload`
-const toSuccessName = (str: string) => `${toPascal(str)}Success`
 
 const createServerMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
   const MUTATIONS_ROOT = path.join(
@@ -56,11 +55,11 @@ import publish from '../../../utils/publish'`
       )
     const channel = `SubscriptionChannel.${subscription.toUpperCase()}`
     const variable = subscription + 'Id'
-    const success = toSuccessName(camelMutationName)
+    const payloadName = toPayloadName(camelMutationName)
     ast
       .find(j.ReturnStatement)
       // .insertBefore(`const data = {${variable}}`)
-      .insertBefore(`publish(${channel}, ${variable}, '${success}', data, subOptions)`)
+      .insertBefore(`publish(${channel}, ${variable}, '${payloadName}', data, subOptions)`)
     ast.findVariableDeclarators('data').replaceWith(`data = {${variable}}`)
   }
 
@@ -72,16 +71,15 @@ import publish from '../../../utils/publish'`
   fs.writeFileSync(mutationPath, res)
 }
 
-const getSubscriptionExtension = (lcaseSubscription: string, successName: string) => {
+const getSubscriptionExtension = (lcaseSubscription: string, payloadName: string) => {
   if (!lcaseSubscription) return ''
   const pascalSubscription = toPascal(lcaseSubscription)
   const subscriptionPayload = `${pascalSubscription}SubscriptionPayload`
-  return '\n' + `extend union ${subscriptionPayload} = ${successName}`
+  return '\n' + `extend type ${subscriptionPayload} {\n  ${payloadName}: ${payloadName}\n}`
 }
 
 const createServerTypeDef = (camelMutationName: string, lcaseSubscription: string) => {
   const payloadName = toPayloadName(camelMutationName)
-  const successName = toSuccessName(camelMutationName)
   // simple string replacement
   const baseTypeDef = fs.readFileSync(
     path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseTypeDef.graphql'),
@@ -89,9 +87,8 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
   )
   const nextTypeDef = baseTypeDef
     .replace(/MUTATION_PAYLOAD/g, payloadName)
-    .replace(/SUCCESS_PAYLOAD/g, successName)
     .replace(/MUTATION_NAME/g, camelMutationName)
-    .concat(getSubscriptionExtension(lcaseSubscription, successName))
+    .concat(getSubscriptionExtension(lcaseSubscription, payloadName))
 
   const TYPEDEF_ROOT = path.join(
     PROJECT_ROOT,
@@ -105,22 +102,22 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
   fs.writeFileSync(payloadPath, nextTypeDef)
 }
 
-const createServerSuccessPayload = (camelMutationName: string) => {
-  const successName = toSuccessName(camelMutationName)
+const createServerPayload = (camelMutationName: string) => {
+  const payloadName = toPayloadName(camelMutationName)
   // simple string replacement
-  const baseSuccessPayload = fs.readFileSync(
-    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseSuccessPayload.ts'),
+  const basePayload = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.ts'),
     'utf-8'
   )
-  const nextTypeDef = baseSuccessPayload.replace(/SUCCESS_PAYLOAD/g, successName)
+  const nextTypeDef = basePayload.replace(/MUTATION_PAYLOAD/g, payloadName)
 
   const TYPE_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'public', 'types')
-  const payloadPath = path.join(TYPE_ROOT, `${successName}.ts`)
+  const payloadPath = path.join(TYPE_ROOT, `${payloadName}.ts`)
   fs.writeFileSync(payloadPath, nextTypeDef)
 }
 
-const addSuccessSourceToCodegen = async (camelMutationName: string) => {
-  const successName = toSuccessName(camelMutationName)
+const addPayloadSourceToCodegen = async (camelMutationName: string) => {
+  const payloadName = toPayloadName(camelMutationName)
   const codegenJSON = require('../../codegen.json')
   const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
   const {generates} = codegenJSON
@@ -128,7 +125,7 @@ const addSuccessSourceToCodegen = async (camelMutationName: string) => {
   const publicConfig = generates[publicKey]
   const {config} = publicConfig
   const {mappers} = config
-  mappers[successName] = `./types/${successName}#${successName}Source`
+  mappers[payloadName] = `./types/${payloadName}#${payloadName}Source`
   // stable stringify first to sort
   const stableString = stringify(codegenJSON)
   fs.writeFileSync(codegenPath, stableString)
@@ -260,8 +257,8 @@ EXAMPLES
   }
   createServerMutation(camelMutationName, lcaseSubscription)
   createServerTypeDef(camelMutationName, lcaseSubscription)
-  createServerSuccessPayload(camelMutationName)
-  addSuccessSourceToCodegen(camelMutationName)
+  createServerPayload(camelMutationName)
+  addPayloadSourceToCodegen(camelMutationName)
   addDummyPermission(camelMutationName)
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)

@@ -1,4 +1,0 @@
-"""
-Return value for toggleTeamDrawer mutation
-"""
-union ToggleTeamDrawerPayload = ErrorPayload | ToggleTeamDrawerSuccess

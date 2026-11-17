@@ -27,11 +27,6 @@ const mutation = graphql`
       totalVotes: $totalVotes
       maxVotesPerGroup: $maxVotesPerGroup
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false) @alias
     }
   }

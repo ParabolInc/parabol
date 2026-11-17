@@ -1,4 +1,0 @@
-"""
-Return value for updateUserTheme mutation
-"""
-union UpdateUserThemePayload = ErrorPayload | UpdateUserThemeSuccess

@@ -1,4 +1,0 @@
-"""
-Return value for updateSAML, which could be an error
-"""
-union UpdateSAMLPayload = ErrorPayload | UpdateSAMLSuccess

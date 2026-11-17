@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleAIFeaturesMutation($orgId: ID!) {
     toggleAIFeatures(orgId: $orgId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleAIFeaturesMutation_organization @relay(mask: false) @alias
     }
   }

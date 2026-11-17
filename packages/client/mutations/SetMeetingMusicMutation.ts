@@ -8,11 +8,6 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 const mutation = graphql`
   mutation SetMeetingMusicMutation($meetingId: ID!, $trackSrc: String, $isPlaying: Boolean!) {
     setMeetingMusic(meetingId: $meetingId, trackSrc: $trackSrc, isPlaying: $isPlaying) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetMeetingMusicMutation_meeting @relay(mask: false) @alias
     }
   }

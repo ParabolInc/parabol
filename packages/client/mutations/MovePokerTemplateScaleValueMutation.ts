@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation MovePokerTemplateScaleValueMutation($scaleId: ID!, $label: String!, $index: Int!) {
     movePokerTemplateScaleValue(scaleId: $scaleId, label: $label, index: $index) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...MovePokerTemplateScaleValueMutation_team @relay(mask: false) @alias
     }
   }

@@ -30,9 +30,6 @@ graphql`
 const mutation = graphql`
   mutation ArchiveOrganizationMutation($orgId: ID!) {
     archiveOrganization(orgId: $orgId) {
-      error {
-        message
-      }
       removedSuggestedActionIds
       ...ArchiveOrganizationMutation_organization @relay(mask: false)
     }

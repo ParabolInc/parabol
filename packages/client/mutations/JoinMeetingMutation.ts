@@ -100,11 +100,6 @@ graphql`
 const mutation = graphql`
   mutation JoinMeetingMutation($meetingId: ID!) {
     joinMeeting(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...JoinMeetingMutation_meeting @relay(mask: false) @alias
     }
   }

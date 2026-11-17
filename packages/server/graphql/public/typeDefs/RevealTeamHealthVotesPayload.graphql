@@ -1,4 +1,0 @@
-"""
-Result of revealing hidden votes in a Team Health meeting stage
-"""
-union RevealTeamHealthVotesPayload = ErrorPayload | RevealTeamHealthVotesSuccess

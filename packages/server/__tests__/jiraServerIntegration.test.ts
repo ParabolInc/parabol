@@ -54,15 +54,13 @@ const addJiraServerProvider = (orgId: string, cookie: string, serverBaseUrl: str
       mutation AddIntegrationProvider($input: AddIntegrationProviderInput!) {
         addIntegrationProvider(input: $input) {
           __typename
-          ... on AddIntegrationProviderSuccess {
-            provider {
-              id
-              isActive
-              teamId
-              orgId
-              ... on IntegrationProviderOAuth1 {
-                serverBaseUrl
-              }
+          provider {
+            id
+            isActive
+            teamId
+            orgId
+            ... on IntegrationProviderOAuth1 {
+              serverBaseUrl
             }
           }
         }
@@ -95,9 +93,6 @@ const signUpOrgAdmin = async () => {
 const CREATE_OAUTH1_AUTHORIZE_URL = `
   mutation CreateOAuth1AuthorizeUrl($providerId: ID!, $teamId: ID!) {
     createOAuth1AuthorizeUrl(providerId: $providerId, teamId: $teamId) {
-      error {
-        message
-      }
       url
     }
   }
@@ -204,7 +199,6 @@ test('an OAuth1 authorize URL is created for a team in the provider’s organiza
   expect(res).toEqual({
     data: {
       createOAuth1AuthorizeUrl: {
-        error: null,
         url: `${jiraServerUrl}/plugins/servlet/oauth/authorize?oauth_token=requestToken1`
       }
     }
@@ -224,7 +218,7 @@ test('an OAuth1 authorize URL is refused for a team outside the provider’s org
   })
 
   expect(res).toEqual({
-    data: {createOAuth1AuthorizeUrl: null},
+    data: null,
     errors: [
       expect.objectContaining({
         message: 'Provider is not available to this team',

@@ -20,11 +20,6 @@ graphql`
 const mutation = graphql`
   mutation BatchArchiveTasksMutation($taskIds: [ID!]!) {
     batchArchiveTasks(taskIds: $taskIds) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...BatchArchiveTasksMutation_tasks @relay(mask: false) @alias
     }
   }

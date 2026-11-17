@@ -65,11 +65,6 @@ graphql`
 const mutation = graphql`
   mutation EndCheckInMutation($meetingId: ID!) {
     endCheckIn(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...EndCheckInMutation_notification @relay(mask: false) @alias
       ...EndCheckInMutation_team @relay(mask: false) @alias
     }

@@ -33,11 +33,6 @@ graphql`
 const mutation = graphql`
   mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
     setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetOrgUserRoleMutation_organization @relay(mask: false) @alias
     }
   }

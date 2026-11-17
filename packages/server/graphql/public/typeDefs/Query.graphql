@@ -70,7 +70,7 @@ type Query {
     The text content of the reflections in the group
     """
     reflectionsContent: [String!]!
-  ): GetDemoGroupTitlePayload!
+  ): GetDemoGroupTitleSuccess!
   """
   Look up the SAML identity provider SSO URL for a given email domain
   """

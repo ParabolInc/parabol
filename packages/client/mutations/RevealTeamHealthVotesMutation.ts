@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RevealTeamHealthVotesMutation($meetingId: ID!, $stageId: ID!) {
     revealTeamHealthVotes(meetingId: $meetingId, stageId: $stageId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...RevealTeamHealthVotesMutation_meeting @relay(mask: false) @alias
     }
   }

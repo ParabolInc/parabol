@@ -36,11 +36,6 @@ const mutation = graphql`
       gcalInput: $gcalInput
       ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...StartTeamPromptMutation_team @relay(mask: false) @alias
     }
   }

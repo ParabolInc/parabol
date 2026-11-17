@@ -109,9 +109,6 @@ const ADD_ORG = `
 const ADD_TEAM = `
   mutation AddTeam($newTeam: NewTeamInput!) {
     addTeam(newTeam: $newTeam) {
-      error {
-        message
-      }
       team {
         id
       }
@@ -178,9 +175,7 @@ const MOVE_TEAM_TO_ORG = `
 const REMOVE_TEAM_MEMBER = `
   mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
     removeTeamMember(teamId: $teamId, userId: $userId) {
-      error {
-        message
-      }
+      __typename
     }
   }
 `
@@ -192,11 +187,6 @@ const createOrgAdmin = async () => {
       mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
         setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `,

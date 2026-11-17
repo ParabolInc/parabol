@@ -22,11 +22,6 @@ graphql`
 const mutation = graphql`
   mutation SetDefaultSlackChannelMutation($slackChannelId: ID!, $teamId: ID!) {
     setDefaultSlackChannel(slackChannelId: $slackChannelId, teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetDefaultSlackChannelMutation_team @relay(mask: false) @alias
     }
   }

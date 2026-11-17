@@ -1,4 +1,0 @@
-"""
-Return value for startTeamPrompt mutation, which could be an error
-"""
-union StartTeamPromptPayload = StartTeamPromptSuccess | ErrorPayload

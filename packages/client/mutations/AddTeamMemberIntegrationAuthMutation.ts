@@ -71,14 +71,7 @@ const mutation = graphql`
       oauthVerifier: $oauthVerifier
       teamId: $teamId
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on AddTeamMemberIntegrationAuthSuccess {
-        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
-      }
+      ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
     }
   }
 `

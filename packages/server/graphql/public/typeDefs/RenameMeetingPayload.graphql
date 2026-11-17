@@ -1,4 +1,0 @@
-"""
-Result of renaming a meeting
-"""
-union RenameMeetingPayload = ErrorPayload | RenameMeetingSuccess

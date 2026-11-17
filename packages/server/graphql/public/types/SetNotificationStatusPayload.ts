@@ -1,12 +1,9 @@
 import type {SetNotificationStatusPayloadResolvers} from '../resolverTypes'
 
-export type SetNotificationStatusPayloadSource =
-  | {notificationId: string}
-  | {error: {message: string}}
+export type SetNotificationStatusPayloadSource = {notificationId: string}
 
 const SetNotificationStatusPayload: SetNotificationStatusPayloadResolvers = {
   notification: (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
     return dataLoader.get('notifications').loadNonNull(source.notificationId)
   }
 }

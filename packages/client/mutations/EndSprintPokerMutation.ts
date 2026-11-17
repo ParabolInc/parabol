@@ -58,11 +58,6 @@ graphql`
 const mutation = graphql`
   mutation EndSprintPokerMutation($meetingId: ID!) {
     endSprintPoker(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...EndSprintPokerMutation_team @relay(mask: false) @alias
     }
   }

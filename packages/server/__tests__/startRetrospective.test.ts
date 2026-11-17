@@ -8,16 +8,9 @@ test('Retro is named Retro #1 by default', async () => {
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!, $name: String, $rrule: RRule, $gcalInput: CreateGcalEventInput) {
         startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-              name
-            }
+          meeting {
+            id
+            name
           }
         }
       }
@@ -48,16 +41,9 @@ test('Single Retro can be named', async () => {
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!, $name: String, $rrule: RRule, $gcalInput: CreateGcalEventInput) {
         startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
-          ... on StartRetrospectiveSuccess {
-            meeting {
-              id
-              name
-            }
+          meeting {
+            id
+            name
           }
         }
       }

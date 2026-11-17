@@ -1,12 +1,10 @@
 import isValid from '../../isValid'
 import type {SetSlackNotificationPayloadResolvers} from '../resolverTypes'
 
-export type SetSlackNotificationPayloadSource =
-  | {
-      slackNotificationIds: string[]
-      userId: string
-    }
-  | {error: {message: string}}
+export type SetSlackNotificationPayloadSource = {
+  slackNotificationIds: string[]
+  userId: string
+}
 
 const SetSlackNotificationPayload: SetSlackNotificationPayloadResolvers = {
   slackNotifications: async (source, _args, {dataLoader}) => {

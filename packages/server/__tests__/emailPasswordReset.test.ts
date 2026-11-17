@@ -3,17 +3,9 @@ import {getTestEmail, sendIntranet, signUp} from './common'
 const EMAIL_PASSWORD_RESET = `
   mutation EmailPasswordReset($email: ID!) {
     emailPasswordReset(email: $email) {
-      ... on ErrorPayload {
-        error {
-          title
-          message
-        }
-      }
-      ... on EmailPasswordResetSuccess {
-        success
-        userErrors {
-          code
-        }
+      success
+      userErrors {
+        code
       }
     }
   }

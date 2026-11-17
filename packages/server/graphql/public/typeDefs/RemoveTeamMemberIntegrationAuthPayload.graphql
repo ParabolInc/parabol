@@ -1,4 +1,0 @@
-"""
-Result of removing a team member's integration authentication
-"""
-union RemoveTeamMemberIntegrationAuthPayload = ErrorPayload | RemoveTeamMemberIntegrationAuthSuccess

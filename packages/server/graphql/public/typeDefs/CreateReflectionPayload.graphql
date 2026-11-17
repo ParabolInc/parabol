@@ -7,7 +7,7 @@ wraps it, both persisted to the database. The meeting's group phase is also unlo
 meeting. The payload is broadcast over the MEETING subscription channel so all
 participants see the new card in real time.
 
-Failure cases surfaced via error:
+Failure cases fail the mutation with a GraphQL error:
 - promptId does not match a known TemplatePrompt ("Category not found")
 - meetingId does not match a known meeting ("Meeting not found")
 - The meeting has already ended ("Meeting already ended")
@@ -16,27 +16,19 @@ Failure cases surfaced via error:
 """
 type CreateReflectionPayload {
   """
-  Present when the mutation failed. Null on success.
-  """
-  error: StandardMutationError
-
-  """
   The retrospective meeting in which the reflection was created.
-  Null when error is non-null.
   """
   meeting: NewMeeting
 
   """
   The ID of the newly created RetroReflection. Useful for optimistic updates
   before the full reflection object is needed.
-  Null when error is non-null.
   """
   reflectionId: ID
 
   """
   The newly created RetroReflection containing the content, promptId, and
   creator information.
-  Null when error is non-null.
   """
   reflection: RetroReflection
 
@@ -45,7 +37,6 @@ type CreateReflectionPayload {
   Every reflection starts in its own group; groups are later merged during the
   group phase. The group's title is initially derived from the reflection text
   and may be asynchronously upgraded to an AI-generated title.
-  Null when error is non-null.
   """
   reflectionGroup: RetroReflectionGroup
 

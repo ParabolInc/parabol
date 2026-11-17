@@ -15,9 +15,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateUserProfileMutation($updatedUser: UpdateUserProfileInput!) {
     updateUserProfile(updatedUser: $updatedUser) {
-      error {
-        message
-      }
       ...UpdateUserProfileMutation_team @relay(mask: false)
     }
   }

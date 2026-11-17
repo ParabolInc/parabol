@@ -22,11 +22,6 @@ const mutation = graphql`
     $rrule: RRule
   ) {
     updateMeetingSeries(meetingSeriesId: $meetingSeriesId, name: $name, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateMeetingSeriesMutation_series @relay(mask: false) @alias
     }
   }

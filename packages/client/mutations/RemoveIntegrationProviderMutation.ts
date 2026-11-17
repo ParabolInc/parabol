@@ -19,11 +19,6 @@ const mutation = graphql`
   mutation RemoveIntegrationProviderMutation($providerId: ID!) {
     removeIntegrationProvider(providerId: $providerId) {
       ...RemoveIntegrationProviderMutation_organization @alias
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
     }
   }
 `

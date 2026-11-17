@@ -1,4 +1,0 @@
-"""
-Return value for modifyCheckInQuestion, which could be an error
-"""
-union ModifyCheckInQuestionPayload = ErrorPayload | ModifyCheckInQuestionSuccess

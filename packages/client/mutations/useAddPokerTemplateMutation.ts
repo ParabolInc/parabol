@@ -27,11 +27,6 @@ graphql`
 const mutation = graphql`
   mutation useAddPokerTemplateMutation($teamId: ID!, $parentTemplateId: ID) {
     addPokerTemplate(teamId: $teamId, parentTemplateId: $parentTemplateId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...useAddPokerTemplateMutation_team @relay(mask: false) @alias
     }
   }

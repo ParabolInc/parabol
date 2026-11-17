@@ -1,4 +1,0 @@
-"""
-Result of removing an integration provider configuration from an organization or team
-"""
-union RemoveIntegrationProviderPayload = ErrorPayload | RemoveIntegrationProviderSuccess

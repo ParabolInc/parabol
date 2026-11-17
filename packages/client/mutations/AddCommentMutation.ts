@@ -29,11 +29,6 @@ graphql`
 const mutation = graphql`
   mutation AddCommentMutation($comment: AddCommentInput!) @raw_response_type {
     addComment(comment: $comment) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddCommentMutation_meeting @relay(mask: false) @alias
     }
   }

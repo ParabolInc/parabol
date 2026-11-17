@@ -90,7 +90,7 @@ test('a facilitator whose team member row is gone does not stall the series', as
   const series = await createSeries(lead.teamId, facilitator.userId)
 
   const res = await processRecurrence()
-  expect(res.data.processRecurrence.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await selectSeries(series.id)
   expect(after.cancelledAt).toBeNull()

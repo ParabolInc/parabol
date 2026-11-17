@@ -20,11 +20,6 @@ graphql`
 const mutation = graphql`
   mutation PokerResetDimensionMutation($meetingId: ID!, $stageId: ID!) {
     pokerResetDimension(meetingId: $meetingId, stageId: $stageId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PokerResetDimensionMutation_meeting @relay(mask: false) @alias
     }
   }

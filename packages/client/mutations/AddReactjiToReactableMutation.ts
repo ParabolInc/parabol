@@ -32,11 +32,6 @@ const mutation = graphql`
       isRemove: $isRemove
       meetingId: $meetingId
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddReactjiToReactableMutation_meeting @relay(mask: false) @alias
     }
   }

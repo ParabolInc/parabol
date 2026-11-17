@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation AddTranscriptionBotMutation($meetingId: ID!, $videoMeetingURL: String!) {
     addTranscriptionBot(meetingId: $meetingId, videoMeetingURL: $videoMeetingURL) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...AddTranscriptionBotMutation_meeting @relay(mask: false) @alias
     }
   }

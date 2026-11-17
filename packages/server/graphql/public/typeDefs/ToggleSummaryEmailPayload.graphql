@@ -1,4 +1,0 @@
-"""
-Return value for toggleSummaryEmail mutation
-"""
-union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess

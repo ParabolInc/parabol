@@ -31,7 +31,7 @@ type TeamSubscriptionPayload {
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
-  UpdateCreditCardPayload: UpdateCreditCardPayload
+  UpdateCreditCardPayload: UpdateCreditCardSuccess
   UpdateFacilitatorRotationSuccess: UpdateFacilitatorRotationSuccess
   UpdateTeamNamePayload: UpdateTeamNamePayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess

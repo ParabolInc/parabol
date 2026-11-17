@@ -3,10 +3,8 @@ import {sendPublic, signUp} from './common'
 const START_RETROSPECTIVE = `
   mutation StartRetrospective($teamId: ID!) {
     startRetrospective(teamId: $teamId) {
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }

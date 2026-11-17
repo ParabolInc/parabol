@@ -1,4 +1,0 @@
-"""
-Return value for shareTopic, which could be an error
-"""
-union ShareTopicPayload = ErrorPayload | ShareTopicSuccess
