@@ -3,7 +3,6 @@ import {decode} from 'jsonwebtoken'
 import ms from 'ms'
 import JiraIssueId from 'parabol-client/integrations/jira/shared/JiraIssueId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import AtlassianServerManager, {
   type JiraIssueRaw,
@@ -192,24 +191,22 @@ export const jiraIssue = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, cloudId, issueKey, taskId, viewerId}) => {
-          const [storedAuth, estimates] = await Promise.all([
-            parent.get('atlassianAuth').load({teamId, userId}),
+          const [auth, estimates] = await Promise.all([
+            parent.get('freshAtlassianAuth').load({teamId, userId}),
             taskId ? parent.get('latestTaskEstimates').load(taskId) : []
           ])
-          if (!storedAuth) return null
-          // a cached issue needs no token, so an expired one is only refreshed on the way to Jira
-          const getManager = async () => {
-            const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-            return auth ? new AtlassianServerManager(auth.accessToken) : null
-          }
+          if (!auth) return null
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
 
           const cacheImagesUpdateEstimates = async (issueRes: JiraIssueRaw) => {
             const {fields} = issueRes
-            const manager = await getManager()
-            const renderedDescription = issueRes.renderedFields.description ?? ''
-            const updatedDescription = manager
-              ? await processJiraImages(manager, cloudId, teamId, renderedDescription)
-              : renderedDescription
+            const updatedDescription = await processJiraImages(
+              manager,
+              cloudId,
+              teamId,
+              issueRes.renderedFields.description ?? ''
+            )
             // update our records
             await Promise.all(
               estimates.map((estimate) => {
@@ -306,11 +303,7 @@ export const jiraIssue = (
           const redisKey = `jira:${cloudId}:${issueKey}:["*all"]["names","schema"]`
           const issueRes = await redisStoreAndNetwork(
             redisKey,
-            async () => {
-              const manager = await getManager()
-              if (!manager) return new JiraNoAccessResponseError('Atlassian auth could not refresh')
-              return manager.getIssue(cloudId, issueKey, ['*all'], ['names', 'schema'])
-            },
+            () => manager.getIssue(cloudId, issueKey, ['*all'], ['names', 'schema']),
             cacheImagesUpdateEstimates,
             {
               onUpdate: (res) => {
@@ -346,25 +339,13 @@ export const atlassianCloudNameLookup = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
-          const storedAuth = await parent.get('atlassianAuth').load({teamId, userId})
-          if (!storedAuth) return {}
-          const result = await redisStoreAndNetwork(
-            `atlassian:cloudNames:${teamId}:${userId}:${storedAuth.cloudIds.toSorted().join(',')}`,
-            async () => {
-              const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-              if (!auth) return new JiraNoAccessResponseError('Atlassian auth could not refresh')
-              const lookup = await new AtlassianServerManager(auth.accessToken).getCloudNameLookup()
-              return lookup instanceof RateLimitError
-                ? new Error('Atlassian rate limited the site lookup')
-                : lookup
-            },
-            (lookup) => lookup,
-            {maxAge: ms('1h')}
-          )
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) return {}
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          const result = await manager.getCloudNameLookup()
           if (result instanceof Error) {
-            if (!(result instanceof JiraNoAccessResponseError)) {
-              logError(result, {userId, tags: {teamId}})
-            }
+            logError(result, {userId, tags: {teamId}})
             return {}
           }
           return result
@@ -390,8 +371,17 @@ export const atlassianCloudName = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({cloudId, teamId, userId}) => {
-          const lookup = await parent.get('atlassianCloudNameLookup').load({teamId, userId})
-          return lookup[cloudId] ?? ''
+          const result = await redisStoreAndNetwork(
+            `atlassian:cloudName:${cloudId}`,
+            async () => {
+              const lookup = await parent.get('atlassianCloudNameLookup').load({teamId, userId})
+              const name = lookup[cloudId]
+              return name ? {name} : new Error('Atlassian site is not accessible')
+            },
+            ({name}) => name,
+            {maxAge: ms('1h')}
+          )
+          return result instanceof Error ? '' : result
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : ''))
