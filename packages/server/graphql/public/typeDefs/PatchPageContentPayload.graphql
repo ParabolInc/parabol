@@ -1,0 +1,7 @@
+"""
+Return value for patchPageContent mutation
+"""
+type PatchPageContentPayload {
+  "The edited page"
+  page: Page!
+}
