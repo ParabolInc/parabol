@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
@@ -19,7 +20,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
 
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
-    .select(['orgId', 'clientType'])
+    .select(['orgId', 'clientId', 'clientType'])
     .where('id', '=', providerId)
     .executeTakeFirst()
 
@@ -35,16 +36,26 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
   const clientSecret =
     isChangingClientType && clientType === 'confidential' ? generateOAuthClientSecret() : null
 
-  await pg
-    .updateTable('OAuthAPIProvider')
-    .set({
-      name: name ?? undefined,
-      redirectUris: redirectUris ?? undefined,
-      scopes: scopes || undefined,
-      ...(isChangingClientType ? {clientType, clientSecret} : {})
-    })
-    .where('id', '=', providerId)
-    .execute()
+  await pg.transaction().execute(async (trx) => {
+    await trx
+      .updateTable('OAuthAPIProvider')
+      .set({
+        name: name ?? undefined,
+        redirectUris: redirectUris ?? undefined,
+        scopes: scopes || undefined,
+        ...(isChangingClientType ? {clientType, clientSecret} : {})
+      })
+      .where('id', '=', providerId)
+      .execute()
+    if (isChangingClientType) {
+      await trx
+        .updateTable('OAuthAPIGrant')
+        .set({revokedAt: sql`now()`})
+        .where('clientId', '=', provider.clientId)
+        .where('revokedAt', 'is', null)
+        .execute()
+    }
+  })
   dataLoader.get('oAuthProviders').clear(providerId)
 
   const data = {
