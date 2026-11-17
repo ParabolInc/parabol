@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
@@ -8,7 +9,6 @@ import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
-import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getValidPromptTemplateId from '../../mutations/helpers/getValidPromptTemplateId'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -42,7 +42,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       getNextFacilitatorUserId(teamId, viewerId, dataLoader),
       dataLoader.get('teamMembers').loadNonNull(toTeamMemberId(teamId, viewerId))
     ])
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
   const {
     id: meetingSettingsId,
     totalVotes,
@@ -65,7 +65,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     try {
       await scheduleLock.lock(0)
     } catch {
-      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+      throw new GraphQLError('Meeting already scheduled', {extensions: {code: 'CONFLICT'}})
     }
     const meetingSeries = await createMeetingSeries({
       meetingType,
@@ -115,7 +115,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     dataLoader
   )
   if (!meeting) {
-    return {error: {message: 'Meeting already started'}}
+    throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   const meetingId = meeting.id
   const meetingMember = createMeetingMember(meeting, teamMember)

@@ -1,45 +1,47 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, UPDATES, VOTE} from '../../../../client/utils/constants'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import getKysely from '../../../postgres/getKysely'
 import type {RetroMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {primePhases} from '../../mutations/helpers/createNewMeetingPhases'
 import type {MutationResolvers} from '../resolverTypes'
 
 const resetRetroMeetingToGroupStage: MutationResolvers['resetRetroMeetingToGroupStage'] = async (
   _source,
   {meetingId},
-  {authToken, socketId: mutatorId, dataLoader}
+  {socketId: mutatorId, dataLoader}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {phases, meetingType} = meeting
   if (meetingType !== 'retrospective') {
-    return standardError(new Error('Meeting type is not retrospective'), {userId: viewerId})
+    throw new GraphQLError('Meeting type is not retrospective', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // VALIDATION
   const groupPhase = phases.find((phase) => phase.phaseType === GROUP)
-  if (!groupPhase) return standardError(new Error('Group phase not found'), {userId: viewerId})
+  if (!groupPhase)
+    throw new GraphQLError('Group phase not found', {extensions: {code: 'NOT_FOUND'}})
   const resetToStage = groupPhase.stages.find((stage) => stage.phaseType === GROUP)
-  if (!resetToStage) return standardError(new Error('Group stage not found'), {userId: viewerId})
+  if (!resetToStage)
+    throw new GraphQLError('Group stage not found', {extensions: {code: 'NOT_FOUND'}})
   if (!resetToStage.isNavigableByFacilitator)
-    return standardError(new Error('Group stage has not started'), {userId: viewerId})
+    throw new GraphQLError('Group stage has not started', {extensions: {code: 'CONFLICT'}})
   if (!resetToStage.isComplete)
-    return standardError(new Error('Group stage has not finished'), {userId: viewerId})
+    throw new GraphQLError('Group stage has not finished', {extensions: {code: 'CONFLICT'}})
   if (meeting.endedAt)
-    return standardError(new Error('The meeting has already ended'), {userId: viewerId})
+    throw new GraphQLError('The meeting has already ended', {extensions: {code: 'CONFLICT'}})
 
   // RESOLUTION
   const discussionPhase = getPhase(phases, DISCUSS)

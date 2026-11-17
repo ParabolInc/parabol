@@ -1,6 +1,6 @@
+import {GraphQLError} from 'graphql'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {dataLoader}) => {
@@ -8,15 +8,18 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
   const now = new Date()
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
-    return {error: {message: 'Organization not found'}}
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
   // VALIDATION
   if (organization.tier !== 'starter') {
-    return standardError(new Error('Cannot start trial for organization on paid tier'))
+    throw new GraphQLError('Cannot start trial for organization on paid tier', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   if (organization.trialStartDate) {
-    return standardError(
-      new Error(`Trial already started for org. Start date: ${organization.trialStartDate}`)
+    throw new GraphQLError(
+      `Trial already started for org. Start date: ${organization.trialStartDate}`,
+      {extensions: {code: 'CONFLICT'}}
     )
   }
 

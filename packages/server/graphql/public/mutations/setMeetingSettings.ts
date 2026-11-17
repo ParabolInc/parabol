@@ -1,10 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSettings} from '../../../postgres/types'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
 
 // Resolve a phase's enabled state from an explicit flag and the existing phaseTypes
@@ -22,16 +21,15 @@ const getFlagState = (
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
   {settingsId, checkinEnabled, teamHealthEnabled, reviewPastTasksEnabled, disableAnonymity},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const settings = (await dataLoader.get('meetingSettings').load(settingsId)) as MeetingSettings
   if (!settings) {
-    return standardError(new Error('Settings not found'), {userId: viewerId})
+    throw new GraphQLError('Settings not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

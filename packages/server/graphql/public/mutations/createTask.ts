@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import type {Insertable} from 'kysely'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {getAllNodesAttributesByType} from 'parabol-client/shared/tiptap/getAllNodesAttributesByType'
@@ -165,7 +166,7 @@ const createTask: MutationResolvers['createTask'] = async (
   ])
   const firstError = errors.find(Boolean)
   if (firstError) {
-    return {error: {message: firstError as string}}
+    throw new GraphQLError(firstError as string, {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const content = convertToTipTap(newTask.content)
@@ -181,7 +182,9 @@ const createTask: MutationResolvers['createTask'] = async (
     info
   )
   if (integrationRes.error) {
-    return {error: {message: integrationRes.error.message}}
+    throw new GraphQLError(integrationRes.error.message, {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
   }
 
   // RESOLUTION

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
@@ -102,7 +103,9 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     return {rows}
   } catch (error) {
     Logger.error('Error executing Org Activity Report:', error)
-    return {error: {message: 'Error executing Org Activity Report'}}
+    throw new GraphQLError('Error executing Org Activity Report', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
 }
 

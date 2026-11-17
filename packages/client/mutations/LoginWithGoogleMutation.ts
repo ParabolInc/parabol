@@ -20,7 +20,7 @@ const mutation = graphql`
       invitationToken: $invitationToken
       params: $params
     ) {
-      error {
+      userErrors {
         message
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
@@ -44,9 +44,9 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Naviga
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError} = loginWithGoogle
+      const [userError] = loginWithGoogle.userErrors
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!uiError && !errors) {
+      if (!userError && !errors) {
         handleSuccessfulLogin(atmosphere, loginWithGoogle)
         const redirectPath = '/meetings'
 

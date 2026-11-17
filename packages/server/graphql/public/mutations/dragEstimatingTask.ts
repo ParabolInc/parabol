@@ -1,40 +1,38 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const dragEstimatingTask: MutationResolvers['dragEstimatingTask'] = async (
   _source,
   {meetingId, taskId, newPositionIndex},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const viewerId = getUserId(authToken)
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   const {endedAt, phases} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   const estimatePhase = getPhase(phases, 'ESTIMATE')
   if (!estimatePhase) {
-    return standardError(new Error('Meeting phase not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting phase not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {stages} = estimatePhase
   const taskIds = stages.map(({taskId}) => taskId)
   const numberOfTasks = new Set(taskIds).size
   if (newPositionIndex < 0 || newPositionIndex >= numberOfTasks) {
-    return standardError(new Error('Invalid position index'), {userId: viewerId})
+    throw new GraphQLError('Invalid position index', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const draggedStages = stages.filter((stage) => stage.taskId === taskId)
   if (!draggedStages.length) {
-    return standardError(new Error('No meeting stages were found'), {userId: viewerId})
+    throw new GraphQLError('No meeting stages were found', {extensions: {code: 'NOT_FOUND'}})
   }
   const stageIds = draggedStages.map((stage) => stage.id)
 

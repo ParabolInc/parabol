@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import publish from '../../../utils/publish'
@@ -14,17 +15,19 @@ const updateOrg: MutationResolvers['updateOrg'] = async (
 
   // VALIDATION
   if (!name) {
-    return {error: {message: 'Must provide a name'}}
+    throw new GraphQLError('Must provide a name', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const normalizedName = name.trim()
   if (normalizedName.length < 2) {
-    return {error: {message: 'The “A Team” had a longer name than that'}}
+    throw new GraphQLError('The “A Team” had a longer name than that', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (normalizedName.length > 50) {
-    return {
-      error: {message: 'That isn’t very memorable. Maybe shorten it up?'}
-    }
+    throw new GraphQLError('That isn’t very memorable. Maybe shorten it up?', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

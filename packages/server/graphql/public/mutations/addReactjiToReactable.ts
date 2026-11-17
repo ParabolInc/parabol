@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
@@ -48,19 +49,19 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const reactable = await getReactable(reactableDBId, reactableType, dataLoader)
 
   if (!reactable) {
-    return {error: {message: `Item does not exist`}}
+    throw new GraphQLError('Item does not exist', {extensions: {code: 'NOT_FOUND'}})
   }
   const {reactjis} = reactable
   const verifiedType = getReactableType(reactable)
   if (verifiedType !== reactableType) {
-    return {error: {message: `Unknown item`}}
+    throw new GraphQLError('Unknown item', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   // VALIDATION
   // the emoji data is megabytes of heap once parsed, so the first reactji evaluates it instead of every server's startup
   const {default: emojiIds} = await import(/* webpackMode: "eager" */ '../../../utils/emojiIds')
   if (!emojiIds.includes(reactji)) {
-    return {error: {message: `invalid emoji`}}
+    throw new GraphQLError('invalid emoji', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   if (!isRemove) {
@@ -68,7 +69,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     const nextReactjiId = `${reactableId}:${reactji}`
     const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
     if (!isReactjiPresent && groupedReactjis.length >= Threshold.MAX_REACTJIS) {
-      return {error: {message: `Reactji limit reached`}}
+      throw new GraphQLError('Reactji limit reached', {extensions: {code: 'CONFLICT'}})
     }
   }
 

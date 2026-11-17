@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
@@ -9,6 +10,7 @@ import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
+import userErrorResult from './helpers/userErrorResult'
 
 const verifyEmail: MutationResolvers['verifyEmail'] = async (
   _source,
@@ -25,12 +27,12 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     .executeTakeFirst()
 
   if (!emailVerification) {
-    return {error: {message: 'Invalid verification token'}}
+    return userErrorResult('TOKEN_INVALID', 'Invalid verification token')
   }
 
   const {email, expiration, hashedPassword, pseudoId, invitationToken} = emailVerification
   if (expiration < now) {
-    return {error: {message: 'Verification token expired'}}
+    return userErrorResult('TOKEN_EXPIRED', 'Verification token expired')
   }
 
   const user = await getUserByEmail(email)
@@ -38,7 +40,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   if (user) {
     const {id: userId, identities, rol, isRemoved} = user
     if (isRemoved) {
-      return {error: {message: 'This account has been removed'}}
+      return userErrorResult('ACCOUNT_REMOVED', 'This account has been removed')
     }
     const localIdentity = identities.find(
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
@@ -55,8 +57,9 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     return {userId, isNewUser: false}
   }
   if (!hashedPassword) {
-    // should be impossible
-    return {error: {message: 'Invalid hash for email. Please reverify'}}
+    throw new GraphQLError('Invalid hash for email. Please reverify', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
   // user does not exist, create them bootstrap
   const newUser = await createNewLocalUser({

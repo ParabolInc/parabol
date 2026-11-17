@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import AuthToken from '../../../database/types/AuthToken'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createImposterToken: MutationResolvers['createImposterToken'] = async (
@@ -22,7 +22,7 @@ const createImposterToken: MutationResolvers['createImposterToken'] = async (
       : null
 
   if (!user) {
-    return standardError(new Error('User not found'), {userId: viewerId})
+    throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

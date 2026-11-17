@@ -1,34 +1,29 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import {getUserId} from '../../../utils/authorization'
 import {getFeatureFlag} from '../../../utils/featureFlags'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = async (
   _source,
   {flagName, subjects},
-  {authToken}
+  _context
 ) => {
   const pg = getKysely()
-
-  const viewerId = getUserId(authToken)
 
   const subjectKeys = Object.keys(subjects)
 
   if (subjectKeys.length === 0) {
-    return standardError(new Error('At least one subject type must be provided'), {
-      userId: viewerId
+    throw new GraphQLError('At least one subject type must be provided', {
+      extensions: {code: 'BAD_USER_INPUT'}
     })
   }
 
   const featureFlag = getFeatureFlag(flagName)
 
   if (!featureFlag) {
-    return standardError(new Error('Feature flag not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Feature flag not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {featureName, scope} = featureFlag
@@ -89,8 +84,9 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
   }
 
   if (deletedCount === 0) {
-    return standardError(
-      new Error('No feature flag owners were removed. Check the scope and subjects provided.')
+    throw new GraphQLError(
+      'No feature flag owners were removed. Check the scope and subjects provided.',
+      {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
 

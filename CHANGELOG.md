@@ -5,6 +5,45 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.37.1](https://github.com/ParabolInc/parabol/compare/v15.37.0...v15.37.1) (2026-11-17)
+
+
+### Fixed
+
+* **server:** rename the NewMeeting.slackTs drop migration so it sorts last ([#14259](https://github.com/ParabolInc/parabol/issues/14259)) ([58c1e90](https://github.com/ParabolInc/parabol/commit/58c1e90d15ef5a8bff12d58da7de93eea73109e9))
+
+## [15.37.0](https://github.com/ParabolInc/parabol/compare/v15.36.2...v15.37.0) (2026-11-17)
+
+
+### Added
+
+* **metrics:** label GraphQL latency by whether a vendor made it slow ([#14248](https://github.com/ParabolInc/parabol/issues/14248)) ([d01d195](https://github.com/ParabolInc/parabol/commit/d01d195bdd7d6ff10ce53f9f3066e68d87e2b4be))
+* **server:** return typed userErrors from sign-in and invitation flows ([#14158](https://github.com/ParabolInc/parabol/issues/14158)) ([1047755](https://github.com/ParabolInc/parabol/commit/1047755aec892040e00edde53ddea077adc33d3b))
+* **server:** throw coded GraphQLErrors instead of returning ErrorPayloads ([#14150](https://github.com/ParabolInc/parabol/issues/14150)) ([424b3bb](https://github.com/ParabolInc/parabol/commit/424b3bbea12b0b86ac793394396ac7c32cb7defc))
+
+
+### Fixed
+
+* **pages:** keep the sharing popup's role dropdown on one line ([#14257](https://github.com/ParabolInc/parabol/issues/14257)) ([fe5d3ea](https://github.com/ParabolInc/parabol/commit/fe5d3ea618c2dadb2f930c3ae2808582db84ef03))
+* **pages:** put the drag handle on the hovered Page block, not the next one ([#14255](https://github.com/ParabolInc/parabol/issues/14255)) ([ff02b24](https://github.com/ParabolInc/parabol/commit/ff02b242296ca801a6c4ba5f303c09b1d22c003d))
+* **server:** disconnect a dead OAuth2 grant without logging it as an error ([#14175](https://github.com/ParabolInc/parabol/issues/14175)) ([d57a1f2](https://github.com/ParabolInc/parabol/commit/d57a1f2563ba4f63f529bce563f426902e293764))
+* **server:** keep a session that is already current when another tab refreshes it ([#14172](https://github.com/ParabolInc/parabol/issues/14172)) ([aecfd6b](https://github.com/ParabolInc/parabol/commit/aecfd6b2589d210085898ae820f3b396e9fdd614))
+* **server:** log a dead MS Teams or Mattermost webhook as a warning and refuse Teams app links ([#14179](https://github.com/ParabolInc/parabol/issues/14179)) ([6f9d4a4](https://github.com/ParabolInc/parabol/commit/6f9d4a4780f3018da5e9816eb9e923e2e4718dc1))
+* **server:** log a refused subscription as a warning, with its user and operation ([#14173](https://github.com/ParabolInc/parabol/issues/14173)) ([13b7405](https://github.com/ParabolInc/parabol/commit/13b740501f496c01655e7e111880d6b4df00fb4f))
+* **server:** log a SCIM refusal of a bad token, unknown resource or duplicate user as a warning ([#14178](https://github.com/ParabolInc/parabol/issues/14178)) ([369007d](https://github.com/ParabolInc/parabol/commit/369007d4320d71f09ba10c30b4a6095579d9aefa))
+* **server:** log an auth token the server rejects as a warning, not an error ([#14176](https://github.com/ParabolInc/parabol/issues/14176)) ([17176a1](https://github.com/ParabolInc/parabol/commit/17176a18d378e7abdc1249dc30f89b4439c13341))
+* **server:** read the LoginSAML payload as the signed-in user ([#14170](https://github.com/ParabolInc/parabol/issues/14170)) ([e79c187](https://github.com/ParabolInc/parabol/commit/e79c1870880602e46ad448c59a255c7e8f468faa))
+* **server:** refresh an expired GitLab token before listing issues ([#14180](https://github.com/ParabolInc/parabol/issues/14180)) ([32381f9](https://github.com/ParabolInc/parabol/commit/32381f9c9f0f3dca4e380c4a108b0a04e7f0f921))
+* **server:** stop logging a request the client aborted as a handler that did not respond ([#14169](https://github.com/ParabolInc/parabol/issues/14169)) ([296ca7f](https://github.com/ParabolInc/parabol/commit/296ca7f97996cb3551e7801b566d49f7be97f78d))
+* **server:** stop refusing SCIM users over a phone or email type label Parabol ignores ([#14177](https://github.com/ParabolInc/parabol/issues/14177)) ([6895100](https://github.com/ParabolInc/parabol/commit/6895100040e9d2e9ee60bc4a690c0e0c85dfc8b7))
+* **server:** stop reporting a quantity mismatch on every Stripe invoice ([#14171](https://github.com/ParabolInc/parabol/issues/14171)) ([51722f3](https://github.com/ParabolInc/parabol/commit/51722f368abfa031fe14f02c1c9fbb9788d41a60))
+* **server:** treat a GitHub issue that no longer resolves as a refused request, not an error ([#14209](https://github.com/ParabolInc/parabol/issues/14209)) ([ab45302](https://github.com/ParabolInc/parabol/commit/ab4530231f70d642d4bd412502ca0fe290aa62a9))
+
+
+### Changed
+
+* **server:** drop NewMeeting.slackTs ([#14201](https://github.com/ParabolInc/parabol/issues/14201)) ([b3464a9](https://github.com/ParabolInc/parabol/commit/b3464a9696025780a1a7d37474a051b842f7d71b))
+
 ## [15.36.2](https://github.com/ParabolInc/parabol/compare/v15.36.1...v15.36.2) (2026-11-16)
 
 

@@ -165,7 +165,7 @@ test('a team member who does not own the series cannot change it', async () => {
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(participant.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -623,7 +623,7 @@ test('a departed owner does not hand the group to a member of one of its teams',
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
 // A hard-deleted owner nulls ownerUserId via ON DELETE SET NULL. Team membership must still not
@@ -659,7 +659,7 @@ test('an ownerless group is not administered by a member of one of its teams', a
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
 // A series scheduled as a group stays a group for life. Handing the last survivor back to its
@@ -703,7 +703,7 @@ test('the last live series of a group is administered by the org, not its team',
     variables: {meetingSeriesId: MeetingSeriesId.join(ownTeamSeries.id), name: 'Ours Now'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(memberRes.data.updateMeetingSeries.error).toBeTruthy()
+  expect(memberRes.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 
   // the org's billing leader still administers it, so it is never stranded
   const leaderRes = await sendPublic({

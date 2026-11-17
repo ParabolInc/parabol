@@ -1,6 +1,6 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const dismissSuggestedAction: MutationResolvers['dismissSuggestedAction'] = async (
@@ -14,11 +14,11 @@ const dismissSuggestedAction: MutationResolvers['dismissSuggestedAction'] = asyn
   // AUTH
   const suggestedAction = await dataLoader.get('suggestedActions').load(suggestedActionId)
   if (!suggestedAction) {
-    return standardError(new Error('Suggested action not found'), {userId: viewerId})
+    throw new GraphQLError('Suggested action not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {userId} = suggestedAction
   if (userId !== viewerId) {
-    return standardError(new Error('Not authenticated'), {userId: viewerId})
+    throw new GraphQLError('Not authenticated', {extensions: {code: 'UNAUTHENTICATED'}})
   }
 
   // RESOLUTION

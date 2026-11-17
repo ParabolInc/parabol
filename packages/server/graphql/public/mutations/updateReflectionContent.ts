@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
@@ -6,7 +7,6 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {embedRetroReflection} from '../../mutations/helpers/embedRetroReflection'
 import updateGroupTitle from '../../mutations/helpers/updateGroupTitle'
 import type {MutationResolvers} from '../resolverTypes'
@@ -24,22 +24,24 @@ const updateReflectionContent: MutationResolvers['updateReflectionContent'] = as
   const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   dataLoader.get('retroReflections').clear(reflectionId)
-  if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
+  if (!reflection) throw new GraphQLError('Reflection not found', {extensions: {code: 'NOT_FOUND'}})
   const {creatorId, meetingId, reflectionGroupId, promptId} = reflection
   const reflectPrompt = await dataLoader.get('templatePrompts').load(promptId)
-  if (!reflectPrompt) return standardError(new Error('Category not found'), {userId: viewerId})
+  if (!reflectPrompt)
+    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases, teamId} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (isPhaseComplete('group', phases)) {
-    return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
+    throw new GraphQLError('Meeting phase already ended', {extensions: {code: 'CONFLICT'}})
   }
   if (creatorId !== viewerId) {
-    return standardError(new Error('Reflection not found'), {userId: viewerId})
+    throw new GraphQLError('Reflection not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
-  if (content && content.length > 2000) return {error: {message: 'Reflection content is too long'}}
+  if (content && content.length > 2000)
+    throw new GraphQLError('Reflection content is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   const normalizedContent = convertToTipTap(content)
 
   // RESOLUTION

@@ -597,9 +597,10 @@ test('updateTemplateCategory keeps standup templates in the standup category', a
     variables: {templateId, mainCategory: 'retrospective'},
     cookie
   })
-  expect(rejected.data.updateTemplateCategory.error.message).toBe(
-    'Standup templates stay in the standup category'
-  )
+  expect(rejected.errors?.[0]).toMatchObject({
+    message: 'Standup templates stay in the standup category',
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
 
   const allowed = await sendPublic({
     query: UPDATE_TEMPLATE_CATEGORY,

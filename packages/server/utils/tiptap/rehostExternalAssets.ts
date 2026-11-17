@@ -9,6 +9,7 @@ import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
 import {hostUserAsset} from '../../graphql/public/mutations/helpers/hostUserAsset'
 import {validateScope} from '../../graphql/public/mutations/uploadUserAsset'
 import {CipherId} from '../CipherId'
+import isExpectedError from '../isExpectedError'
 import {Logger} from '../Logger'
 import logError from '../logError'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
@@ -96,7 +97,6 @@ const hostAsUser = async (pageId: number, sourceUrl: URL, userId: string) => {
     const authToken = new AuthToken({sub: userId, tms})
     const pageKey = CipherId.toClient(pageId, 'page')
     const scopeCode = await validateScope(authToken, 'Page', pageKey, dataLoader)
-    if (typeof scopeCode !== 'string') return scopeCode
     return await hostUserAsset(sourceUrl, authToken, 'Page', scopeCode, dataLoader)
   } finally {
     dataLoader.dispose()
@@ -115,14 +115,13 @@ const rehostAsset = (
   if (inFlight.has(key)) return
   const rehost = async () => {
     try {
-      const res = await withUserLimit(userId, () => hostAsUser(pageId, sourceUrl, userId))
-      if ('url' in res) {
-        await replacePageAssetSrc(pageId, src, res.url)
-        return
-      }
-      if (!connection) Logger.warn(`Asset not copied into page ${pageId}: ${res.error.message}`)
+      const {url} = await withUserLimit(userId, () => hostAsUser(pageId, sourceUrl, userId))
+      await replacePageAssetSrc(pageId, src, url)
+      return
     } catch (error) {
-      logError(error as Error, {userId, extras: {pageId}})
+      if (!isExpectedError(error)) logError(error as Error, {userId, extras: {pageId}})
+      else if (!connection)
+        Logger.warn(`Asset not copied into page ${pageId}: ${(error as Error).message}`)
     } finally {
       inFlight.delete(key)
     }

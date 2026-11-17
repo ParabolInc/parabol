@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -19,7 +19,7 @@ const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async 
 
   // AUTH
   if (!template || !template.isActive) {
-    return standardError(new Error('Template not found'), {userId: viewerId})
+    throw new GraphQLError('Template not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
@@ -31,7 +31,7 @@ const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async 
     .load({meetingType: template.type, teamId})
   dataLoader.get('meetingTemplatesByType').clearAll()
   if (allTemplates.find((t) => t.name === normalizedName)) {
-    return standardError(new Error('Duplicate template name'), {userId: viewerId})
+    throw new GraphQLError('Duplicate template name', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION
