@@ -1,6 +1,8 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isMSTeamsAppLink, {MS_TEAMS_APP_LINK_ERROR} from 'parabol-client/utils/isMSTeamsAppLink'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import isRSAPrivateKey from '../../../integrations/jiraServer/isRSAPrivateKey'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -99,6 +101,18 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     ].filter(isNotNull).length !== 1
   ) {
     throw new GraphQLError('Exactly 1 metadata provider is expected', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  if (
+    service === 'msTeams' &&
+    webhookProviderMetadataInput &&
+    isMSTeamsAppLink(webhookProviderMetadataInput.webhookUrl)
+  ) {
+    throw new GraphQLError(MS_TEAMS_APP_LINK_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+  if (oAuth1ProviderMetadataInput && !isRSAPrivateKey(oAuth1ProviderMetadataInput.consumerSecret)) {
+    throw new GraphQLError('consumerSecret must be an unencrypted PEM RSA private key', {
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }

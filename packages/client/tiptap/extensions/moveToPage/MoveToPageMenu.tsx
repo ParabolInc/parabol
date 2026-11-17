@@ -6,7 +6,6 @@ import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuSearch} from '../../../ui/Menu/MenuSearch'
 import MenuSkeletonRows from '../../../ui/Menu/MenuSkeletonRows'
 import menuSectionTitleClass from '../../../ui/Menu/menuSectionTitleClass'
-import plural from '../../../utils/plural'
 import type {BlockDragState} from '../../blockMove/getBlockDropRefusal'
 import type {MoveToPageAnchorRect} from '../../blockMove/openMoveToPageMenu'
 import {handleMoveToPageMenuKey} from './handleMoveToPageMenuKey'
@@ -16,14 +15,15 @@ import MoveToPageResultsRoot from './MoveToPageResultsRoot'
 
 interface Props {
   anchorRect: MoveToPageAnchorRect
-  count: number
   drag: BlockDragState
+  heading: string
+  confirmVerb?: string
   onClose: (returnFocus: boolean) => void
   onPick: (pageId: string, title: string, navigate: (path: string) => void) => void
 }
 
 const MoveToPageMenu = (props: Props) => {
-  const {anchorRect, count, drag, onClose, onPick} = props
+  const {anchorRect, drag, heading, confirmVerb = 'move', onClose, onPick} = props
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const {debouncedSearch} = useDebouncedSearch(search, 150)
@@ -69,9 +69,7 @@ const MoveToPageMenu = (props: Props) => {
         }}
         className='z-50 flex max-h-96 w-80 flex-col overflow-hidden py-0'
       >
-        <div className={menuSectionTitleClass}>
-          Move {count} {plural(count, 'block')} to
-        </div>
+        <div className={menuSectionTitleClass}>{heading}</div>
         <MenuSearch
           placeholder='Search pages'
           value={search}
@@ -89,7 +87,7 @@ const MoveToPageMenu = (props: Props) => {
           </Suspense>
         </div>
         <div className='shrink-0 border-hairline border-t px-4 py-2 text-fg-muted text-xs'>
-          ↑ ↓ choose · Enter move · Esc close
+          ↑ ↓ choose · Enter {confirmVerb} · Esc close
         </div>
       </MenuContent>
     </Menu>

@@ -240,7 +240,7 @@ test("an org admin cannot disconnect another org's identity provider", async () 
 })
 
 test('downgrading to Starter disconnects every identity provider and revokes its SCIM credentials', async () => {
-  const {orgId, cookie, parentSlug, subsidiarySlug} = await setupOrgWithTwoIdPs()
+  const {orgId, parentSlug, subsidiarySlug} = await setupOrgWithTwoIdPs()
   const pg = getKysely()
   await pg
     .updateTable('SAML')
@@ -253,7 +253,7 @@ test('downgrading to Starter disconnects every identity provider and revokes its
     .where('id', 'in', [parentSlug, subsidiarySlug])
     .execute()
 
-  const res = await sendPublic({
+  const res = await sendIntranet({
     query: `
       mutation DowngradeToStarter($orgId: ID!) {
         downgradeToStarter(orgId: $orgId) {
@@ -263,8 +263,7 @@ test('downgrading to Starter disconnects every identity provider and revokes its
         }
       }
     `,
-    variables: {orgId},
-    cookie
+    variables: {orgId}
   })
   expect(res.data.downgradeToStarter).toEqual({organization: {billingTier: 'starter'}})
 

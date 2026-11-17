@@ -171,9 +171,18 @@ const permissionMap: PermissionMap<Resolvers> = {
         isTeamMember<'Mutation.createPage'>('args.teamId')
       )
     ),
+    duplicatePage: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.duplicatePage'>('args.pageId', 'viewer', {ignorePublicLink: true}),
+      hasPageAccess<'Mutation.duplicatePage'>('args.parentPageId', 'editor'),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
-    createStripeSubscription: isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+    createStripeSubscription: and(
+      isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+      not(isOrgTier<'Mutation.createStripeSubscription'>('args.orgId', 'enterprise'))
+    ),
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
@@ -192,7 +201,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
       isSuperUser,
-      isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
+      and(
+        isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId'),
+        not(isOrgTier<'Mutation.downgradeToStarter'>('args.orgId', 'enterprise'))
+      )
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragTeamHealthResultStage:
@@ -281,6 +293,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
+    patchPageContent: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.patchPageContent'>('args.pageId', 'editor'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
     pokerAnnounceDeckHover:
@@ -454,7 +471,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'agendaItems'
     ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
-    updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+    updateCreditCard: and(
+      isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+      not(isOrgTier<'Mutation.updateCreditCard'>('args.orgId', 'enterprise'))
+    ),
     // A drag update is a broadcast that must not touch Postgres or a dataloader, so this checks
     // only the teams in the auth token, not that meetingId belongs to teamId. A user who knows
     // another team's meetingId can broadcast fake drag positions into that meeting. The payload is
@@ -759,6 +779,10 @@ const permissionMap: PermissionMap<Resolvers> = {
   Page: {
     '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
     access: allow,
+    content: and(
+      hasPageAccess<'Page.content'>('source.id', 'viewer'),
+      rateLimit({perMinute: 100, perHour: 1000, cache: 'strict'})
+    ),
     id: allow,
     team: allow,
     teamId: allow,

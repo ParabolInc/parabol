@@ -11,6 +11,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
+import {isDeadGrant} from '../../../utils/OAuth2TokenError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
 import type {MutationResolvers} from '../resolverTypes'
@@ -22,7 +23,12 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   context
 ) => {
   const {dataLoader} = context
-  const manager = await GoogleServerManager.init(code)
+  const manager = await GoogleServerManager.init(code).catch((error: unknown) => {
+    if (!isDeadGrant(error)) throw error
+    throw new GraphQLError('Google did not accept this sign-in. Please sign in again', {
+      extensions: {code: 'UNAUTHENTICATED'}
+    })
+  })
   const {id} = manager
   if (!id) {
     throw new GraphQLError('Invalid login code', {extensions: {code: 'BAD_USER_INPUT'}})

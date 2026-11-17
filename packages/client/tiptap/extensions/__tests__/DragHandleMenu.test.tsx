@@ -31,6 +31,11 @@ jest.mock('react-router', () => ({
   useNavigate: () => jest.fn()
 }))
 jest.mock('../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
+jest.mock('../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
+jest.mock('../../../mutations/useDuplicatePageMutation', () => ({
+  useDuplicatePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../hooks/usePageViewerAccess', () => ({lookupPageViewerGrant: () => undefined}))
 
 const atmosphere = {} as Atmosphere
 let mockPlaces: {original: null; otherCount: number; isOwner: boolean} | null = null
@@ -105,7 +110,6 @@ const openMenuOnSelection = async (
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
         selection={{range, count: countBlocks(doc, range)}}
-        atmosphere={atmosphere}
         pageId='page:1'
       />
     )
@@ -271,7 +275,6 @@ describe('the menu on a synced block', () => {
           anchorElement={anchor}
           canCreateSubPage
           selection={null}
-          atmosphere={atmosphere}
           pageId='page:1'
         />
       )
@@ -491,7 +494,6 @@ const openMenuOnBlock = async (
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
         selection={null}
-        atmosphere={atmosphere}
         pageId='page:1'
       />
     )

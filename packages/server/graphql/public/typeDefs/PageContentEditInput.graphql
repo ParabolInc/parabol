@@ -1,0 +1,19 @@
+"""
+A find-and-replace edit to a page's Markdown content
+"""
+input PageContentEditInput {
+  """
+  Text to find in the page's Markdown, as returned by Page.content. It must appear exactly once unless replaceAll is true
+  """
+  oldText: String!
+
+  """
+  Markdown to put in place of oldText
+  """
+  newText: String!
+
+  """
+  Replace every occurrence of oldText instead of requiring exactly one
+  """
+  replaceAll: Boolean
+}

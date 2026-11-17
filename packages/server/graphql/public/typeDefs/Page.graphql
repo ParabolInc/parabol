@@ -19,7 +19,12 @@ type Page {
   """
   title: String
 
-  # plaintextContent: String!
+  """
+  The page content, including edits not yet saved. In markdown, top-level blocks are separated by a blank line
+  """
+  content("The format to return the content in" format: PageContentFormatEnum! = markdown): String
+    @scope(name: PAGES_READ)
+
   """
   When the page was created
   """

@@ -691,9 +691,9 @@ const User: ReqResolvers<'User'> = {
   domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
     const request = await dataLoader
       .get('domainJoinRequests')
-      .loadNonNull(DomainJoinRequestId.split(requestId))
+      .load(DomainJoinRequestId.split(requestId))
     const domain = getDomainFromEmail(email)
-    if (domain !== request.domain) {
+    if (!request || domain !== request.domain) {
       return null
     }
     return request

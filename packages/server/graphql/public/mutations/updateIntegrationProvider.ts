@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isMSTeamsAppLink, {MS_TEAMS_APP_LINK_ERROR} from 'parabol-client/utils/isMSTeamsAppLink'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -37,6 +38,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     .selectFrom('IntegrationProvider')
     .selectAll()
     .where('id', '=', providerDbId)
+    .where('isActive', '=', true)
     .executeTakeFirst()
   if (!currentProvider) {
     throw new GraphQLError('Invalid provider ID', {extensions: {code: 'BAD_USER_INPUT'}})
@@ -134,6 +136,13 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     }
   } else {
     throw new GraphQLError('Unsupported authStrategy', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+  if (
+    currentProvider.service === 'msTeams' &&
+    webhookProviderMetadataInput &&
+    isMSTeamsAppLink(webhookProviderMetadataInput.webhookUrl)
+  ) {
+    throw new GraphQLError(MS_TEAMS_APP_LINK_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const teamId = newTeamId || oldTeamId

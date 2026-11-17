@@ -6,10 +6,11 @@ import type {RuleContext} from '../../graphql'
 interface RateLimitOptions {
   perMinute: number
   perHour: number
+  cache?: 'contextual' | 'strict'
 }
 
-const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
-  rule(`rateLimit-${perMinute}-${perHour}`, {cache: 'contextual'})(
+const rateLimit = ({perMinute, perHour, cache = 'contextual'}: RateLimitOptions) =>
+  rule(`rateLimit-${perMinute}-${perHour}-${cache}`, {cache})(
     (_source, _args, context: RuleContext, info) => {
       const {authToken, rateLimiter, ip} = context
       const {fieldName} = info

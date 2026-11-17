@@ -1,6 +1,7 @@
 import {Public as PublicIcon} from '~/ui/icons'
 import {toSafeHref} from '../../../shared/embed/normalizeEmbedUrl'
 import type {EmbedBlockAttrs} from '../../../shared/tiptap/extensions/EmbedBlockBase'
+import {EmbedBlockImage} from './EmbedBlockImage'
 
 interface Props {
   attrs: EmbedBlockAttrs
@@ -31,12 +32,10 @@ export const EmbedBlockCard = (props: Props) => {
         ) : null}
         <div className='flex items-center gap-1.5 pt-1'>
           {faviconUrl ? (
-            <img
+            <EmbedBlockImage
               src={faviconUrl}
-              alt=''
-              referrerPolicy='no-referrer'
-              loading='lazy'
               className='size-4 rounded-xs'
+              fallback={<PublicIcon className='size-4 text-fg-muted' />}
             />
           ) : (
             <PublicIcon className='size-4 text-fg-muted' />
@@ -45,12 +44,14 @@ export const EmbedBlockCard = (props: Props) => {
         </div>
       </div>
       {thumbnailUrl ? (
-        <img
+        <EmbedBlockImage
           src={thumbnailUrl}
-          alt=''
-          referrerPolicy='no-referrer'
-          loading='lazy'
           className='hidden h-[120px] w-[200px] shrink-0 object-cover sm:block'
+          fallback={
+            <div className='hidden h-[120px] w-[200px] shrink-0 items-center justify-center bg-surface-well sm:flex'>
+              <PublicIcon className='size-6 text-fg-muted' />
+            </div>
+          }
         />
       ) : null}
     </a>

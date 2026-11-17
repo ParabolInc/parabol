@@ -15,7 +15,7 @@ interface Props {
 }
 
 const pillClass =
-  'inline-flex h-7 items-center gap-1 rounded-full border border-hairline-strong px-2.5 font-semibold text-fg-secondary text-xs leading-4 not-aria-pressed:hover:bg-surface-hover aria-pressed:border-surface-selected aria-pressed:bg-surface-selected aria-pressed:text-fg-selected'
+  'inline-flex h-7 items-center gap-1 rounded-md border border-hairline-strong px-2.5 font-semibold text-fg-secondary text-xs leading-4 not-aria-pressed:hover:bg-surface-hover aria-pressed:border-surface-selected aria-pressed:bg-surface-selected aria-pressed:text-fg-selected'
 
 const goldClass =
   'border-gold-300 bg-gold-100 text-gold-700 not-aria-pressed:hover:bg-gold-100 dark:border-gold-500/45 dark:bg-gold-500/20 dark:text-gold-200 dark:not-aria-pressed:hover:bg-gold-500/20'

@@ -6,24 +6,37 @@ import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLin
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
+import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {hocuspocus} from '../../hocusPocus'
+import {applyPageContentEdits} from './applyPageContentEdits'
+import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
 import {toYXmlNodes} from './toYXmlNodes'
 
-const withDoc = async (
+const withDoc = async <T>(
   documentName: string,
-  fn: (doc: Document) => void,
+  fn: (doc: Document) => T,
   context: {userId?: string} = {}
 ) => {
   const conn = await hocuspocus.openDirectConnection(documentName, context)
+  let result!: T
   // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
   // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
   try {
-    await conn.transact(fn)
+    await conn.transact((doc) => {
+      result = fn(doc)
+    })
   } finally {
     await conn.disconnect()
   }
+  return result
+}
+
+// A DirectConnection runs the store hooks when it disconnects, so a read uses the loaded doc when there is one
+const readDoc = async <T>(documentName: string, fn: (doc: Document) => T) => {
+  const loadedDoc = hocuspocus.documents.get(documentName)
+  return loadedDoc ? fn(loadedDoc) : withDoc(documentName, fn)
 }
 
 export const addCanonicalPageLink = async (
@@ -34,9 +47,10 @@ export const addCanonicalPageLink = async (
     isDatabase: boolean
     isSyncedBlock: boolean
     append?: boolean
+    afterPageCode?: number
   }
 ) => {
-  const {title, pageCode, isDatabase, isSyncedBlock, append = false} = payload
+  const {title, pageCode, isDatabase, isSyncedBlock, append, afterPageCode} = payload
   await withDoc(documentName, (doc) => {
     const pageLinkBlock = createPageLinkElement(
       pageCode,
@@ -44,9 +58,7 @@ export const addCanonicalPageLink = async (
       isDatabase,
       isSyncedBlock
     ) as XmlElement
-    const frag = doc.getXmlFragment('default')
-    const position = append ? frag.length : 1
-    frag.insert(position, [pageLinkBlock])
+    insertCanonicalLink(doc.getXmlFragment('default'), pageLinkBlock, {append, afterPageCode})
   })
 }
 
@@ -119,12 +131,15 @@ export const removeBacklinkedPageLinkBlocks = async (
   })
 }
 
-export const readPageContent = async (documentName: string, _payload: {}) => {
-  let content: JSONContent = {type: 'doc', content: []}
-  await withDoc(documentName, (doc) => {
-    content = TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
-  })
-  return content
+export const readPageContent = async (documentName: string, _payload: {}): Promise<JSONContent> =>
+  readDoc(documentName, (doc) => TiptapTransformer.fromYdoc(doc, 'default') as JSONContent)
+
+export const readPageState = async (
+  documentName: string,
+  _payload: {}
+): Promise<string | undefined> => {
+  const doc: Document | undefined = hocuspocus.documents.get(documentName)
+  return doc ? Buffer.from(encodeStateAsUpdate(doc)).toString('base64') : undefined
 }
 
 export const replaceSyncedBlockWithContent = async (
@@ -254,4 +269,14 @@ export const replacePageContent = async (
     },
     {userId}
   )
+}
+
+export const patchPageContent = async (
+  documentName: string,
+  payload: {edits: PageContentEditInput[]; userId: string; canChangePageLinks: boolean}
+) => {
+  const {edits, userId, canChangePageLinks} = payload
+  await withDoc(documentName, (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}), {
+    userId
+  })
 }

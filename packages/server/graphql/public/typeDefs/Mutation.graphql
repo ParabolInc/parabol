@@ -138,6 +138,15 @@ type Mutation {
     teamId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
+  Copy a page and all of its sub-pages
+  """
+  duplicatePage(
+    "The page to copy"
+    pageId: ID!
+    "The page to copy into, appended at the end. If omitted, the copy is placed next to the original"
+    parentPageId: ID
+  ): DuplicatePagePayload! @scope(name: PAGES_WRITE)
+  """
   Create a personal access token for API access
   """
   createPersonalAccessToken(
@@ -447,6 +456,17 @@ type Mutation {
     "The format of the content string: markdown or tiptap JSON"
     format: PageContentFormatEnum!
   ): EditPageContentPayload! @scope(name: PAGES_WRITE)
+
+  """
+  Apply find-and-replace edits to a page's Markdown content, in order and all or nothing.
+  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive
+  """
+  patchPageContent(
+    "The ID of the page to edit"
+    pageId: ID!
+    "The edits to apply"
+    edits: [PageContentEditInput!]!
+  ): PatchPageContentPayload! @scope(name: PAGES_WRITE)
 
   """
   Finish a sprint poker meeting
