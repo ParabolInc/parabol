@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.38.0](https://github.com/ParabolInc/parabol/compare/v15.37.1...v15.38.0) (2026-11-17)
+
+
+### Added
+
+* **pages:** duplicate a page and copy it to another page ([#14256](https://github.com/ParabolInc/parabol/issues/14256)) ([0930a4b](https://github.com/ParabolInc/parabol/commit/0930a4bd32f13ac07861cfc8bc1e7462ad648e27))
+
+
+### Fixed
+
+* **pages:** hide link card images until they load ([#14253](https://github.com/ParabolInc/parabol/issues/14253)) ([1c22e85](https://github.com/ParabolInc/parabol/commit/1c22e853de21e5ef25764bab3c28431f70f514c5))
+* **server:** refuse an OAuth1 provider whose consumer secret isn't an RSA private key ([#14223](https://github.com/ParabolInc/parabol/issues/14223)) ([9b1615c](https://github.com/ParabolInc/parabol/commit/9b1615c7593ba18fd997c0bcb8fa0f6dcb75d4c0))
+
 ## [15.37.1](https://github.com/ParabolInc/parabol/compare/v15.37.0...v15.37.1) (2026-11-17)
 
 
