@@ -10,7 +10,7 @@ interface Props {
 }
 
 const tabClass =
-  '-mb-px inline-flex h-9 items-center gap-1 border-transparent border-b-2 font-semibold text-[13px] text-fg-secondary leading-4 hover:text-fg-primary disabled:pointer-events-none disabled:opacity-50 aria-selected:border-accent-active aria-selected:text-fg-primary'
+  '-mb-px inline-flex h-9 flex-1 items-center justify-center gap-1 border-transparent border-b-2 font-semibold text-[13px] text-fg-secondary leading-4 hover:text-fg-primary disabled:pointer-events-none disabled:opacity-50 aria-selected:border-accent-active aria-selected:text-fg-primary'
 
 const DiscussionComposerTabs = (props: Props) => {
   const {activeTab, isTaskDisabled, onChange} = props
@@ -26,7 +26,7 @@ const DiscussionComposerTabs = (props: Props) => {
       role='tablist'
       aria-label='Add to this discussion'
       onKeyDown={onKeyDown}
-      className='flex gap-6 border-hairline border-b px-3'
+      className='flex border-hairline border-b'
     >
       <button
         type='button'
