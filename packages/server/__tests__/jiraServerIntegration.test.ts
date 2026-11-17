@@ -60,11 +60,6 @@ const addJiraServerProvider = (
       mutation AddIntegrationProvider($input: AddIntegrationProviderInput!) {
         addIntegrationProvider(input: $input) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
           ... on AddIntegrationProviderSuccess {
             provider {
               id
@@ -254,7 +249,7 @@ const {privateKey: ecPrivateKey} = crypto.generateKeyPairSync('ec', {
 const {privateKey: encryptedRSAPrivateKey, publicKey: rsaPublicKey} = crypto.generateKeyPairSync(
   'rsa',
   {
-    modulusLength: 1024,
+    modulusLength: 2048,
     privateKeyEncoding: {type: 'pkcs8', format: 'pem', cipher: 'aes-256-cbc', passphrase: 'secret'},
     publicKeyEncoding: {type: 'spki', format: 'pem'}
   }
@@ -274,12 +269,13 @@ test.each([
 
     const refused = await addJiraServerProvider(orgId, cookie, jiraServerUrl, secret)
     expect(refused).toEqual({
-      data: {
-        addIntegrationProvider: {
-          __typename: 'ErrorPayload',
-          error: {message: 'consumerSecret must be an unencrypted PEM RSA private key'}
-        }
-      }
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'consumerSecret must be an unencrypted PEM RSA private key',
+          extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})
+        })
+      ]
     })
 
     const res = await sendPublic({

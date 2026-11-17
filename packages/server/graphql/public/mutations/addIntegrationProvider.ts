@@ -112,7 +112,9 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     throw new GraphQLError(MS_TEAMS_APP_LINK_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (oAuth1ProviderMetadataInput && !isRSAPrivateKey(oAuth1ProviderMetadataInput.consumerSecret)) {
-    return {error: {message: 'consumerSecret must be an unencrypted PEM RSA private key'}}
+    throw new GraphQLError('consumerSecret must be an unencrypted PEM RSA private key', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
