@@ -526,3 +526,11 @@ test('a PAT limited to org A, or without orgs:read, patching an org B asset src 
   expect((await patch(unrestricted, 'Third step')).errors).toBeUndefined()
   expect(await waitForCopy(pageId, cookie)).toMatch(COPIED_INTO_PAGE)
 }, 30_000)
+
+test('a lowercase bearer scheme still fetches an asset', async () => {
+  const {userId, cookie} = await signUp()
+  const path = await uploadAsset({cookie}, 'User', userId)
+  const token = await createToken(cookie, ['USERS_READ'])
+  const res = await fetchAsset(path, {authorization: `bearer ${token}`})
+  expect(res.status).toBe(307)
+})
