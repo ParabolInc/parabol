@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [15.37.1](https://github.com/ParabolInc/parabol/compare/v15.37.0...v15.37.1) (2026-11-17)
+
+
+### Fixed
+
+* **server:** rename the NewMeeting.slackTs drop migration so it sorts last ([#14259](https://github.com/ParabolInc/parabol/issues/14259)) ([58c1e90](https://github.com/ParabolInc/parabol/commit/58c1e90d15ef5a8bff12d58da7de93eea73109e9))
+
 ## [15.37.0](https://github.com/ParabolInc/parabol/compare/v15.36.2...v15.37.0) (2026-11-17)
 
 
