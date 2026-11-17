@@ -17,29 +17,23 @@ interface Props extends ButtonProps {
 const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
   const {services, suggestedServices, isCardActive, className, ...rest} = props
   const [primaryService] = services
-  const logoTone = cn(
-    'flex items-center gap-[3px] transition-[filter,opacity]',
-    !isCardActive &&
-      'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-data-[state=open]:opacity-100 group-data-[state=open]:grayscale-0'
-  )
   return (
     <Button
       {...rest}
       ref={ref}
       variant='flat'
       className={cn(
-        'group h-6 gap-0.5 rounded-sm px-1 text-fg-secondary hover:text-fg-primary data-[state=open]:bg-surface-hover',
+        'h-6 gap-0.5 rounded-sm px-1 text-fg-secondary hover:text-fg-primary data-[state=open]:bg-surface-hover',
+        !isCardActive && 'opacity-0 focus-visible:opacity-100 data-[state=open]:opacity-100',
         className
       )}
     >
       {primaryService ? (
-        <span className={logoTone}>
-          <ProviderLogo logo={getClientIntegration(primaryService).logo} className='h-4 w-4' />
-        </span>
+        <ProviderLogo logo={getClientIntegration(primaryService).logo} className='h-4 w-4' />
       ) : (
         <>
           <Add className='h-4 w-4' />
-          <span className={logoTone}>
+          <span className='flex items-center gap-[3px]'>
             {suggestedServices.map((service) => (
               <ProviderLogo
                 key={service}
@@ -50,12 +44,7 @@ const TaskSendButton = forwardRef<HTMLButtonElement, Props>((props, ref) => {
           </span>
         </>
       )}
-      <ArrowDropDown
-        className={cn(
-          'h-4 w-4',
-          !isCardActive && 'invisible group-hover:visible group-data-[state=open]:visible'
-        )}
-      />
+      <ArrowDropDown className='h-4 w-4' />
     </Button>
   )
 })
