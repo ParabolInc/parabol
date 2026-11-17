@@ -15,6 +15,7 @@ import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
 import plural from '../../../../utils/plural'
 import OAuthAppFormDialog from './OAuthAppFormDialog'
+import OAuthClientTypeChip from './OAuthClientTypeChip'
 
 interface Props {
   organizationRef: OAuthProviderList_organization$key
@@ -29,6 +30,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           id
           name
           updatedAt
+          clientType
         }
       }
     `,
@@ -157,23 +159,26 @@ const OAuthProviderList = ({organizationRef}: Props) => {
                 </span>
               </div>
             </div>
-            <Menu
-              trigger={
-                <button
-                  className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-surface-hover'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreVertIcon className='text-fg-muted' />
-                </button>
-              }
-            >
-              <MenuContent align='end'>
-                <MenuItem onClick={() => handleEdit(provider.id)}>Edit application</MenuItem>
-                <MenuItem onClick={() => handleDeleteClick(provider)} className='text-tomato-600'>
-                  Delete application
-                </MenuItem>
-              </MenuContent>
-            </Menu>
+            <div className='flex items-center gap-4'>
+              <OAuthClientTypeChip isPublic={provider.clientType === 'PUBLIC'} />
+              <Menu
+                trigger={
+                  <button
+                    className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-surface-hover'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertIcon className='text-fg-muted' />
+                  </button>
+                }
+              >
+                <MenuContent align='end'>
+                  <MenuItem onClick={() => handleEdit(provider.id)}>Edit application</MenuItem>
+                  <MenuItem onClick={() => handleDeleteClick(provider)} className='text-tomato-600'>
+                    Delete application
+                  </MenuItem>
+                </MenuContent>
+              </Menu>
+            </div>
           </div>
         ))}
       </div>

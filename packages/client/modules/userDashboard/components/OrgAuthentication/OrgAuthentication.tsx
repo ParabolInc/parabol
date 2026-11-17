@@ -25,7 +25,6 @@ const OrgAuthentication = (props: Props) => {
             }
             ...OAuthProviderList_organization
             isOrgAdmin
-            showOAuthProvider: featureFlag(featureName: "oauthProvider")
             scimEnabled: featureFlag(featureName: "SCIM")
           }
         }
@@ -39,7 +38,7 @@ const OrgAuthentication = (props: Props) => {
   if (!organization) {
     return null
   }
-  const {isOrgAdmin, showOAuthProvider, scimEnabled} = organization
+  const {isOrgAdmin, scimEnabled} = organization
 
   return (
     <div className='space-y-6'>
@@ -62,7 +61,7 @@ const OrgAuthentication = (props: Props) => {
         </div>
       </Panel>
 
-      {showOAuthProvider && (
+      {isOrgAdmin && (
         <Panel className='max-w-[976px]'>
           <LabelHeading className='px-6 pt-4 pb-2'>OAuth 2.0 API</LabelHeading>
           <div className='border-hairline border-t px-6 pt-6 pb-6'>
