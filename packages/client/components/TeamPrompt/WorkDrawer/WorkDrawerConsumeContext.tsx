@@ -9,6 +9,9 @@ export interface WorkDrawerPrompt {
 // Tells the retro drawer's item cards how a generated item becomes a reflection card
 export interface WorkDrawerConsume {
   mode: 'retro'
+  meetingId: string
+  // The columns a reflection can start in, in board order.
+  reflectPrompts: readonly WorkDrawerPrompt[]
   // The sort order to give a new reflection so it lands on top of the prompt's stack.
   getNextReflectionSortOrder: (promptId: string | null) => number
   // The reflect prompt (column) a generated item will be added to, for the card footer.

@@ -5,17 +5,17 @@ describe('dateRangeLabel', () => {
   const local = (time: string) => dayjs(time).toISOString()
   const dateRange = {startAt: local('2026-09-17T09:00'), endAt: local('2026-09-24T17:00')}
 
-  it('names the default window after the last standup', () => {
-    expect(dateRangeLabel(dateRange, true)).toBe('Since last standup')
+  it('names the default window after the last meeting', () => {
+    expect(dateRangeLabel(dateRange, 'Since last standup')).toBe('Since last standup')
   })
 
   it('formats a custom window as a date range', () => {
-    expect(dateRangeLabel(dateRange, false)).toBe('Sep 17 – Sep 24')
+    expect(dateRangeLabel(dateRange, null)).toBe('Sep 17 – Sep 24')
   })
 
   it('shows a single day once', () => {
     const oneDay = {startAt: local('2026-09-24T09:00'), endAt: local('2026-09-24T17:00')}
-    expect(dateRangeLabel(oneDay, false)).toBe('Sep 24')
+    expect(dateRangeLabel(oneDay, null)).toBe('Sep 24')
   })
 })
 

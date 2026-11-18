@@ -6,8 +6,14 @@ import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {WorkDrawerDateFilter, type WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
+const INSTRUCTIONS_PLACEHOLDERS = {
+  standup: 'e.g. One sentence per answer. Skip dependency bumps unless they’re blocked.',
+  retro: 'e.g. Skip dependency bumps. Focus on reviews and handoffs.'
+}
+
 interface Props {
   isOpen: boolean
+  meetingKind: 'standup' | 'retro'
   onClose: () => void
   dateRange: WorkDrawerDateRange | undefined
   instructions: string
@@ -16,7 +22,7 @@ interface Props {
 }
 
 const InspirationSettingsDialog = (props: Props) => {
-  const {isOpen, onClose, onSave, canDraft} = props
+  const {isOpen, meetingKind, onClose, onSave, canDraft} = props
   const [dateRange, setDateRange] = useState(props.dateRange)
   const [instructions, setInstructions] = useState(props.instructions)
   return (
@@ -37,10 +43,10 @@ const InspirationSettingsDialog = (props: Props) => {
                 className='min-h-28 w-full resize-y rounded-md border border-hairline-field bg-surface-card p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
-                placeholder='e.g. One sentence per answer. Skip dependency bumps unless they’re blocked.'
+                placeholder={INSTRUCTIONS_PLACEHOLDERS[meetingKind]}
               />
               <span className='text-fg-muted text-xs'>
-                Used in every standup until you change it.
+                Used in every {meetingKind} until you change it.
               </span>
             </label>
           )}

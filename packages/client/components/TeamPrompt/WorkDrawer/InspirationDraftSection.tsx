@@ -1,10 +1,10 @@
-import type {JSONContent} from '@tiptap/core'
 import {AutoAwesome} from '~/ui/icons'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import type {TeamPromptComposerApi} from '../structured/TeamPromptComposerApiContext'
 import InspirationDraftList from './InspirationDraftList'
 import InspirationUnusedIssues from './InspirationUnusedIssues'
 import {NO_WORK_LINE, usedLabel} from './inspirationCopy'
+import parseInspirationContent from './parseInspirationContent'
 import type {InspirationDraft} from './useInspirationDraft'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
@@ -16,22 +16,13 @@ interface Props {
   error: string | null
 }
 
-// content arrives as a stringified tiptap doc
-const parseContent = (raw: string): JSONContent => {
-  try {
-    return JSON.parse(raw)
-  } catch {
-    return {type: 'doc', content: []}
-  }
-}
-
 const InspirationDraftSection = (props: Props) => {
   const {draft, prompts, composer, drafting, error} = props
   const shownDraft = drafting ? null : draft
   const items = (shownDraft?.items ?? []).map(({id, content, promptId}) => ({
     id,
     title: null,
-    content: parseContent(content),
+    content: parseInspirationContent(content),
     promptId: promptId ?? null
   }))
   const issues = shownDraft?.issues ?? []
