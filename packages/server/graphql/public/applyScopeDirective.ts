@@ -1,11 +1,12 @@
 import type {GraphQLSchema} from 'graphql'
 import {defaultFieldResolver, GraphQLError, getDirectiveValues, isObjectType} from 'graphql'
-import type {OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
+import getAssetOwnerScope from '../../utils/getAssetOwnerScope'
+import type {AssetScopeEnum, OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 export const PAT_PREFIX = 'pat_'
 
 /**
- * Wraps field resolvers that have @scope(name: OAuthScopeEnum!) applied.
+ * Wraps field resolvers that have @scope applied, with either a static name or an ownerFromArg.
  * For access tokens (PATs and OAuth access tokens), verifies the token has the required scope.
  * Session requests pass through without scope checks.
  */
@@ -26,15 +27,27 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
         continue
       }
 
+      const {name, ownerFromArg} = directiveValues as {name?: string; ownerFromArg?: string}
+      if (!name === !ownerFromArg) {
+        // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
+        throw new Error(
+          `@scope on ${type.name}.${field.name} needs exactly one of name or ownerFromArg`
+        )
+      }
+
       // FIXME: https://github.com/ardatan/graphql-tools/pull/8117
       // const requiredScope = OAuthScopeEnum[directiveValues.name as string] as TOAuthScopeEnum
-      const requiredScope = directiveValues.name as TOAuthScopeEnum
+      const getRequiredScope = (args: Record<string, unknown>) =>
+        ownerFromArg
+          ? getAssetOwnerScope(args[ownerFromArg] as AssetScopeEnum, 'write')
+          : (name as TOAuthScopeEnum)
 
       const originalResolver = field.resolve ?? defaultFieldResolver
 
       field.resolve = async (source, args, context, info) => {
         const {authToken} = context
         if (authToken && authToken.aud !== 'action') {
+          const requiredScope = getRequiredScope(args)
           if (authToken.scope?.includes(requiredScope)) {
             return originalResolver(source, args, context, info)
           }

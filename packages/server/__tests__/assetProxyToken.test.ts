@@ -287,12 +287,8 @@ test('embedding an org file into a page needs orgs:read', async () => {
   const {firstOrgId, firstTeamId, cookie} = await signUpWithTwoOrgs()
   const pageId = await createPage(cookie, firstTeamId)
   const path = await uploadAsset({cookie}, 'Organization', firstOrgId)
-  const withoutOrgs = await createToken(cookie, ['USERS_WRITE', 'PAGES_WRITE'], [firstOrgId])
-  const withOrgs = await createToken(
-    cookie,
-    ['USERS_WRITE', 'PAGES_WRITE', 'ORGS_READ'],
-    [firstOrgId]
-  )
+  const withoutOrgs = await createToken(cookie, ['PAGES_WRITE'], [firstOrgId])
+  const withOrgs = await createToken(cookie, ['PAGES_WRITE', 'ORGS_READ'], [firstOrgId])
   const embed = (bearerToken: string) =>
     sendPublic({
       query: EMBED_USER_ASSET,
@@ -308,7 +304,7 @@ test('embedding an org file into a page needs orgs:read', async () => {
 
 test('a PAT limited to org A reads org A team assets, not org B team assets', async () => {
   const {firstOrgId, firstTeamId, secondTeamId, cookie} = await signUpWithTwoOrgs()
-  const writer = await createToken(cookie, ['USERS_WRITE'])
+  const writer = await createToken(cookie, ['TEAMS_WRITE'])
   const firstTeamPath = await uploadAsset({bearerToken: writer}, 'Team', firstTeamId)
   const secondTeamPath = await uploadAsset({bearerToken: writer}, 'Team', secondTeamId)
   const limited = await createToken(cookie, ['TEAMS_READ'], [firstOrgId], [])
