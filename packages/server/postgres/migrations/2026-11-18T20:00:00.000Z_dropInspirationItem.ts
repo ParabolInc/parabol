@@ -14,7 +14,7 @@ export async function down(db: Kysely<any>): Promise<void> {
       "title" varchar(255),
       "content" jsonb NOT NULL,
       "createdAt" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      "promptId" varchar(100) REFERENCES "ReflectPrompt"("id") ON DELETE SET NULL
+      "promptId" varchar(100) REFERENCES "TemplatePrompt"("id") ON DELETE SET NULL
     )
   `.execute(db)
   await sql`
