@@ -1,14 +1,31 @@
 import {createRoute, lazyRouteComponent, redirect} from '@tanstack/react-router'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
+import {parseMeetingSeriesIdFromSlug} from 'parabol-client/shared/meetingSeriesSlug'
+import activityDetailsQuery, {
+  type ActivityDetailsQuery
+} from '../../__generated__/ActivityDetailsQuery.graphql'
+import activityLibraryQuery, {
+  type ActivityLibraryQuery
+} from '../../__generated__/ActivityLibraryQuery.graphql'
+import createNewActivityQuery, {
+  type CreateNewActivityQuery
+} from '../../__generated__/CreateNewActivityQuery.graphql'
+import meetingSeriesAttendRedirectQuery, {
+  type MeetingSeriesAttendRedirectQuery
+} from '../../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
+import meetingSeriesManagementPageQuery, {
+  type MeetingSeriesManagementPageQuery
+} from '../../__generated__/MeetingSeriesManagementPageQuery.graphql'
+import oAuthAuthorizeQuery, {
+  type OAuthAuthorizeQuery
+} from '../../__generated__/OAuthAuthorizeQuery.graphql'
+import viewerNotOnTeamQuery, {
+  type ViewerNotOnTeamQuery
+} from '../../__generated__/ViewerNotOnTeamQuery.graphql'
 import {rootRoute} from './rootRoute'
 
 const DemoSummary = lazyRouteComponent(
   () => import(/* webpackChunkName: 'DemoSummary' */ '../../components/DemoSummary')
-)
-const ActivityLibraryRoute = lazyRouteComponent(
-  () =>
-    import(
-      /* webpackChunkName: 'AcitivityLibraryRoute' */ '../../components/ActivityLibrary/ActivityLibraryRoute'
-    )
 )
 const Graphql = lazyRouteComponent(
   () =>
@@ -55,6 +72,21 @@ export const retroDemoSummaryActionRoute = createRoute({
 export const privateLayoutRoute = createRoute({
   getParentRoute: () => tipTapLayoutRoute,
   id: 'privateLayout',
+  // A signed-out visitor goes to sign in before any page's data loads, except to read a public page
+  beforeLoad: ({context: {atmosphere}, location, matches}) => {
+    const {authObj} = atmosphere
+    if (authObj && authObj.exp > Date.now() / 1000) return
+    const isPublicPage = matches.some(
+      ({routeId}) => routeId === '/tipTapLayout/privateLayout/dashboardLayout/pages/$pageSlug'
+    )
+    if (!authObj && isPublicPage) return
+    throw redirect({
+      href: `/?redirectTo=${encodeURIComponent(location.pathname)}`,
+      replace: true,
+      // an expired session is already ending with a message of its own
+      state: {isSignInRequired: !authObj}
+    })
+  },
   component: lazyRouteComponent(
     () => import(/* webpackChunkName: 'PrivateRoutes' */ '../../components/PrivateRoutes')
   )
@@ -63,19 +95,34 @@ export const activityLibraryRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'activity-library'
 })
-export const activityLibraryIndexRoute = createRoute({
+// The library and its categories share one query
+export const activityLibraryHomeRoute = createRoute({
   getParentRoute: () => activityLibraryRoute,
-  path: '/',
-  component: ActivityLibraryRoute
+  id: 'activityLibraryHome',
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<ActivityLibraryQuery>(activityLibraryQuery, {})
+  }),
+  component: lazyRouteComponent(
+    () =>
+      import(
+        /* webpackChunkName: 'ActivityLibraryRoute' */ '../../components/ActivityLibrary/ActivityLibraryRoute'
+      )
+  )
+})
+export const activityLibraryIndexRoute = createRoute({
+  getParentRoute: () => activityLibraryHomeRoute,
+  path: '/'
 })
 export const activityLibraryCategoryRoute = createRoute({
-  getParentRoute: () => activityLibraryRoute,
-  path: 'category/$categoryId',
-  component: ActivityLibraryRoute
+  getParentRoute: () => activityLibraryHomeRoute,
+  path: 'category/$categoryId'
 })
 export const activityDetailsRoute = createRoute({
   getParentRoute: () => activityLibraryRoute,
   path: 'details/$activityId',
+  loader: async ({context: {queryRefs}, params: {activityId}}) => ({
+    queryRef: await queryRefs.load<ActivityDetailsQuery>(activityDetailsQuery, {activityId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
@@ -86,6 +133,9 @@ export const activityDetailsRoute = createRoute({
 export const newActivityRoute = createRoute({
   getParentRoute: () => activityLibraryRoute,
   path: 'new-activity/$categoryId',
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<CreateNewActivityQuery>(createNewActivityQuery, {})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
@@ -118,16 +168,37 @@ export const meetingPhaseRoute = createRoute({
 export const meetingSeriesManagementRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'meeting-series/manage/$meetingSeriesId',
+  loader: async ({context: {queryRefs}, params}) => {
+    const rawId = parseMeetingSeriesIdFromSlug(params.meetingSeriesId)
+    const meetingSeriesId = rawId != null ? MeetingSeriesId.join(rawId) : ''
+    return {
+      queryRef: await queryRefs.load<MeetingSeriesManagementPageQuery>(
+        meetingSeriesManagementPageQuery,
+        {meetingSeriesId}
+      )
+    }
+  },
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'MeetingSeriesManagementRoot' */ '../../components/MeetingSeriesManagementRoot'
+        /* webpackChunkName: 'MeetingSeriesManagementRoute' */ '../../components/MeetingSeriesManagementRoute'
       )
   )
 })
 export const meetingSeriesAttendRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'meeting-series/$slug',
+  loader: async ({context: {queryRefs}, params: {slug}}) => {
+    const rawId = parseMeetingSeriesIdFromSlug(slug)
+    if (rawId == null) throw redirect({to: '/meetings', replace: true})
+    const meetingSeriesId = MeetingSeriesId.join(rawId)
+    return {
+      queryRef: await queryRefs.load<MeetingSeriesAttendRedirectQuery>(
+        meetingSeriesAttendRedirectQuery,
+        {meetingSeriesId}
+      )
+    }
+  },
   component: lazyRouteComponent(
     () =>
       import(
@@ -158,16 +229,41 @@ export const impersonateRoute = createRoute({
 export const invitationRequiredRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'invitation-required',
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {queryRefs}, location}) => {
+    const searchParams = new URLSearchParams(location.searchStr)
+    const variables = {teamId: searchParams.get('teamId'), meetingId: searchParams.get('meetingId')}
+    return {queryRef: await queryRefs.load<ViewerNotOnTeamQuery>(viewerNotOnTeamQuery, variables)}
+  },
   component: lazyRouteComponent(
     () =>
-      import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ '../../components/ViewerNotOnTeamRoot')
+      import(/* webpackChunkName: 'ViewerNotOnTeamRoute' */ '../../components/ViewerNotOnTeamRoute')
   )
 })
 export const authorizeAppRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'authorize-app',
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {queryRefs}, location}) => {
+    const searchParams = new URLSearchParams(location.searchStr)
+    const request = {
+      clientId: searchParams.get('client_id') ?? '',
+      redirectUri: searchParams.get('redirect_uri') ?? '',
+      scope: searchParams.get('scope'),
+      state: searchParams.get('state') ?? '',
+      codeChallenge: searchParams.get('code_challenge'),
+      codeChallengeMethod: searchParams.get('code_challenge_method')
+    }
+    const queryRef = await queryRefs.load<OAuthAuthorizeQuery>(
+      oAuthAuthorizeQuery,
+      {request},
+      {fetchPolicy: 'network-only'}
+    )
+    return {queryRef, request}
+  },
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'OAuthAuthorizeRoot' */ '../../components/OAuthAuthorizeRoot')
+    () =>
+      import(/* webpackChunkName: 'OAuthAuthorizeRoute' */ '../../components/OAuthAuthorizeRoute')
   )
 })
 export const signoutRoute = createRoute({

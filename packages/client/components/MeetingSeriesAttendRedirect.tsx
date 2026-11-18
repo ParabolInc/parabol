@@ -1,16 +1,15 @@
-import {useParams} from '@tanstack/react-router'
+import {getRouteApi} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
-import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
-import {parseMeetingSeriesIdFromSlug} from 'parabol-client/shared/meetingSeriesSlug'
-import {Suspense} from 'react'
-import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {usePreloadedQuery} from 'react-relay'
 import Redirect from '~/routing/Redirect'
 import type {MeetingSeriesAttendRedirectQuery} from '../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
-import meetingSeriesAttendRedirectQuery from '../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import useQueryRefLease from '../routing/useQueryRefLease'
 
-const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery>}) => {
-  const {queryRef} = props
+const routeApi = getRouteApi('/tipTapLayout/privateLayout/meeting-series/$slug')
+
+const MeetingSeriesAttendRedirect = () => {
+  const {queryRef} = routeApi.useLoaderData()
+  useQueryRefLease(queryRef)
   const data = usePreloadedQuery<MeetingSeriesAttendRedirectQuery>(
     graphql`
       query MeetingSeriesAttendRedirectQuery($meetingSeriesId: ID!) {
@@ -25,24 +24,11 @@ const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery
     `,
     queryRef
   )
-  const series = data.viewer.meetingSeries
-  const activeMeeting = series?.activeMeetings[0]
+  const activeMeeting = data.viewer.meetingSeries?.activeMeetings[0]
   if (activeMeeting) {
     return <Redirect replace to='/meet/$meetingId' params={{meetingId: activeMeeting.id}} />
   }
   return <Redirect replace to='/meetings' />
-}
-
-const MeetingSeriesAttendRedirect = () => {
-  const {slug} = useParams({strict: false})
-  const rawId = slug ? parseMeetingSeriesIdFromSlug(slug) : null
-  const meetingSeriesId = rawId != null ? MeetingSeriesId.join(rawId) : null
-  const queryRef = useQueryLoaderNow<MeetingSeriesAttendRedirectQuery>(
-    meetingSeriesAttendRedirectQuery,
-    {meetingSeriesId: meetingSeriesId ?? ''}
-  )
-  if (!meetingSeriesId) return <Redirect replace to='/meetings' />
-  return <Suspense fallback={''}>{queryRef && <Inner queryRef={queryRef} />}</Suspense>
 }
 
 export default MeetingSeriesAttendRedirect

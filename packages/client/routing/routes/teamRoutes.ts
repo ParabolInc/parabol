@@ -1,11 +1,14 @@
 import {createRoute, lazyRouteComponent} from '@tanstack/react-router'
+import teamArchiveQuery, {type TeamArchiveQuery} from '../../__generated__/TeamArchiveQuery.graphql'
 import teamContainerQuery, {
   type TeamContainerQuery
 } from '../../__generated__/TeamContainerQuery.graphql'
 import teamDashMainQuery, {
   type TeamDashMainQuery
 } from '../../__generated__/TeamDashMainQuery.graphql'
-import {holdForData, loadRouteQuery} from '../routeQueries'
+import teamSettingsQuery, {
+  type TeamSettingsQuery
+} from '../../__generated__/TeamSettingsQuery.graphql'
 import {dashboardLayoutRoute} from './dashboardRoutes'
 
 const TeamDashActivityRoute = lazyRouteComponent(
@@ -18,48 +21,53 @@ const TeamDashActivityRoute = lazyRouteComponent(
 export const teamRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'team/$teamId',
-  loader: ({context: {atmosphere}, params: {teamId}}) => {
-    if (!atmosphere.authObj) return
-    return holdForData([
-      loadRouteQuery<TeamContainerQuery>(atmosphere, teamContainerQuery, {teamId})
-    ])
-  },
+  loader: async ({context: {queryRefs}, params: {teamId}}) => ({
+    queryRef: await queryRefs.load<TeamContainerQuery>(teamContainerQuery, {teamId})
+  }),
   component: lazyRouteComponent(
     () =>
-      import(/* webpackChunkName: 'TeamRoot' */ '../../modules/teamDashboard/components/TeamRoot')
+      import(/* webpackChunkName: 'TeamRoute' */ '../../modules/teamDashboard/components/TeamRoute')
   )
 })
 export const teamSettingsRoute = createRoute({
   getParentRoute: () => teamRoute,
   path: 'settings',
+  loader: async ({context: {queryRefs}, params: {teamId}}) => ({
+    queryRef: await queryRefs.load<TeamSettingsQuery>(teamSettingsQuery, {teamId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'TeamIntegrationsRoot' */ '../../modules/teamDashboard/components/TeamSettingsRoute'
+        /* webpackChunkName: 'TeamSettingsRoute' */ '../../modules/teamDashboard/components/TeamSettingsRoute'
       )
   )
 })
 export const teamArchiveRoute = createRoute({
   getParentRoute: () => teamRoute,
   path: 'archive',
+  loader: async ({context: {queryRefs}, params: {teamId}}) => ({
+    queryRef: await queryRefs.load<TeamArchiveQuery>(teamArchiveQuery, {
+      teamIds: [teamId],
+      first: 40
+    })
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'ArchiveTaskRoot' */ '../../modules/teamDashboard/components/TeamArchiveRoute'
+        /* webpackChunkName: 'TeamArchiveRoute' */ '../../modules/teamDashboard/components/TeamArchiveRoute'
       )
   )
 })
 export const teamDashMainLayoutRoute = createRoute({
   getParentRoute: () => teamRoute,
   id: 'teamDashMainLayout',
-  loader: ({context: {atmosphere}, params: {teamId}}) => {
-    if (!atmosphere.authObj) return
-    return holdForData([loadRouteQuery<TeamDashMainQuery>(atmosphere, teamDashMainQuery, {teamId})])
-  },
+  loader: async ({context: {queryRefs}, params: {teamId}}) => ({
+    queryRef: await queryRefs.load<TeamDashMainQuery>(teamDashMainQuery, {teamId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'TeamDashMainRoot' */ '../../modules/teamDashboard/components/TeamDashMainRoot'
+        /* webpackChunkName: 'TeamDashMainRoute' */ '../../modules/teamDashboard/components/TeamDashMainRoute'
       )
   )
 })

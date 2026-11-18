@@ -1,6 +1,4 @@
 import {useEffect} from 'react'
-import {LoaderSize} from '../types/constEnums'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
 
 const OAuthAuthorizePage = () => {
   useEffect(() => {
@@ -8,7 +6,7 @@ const OAuthAuthorizePage = () => {
     window.location.assign(window.location.href)
   }, [])
 
-  return <LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />
+  return null
 }
 
 export default OAuthAuthorizePage

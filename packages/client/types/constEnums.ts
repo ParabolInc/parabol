@@ -207,9 +207,7 @@ export enum Layout {
 
 export enum LoaderSize {
   MENU = 24,
-  MAIN = 40,
-  WHOLE_PAGE = 400,
-  PANEL = 200
+  MAIN = 40
 }
 
 export enum LocalStorageKey {

@@ -1,9 +1,15 @@
-import OrgAuthenticationRoot from '../../containers/OrgAuthentication/OrgAuthenticationRoot'
-import useOrganizationOutlet from './useOrganizationOutlet'
+import {getRouteApi} from '@tanstack/react-router'
+import useQueryRefLease from '../../../../routing/useQueryRefLease'
+import OrgAuthentication from '../OrgAuthentication/OrgAuthentication'
+
+const routeApi = getRouteApi(
+  '/tipTapLayout/privateLayout/dashboardLayout/me/organizations/$orgId/authentication'
+)
 
 const OrgAuthenticationRoute = () => {
-  const {orgId} = useOrganizationOutlet()
-  return <OrgAuthenticationRoot orgId={orgId} />
+  const {queryRef} = routeApi.useLoaderData()
+  useQueryRefLease(queryRef)
+  return <OrgAuthentication queryRef={queryRef} />
 }
 
 export default OrgAuthenticationRoute

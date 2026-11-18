@@ -1,4 +1,21 @@
 import {createRoute, lazyRouteComponent, redirect} from '@tanstack/react-router'
+import myDashboardTimelineQuery, {
+  type MyDashboardTimelineQuery
+} from '../../__generated__/MyDashboardTimelineQuery.graphql'
+import orgAuthenticationQuery, {
+  type OrgAuthenticationQuery
+} from '../../__generated__/OrgAuthenticationQuery.graphql'
+import organizationQuery, {
+  type OrganizationQuery
+} from '../../__generated__/OrganizationQuery.graphql'
+import organizationsQuery, {
+  type OrganizationsQuery
+} from '../../__generated__/OrganizationsQuery.graphql'
+import orgMembersQuery, {type OrgMembersQuery} from '../../__generated__/OrgMembersQuery.graphql'
+import orgTeamMembersQuery, {
+  type OrgTeamMembersQuery
+} from '../../__generated__/OrgTeamMembersQuery.graphql'
+import userProfileQuery, {type UserProfileQuery} from '../../__generated__/UserProfileQuery.graphql'
 import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
@@ -7,14 +24,8 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../utils/constants'
+import {parseQueryParams} from '../../utils/useQueryParameterParser'
 import {dashboardLayoutRoute} from './dashboardRoutes'
-
-const MyDashboardTimelineRoot = lazyRouteComponent(
-  () =>
-    import(
-      /* webpackChunkName: 'MyDashboardTimelineRoot' */ '../../components/MyDashboardTimelineRoot'
-    )
-)
 
 export const meRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -23,30 +34,39 @@ export const meRoute = createRoute({
 export const profileRoute = createRoute({
   getParentRoute: () => meRoute,
   path: 'profile',
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<UserProfileQuery>(userProfileQuery, {})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'UserProfileRoot' */ '../../modules/userDashboard/components/UserProfileRoot'
+        /* webpackChunkName: 'UserProfileRoute' */ '../../modules/userDashboard/components/UserProfileRoute'
       )
   )
 })
 export const organizationsRoute = createRoute({
   getParentRoute: () => meRoute,
   path: 'organizations',
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<OrganizationsQuery>(organizationsQuery, {})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'OrganizationsRoot' */ '../../modules/userDashboard/containers/Organizations/OrganizationsRoot'
+        /* webpackChunkName: 'OrganizationsRoute' */ '../../modules/userDashboard/containers/Organizations/OrganizationsRoute'
       )
   )
 })
 export const organizationRoute = createRoute({
   getParentRoute: () => meRoute,
   path: 'organizations/$orgId',
+  loader: async ({context: {queryRefs}, params: {orgId}}) => ({
+    queryRef: await queryRefs.load<OrganizationQuery>(organizationQuery, {orgId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'OrganizationRoot' */ '../../modules/userDashboard/containers/Organization/OrganizationRoot'
+        /* webpackChunkName: 'OrganizationRoute' */ '../../modules/userDashboard/containers/Organization/OrganizationRoute'
       )
   )
 })
@@ -74,10 +94,13 @@ export const orgBillingRoute = createRoute({
 export const orgMembersRoute = createRoute({
   getParentRoute: () => organizationRoute,
   path: MEMBERS_PAGE,
+  loader: async ({context: {queryRefs}, params: {orgId}}) => ({
+    queryRef: await queryRefs.load<OrgMembersQuery>(orgMembersQuery, {orgId, first: 10000})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'OrgMembersRoot' */ '../../modules/userDashboard/components/OrgBilling/OrgMembersRoute'
+        /* webpackChunkName: 'OrgMembersRoute' */ '../../modules/userDashboard/components/OrgBilling/OrgMembersRoute'
       )
   )
 })
@@ -104,6 +127,9 @@ export const orgIntegrationsRoute = createRoute({
 export const orgAuthenticationRoute = createRoute({
   getParentRoute: () => organizationRoute,
   path: AUTHENTICATION_PAGE,
+  loader: async ({context: {queryRefs}, params: {orgId}}) => ({
+    queryRef: await queryRefs.load<OrgAuthenticationQuery>(orgAuthenticationQuery, {orgId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
@@ -124,10 +150,13 @@ export const orgTeamsRoute = createRoute({
 export const orgTeamMembersRoute = createRoute({
   getParentRoute: () => organizationRoute,
   path: `${TEAMS_PAGE}/$teamId`,
+  loader: async ({context: {queryRefs}, params: {teamId}}) => ({
+    queryRef: await queryRefs.load<OrgTeamMembersQuery>(orgTeamMembersQuery, {teamId})
+  }),
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'OrgTeamMembers' */ '../../modules/userDashboard/components/OrgTeamMembers/OrgTeamMembersRoot'
+        /* webpackChunkName: 'OrgTeamMembers' */ '../../modules/userDashboard/components/OrgTeamMembers/OrgTeamMembersRoute'
       )
   )
 })
@@ -148,14 +177,37 @@ export const myTasksRoute = createRoute({
     () => import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../../components/UserTaskViewRoot')
   )
 })
-export const timelineRoute = createRoute({
+// The timeline and every other /me URL share one query, filtered by the URL's search
+export const timelineLayoutRoute = createRoute({
   getParentRoute: () => userDashMainLayoutRoute,
-  path: '/',
-  component: MyDashboardTimelineRoot
+  id: 'timelineLayout',
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {atmosphere, queryRefs}, location}) => {
+    const {viewerId} = atmosphere
+    const {teamIds, eventTypes, showArchived} = parseQueryParams(viewerId, location.searchStr)
+    return {
+      queryRef: await queryRefs.load<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
+        first: 10,
+        userIds: [viewerId],
+        teamIds,
+        eventTypes,
+        archived: showArchived
+      })
+    }
+  },
+  component: lazyRouteComponent(
+    () =>
+      import(
+        /* webpackChunkName: 'MyDashboardTimelineRoute' */ '../../components/MyDashboardTimelineRoute'
+      )
+  )
+})
+export const timelineRoute = createRoute({
+  getParentRoute: () => timelineLayoutRoute,
+  path: '/'
 })
 // Any other /me URL falls back to the timeline
 export const timelineFallbackRoute = createRoute({
-  getParentRoute: () => userDashMainLayoutRoute,
-  path: '$',
-  component: MyDashboardTimelineRoot
+  getParentRoute: () => timelineLayoutRoute,
+  path: '$'
 })

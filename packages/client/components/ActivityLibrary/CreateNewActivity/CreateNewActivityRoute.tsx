@@ -1,19 +1,15 @@
-import {Suspense} from 'react'
-import createNewActivityQuery, {
-  type CreateNewActivityQuery
-} from '~/__generated__/CreateNewActivityQuery.graphql'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {Loader} from '../../../utils/relay/renderLoader'
+import {getRouteApi} from '@tanstack/react-router'
+import useQueryRefLease from '../../../routing/useQueryRefLease'
 import {CreateNewActivity} from './CreateNewActivity'
 
-const CreateNewActivityRoute = () => {
-  const queryRef = useQueryLoaderNow<CreateNewActivityQuery>(createNewActivityQuery)
+const routeApi = getRouteApi(
+  '/tipTapLayout/privateLayout/activity-library/new-activity/$categoryId'
+)
 
-  return (
-    <Suspense fallback={<Loader />}>
-      {queryRef && <CreateNewActivity queryRef={queryRef} />}
-    </Suspense>
-  )
+const CreateNewActivityRoute = () => {
+  const {queryRef} = routeApi.useLoaderData()
+  useQueryRefLease(queryRef)
+  return <CreateNewActivity queryRef={queryRef} />
 }
 
 export default CreateNewActivityRoute
