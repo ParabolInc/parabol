@@ -4,4 +4,9 @@ Return value for setMeetingSettings mutation
 type SetMeetingSettingsPayload {
   "The updated meeting settings"
   settings: TeamMeetingSettings
+
+  """
+  The running meeting that changed, when the mutation was given one
+  """
+  meeting: NewMeeting
 }

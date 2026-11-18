@@ -38,6 +38,12 @@ export const isTeamMember = <T>(
 
     let teamId: string = argVar
     if (dataLoaderName) {
+      // an optional argument left out has nothing to look up, so or(isNull(...), isTeamMember(...)) can guard it
+      if (argVar == null) {
+        return new GraphQLError(`Permission lookup failed on ${dataLoaderName}: no id`, {
+          extensions: {code: 'NOT_FOUND'}
+        })
+      }
       const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
       if (typeof teamIdKey === 'function') {
         teamId = teamIdKey(subject)

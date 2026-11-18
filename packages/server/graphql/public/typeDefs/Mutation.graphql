@@ -1902,10 +1902,32 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
-  Update configurable settings for a meeting type, including icebreaker phase, team health phase, review tasks phase, reflection anonymity, and video meeting URL
+  Update configurable settings for a meeting type, including icebreaker phase, team health phase, review tasks phase, reflection anonymity, and video meeting URL.
+  With meetingId, change a running meeting's settings and template instead
   """
   setMeetingSettings(
+    """
+    The team's settings for the meeting type. Without meetingId, these are what change
+    """
     settingsId: ID!
+
+    """
+    A running meeting of that team and type. Each change applies to the meeting while it still can,
+    and to the team's settings and the series' template only when the meeting repeats. A meeting
+    that doesn't repeat leaves the team's settings as they are
+    """
+    meetingId: ID
+
+    """
+    The meeting's new template. Requires meetingId: a team's default template changes with selectTemplate
+    """
+    templateId: ID
+
+    """
+    Standup only. Clear every answer, private drafts included. Without it, a template change refuses
+    with a CONFLICT error carrying answeredCount when anyone has started answering
+    """
+    clearTeamPromptResponses: Boolean
 
     """
     true to turn icebreaker phase on, false to turn it off
@@ -2286,33 +2308,9 @@ type Mutation {
     with a CONFLICT error carrying answeredCount when anyone has started answering
     """
     clearTeamPromptResponses: Boolean
-  ): UpdateMeetingTemplatePayload! @scope(name: MEETINGS_WRITE)
-
-  """
-  Change a retrospective's settings from inside the meeting. Each change applies to the meeting
-  while it still can, and to the team's next retrospectives when the meeting repeats
-  """
-  updateRetroMeetingSettings(
-    """
-    The id of the retrospective
-    """
-    meetingId: ID!
-
-    """
-    Start with an icebreaker. Only future meetings change, since the icebreaker opens a meeting
-    """
-    checkinEnabled: Boolean
-
-    """
-    Review open tasks before reflecting. The meeting changes until Reflect starts
-    """
-    reviewPastTasksEnabled: Boolean
-
-    """
-    Show who wrote each reflection. The meeting changes until someone adds a reflection
-    """
-    disableAnonymity: Boolean
-  ): UpdateRetroMeetingSettingsPayload! @scope(name: MEETINGS_WRITE)
+  ): UpdateMeetingTemplatePayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(reason: "Use setMeetingSettings with meetingId and templateId")
 
   """
   Update an with a change in name, avatar

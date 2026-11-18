@@ -4,7 +4,7 @@ import {RRule} from 'rrule'
 import type {RetroMeetingSettings_meeting$key} from '../../__generated__/RetroMeetingSettings_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import type useGotoStageId from '../../hooks/useGotoStageId'
-import useUpdateRetroMeetingSettingsMutation from '../../mutations/useUpdateRetroMeetingSettingsMutation'
+import useSetMeetingSettingsMutation from '../../mutations/useSetMeetingSettingsMutation'
 import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import getRetroSettingSections, {
   PHASE_SETTINGS,
@@ -70,9 +70,10 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
     meetingRef
   )
   const {viewerId} = useAtmosphere()
-  const [updateSettings, submitting] = useUpdateRetroMeetingSettingsMutation()
+  const [setMeetingSettings, submitting] = useSetMeetingSettingsMutation()
   const {id: meetingId, phases, facilitatorStageId, meetingSeries, template, team} = meeting
   const {retroSettings} = team
+  const {id: settingsId} = retroSettings
   const isRecurring = !!meetingSeries && !meetingSeries.cancelledAt
   const phaseTypes = phases.map(({phaseType}) => phaseType)
   const currentPhaseIdx = phases.findIndex(({stages}) =>
@@ -93,7 +94,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
     const {phaseType, variable} = PHASE_SETTINGS[settingId]
     const isEndingCurrentPhase = isNow && !isEnabled && currentPhase?.phaseType === phaseType
     if (!isEndingCurrentPhase || isRecurring) {
-      updateSettings({variables: {meetingId, [variable]: isEnabled}})
+      setMeetingSettings({variables: {settingsId, meetingId, [variable]: isEnabled}})
     }
     if (isEndingCurrentPhase) {
       const nextStage = phases[currentPhaseIdx + 1]?.stages[0]
@@ -113,7 +114,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
       disabled={submitting}
       onChangeTemplate={() => onOpenSubview('settingsTemplate')}
       onAnonymityChange={(isAnonymous) =>
-        updateSettings({variables: {meetingId, disableAnonymity: !isAnonymous}})
+        setMeetingSettings({variables: {settingsId, meetingId, disableAnonymity: !isAnonymous}})
       }
       onPhaseChange={(phaseSettingId, isEnabled) => setPhase(phaseSettingId, isEnabled, isNow)}
     />

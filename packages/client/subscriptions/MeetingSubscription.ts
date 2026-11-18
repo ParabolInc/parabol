@@ -183,8 +183,8 @@ const subscription = graphql`
       UpdateMeetingTemplatePayload {
         ...useUpdateMeetingTemplateMutation_meeting @relay(mask: false)
       }
-      UpdateRetroMeetingSettingsPayload {
-        ...useUpdateRetroMeetingSettingsMutation_payload @relay(mask: false)
+      SetMeetingSettingsPayload {
+        ...useSetMeetingSettingsMutation_payload @relay(mask: false)
       }
       VoteForReflectionGroupPayload {
         ...VoteForReflectionGroupMutation_meeting @relay(mask: false)

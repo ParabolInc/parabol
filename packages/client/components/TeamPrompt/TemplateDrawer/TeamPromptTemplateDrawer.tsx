@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {TeamPromptTemplateDrawerQuery} from '~/__generated__/TeamPromptTemplateDrawerQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -36,6 +36,9 @@ const TeamPromptTemplateDrawer = ({queryRef, onClose, hideHeader}: Props) => {
                 organization {
                   name
                 }
+                teamPromptSettings: meetingSettings(meetingType: teamPrompt) {
+                  id
+                }
               }
               meetingSeries {
                 cancelledAt
@@ -66,11 +69,10 @@ const TeamPromptTemplateDrawer = ({queryRef, onClose, hideHeader}: Props) => {
   )
   const {viewerId} = useAtmosphere()
   const meeting = viewer.meeting
-  const [isSeriesChecked, setIsSeriesChecked] = useState(false)
   const isSeriesActive = !!meeting?.meetingSeries && !meeting.meetingSeries.cancelledAt
   const switcher = useSwitchTeamPromptTemplate({
     meetingId: meeting?.id ?? '',
-    applyToSeries: isSeriesActive && isSeriesChecked,
+    settingsId: meeting?.team?.teamPromptSettings.id ?? '',
     onSwitched: onClose
   })
   const isEnded = !!meeting?.endedAt
@@ -109,9 +111,6 @@ const TeamPromptTemplateDrawer = ({queryRef, onClose, hideHeader}: Props) => {
     <div className='flex h-full w-full flex-col bg-surface-drawer'>
       {!hideHeader && <TeamPromptTemplateDrawerHeader onClose={onClose} />}
       <TeamPromptTemplateDrawerPinned
-        isSeriesActive={isSeriesActive}
-        isSeriesChecked={isSeriesChecked}
-        onSeriesCheckedChange={setIsSeriesChecked}
         answeredCount={answeredCount}
         youAnswered={youAnswered}
         hasHeader={!hideHeader}
@@ -129,7 +128,7 @@ const TeamPromptTemplateDrawer = ({queryRef, onClose, hideHeader}: Props) => {
       <TeamPromptSwitchTemplateDialog
         confirmation={switcher.confirmation}
         youAnswered={youAnswered}
-        isSeriesChange={isSeriesActive && isSeriesChecked}
+        isSeriesChange={isSeriesActive}
         submitting={switcher.submitting}
         onCancel={switcher.cancelConfirmation}
         onConfirm={confirm}

@@ -3,7 +3,7 @@ import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {RetroTemplatePickerQuery} from '../../__generated__/RetroTemplatePickerQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useUpdateMeetingTemplateMutation from '../../mutations/useUpdateMeetingTemplateMutation'
+import useSetMeetingSettingsMutation from '../../mutations/useSetMeetingSettingsMutation'
 import isTemplateAvailableToTeam from '../../shared/isTemplateAvailableToTeam'
 import RetroTemplateList from './RetroTemplateList'
 import RetroTemplateSearch from './RetroTemplateSearch'
@@ -34,7 +34,6 @@ const RetroTemplatePicker = ({queryRef}: Props) => {
               }
               meetingSeries {
                 id
-                cancelledAt
                 templateId
               }
               team {
@@ -43,6 +42,9 @@ const RetroTemplatePicker = ({queryRef}: Props) => {
                 orgId
                 organization {
                   name
+                }
+                retroSettings: meetingSettings(meetingType: retrospective) {
+                  id
                 }
               }
             }
@@ -65,13 +67,12 @@ const RetroTemplatePicker = ({queryRef}: Props) => {
     queryRef
   )
   const atmosphere = useAtmosphere()
-  const [updateMeetingTemplate] = useUpdateMeetingTemplateMutation()
+  const [setMeetingSettings] = useSetMeetingSettingsMutation()
   const [pendingTemplateId, setPendingTemplateId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const meeting = viewer.meeting
   if (!meeting?.team || !meeting.phases) return null
   const {id: meetingId, team, meetingSeries, phases} = meeting
-  const isRecurring = !!meetingSeries && !meetingSeries.cancelledAt
   const reflectPhase = phases.find(({phaseType}) => phaseType === 'reflect')
   const isReflectDone = !reflectPhase || reflectPhase.stages.every(({isComplete}) => isComplete)
   const isFutureOnly = (meeting.reflectionGroups?.length ?? 0) > 0 || isReflectDone
@@ -88,8 +89,8 @@ const RetroTemplatePicker = ({queryRef}: Props) => {
   const pick = (template: {id: string; name: string}) => {
     if (template.id === currentTemplateId || pendingTemplateId) return
     setPendingTemplateId(template.id)
-    updateMeetingTemplate({
-      variables: {meetingId: meetingId!, templateId: template.id, applyToSeries: isRecurring},
+    setMeetingSettings({
+      variables: {settingsId: team.retroSettings.id, meetingId, templateId: template.id},
       onCompleted: (_res, errors) => {
         setPendingTemplateId(null)
         const message = errors?.[0]?.message
