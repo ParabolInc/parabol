@@ -1,16 +1,20 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {fetch} from '@whatwg-node/fetch'
+import {GraphQLError} from 'graphql'
 import imageNotSupportedPlaceholder from '../../static/images/illustrations/imageNotSupportedPlaceholder.png'
 import type AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import type {AssetType, PartialPath} from './fileStorage/FileStoreManager'
 import getFileStoreManager from './fileStorage/getFileStoreManager'
+import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import {atlassianProxyHandler} from './integrations/jira/atlassianProxyHandler'
 import getKysely from './postgres/getKysely'
 import {getUserId, isTeamMember} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
+import getAPIAuthToken from './utils/getAPIAuthToken'
+import getAPIGrant from './utils/getAPIGrant'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
@@ -37,7 +41,8 @@ export const checkAccess = async (
   authToken: AuthToken | null,
   scope: AssetScopeEnum,
   scopeCode: string,
-  assetType: AssetType | 'idpMetadata' | 'idpMetadata.xml'
+  assetType: AssetType | 'idpMetadata' | 'idpMetadata.xml',
+  resourceGrants?: ResourceGrants
 ) => {
   const viewerId = getUserId(authToken)
   if (scope === 'User') {
@@ -45,7 +50,9 @@ export const checkAccess = async (
       // User/picture is for avatars. All user avatars are visible to all users
       return true
     } else {
-      if ([viewerId, 'aGhostUser'].includes(scopeCode)) return true
+      if (scopeCode === 'aGhostUser') return true
+      if (resourceGrants && !resourceGrants.isUnrestricted()) return false
+      if (scopeCode === viewerId) return true
     }
   } else if (scope === 'Team') {
     if (assetType === 'picture') {
@@ -61,6 +68,7 @@ export const checkAccess = async (
     } else {
       // aGhostOrg contains all parabol-seeded assets, e.g. illustrations
       if (scopeCode === 'aGhostOrg') return true
+      if (resourceGrants && !(await resourceGrants.hasOrg(scopeCode))) return false
       const inOrg = await getKysely()
         .selectFrom('OrganizationUser')
         .select('id')
@@ -78,7 +86,7 @@ export const checkAccess = async (
       .get('pageAccessByPageIdUserId')
       .load({pageId, userId: viewerId})
     dataLoader.dispose()
-    if (pageAccess) return true
+    if (pageAccess && (!resourceGrants || (await resourceGrants.hasPage(pageId)))) return true
   }
   return false
 }
@@ -98,6 +106,38 @@ const decodePartialPath = (rawPath: string) => {
   return segments.every(isPlainSegment) ? (segments.join('/') as PartialPath) : null
 }
 
+const isUnauthenticated = (error: unknown) =>
+  error instanceof GraphQLError && error.extensions.code === 'UNAUTHENTICATED'
+
+const getBearerDenialStatus = async (
+  bearerToken: string,
+  scope: AssetScopeEnum,
+  scopeCode: string,
+  assetType: AssetType
+) => {
+  if (assetType === 'atlassian') return '403'
+  const dataLoader = getNewDataLoader('assetProxyToken')
+  try {
+    const grant = await getAPIGrant(bearerToken, dataLoader)
+    if (!grant) return '401'
+    const authToken = await getAPIAuthToken(grant, dataLoader)
+    const canAccess = await checkAccess(
+      authToken,
+      scope,
+      scopeCode,
+      assetType,
+      grant.resourceGrants
+    )
+    return canAccess ? null : '403'
+  } catch (error) {
+    if (isUnauthenticated(error)) return '401'
+    Logger.error('Asset proxy could not check an access token', error)
+    return '500'
+  } finally {
+    dataLoader.dispose()
+  }
+}
+
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   // Parse the raw (non-decoded) path so an encoded Atlassian URL in the filename segment
   // doesn't get its slashes expanded before we split on '/'.
@@ -112,15 +152,32 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const assetType = segmentMatch[3] as AssetType
   const rawFilename = segmentMatch[4] ?? ''
 
-  const authToken = getReqAuth(req)
-  const canAccess = await checkAccess(authToken, scope, scopeCode, assetType)
-  if (!canAccess) {
+  const authorization = req.getHeader('authorization')
+  const sessionAuthToken = getReqAuth(req)
+  if (!sessionAuthToken && authorization.startsWith('Bearer ')) {
+    const denialStatus = await getBearerDenialStatus(
+      authorization.slice(7),
+      scope,
+      scopeCode,
+      assetType
+    )
+    if (denialStatus) {
+      res.writeStatus(denialStatus).end()
+      return
+    }
+  } else if (!(await checkAccess(sessionAuthToken, scope, scopeCode, assetType))) {
     await servePlaceholderImage(res)
     return
   }
 
   if (assetType === 'atlassian') {
-    await atlassianProxyHandler(res, authToken, scopeCode, rawFilename, servePlaceholderImage)
+    await atlassianProxyHandler(
+      res,
+      sessionAuthToken,
+      scopeCode,
+      rawFilename,
+      servePlaceholderImage
+    )
     return
   }
 
