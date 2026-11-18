@@ -9,9 +9,8 @@ import {
   MAX_USER_UPLOAD_BYTES_FREE,
   MAX_USER_UPLOAD_BYTES_PAID
 } from '../../../../../client/utils/constants'
-import {checkAccess} from '../../../../assetProxyHandler'
 import type AuthToken from '../../../../database/types/AuthToken'
-import type {AssetType, PartialPath} from '../../../../fileStorage/FileStoreManager'
+import type {PartialPath} from '../../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
 import {isParabolHostedAsset} from '../../../../fileStorage/isParabolHostedAsset'
 import {getUserId} from '../../../../utils/authorization'
@@ -21,11 +20,10 @@ import {fetchUntrusted} from '../../../../utils/fetchUntrusted'
 import getUserDetail from '../../../../utils/getUserDetail'
 import {Logger} from '../../../../utils/Logger'
 import type {DataLoaderWorker} from '../../../graphql'
+import type {ResourceGrants} from '../../ResourceGrants'
 import type {AssetScopeEnum} from '../../resolverTypes'
 import {incrementUserBytesUploaded} from '../uploadUserAsset'
-
-const VALID_SCOPES: AssetScopeEnum[] = ['Page', 'User', 'Team', 'Organization']
-const VALID_ASSET_TYPES: AssetType[] = ['assets', 'picture', 'metadata', 'template']
+import {checkSourceAssetAccess} from './checkSourceAssetAccess'
 
 // Copies a URL into the file store on the viewer's quota, reading Parabol assets with the viewer's access
 export const hostUserAsset = async (
@@ -33,7 +31,8 @@ export const hostUserAsset = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
   scopeCode: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants: ResourceGrants | null
 ) => {
   const url = parsedUrl.href
   const viewerId = getUserId(authToken)
@@ -50,25 +49,11 @@ export const hostUserAsset = async (
   if (isParabolHostedAsset(parsedUrl)) {
     // if we host it, just make a copy of it in the new directory
     const manager = await getFileStoreManager()
-    const sourcePartialPath = parsedUrl.pathname.slice('/assets/'.length) as PartialPath
-    const [sourceScope, sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
-      AssetScopeEnum,
-      string,
-      AssetType,
-      string
-    ]
-    if (
-      !VALID_SCOPES.includes(sourceScope) ||
-      !VALID_ASSET_TYPES.includes(assetType) ||
-      !filename ||
-      filename.includes('..')
-    ) {
-      throw new GraphQLError('Invalid asset URL', {extensions: {code: 'BAD_USER_INPUT'}})
-    }
-    const canAccessSource = await checkAccess(authToken, sourceScope, sourceScopeCode, assetType)
-    if (!canAccessSource) {
-      throw new GraphQLError('Access denied to source asset', {extensions: {code: 'FORBIDDEN'}})
-    }
+    const {sourcePartialPath, assetType, filename} = await checkSourceAssetAccess(
+      parsedUrl,
+      authToken,
+      resourceGrants
+    )
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
       const [newUrl, localRes] = await Promise.all([

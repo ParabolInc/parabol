@@ -19,7 +19,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants)
   if (typeof scopeCode !== 'string') return scopeCode
   // RESOLUTION
-  return hostUserAsset(parsedUrl, authToken, scope, scopeCode, dataLoader)
+  return hostUserAsset(parsedUrl, authToken, scope, scopeCode, dataLoader, resourceGrants ?? null)
 }
 
 export default embedUserAsset

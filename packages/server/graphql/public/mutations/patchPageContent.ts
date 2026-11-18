@@ -22,6 +22,7 @@ const patchPageContent: MutationResolvers['patchPageContent'] = async (
   await redisHocusPocus.handleEvent('patchPageContent', CipherId.toClient(dbPageId, 'page'), {
     edits,
     userId: viewerId,
+    resourceGrants: resourceGrants?.serialize(),
     canChangePageLinks: !resourceGrants || resourceGrants.isUnrestricted()
   })
   dataLoader.get('pages').clear(dbPageId)

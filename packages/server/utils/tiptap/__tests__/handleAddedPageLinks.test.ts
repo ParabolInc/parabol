@@ -350,7 +350,8 @@ test('rehosts the assets a seed carries into the new page as the inserting user'
   expect(mockRehostSeededAssets).toHaveBeenCalledWith(
     NEW_PAGE_ID,
     [seedParagraph, {type: 'imageBlock', attrs: expect.objectContaining(image.attrs)}],
-    EDITOR_ID
+    EDITOR_ID,
+    undefined
   )
 })
 

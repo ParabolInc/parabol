@@ -6,6 +6,7 @@ const mockPublicRoles = new Map<number, string>()
 const mockCharges: [userId: string, bytes: number][] = []
 const mockFetchedUrls: string[] = []
 const mockAccessCheckUserIds: string[] = []
+const mockAccessCheckGrants: unknown[] = []
 const mockErrors: unknown[] = []
 const mockDocs: {current?: Y.Doc} = {}
 const mockFetchGate: {wait?: Promise<void>} = {}
@@ -91,8 +92,15 @@ jest.mock('../../../fileStorage/getFileStoreManager', () => ({
   })
 }))
 jest.mock('../../../assetProxyHandler', () => ({
-  checkAccess: async (authToken: {sub: string}, _scope: string, scopeCode: string) => {
+  checkAccess: async (
+    authToken: {sub: string},
+    _scope: string,
+    scopeCode: string,
+    _assetType: string,
+    resourceGrants?: {serialize: () => unknown}
+  ) => {
     mockAccessCheckUserIds.push(authToken.sub)
+    mockAccessCheckGrants.push(resourceGrants?.serialize() ?? null)
     return mockPageRoles.has(`${scopeCode}:${authToken.sub}`)
   }
 }))
@@ -174,6 +182,7 @@ beforeEach(() => {
   mockCharges.length = 0
   mockFetchedUrls.length = 0
   mockAccessCheckUserIds.length = 0
+  mockAccessCheckGrants.length = 0
   mockErrors.length = 0
   mockFetchGate.wait = undefined
   mockPageRoles.set(`${PAGE_ID}:${INSERTER_ID}`, 'editor')
@@ -290,6 +299,29 @@ test("copies another page's asset only with the access of the user who added it"
   ])
 })
 
+test("checks another page's asset against the grants of the token that wrote it", async () => {
+  const secretSrc = (name: string) =>
+    `https://parabol.test/assets/Page/${SECRET_PAGE_ID}/assets/${name}.png`
+  const grants = {grantedOrgIds: ['org-a'], grantedTeamIds: [], grantedPageIds: null}
+  const {doc, frag} = makePage()
+  doc.transact(
+    () => frag.insert(0, [makeImage(secretSrc('by-session'))]),
+    asConnection(INSERTER_ID).origin
+  )
+  doc.transact(() => frag.insert(1, [makeImage(secretSrc('by-token'))]), {
+    source: 'local',
+    context: {userId: INSERTER_ID, resourceGrants: grants}
+  })
+  rehostSeededAssets(
+    PAGE_ID,
+    [{type: 'imageBlock', attrs: {src: secretSrc('in-seed')}}],
+    INSERTER_ID,
+    grants
+  )
+  await flush()
+  expect(mockAccessCheckGrants).toEqual([null, grants, grants])
+})
+
 test('keeps a src that changed while its old one was being fetched', async () => {
   let release = () => {}
   mockFetchGate.wait = new Promise((resolve) => {
@@ -338,7 +370,8 @@ test('hosts the images a seed carries, nested or not, on the quota of the user w
       },
       {type: 'imageBlock', attrs: {src: hostedSrc}}
     ],
-    INSERTER_ID
+    INSERTER_ID,
+    undefined
   )
   await flush()
   expect(mockFetchedUrls).toEqual([EXTERNAL_SRC])
@@ -407,7 +440,8 @@ test('hosts the embed thumbnails a seed carries', async () => {
         attrs: {url: 'https://claude.example/a', thumbnailUrl: EXTERNAL_THUMBNAIL}
       }
     ],
-    INSERTER_ID
+    INSERTER_ID,
+    undefined
   )
   await flush()
   expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL])

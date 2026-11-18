@@ -8,10 +8,12 @@ import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {isParabolHostedAsset} from '../../fileStorage/isParabolHostedAsset'
 import {hostUserAsset} from '../../graphql/public/mutations/helpers/hostUserAsset'
 import {validateScope} from '../../graphql/public/mutations/uploadUserAsset'
+import {ResourceGrants, type SerializedResourceGrants} from '../../graphql/public/ResourceGrants'
 import {CipherId} from '../CipherId'
 import isExpectedError from '../isExpectedError'
 import {Logger} from '../Logger'
 import logError from '../logError'
+import {getResourceGrantsFromTransaction} from './getResourceGrantsFromTransaction'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {replacePageAssetSrc} from './hocusPocusHub'
@@ -90,14 +92,32 @@ const withUserLimit = async <T>(userId: string, fn: () => Promise<T>) => {
   }
 }
 
-const hostAsUser = async (pageId: number, sourceUrl: URL, userId: string) => {
+const hostAsUser = async (
+  pageId: number,
+  sourceUrl: URL,
+  userId: string,
+  grants: SerializedResourceGrants | undefined
+) => {
   const dataLoader = getNewDataLoader('rehostExternalAssets')
   try {
-    const tms = await dataLoader.get('teamIdsByUserId').load(userId)
+    const resourceGrants = grants
+      ? new ResourceGrants(
+          userId,
+          grants.grantedOrgIds,
+          grants.grantedTeamIds,
+          grants.grantedPageIds,
+          dataLoader
+        )
+      : null
+    const teamIds = await dataLoader.get('teamIdsByUserId').load(userId)
+    const isTeamGranted = await Promise.all(
+      teamIds.map((teamId) => resourceGrants?.hasTeam(teamId) ?? true)
+    )
+    const tms = teamIds.filter((_, idx) => isTeamGranted[idx])
     const authToken = new AuthToken({sub: userId, tms})
     const pageKey = CipherId.toClient(pageId, 'page')
     const scopeCode = await validateScope(authToken, 'Page', pageKey, dataLoader)
-    return await hostUserAsset(sourceUrl, authToken, 'Page', scopeCode, dataLoader)
+    return await hostUserAsset(sourceUrl, authToken, 'Page', scopeCode, dataLoader, resourceGrants)
   } finally {
     dataLoader.dispose()
   }
@@ -109,13 +129,14 @@ const rehostAsset = (
   src: string,
   sourceUrl: URL,
   userId: string,
+  grants: SerializedResourceGrants | undefined,
   connection: Connection | undefined
 ) => {
   const key = `${pageId}:${userId}:${src}`
   if (inFlight.has(key)) return
   const rehost = async () => {
     try {
-      const {url} = await withUserLimit(userId, () => hostAsUser(pageId, sourceUrl, userId))
+      const {url} = await withUserLimit(userId, () => hostAsUser(pageId, sourceUrl, userId, grants))
       await replacePageAssetSrc(pageId, src, url)
       return
     } catch (error) {
@@ -138,6 +159,7 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
   const {transaction} = e
   const userId = getUserIdFromTransaction(transaction)
   if (!userId) return
+  const grants = getResourceGrantsFromTransaction(transaction)
   const {origin} = transaction
   const connection =
     isTransactionOrigin(origin) && origin.source === 'connection' ? origin.connection : undefined
@@ -151,11 +173,16 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
     if (typeof src !== 'string' || movedSrcs.has(src)) return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
-    rehostAsset(pageId, src, sourceUrl, userId, connection)
+    rehostAsset(pageId, src, sourceUrl, userId, grants, connection)
   })
 }
 
-export const rehostSeededAssets = (pageId: number, content: JSONContent[], userId: string) => {
+export const rehostSeededAssets = (
+  pageId: number,
+  content: JSONContent[],
+  userId: string,
+  grants: SerializedResourceGrants | undefined
+) => {
   const pageCode = CipherId.encrypt(pageId)
   const srcs = [...PAGE_ASSET_ATTRS].flatMap(([nodeType, attr]) =>
     getAllNodesAttributesByType<Record<string, unknown>>({content}, nodeType).map(
@@ -166,6 +193,6 @@ export const rehostSeededAssets = (pageId: number, content: JSONContent[], userI
     if (typeof src !== 'string') return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
-    rehostAsset(pageId, src, sourceUrl, userId, undefined)
+    rehostAsset(pageId, src, sourceUrl, userId, grants, undefined)
   })
 }

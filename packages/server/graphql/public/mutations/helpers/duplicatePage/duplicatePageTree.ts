@@ -51,7 +51,13 @@ export const duplicatePageTree = async (params: Params) => {
     reservePageIds(pages.length)
   ])
   const copyIdBySourceId = new Map(pages.map(({id}, idx) => [id, copyIds[idx]!]))
-  const hostedSrcs = await rehostPageAssets({states, copyIdBySourceId, authToken, dataLoader})
+  const hostedSrcs = await rehostPageAssets({
+    states,
+    copyIdBySourceId,
+    authToken,
+    dataLoader,
+    resourceGrants: resourceGrants ?? null
+  })
   const copies = buildPageCopies({
     pages,
     states,
