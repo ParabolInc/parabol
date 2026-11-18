@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -111,7 +112,7 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
       return makeHackedButtonPairFields(resultsButton, summaryButton)
     }
     default:
-      throw new Error('Invalid meeting type')
+      throw new GraphQLError('Invalid meeting type', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
   }
 }
 

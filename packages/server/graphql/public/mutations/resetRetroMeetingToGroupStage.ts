@@ -73,7 +73,9 @@ const resetRetroMeetingToGroupStage: MutationResolvers['resetRetroMeetingToGroup
         return newDiscussPhase
       }
       default:
-        throw new Error(`Unhandled phaseType: ${phase.phaseType}`)
+        throw new GraphQLError(`Unhandled phaseType: ${phase.phaseType}`, {
+          extensions: {code: 'INTERNAL_SERVER_ERROR'}
+        })
     }
   }) as RetroMeetingPhase[]
 

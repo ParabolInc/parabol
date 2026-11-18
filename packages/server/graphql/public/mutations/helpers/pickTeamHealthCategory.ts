@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../../graphql'
@@ -23,7 +24,10 @@ const pickTeamHealthCategory = async (
     .orderBy('sortOrder')
     .execute()
   const fallback = categories.find((c) => c.userId === 'aGhostUser' && c.name === DEFAULT_CATEGORY)
-  if (!fallback) throw new Error(`Built-in ${DEFAULT_CATEGORY} category is missing`)
+  if (!fallback)
+    throw new GraphQLError(`Built-in ${DEFAULT_CATEGORY} category is missing`, {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
 
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
   const orgIds = [...new Set(orgUsers.map(({orgId}) => orgId))]

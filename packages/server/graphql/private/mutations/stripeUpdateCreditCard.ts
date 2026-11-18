@@ -1,30 +1,29 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
-import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import type {MutationResolvers} from '../resolverTypes'
 
 const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = async (
   _source,
-  {customerId},
-  {authToken}
+  {customerId}
 ) => {
-  // AUTH
-  if (!isSuperUser(authToken)) {
-    throw new Error('Don’t be rude.')
-  }
   const manager = getStripeManager()
   const customer = await manager.retrieveCustomer(customerId)
   if (customer.deleted) {
-    throw new Error('Unable to update credit card as customer has been deleted')
+    throw new GraphQLError('Unable to update credit card as customer has been deleted', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   const creditCard = await getCCFromCustomer(customer)
   const {
     metadata: {orgId}
   } = customer
   if (!orgId) {
-    throw new Error('Unable to update credit card as customer does not have an orgId')
+    throw new GraphQLError('Unable to update credit card as customer does not have an orgId', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   await getKysely()
     .updateTable('Organization')

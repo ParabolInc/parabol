@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import type {JsonObject} from '../../../postgres/types/pg'
 import type {MutationResolvers} from '../resolverTypes'
@@ -7,7 +8,9 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
 
   // VALIDATION
   if (oldEmail === newEmail) {
-    throw new Error('New email is the same as the old one')
+    throw new GraphQLError('New email is the same as the old one', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const user = await pg
@@ -17,7 +20,7 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     .executeTakeFirst()
 
   if (!user) {
-    throw new Error(`User with ${oldEmail} not found`)
+    throw new GraphQLError(`User with ${oldEmail} not found`, {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {id: userId, identities} = user

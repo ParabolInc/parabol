@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {IntegrationProviderLinear} from '../../postgres/types/IntegrationProvider'
 import type {GQLContext} from '../graphql'
 import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
@@ -13,8 +14,10 @@ export const nestLinear = () =>
       {dataLoader}: GQLContext
     ) => {
       const auth = await dataLoader.get('freshAuth').load({service: 'linear', teamId, userId})
-      if (!auth?.accessToken) throw new Error('No Linear token found')
-      if (!auth?.providerId) throw new Error('No Linear provider found')
+      if (!auth?.accessToken)
+        throw new GraphQLError('No Linear token found', {extensions: {code: 'NOT_FOUND'}})
+      if (!auth?.providerId)
+        throw new GraphQLError('No Linear provider found', {extensions: {code: 'NOT_FOUND'}})
       const {accessToken, providerId} = auth
       const provider = await dataLoader.get('integrationProviders').load(providerId)
       const {serverBaseUrl} = provider as IntegrationProviderLinear

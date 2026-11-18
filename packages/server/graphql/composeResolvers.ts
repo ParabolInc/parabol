@@ -161,6 +161,7 @@ const composeResolvers = <T extends ResolverMap>(
     // only clone field maps that will be mutated by permissions
     nextResolverMap[typeName] = {...nextResolverMap[typeName]}
     const nextResolverFieldMap = nextResolverMap[typeName]
+    // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
     if (!nextResolverFieldMap) throw new Error(`No resolver exists for type: ${String(typeName)}`)
     Object.entries(ruleFieldMap).forEach(([fieldName, rule]) => {
       if (fieldName === '*') {

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
 import type {UpdatedNotificationResolvers} from '../resolverTypes'
 
@@ -8,8 +9,9 @@ const UpdatedNotification: UpdatedNotificationResolvers = {
     const viewerId = getUserId(authToken)
     const notification = await dataLoader.get('notifications').loadNonNull(updatedNotificationId)
     if (notification.userId !== viewerId) {
-      throw new Error(
-        `Viewer ID does not match notification user ID: notification ${updatedNotificationId} published to user ${viewerId}`
+      throw new GraphQLError(
+        `Notification ${updatedNotificationId} was published to another user`,
+        {extensions: {code: 'INTERNAL_SERVER_ERROR'}}
       )
     }
 

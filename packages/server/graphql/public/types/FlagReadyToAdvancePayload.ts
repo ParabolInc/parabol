@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import type {FlagReadyToAdvancePayloadResolvers} from '../resolverTypes'
 
@@ -13,7 +14,8 @@ const FlagReadyToAdvancePayload: FlagReadyToAdvancePayloadResolvers = {
   stage: async ({meetingId, stageId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const stageRes = findStageById(meeting.phases, stageId)
-    if (!stageRes) throw new Error('Stage not found')
+    if (!stageRes)
+      throw new GraphQLError('Stage not found', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
     return {
       ...stageRes.stage,
       meetingId,

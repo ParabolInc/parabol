@@ -19,8 +19,10 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
       if (!field.astNode) continue
       const directiveValues = getDirectiveValues(scopeDirective, field.astNode)
       if (!directiveValues) {
-        if (isScopeDirectiveRequired)
+        if (isScopeDirectiveRequired) {
+          // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
           throw new Error(`Missing @scope directive on ${type.name}.${field.name}`)
+        }
         continue
       }
 

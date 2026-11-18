@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
@@ -25,7 +26,8 @@ const EndCheckInPayload: EndCheckInPayloadResolvers = {
     const timelineEvent = timelineEvents.find(
       (event) => event.type === 'actionComplete' && event.userId === viewerId
     )
-    if (!timelineEvent) throw new Error('Timeline event not found')
+    if (!timelineEvent)
+      throw new GraphQLError('Timeline event not found', {extensions: {code: 'NOT_FOUND'}})
     return timelineEvent
   },
   updatedTasks: async ({updatedTaskIds}, _args, {dataLoader, authToken}) => {

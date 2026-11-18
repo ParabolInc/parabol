@@ -2,7 +2,6 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
-import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
@@ -483,26 +482,13 @@ const User: ReqResolvers<'User'> = {
   },
 
   similarReflectionGroups: async (
-    {id: userId},
+    _source,
     {reflectionGroupId, searchQuery: rawSearchQuery},
     {dataLoader}
   ) => {
     const searchQuery = rawSearchQuery.toLowerCase().trim()
-    const retroReflectionGroup = await dataLoader
-      .get('retroReflectionGroups')
-      .load(reflectionGroupId)
-    if (!retroReflectionGroup) {
-      throw new Error('Invalid reflection group id')
-    }
-    const {meetingId} = retroReflectionGroup
-    const meetingMemberId = MeetingMemberId.join(meetingId, userId)
-    const [viewerMeetingMember, reflections] = await Promise.all([
-      dataLoader.get('meetingMembers').load(meetingMemberId),
-      dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-    ])
-    if (!viewerMeetingMember) {
-      throw new Error('Not a member of meeting')
-    }
+    const {meetingId} = await dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId)
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
 
     if (searchQuery !== '') {
       const matchedReflections = reflections.filter(({plaintextContent}) =>
@@ -753,8 +739,9 @@ const User: ReqResolvers<'User'> = {
 
     if (!__PRODUCTION__) {
       if (parabolActivities!.length + allUserActivities.length > first) {
-        throw new Error(
-          'Please implement pagination for User.activities or increase `first` for the query'
+        throw new GraphQLError(
+          'Please implement pagination for User.activities or increase `first` for the query',
+          {extensions: {code: 'INTERNAL_SERVER_ERROR'}}
         )
       }
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {

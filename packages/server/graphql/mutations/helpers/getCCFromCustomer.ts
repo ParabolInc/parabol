@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type Stripe from 'stripe'
 import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
@@ -7,10 +8,15 @@ export default async function getCCFromCustomer(
   customer: Stripe.Customer | Stripe.DeletedCustomer
 ) {
   if (customer.deleted) {
-    throw new Error(`Customer ${customer.id} has been deleted`)
+    throw new GraphQLError(`Customer ${customer.id} has been deleted`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   if (!customer.default_source && !customer.invoice_settings.default_payment_method) {
-    throw new Error(`Could not find default_source or default_payment_method for ${customer.id}`)
+    throw new GraphQLError(
+      `Could not find default_source or default_payment_method for ${customer.id}`,
+      {extensions: {code: 'CONFLICT'}}
+    )
   }
   const manager = getStripeManager()
   if (customer.invoice_settings.default_payment_method) {
@@ -29,10 +35,12 @@ export default async function getCCFromCustomer(
         : customer.default_source!.id
     const card = await manager.retrieveSource(customer.id, defaultSource)
     if (!card) {
-      throw new Error(`Could not find a card for ${customer.id}`)
+      throw new GraphQLError(`Could not find a card for ${customer.id}`, {
+        extensions: {code: 'NOT_FOUND'}
+      })
     }
     if (card.object !== 'card') {
-      throw new Error(`Card is type ${card.object}`)
+      throw new GraphQLError(`Card is type ${card.object}`, {extensions: {code: 'CONFLICT'}})
     }
     const {brand, last4, exp_month: expMonth, exp_year: expYear} = card
     const expiry = `${expMonth.toString().padStart(2, '0')}/${String(expYear).substr(2)}`
