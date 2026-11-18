@@ -123,6 +123,32 @@ const subscription = graphql`
       RevealTeamHealthVotesPayload {
         ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
       }
+      RetroTeamHealthCheckPayload {
+        meeting {
+          id
+          # a reveal replaces the Health Results stage list, and the retro may navigate there at
+          # once, so every stage field the retro reads comes with it
+          phases {
+            id
+            phaseType
+            stages {
+              id
+              isComplete
+              isNavigable
+              isNavigableByFacilitator
+              meetingId
+              phaseType
+              ...BottomControlBarReadyStage
+              ...StageTimerControlStage
+              ...StageTimerDisplayStage
+            }
+          }
+          ...RetroTeamHealthCheckPhase_meeting
+          ...RetroTeamHealthResultPhase_meeting
+          ...RetroMeetingSidebar_meeting
+          ...MeetingControlBar_meeting
+        }
+      }
       SetPhaseFocusPayload {
         ...SetPhaseFocusMutation_meeting @relay(mask: false)
       }

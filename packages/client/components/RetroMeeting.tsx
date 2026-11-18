@@ -6,6 +6,7 @@ import type {
   RetroMeeting_meeting$key
 } from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import type useGotoStageId from '../hooks/useGotoStageId'
 import useMeeting from '../hooks/useMeeting'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -29,6 +30,18 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   TEAM_HEALTH: lazyPreload(() => import(/* webpackChunkName: 'TeamHealth' */ './TeamHealth')),
+  TEAM_HEALTH_CHECK: lazyPreload(
+    () =>
+      import(
+        /* webpackChunkName: 'RetroTeamHealthCheckPhase' */ './RetroTeamHealth/RetroTeamHealthCheckPhase'
+      )
+  ),
+  TEAM_HEALTH_CHECK_RESULT: lazyPreload(
+    () =>
+      import(
+        /* webpackChunkName: 'RetroTeamHealthResultPhase' */ './RetroTeamHealth/RetroTeamHealthResultPhase'
+      )
+  ),
   updates: lazyPreload(
     () => import(/* webpackChunkName: 'RetroMeetingUpdates' */ './RetroMeetingUpdates')
   ),
@@ -48,6 +61,7 @@ export interface RetroMeetingPhaseProps {
   meeting: any
   avatarGroup: ReactElement
   openSettings?: () => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
 }
 
 const RetroMeeting = (props: Props) => {
@@ -61,6 +75,8 @@ const RetroMeeting = (props: Props) => {
         ...RetroMeetingSidebar_meeting
         ...NewMeetingCheckIn_meeting
         ...TeamHealth_meeting
+        ...RetroTeamHealthCheckPhase_meeting
+        ...RetroTeamHealthResultPhase_meeting
         ...RetroMeetingUpdates_meeting
         ...RetroReflectPhase_meeting
         ...RetroGroupPhase_meeting
@@ -107,10 +123,13 @@ const RetroMeeting = (props: Props) => {
   const Phase = phaseLookup[localPhaseType]!
   if (!Phase) reportMissingMeetingPhase('RetroMeeting', meeting)
   const isDemo = meetingId === RetroDemo.MEETING_ID
-  // Vote and discuss render their own drawer. The other phases share one, rendered here above the
-  // swapped Phase so it stays mounted across phase changes instead of flickering. Hidden in the
-  // demo: the mock DB doesn't serve the drawer's fields.
-  const hasOwnDrawer = localPhaseType === 'vote' || localPhaseType === 'discuss'
+  // Vote, discuss and Health Results render their own drawer. The other phases share one, rendered
+  // here above the swapped Phase so it stays mounted across phase changes instead of flickering.
+  // Hidden in the demo: the mock DB doesn't serve the drawer's fields.
+  const hasOwnDrawer =
+    localPhaseType === 'vote' ||
+    localPhaseType === 'discuss' ||
+    localPhaseType === 'TEAM_HEALTH_CHECK_RESULT'
   const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
   const openSettings = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -142,6 +161,7 @@ const RetroMeeting = (props: Props) => {
           toggleSidebar={toggleSidebar}
           avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
           openSettings={isDemo ? undefined : openSettings}
+          gotoStageId={gotoStageId}
         />
       </Suspense>
       {!isDemo && !hasOwnDrawer && (

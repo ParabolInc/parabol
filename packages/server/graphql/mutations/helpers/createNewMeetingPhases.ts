@@ -32,6 +32,7 @@ import type {DB} from '../../../postgres/types/pg'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import type {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import createTeamHealthCheckPhases from './createTeamHealthCheckPhases'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -92,82 +93,91 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
   const inserts = [] as InsertQueryBuilder<DB, any, any>[]
 
   const tier = getFeatureTier(org)
-  const phases = (await Promise.all(
-    phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
-      const durations = stageDurations[phaseType]
-      switch (phaseType) {
-        case CHECKIN:
-          return new CheckInPhase({
-            teamId,
-            meetingCount,
-            stages: [new CheckInStage(facilitatorTeamMemberId, positionAfter(''))]
-          })
-        case 'TEAM_HEALTH':
-          return new TeamHealthPhase({
-            stages: [
-              new TeamHealthStage('How are you feeling about work today?', ['😀', '😐', '😢'])
-            ]
-          })
-        case REFLECT:
-          return new ReflectPhase(teamId, durations)
-        case DISCUSS: {
-          const discussPhase = new DiscussPhase(durations)
-          const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
-          if (discussStages.length > 0) {
-            inserts.push(
-              pg.insertInto('Discussion').values(
-                discussStages.map((stage) => ({
-                  id: stage.discussionId,
-                  teamId,
-                  meetingId,
-                  discussionTopicId: stage.reflectionGroupId,
-                  discussionTopicType: 'reflectionGroup'
-                }))
+  // a retro's settings may still list the one-question pulse, which only check-ins run now
+  const isLegacyRetroPulse = (phaseType: string) =>
+    meetingType === 'retrospective' && phaseType === 'TEAM_HEALTH'
+  const phaseGroups = await Promise.all(
+    phaseTypes
+      .filter(isPhaseAvailable(tier))
+      .filter((phaseType) => !isLegacyRetroPulse(phaseType))
+      .map(async (phaseType) => {
+        const durations = stageDurations[phaseType]
+        switch (phaseType) {
+          case CHECKIN:
+            return new CheckInPhase({
+              teamId,
+              meetingCount,
+              stages: [new CheckInStage(facilitatorTeamMemberId, positionAfter(''))]
+            })
+          case 'TEAM_HEALTH':
+            return new TeamHealthPhase({
+              stages: [
+                new TeamHealthStage('How are you feeling about work today?', ['😀', '😐', '😢'])
+              ]
+            })
+          case 'TEAM_HEALTH_CHECK':
+            return createTeamHealthCheckPhases(teamId, dataLoader)
+          case REFLECT:
+            return new ReflectPhase(teamId, durations)
+          case DISCUSS: {
+            const discussPhase = new DiscussPhase(durations)
+            const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
+            if (discussStages.length > 0) {
+              inserts.push(
+                pg.insertInto('Discussion').values(
+                  discussStages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.reflectionGroupId,
+                    discussionTopicType: 'reflectionGroup'
+                  }))
+                )
               )
-            )
+            }
+            return discussPhase
           }
-          return discussPhase
-        }
-        case UPDATES:
-          return new UpdatesPhase({
-            durations,
-            stages: [new UpdatesStage(facilitatorTeamMemberId, positionAfter(''))]
-          })
-        case AGENDA_ITEMS: {
-          const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
-          const agendaItemIds = agendaItems.map(({id}) => id)
-          const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
-          const {stages} = agendaItemPhase
-          if (stages.length > 0) {
-            inserts.push(
-              pg.insertInto('Discussion').values(
-                stages.map((stage) => ({
-                  id: stage.discussionId,
-                  teamId,
-                  meetingId,
-                  discussionTopicId: stage.agendaItemId,
-                  discussionTopicType: 'agendaItem'
-                }))
+          case UPDATES:
+            return new UpdatesPhase({
+              durations,
+              stages: [new UpdatesStage(facilitatorTeamMemberId, positionAfter(''))]
+            })
+          case AGENDA_ITEMS: {
+            const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+            const agendaItemIds = agendaItems.map(({id}) => id)
+            const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
+            const {stages} = agendaItemPhase
+            if (stages.length > 0) {
+              inserts.push(
+                pg.insertInto('Discussion').values(
+                  stages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.agendaItemId,
+                    discussionTopicType: 'agendaItem'
+                  }))
+                )
               )
-            )
+            }
+            return agendaItemPhase
           }
-          return agendaItemPhase
+          case 'ESTIMATE':
+            return new EstimatePhase()
+          case GROUP:
+          case VOTE:
+          case FIRST_CALL:
+          case LAST_CALL:
+          case 'SCOPE':
+            return new GenericMeetingPhase(phaseType, durations)
+          default:
+            throw new GraphQLError(`Unhandled phaseType: ${phaseType}`, {
+              extensions: {code: 'INTERNAL_SERVER_ERROR'}
+            })
         }
-        case 'ESTIMATE':
-          return new EstimatePhase()
-        case GROUP:
-        case VOTE:
-        case FIRST_CALL:
-        case LAST_CALL:
-        case 'SCOPE':
-          return new GenericMeetingPhase(phaseType, durations)
-        default:
-          throw new GraphQLError(`Unhandled phaseType: ${phaseType}`, {
-            extensions: {code: 'INTERNAL_SERVER_ERROR'}
-          })
-      }
-    })
-  )) as [T, ...T[]]
+      })
+  )
+  const phases = phaseGroups.flat() as [T, ...T[]]
   primePhases(phases)
   return [phases, inserts] as const
 }

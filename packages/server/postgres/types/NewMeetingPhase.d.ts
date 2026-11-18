@@ -205,9 +205,35 @@ export interface UpdatesPhase extends GenericMeetingPhase {
   stages: [UpdatesStage, ...UpdatesStage[]]
 }
 
+export interface TeamHealthCheckStage extends GenericMeetingStage {
+  phaseType: 'TEAM_HEALTH_CHECK'
+  // the check this retro started itself, which ends with the retro. Unset while the retro answers a
+  // check the team opened some other way
+  startedTeamHealthMeetingId?: string | null
+}
+
+export interface TeamHealthCheckPhase extends GenericMeetingPhase {
+  phaseType: 'TEAM_HEALTH_CHECK'
+  stages: [TeamHealthCheckStage]
+}
+
+export interface TeamHealthCheckResultStage extends GenericMeetingStage {
+  phaseType: 'TEAM_HEALTH_CHECK_RESULT'
+  teamHealthMeetingId: string
+  teamHealthResultStageId: string
+}
+
+// empty until a check's results are revealed, which greys out the row and lets Next skip it
+export interface TeamHealthCheckResultPhase extends GenericMeetingPhase {
+  phaseType: 'TEAM_HEALTH_CHECK_RESULT'
+  stages: TeamHealthCheckResultStage[]
+}
+
 export type RetroMeetingPhase =
   | CheckInPhase
   | TeamHealthPhase
+  | TeamHealthCheckPhase
+  | TeamHealthCheckResultPhase
   | UpdatesPhase
   | ReflectPhase
   | GroupPhase

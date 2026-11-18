@@ -96,4 +96,14 @@ enum NewMeetingPhaseTypeEnum {
   Result phase of a standalone Team Health meeting, unlocked when the owner reveals
   """
   TEAM_HEALTH_RESULT
+
+  """
+  Retrospective phase where each member answers the team's open Team Health check
+  """
+  TEAM_HEALTH_CHECK
+
+  """
+  Retrospective phase that walks through a Team Health check's results, one category per stage
+  """
+  TEAM_HEALTH_CHECK_RESULT
 }

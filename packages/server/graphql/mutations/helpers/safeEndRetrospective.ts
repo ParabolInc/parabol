@@ -15,6 +15,7 @@ import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import type {InternalContext} from '../../graphql'
+import endTeamHealthStartedInRetro from './endTeamHealthStartedInRetro'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
 import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
@@ -156,6 +157,7 @@ const safeEndRetrospective = async ({
   // don't await these, but put them after both "publish" calls so the dataloader has the same data
   summarizeRetroMeeting(meeting, context).catch(Logger.log)
   updateTeamGroupingBriefing(teamId).catch(Logger.log)
+  endTeamHealthStartedInRetro(meeting, context, info).catch(logError)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   meetingsEnded.inc({meeting_type: meeting.meetingType})

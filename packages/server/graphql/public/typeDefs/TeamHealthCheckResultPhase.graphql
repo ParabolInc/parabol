@@ -1,0 +1,16 @@
+"""
+The retrospective phase that walks through a revealed Team Health check, one category per stage. It
+has no stages until a check revealed during the retro, or since the team's previous retro, has results
+"""
+type TeamHealthCheckResultPhase implements NewMeetingPhase {
+  "Unique identifier"
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """
+  The type of phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [TeamHealthCheckResultStage!]!
+}

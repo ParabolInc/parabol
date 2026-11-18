@@ -8,7 +8,9 @@ import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import getPhase from '../../../utils/getPhase'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import type {DataLoaderWorker} from '../../graphql'
@@ -16,10 +18,13 @@ import isValid from '../../isValid'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
+import getOpenTeamHealthMeeting from '../../mutations/helpers/getOpenTeamHealthMeeting'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import recordTeamHealthCheckStartedInRetro from '../../mutations/helpers/recordTeamHealthCheckStartedInRetro'
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeCreateTeamHealth from '../../mutations/helpers/safeCreateTeamHealth'
+import syncRetrosWithTeamHealthCheck from '../../mutations/helpers/syncRetrosWithTeamHealthCheck'
 import type {CreateGcalEventInput, MutationResolvers} from '../resolverTypes'
 import assertTemplateAccess from './helpers/assertTemplateAccess'
 import {createMeetingMember} from './joinMeeting'
@@ -179,7 +184,7 @@ const startTeamHealthForTeam = async (
 
 const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   _source,
-  {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId},
+  {teamIds, templateId, name, rrule: rruleString, gcalInput, joinMeetingSeriesId, retroMeetingId},
   {authToken, socketId: mutatorId, dataLoader, resourceGrants}
 ) => {
   const operationId = dataLoader.share()
@@ -239,6 +244,33 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
       throw new GraphQLError('Pick teams from the same organization as the group', {
         extensions: {code: 'BAD_USER_INPUT'}
       })
+    }
+  }
+
+  if (retroMeetingId) {
+    const retro = await dataLoader.get('newMeetings').load(retroMeetingId)
+    if (!retro || retro.meetingType !== 'retrospective') {
+      throw new GraphQLError('Retrospective not found', {extensions: {code: 'NOT_FOUND'}})
+    }
+    if (retro.endedAt) {
+      throw new GraphQLError('The retrospective has ended', {extensions: {code: 'CONFLICT'}})
+    }
+    const isRetroTeamOnly = uniqueTeamIds.length === 1 && uniqueTeamIds[0] === retro.teamId
+    if (!isRetroTeamOnly || rrule || joinMeetingSeriesId) {
+      throw new GraphQLError('A retrospective starts a one-off check for its own team', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+    if (!getPhase(retro.phases, 'TEAM_HEALTH_CHECK')) {
+      throw new GraphQLError('The retrospective has no Team Health phase', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+    }
+    // a second check beside the open one would split the team's answers
+    const openCheck = await getOpenTeamHealthMeeting(retro.teamId, null, dataLoader)
+    if (openCheck) {
+      syncRetrosWithTeamHealthCheck(retro.teamId).catch(logError)
+      return {meetingIds: [openCheck.id], teamIds: [retro.teamId]}
     }
   }
 
@@ -306,6 +338,14 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   }
   const startedTeamIds = started.map(({teamId}) => teamId)
   const meetingIds = started.flatMap(({meetingId}) => (meetingId ? [meetingId] : []))
+  const [retroStartedMeetingId] = meetingIds
+  if (retroMeetingId && retroStartedMeetingId) {
+    await recordTeamHealthCheckStartedInRetro(retroMeetingId, retroStartedMeetingId)
+    dataLoader.clearAll('newMeetings')
+  }
+  started.forEach(({teamId, meetingId}) => {
+    if (meetingId) syncRetrosWithTeamHealthCheck(teamId).catch(logError)
+  })
 
   dataLoader.clearAll('meetingSeries')
 

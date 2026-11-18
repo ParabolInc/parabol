@@ -43,7 +43,7 @@ const getRetroPhaseTypes = async (teamId: string, cookie: string) => {
   return res.data.viewer.team.meetingSettings
 }
 
-test('setMeetingSettings canonicalizes retro phase order: checkin, TEAM_HEALTH, updates, then rest', async () => {
+test('setMeetingSettings canonicalizes retro phase order: checkin, TEAM_HEALTH_CHECK, updates, then rest', async () => {
   const user = await signUp()
   const before = await getRetroPhaseTypes(user.teamId, user.cookie)
   await sendPublic({
@@ -75,7 +75,7 @@ test('setMeetingSettings canonicalizes retro phase order: checkin, TEAM_HEALTH, 
     cookie: user.cookie
   })
   const after = await getRetroPhaseTypes(user.teamId, user.cookie)
-  expect(after.phaseTypes.slice(0, 3)).toEqual(['checkin', 'TEAM_HEALTH', 'updates'])
+  expect(after.phaseTypes.slice(0, 3)).toEqual(['checkin', 'TEAM_HEALTH_CHECK', 'updates'])
   expect(after.phaseTypes.slice(3)).toEqual(['reflect', 'group', 'vote', 'discuss'])
 })
 
