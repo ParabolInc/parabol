@@ -5,6 +5,7 @@ import Atmosphere from '../../Atmosphere'
 
 interface Props {
   children: ReactNode
+  atmosphere?: Atmosphere
   // a demo atmosphere has a bunch of junk we don't want to SSR, so we have client-only files pass it in
   getLocalAtmosphere?: () => Promise<{default: {new (): Environment}}>
 }
@@ -13,7 +14,7 @@ const AtmosphereProvider = (props: Props) => {
   const {children, getLocalAtmosphere} = props
   const [atmosphere, setAtmosphere] = useState<Environment | undefined>(() => {
     if (!getLocalAtmosphere) {
-      return new Atmosphere()
+      return props.atmosphere ?? new Atmosphere()
     }
     return undefined
   })

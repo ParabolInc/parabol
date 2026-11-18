@@ -1,23 +1,24 @@
 import * as Tooltip from '@radix-ui/react-tooltip'
+import {RouterProvider} from '@tanstack/react-router'
 import {StrictMode} from 'react'
-import {BrowserRouter as Router} from 'react-router'
-
-import Action from './components/Action/Action'
+import {unstable_HistoryRouter as HistoryRouter} from 'react-router'
 import AtmosphereProvider from './components/AtmosphereProvider/AtmosphereProvider'
 import './styles/theme/global.css'
 import {IsAuthenticatedProvider} from './components/IsAuthenticatedProvider'
 import {ThemeProvider} from './components/ThemeProvider'
+import appAtmosphere from './routing/appAtmosphere'
+import appRouter, {reactRouterHistory} from './routing/appRouter'
 export default function Root() {
   return (
     <StrictMode>
       <ThemeProvider>
-        <AtmosphereProvider>
+        <AtmosphereProvider atmosphere={appAtmosphere}>
           <IsAuthenticatedProvider>
-            <Router>
+            <HistoryRouter history={reactRouterHistory}>
               <Tooltip.Provider>
-                <Action />
+                <RouterProvider router={appRouter} />
               </Tooltip.Provider>
-            </Router>
+            </HistoryRouter>
           </IsAuthenticatedProvider>
         </AtmosphereProvider>
       </ThemeProvider>

@@ -59,6 +59,7 @@
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
     "@stripe/react-stripe-js": "^3.11.0",
     "@stripe/stripe-js": "^4.0.0",
+    "@tanstack/react-router": "1.170.46",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.19",
     "@zxcvbn-ts/core": "^3.0.4",

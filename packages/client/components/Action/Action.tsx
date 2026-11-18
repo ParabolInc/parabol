@@ -1,10 +1,10 @@
 import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
-import {Route, Routes} from 'react-router'
+import {type Location, Route, Routes} from 'react-router'
 import useNavigationBreadcrumbs from '../../hooks/useNavigationBreadcrumbs'
-import useNavigationTimings from '../../hooks/useNavigationTimings'
 import useQuietUpdate from '../../hooks/useQuietUpdate'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
+import {TipTapLayout} from '../../routing/legacyRouteComponents'
 import {LoaderSize} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
@@ -42,14 +42,11 @@ const PageRoot = lazy(
 const OAuthAuthorizePage = lazy(
   () => import(/* webpackChunkName: 'OAuthAuthorizePage' */ '../OAuthAuthorizePage')
 )
-// The editor stack is a third of the entry bundle & the sign in pages do not use it
-const TipTapLayout = lazy(() => import(/* webpackChunkName: 'TipTapLayout' */ '../TipTapLayout'))
 
-const Action = memo(() => {
+const Action = memo(({location}: {location?: Location}) => {
   useServiceWorkerUpdater()
   useQuietUpdate()
   useNavigationBreadcrumbs()
-  useNavigationTimings()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   // Global Banner
   const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
@@ -78,7 +75,7 @@ const Action = memo(() => {
               isGlobalBannerEnabled && `h-[calc(100vh-var(--global-banner-height))]`
             )}
           >
-            <Routes>
+            <Routes location={location}>
               <Route path='/' element={<AuthenticationPage page={'signin'} />} />
               <Route path={`/${SIGNIN_SLUG}`} element={<AuthenticationPage page={'signin'} />} />
               <Route

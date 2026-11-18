@@ -31,6 +31,7 @@ interface RouteTrace {
   mutationTimes: number[]
   contentAt: number | null
   mainEmptyMs: number
+  mainFilledAt: number | null
 }
 
 declare global {
@@ -96,9 +97,21 @@ for (const file of fs.readdirSync(GENERATED_DIR)) {
   docIdsByName.set(name!, docId!)
 }
 const kindOf = (docId?: string) => (docId ? operationsByDocId.get(docId)?.kind : undefined)
+// It sets up analytics once the viewer is known and draws nothing, so no page waits on it
+const BACKGROUND_QUERIES = new Set(['AnalyticsPageQuery'])
+const isPageQuery = (docId?: string) => {
+  const operation = docId ? operationsByDocId.get(docId) : undefined
+  return operation?.kind === 'query' && !BACKGROUND_QUERIES.has(operation.name)
+}
 
 const instrumentPage = () => {
-  const trace: RouteTrace = {operations: [], mutationTimes: [], contentAt: null, mainEmptyMs: 0}
+  const trace: RouteTrace = {
+    operations: [],
+    mutationTimes: [],
+    contentAt: null,
+    mainEmptyMs: 0,
+    mainFilledAt: null
+  }
   window.__routeTrace = trace
   const now = () => performance.now()
   const readDocId = (body: string) => {
@@ -167,6 +180,7 @@ const instrumentPage = () => {
     if (isMainEmpty && mainEmptySince === null) mainEmptySince = now()
     if (!isMainEmpty && mainEmptySince !== null) {
       trace.mainEmptyMs += now() - mainEmptySince
+      trace.mainFilledAt = now()
       mainEmptySince = null
     }
   }, 16)
@@ -303,10 +317,12 @@ const traceRoute = async (
 
   const queries = trace.operations.filter(
     (op): op is Required<TracedOperation> =>
-      op.end !== undefined && op.start >= since - 5 && kindOf(op.docId) === 'query'
+      op.end !== undefined && op.start >= since - 5 && isPageQuery(op.docId)
   )
   const sequence = sequenceOf(queries)
   const lastQueryEnd = Math.max(since, ...queries.map((query) => query.end))
+  // A page whose code arrives after its data draws well after its last query, so it settles from when it drew
+  const drawnAt = Math.max(since, trace.contentAt ?? since, trace.mainFilledAt ?? since)
   const waitingBetweenQueriesMs = sequence.reduce(
     (total, query, index) => (index === 0 ? 0 : total + query.start - sequence[index - 1]!.end),
     0
@@ -325,7 +341,7 @@ const traceRoute = async (
       start: relative(query.start),
       end: relative(query.end)
     })),
-    settledMs: relative(settledAfter(trace.mutationTimes, lastQueryEnd)),
+    settledMs: relative(settledAfter(trace.mutationTimes, Math.max(lastQueryEnd, drawnAt))),
     blankMs: Math.round(target.clickTo ? trace.mainEmptyMs : (trace.contentAt ?? 0)),
     reported: reportedNavigations.findLast((navigation) => navigation.kind === reportedKind)
   }
