@@ -2319,7 +2319,10 @@ type Mutation {
     clearTeamPromptResponses: Boolean
   ): UpdateMeetingTemplatePayload!
     @scope(name: MEETINGS_WRITE)
-    @deprecated(reason: "Use setMeetingSettings with meetingId and templateId")
+    @deprecated(
+      reason: "Use setMeetingSettings with meetingId and templateId"
+      deletionDate: "2026-12-02"
+    )
 
   """
   Update an with a change in name, avatar
