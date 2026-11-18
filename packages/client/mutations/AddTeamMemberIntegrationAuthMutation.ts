@@ -71,6 +71,7 @@ const mutation = graphql`
       oauthVerifier: $oauthVerifier
       teamId: $teamId
     ) {
+      service
       ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
     }
   }
@@ -82,6 +83,17 @@ const AddTeamMemberIntegrationAuthMutation: StandardMutation<
   return commitMutation<TAddTeamMemberIntegrationAuthMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('addTeamMemberIntegrationAuth')
+      if (!payload) return
+      const service = payload.getValue('service')
+      // The repos cached while the service was disconnected are [], so they are dropped for the next query to fetch
+      payload
+        .getLinkedRecord('teamMember')
+        .getLinkedRecords('services')
+        .find((integrationService) => integrationService.getValue('service') === service)
+        ?.setValue(undefined, 'repos')
+    },
     onCompleted,
     onError
   })
