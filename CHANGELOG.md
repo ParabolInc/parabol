@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.0.2](https://github.com/ParabolInc/parabol/compare/v16.0.1...v16.0.2) (2026-11-18)
+
+
+### Changed
+
+* **client:** move every route onto TanStack Router and remove react-router ([#14289](https://github.com/ParabolInc/parabol/issues/14289)) ([8f5200d](https://github.com/ParabolInc/parabol/commit/8f5200d161312965e7112523a5fb31824f9b5c75))
+* **client:** route through TanStack Router and load the meetings and team pages from loaders ([#14282](https://github.com/ParabolInc/parabol/issues/14282)) ([0f09352](https://github.com/ParabolInc/parabol/commit/0f093521894b0408465016844c6b30f496484d04))
+
 ## [16.0.1](https://github.com/ParabolInc/parabol/compare/v16.0.0...v16.0.1) (2026-11-18)
 
 
