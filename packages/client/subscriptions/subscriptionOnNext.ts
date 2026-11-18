@@ -1,5 +1,6 @@
 import type Atmosphere from '../Atmosphere'
 import type {NavigateFn, OnNextHandler} from '../types/relayMutations'
+import logMissingSubscriptionField from './logMissingSubscriptionField'
 
 const subscriptionOnNext =
   (
@@ -14,9 +15,8 @@ const subscriptionOnNext =
     if (!payload) return
     const {fieldName} = payload
     const field = payload[fieldName]
-    // the server nulls a payload it failed to resolve
     if (!field) {
-      console.error('Notification Subscription Payload received without field:', fieldName)
+      logMissingSubscriptionField(fieldName)
       return
     }
     const handler = onNextHandlers[fieldName]
