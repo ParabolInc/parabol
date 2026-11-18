@@ -1,5 +1,6 @@
 import {Window} from 'happy-dom'
-import {createRoot} from 'react-dom/client'
+import {act} from 'react'
+import {createRoot, type Root} from 'react-dom/client'
 import {MemoryRouter} from 'react-router'
 import {getBreadcrumbs} from '../../utils/clientBreadcrumbs'
 import useJoinedMeetingQuery from '../useJoinedMeetingQuery'
@@ -55,7 +56,6 @@ jest.mock('react-relay', () => ({
 }))
 
 const happyWindow = new Window({url: 'https://parabol.test/'})
-const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
 const joined = {joinMeeting: {JoinMeetingMutation_meeting: {meeting: {id: 'meeting1'}}}}
 
 const JoinedMeeting = () => {
@@ -67,23 +67,32 @@ const renderJoinedMeeting = async () => {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(
-    <MemoryRouter>
-      <JoinedMeeting />
-    </MemoryRouter>
+  await act(async () =>
+    root.render(
+      <MemoryRouter>
+        <JoinedMeeting />
+      </MemoryRouter>
+    )
   )
-  await tick()
   return root
 }
 
-const acknowledgeSubscription = async () => {
-  const subKey = mockGetKey('MeetingSubscription', {meetingId: 'meeting1'})
-  mockAtmosphere.subscriptionAckHandlers.get(subKey)?.()
-  await tick()
-}
+const completeJoin = () => act(async () => mockJoin.handlers!.onCompleted(joined))
+
+const acknowledgeSubscription = () =>
+  act(async () => {
+    const subKey = mockGetKey('MeetingSubscription', {meetingId: 'meeting1'})
+    mockAtmosphere.subscriptionAckHandlers.get(subKey)?.()
+  })
+
+const leaveMeeting = (root: Root) => act(async () => root.unmount())
 
 beforeAll(() => {
-  Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
+  Object.assign(globalThis, {
+    window: happyWindow,
+    document: happyWindow.document,
+    IS_REACT_ACT_ENVIRONMENT: true
+  })
 })
 
 afterAll(async () => {
@@ -100,20 +109,18 @@ beforeEach(() => {
 test('a viewer not yet in the meeting subscribes after joining, then fetches once the subscription listens', async () => {
   const root = await renderJoinedMeeting()
   expect(mockEvents).toEqual(['join'])
-  mockJoin.handlers!.onCompleted(joined)
-  await tick()
+  await completeJoin()
   expect(mockEvents).toEqual(['join', 'subscribe'])
   await acknowledgeSubscription()
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch'])
   mockFetch.complete!()
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load', 'release'])
-  root.unmount()
+  await leaveMeeting(root)
 })
 
 test('each step of loading the meeting leaves a breadcrumb', async () => {
   const root = await renderJoinedMeeting()
-  mockJoin.handlers!.onCompleted(joined)
-  await tick()
+  await completeJoin()
   await acknowledgeSubscription()
   mockFetch.complete!()
   expect(getBreadcrumbs().map(({message}) => message)).toEqual(
@@ -123,7 +130,7 @@ test('each step of loading the meeting leaves a breadcrumb', async () => {
       'MeetingSelectorQuery fetched, loaded from the store'
     ])
   )
-  root.unmount()
+  await leaveMeeting(root)
 })
 
 test('a viewer the store has in the meeting subscribes while joining, then fetches once both are done', async () => {
@@ -132,32 +139,29 @@ test('a viewer the store has in the meeting subscribes while joining, then fetch
   expect(mockEvents).toEqual(['subscribe', 'join'])
   await acknowledgeSubscription()
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold'])
-  mockJoin.handlers!.onCompleted(joined)
-  await tick()
+  await completeJoin()
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold', 'fetch'])
   mockFetch.complete!()
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold', 'fetch', 'load', 'release'])
-  root.unmount()
+  await leaveMeeting(root)
 })
 
 test('leaving before the join lands hands over the held messages without fetching', async () => {
   mockAtmosphere.records.meeting1 = {viewerMeetingMember: {__ref: 'user1::meeting1'}}
   const root = await renderJoinedMeeting()
   await acknowledgeSubscription()
-  root.unmount()
-  await tick()
+  await leaveMeeting(root)
   expect(mockEvents).toEqual(['subscribe', 'join', 'hold', 'release'])
 })
 
 test('the meeting loads from its first payload and holds subscription messages until the last', async () => {
   const root = await renderJoinedMeeting()
-  mockJoin.handlers!.onCompleted(joined)
-  await tick()
+  await completeJoin()
   await acknowledgeSubscription()
   mockFetch.next!()
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load'])
   mockFetch.next!()
   mockFetch.complete!()
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load', 'release'])
-  root.unmount()
+  await leaveMeeting(root)
 })
