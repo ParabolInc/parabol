@@ -30,12 +30,13 @@ const ReviewTasksExampleSend = (props: Props) => {
   const preload = () => {
     if (!queryRef) loadQuery({teamId}, {fetchPolicy: 'store-or-network'})
   }
+  const refresh = () => loadQuery({teamId}, {fetchPolicy: 'store-and-network'})
   const label =
     services.length > 0 ? 'Try sending this example card' : getConnectLabel(suggestedServices)
   const skeleton = <MenuSkeletonRows count={3} />
   return (
     <Menu
-      onOpenChange={(isOpen) => isOpen && preload()}
+      onOpenChange={(isOpen) => isOpen && refresh()}
       trigger={
         <TaskSendButton
           aria-label={label}

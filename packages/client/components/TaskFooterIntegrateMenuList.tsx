@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Fragment, Suspense, useCallback, useMemo, useState} from 'react'
+import {Fragment, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {fetchQuery, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useSearchFilter from '~/hooks/useSearchFilter'
@@ -10,7 +10,8 @@ import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskF
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {
   isTaskClientIntegration,
-  listClientIntegrationServices
+  listClientIntegrationServices,
+  type RegisteredClientIntegration
 } from '../integrations/platform/registry'
 import type {BeginConnect, ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
@@ -43,6 +44,7 @@ interface Props {
   failure?: Extract<ConnectInMenuState, {phase: 'failed'}>
   onConnect?: BeginConnect
   mutationProps: MenuMutationProps
+  newlyConnectedService?: RegisteredClientIntegration
   placeholder: string
   teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
   label?: string
@@ -62,13 +64,16 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     failure,
     onConnect,
     mutationProps,
+    newlyConnectedService,
     onPushToIntegration,
     placeholder,
     teamMemberRef,
     label
   } = props
   const atmosphere = useAtmosphere()
-  const [isRetrying, setIsRetrying] = useState(false)
+  const [refreshingServices, setRefreshingServices] = useState<ReadonlySet<string>>(
+    () => new Set(newlyConnectedService ? [newlyConnectedService] : [])
+  )
 
   graphql`
     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
@@ -124,20 +129,28 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       ),
     [recentItems, services, reposByService]
   )
-  const failedServices = connectedServices.filter((service) => reposByService[service] === null)
-  const loadingCount =
-    connectedServices.filter((service) => !(service in reposByService)).length +
-    (isRetrying ? failedServices.length : 0)
-  const retry = () => {
-    setIsRetrying(true)
-    const done = () => setIsRetrying(false)
-    fetchQuery<TaskFooterIntegrateMenuListRetryQuery>(
-      atmosphere,
-      retryQuery,
-      {teamId: teamMember.teamId},
-      {fetchPolicy: 'network-only'}
-    ).subscribe({complete: done, error: done})
-  }
+  const failedServices = connectedServices.filter(
+    (service) => !refreshingServices.has(service) && reposByService[service] === null
+  )
+  const loadingCount = connectedServices.filter(
+    (service) => refreshingServices.has(service) || !(service in reposByService)
+  ).length
+  const refresh = useCallback(
+    (refreshed: readonly string[]) => {
+      setRefreshingServices(new Set(refreshed))
+      const done = () => setRefreshingServices(new Set())
+      fetchQuery<TaskFooterIntegrateMenuListRetryQuery>(
+        atmosphere,
+        retryQuery,
+        {teamId: teamMember.teamId},
+        {fetchPolicy: 'network-only'}
+      ).subscribe({complete: done, error: done})
+    },
+    [atmosphere, teamMember.teamId]
+  )
+  useEffect(() => {
+    if (newlyConnectedService) refresh([newlyConnectedService])
+  }, [newlyConnectedService, refresh])
   const onRepos = useCallback((service: RepoIntegrationService, repos: readonly Item[] | null) => {
     setReposByService((prev) => ({...prev, [service]: repos}))
   }, [])
@@ -194,13 +207,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         )
       })}
       {!query && loadingCount > 0 && <MenuSkeletonRows count={Math.min(loadingCount * 2, 4)} />}
-      {!isRetrying && failedServices.length > 0 && (
+      {failedServices.length > 0 && (
         <TaskFooterIntegrateMenuToolFailure
           titles={services
             .filter(({service}) => failedServices.includes(service))
             .map(({title}) => title)}
           othersWork={failedServices.length < connectedServices.length}
-          onRetry={retry}
+          onRetry={() => refresh(failedServices)}
         />
       )}
       <TaskFooterIntegrateMenuNeedsReconnect

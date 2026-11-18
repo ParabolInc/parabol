@@ -72,10 +72,13 @@ const TaskSendControl = (props: Props) => {
     taskFooterIntegrateMenuQuery
   )
   const [MenuRoot, setMenuRoot] = useState<MenuRootComponent | null>(() => loadedMenuRoot)
-  const preloadMenu = () => {
+  const loadMenu = (fetchPolicy: 'store-or-network' | 'store-and-network') => {
     if (!MenuRoot) loadMenuRoot().then((loaded) => setMenuRoot(() => loaded))
-    if (!menuQueryRef) loadMenuQuery({teamId}, {fetchPolicy: 'store-or-network'})
+    if (!menuQueryRef || fetchPolicy === 'store-and-network') {
+      loadMenuQuery({teamId}, {fetchPolicy})
+    }
   }
+  const preloadMenu = () => loadMenu('store-or-network')
   const services = getSendServices(viewer.teamMember?.services ?? [])
   const orgServices = getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])
   const suggestedServices = orgServices.length > 0 ? orgServices : SUGGESTED_SEND_SERVICES
@@ -83,7 +86,7 @@ const TaskSendControl = (props: Props) => {
   return (
     <Tooltip>
       <Menu
-        onOpenChange={(isOpen) => isOpen && preloadMenu()}
+        onOpenChange={(isOpen) => isOpen && loadMenu('store-and-network')}
         trigger={
           <TooltipTrigger asChild>
             <TaskSendButton

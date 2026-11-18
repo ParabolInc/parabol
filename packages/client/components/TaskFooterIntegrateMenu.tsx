@@ -73,6 +73,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         failure={failure}
         onConnect={connectInMenu.begin}
         mutationProps={mutationProps}
+        newlyConnectedService={
+          connectState.phase === 'connected' ? connectState.service : undefined
+        }
         placeholder={placeholder}
         teamMemberRef={viewerTeamMember}
         onPushToIntegration={onPushToIntegration}

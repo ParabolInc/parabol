@@ -23,7 +23,7 @@ describe('makeConnectAttemptProps', () => {
     const res = {addTeamMemberIntegrationAuth: {teamMember: {id: 'tm1'}}}
     props.onCompleted(res)
     expect(base.onCompleted).toHaveBeenCalledWith(res, undefined)
-    expect(setState).toHaveBeenCalledWith({phase: 'idle'})
+    expect(setState).toHaveBeenCalledWith({phase: 'connected', service: 'github', title: 'GitHub'})
   })
 
   it('shows the server’s error in the menu, not on the card', () => {

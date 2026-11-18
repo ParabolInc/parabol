@@ -34,9 +34,11 @@ const ExportAllTasksMenuRoot = (props: Props) => {
     meetingRef
   )
   const {teamId} = meeting
-  const queryRef = useQueryLoaderNow<ExportAllTasksMenuQuery>(exportAllTasksMenuQuery, {
-    teamId
-  })
+  const queryRef = useQueryLoaderNow<ExportAllTasksMenuQuery>(
+    exportAllTasksMenuQuery,
+    {teamId},
+    'store-and-network'
+  )
   return (
     <Suspense
       fallback={

@@ -8,6 +8,7 @@ type ConnectingService = {service: RegisteredClientIntegration; title: string}
 export type ConnectInMenuState =
   | {phase: 'idle'}
   | ({phase: 'waiting'} & ConnectingService)
+  | ({phase: 'connected'} & ConnectingService)
   | ({phase: 'failed'; error: {message: string} | undefined} & ConnectingService)
 
 export type BeginConnect = (
@@ -34,7 +35,7 @@ export const makeConnectAttemptProps = (
         return
       }
       mutationProps.onCompleted(res, errors)
-      if (isCurrent()) setState({phase: 'idle'})
+      if (isCurrent()) setState({phase: 'connected', ...connecting})
     },
     onError: fail
   }
