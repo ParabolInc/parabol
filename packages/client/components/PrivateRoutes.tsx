@@ -3,6 +3,7 @@ import {type Location, Navigate, Route, Routes, useLocation} from 'react-router'
 import useAppSubscriptions from '../hooks/useAppSubscriptions'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
+import {DashboardRoot} from '../routing/legacyRouteComponents'
 
 const Graphql = lazy(
   () =>
@@ -19,7 +20,6 @@ const Impersonate = lazy(
 const Signout = lazy(
   () => import(/* webpackChunkName: 'SignoutContainer' */ '../containers/Signout/SignoutContainer')
 )
-const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
 const MeetingSeriesAttendRedirect = lazy(
   () =>

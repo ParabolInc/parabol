@@ -1,5 +1,6 @@
 jest.mock('react-dom/client', () => ({createRoot: () => ({render: jest.fn()})}))
 jest.mock('../Root', () => () => null)
+jest.mock('../routing/appRouter', () => ({load: () => Promise.resolve()}))
 jest.mock('../scrollIntoViewIfNeeded', () => ({}))
 jest.mock('../utils/registerClientErrorHandlers', () => jest.fn())
 jest.mock('../utils/retryChunkLoadErrorOnce', () => jest.fn())
