@@ -18,23 +18,23 @@ const ALL_BUT_DATA_CENTER = ['jira', 'linear', 'github', 'gitlab', 'azureDevOps'
 
 interface Scenario {
   connected?: string[]
-  orgTaskCounts?: Record<string, number>
+  orgServices?: string[]
   barWidth?: number
   heldPickKey?: string
   savedActiveKey?: string
 }
 
 const layout = (scenario: Scenario) => {
-  const {connected = [], orgTaskCounts = {}, barWidth = 640} = scenario
+  const {connected = [], orgServices = [], barWidth = 640} = scenario
   const integrations: ScopePhaseLayoutTab[] = REGISTRY.map(([key, title]) => ({
     key,
     title,
-    isConnected: connected.includes(key),
-    orgTaskCount: orgTaskCounts[key] ?? 0
+    isConnected: connected.includes(key)
   }))
   const result = layoutScopePhaseTabs({
     integrations,
-    parabol: {key: 'parabol', title: 'Parabol', isConnected: true, orgTaskCount: 0},
+    parabol: {key: 'parabol', title: 'Parabol', isConnected: true},
+    orgServices,
     widths,
     barWidth,
     triggerWidth: 88,
@@ -67,13 +67,13 @@ describe('layoutScopePhaseTabs', () => {
     })
 
     it('ranks by how much the organization uses each integration', () => {
-      const {bar, menu} = layout({connected: FOUR, orgTaskCounts: {clickup: 40, linear: 9}})
+      const {bar, menu} = layout({connected: FOUR, orgServices: ['clickup', 'linear']})
       expect(bar).toEqual(['Parabol', 'ClickUp', 'Linear', 'Jira Cloud'])
       expect(menu).toEqual(['GitHub', 'Azure DevOps', 'GitLab', 'Jira Data Center'])
     })
 
     it('ranks a used integration above unused ones even if the viewer has not connected it', () => {
-      const {bar, menu} = layout({connected: ['jira'], orgTaskCounts: {gitlab: 3}})
+      const {bar, menu} = layout({connected: ['jira'], orgServices: ['gitlab']})
       expect(bar).toEqual(['Parabol', 'Jira Cloud', 'GitLab', 'Linear'])
       expect(menu).toEqual(['Azure DevOps', 'ClickUp', 'GitHub', 'Jira Data Center'])
     })
@@ -97,7 +97,7 @@ describe('layoutScopePhaseTabs', () => {
   describe('Parabol', () => {
     const crowded = {
       connected: FOUR,
-      orgTaskCounts: {jira: 8, linear: 7, github: 6, clickup: 5}
+      orgServices: ['jira', 'linear', 'github', 'clickup']
     }
 
     it('moves to the menu when the integrations the organization uses fill the bar', () => {

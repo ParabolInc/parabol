@@ -34,10 +34,7 @@ const ScopePhaseArea = (props: Props) => {
         ...IntegrationScopingPanel_meeting
         teamId
         team {
-          recentOrgTaskCounts {
-            service
-            taskCount
-          }
+          recentOrgServices
         }
         viewerMeetingMember {
           teamMember {
@@ -55,9 +52,6 @@ const ScopePhaseArea = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {teamId, team, viewerMeetingMember} = meeting
-  const orgTaskCounts = new Map(
-    team.recentOrgTaskCounts.map(({service, taskCount}) => [service, taskCount])
-  )
   const services = viewerMeetingMember?.teamMember.services ?? []
   const [savedActiveKey, setSavedActiveKey] = useState(() =>
     window.localStorage.getItem(FAVORITE_SERVICE_STORAGE_KEY)
@@ -77,7 +71,6 @@ const ScopePhaseArea = (props: Props) => {
           key: service,
           title: definition.title,
           isConnected,
-          orgTaskCount: orgTaskCounts.get(service) ?? 0,
           icon: <definition.Icon className={definition.iconClassName} />,
           keywords: definition.searchKeywords ?? [],
           menuStatus: isConnected ? ('connected' as const) : contactStatus,
@@ -100,7 +93,6 @@ const ScopePhaseArea = (props: Props) => {
     key: PARABOL_TAB_KEY,
     title: 'Parabol',
     isConnected: true,
-    orgTaskCount: 0,
     icon: <ParabolLogoSVG />,
     keywords: [],
     menuStatus: null,
@@ -110,6 +102,7 @@ const ScopePhaseArea = (props: Props) => {
   const {barRef, measureRef, layout} = useScopePhaseTabLayout({
     integrations,
     parabol,
+    orgServices: team.recentOrgServices,
     heldPickKey,
     savedActiveKey
   })

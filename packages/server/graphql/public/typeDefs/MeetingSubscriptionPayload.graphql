@@ -7,6 +7,7 @@ type MeetingSubscriptionPayload {
   AutogroupPayload: AutogroupPayload
     @deprecated(
       reason: "Superseded by SuggestedGroupsPayload. Still selected by current clients so they re-render the board when a client loaded before the SuggestedGroups release calls the deprecated autogroup mutation. Delete with that mutation."
+      deletionDate: "2026-12-02"
     )
   AddCommentPayload: AddCommentPayload
   CreatePollPayload: CreatePollPayload
@@ -26,6 +27,7 @@ type MeetingSubscriptionPayload {
   GenerateGroupsPayload: GenerateGroupsPayload
     @deprecated(
       reason: "Superseded by SuggestedGroupsPayload. Nothing publishes this any more: it announced the reflect-phase pre-warm, which was removed so AI grouping is only computed when a user asks for it. Safe to delete along with the GenerateGroupsPayload type once clients loaded before the SuggestedGroups release have drained."
+      deletionDate: "2026-12-02"
     )
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
   UpdateFacilitatorRotationPayload: UpdateFacilitatorRotationPayload

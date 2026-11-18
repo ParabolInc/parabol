@@ -7,11 +7,6 @@ import {
   type TaskClientIntegration
 } from '../integrations/platform/registry'
 
-interface OrgTaskCount {
-  readonly service: TaskServiceEnum
-  readonly taskCount: number
-}
-
 interface ServiceConnection {
   readonly service: IntegrationProviderServiceEnum
   readonly isConnected: boolean
@@ -39,13 +34,8 @@ export const getSendToLabel = (services: readonly TaskClientIntegration[]) => {
   return `Send to ${titles.slice(0, -1).join(', ')} or ${titles.at(-1)}`
 }
 
-export const getOrgSendServices = (orgTaskCounts: readonly OrgTaskCount[]) =>
-  orgTaskCounts
-    .filter(({taskCount}) => taskCount > 0)
-    .toSorted((a, b) => b.taskCount - a.taskCount)
-    .map(({service}) => service)
-    .filter(isTaskClientIntegration)
-    .slice(0, MAX_SEND_SERVICES)
+export const getOrgSendServices = (orgServices: readonly TaskServiceEnum[]) =>
+  orgServices.filter(isTaskClientIntegration).slice(0, MAX_SEND_SERVICES)
 
 export const getConnectLabel = (services: readonly TaskClientIntegration[]) =>
   `Connect ${getTitles(services).join(', ')} or another tool to send this task`

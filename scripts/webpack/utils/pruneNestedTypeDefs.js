@@ -22,11 +22,13 @@ const pruneNestedTypeDefs = (usage) => {
   const {mergeNestedUsage, nestGraphQLEndpoint} = resolveFromServer('nest-graphql-endpoint')
 
   const typeDefsDir = path.join(SERVER_ROOT, 'graphql', 'public', 'typeDefs')
+  // Like the production server, skip SDL validation: the raw typeDefs carry @deprecated(deletionDate) for Biome
   const parabolTypeDefs = mergeSchemas({
     typeDefs: fs
       .readdirSync(typeDefsDir)
       .filter((name) => name.endsWith('.graphql'))
-      .map((name) => fs.readFileSync(path.join(typeDefsDir, name), 'utf8'))
+      .map((name) => fs.readFileSync(path.join(typeDefsDir, name), 'utf8')),
+    assumeValidSDL: true
   })
   const interfaceUsage = {}
   Object.values(parabolTypeDefs.getTypeMap()).forEach((type) => {

@@ -105,5 +105,6 @@ type RetroReflection implements Reactable {
   embeddingVector: [Float!]
     @deprecated(
       reason: "Similarity is now computed on the server and served via RetrospectiveMeeting.suggestedGrouping, so no vectors need to reach the browser. Still selected by clients loaded before the SuggestedGroups release. Delete once those have drained."
+      deletionDate: "2026-12-02"
     )
 }

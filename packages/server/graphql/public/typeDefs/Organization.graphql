@@ -154,12 +154,14 @@ type Organization {
   """
   The total number of retroMeetings given to the team
   """
-  retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
+  retroMeetingsOffered: Int!
+    @deprecated(reason: "Unlimited retros for all!", deletionDate: "2026-12-02")
 
   """
   Number of retro meetings that can be run (if not pro)
   """
-  retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
+  retroMeetingsRemaining: Int!
+    @deprecated(reason: "Unlimited retros for all!", deletionDate: "2026-12-02")
 
   """
   The customerId from stripe
@@ -265,7 +267,11 @@ type Organization {
   """
   The oldest SAML identity provider attached to the Organization, if any
   """
-  saml: SAML @deprecated(reason: "An organization can own many identity providers. Use samls")
+  saml: SAML
+    @deprecated(
+      reason: "An organization can own many identity providers. Use samls"
+      deletionDate: "2026-12-02"
+    )
 
   """
   The SAML identity providers owned by the Organization, oldest first. Null if the viewer may not see them

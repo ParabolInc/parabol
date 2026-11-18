@@ -55,7 +55,8 @@
             "attributes": ["classList"],
             "functions": ["cn", "clsx", "cva", "tw", "tw.*"]
           }
-        }
+        },
+        "useDeprecatedDate": "error"
       },
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
@@ -157,7 +158,7 @@
         "useNamespaceKeyword": "error"
       }
     },
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.graphql"]
   },
   "javascript": {
     "formatter": {

@@ -231,7 +231,13 @@ type Team implements Node {
   autoAssignFacilitator: Boolean!
 
   """
-  How many tasks created in the last 180 days, across the teams in this team's organization, are linked to each external task service. Services with no linked tasks are left out
+  Always empty
   """
   recentOrgTaskCounts: [IntegrationTaskCount!]!
+    @deprecated(reason: "Use recentOrgServices", deletionDate: "2026-12-02")
+
+  """
+  The external task services that tasks created in the last 180 days, across the teams in this team's organization, are linked to, most used first. Services with no linked tasks are left out
+  """
+  recentOrgServices: [TaskServiceEnum!]!
 }

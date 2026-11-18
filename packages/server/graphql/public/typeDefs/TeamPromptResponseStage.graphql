@@ -121,7 +121,10 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   The response to the prompt
   """
   response: TeamPromptResponse
-    @deprecated(reason: "A member has one response per prompt. Use responses")
+    @deprecated(
+      reason: "A member has one response per prompt. Use responses"
+      deletionDate: "2026-12-02"
+    )
 
   """
   The member's responses in this stand-up, one per prompt. Another member's responses are only

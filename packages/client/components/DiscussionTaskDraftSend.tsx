@@ -18,7 +18,7 @@ const DiscussionTaskDraftSend = (props: Props) => {
   const {queryRef} = props
   const {viewer} = usePreloadedQuery<TaskSendControlQuery>(taskSendControlQuery, queryRef)
   const services = getSendServices(viewer.teamMember?.services ?? [])
-  const orgServices = getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])
+  const orgServices = getOrgSendServices(viewer.team?.recentOrgServices ?? [])
   const suggestedServices = orgServices.length > 0 ? orgServices : SUGGESTED_SEND_SERVICES
   return (
     <TaskSendButton

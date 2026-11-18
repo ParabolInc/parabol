@@ -43,22 +43,16 @@ describe('getSendToLabel', () => {
 })
 
 describe('getOrgSendServices', () => {
-  it('lists the tools the org sends tasks to, most used first, up to three', () => {
-    const counts = [
-      {service: 'github' as const, taskCount: 4},
-      {service: 'gitlab' as const, taskCount: 40},
-      {service: 'linear' as const, taskCount: 9},
-      {service: 'jira' as const, taskCount: 2}
-    ]
-    expect(getOrgSendServices(counts)).toEqual(['gitlab', 'linear', 'github'])
+  it('keeps the org’s most used tools first, up to three', () => {
+    expect(getOrgSendServices(['gitlab', 'linear', 'github', 'jira'])).toEqual([
+      'gitlab',
+      'linear',
+      'github'
+    ])
   })
 
-  it('leaves out Parabol tasks and tools with no tasks', () => {
-    const counts = [
-      {service: 'PARABOL' as const, taskCount: 90},
-      {service: 'jira' as const, taskCount: 0}
-    ]
-    expect(getOrgSendServices(counts)).toEqual([])
+  it('leaves out Parabol tasks', () => {
+    expect(getOrgSendServices(['PARABOL', 'jira'])).toEqual(['jira'])
   })
 })
 

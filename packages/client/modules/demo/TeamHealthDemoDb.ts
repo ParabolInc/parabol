@@ -372,7 +372,7 @@ export default class TeamHealthDemoDb {
   integrateMenu: Resolver<TaskFooterIntegrateMenuQuery> = ({teamId}) => ({
     viewer: {
       id: demoViewer.id,
-      team: {id: teamId, recentOrgTaskCounts: []},
+      team: {id: teamId, recentOrgServices: []},
       viewerTeamMember: {
         id: demoTeamMemberId(demoViewer.id),
         teamId,

@@ -4,14 +4,14 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {getNewDataLoader} from '../getNewDataLoader'
 
-const TEST_DB = 'recentIntegrationTaskCountsTest'
+const TEST_DB = 'recentIntegrationServicesTest'
 const TABLES = ['Organization', 'Team', 'Task']
 const ORG_ID = 'org1'
 const OTHER_ORG_ID = 'org2'
 
 const daysAgo = (days: number) => new Date(Date.now() - days * ms('1d'))
 
-describe('recentIntegrationTaskCountsByOrgId', () => {
+describe('recentIntegrationServicesByOrgId', () => {
   const pg = getKysely(TEST_DB)
 
   const addOrg = (id: string) =>
@@ -37,11 +37,10 @@ describe('recentIntegrationTaskCountsByOrgId', () => {
       .execute()
   }
 
-  const loadCounts = async (orgId: string) => {
-    const dataLoader = getNewDataLoader('recentIntegrationTaskCountsTest')
+  const loadServices = async (orgId: string) => {
+    const dataLoader = getNewDataLoader('recentIntegrationServicesTest')
     try {
-      const taskCounts = await dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
-      return Object.fromEntries(taskCounts.map(({service, taskCount}) => [service, taskCount]))
+      return await dataLoader.get('recentIntegrationServicesByOrgId').load(orgId)
     } finally {
       dataLoader.dispose()
     }
@@ -66,30 +65,39 @@ describe('recentIntegrationTaskCountsByOrgId', () => {
     await pg.destroy()
   })
 
-  it('adds up linked tasks by service across the teams of an organization', async () => {
+  it('ranks services by their linked tasks across the teams of an organization', async () => {
+    await addTask('team1', 'linear')
     await addTask('team1', 'jira')
     await addTask('team2', 'jira')
-    await addTask('team2', 'linear')
-    expect(await loadCounts(ORG_ID)).toEqual({jira: 2, linear: 1})
+    await addTask('team2', 'github')
+    await addTask('team2', 'github')
+    await addTask('team2', 'github')
+    expect(await loadServices(ORG_ID)).toEqual(['github', 'jira', 'linear'])
+  })
+
+  it('orders services with as many linked tasks by name', async () => {
+    await addTask('team1', 'gitlab')
+    await addTask('team2', 'azureDevOps')
+    expect(await loadServices(ORG_ID)).toEqual(['azureDevOps', 'gitlab'])
   })
 
   it('leaves out other organizations and archived teams', async () => {
     await addTeam('archivedTeam', ORG_ID, true)
     await addTask('team1', 'jira')
-    await addTask('otherTeam', 'jira')
+    await addTask('otherTeam', 'linear')
     await addTask('archivedTeam', 'gitlab')
-    expect(await loadCounts(ORG_ID)).toEqual({jira: 1})
+    expect(await loadServices(ORG_ID)).toEqual(['jira'])
   })
 
   it('leaves out tasks created before the window, even if updated since', async () => {
     await addTask('team1', 'jira', 179)
     await addTask('team1', 'github', 181)
-    expect(await loadCounts(ORG_ID)).toEqual({jira: 1})
+    expect(await loadServices(ORG_ID)).toEqual(['jira'])
   })
 
   it('leaves out tasks with no integration and is empty with no usage', async () => {
     await addTask('team1', null)
-    expect(await loadCounts(ORG_ID)).toEqual({})
+    expect(await loadServices(ORG_ID)).toEqual([])
   })
 
   it('leaves out tasks whose integration is a JSON null', async () => {
@@ -105,6 +113,6 @@ describe('recentIntegrationTaskCountsByOrgId', () => {
         integration: JSON.stringify(null)
       })
       .execute()
-    expect(await loadCounts(ORG_ID)).toEqual({jira: 1})
+    expect(await loadServices(ORG_ID)).toEqual(['jira'])
   })
 })

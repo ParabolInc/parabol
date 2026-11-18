@@ -91,7 +91,7 @@ type User {
   """
   true if the user is the first to sign up from their domain, else false
   """
-  isPatientZero: Boolean! @deprecated(reason: "Use isPatient0 instead")
+  isPatientZero: Boolean! @deprecated(reason: "Use isPatient0 instead", deletionDate: "2026-12-02")
 
   """
   the reason the user account was removed

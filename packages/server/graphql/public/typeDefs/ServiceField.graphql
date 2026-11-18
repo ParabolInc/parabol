@@ -17,5 +17,5 @@ type ServiceField {
   """
   type: String!
 
-  name: String! @deprecated(reason: "Use fieldId, or label for display")
+  name: String! @deprecated(reason: "Use fieldId, or label for display", deletionDate: "2026-12-02")
 }

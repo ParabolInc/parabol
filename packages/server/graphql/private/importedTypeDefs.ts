@@ -1,4 +1,3 @@
-const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {
-  return context.keys().map((id) => context(id))
-}
-export const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql$/))
+import importTypeDefs from '../importTypeDefs'
+
+export const typeDefs = importTypeDefs(require.context('./typeDefs', false, /.graphql$/))
