@@ -121,8 +121,8 @@ test('authorization server metadata lists S256 and both grant types', async () =
     code_challenge_methods_supported: ['S256'],
     token_endpoint_auth_methods_supported: ['client_secret_post', 'none']
   })
-  expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'files:write']))
-  expect(metadata.scopes_supported).toHaveLength(20)
+  expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
+  expect(metadata.scopes_supported).toHaveLength(18)
 })
 
 test('protected resource metadata names the /mcp resource and this server', async () => {
@@ -141,7 +141,7 @@ test('protected resource metadata names the /mcp resource and this server', asyn
       bearer_methods_supported: ['header'],
       resource_name: 'Parabol'
     })
-    expect(metadata.scopes_supported).toHaveLength(20)
+    expect(metadata.scopes_supported).toHaveLength(18)
   }
 })
 
