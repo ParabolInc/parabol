@@ -403,7 +403,7 @@ ${previousCheck}`
     userName: string,
     userPrompt?: string | null
   ): Promise<{
-    items: {workItemId: string; promptIndex: number; isColumnClear: boolean; content: string}[]
+    items: {issueId: string; promptIndex: number; isColumnClear: boolean; content: string}[]
     tokenCost: number
   } | null> {
     if (!this.openAIApi) return null
@@ -425,25 +425,25 @@ ${previousCheck}`
 The retro board has these columns:
 ${promptList}
 
-Below are ${userName}'s work items since the last retro, grouped by the tool they came from (issues, pull requests, calendar events, tasks, past standup answers). Each item has an id in brackets, like [W3]. Find the few items worth raising in the retro and draft a short reflection about each.
+Below are ${userName}'s items since the last retro, grouped by the tool they came from (issues, pull requests, calendar events, tasks, past standup answers). Each item has an id in brackets, like [W3]. Find the few items worth raising in the retro and draft a short reflection about each.
 
 Rules:
 - Raise an item only when it shows how the work went: something that dragged on, got blocked or waited on others, a long review, a repeated problem, a surprise, or a practice that clearly paid off. Routine work that went as expected gets no reflection, so most items get none.
-- Each reflection is about ONE work item. Return that item's id as "workItemId". Write at most one reflection per work item.
+- Each reflection is about ONE item. Return that item's id as "id". Write at most one reflection per item.
 - Return the index of the column the reflection belongs in as "promptIndex".
 - Rate how sure you are of that column as "columnConfidence": "high" only when exactly one column fits and the team would put it there too, otherwise "low".
 - One or two sentences, at most 40 words. Be specific: name the work and the fact that makes it worth raising, like how long it took or what it waited on.
 - Write in the first person ("I", "we"). NEVER refer to ${userName} in the third person.
-- Do not include links or URLs. The reflection is shown next to its work item.
-- Never invent problems, wins or feelings the work items don't show.
-- Each work item lists a Status and a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
+- Do not include links or URLs. The reflection is shown next to its item.
+- Never invent problems, wins or feelings the items don't show.
+- Each item lists a Status and a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
 
-Return JSON of the form: { "items": [{ "workItemId": "<work item id, e.g. W3>", "promptIndex": <column index>, "columnConfidence": "high" | "low", "content": "<the reflection>" }] }`
+Return JSON of the form: { "items": [{ "id": "<item id, e.g. W3>", "promptIndex": <column index>, "columnConfidence": "high" | "low", "content": "<the reflection>" }] }`
 
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
-        messages: [{role: 'user', content: `${instructions}\n\nRecent work items:\n${issuesText}`}],
+        messages: [{role: 'user', content: `${instructions}\n\nRecent items:\n${issuesText}`}],
         response_format: {type: 'json_object'},
         reasoning_effort: 'low'
       })
@@ -453,7 +453,7 @@ Return JSON of the form: { "items": [{ "workItemId": "<work item id, e.g. W3>", 
 
       let parsed: {
         items?: {
-          workItemId?: string
+          id?: string
           promptIndex?: number
           columnConfidence?: string
           content?: string
@@ -471,10 +471,10 @@ Return JSON of the form: { "items": [{ "workItemId": "<work item id, e.g. W3>", 
         const promptIndex = Number(item?.promptIndex)
         const isValidIndex =
           Number.isInteger(promptIndex) && promptIndex >= 0 && promptIndex < prompts.length
-        if (!text || !item.workItemId || !isValidIndex) return []
+        if (!text || !item.id || !isValidIndex) return []
         return [
           {
-            workItemId: item.workItemId,
+            issueId: item.id,
             promptIndex,
             isColumnClear: item.columnConfidence === 'high',
             content: text

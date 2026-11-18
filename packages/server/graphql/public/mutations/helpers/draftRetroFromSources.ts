@@ -25,7 +25,7 @@ interface Options {
   info: GraphQLResolveInfo
 }
 
-// A retro draft is about one work item, so it travels with that item. The AI only drafts the few
+// A retro draft is about one issue, so it travels with that issue. The AI only drafts the few
 // items worth raising, and a draft whose column it isn't sure of is dropped, not left for the
 // viewer to sort.
 const draftRetroFromSources = async (options: Options) => {
@@ -86,12 +86,12 @@ const draftRetroFromSources = async (options: Options) => {
   const issueIds = new Set(numberedIssues.map(({id}) => id))
   const createdAt = new Date()
   const draftByIssueId = new Map<string, InspirationItemSource>()
-  result.items.forEach(({workItemId, promptIndex, isColumnClear, content}) => {
+  result.items.forEach(({issueId, promptIndex, isColumnClear, content}) => {
     const prompt = prompts[promptIndex]
-    if (!isColumnClear || !prompt || !issueIds.has(workItemId)) return
-    if (draftByIssueId.has(workItemId)) return
-    draftByIssueId.set(workItemId, {
-      id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${workItemId}`,
+    if (!isColumnClear || !prompt || !issueIds.has(issueId)) return
+    if (draftByIssueId.has(issueId)) return
+    draftByIssueId.set(issueId, {
+      id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${issueId}`,
       meetingId,
       userId: viewerId,
       service: INSPIRATION_DRAFT_SERVICE,
