@@ -25,12 +25,13 @@ interface Props {
   // set when editing from inside a live meeting, which may have no series yet or a cancelled one
   meetingId?: string
   defaultTitle?: string
+  recurrenceClassName?: string
   onClose: () => void
   onCancelled?: () => void
 }
 
 export const MeetingSeriesEditForm = (props: Props) => {
-  const {seriesRef, meetingId, defaultTitle, onClose, onCancelled} = props
+  const {seriesRef, meetingId, defaultTitle, recurrenceClassName, onClose, onCancelled} = props
   const meetingSeries = useFragment(
     graphql`
       fragment MeetingSeriesEditForm_series on MeetingSeries {
@@ -142,7 +143,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
         maxLength={50}
       />
       {titleErr && <div className='mt-1 text-fg-error text-sm'>{titleErr}</div>}
-      <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
+      <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} className={recurrenceClassName} />
       <DialogActions>
         {isActive && (
           <Button

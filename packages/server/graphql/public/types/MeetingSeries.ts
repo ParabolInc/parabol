@@ -20,6 +20,10 @@ const MeetingSeries: MeetingSeriesResolvers = {
   team: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
+  template: async ({templateId}, _args, {dataLoader}) => {
+    if (!templateId) return null
+    return (await dataLoader.get('meetingTemplates').load(templateId)) ?? null
+  },
   owner: async ({ownerUserId}, _args, {dataLoader}) => {
     if (!ownerUserId) return null
     return (await dataLoader.get('users').load(ownerUserId)) ?? null

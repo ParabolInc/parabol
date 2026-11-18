@@ -25,6 +25,7 @@ interface Props {
   showSidebar: boolean
   tasks: TaskColumns_tasks$key
   toggleSidebar: () => void
+  onOpenSettings?: () => void
 }
 
 const MeetingUpdatesContent = (props: Props) => {
@@ -40,7 +41,8 @@ const MeetingUpdatesContent = (props: Props) => {
     myTeamMemberId,
     showSidebar,
     tasks,
-    toggleSidebar
+    toggleSidebar,
+    onOpenSettings
   } = props
   const board = (
     <>
@@ -69,6 +71,7 @@ const MeetingUpdatesContent = (props: Props) => {
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
+          onOpenSettings={onOpenSettings}
         >
           {header}
         </MeetingTopBar>

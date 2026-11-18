@@ -385,6 +385,7 @@
           "UpdateIntegrationDimensionFieldPayload": "./types/UpdateIntegrationDimensionFieldPayload#UpdateIntegrationDimensionFieldPayloadSource",
           "UpdateIntegrationProviderPayload": "./types/UpdateIntegrationProviderPayload#UpdateIntegrationProviderPayloadSource",
           "UpdateMeetingTemplatePayload": "./types/UpdateMeetingTemplatePayload#UpdateMeetingTemplatePayloadSource",
+          "UpdateRetroMeetingSettingsPayload": "./types/UpdateRetroMeetingSettingsPayload#UpdateRetroMeetingSettingsPayloadSource",
           "UpdateOAuthAPIProviderPayload": "./types/UpdateOAuthAPIProviderPayload#UpdateOAuthAPIProviderPayloadSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "PageExport": "../../postgres/types/index#PageExport as PageExportDB",

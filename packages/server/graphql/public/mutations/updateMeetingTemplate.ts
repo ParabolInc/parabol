@@ -56,25 +56,28 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
     await updateMeetingTemplateLastUsedAt(templateId, teamId)
   } else {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-    if (reflections.length > 0) {
-      throw new GraphQLError('Cannot change template after reflections have been created', {
-        extensions: {code: 'CONFLICT'}
-      })
-    }
     const reflectPhase = getPhase(meeting.phases, 'reflect')
-    if (reflectPhase.stages.every((stage) => stage.isComplete)) {
-      throw new GraphQLError('Cannot change template after reflection phase has been completed', {
-        extensions: {code: 'CONFLICT'}
-      })
+    const isReflectDone = reflectPhase.stages.every((stage) => stage.isComplete)
+    // once reflections exist they belong to this template's prompts, so only the series can change
+    const canChangeMeeting = reflections.length === 0 && !isReflectDone
+    if (!canChangeMeeting && !seriesIdToUpdate) {
+      throw new GraphQLError(
+        reflections.length > 0
+          ? 'Cannot change template after reflections have been created'
+          : 'Cannot change template after reflection phase has been completed',
+        {extensions: {code: 'CONFLICT'}}
+      )
     }
     await getKysely()
       .transaction()
       .execute(async (trx) => {
-        await trx
-          .updateTable('NewMeeting')
-          .set({templateId, templateChosenAt: sql`now()`})
-          .where('id', '=', meetingId)
-          .execute()
+        if (canChangeMeeting) {
+          await trx
+            .updateTable('NewMeeting')
+            .set({templateId, templateChosenAt: sql`now()`})
+            .where('id', '=', meetingId)
+            .execute()
+        }
         if (seriesIdToUpdate) {
           await trx
             .updateTable('MeetingSeries')

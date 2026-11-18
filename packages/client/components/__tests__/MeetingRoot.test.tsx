@@ -41,7 +41,7 @@ jest.mock('../RetroDiscussPhase', () => ({__esModule: true, default: () => null}
 jest.mock('../MeetingControlBar', () => ({__esModule: true, default: () => null}))
 jest.mock('../MeetingLockedOverlay', () => ({__esModule: true, default: () => null}))
 jest.mock('../ResponsiveDashSidebar', () => ({__esModule: true, default: () => null}))
-jest.mock('../RetroInspirationDrawer', () => ({__esModule: true, default: () => null}))
+jest.mock('../RetroMeetingDrawer', () => ({__esModule: true, default: () => null}))
 jest.mock('../RetroMeetingSidebar', () => ({__esModule: true, default: () => null}))
 jest.mock('../../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup', () => ({
   __esModule: true,

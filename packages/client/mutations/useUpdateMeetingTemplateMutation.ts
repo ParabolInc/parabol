@@ -10,9 +10,17 @@ graphql`
       ... on RetrospectiveMeeting {
         id
         templateId
+        template {
+          id
+          name
+        }
         meetingSeries {
           id
           templateId
+          template {
+            id
+            name
+          }
         }
         phases {
           id

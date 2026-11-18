@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type ReactElement, Suspense} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {
   NewMeetingPhaseTypeEnum,
   RetroMeeting_meeting$key
@@ -16,8 +16,9 @@ import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import RetroInspirationDrawer from './RetroInspirationDrawer'
+import RetroMeetingDrawer from './RetroMeetingDrawer'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
+import useTemplateSwitchedSnackbar from './TeamPrompt/TemplateDrawer/useTemplateSwitchedSnackbar'
 
 interface Props {
   meeting: RetroMeeting_meeting$key
@@ -46,6 +47,7 @@ export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
   meeting: any
   avatarGroup: ReactElement
+  openSettings?: () => void
 }
 
 const RetroMeeting = (props: Props) => {
@@ -64,10 +66,17 @@ const RetroMeeting = (props: Props) => {
         ...RetroGroupPhase_meeting
         ...RetroVotePhase_meeting
         ...RetroDiscussPhase_meeting
-        ...RetroInspirationDrawer_meeting
+        ...RetroMeetingDrawer_meeting
         ...NewMeetingAvatarGroup_meeting
         ...MeetingLockedOverlay_meeting
         id
+        templateId
+        template {
+          name
+        }
+        meetingSeries {
+          cancelledAt
+        }
         showSidebar
         localPhase {
           phaseType
@@ -85,18 +94,32 @@ const RetroMeeting = (props: Props) => {
   const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick, demoPortal} =
     useMeeting(meeting)
   const atmosphere = useAtmosphere()
+  const {id: meetingId, showSidebar, localPhase, meetingSeries} = meeting
+  useTemplateSwitchedSnackbar({
+    meetingId,
+    templateId: meeting.templateId,
+    templateName: meeting.template?.name,
+    hasAnswers: false,
+    isSeriesTemplate: !!meetingSeries && !meetingSeries.cancelledAt
+  })
   if (!safeRoute) return null
-  const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]!
   if (!Phase) reportMissingMeetingPhase('RetroMeeting', meeting)
-  // The inspiration drawer is shared by the reflect & group phases. Render it here, above the
-  // swapped Phase component, so it stays mounted across the reflect <-> group transition and
-  // doesn't flicker. Hidden in the demo: the mock DB doesn't serve inspirationItems (or the
-  // drawer's other fields), and drafting reflections can't work against the mock server anyway.
-  const showInspirationDrawer =
-    (localPhaseType === 'reflect' || localPhaseType === 'group') &&
-    meetingId !== RetroDemo.MEETING_ID
+  const isDemo = meetingId === RetroDemo.MEETING_ID
+  // Vote and discuss render their own drawer. The other phases share one, rendered here above the
+  // swapped Phase so it stays mounted across phase changes instead of flickering. Hidden in the
+  // demo: the mock DB doesn't serve the drawer's fields.
+  const hasOwnDrawer = localPhaseType === 'vote' || localPhaseType === 'discuss'
+  const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
+  const openSettings = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      const isOnSettings = meetingProxy.getValue('rightDrawerOpen') === 'settings'
+      meetingProxy.setValue(isOnSettings ? null : 'settings', 'rightDrawerOpen')
+    })
+  }
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
@@ -118,9 +141,16 @@ const RetroMeeting = (props: Props) => {
           meeting={meeting}
           toggleSidebar={toggleSidebar}
           avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
+          openSettings={isDemo ? undefined : openSettings}
         />
       </Suspense>
-      {showInspirationDrawer && <RetroInspirationDrawer meeting={meeting} />}
+      {!isDemo && !hasOwnDrawer && (
+        <RetroMeetingDrawer
+          meeting={meeting}
+          showInspiration={showInspiration}
+          gotoStageId={gotoStageId}
+        />
+      )}
       <MeetingControlBar
         isDemoStageComplete={isDemoStageComplete}
         meeting={meeting}

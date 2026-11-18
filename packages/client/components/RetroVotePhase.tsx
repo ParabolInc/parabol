@@ -16,6 +16,8 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
+import RetroMeetingSettings from './RetroMeetingSettings/RetroMeetingSettings'
+import RetroSettingsSubviews from './RetroMeetingSettings/RetroSettingsSubviews'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
 import StageTimerDisplay from './StageTimerDisplay'
 
@@ -24,7 +26,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroVotePhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
   const meeting = useFragment(
     graphql`
       fragment RetroVotePhase_meeting on RetrospectiveMeeting {
@@ -33,6 +35,8 @@ const RetroVotePhase = (props: Props) => {
         ...GroupingKanban_meeting
         ...RetroVoteMetaHeader_meeting
         ...DiscussionDrawerTranscripts_meeting
+        ...RetroMeetingSettings_meeting
+        ...RetroSettingsSubviews_meeting
         id
         endedAt
         showSidebar
@@ -54,6 +58,7 @@ const RetroVotePhase = (props: Props) => {
           rightDrawerOpen={rightDrawerOpen}
           drawerType='transcription'
           toggleSidebar={toggleSidebar}
+          onOpenSettings={openSettings}
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.vote}</PhaseHeaderTitle>
@@ -75,15 +80,25 @@ const RetroVotePhase = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <DiscussionDrawer
-          hideDiscussion
-          onToggle={toggleDrawer}
-          allowedThreadables={[]}
+        <RetroSettingsSubviews
           meetingRef={meeting}
-          meetingId={meetingId}
           activeTab={rightDrawerOpen}
           onChangeTab={setActiveTab}
-        />
+          onClose={toggleDrawer}
+        >
+          <DiscussionDrawer
+            hideDiscussion
+            onToggle={toggleDrawer}
+            allowedThreadables={[]}
+            meetingRef={meeting}
+            meetingId={meetingId}
+            settingsContent={
+              <RetroMeetingSettings meetingRef={meeting} onOpenSubview={setActiveTab} />
+            }
+            activeTab={rightDrawerOpen}
+            onChangeTab={setActiveTab}
+          />
+        </RetroSettingsSubviews>
       </ResponsiveDashSidebar>
     </MeetingContent>
   )

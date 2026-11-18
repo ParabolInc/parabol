@@ -1,0 +1,14 @@
+"""
+Return object for updateRetroMeetingSettings
+"""
+type UpdateRetroMeetingSettingsPayload {
+  """
+  The retrospective whose settings changed
+  """
+  meeting: RetrospectiveMeeting!
+
+  """
+  The team's settings for its next retrospectives
+  """
+  meetingSettings: RetrospectiveMeetingSettings!
+}

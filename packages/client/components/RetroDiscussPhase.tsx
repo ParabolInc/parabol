@@ -23,6 +23,8 @@ import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
+import RetroMeetingSettings from './RetroMeetingSettings/RetroMeetingSettings'
+import RetroSettingsSubviews from './RetroMeetingSettings/RetroSettingsSubviews'
 import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
@@ -30,7 +32,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroDiscussPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
   const meeting = useFragment(
     graphql`
       fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
@@ -39,6 +41,8 @@ const RetroDiscussPhase = (props: Props) => {
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
         ...DiscussionDrawerTranscripts_meeting
+        ...RetroMeetingSettings_meeting
+        ...RetroSettingsSubviews_meeting
         id
         endedAt
         isCommentUnread
@@ -79,7 +83,7 @@ const RetroDiscussPhase = (props: Props) => {
   const showLastTopicLine =
     !endedAt && discussStages.at(-1)?.id === localStage.id && tasks.length === 0
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const [toggleDrawer] = useRightDrawer(meetingId)
+  const [toggleDrawer, setActiveTab] = useRightDrawer(meetingId)
   const title = reflectionGroup?.title ?? ''
 
   // Uncomment below code to enable Easter Egg:
@@ -105,6 +109,7 @@ const RetroDiscussPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
+          onOpenSettings={openSettings}
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.discuss}</PhaseHeaderTitle>
@@ -152,13 +157,25 @@ const RetroDiscussPhase = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <DiscussionDrawer
-          discussionId={discussionId!}
-          onToggle={toggleDrawer}
-          allowedThreadables={allowedThreadables}
+        <RetroSettingsSubviews
           meetingRef={meeting}
-          showLastTopicLine={showLastTopicLine}
-        />
+          activeTab={rightDrawerOpen}
+          onChangeTab={setActiveTab}
+          onClose={toggleDrawer}
+        >
+          <DiscussionDrawer
+            discussionId={discussionId!}
+            onToggle={toggleDrawer}
+            allowedThreadables={allowedThreadables}
+            meetingRef={meeting}
+            showLastTopicLine={showLastTopicLine}
+            settingsContent={
+              <RetroMeetingSettings meetingRef={meeting} onOpenSubview={setActiveTab} />
+            }
+            activeTab={rightDrawerOpen}
+            onChangeTab={setActiveTab}
+          />
+        </RetroSettingsSubviews>
       </ResponsiveDashSidebar>
     </MeetingContent>
   )

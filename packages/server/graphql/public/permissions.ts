@@ -498,6 +498,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
+    updateRetroMeetingSettings: isTeamMember<'Mutation.updateRetroMeetingSettings'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
     updateNewCheckInQuestion: isTeamMember<'Mutation.updateNewCheckInQuestion'>(
       'args.meetingId',
       'newMeetings'

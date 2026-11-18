@@ -84,6 +84,9 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return reflectionGroups
   },
   taskCount: ({taskCount}) => taskCount || 0,
+  template: ({templateId}, _args, {dataLoader}) => {
+    return dataLoader.get('meetingTemplates').loadNonNull(templateId)
+  },
   tasks: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
