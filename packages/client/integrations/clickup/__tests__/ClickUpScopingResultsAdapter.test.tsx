@@ -22,7 +22,7 @@ const task = {
 
 const mockPage = {
   edges: [] as {node: typeof task}[],
-  error: null as {message: string} | null,
+  errorMessage: null as string | null,
   hasNext: false
 }
 
@@ -35,7 +35,11 @@ jest.mock('react-relay', () => ({
       viewer: {
         teamMember: {
           integrations: {
-            clickup: {tasks: {edges: mockPage.edges, error: mockPage.error}}
+            clickup: {
+              tasks: mockPage.errorMessage
+                ? {ok: false, errors: [{extensions: {message: mockPage.errorMessage}}]}
+                : {ok: true, value: {edges: mockPage.edges}}
+            }
           }
         }
       }
@@ -70,7 +74,7 @@ const renderAdapter = async (queryString: string) => {
 
 beforeEach(() => {
   mockPage.edges = []
-  mockPage.error = null
+  mockPage.errorMessage = null
   mockPage.hasNext = false
   container = happyWindow.document.createElement('div')
   happyWindow.document.body.appendChild(container)
@@ -136,7 +140,7 @@ test('a pasted task link that matches shows the task without a message', async (
 
 test('a server error wins over the guidance', async () => {
   mockPage.hasNext = true
-  mockPage.error = {message: 'ClickUp rate limit reached, try again in a minute'}
+  mockPage.errorMessage = 'ClickUp rate limit reached, try again in a minute'
   const results = await renderAdapter('login')
   expect(results.error).toBe('ClickUp rate limit reached, try again in a minute')
 })

@@ -4,6 +4,7 @@ import {usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {JiraServerScopingResultsAdapter_query$key} from '../../__generated__/JiraServerScopingResultsAdapter_query.graphql'
 import type {JiraServerScopingResultsAdapterPaginationQuery} from '../../__generated__/JiraServerScopingResultsAdapterPaginationQuery.graphql'
 import type {JiraServerScopingResultsAdapterQuery} from '../../__generated__/JiraServerScopingResultsAdapterQuery.graphql'
+import getCaughtErrorMessage from '../../utils/relay/getCaughtErrorMessage'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 
 const query = graphql`
@@ -40,10 +41,7 @@ const JiraServerScopingResultsAdapter = (
                   queryString: $queryString
                   isJQL: $isJQL
                   projectKeyFilters: $projectKeyFilters
-                ) @connection(key: "JiraServerScopingSearchResults_issues") {
-                  error {
-                    message
-                  }
+                ) @connection(key: "JiraServerScopingSearchResults_issues") @catch {
                   edges {
                     node {
                       id
@@ -63,9 +61,9 @@ const JiraServerScopingResultsAdapter = (
     `,
     queryData
   )
-  const issues = data.viewer.teamMember?.integrations.jiraServer?.issues
-  const error = issues?.error?.message
-  const edges = issues?.edges
+  const issuesResult = data.viewer.teamMember?.integrations.jiraServer?.issues
+  const error = getCaughtErrorMessage(issuesResult)
+  const edges = issuesResult?.ok ? issuesResult.value?.edges : undefined
   const items = useMemo(
     () =>
       (edges ?? []).map(({node}) => ({

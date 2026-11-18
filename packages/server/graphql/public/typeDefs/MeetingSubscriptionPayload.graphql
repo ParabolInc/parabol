@@ -27,7 +27,6 @@ type MeetingSubscriptionPayload {
     @deprecated(
       reason: "Superseded by SuggestedGroupsPayload. Nothing publishes this any more: it announced the reflect-phase pre-warm, which was removed so AI grouping is only computed when a user asks for it. Safe to delete along with the GenerateGroupsPayload type once clients loaded before the SuggestedGroups release have drained."
     )
-  NewMeetingCheckInPayload: NewMeetingCheckInPayload
   UpdateFacilitatorRotationPayload: UpdateFacilitatorRotationPayload
   RemoveReflectionPayload: RemoveReflectionPayload
   ResetReflectionGroupsPayload: ResetReflectionGroupsPayload

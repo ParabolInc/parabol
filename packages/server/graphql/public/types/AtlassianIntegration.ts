@@ -2,10 +2,10 @@ import {GraphQLError} from 'graphql'
 import AtlassianIntegrationId from '../../../../client/integrations/jira/shared/AtlassianIntegrationId'
 import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
 import {processJiraImages} from '../../../integrations/jira/jiraImages'
+import toCodedIntegrationError from '../../../integrations/platform/toCodedIntegrationError'
 import {getUserId} from '../../../utils/authorization'
 import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {Logger} from '../../../utils/Logger'
-import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
 
@@ -22,18 +22,16 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   issues: async ({teamId, userId, cloudIds}, args, {authToken, dataLoader}) => {
     const {first, queryString, isJQL, projectKeyFilters, after} = args
     const viewerId = getUserId(authToken)
+    if (viewerId !== userId) {
+      throw new GraphQLError('Cannot access another team members issues', {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    }
     const accessToken = await loadFreshAccessToken(dataLoader, teamId, userId)
-    if (viewerId !== userId || !accessToken) {
-      const err = new Error('Cannot access another team members issues')
-      standardError(err, {tags: {teamId, userId}, userId: viewerId})
-      return {
-        error: {message: err.message},
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false
-        }
-      }
+    if (!accessToken) {
+      throw new GraphQLError('Jira is not connected. Reconnect it and try again', {
+        extensions: {code: 'SERVICE_UNAVAILABLE'}
+      })
     }
     const manager = new AtlassianServerManager(accessToken)
     const projectKeyFiltersByCloudId = {} as {[cloudId: string]: string[]}
@@ -68,16 +66,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
           //after
         )
         const {error, issues, nextPageToken} = issueRes
-        if (error) {
-          return {
-            error: {message: error.message},
-            edges: [],
-            pageInfo: {
-              hasNextPage: false,
-              hasPreviousPage: false
-            }
-          }
-        }
+        if (error) return {error, edges: []}
         const nodes = await Promise.all(
           issues.map(async (issue) => {
             const descriptionHTML = await processJiraImages(
@@ -114,7 +103,8 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     )
 
     const combinedEdges = cloudResults.flatMap((result) => result.edges).filter(Boolean)
-    const combinedError = cloudResults.find((result) => result.error)
+    const cloudError = cloudResults.find((result) => result.error)?.error
+    if (combinedEdges.length === 0 && cloudError) throw toCodedIntegrationError(cloudError)
     return {
       edges: combinedEdges.slice(0, first),
       // TODO if we want to paginate properly, we need to keep track of how many results from each cloudId we presented in addition to the cloudId's endCursor.
@@ -124,8 +114,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         hasPreviousPage: false,
         startCursor: after,
         endCursor: null
-      },
-      error: combinedError?.error || null
+      }
     }
   },
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),

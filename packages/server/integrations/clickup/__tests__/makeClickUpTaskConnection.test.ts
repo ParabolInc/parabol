@@ -39,9 +39,10 @@ test('makeClickUpTaskConnection reads the cursor as the next ClickUp page', asyn
 test.each(['-1', '1.5', 'abc', '9999999999999999999'])(
   'makeClickUpTaskConnection refuses the cursor %s without searching',
   async (after) => {
-    const res = await makeClickUpTaskConnection(ctx, {first: 50, after})
-    expect(res.error).toEqual({message: 'Invalid cursor'})
-    expect(res.edges).toEqual([])
+    await expect(makeClickUpTaskConnection(ctx, {first: 50, after})).rejects.toMatchObject({
+      message: 'Invalid cursor',
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
     expect(mockedSearch).not.toHaveBeenCalled()
   }
 )
@@ -77,9 +78,10 @@ test('makeClickUpTaskConnection ends the connection on the last page', async () 
   })
 })
 
-test('makeClickUpTaskConnection carries a search Error in the connection', async () => {
+test('makeClickUpTaskConnection throws a search Error as a retryable failure', async () => {
   mockedSearch.mockResolvedValue(new Error('ClickUp rate limit reached, try again in a minute'))
-  const res = await makeClickUpTaskConnection(ctx, {first: 50})
-  expect(res.edges).toEqual([])
-  expect(res.error).toEqual({message: 'ClickUp rate limit reached, try again in a minute'})
+  await expect(makeClickUpTaskConnection(ctx, {first: 50})).rejects.toMatchObject({
+    message: 'ClickUp rate limit reached, try again in a minute',
+    extensions: {code: 'SERVICE_UNAVAILABLE'}
+  })
 })

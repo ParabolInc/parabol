@@ -26,7 +26,8 @@ type AzureDevOpsIntegration {
 
   """
   Work items fetched live from the projects this connection shares with the team, most recently
-  changed first. A plain search matches titles, or a work item id when it is a number
+  changed first. A plain search matches titles, or a work item id when it is a number.
+  Null, with a coded error, when the search fails in every Azure DevOps organization
   """
   workItems(
     """
@@ -49,7 +50,7 @@ type AzureDevOpsIntegration {
     True when queryString is a WIQL (Work Item Query Language) WHERE clause
     """
     isWIQL: Boolean!
-  ): AzureDevOpsWorkItemConnection!
+  ): AzureDevOpsWorkItemConnection
 
   """
   The global OAuth2 provider for Azure DevOps. Null when this instance has no credentials for it

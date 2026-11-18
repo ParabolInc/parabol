@@ -7,6 +7,7 @@ import type {JiraIntegrationResults_search$key} from '../../../__generated__/Jir
 import type {JiraIntegrationResultsQuery} from '../../../__generated__/JiraIntegrationResultsQuery.graphql'
 import type {JiraIntegrationResultsSearchPaginationQuery} from '../../../__generated__/JiraIntegrationResultsSearchPaginationQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
+import getCaughtErrorMessage from '../../../utils/relay/getCaughtErrorMessage'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import JiraObjectCard from './JiraObjectCard'
 
@@ -49,10 +50,7 @@ const JiraIntegrationResults = (props: Props) => {
                   after: $cursor
                   isJQL: true
                   queryString: $searchQuery
-                ) @connection(key: "JiraScopingSearchResults_issues") {
-                  error {
-                    message
-                  }
+                ) @connection(key: "JiraScopingSearchResults_issues") @catch {
                   edges {
                     node {
                       ...JiraObjectCard_result
@@ -75,9 +73,10 @@ const JiraIntegrationResults = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
 
-  const jira = data.viewer.teamMember?.integrations.atlassian
-  const jiraResults = jira?.issues.edges.map((edge) => edge.node)
-  const error = jira?.issues.error ?? null
+  const issuesResult = data.viewer.teamMember?.integrations.atlassian?.issues
+  const issues = issuesResult?.ok ? issuesResult.value : null
+  const jiraResults = issues?.edges.map((edge) => edge.node)
+  const errorMessage = getCaughtErrorMessage(issuesResult)
 
   // Report how many issues this search returned so the parent can hide the AI draft UI
   // when there's no work to draft from.
@@ -100,7 +99,7 @@ const JiraIntegrationResults = (props: Props) => {
           <div className='flex flex-col items-center pt-12'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
             <div className='mt-7 w-2/3 text-center'>
-              {error?.message ? error.message : `Looks like you don’t have any issues to display.`}
+              {errorMessage ?? `Looks like you don’t have any issues to display.`}
             </div>
             <Link
               to='/team/$teamId/integrations'

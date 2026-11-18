@@ -1,6 +1,7 @@
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
+import toCodedIntegrationError from '../../../integrations/platform/toCodedIntegrationError'
 import type {TeamMember} from '../../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
@@ -105,14 +106,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
       startAt
     )
 
-    if (issueRes instanceof Error) {
-      return {
-        ...emptyConnection,
-        error: {
-          message: issueRes.message
-        }
-      }
-    }
+    if (issueRes instanceof Error) throw toCodedIntegrationError(issueRes)
 
     const {issues} = issueRes
 

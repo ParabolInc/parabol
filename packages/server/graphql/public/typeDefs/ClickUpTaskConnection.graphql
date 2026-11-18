@@ -11,9 +11,4 @@ type ClickUpTaskConnection {
   A list of edges
   """
   edges: [ClickUpTaskEdge!]!
-
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
 }

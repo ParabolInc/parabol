@@ -157,7 +157,7 @@ const Team: TeamResolvers = {
     if (!isTeamMember(authToken, teamId)) {
       const err = new Error('Team not found')
       standardError(err, {tags: {teamId}})
-      return connectionFromTasks([], 0, err)
+      return connectionFromTasks([], 0)
     }
     const viewerId = getUserId(authToken)
     const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)

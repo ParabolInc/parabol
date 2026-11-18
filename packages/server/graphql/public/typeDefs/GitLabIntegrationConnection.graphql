@@ -11,9 +11,4 @@ type GitLabIntegrationConnection {
   A list of edges.
   """
   edges: [GitLabIntegrationEdge!]!
-
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
 }

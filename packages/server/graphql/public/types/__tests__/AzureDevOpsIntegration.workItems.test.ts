@@ -48,12 +48,12 @@ describe('AzureDevOpsIntegration.workItems', () => {
     mockedSearch.mockResolvedValue([workItem])
   })
 
-  it('answers unbalanced WIQL with an empty connection carrying the error, without searching', async () => {
-    const connection = await run({queryString: '1 = 1) OR ([System.Id] > 0', isWIQL: true})
-    expect(connection).toMatchObject({
-      error: {message: 'That WIQL has unbalanced parentheses, brackets or quotes'},
-      edges: [],
-      pageInfo: {hasNextPage: false}
+  it('refuses unbalanced WIQL as bad input, without searching', async () => {
+    await expect(
+      run({queryString: '1 = 1) OR ([System.Id] > 0', isWIQL: true})
+    ).rejects.toMatchObject({
+      message: 'That WIQL has unbalanced parentheses, brackets or quotes',
+      extensions: {code: 'BAD_USER_INPUT'}
     })
     expect(mockedSearch).not.toHaveBeenCalled()
   })
@@ -75,10 +75,7 @@ describe('AzureDevOpsIntegration.workItems', () => {
         limit: 10
       }
     )
-    expect(connection).toMatchObject({
-      error: undefined,
-      edges: [{cursor: workItem.updatedAt, node: workItem}]
-    })
+    expect(connection).toMatchObject({edges: [{cursor: workItem.updatedAt, node: workItem}]})
   })
 
   it.each([
@@ -91,11 +88,11 @@ describe('AzureDevOpsIntegration.workItems', () => {
     expect(mockedSearch).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({limit}))
   })
 
-  it('carries a failed search as the error of an empty connection', async () => {
+  it('throws a failed search as a retryable failure', async () => {
     mockedSearch.mockResolvedValue(new Error('Azure DevOps took too long to respond'))
-    await expect(run({queryString: 'login', isWIQL: false})).resolves.toMatchObject({
-      error: {message: 'Azure DevOps took too long to respond'},
-      edges: []
+    await expect(run({queryString: 'login', isWIQL: false})).rejects.toMatchObject({
+      message: 'Azure DevOps took too long to respond',
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
     })
   })
 })

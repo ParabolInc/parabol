@@ -155,9 +155,14 @@ describe('Atmosphere', () => {
       )
     })
 
-    it('keeps the partial data of a query whose field failed', async () => {
+    it('keeps the partial data of a query whose field failed, with the message where @catch reads it', async () => {
       const payload = {data: {team: null}, errors: [notFound]}
-      await expect(fetchOverHTTP(jsonResponse(payload))).resolves.toEqual([payload])
+      await expect(fetchOverHTTP(jsonResponse(payload))).resolves.toEqual([
+        {
+          data: {team: null},
+          errors: [{...notFound, extensions: {code: 'NOT_FOUND', message: 'Team not found'}}]
+        }
+      ])
     })
 
     it('fails a mutation over the socket that got errors and no data', async () => {
