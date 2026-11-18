@@ -1,7 +1,4 @@
 import {createElement, lazy} from 'react'
-import gitLabIntegrationResultsQuery, {
-  type GitLabIntegrationResultsQuery
-} from '../../__generated__/GitLabIntegrationResultsQuery.graphql'
 import gitLabScopingResultsQuery, {
   type GitLabScopingResultsAdapterQuery
 } from '../../__generated__/GitLabScopingResultsAdapterQuery.graphql'
@@ -14,12 +11,9 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability,
-  type WorkDrawerCapability,
-  type WorkDrawerPanelProps
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
-import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import GitLabClientManager from './GitLabClientManager'
 import {gitLabIssueArgs} from './gitLabIssueArgs'
@@ -72,20 +66,6 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
-const workDrawer: WorkDrawerCapability = {
-  Panel: makeQueryRoot<WorkDrawerPanelProps, GitLabIntegrationResultsQuery>({
-    query: gitLabIntegrationResultsQuery,
-    getVariables: ({teamId}) => ({teamId}),
-    Component: lazy(
-      () =>
-        import(
-          /* webpackChunkName: 'GitLabIntegrationResults' */ '../../components/TeamPrompt/WorkDrawer/GitLabIntegrationResults'
-        )
-    )
-  }),
-  connectDescription: 'issues'
-}
-
 export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly service = gitlabIntegrationMeta.service
   readonly title = gitlabIntegrationMeta.title
@@ -95,8 +75,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: gitlabLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
-    taskLink: gitLabTaskLink,
-    workDrawer
+    taskLink: gitLabTaskLink
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId || !provider.serverBaseUrl) return false

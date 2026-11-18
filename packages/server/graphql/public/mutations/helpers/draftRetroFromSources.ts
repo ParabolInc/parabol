@@ -6,7 +6,7 @@ import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
 import type {InspirationSourceInput} from '../../resolverTypes'
-import type {InspirationItemSource} from '../../types/GenerateInspirationItemsPayload'
+import type {InspirationItemSource} from '../../types/InspirationItem'
 import gatherInspirationIssues, {
   INSPIRATION_DRAFT_SERVICE,
   type NumberedIssue
@@ -92,8 +92,6 @@ const draftRetroFromSources = async (options: Options) => {
     if (draftByIssueId.has(issueId)) return
     draftByIssueId.set(issueId, {
       id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${issueId}`,
-      meetingId,
-      userId: viewerId,
       service: INSPIRATION_DRAFT_SERVICE,
       title: null,
       promptId: prompt.id,
