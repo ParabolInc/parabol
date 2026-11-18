@@ -2,8 +2,10 @@ import {
   dashboardLayoutRoute,
   makePageRoute,
   meetingSummaryActionRoute,
+  meetingSummaryIndexRoute,
   meetingSummaryRoute,
   meetingsRoute,
+  newTeamIndexRoute,
   newTeamInOrgRoute,
   newTeamRoute,
   pageRoute,
@@ -17,6 +19,7 @@ import {
 import {
   activityDetailsRoute,
   activityLibraryCategoryRoute,
+  activityLibraryHomeRoute,
   activityLibraryIndexRoute,
   activityLibraryRoute,
   adminGraphqlRoute,
@@ -86,6 +89,7 @@ import {
   orgTeamsRoute,
   profileRoute,
   timelineFallbackRoute,
+  timelineLayoutRoute,
   timelineRoute,
   userDashMainLayoutRoute
 } from './routes/userDashboardRoutes'
@@ -111,8 +115,10 @@ export const routeTree = rootRoute.addChildren([
     retroDemoSummaryActionRoute,
     privateLayoutRoute.addChildren([
       activityLibraryRoute.addChildren([
-        activityLibraryIndexRoute,
-        activityLibraryCategoryRoute,
+        activityLibraryHomeRoute.addChildren([
+          activityLibraryIndexRoute,
+          activityLibraryCategoryRoute
+        ]),
         activityDetailsRoute,
         newActivityRoute
       ]),
@@ -142,7 +148,10 @@ export const routeTree = rootRoute.addChildren([
             orgTeamsRoute,
             orgTeamMembersRoute
           ]),
-          userDashMainLayoutRoute.addChildren([myTasksRoute, timelineRoute, timelineFallbackRoute])
+          userDashMainLayoutRoute.addChildren([
+            myTasksRoute,
+            timelineLayoutRoute.addChildren([timelineRoute, timelineFallbackRoute])
+          ])
         ]),
         requestToJoinTeamRoute,
         teamRoute.addChildren([
@@ -155,16 +164,14 @@ export const routeTree = rootRoute.addChildren([
             teamActivityFallbackRoute
           ])
         ]),
-        newTeamRoute,
-        newTeamInOrgRoute,
+        newTeamRoute.addChildren([newTeamIndexRoute, newTeamInOrgRoute]),
         makePageRoute,
         pageRoute,
         reportsRoute,
         reportsHomeRoute,
         reportPageRoute,
         reportPinRoute,
-        meetingSummaryRoute,
-        meetingSummaryActionRoute,
+        meetingSummaryRoute.addChildren([meetingSummaryIndexRoute, meetingSummaryActionRoute]),
         shareTopicRoute
       ]),
       notFoundRoute

@@ -1,32 +1,34 @@
 import {createRoute, lazyRouteComponent} from '@tanstack/react-router'
 import dashboardQuery, {type DashboardQuery} from '../../__generated__/DashboardQuery.graphql'
-import {holdForData, loadRouteQuery} from '../routeQueries'
+import newMeetingSummaryQuery, {
+  type NewMeetingSummaryQuery
+} from '../../__generated__/NewMeetingSummaryQuery.graphql'
+import newTeamQuery, {type NewTeamQuery} from '../../__generated__/NewTeamQuery.graphql'
+import pageEntryQuery, {type PageEntryQuery} from '../../__generated__/PageEntryQuery.graphql'
+import reportPinQuery, {type ReportPinQuery} from '../../__generated__/ReportPinQuery.graphql'
+import reportsHomeQuery, {type ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
+import reportsRedirectQuery, {
+  type ReportsRedirectQuery
+} from '../../__generated__/ReportsRedirectQuery.graphql'
+import shareTopicModalQuery, {
+  type ShareTopicModalQuery
+} from '../../__generated__/ShareTopicModalQuery.graphql'
+import {parseReportPeriodParam} from '../../modules/reports/reportPeriodParam'
+import {GQLID} from '../../utils/GQLID'
 import {privateLayoutRoute} from './privateRoutes'
-
-const NewTeam = lazyRouteComponent(
-  () =>
-    import(
-      /* webpackChunkName: 'NewTeamRoot' */ '../../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
-    )
-)
-const NewMeetingSummary = lazyRouteComponent(
-  () =>
-    import(
-      /* webpackChunkName: 'NewMeetingSummaryRoot' */ '../../modules/summary/components/NewMeetingSummaryRoot'
-    )
-)
 
 export const dashboardLayoutRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   id: 'dashboardLayout',
-  loader: ({context: {atmosphere}}) => {
-    if (!atmosphere.authObj) return
-    return holdForData([
-      loadRouteQuery<DashboardQuery>(atmosphere, dashboardQuery, {first: 5, nullId: null})
-    ])
+  loader: async ({context: {atmosphere, queryRefs}}) => {
+    // Only a public page reaches the dashboard signed out, and it renders without it
+    if (!atmosphere.authObj) return {queryRef: null}
+    // relay-compiler strips null literals (facebook/relay#4488), so null rides in as a variable
+    const variables = {first: 5, nullId: null}
+    return {queryRef: await queryRefs.load<DashboardQuery>(dashboardQuery, variables)}
   },
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'DashboardRoot' */ '../../components/DashboardLayout')
+    () => import(/* webpackChunkName: 'DashboardLayout' */ '../../components/DashboardLayout')
   )
 })
 export const meetingsRoute = createRoute({
@@ -47,12 +49,20 @@ export const requestToJoinTeamRoute = createRoute({
 export const newTeamRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'newteam',
-  component: NewTeam
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<NewTeamQuery>(newTeamQuery, {})
+  }),
+  component: lazyRouteComponent(
+    () => import(/* webpackChunkName: 'NewTeamRoute' */ '../../modules/newTeam/NewTeamRoute')
+  )
+})
+export const newTeamIndexRoute = createRoute({
+  getParentRoute: () => newTeamRoute,
+  path: '/'
 })
 export const newTeamInOrgRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: 'newteam/$defaultOrgId',
-  component: NewTeam
+  getParentRoute: () => newTeamRoute,
+  path: '$defaultOrgId'
 })
 export const makePageRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
@@ -65,22 +75,45 @@ export const makePageRoute = createRoute({
 export const pageRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'pages/$pageSlug',
+  // A public page loads signed out too
+  loader: async ({context: {queryRefs}, params: {pageSlug}}) => {
+    // The slug ends in the page's code, after a readable title
+    const pageId = GQLID.toKey(pageSlug.slice(pageSlug.lastIndexOf('-') + 1), 'page')
+    return {pageId, queryRef: await queryRefs.load<PageEntryQuery>(pageEntryQuery, {pageId})}
+  },
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'PageRoot' */ '../../modules/pages/PageRoute')
+    () => import(/* webpackChunkName: 'PageRoute' */ '../../modules/pages/PageRoute')
   )
 })
 export const reportsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports',
+  loader: async ({context: {queryRefs}}) => ({
+    queryRef: await queryRefs.load<ReportsRedirectQuery>(reportsRedirectQuery, {})
+  }),
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'ReportsRoot' */ '../../modules/reports/ReportsRoot')
+    () => import(/* webpackChunkName: 'ReportsRoute' */ '../../modules/reports/ReportsRoute')
   )
 })
 export const reportsHomeRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports/$orgId',
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {queryRefs}, params: {orgId}, location}) => {
+    const period = new URLSearchParams(location.searchStr).get('period')
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const variables = {orgId, timeZone, pagePeriod: parseReportPeriodParam(period)}
+    return {
+      queryRef: await queryRefs.load<ReportsHomeQuery>(reportsHomeQuery, variables, {
+        fetchPolicy: 'network-only'
+      })
+    }
+  },
+  // The last period's numbers stay up while the next period loads
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'ReportsHomeRoot' */ '../../modules/reports/ReportsHomeRoot')
+    () =>
+      import(/* webpackChunkName: 'ReportsHomeRoute' */ '../../modules/reports/ReportsHomeRoute')
   )
 })
 export const reportPageRoute = createRoute({
@@ -93,25 +126,49 @@ export const reportPageRoute = createRoute({
 export const reportPinRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports/$orgId/pins/$pinParam',
+  loader: async ({context: {queryRefs}, params: {orgId}}) => ({
+    queryRef: await queryRefs.load<ReportPinQuery>(reportPinQuery, {orgId})
+  }),
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'ReportPinRoot' */ '../../modules/reports/ReportPinRoot')
+    () => import(/* webpackChunkName: 'ReportPinRoute' */ '../../modules/reports/ReportPinRoute')
   )
 })
 export const meetingSummaryRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'new-summary/$meetingId',
-  component: NewMeetingSummary
+  loader: async ({context: {queryRefs}, params: {meetingId}}) => ({
+    queryRef: await queryRefs.load<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {
+      meetingId,
+      first: 5,
+      nullId: null
+    })
+  }),
+  component: lazyRouteComponent(
+    () =>
+      import(
+        /* webpackChunkName: 'NewMeetingSummaryRoute' */ '../../modules/summary/components/NewMeetingSummaryRoute'
+      )
+  )
+})
+export const meetingSummaryIndexRoute = createRoute({
+  getParentRoute: () => meetingSummaryRoute,
+  path: '/'
 })
 export const meetingSummaryActionRoute = createRoute({
-  getParentRoute: () => dashboardLayoutRoute,
-  path: 'new-summary/$meetingId/$urlAction',
-  component: NewMeetingSummary
+  getParentRoute: () => meetingSummaryRoute,
+  path: '$urlAction'
 })
 export const shareTopicRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'new-summary/$meetingId/share/$stageId',
+  loader: async ({context: {queryRefs}, params: {meetingId}}) => ({
+    queryRef: await queryRefs.load<ShareTopicModalQuery>(
+      shareTopicModalQuery,
+      {meetingId},
+      {fetchPolicy: 'network-only'}
+    )
+  }),
   component: lazyRouteComponent(
-    () =>
-      import(/* webpackChunkName: 'ShareTopicRouterRoot' */ '../../components/ShareTopicRouterRoot')
+    () => import(/* webpackChunkName: 'ShareTopicRoute' */ '../../components/ShareTopicRoute')
   )
 })

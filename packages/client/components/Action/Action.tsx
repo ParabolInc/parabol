@@ -4,11 +4,10 @@ import 'react-day-picker/dist/style.css'
 import useNavigationBreadcrumbs from '../../hooks/useNavigationBreadcrumbs'
 import useQuietUpdate from '../../hooks/useQuietUpdate'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
-import {LoaderSize} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import ErrorBoundary from '../ErrorBoundary'
 import Banner from '../GlobalBanner'
-import LoadingComponent from '../LoadingComponent/LoadingComponent'
+import NavigationProgress from '../NavigationProgress'
 import Snackbar from '../Snackbar'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
@@ -27,7 +26,8 @@ const Action = () => {
     <>
       <ErrorBoundary>
         <Snackbar />
-        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
+        <NavigationProgress />
+        <Suspense fallback={null}>
           {/* Nested so analytics never holds up the first route, but still mounts no earlier than it */}
           <Suspense fallback={null}>
             <AnalyticsPage />

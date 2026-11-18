@@ -1,4 +1,10 @@
 import {createRoute, lazyRouteComponent, notFound} from '@tanstack/react-router'
+import invitationLinkQuery, {
+  type InvitationLinkQuery
+} from '../../__generated__/InvitationLinkQuery.graphql'
+import teamInvitationQuery, {
+  type TeamInvitationQuery
+} from '../../__generated__/TeamInvitationQuery.graphql'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import {rootRoute} from './rootRoute'
 
@@ -103,14 +109,22 @@ export const oauthAuthorizeRoute = createRoute({
 export const teamInvitationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'team-invitation/$token',
+  loader: async ({context: {queryRefs}, params: {token}}) => ({
+    queryRef: await queryRefs.load<TeamInvitationQuery>(teamInvitationQuery, {token})
+  }),
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'TeamInvitationRoot' */ '../../components/TeamInvitationRoot')
+    () =>
+      import(/* webpackChunkName: 'TeamInvitationRoute' */ '../../components/TeamInvitationRoute')
   )
 })
 export const invitationLinkRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'invitation-link/$token',
+  loader: async ({context: {queryRefs}, params: {token}}) => ({
+    queryRef: await queryRefs.load<InvitationLinkQuery>(invitationLinkQuery, {token})
+  }),
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'InvitationLinkRoot' */ '../../components/InvitationLinkRoot')
+    () =>
+      import(/* webpackChunkName: 'InvitationLinkRoute' */ '../../components/InvitationLinkRoute')
   )
 })

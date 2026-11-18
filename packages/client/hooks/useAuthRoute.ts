@@ -15,7 +15,7 @@ const unauthorizedDefault = {
   key: 'unauthorized'
 }
 
-const unauthenticatedDefault = {
+export const unauthenticatedSnackbar = {
   autoDismiss: 5,
   message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.',
   key: 'unauthenticated'
@@ -42,7 +42,7 @@ const useAuthRoute = (inOptions: Options = {}) => {
       // User is not authenticated, redirect them to sign in
       if (!silent) {
         setTimeout(() => {
-          atmosphere.eventEmitter.emit('addSnackbar', unauthenticatedDefault)
+          atmosphere.eventEmitter.emit('addSnackbar', unauthenticatedSnackbar)
         })
       }
       navigate({

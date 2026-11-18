@@ -4,8 +4,6 @@ import newMeetingSummaryQuery, {
   type NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {LoaderSize} from '../../../types/constEnums'
-import {Loader} from '../../../utils/relay/renderLoader'
 import NewMeetingSummary from './NewMeetingSummary'
 
 const NewMeetingSummaryRoot = () => {
@@ -16,7 +14,7 @@ const NewMeetingSummaryRoot = () => {
     nullId: null
   })
   return (
-    <Suspense fallback={<Loader size={LoaderSize.WHOLE_PAGE} />}>
+    <Suspense fallback={null}>
       {queryRef && (
         <NewMeetingSummary queryRef={queryRef} urlAction={urlAction as 'csv' | undefined} />
       )}

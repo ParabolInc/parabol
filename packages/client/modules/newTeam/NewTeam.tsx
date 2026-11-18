@@ -9,7 +9,7 @@ import {ExternalLinks} from '../../types/constEnums'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 
 interface Props {
-  defaultOrgId: string
+  defaultOrgId?: string
   queryRef: PreloadedQuery<NewTeamQuery>
 }
 

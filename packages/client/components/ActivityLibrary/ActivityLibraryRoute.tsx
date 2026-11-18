@@ -1,17 +1,13 @@
-import {Suspense} from 'react'
-import activityLibraryQuery, {
-  type ActivityLibraryQuery
-} from '~/__generated__/ActivityLibraryQuery.graphql'
-import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
-import {Loader} from '../../utils/relay/renderLoader'
+import {getRouteApi} from '@tanstack/react-router'
+import useQueryRefLease from '../../routing/useQueryRefLease'
 import {ActivityLibrary} from './ActivityLibrary'
 
-const ActivityLibraryRoute = () => {
-  const queryRef = useQueryLoaderNow<ActivityLibraryQuery>(activityLibraryQuery)
+const routeApi = getRouteApi('/tipTapLayout/privateLayout/activity-library/activityLibraryHome')
 
-  return (
-    <Suspense fallback={<Loader />}>{queryRef && <ActivityLibrary queryRef={queryRef} />}</Suspense>
-  )
+const ActivityLibraryRoute = () => {
+  const {queryRef} = routeApi.useLoaderData()
+  useQueryRefLease(queryRef)
+  return <ActivityLibrary queryRef={queryRef} />
 }
 
 export default ActivityLibraryRoute

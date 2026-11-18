@@ -13,7 +13,6 @@ import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 
 interface Props {
-  teamId: string
   queryRef: PreloadedQuery<UserProfileQuery>
 }
 
