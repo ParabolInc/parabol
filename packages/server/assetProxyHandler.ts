@@ -83,6 +83,21 @@ export const checkAccess = async (
   return false
 }
 
+const isPlainSegment = (segment: string) =>
+  segment !== '' && segment !== '.' && segment !== '..' && !/[\\/]/.test(segment)
+
+const decodePartialPath = (rawPath: string) => {
+  const rawSegments = rawPath.split('/')
+  if (rawSegments.length > 4) return null
+  let segments: string[]
+  try {
+    segments = rawSegments.map(decodeURIComponent)
+  } catch {
+    return null
+  }
+  return segments.every(isPlainSegment) ? (segments.join('/') as PartialPath) : null
+}
+
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   // Parse the raw (non-decoded) path so an encoded Atlassian URL in the filename segment
   // doesn't get its slashes expanded before we split on '/'.
@@ -109,11 +124,15 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     return
   }
 
-  const partialPath = decodeURIComponent(rawPath)
+  const partialPath = decodePartialPath(rawPath)
+  if (!partialPath) {
+    res.writeStatus('404').end()
+    return
+  }
   const manager = await getFileStoreManager()
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,
-    () => manager.presignUrl(partialPath as PartialPath),
+    () => manager.presignUrl(partialPath),
     60_000
   )
   res
