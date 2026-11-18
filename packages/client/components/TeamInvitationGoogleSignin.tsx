@@ -1,6 +1,6 @@
+import {useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router'
 import type {TeamInvitationGoogleSignin_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import DialogContent from './DialogContent'
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const TeamInvitationGoogleSignin = (props: Props) => {
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const invitationToken = token!
   const {verifiedInvitation: verifiedInvitationRef} = props
   const verifiedInvitation = useFragment(

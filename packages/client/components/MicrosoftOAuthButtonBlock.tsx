@@ -1,4 +1,4 @@
-import {useLocation, useNavigate} from 'react-router'
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import logo from '../styles/theme/images/graphics/microsoft.svg'
@@ -30,7 +30,7 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
       atmosphere,
       mutationProps,
       navigate,
-      location.search,
+      location.searchStr,
       invitationToken,
       loginHint,
       getOffsetTop

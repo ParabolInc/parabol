@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {Add as AddIcon} from '~/ui/icons'
 import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
@@ -67,7 +67,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         const {page} = createPage
         const {id} = page
         const [_, pageCode] = id.split(':')
-        navigate(`/pages/${pageCode}`)
+        navigate({to: '/pages/$pageSlug', params: {pageSlug: pageCode!}})
       }
     })
   }

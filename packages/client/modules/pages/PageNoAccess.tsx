@@ -1,4 +1,4 @@
-import {useLocation, useNavigate} from 'react-router'
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import {Lock as LockIcon} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
@@ -19,7 +19,7 @@ export const PageNoAccess = (props: Props) => {
   const isLoggedIn = !!atmosphere.authObj
 
   const navigate = useNavigate()
-  const searchParams = new URLSearchParams(useLocation().search)
+  const searchParams = new URLSearchParams(useLocation().searchStr)
   const inviteEmail = searchParams.get('email')
 
   if (isLoggedIn) {
@@ -50,21 +50,15 @@ export const PageNoAccess = (props: Props) => {
               size='md'
               onClick={() => {
                 if (inviteEmail) {
-                  navigate(
-                    {
-                      pathname: '/create-account',
-                      search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&email=${encodeURIComponent(inviteEmail)}`
-                    },
-                    {replace: true}
-                  )
+                  navigate({
+                    href: `/create-account?redirectTo=${encodeURIComponent(window.location.pathname)}&email=${encodeURIComponent(inviteEmail)}`,
+                    replace: true
+                  })
                 } else {
-                  navigate(
-                    {
-                      pathname: '/',
-                      search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-                    },
-                    {replace: true}
-                  )
+                  navigate({
+                    href: `/?redirectTo=${encodeURIComponent(window.location.pathname)}`,
+                    replace: true
+                  })
                 }
               }}
             >

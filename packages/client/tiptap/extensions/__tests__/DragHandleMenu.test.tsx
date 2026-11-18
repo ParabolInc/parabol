@@ -26,8 +26,8 @@ jest.mock('../../../components/ErrorComponent/ErrorComponent', () => ({
 }))
 jest.mock('../../../hooks/useQueryLoaderNow', () => ({__esModule: true, default: () => null}))
 jest.mock('../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
   useNavigate: () => jest.fn()
 }))
 jest.mock('../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))

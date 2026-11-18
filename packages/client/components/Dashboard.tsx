@@ -1,7 +1,7 @@
+import {Outlet} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
-import {lazy, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Routes, useParams} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useNewFeatureSnackbar from '~/hooks/useNewFeatureSnackbar'
 import useSnackNag from '~/hooks/useSnackNag'
@@ -11,58 +11,15 @@ import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import {useOpenSidebarForPagesTrash} from '../hooks/useOpenSidebarForPagesTrash'
 import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
-import {MeetingsDash, TeamRoot} from '../routing/legacyRouteComponents'
+import {SearchProvider} from '../modules/search/SearchContext'
+import {GlobalSearchDialog} from '../modules/search/SearchDialog'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
-import RequestToJoinComponent from './RequestToJoin'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import ThemeSync from './ThemeSync'
-
-const NewMeetingSummary = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'NewMeetingSummaryRoot' */ '../modules/summary/components/NewMeetingSummaryRoot'
-    )
-)
-
-const UserDashboard = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
-    )
-)
-const NewTeam = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
-    )
-)
-
-const PageRoot = lazy(() => import(/* webpackChunkName: 'PageRoot' */ '../modules/pages/PageRoot'))
-const MakePage = lazy(() => import(/* webpackChunkName: 'MakePage' */ '../modules/pages/MakePage'))
-
-const ReportsRoot = lazy(
-  () => import(/* webpackChunkName: 'ReportsRoot' */ '../modules/reports/ReportsRoot')
-)
-const ReportsHomeRoot = lazy(
-  () => import(/* webpackChunkName: 'ReportsHomeRoot' */ '../modules/reports/ReportsHomeRoot')
-)
-const ReportPageRoot = lazy(
-  () => import(/* webpackChunkName: 'ReportPageRoot' */ '../modules/reports/ReportPageRoot')
-)
-const ReportPinRoot = lazy(
-  () => import(/* webpackChunkName: 'ReportPinRoot' */ '../modules/reports/ReportPinRoot')
-)
-
-const ShareTopicRouterRoot = lazy(
-  () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
-)
-const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
-
-import {SearchProvider} from '../modules/search/SearchContext'
-import {GlobalSearchDialog} from '../modules/search/SearchDialog'
+import {DashboardOutletContext} from './useDashboardOutlet'
 
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
@@ -73,11 +30,6 @@ const dashLayoutClassName = 'flex h-full flex-col'
 
 const skipLinkClassName =
   '-m-px absolute h-px w-px overflow-hidden [clip:rect(1px,1px,1px,1px)] [clip-path:inset(50%)] transition-[background-color] duration-100 ease-[ease] focus:[clip:auto]! focus:h-auto focus:w-auto focus:bg-gold-300 focus:px-11 focus:py-1 focus:text-slate-900 focus:underline focus:outline-none focus:[clip-path:inherit] focus:leading-[49px]'
-
-const RequestToJoinRoute = () => {
-  const {teamId} = useParams()
-  return <RequestToJoinComponent key={teamId} />
-}
 
 const Dashboard = (props: Props) => {
   const {queryRef} = props
@@ -114,6 +66,7 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
+  const dashboardOutlet = useMemo(() => ({viewer, mainRef: meetingsDashRef}), [viewer])
   useSnackNag(overLimitCopy)
   useSnacksForNewMeetings(activeMeetings)
   useNewFeatureSnackbar(viewer)
@@ -153,30 +106,9 @@ const Dashboard = (props: Props) => {
             id='main'
             ref={meetingsDashRef}
           >
-            <Routes>
-              <Route
-                path='/meetings'
-                element={<MeetingsDash meetingsDashRef={meetingsDashRef} viewer={viewer} />}
-              />
-              <Route path='/me/*' element={<UserDashboard />} />
-              <Route path='/team/:teamId/requestToJoin' element={<RequestToJoinRoute />} />
-              <Route path='/team/:teamId/*' element={<TeamRoot />} />
-              <Route path='/newteam/:defaultOrgId' element={<NewTeam />} />
-              <Route path='/newteam' element={<NewTeam />} />
-              <Route path='/pages/:pageSlug' element={<PageRoot viewerRef={viewer} />} />
-              <Route path='/pages' element={<MakePage />} />
-              <Route path='/reports' element={<ReportsRoot />} />
-              <Route path='/reports/:orgId' element={<ReportsHomeRoot />} />
-              <Route path='/reports/:orgId/report' element={<ReportPageRoot />} />
-              <Route path='/reports/:orgId/pins/:pinParam' element={<ReportPinRoot />} />
-              <Route
-                path='/new-summary/:meetingId/share/:stageId'
-                element={<ShareTopicRouterRoot />}
-              />
-              <Route path='/new-summary/:meetingId/:urlAction' element={<NewMeetingSummary />} />
-              <Route path='/new-summary/:meetingId' element={<NewMeetingSummary />} />
-              <Route path='*' element={<NotFound />} />
-            </Routes>
+            <DashboardOutletContext.Provider value={dashboardOutlet}>
+              <Outlet />
+            </DashboardOutletContext.Provider>
           </main>
         </div>
       </div>

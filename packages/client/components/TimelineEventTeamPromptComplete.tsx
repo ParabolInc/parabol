@@ -91,7 +91,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         {locked ? (
           canUpgrade && (
             <>
-              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
+              <StyledLink className='font-semibold' to='/me/organizations/$orgId' params={{orgId}}>
                 Upgrade now
               </StyledLink>{' '}
               to see responses and discussion or review a summary
@@ -99,7 +99,11 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           )
         ) : (
           <>
-            <StyledLink className='font-semibold' to={`/meet/${meetingId}/responses`}>
+            <StyledLink
+              className='font-semibold'
+              to='/meet/$meetingId/$'
+              params={{meetingId, _splat: 'responses'}}
+            >
               See responses and discussions
             </StyledLink>
             {' or '}

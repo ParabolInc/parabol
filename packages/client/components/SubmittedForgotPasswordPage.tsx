@@ -1,5 +1,5 @@
+import {useLocation, useParams} from '@tanstack/react-router'
 import type {JSX} from 'react'
-import {useLocation, useParams} from 'react-router'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {Button} from '../ui/Button/Button'
 import AuthenticationDialog from './AuthenticationDialog'
@@ -24,9 +24,9 @@ interface Props {
 
 const SubmittedForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
+  const searchParams = new URLSearchParams(location.searchStr)
   const forgotPasswordResType = searchParams.get('type') || ForgotPasswordResType.SUCCESS
   const email = searchParams.get('email')
   const contactSupportCopy = (

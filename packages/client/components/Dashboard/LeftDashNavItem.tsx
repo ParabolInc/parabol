@@ -1,5 +1,5 @@
+import {Link, useMatchRoute} from '@tanstack/react-router'
 import {forwardRef, type ReactNode, type Ref} from 'react'
-import {Link, useMatch} from 'react-router'
 import type {IconComponent} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {LeftNavItem} from '../DashNavList/LeftNavItem'
@@ -15,7 +15,8 @@ interface Props {
 
 const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {label, Icon, href, onClick, exact, decoration} = props
-  const match = useMatch({path: href || '/', end: !!exact})
+  const matchRoute = useMatchRoute()
+  const match = matchRoute({to: href || '/', fuzzy: !exact})
   const isActive = href && !!match
   const LinkWrapper = href ? Link : 'div'
   return (

@@ -18,11 +18,11 @@ const handleAuthenticationRedirect: OnNextHandler<
   const isOnInvitationPage = /^\/(team-invitation|invitation-link)\//.test(window.location.pathname)
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
-    navigate(redirectTo, {replace: isOnInvitationPage})
+    navigate({href: redirectTo, replace: isOnInvitationPage})
     return
   }
   if (!acceptTeamInvitation?.team) {
-    navigate(redirectPath, {replace: isOnInvitationPage})
+    navigate({href: redirectPath, replace: isOnInvitationPage})
     return
   }
   const {meetingId: invitedMeetingId, team} = acceptTeamInvitation
@@ -31,9 +31,13 @@ const handleAuthenticationRedirect: OnNextHandler<
   const activeMeeting =
     (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) || activeMeetings[0]
   if (activeMeeting) {
-    navigate(`/meet/${activeMeeting.id}`, {replace: isOnInvitationPage})
+    navigate({
+      to: '/meet/$meetingId',
+      params: {meetingId: activeMeeting.id},
+      replace: isOnInvitationPage
+    })
   } else {
-    navigate(`/team/${teamId}`, {replace: isOnInvitationPage})
+    navigate({to: '/team/$teamId', params: {teamId}, replace: isOnInvitationPage})
   }
 }
 export default handleAuthenticationRedirect

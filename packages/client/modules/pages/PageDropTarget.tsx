@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useClientQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../__generated__/PageDropTargetQuery.graphql'

@@ -68,7 +68,10 @@ test('a move offers Open page and Undo', () => {
     message: 'Moved 1 block to Q3 Roadmap'
   })
   snack.action!.callback()
-  expect(navigate).toHaveBeenCalledWith('/pages/q3-roadmap-42')
+  expect(navigate).toHaveBeenCalledWith({
+    to: '/pages/$pageSlug',
+    params: {pageSlug: 'q3-roadmap-42'}
+  })
   snack.secondaryAction!.callback()
   expect(undoBlockMove).toHaveBeenCalledWith(editor, moveMeta)
 })

@@ -1,8 +1,8 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useClientQuery, useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
@@ -108,7 +108,8 @@ export const PageBreadCrumbs = (props: Props) => {
         >
           <Link
             draggable={false}
-            to={`/team/${team.id}`}
+            to='/team/$teamId'
+            params={{teamId: team.id}}
             className='rounded-md px-1 hover:bg-surface-hover'
           >
             {team.name}
@@ -158,7 +159,8 @@ export const PageBreadCrumbs = (props: Props) => {
           {page.team && renderTeamCrumb(page.team)}
           <Link
             draggable={false}
-            to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
+            to='/pages/$pageSlug'
+            params={{pageSlug: getPageSlug(Number(page.id.split(':')[1]), page.title)}}
             className='rounded-md px-1 hover:bg-surface-hover'
           >
             {!canOpen && <PageNoAccessLock className='mr-1 align-[-2px]' />}
@@ -212,7 +214,8 @@ export const PageBreadCrumbs = (props: Props) => {
                     >
                       <Link
                         draggable={false}
-                        to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
+                        to='/pages/$pageSlug'
+                        params={{pageSlug: getPageSlug(Number(page.id.split(':')[1]), page.title)}}
                       >
                         {page.title}
                       </Link>

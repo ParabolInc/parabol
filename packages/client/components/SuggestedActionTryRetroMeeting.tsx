@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {SuggestedActionTryRetroMeeting_suggestedAction$key} from '../__generated__/SuggestedActionTryRetroMeeting_suggestedAction.graphql'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
@@ -29,7 +29,7 @@ const SuggestedActionTryRetroMeeting = (props: Props) => {
   const {name: teamName} = team
 
   const onClick = () => {
-    navigate(`/activity-library/category/retrospective`)
+    navigate({href: `/activity-library/category/retrospective`})
   }
 
   return (

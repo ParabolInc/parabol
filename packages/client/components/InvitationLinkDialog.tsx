@@ -1,7 +1,7 @@
+import {useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router'
 import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
@@ -21,7 +21,7 @@ const InvitationLinkDialog = (props: Props) => {
   const isLoggedIn = useIsAuthenticated()
   // if they log in, then accepting team invite will get triggered via login flow
   const isInitiallyLoggedInRef = useRef(isLoggedIn)
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   useEffect(() => {
     if (token) {
       setStorageItem('localStorage', LocalStorageKey.INVITATION_TOKEN, token)

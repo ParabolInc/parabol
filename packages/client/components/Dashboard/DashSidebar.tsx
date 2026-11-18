@@ -1,6 +1,6 @@
+import {useMatchRoute} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useMatch} from 'react-router'
 import {
   Add as AddIcon,
   AppRegistration as AppRegistrationIcon,
@@ -47,7 +47,8 @@ interface Props {
 
 const DashSidebar = (props: Props) => {
   const {isOpen, viewerRef, reportsGlow} = props
-  const match = useMatch('/me/organizations/:orgId/*')
+  const matchRoute = useMatchRoute()
+  const match = matchRoute({to: '/me/organizations/$orgId', fuzzy: true})
 
   const viewer = useFragment(
     graphql`
@@ -67,7 +68,7 @@ const DashSidebar = (props: Props) => {
   const {organizations} = viewer
 
   if (match) {
-    const orgIdFromParams = match.params.orgId!
+    const orgIdFromParams = match.orgId
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (

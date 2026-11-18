@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
 import {Button} from '~/ui/Button/Button'
 import {Settings as SettingsIcon} from '~/ui/icons'
@@ -52,7 +52,7 @@ const OrganizationRow = (props: Props) => {
   } = organization
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = billingTier === 'starter'

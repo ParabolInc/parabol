@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
 import type {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
@@ -56,7 +56,7 @@ const Mentioned = (props: Props) => {
   const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
-    navigate(actionUrl)
+    navigate({href: actionUrl})
   }
 
   const htmlContent = previewContent ? generateHTML(JSON.parse(previewContent)) : ''

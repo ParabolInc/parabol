@@ -1,13 +1,12 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import {ArrowBack, Delete} from '~/ui/icons'
 import type {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
-import {ORGANIZATIONS} from '../../../../utils/constants'
 import plural from '../../../../utils/plural'
 import EditableTeamName from '../../../teamDashboard/components/EditTeamName/EditableTeamName'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
@@ -60,7 +59,7 @@ export const OrgTeamMembers = (props: Props) => {
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <Button size='md' shape='icon' variant='ghost' asChild>
-          <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
+          <Link to='/me/organizations/$orgId/teams' params={{orgId: team.orgId}}>
             <ArrowBack />
           </Link>
         </Button>

@@ -5,8 +5,8 @@ import {SyncedBlockBar} from '../SyncedBlockBar'
 import {SyncedBlockPlaceRow} from '../SyncedBlockPlaceRow'
 import {SyncedBlockPlacesMenu} from '../SyncedBlockPlacesMenu'
 
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
   useNavigate: () => jest.fn()
 }))
 

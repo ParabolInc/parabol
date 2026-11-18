@@ -41,8 +41,8 @@ jest.mock('../../../../utils/reportClientError', () => ({
   __esModule: true,
   default: (...args: unknown[]) => mockReportClientError(...args)
 }))
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
   useNavigate: () => jest.fn()
 }))
 

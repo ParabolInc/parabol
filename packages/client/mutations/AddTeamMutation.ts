@@ -61,7 +61,11 @@ const popTeamCreatedToast = (
   })
   // the team page opens its invite dialog to explain any invitation that did not go out
   const inviteResults = invitees?.some(isRejected) ? invitees : undefined
-  navigate?.(`/team/${teamId}`, {state: inviteResults ? {inviteResults} : null})
+  navigate?.({
+    to: '/team/$teamId',
+    params: {teamId},
+    state: inviteResults ? {inviteResults} : undefined
+  })
 }
 
 export const addTeamMutationNotificationUpdater: SharedUpdater<

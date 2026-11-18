@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router'
+import matchPath from '~/utils/matchPath'
 
 const onTeamRoute = (pathname: string, teamId: string) => {
   const res = matchPath({path: '/:teamRoute/:teamId', end: false}, pathname)

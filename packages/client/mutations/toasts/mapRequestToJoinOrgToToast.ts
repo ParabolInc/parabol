@@ -29,9 +29,16 @@ const mapRequestToJoinOrgToToast = (
     action: {
       label: 'Review',
       callback: () => {
-        const {pathname, search, hash} = window.location
-        navigate(`/organization-join-request/${domainJoinRequestId}`, {
-          state: {backgroundLocation: {pathname, search, hash}}
+        navigate({
+          to: '.',
+          params: true,
+          search: true,
+          hash: true,
+          state: {orgJoinRequestId: domainJoinRequestId},
+          mask: {
+            to: '/organization-join-request/$requestId',
+            params: {requestId: domainJoinRequestId}
+          }
         })
       }
     },

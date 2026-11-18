@@ -1,8 +1,8 @@
 import * as Popover from '@radix-ui/react-popover'
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
-import {Link} from 'react-router'
 import {Add, Check, Close, RestartAlt} from '~/ui/icons'
 import type {
   OrgAuthenticationSCIM_saml$key,
@@ -241,7 +241,8 @@ const OrgAuthenticationSCIM = (props: Props) => {
         <div className='px-6 pb-3 text-fg-primary text-sm'>
           <Link
             className='font-semibold text-accent hover:text-sky-600'
-            to={`/me/organizations/${orgId}/members`}
+            to='/me/organizations/$orgId/members'
+            params={{orgId}}
           >
             Contact an Org Admin
           </Link>

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {
   OAuthAuthorizationRequestInput,
   OAuthAuthorizeQuery,
@@ -80,7 +80,7 @@ const OAuthAuthorize = (props: Props) => {
               Go back to the app that sent you here and try connecting it again.
             </p>
             <div className='flex justify-end pt-6'>
-              <Button variant='outline' size='md' onClick={() => navigate('/meetings')}>
+              <Button variant='outline' size='md' onClick={() => navigate({to: '/meetings'})}>
                 Go to Parabol
               </Button>
             </div>

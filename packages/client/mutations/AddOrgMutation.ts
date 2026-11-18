@@ -109,7 +109,13 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, NavigateLocalHandler> = 
         popOrganizationCreatedToast(addOrg, {atmosphere})
         const teamId = addOrg.team && addOrg.team.id
         const inviteResults = addOrg.invitees?.some(isRejected) ? addOrg.invitees : undefined
-        navigate(`/team/${teamId}`, {state: inviteResults ? {inviteResults} : null})
+        if (teamId) {
+          navigate({
+            to: '/team/$teamId',
+            params: {teamId},
+            state: inviteResults ? {inviteResults} : undefined
+          })
+        }
       }
     },
     onError

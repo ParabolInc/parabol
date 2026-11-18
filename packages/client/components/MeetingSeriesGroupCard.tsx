@@ -7,11 +7,12 @@
  * Rendered by MeetingsDash for any group returned by getMeetingSeriesGroups with 2+ series.
  * Groups of one keep using ScheduledSeriesCard / MeetingCard unchanged.
  */
+
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {
   Groups as GroupsIcon,
   MoreVert,
@@ -112,7 +113,7 @@ const MeetingSeriesGroupCard = (props: Props) => {
         // an owner can schedule for teams they are not on, & they cannot join those meetings
         const {meeting} = res.startMeetingSeriesNow
         if (meeting) {
-          navigate(`/meet/${meeting.id}`)
+          navigate({to: '/meet/$meetingId', params: {meetingId: meeting.id}})
           return
         }
         atmosphere.eventEmitter.emit('addSnackbar', {

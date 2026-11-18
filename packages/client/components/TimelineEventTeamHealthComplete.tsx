@@ -55,7 +55,11 @@ const TimelineEventTeamHealthComplete = (props: Props) => {
         <br />
         {!locked && (
           <>
-            <StyledLink className='font-semibold' to={`/meet/${meetingId}/result/1`}>
+            <StyledLink
+              className='font-semibold'
+              to='/meet/$meetingId/$'
+              params={{meetingId, _splat: 'result/1'}}
+            >
               See results
             </StyledLink>
             {' or '}

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {Button} from '~/ui/Button/Button'
 import {ArrowBack} from '~/ui/icons'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
@@ -46,7 +46,7 @@ const Team = (props: Props) => {
   const {lockedAt, isPaid} = organization
 
   const goToTeamDashboard = () => {
-    navigate(`/team/${teamId}/`)
+    navigate({to: '/team/$teamId', params: {teamId}})
   }
 
   const isLocked = !isPaid || !!lockedAt

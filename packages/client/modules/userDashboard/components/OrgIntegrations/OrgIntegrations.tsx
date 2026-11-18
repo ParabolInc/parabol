@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
@@ -70,7 +70,9 @@ const OrgIntegrations = (props: Props) => {
                 <>
                   {` View yours `}
                   <button
-                    onClick={() => navigate(`/me/organizations/${orgId}/billing`)}
+                    onClick={() =>
+                      navigate({to: '/me/organizations/$orgId/billing', params: {orgId}})
+                    }
                     className='cursor-pointer bg-transparent p-0 font-bold text-accent hover:text-sky-600'
                   >
                     here

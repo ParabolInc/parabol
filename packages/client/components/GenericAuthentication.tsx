@@ -1,5 +1,5 @@
+import {useLocation} from '@tanstack/react-router'
 import {useRef} from 'react'
-import {useLocation} from 'react-router'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
@@ -39,7 +39,7 @@ const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
   const emailRef = useRef<{email: () => string}>(undefined)
   const location = useLocation()
-  const params = new URLSearchParams(location.search)
+  const params = new URLSearchParams(location.searchStr)
   const email = params.get('email')
   const authDialogRef = useRef<HTMLDivElement>(null)
   const getOffsetTop = () => authDialogRef.current?.offsetTop || 0
@@ -81,7 +81,7 @@ const GenericAuthentication = (props: Props) => {
         <span>{actionCopy}</span>
         <PlainButton
           className='text-accent hover:underline focus:underline'
-          onClick={() => goToPage(counterActionSlug, location.search)}
+          onClick={() => goToPage(counterActionSlug, location.searchStr)}
         >
           {counterAction}
         </PlainButton>

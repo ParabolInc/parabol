@@ -1,5 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import type {ReactNode} from 'react'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {Notifications, NotificationsOff} from '~/ui/icons'
 import {getProviderAnchorId} from '../../modules/teamDashboard/components/ProviderRow/ProviderRowEntry'
 import {Providers} from '../../types/constEnums'
@@ -49,7 +50,7 @@ const TeamHealthReminderStatus = (props: Props) => {
   if (!isOn) {
     return (
       <Link
-        to={getSettingsUrl(services[0] ?? 'Slack')}
+        {...hrefOptions(getSettingsUrl(services[0] ?? 'Slack'))}
         className={`${rowClassName} rounded-sm hover:text-fg-secondary hover:underline focus-visible:outline-accent`}
       >
         <NotificationsOff fontSize='small' />
@@ -66,7 +67,7 @@ const TeamHealthReminderStatus = (props: Props) => {
         {services.map((service) => (
           <Link
             key={service}
-            to={getSettingsUrl(service)}
+            {...hrefOptions(getSettingsUrl(service))}
             title={`${service} notification settings`}
             className='rounded-sm hover:opacity-80 focus-visible:outline-accent'
           >

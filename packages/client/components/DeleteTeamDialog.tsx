@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useState} from 'react'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
@@ -35,7 +35,7 @@ const DeleteTeamDialog = (props: Props) => {
     submitMutation()
     ArchiveTeamMutation(atmosphere, {teamId}, {navigate, onError, onCompleted})
     onDeleteTeam(teamId)
-    navigate(`/me/organizations/${teamOrgId}/teams`)
+    navigate({to: '/me/organizations/$orgId/teams', params: {orgId: teamOrgId}})
   }
 
   const handleTypeTeamName = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,5 @@
 import type {Editor} from '@tiptap/core'
+import type {NavigateFn} from '~/types/relayMutations'
 import type Atmosphere from '../../Atmosphere'
 import type {SnackAction} from '../../components/Snackbar'
 import {GQLID} from '../../utils/GQLID'
@@ -12,7 +13,7 @@ import {undoBlockMove} from './undoBlockMove'
 type Params = {
   atmosphere: Atmosphere
   editor: Editor
-  navigate?: (path: string) => void
+  navigate?: NavigateFn
   outcome: BlockMoveOutcome
   count: number
   targetPageId: string
@@ -53,7 +54,10 @@ export const showBlockMoveSnack = ({
           label: 'Open page',
           callback: () => {
             setPendingArrival(targetPageId, moved)
-            navigate(`/pages/${getPageSlug(pageCode, targetTitle)}`)
+            navigate({
+              to: '/pages/$pageSlug',
+              params: {pageSlug: getPageSlug(pageCode, targetTitle)}
+            })
           }
         }
       : undefined

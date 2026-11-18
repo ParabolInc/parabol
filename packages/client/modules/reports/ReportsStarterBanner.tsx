@@ -1,6 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {ReportsStarterBanner_organization$key} from '../../__generated__/ReportsStarterBanner_organization.graphql'
 import {Button} from '../../ui/Button/Button'
 
@@ -51,7 +51,9 @@ const ReportsStarterBanner = ({organizationRef}: Props) => {
         </p>
       </div>
       <Button asChild variant='primary' size='md'>
-        <Link to={`/me/organizations/${orgId}/billing`}>Upgrade to Team</Link>
+        <Link to='/me/organizations/$orgId/billing' params={{orgId}}>
+          Upgrade to Team
+        </Link>
       </Button>
     </section>
   )

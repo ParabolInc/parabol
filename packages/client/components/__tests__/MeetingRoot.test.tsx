@@ -1,8 +1,8 @@
+import {Outlet, RouterProvider, useNavigate} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {Component, type ReactNode} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {loadQuery, type PreloadedQuery, RelayEnvironmentProvider} from 'react-relay'
-import {BrowserRouter, type NavigateFunction, Route, Routes, useNavigate} from 'react-router'
 import {
   createOperationDescriptor,
   Environment,
@@ -13,6 +13,8 @@ import {
   Store
 } from 'relay-runtime'
 import type {MeetingSelectorQuery} from '../../__generated__/MeetingSelectorQuery.graphql'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
+import type {NavigateFn} from '../../types/relayMutations'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import MeetingRoot from '../MeetingRoot'
 
@@ -23,11 +25,23 @@ jest.mock('babel-plugin-relay/macro', () => ({
     return jest.requireActual(`../../__generated__/${name}.graphql`).default
   }
 }))
-const mockLoaded: {queryRef: PreloadedQuery<MeetingSelectorQuery> | null} = {queryRef: null}
-jest.mock('../../hooks/useJoinedMeetingQuery', () => ({
-  __esModule: true,
-  default: () => mockLoaded.queryRef
-}))
+const mockLoaded = {
+  queryRef: null as PreloadedQuery<MeetingSelectorQuery> | null,
+  listeners: new Set<() => void>()
+}
+jest.mock('../../hooks/useJoinedMeetingQuery', () => {
+  const {useSyncExternalStore} = jest.requireActual<typeof import('react')>('react')
+  const subscribe = (listener: () => void) => {
+    mockLoaded.listeners.add(listener)
+    return () => {
+      mockLoaded.listeners.delete(listener)
+    }
+  }
+  return {
+    __esModule: true,
+    default: () => useSyncExternalStore(subscribe, () => mockLoaded.queryRef)
+  }
+})
 jest.mock('../NewMeetingCheckIn', () => ({__esModule: true, default: () => 'checkin phase'}))
 jest.mock('../RetroReflectPhase/RetroReflectPhase', () => ({
   __esModule: true,
@@ -120,6 +134,7 @@ const loadMeeting = (meetingId: string, facilitatorStageId: string) => {
   mockLoaded.queryRef = loadQuery<MeetingSelectorQuery>(atmosphere, meetingQuery, variables, {
     fetchPolicy: 'store-only'
   })
+  mockLoaded.listeners.forEach((listener) => listener())
 }
 
 class CrashBoundary extends Component<{children: ReactNode}, {error?: Error}> {
@@ -132,11 +147,20 @@ class CrashBoundary extends Component<{children: ReactNode}, {error?: Error}> {
   }
 }
 
-let navigate: NavigateFunction = () => {}
+let navigate: NavigateFn = async () => {}
 const NavigateSpy = () => {
   navigate = useNavigate()
   return null
 }
+
+const MeetingLayout = () => (
+  <>
+    <NavigateSpy />
+    <CrashBoundary>
+      <Outlet />
+    </CrashBoundary>
+  </>
+)
 
 const happyWindow = new Window({url: 'https://parabol.test/'})
 const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
@@ -144,16 +168,13 @@ let root: Root
 let container: HTMLElement
 
 const renderRoute = () => {
+  const router = createTestRouter({
+    rootComponent: MeetingLayout,
+    routes: {'/meet/$meetingId/$': <MeetingRoot />}
+  })
   root.render(
     <RelayEnvironmentProvider environment={atmosphere}>
-      <BrowserRouter>
-        <NavigateSpy />
-        <CrashBoundary>
-          <Routes>
-            <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
-          </Routes>
-        </CrashBoundary>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </RelayEnvironmentProvider>
   )
 }
@@ -169,6 +190,7 @@ beforeAll(() => {
     __APP_VERSION__: '1.0.0',
     window: happyWindow,
     document: happyWindow.document,
+    self: happyWindow,
     location: happyWindow.location
   })
 })
@@ -187,6 +209,7 @@ beforeEach(() => {
 
 afterEach(() => {
   root.unmount()
+  destroyTestRouters()
   container.remove()
   jest.restoreAllMocks()
 })
@@ -205,10 +228,9 @@ test('going from one retro to another opens the second on its own phase', async 
   renderRoute()
   expect(await waitForPhase()).toBe('checkin phase')
 
-  navigate('/meet/meeting3')
+  navigate({href: '/meet/meeting3'})
   await tick()
   loadMeeting('meeting3', 'meeting3:reflect:1')
-  renderRoute()
   await tick()
   expect(await waitForPhase()).toBe('reflect phase')
   expect(happyWindow.location.pathname).toBe('/meet/meeting3/reflect')

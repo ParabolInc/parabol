@@ -1,8 +1,9 @@
+import {Outlet, RouterProvider, useLocation} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {Suspense} from 'react'
 import {createRoot} from 'react-dom/client'
-import {MemoryRouter, useLocation} from 'react-router'
 import * as Y from 'yjs'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import {providerManager} from '../../tiptap/providerManager'
 import {usePageProvider} from '../usePageProvider'
 
@@ -59,7 +60,11 @@ const emitProviderEvent = (documentName: string, eventName: string, payload?: un
 }
 
 beforeAll(() => {
-  Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
+  Object.assign(globalThis, {
+    window: happyWindow,
+    document: happyWindow.document,
+    self: happyWindow
+  })
 })
 
 afterAll(async () => {
@@ -67,6 +72,7 @@ afterAll(async () => {
 })
 
 afterEach(() => {
+  destroyTestRouters()
   Object.values(providerManager.providers).forEach((entry) => {
     entry.count = 0
   })
@@ -92,17 +98,21 @@ test('a page whose first render is thrown away by a suspending sibling releases 
     usePageProvider('page:1')
     return <main>Page</main>
   }
+  const SuspendingLayout = () => (
+    <Suspense fallback={null}>
+      <Outlet />
+      <SuspendingSibling />
+    </Suspense>
+  )
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(
-    <MemoryRouter>
-      <Suspense fallback={null}>
-        <PageProviderUser />
-        <SuspendingSibling />
-      </Suspense>
-    </MemoryRouter>
-  )
+  const router = createTestRouter({
+    initialEntry: '/',
+    rootComponent: SuspendingLayout,
+    routes: {'/': <PageProviderUser />}
+  })
+  root.render(<RouterProvider router={router} />)
   await tick()
   resolveSiblingData()
   await waitUntil(() => container.textContent === 'Page' && getCount('page:1') > 0)
@@ -134,7 +144,7 @@ test('withDoc releases its provider when the doc is denied', async () => {
 const rewriteSlugFrom = async (url: string) => {
   happyWindow.happyDOM.setURL(`https://parabol.test${url}`)
   Object.assign(globalThis, {location: happyWindow.location})
-  let routerLocation = {pathname: '', search: '', hash: ''}
+  let routerLocation = {pathname: '', search: {}, hash: ''}
   const LocationProbe = () => {
     routerLocation = useLocation()
     return null
@@ -143,15 +153,21 @@ const rewriteSlugFrom = async (url: string) => {
     usePageProvider('page:7')
     return null
   }
+  const ProbedLayout = () => (
+    <>
+      <LocationProbe />
+      <Outlet />
+    </>
+  )
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(
-    <MemoryRouter initialEntries={[url]}>
-      <LocationProbe />
-      <PageProviderUser />
-    </MemoryRouter>
-  )
+  const router = createTestRouter({
+    initialEntry: url,
+    rootComponent: ProbedLayout,
+    routes: {'/pages/$pageSlug': <PageProviderUser />}
+  })
+  root.render(<RouterProvider router={router} />)
   await waitUntil(() => !!providerManager.providers['page:7'])
   const {provider} = providerManager.providers['page:7']!
   const heading = new Y.XmlElement('heading')
@@ -167,18 +183,18 @@ const rewriteSlugFrom = async (url: string) => {
 test('the slug rewrite keeps ?share and the hash', async () => {
   const result = await rewriteSlugFrom('/pages/7?share#top')
   expect(result.pathname).toBe('/pages/roadmap-7')
-  expect(result.search).toBe('?share')
-  expect(result.hash).toBe('#top')
+  expect(result.search).toEqual({share: ''})
+  expect(result.hash).toBe('top')
 })
 
 test('the slug rewrite drops ?export but keeps ?share', async () => {
   const result = await rewriteSlugFrom('/pages/7?export=confluence&share')
   expect(result.pathname).toBe('/pages/roadmap-7')
-  expect(result.search).toBe('?share')
+  expect(result.search).toEqual({share: ''})
 })
 
 test('the slug rewrite leaves an empty search when only ?export was present', async () => {
   const result = await rewriteSlugFrom('/pages/7?export=confluence')
   expect(result.pathname).toBe('/pages/roadmap-7')
-  expect(result.search).toBe('')
+  expect(result.search).toEqual({})
 })

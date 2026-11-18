@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {OpenInNew} from '~/ui/icons'
 import {MenuContent} from '../../ui/Menu/MenuContent'

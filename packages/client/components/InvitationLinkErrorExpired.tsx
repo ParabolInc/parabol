@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {InvitationLinkErrorExpired_massInvitation$key} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {Button} from '../ui/Button/Button'
@@ -48,7 +48,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
                 variant='primary'
                 size='md'
                 className='h-10 text-[15px]'
-                onClick={() => navigate('/meetings')}
+                onClick={() => navigate({to: '/meetings'})}
               >
                 Go to Dashboard
               </Button>
@@ -58,7 +58,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
               variant='primary'
               size='md'
               className='h-10 text-[15px]'
-              onClick={() => navigate('/')}
+              onClick={() => navigate({to: '/'})}
             >
               Sign In
             </Button>

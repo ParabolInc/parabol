@@ -1,8 +1,8 @@
+import {Link, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link, useNavigate} from 'react-router'
 import {Lock, TaskAlt} from '~/ui/icons'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -135,7 +135,7 @@ const MeetingCard = (props: Props) => {
         // an owner can schedule for teams they are not on, & cannot join those meetings
         const {meeting: nextMeeting} = res.startMeetingSeriesNow
         if (nextMeeting) {
-          navigate(`/meet/${nextMeeting.id}`)
+          navigate({to: '/meet/$meetingId', params: {meetingId: nextMeeting.id}})
           return
         }
         atmosphere.eventEmitter.emit('addSnackbar', {
@@ -163,8 +163,6 @@ const MeetingCard = (props: Props) => {
   const meetingPhaseLabel = isCompleted
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
-
-  const meetingLink = `/meet/${meetingId}`
 
   const imgSection = (
     <div className='relative block rounded-t-card'>
@@ -251,7 +249,7 @@ const MeetingCard = (props: Props) => {
                 Recurring
               </span>
             )}
-            <Link to={meetingLink}>
+            <Link to='/meet/$meetingId' params={{meetingId}}>
               <img
                 src={meetingTypeToIllustration[meetingType]}
                 alt=''
@@ -269,11 +267,11 @@ const MeetingCard = (props: Props) => {
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
               {locked && (
-                <Link to={`/me/organizations/${orgId}/billing`}>
+                <Link to='/me/organizations/$orgId/billing' params={{orgId}}>
                   <Lock className='text-tomato-500' />
                 </Link>
               )}
-              <Link to={meetingLink}>
+              <Link to='/meet/$meetingId' params={{meetingId}}>
                 {isRecurring ? (
                   <>
                     <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
@@ -321,7 +319,7 @@ const MeetingCard = (props: Props) => {
                 </TooltipContent>
               </Tooltip>
             </div>
-            <Link to={meetingLink}>
+            <Link to='/meet/$meetingId' params={{meetingId}}>
               <span className='wrap-break-word block pt-1 pb-2 text-fg-muted text-sm'>
                 {teamName} • {meetingPhaseLabel}
                 {isViewerComplete && (

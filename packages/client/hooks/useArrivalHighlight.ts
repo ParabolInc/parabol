@@ -1,6 +1,6 @@
+import {useLocation} from '@tanstack/react-router'
 import type {Editor} from '@tiptap/core'
 import {useEffect} from 'react'
-import {useLocation} from 'react-router'
 import {findMovedBlockPositions} from '../tiptap/blockMove/findMovedBlockPositions'
 import {peekPendingArrival, takePendingArrival} from '../tiptap/blockMove/pendingArrivals'
 import {clearBlockArrival, showBlockArrival} from '../tiptap/extensions/BlockArrival'
@@ -26,7 +26,7 @@ const getArrivalTarget = (
 }
 
 export const useArrivalHighlight = (editor: Editor | null, pageId: string) => {
-  const {hash} = useLocation()
+  const hash = useLocation({select: (location) => (location.hash ? `#${location.hash}` : '')})
   useEffect(() => {
     if (!editor) return
     const moved = peekPendingArrival(pageId)

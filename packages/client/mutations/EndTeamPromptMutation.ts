@@ -65,7 +65,7 @@ export const endTeamPromptTeamOnNext: OnNextHandler<
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      navigate(`/pages/${pageCode}`)
+      navigate({to: '/pages/$pageSlug', params: {pageSlug: String(pageCode)}})
     }
   }
 }

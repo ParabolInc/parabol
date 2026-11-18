@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import {DeleteOutlined, Description} from '~/ui/icons'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
 import {GQLID} from '../../../utils/GQLID'
@@ -34,7 +34,9 @@ export const SyncedBlockPlaceRow = ({row}: Props) => {
   return (
     <MenuItem
       className='min-h-8 gap-2'
-      onSelect={() => navigate(`/pages/${getPageSlug(pageCode, title)}`)}
+      onSelect={() =>
+        navigate({to: '/pages/$pageSlug', params: {pageSlug: getPageSlug(pageCode, title)}})
+      }
     >
       {content}
     </MenuItem>

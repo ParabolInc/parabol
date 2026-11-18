@@ -1,17 +1,11 @@
+import {Outlet, RouterProvider, useLocation, useNavigate} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {Suspense} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import {
-  BrowserRouter,
-  MemoryRouter,
-  type NavigateFunction,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate
-} from 'react-router'
 import type Atmosphere from '../../Atmosphere'
 import handleAuthenticationRedirect from '../../mutations/handlers/handleAuthenticationRedirect'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
+import type {NavigateFn} from '../../types/relayMutations'
 import AuthenticationPage from '../AuthenticationPage'
 
 const mockAtmosphere: {authObj: {sub: string} | null} = {authObj: null}
@@ -35,7 +29,7 @@ const LocationSpy = () => {
   return null
 }
 
-let signInFormNavigate: NavigateFunction = () => {}
+let signInFormNavigate: NavigateFn = async () => {}
 const SignInFormNavigate = () => {
   signInFormNavigate = useNavigate()
   return null
@@ -75,12 +69,17 @@ const recordNavigations = () => {
 }
 
 beforeAll(() => {
-  Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
+  Object.assign(globalThis, {
+    window: happyWindow,
+    document: happyWindow.document,
+    self: happyWindow
+  })
 })
 
 afterEach(() => {
   jest.restoreAllMocks()
   mountedRoot?.unmount()
+  destroyTestRouters()
 })
 
 afterAll(async () => {
@@ -91,18 +90,19 @@ describe('AuthenticationPage', () => {
   it('redirects a signed-in viewer when a sibling suspends the first render', async () => {
     mockAtmosphere.authObj = {sub: 'signed-in-user'}
     const {container, root} = renderInContainer()
-    root.render(
-      <MemoryRouter initialEntries={['/']}>
-        <Suspense fallback={null}>
-          <LocationSpy />
-          <Routes>
-            <Route path='/' element={<AuthenticationPage page='signin' />} />
-            <Route path='/meetings' element={<main>Meetings</main>} />
-          </Routes>
-          <SuspendingSibling />
-        </Suspense>
-      </MemoryRouter>
+    const SuspendingLayout = () => (
+      <Suspense fallback={null}>
+        <LocationSpy />
+        <Outlet />
+        <SuspendingSibling />
+      </Suspense>
     )
+    const router = createTestRouter({
+      initialEntry: '/',
+      rootComponent: SuspendingLayout,
+      routes: {'/': <AuthenticationPage page='signin' />, '/meetings': <main>Meetings</main>}
+    })
+    root.render(<RouterProvider router={router} />)
     await tick()
     resolveSiblingData()
     await waitUntil(() => container.textContent !== '')
@@ -119,18 +119,22 @@ describe('AuthenticationPage', () => {
       mockAtmosphere.authObj = null
       happyWindow.history.replaceState(null, '', signInUrl)
       const {root} = renderInContainer()
-      const renderApp = () =>
-        root.render(
-          <BrowserRouter>
-            <LocationSpy />
-            <SignInFormNavigate />
-            <Routes>
-              <Route path='/' element={<AuthenticationPage page='signin' />} />
-              <Route path='/pages/:pageSlug' element={<main>Page</main>} />
-              <Route path='/meetings' element={<main>Meetings</main>} />
-            </Routes>
-          </BrowserRouter>
-        )
+      const SpiedLayout = () => (
+        <>
+          <LocationSpy />
+          <SignInFormNavigate />
+          <Outlet />
+        </>
+      )
+      const router = createTestRouter({
+        rootComponent: SpiedLayout,
+        routes: {
+          '/': <AuthenticationPage page='signin' />,
+          '/pages/$pageSlug': <main>Page</main>,
+          '/meetings': <main>Meetings</main>
+        }
+      })
+      const renderApp = () => root.render(<RouterProvider router={router} />)
       renderApp()
       await tick()
       const navigations = recordNavigations()

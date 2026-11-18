@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {ArchiveTeamForm_team$key} from '~/__generated__/ArchiveTeamForm_team.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'

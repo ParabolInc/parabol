@@ -40,7 +40,9 @@ const mapResponseRepliedToToast = (
     action: {
       label: 'See the discussion',
       callback: () => {
-        navigate(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
+        navigate({
+          href: `/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`
+        })
       }
     }
   }

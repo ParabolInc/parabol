@@ -72,9 +72,9 @@ const mapDiscussionMentionedToToast = (
     action: {
       label: 'See the discussion',
       callback: () => {
-        navigate(
-          response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl
-        )
+        navigate({
+          href: response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl
+        })
       }
     }
   }

@@ -1,9 +1,9 @@
+import {Link, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link, useNavigate} from 'react-router'
 import {MoreVert, PlayArrow as PlayArrowIcon, Replay as ReplayIcon} from '~/ui/icons'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -93,7 +93,7 @@ const ScheduledSeriesCard = (props: Props) => {
         // an owner can schedule for teams they are not on, & they cannot join those meetings
         const {meeting} = res.startMeetingSeriesNow
         if (meeting) {
-          navigate(`/meet/${meeting.id}`)
+          navigate({to: '/meet/$meetingId', params: {meetingId: meeting.id}})
           return
         }
         atmosphere.eventEmitter.emit('addSnackbar', {

@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamHealthMeetingSidebar_meeting$key} from '~/__generated__/TeamHealthMeetingSidebar_meeting.graphql'
 import type useGotoStageId from '../hooks/useGotoStageId'
 import {GQLID} from '../utils/GQLID'
@@ -102,7 +102,10 @@ const TeamHealthMeetingSidebar = (props: Props) => {
         {summaryPageId && (
           <NewMeetingSidebarPhaseListItem
             handleClick={() => {
-              navigate(`/pages/${GQLID.fromKey(summaryPageId)[0]}`)
+              navigate({
+                to: '/pages/$pageSlug',
+                params: {pageSlug: String(GQLID.fromKey(summaryPageId)[0])}
+              })
               handleMenuClick()
             }}
             isActive={false}

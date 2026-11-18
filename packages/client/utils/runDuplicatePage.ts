@@ -1,3 +1,4 @@
+import type {NavigateFn} from '~/types/relayMutations'
 import type Atmosphere from '../Atmosphere'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import type {DuplicateExecute} from '../mutations/useDuplicatePageMutation'
@@ -15,7 +16,7 @@ type Params = {
   destination: DuplicateDestination
   execute: DuplicateExecute
   atmosphere: Atmosphere
-  navigate: (path: string) => void
+  navigate: NavigateFn
 }
 
 const showDuplicateError = (atmosphere: Atmosphere, message: string) => {

@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
-import {Link} from 'react-router'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import {compareTimelineLabels, getTimeGroup, type TimelineGroup} from '~/utils/date/timelineGroups'
 import type {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
@@ -127,7 +127,7 @@ const TimelineFeedList = (props: Props) => {
     return (
       <div className='text-base'>
         Looks like you have no events with these filters.
-        <Link to={'/me'} className='font-sans font-semibold text-accent no-underline'>
+        <Link to='/me' className='font-sans font-semibold text-accent no-underline'>
           {' '}
           Show all events.
         </Link>

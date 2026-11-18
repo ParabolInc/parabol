@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {ReactRenderer} from '@tiptap/react'
+import type {NavigateFn} from '~/types/relayMutations'
 import type Atmosphere from '../../Atmosphere'
 import plural from '../../utils/plural'
 import type {BlockRange} from '../blockSelection/blockUnits'
@@ -46,7 +47,7 @@ export const openMoveToPageMenu = ({editor, range, anchorRect, pageId, atmospher
     if (returnFocus) editor.commands.focus()
   }
 
-  const pick = (targetPageId: string, targetTitle: string, navigate: (path: string) => void) => {
+  const pick = (targetPageId: string, targetTitle: string, navigate: NavigateFn) => {
     if (!unmount()) return
     editor.commands.focus()
     moveBlocksToPage({session, targetPageId, targetTitle})

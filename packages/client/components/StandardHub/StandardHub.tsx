@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {StandardHub_viewer$key} from '../../__generated__/StandardHub_viewer.graphql'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import Avatar from '../Avatar/Avatar'
@@ -35,7 +35,7 @@ const StandardHub = (props: Props) => {
   const navigate = useNavigate()
 
   const gotoUserSettings = () => {
-    navigate('/me/profile')
+    navigate({to: '/me/profile'})
     handleMenuClick()
   }
   return (

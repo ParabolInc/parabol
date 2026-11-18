@@ -1,27 +1,21 @@
-import {Suspense, useCallback} from 'react'
-import {useLocation, useNavigate, useParams} from 'react-router'
+import {Suspense} from 'react'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {
   type ReviewRequestToJoinOrgModalQuery
 } from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 
-const ReviewRequestToJoinOrgRoot = () => {
-  const {requestId} = useParams()
+interface Props {
+  requestId: string
+  onClose: () => void
+}
+
+const ReviewRequestToJoinOrgRoot = ({requestId, onClose}: Props) => {
   const queryRef = useQueryLoaderNow<ReviewRequestToJoinOrgModalQuery>(
     reviewRequestToJoinOrgModalQuery,
-    {requestId: requestId!},
+    {requestId},
     'network-only'
   )
-
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  const onClose = useCallback(() => {
-    const state = location.state as {backgroundLocation?: Location} | null
-    navigate(state?.backgroundLocation ?? '/meetings', {replace: true})
-  }, [location])
-
   return (
     <Suspense fallback=''>
       {queryRef && <ReviewRequestToJoinOrgModal onClose={onClose} queryRef={queryRef} />}

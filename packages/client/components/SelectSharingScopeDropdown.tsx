@@ -1,6 +1,6 @@
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useLocation, useNavigate} from 'react-router'
 import type {SelectSharingScopeDropdown_template$key} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import type {UpdateTemplateScopeMutation$data} from '../__generated__/UpdateTemplateScopeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -38,7 +38,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const location = useLocation() as {state?: object}
+  const location = useLocation()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {id: templateId, scope, team, type} = template
   const {name: teamName, organization} = team
@@ -52,7 +52,9 @@ const SelectSharingScopeDropdown = (props: Props) => {
     const clonedTemplateId =
       res.updateTemplateScope.UpdateTemplateScopeMutation_organization?.clonedTemplate?.id
     if (clonedTemplateId) {
-      navigate(`/activity-library/details/${clonedTemplateId}`, {
+      navigate({
+        to: '/activity-library/details/$activityId',
+        params: {activityId: clonedTemplateId},
         replace: true,
         state: {...location.state, edit: isEditing}
       })

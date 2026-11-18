@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
-import {Link} from 'react-router'
 import {MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PersonalAccessTokens_viewer$key} from '../../../__generated__/PersonalAccessTokens_viewer.graphql'
 import type {PersonalAccessTokensRevokeMutation} from '../../../__generated__/PersonalAccessTokensRevokeMutation.graphql'

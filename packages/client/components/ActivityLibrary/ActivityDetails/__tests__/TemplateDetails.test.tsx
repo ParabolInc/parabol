@@ -1,9 +1,10 @@
+import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {act, useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import {MemoryRouter} from 'react-router'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
+import {createTestRouter, destroyTestRouters} from '../../../../routing/__tests__/testRouter'
 import {setActiveTemplate} from '../../../../utils/relay/setActiveTemplate'
 import {TemplateDetails} from '../TemplateDetails'
 
@@ -89,14 +90,12 @@ const Harness = () => {
   const [activity, setActivityState] = useState(() => makeActivity('template1'))
   setActivity = setActivityState
   return (
-    <MemoryRouter>
-      <TemplateDetails
-        activityRef={activity}
-        viewerRef={viewer}
-        isEditing
-        setIsEditing={setIsEditing}
-      />
-    </MemoryRouter>
+    <TemplateDetails
+      activityRef={activity}
+      viewerRef={viewer}
+      isEditing
+      setIsEditing={setIsEditing}
+    />
   )
 }
 const setIsEditing = () => {}
@@ -109,7 +108,8 @@ beforeAll(() => {
   Object.assign(globalThis, {
     IS_REACT_ACT_ENVIRONMENT: true,
     window: happyWindow,
-    document: happyWindow.document
+    document: happyWindow.document,
+    self: happyWindow
   })
 })
 
@@ -118,11 +118,14 @@ beforeEach(async () => {
   container = happyWindow.document.createElement('div')
   happyWindow.document.body.appendChild(container)
   root = createRoot(container as unknown as Element)
-  await act(async () => root.render(<Harness />))
+  const router = createTestRouter({initialEntry: '/', routes: {'/': <Harness />}})
+  await router.load()
+  await act(async () => root.render(<RouterProvider router={router} />))
 })
 
 afterEach(async () => {
   await act(async () => root.unmount())
+  destroyTestRouters()
   container.remove()
 })
 

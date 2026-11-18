@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {matchPath} from 'react-router'
+import matchPath from '~/utils/matchPath'
 import type {mapTeamInvitationToToast_notification$data} from '../../__generated__/mapTeamInvitationToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
 import type {OnNextNavigateContext} from '../../types/relayMutations'

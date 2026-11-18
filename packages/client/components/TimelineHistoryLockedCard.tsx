@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {Lock} from '~/ui/icons'
 import type {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import {Button} from '../ui/Button/Button'
@@ -27,7 +27,8 @@ const TimelineHistoryLockedCard = (props: Props) => {
   const navigate = useNavigate()
 
   const onClick = () => {
-    navigate(`/me/organizations/${orgId}/billing`)
+    if (!orgId) return
+    navigate({to: '/me/organizations/$orgId/billing', params: {orgId}})
   }
 
   const title = isPaid === false ? 'Organization Locked' : 'Past Meetings Locked'

@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {useState} from 'react'
-import {useMatch} from 'react-router'
 import {Lock, MailOutline} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -8,8 +8,7 @@ import {Button} from '../ui/Button/Button'
 
 const RequestToJoinComponent = () => {
   const atmosphere = useAtmosphere()
-  const match = useMatch('/team/:teamId/*')
-  const teamId = match?.params?.teamId
+  const {teamId} = useParams({strict: false})
   const [isRequestSent, setIsRequestSent] = useState(false)
   const {onError, onCompleted, error} = useMutationProps({errorDisplay: 'inline'})
 

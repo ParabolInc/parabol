@@ -54,7 +54,7 @@ test('copy to shows where it went with Open page', () => {
   expect(snack!.message).toBe('Copied to "Q3"')
   expect(snack!.action!.label).toBe('Open page')
   snack!.action!.callback()
-  expect(navigate).toHaveBeenCalledWith('/pages/plan-b-12')
+  expect(navigate).toHaveBeenCalledWith({to: '/pages/$pageSlug', params: {pageSlug: 'plan-b-12'}})
 })
 
 test('private fallback names Private pages', () => {

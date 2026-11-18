@@ -1,7 +1,8 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import type {ReportCard_pin$key} from '../../__generated__/ReportCard_pin.graphql'
 import isLoneActiveUserReport from './isLoneActiveUserReport'
 import isMeetingsByTypeSpec from './isMeetingsByTypeSpec'
@@ -97,7 +98,7 @@ const ReportCard = ({pinRef, orgId, period, index, pinCount, isLeader}: Props) =
       </div>
       {spec && (
         <Link
-          to={toReportPinPath(orgId, pinId, period)}
+          {...hrefOptions(toReportPinPath(orgId, pinId, period))}
           className='mt-auto self-start font-semibold text-[13px] text-sky-600 hover:underline dark:text-accent'
         >
           Open report

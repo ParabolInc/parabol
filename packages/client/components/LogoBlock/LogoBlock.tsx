@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {cn} from '../../ui/cn'
 

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
@@ -51,7 +51,7 @@ const NewMeetingSummary = (props: Props) => {
   const navigate = useNavigate()
   useEffect(() => {
     if (!newMeeting) {
-      navigate('/meetings', {replace: true})
+      navigate({to: '/meetings', replace: true})
     }
   }, [navigate, newMeeting])
   if (!newMeeting) {

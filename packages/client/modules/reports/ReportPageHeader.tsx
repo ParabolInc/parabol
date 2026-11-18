@@ -1,6 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {ArrowBack} from '~/ui/icons'
 import type {ReportPageHeader_organization$key} from '../../__generated__/ReportPageHeader_organization.graphql'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
@@ -29,7 +30,7 @@ const ReportPageHeader = ({orgId, organizationRef, spec, period, onPeriodChange}
     <div className='flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2'>
       <Link
         aria-label='Back to Reports'
-        to={toReportsHomePath(orgId, period)}
+        {...hrefOptions(toReportsHomePath(orgId, period))}
         className='inline-flex items-center gap-1 font-semibold text-[13px] text-sky-600 hover:underline dark:text-accent'
       >
         <ArrowBack className='text-[16px]' />

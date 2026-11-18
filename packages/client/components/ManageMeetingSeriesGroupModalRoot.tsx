@@ -7,9 +7,10 @@
  * series in this group; checking a row starts/schedules the series for that team, unchecking
  * cancels it. Enter-meeting and permalink actions are per-team.
  */
+
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useLazyLoadQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {ManageMeetingSeriesGroupModalRootQuery} from '../__generated__/ManageMeetingSeriesGroupModalRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -124,7 +125,7 @@ const ManageMeetingSeriesGroupModalRoot = (props: Props) => {
 
   const onEnterMeeting = (team: ManageGroupTeam) => {
     if (!team.meetingId) return
-    navigate(`/meet/${team.meetingId}`)
+    navigate({to: '/meet/$meetingId', params: {meetingId: team.meetingId}})
   }
 
   const onCopyPermalink = async (team: ManageGroupTeam) => {

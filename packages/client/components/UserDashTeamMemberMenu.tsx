@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
@@ -93,7 +93,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
       )}
       {query === '' && showAllTeamMembers && (
         <MenuItem
-          onClick={() => navigate(constructFilterQueryParamURL(teamIds, null, showArchived))}
+          onClick={() =>
+            navigate({href: constructFilterQueryParamURL(teamIds, null, showArchived)})
+          }
         >
           {FilterLabels.ALL_TEAM_MEMBERS}
         </MenuItem>
@@ -102,7 +104,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
           onClick={() =>
-            navigate(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
+            navigate({
+              href: constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived)
+            })
           }
         >
           {teamMember.preferredName}

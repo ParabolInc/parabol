@@ -51,7 +51,7 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
     action: {
       label: 'Check it out!',
       callback: () => {
-        navigate?.(`/me/organizations/${orgId}/members`)
+        navigate?.({to: '/me/organizations/$orgId/members', params: {orgId}})
       }
     }
   })

@@ -1,5 +1,5 @@
+import {Link} from '@tanstack/react-router'
 import type {ReactNode} from 'react'
-import {Link} from 'react-router'
 import {OpenInNew} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
 

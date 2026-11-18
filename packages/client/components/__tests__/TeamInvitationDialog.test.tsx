@@ -1,18 +1,14 @@
+import {Outlet, RouterProvider, useLocation, useNavigate} from '@tanstack/react-router'
 import EventEmitter from 'eventemitter3'
 import {Window} from 'happy-dom'
+import {useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import {
-  BrowserRouter,
-  type NavigateFunction,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate
-} from 'react-router'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type AcceptTeamInvitationMutation from '../../mutations/AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from '../../mutations/handlers/handleAuthenticationRedirect'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
+import type {NavigateFn} from '../../types/relayMutations'
 import {IsAuthenticatedProvider} from '../IsAuthenticatedProvider'
 import TeamInvitationDialog from '../TeamInvitationDialog'
 
@@ -41,7 +37,7 @@ jest.mock('../TeamInvitationEmailCreateAccount', () => ({
   default: () => <MockAuthForm />
 }))
 
-let authFormNavigate: NavigateFunction = () => {}
+let authFormNavigate: NavigateFn = async () => {}
 const MockAuthForm = () => {
   authFormNavigate = useNavigate()
   return <form />
@@ -84,26 +80,41 @@ const answerAcceptTeamInvitationRequests = (activeMeetingIds: string[]) => {
   })
 }
 
+let replaceInvitation: (verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key) => void =
+  () => {}
+const ReplaceableTeamInvitationDialog = (props: {
+  verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key
+}) => {
+  const [verifiedInvitation, setVerifiedInvitation] = useState(props.verifiedInvitation)
+  replaceInvitation = setVerifiedInvitation
+  return <TeamInvitationDialog verifiedInvitation={verifiedInvitation} />
+}
+
+const SpiedLayout = () => (
+  <>
+    <LocationSpy />
+    <Outlet />
+  </>
+)
+
 let mountedRoot: Root | undefined
 const renderInvitation = (verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key) => {
-  if (!mountedRoot) {
-    const container = document.createElement('div')
-    document.body.appendChild(container)
-    mountedRoot = createRoot(container)
-  }
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  mountedRoot = createRoot(container)
+  const router = createTestRouter({
+    rootComponent: SpiedLayout,
+    routes: {
+      '/team-invitation/$token': (
+        <ReplaceableTeamInvitationDialog verifiedInvitation={verifiedInvitation} />
+      ),
+      '/team/$teamId': <main>Team</main>,
+      '/meet/$meetingId': <main>Meeting</main>
+    }
+  })
   mountedRoot.render(
     <IsAuthenticatedProvider>
-      <BrowserRouter>
-        <LocationSpy />
-        <Routes>
-          <Route
-            path='/team-invitation/:token'
-            element={<TeamInvitationDialog verifiedInvitation={verifiedInvitation} />}
-          />
-          <Route path='/team/:teamId' element={<main>Team</main>} />
-          <Route path='/meet/:meetingId' element={<main>Meeting</main>} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </IsAuthenticatedProvider>
   )
 }
@@ -121,7 +132,11 @@ const recordNavigations = () => {
 }
 
 beforeAll(() => {
-  Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
+  Object.assign(globalThis, {
+    window: happyWindow,
+    document: happyWindow.document,
+    self: happyWindow
+  })
 })
 
 beforeEach(() => {
@@ -133,6 +148,7 @@ afterEach(() => {
   mockAcceptTeamInvitation.mockClear()
   mountedRoot?.unmount()
   mountedRoot = undefined
+  destroyTestRouters()
 })
 
 afterAll(async () => {
@@ -172,7 +188,7 @@ describe('TeamInvitationDialog', () => {
     renderInvitation(invitationFor({preferredName: 'Invitee'}))
     await tick()
     // a store update re-renders the dialog the same way
-    renderInvitation(invitationFor({preferredName: 'Invitee'}))
+    replaceInvitation(invitationFor({preferredName: 'Invitee'}))
     await tick()
     const navigations = recordNavigations()
     answerAcceptTeamInvitationRequests(['meeting-1'])

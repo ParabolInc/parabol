@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {
   NewMeetingPhaseTypeEnum,
   PokerMeetingSidebar_meeting$key
@@ -145,7 +145,7 @@ const PokerMeetingSidebar = (props: Props) => {
               const summaryURL = summaryPageId
                 ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
                 : `/new-summary/${meetingId}`
-              navigate(summaryURL)
+              navigate({href: summaryURL})
             }}
             phaseType='SUMMARY'
           />

@@ -2,8 +2,9 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
+
+import {useNavigate} from '@tanstack/react-router'
 import type * as React from 'react'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'

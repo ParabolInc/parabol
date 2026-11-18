@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {useTeamPromptOptionItems_meeting$key} from '~/__generated__/useTeamPromptOptionItems_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'

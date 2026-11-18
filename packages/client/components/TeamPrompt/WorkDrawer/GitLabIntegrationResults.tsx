@@ -1,6 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {GitLabIntegrationResults_search$key} from '../../../__generated__/GitLabIntegrationResults_search.graphql'
 import type {GitLabIntegrationResultsQuery} from '../../../__generated__/GitLabIntegrationResultsQuery.graphql'
@@ -94,7 +94,8 @@ const GitLabIntegrationResults = (props: Props) => {
               {error?.message ? error.message : `Looks like you don’t have any issues to display.`}
             </div>
             <Link
-              to={`/team/${teamId}/integrations`}
+              to='/team/$teamId/integrations'
+              params={{teamId}}
               className='mt-4 font-semibold text-accent hover:text-sky-400'
             >
               Review your GitLab configuration

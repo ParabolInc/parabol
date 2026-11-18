@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
 import invitationLinkQuery, {
   type InvitationLinkQuery
 } from '~/__generated__/InvitationLinkQuery.graphql'
@@ -9,7 +9,7 @@ import InvitationLink from './InvitationLink'
 
 const InvitationLinkRoot = () => {
   useNoIndex()
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const queryRef = useQueryLoaderNow<InvitationLinkQuery>(invitationLinkQuery, {
     token: token!
   })

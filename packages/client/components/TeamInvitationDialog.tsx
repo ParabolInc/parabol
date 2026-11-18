@@ -1,7 +1,7 @@
+import {useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import {LocalStorageKey} from '../types/constEnums'
 import setStorageItem from '../utils/setStorageItem'
@@ -22,7 +22,7 @@ interface Props {
 
 const TeamInvitationDialog = (props: Props) => {
   const {verifiedInvitation: verifiedInvitationRef} = props
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const invitationToken = token!
   const verifiedInvitation = useFragment(
     graphql`

@@ -20,7 +20,10 @@ let mockSubmitting = false
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-relay', () => ({useFragment: () => mockPage}))
-jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => ({eventEmitter: {emit: jest.fn()}})

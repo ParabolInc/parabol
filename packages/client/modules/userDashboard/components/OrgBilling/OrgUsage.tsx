@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 
@@ -34,7 +34,7 @@ const OrgUsage = (props: Props) => {
         <a
           onClick={(e) => {
             e.preventDefault()
-            navigate(`/me/organizations/${orgId}/teams`)
+            navigate({to: '/me/organizations/$orgId/teams', params: {orgId}})
           }}
           className='cursor-pointer text-center text-accent hover:text-sky-600'
         >
@@ -46,7 +46,7 @@ const OrgUsage = (props: Props) => {
         <a
           onClick={(e) => {
             e.preventDefault()
-            navigate(`/me/organizations/${orgId}/members`)
+            navigate({to: '/me/organizations/$orgId/members', params: {orgId}})
           }}
           className='cursor-pointer text-center text-accent hover:text-sky-600'
         >

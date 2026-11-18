@@ -1,7 +1,7 @@
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
 import type {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import lazyPreload from '~/utils/lazyPreload'
 import {Menu} from '../ui/Menu/Menu'
@@ -46,7 +46,7 @@ const TopBarNotifications = ({queryRef}: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
   useEffect(() => {
-    const parsed = new URLSearchParams(location.search)
+    const parsed = new URLSearchParams(location.searchStr)
     if (parsed.get('openNotifs')) {
       // delay a bit so the menu catches the user's attention by opening shortly
       // after the rest of the page loads

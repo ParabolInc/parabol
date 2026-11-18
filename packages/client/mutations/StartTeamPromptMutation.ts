@@ -83,7 +83,7 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Naviga
           message: `Sorry, we couldn't create your Google Calendar event`
         })
       }
-      navigate(`/meet/${meetingId}`)
+      navigate({to: '/meet/$meetingId', params: {meetingId}})
     },
     onError
   })

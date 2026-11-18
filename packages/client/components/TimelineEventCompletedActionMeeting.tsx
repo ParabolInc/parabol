@@ -89,7 +89,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         {locked ? (
           canUpgrade && (
             <>
-              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
+              <StyledLink className='font-semibold' to='/me/organizations/$orgId' params={{orgId}}>
                 Upgrade now
               </StyledLink>{' '}
               to see the discussion in your meeting or review a summary
@@ -97,7 +97,11 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
           )
         ) : (
           <>
-            <StyledLink className='font-semibold' to={`/meet/${meetingId}/agendaitems/1`}>
+            <StyledLink
+              className='font-semibold'
+              to='/meet/$meetingId/$'
+              params={{meetingId, _splat: 'agendaitems/1'}}
+            >
               See the discussion
             </StyledLink>
             {' in your meeting or '}

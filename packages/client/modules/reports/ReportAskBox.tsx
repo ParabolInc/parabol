@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useId, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {AutoAwesome} from '~/ui/icons'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {ReportAskBox_organization$key} from '../../__generated__/ReportAskBox_organization.graphql'
@@ -86,7 +86,7 @@ const ReportAskBox = ({organizationRef, period, onAskingChange}: Props) => {
   const openReport = (spec: ReportSpec | null, reportQuestionId: string | null) => {
     if (!spec) return
     setIsOpen(false)
-    navigate(toReportsHomePath(orgId, period, {spec, reportQuestionId}))
+    navigate({href: toReportsHomePath(orgId, period, {spec, reportQuestionId})})
   }
   const askAI = (question: string) => {
     setError(null)

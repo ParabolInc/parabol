@@ -14,7 +14,8 @@ jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   useFragment: (_fragment: unknown, fragmentRef: unknown) => fragmentRef
 }))
-jest.mock('react-router', () => ({
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
   useNavigate: () => mockNavigate,
   useLocation: () => ({state: {prevCategory: 'standup'}})
 }))
@@ -96,7 +97,9 @@ test('a downscope that clones the template opens the clone, still editing', asyn
     )
   )
 
-  expect(mockNavigate).toHaveBeenCalledWith('/activity-library/details/clone1', {
+  expect(mockNavigate).toHaveBeenCalledWith({
+    to: '/activity-library/details/$activityId',
+    params: {activityId: 'clone1'},
     replace: true,
     state: {prevCategory: 'standup', edit: true}
   })
@@ -120,7 +123,9 @@ test('a downscope that clones the template does not start editing on its own', a
     )
   )
 
-  expect(mockNavigate).toHaveBeenCalledWith('/activity-library/details/clone1', {
+  expect(mockNavigate).toHaveBeenCalledWith({
+    to: '/activity-library/details/$activityId',
+    params: {activityId: 'clone1'},
     replace: true,
     state: {prevCategory: 'standup', edit: false}
   })

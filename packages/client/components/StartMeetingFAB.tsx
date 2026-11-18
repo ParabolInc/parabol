@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect, useRef, useState} from 'react'
-import {useNavigate} from 'react-router'
 import {Add as AddIcon} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
@@ -46,7 +46,7 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    navigate('/activity-library')
+    navigate({to: '/activity-library'})
   }
   // We use the SideBarStartMeetingButton in this case
   if (isDesktop) {

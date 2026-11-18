@@ -1,7 +1,7 @@
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
 import type {TeamPromptMobileMeeting_meeting$key} from '~/__generated__/TeamPromptMobileMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {cn} from '../../../ui/cn'
@@ -66,7 +66,7 @@ const TeamPromptMobileMeeting = ({meetingRef}: Props) => {
   const hasViewerShared = !!getMemberSharedAt(viewerStage?.responses ?? [])
   const {shared, waiting} = sortTeamStages(stages, viewerId)
   const location = useLocation()
-  const hasResponseLink = new URLSearchParams(location.search).has('responseId')
+  const hasResponseLink = new URLSearchParams(location.searchStr).has('responseId')
   const [activeTab, setActiveTab] = useState<TeamPromptMobileTab>(
     hasViewerShared || !!endedAt || hasResponseLink || !viewerStage ? 'team' : 'mine'
   )

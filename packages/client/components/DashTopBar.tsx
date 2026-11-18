@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
 import type {ReportsLaunchGlowState} from '~/hooks/useReportsLaunchGlow'
 import {Menu} from '~/ui/icons'
@@ -39,7 +39,7 @@ const DashTopBar = (props: Props) => {
   )
   const navigate = useNavigate()
   const gotoHome = () => {
-    navigate('/meetings')
+    navigate({to: '/meetings'})
   }
   return (
     <div className='flex h-14 w-full justify-between bg-surface-topbar dashboard-widest:pr-64 print:hidden'>

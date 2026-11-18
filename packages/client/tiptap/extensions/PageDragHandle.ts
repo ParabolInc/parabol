@@ -6,6 +6,7 @@ import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
+import type {NavigateFn} from '~/types/relayMutations'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import {lookupPageViewerGrant} from '../../hooks/usePageViewerAccess'
@@ -190,7 +191,7 @@ type Options = {
   pageId: string
   isNested?: boolean
   duplicatePage: DuplicateExecute
-  navigate: (path: string) => void
+  navigate: NavigateFn
 }
 export const PageDragHandle = Extension.create<Options>({
   name: 'PageDragHandle',

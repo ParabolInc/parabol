@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense, useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import {Lock} from '~/ui/icons'
 import {Button} from '../ui/Button/Button'
@@ -60,7 +60,7 @@ const MeetingLockedOverlay = (props: Props) => {
   const canUpgrade = !!viewerOrganizationUser
 
   const onClick = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   if (!isPaid) {

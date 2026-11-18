@@ -24,7 +24,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const meetingId = task.getValue('meetingId') as string
   const meeting = store.get(meetingId!)!
   const team = store.get(teamId)
-  const {userIds, teamIds} = parseQueryParams(viewer.getDataID(), window.location)
+  const {userIds, teamIds} = parseQueryParams(viewer.getDataID(), window.location.search)
   const archiveConns = [
     /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
     /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])

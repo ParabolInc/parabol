@@ -2,7 +2,7 @@
  * The brand header for the authentication homepages.
  *
  */
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 
 export default () => (

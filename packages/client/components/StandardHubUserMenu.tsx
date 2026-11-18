@@ -1,13 +1,14 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {AccountBalance, AccountBox, ExitToApp, Star} from '~/ui/icons'
 import type {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import {cn} from '../ui/cn'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
-import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
+import {SIGNOUT_LABEL} from '../utils/constants'
 
 const linkClassName = 'gap-2 leading-6 hover:text-fg-primary focus:text-fg-primary'
 const iconClassName = 'size-[18px] text-[18px] text-fg-secondary'
@@ -46,13 +47,13 @@ const StandardHubUserMenu = (props: Props) => {
         {email}
       </DropdownMenu.Label>
       <MenuItem asChild>
-        <Link to={'/me/profile'} className={linkClassName}>
+        <Link to='/me/profile' className={linkClassName}>
           <AccountBox className={iconClassName} />
           {'My Settings'}
         </Link>
       </MenuItem>
       <MenuItem asChild>
-        <Link to={'/me/organizations'} className={linkClassName}>
+        <Link to='/me/organizations' className={linkClassName}>
           <AccountBalance className={iconClassName} />
           {'Organizations'}
         </Link>
@@ -60,7 +61,7 @@ const StandardHubUserMenu = (props: Props) => {
       {showUpgradeCTA && (
         <MenuItem asChild>
           <Link
-            to={`/me/organizations${routeSuffix}`}
+            {...hrefOptions(`/me/organizations${routeSuffix}`)}
             className={cn(linkClassName, 'text-accent hover:text-accent focus:text-accent')}
           >
             <Star className={cn(iconClassName, 'text-accent')} />
@@ -69,7 +70,7 @@ const StandardHubUserMenu = (props: Props) => {
         </MenuItem>
       )}
       <MenuItem asChild>
-        <Link to={`/${SIGNOUT_SLUG}`} className={linkClassName}>
+        <Link to='/signout' className={linkClassName}>
           <ExitToApp className={iconClassName} />
           {SIGNOUT_LABEL}
         </Link>

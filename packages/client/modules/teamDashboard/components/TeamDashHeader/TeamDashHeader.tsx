@@ -1,7 +1,7 @@
+import {Link, useLocation, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {NavLink, useLocation, useNavigate} from 'react-router'
 import DashSectionHeader from '~/components/Dashboard/DashSectionHeader'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import InviteTeamMemberAvatar from '~/components/InviteTeamMemberAvatar'
@@ -9,7 +9,6 @@ import Tab from '~/components/Tab/Tab'
 import Tabs from '~/components/Tabs/Tabs'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import type {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
-import type {TeamInviteeResult} from '../../../../hooks/useTeamInviteeDrafts'
 
 const linkClassName =
   'mr-2 cursor-pointer font-semibold text-[12px] text-accent leading-3 outline-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
@@ -48,12 +47,11 @@ const TeamDashHeader = (props: Props) => {
   const {name: orgName, id: orgId} = organization
   const navigate = useNavigate()
   const location = useLocation()
-  const {inviteResults} = (location.state ?? {}) as {inviteResults?: TeamInviteeResult[]}
+  const {inviteResults} = location.state
 
   useEffect(() => {
     if (!inviteResults) return
-    const {pathname, search, hash} = location
-    navigate({pathname, search, hash}, {replace: true, state: null})
+    navigate({href: location.href, replace: true})
   }, [inviteResults])
 
   const tabs = [
@@ -67,7 +65,7 @@ const TeamDashHeader = (props: Props) => {
   const activeIdx = tabs.findIndex((tab) => tab.path === activeTab)
 
   const handleTabClick = (path: string) => {
-    navigate(`/team/${teamId}/${path}`)
+    navigate({href: `/team/${teamId}/${path}`})
   }
 
   return (
@@ -78,21 +76,23 @@ const TeamDashHeader = (props: Props) => {
             {teamName}
           </div>
           <div className='flex sidebar-left:w-auto w-full max-w-full flex-wrap items-center justify-start text-[12px] leading-4'>
-            <NavLink
+            <Link
               className={linkClassName}
               title={orgName}
-              to={`/me/organizations/${orgId}/billing`}
+              to='/me/organizations/$orgId/billing'
+              params={{orgId}}
             >
               {orgName}
-            </NavLink>
+            </Link>
             {'•'}
-            <NavLink
+            <Link
               className={secondLinkClassName}
               title={'Team Settings'}
-              to={`/team/${teamId}/settings/`}
+              to='/team/$teamId/settings'
+              params={{teamId}}
             >
               {'Settings'}
-            </NavLink>
+            </Link>
           </div>
         </div>
         <div className='flex items-start pt-3 sidebar-left:pt-0'>

@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router'
+import matchPath from '~/utils/matchPath'
 import {REPORTED_ROUTES, type ReportedRoute} from '../shared/reportedRoutes'
 
 // The key changes when the route or one of its params does, but not on a meeting's stage change or a search change

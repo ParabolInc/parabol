@@ -1,115 +1,13 @@
-import {lazy} from 'react'
-import {type Location, Navigate, Route, Routes, useLocation} from 'react-router'
-import useAppSubscriptions from '../hooks/useAppSubscriptions'
-import useAuthRoute from '../hooks/useAuthRoute'
-import useNoIndex from '../hooks/useNoIndex'
-import {DashboardRoot} from '../routing/legacyRouteComponents'
-
-const Graphql = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'GraphqlContainer' */ '../modules/admin/containers/Graphql/GraphqlContainer'
-    )
-)
-const Impersonate = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'ImpersonateContainer' */ '../modules/admin/containers/Impersonate/ImpersonateContainer'
-    )
-)
-const Signout = lazy(
-  () => import(/* webpackChunkName: 'SignoutContainer' */ '../containers/Signout/SignoutContainer')
-)
-const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
-const MeetingSeriesAttendRedirect = lazy(
-  () =>
-    import(/* webpackChunkName: 'MeetingSeriesAttendRedirect' */ './MeetingSeriesAttendRedirect')
-)
-const MeetingSeriesManagementRoot = lazy(
-  () =>
-    import(/* webpackChunkName: 'MeetingSeriesManagementRoot' */ './MeetingSeriesManagementRoot')
-)
-const ViewerNotOnTeamRoot = lazy(
-  () => import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
-)
-
-const ActivityLibraryRoutes = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'ActivityLibraryRoutes' */ './ActivityLibrary/ActivityLibraryRoutes'
-    )
-)
-
-const OAuthAuthorizeRoot = lazy(
-  () => import(/* webpackChunkName: 'OAuthAuthorizeRoot' */ './OAuthAuthorizeRoot')
-)
-
-const ReviewRequestToJoinOrgRoot = lazy(
-  () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
-)
-const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
-
-const DASHBOARD_PREFIXES = [
-  '/meetings',
-  '/me',
-  '/new-summary',
-  '/newteam',
-  '/team',
-  '/pages',
-  '/reports'
-]
-
-const DashboardOrNotFound = () => {
-  const {pathname} = useLocation()
-  const isDashboardRoute = DASHBOARD_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
-  )
-  if (!isDashboardRoute) return <NotFound />
-  return <DashboardRoot />
-}
+import {Outlet, useMatchRoute} from '@tanstack/react-router'
+import {useIsAuthenticated} from './IsAuthenticatedProvider'
+import SignedInRoutes from './SignedInRoutes'
 
 const PrivateRoutes = () => {
-  const isSignedIn = useAuthRoute()
-  useAppSubscriptions()
-  useNoIndex()
-  const location = useLocation()
-  const state = location.state as {backgroundLocation?: Location} | null
-  const backgroundLocation = state?.backgroundLocation
-  // children's effects run before this redirect, so they'd send requests without a usable token
-  if (!isSignedIn) return null
-  return (
-    <>
-      <Routes location={backgroundLocation || location}>
-        <Route path='/activity-library/*' element={<ActivityLibraryRoutes />} />
-        <Route path='/new-meeting' element={<Navigate to='/activity-library' replace />} />
-        <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
-        <Route
-          path='/meeting-series/manage/:meetingSeriesId'
-          element={<MeetingSeriesManagementRoot />}
-        />
-        <Route path='/meeting-series/:slug' element={<MeetingSeriesAttendRedirect />} />
-        <Route path='/admin/graphql' element={<Graphql />} />
-        <Route path='/graphql' element={<Graphql />} />
-        <Route path='/admin/impersonate' element={<Impersonate />} />
-        <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
-        <Route path='/authorize-app' element={<OAuthAuthorizeRoot />} />
-        <Route path='/signout' element={<Signout />} />
-        <Route
-          path='/organization-join-request/:requestId'
-          element={<ReviewRequestToJoinOrgRoot />}
-        />
-        <Route path='*' element={<DashboardOrNotFound />} />
-      </Routes>
-      {backgroundLocation && (
-        <Routes>
-          <Route
-            path='/organization-join-request/:requestId'
-            element={<ReviewRequestToJoinOrgRoot />}
-          />
-        </Routes>
-      )}
-    </>
-  )
+  const isAuthenticated = useIsAuthenticated()
+  const matchRoute = useMatchRoute()
+  // A signed-out reader of a public page gets the page on its own
+  if (!isAuthenticated && matchRoute({to: '/pages/$pageSlug'})) return <Outlet />
+  return <SignedInRoutes />
 }
 
 export default PrivateRoutes

@@ -1,3 +1,4 @@
+import type {NavigateFn} from '~/types/relayMutations'
 import type Atmosphere from '../Atmosphere'
 import {getPageSlug} from '../tiptap/getPageSlug'
 import {GQLID} from './GQLID'
@@ -14,7 +15,7 @@ type Params =
       title: string
       target: DuplicateTarget
       page: {id: string; title?: string | null}
-      navigate: (path: string) => void
+      navigate: NavigateFn
     }
 
 const getDoneMessage = (title: string, target: DuplicateTarget) => {
@@ -50,7 +51,8 @@ export const showDuplicatePageSnack = (atmosphere: Atmosphere, params: Params) =
     autoDismiss: 10,
     action: {
       label: 'Open page',
-      callback: () => navigate(`/pages/${getPageSlug(pageCode, page.title)}`)
+      callback: () =>
+        navigate({to: '/pages/$pageSlug', params: {pageSlug: getPageSlug(pageCode, page.title)}})
     }
   })
 }

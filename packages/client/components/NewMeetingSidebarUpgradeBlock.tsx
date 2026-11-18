@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useState} from 'react'
-import {useNavigate} from 'react-router'
 import {Button} from '../ui/Button/Button'
 import IconButton from './IconButton'
 
@@ -15,7 +15,7 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
 
   const handleUpgradeClick = () => {
     onClick?.()
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   const handleClose = () => {

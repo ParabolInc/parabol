@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
@@ -73,7 +73,7 @@ const AddTeamDialog = (props: Props) => {
   const disablePrivacyToggle = isStarterTier
 
   const goToBilling = () => {
-    navigate(`/me/organizations/${organization.id}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId: organization.id}})
   }
 
   const handleAddTeam = () => {
@@ -103,7 +103,12 @@ const AddTeamDialog = (props: Props) => {
                 message: `${team.name} was created, but ${unsent}`,
                 action: {
                   label: 'Review',
-                  callback: () => navigate(`/team/${team.id}`, {state: {inviteResults: invitees}})
+                  callback: () =>
+                    navigate({
+                      to: '/team/$teamId',
+                      params: {teamId: team.id},
+                      state: {inviteResults: invitees}
+                    })
                 }
               })
             }

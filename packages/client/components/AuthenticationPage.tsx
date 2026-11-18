@@ -1,6 +1,8 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useRef} from 'react'
-import {Navigate, useNavigate} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
+import hrefOptions from '~/routing/hrefOptions'
+import Redirect from '~/routing/Redirect'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import GenericAuthentication, {type AuthPageSlug, type GotoAuthPage} from './GenericAuthentication'
@@ -20,11 +22,11 @@ const AuthenticationPage = (props: Props) => {
   if (isInitiallySignedInRef.current) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
-    return <Navigate to={nextUrl} replace />
+    return <Redirect {...hrefOptions(nextUrl)} replace />
   }
   const goToPage: GotoAuthPage = (page, search?) => {
     const url = search ? `/${page}${search}` : `/${page}`
-    navigate(url)
+    navigate({href: url})
   }
   return (
     <TeamInvitationWrapper>

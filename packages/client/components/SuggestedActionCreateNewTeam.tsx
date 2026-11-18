@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {SuggestedActionCreateNewTeam_suggestedAction$key} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
@@ -13,7 +13,7 @@ interface Props {
 const SuggestedActionCreateNewTeam = (props: Props) => {
   const navigate = useNavigate()
   const onClick = () => {
-    navigate('/newteam')
+    navigate({to: '/newteam'})
   }
 
   const {suggestedAction: suggestedActionRef} = props

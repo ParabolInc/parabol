@@ -1,5 +1,5 @@
+import {useLocation, useNavigate, useParams} from '@tanstack/react-router'
 import {Suspense, useMemo} from 'react'
-import {useNavigate, useParams, useSearchParams} from 'react-router'
 import reportsHomeQuery, {type ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import ReportsHome from './ReportsHome'
@@ -7,8 +7,9 @@ import {readReportAddress, toReportsHomePath} from './reportPaths'
 import {parseReportPeriodParam, type ReportPagePeriod} from './reportPeriodParam'
 
 const ReportsHomeRoot = () => {
-  const {orgId} = useParams()
-  const [searchParams] = useSearchParams()
+  const {orgId} = useParams({strict: false})
+  const searchStr = useLocation({select: (location) => location.searchStr})
+  const searchParams = useMemo(() => new URLSearchParams(searchStr), [searchStr])
   const navigate = useNavigate()
   const period = parseReportPeriodParam(searchParams.get('period'))
   const answer = useMemo(() => readReportAddress(searchParams), [searchParams])
@@ -21,7 +22,7 @@ const ReportsHomeRoot = () => {
     true
   )
   const onPeriodChange = (nextPeriod: ReportPagePeriod) => {
-    navigate(toReportsHomePath(orgId!, nextPeriod, answer), {replace: true})
+    navigate({href: toReportsHomePath(orgId!, nextPeriod, answer), replace: true})
   }
   return (
     <Suspense fallback={''}>

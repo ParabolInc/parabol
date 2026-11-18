@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {
   NewMeetingPhaseTypeEnum,
   RetroMeetingSidebar_meeting$key
@@ -176,12 +176,12 @@ const RetroMeetingSidebar = (props: Props) => {
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
               if (isDemoRoute()) {
-                navigate('/retrospective-demo-summary')
+                navigate({to: '/retrospective-demo-summary'})
               } else {
                 const summaryURL = summaryPageId
                   ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
                   : `/new-summary/${meetingId}`
-                navigate(summaryURL)
+                navigate({href: summaryURL})
               }
             }}
             phaseType='SUMMARY'

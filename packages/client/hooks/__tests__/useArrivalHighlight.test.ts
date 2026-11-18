@@ -1,11 +1,14 @@
 import '../../tiptap/extensions/__tests__/installHappyDom'
+import {RouterProvider, useNavigate} from '@tanstack/react-router'
 import type {Editor} from '@tiptap/core'
 import {act, createElement} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import {MemoryRouter, useNavigate} from 'react-router'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import {setPendingArrival, takePendingArrival} from '../../tiptap/blockMove/pendingArrivals'
+import {happyWindow} from '../../tiptap/extensions/__tests__/installHappyDom'
 import {clearBlockArrival, showBlockArrival} from '../../tiptap/extensions/BlockArrival'
 import {findSyncedBlockPositions} from '../../tiptap/extensions/pageLinkBlock/findSyncedBlockPositions'
+import type {NavigateFn} from '../../types/relayMutations'
 import {isArrivalPending, useArrivalHighlight} from '../useArrivalHighlight'
 
 jest.mock('../../tiptap/extensions/BlockArrival', () => ({
@@ -24,23 +27,25 @@ const mockFind = jest.mocked(findSyncedBlockPositions)
 let root: Root
 let container: HTMLElement
 
-let navigateTo: (to: string) => void = () => {}
+let navigate: NavigateFn = async () => {}
 const Probe = ({editor}: {editor: Editor}) => {
   useArrivalHighlight(editor, 'page:1')
-  const navigate = useNavigate()
-  navigateTo = navigate
+  navigate = useNavigate()
   return null
 }
-const mount = (editor: Editor, hash = '') =>
-  act(() =>
-    root.render(
-      createElement(
-        MemoryRouter,
-        {initialEntries: [`/pages/runbook-1${hash}`]},
-        createElement(Probe, {editor})
-      )
-    )
-  )
+const mount = async (editor: Editor, hash = '') => {
+  const router = createTestRouter({
+    initialEntry: `/pages/runbook-1${hash}`,
+    routes: {'/pages/$pageSlug': createElement(Probe, {editor})}
+  })
+  await router.load()
+  act(() => root.render(createElement(RouterProvider, {router})))
+}
+const navigateTo = (href: string) =>
+  act(async () => {
+    navigate({href})
+    await new Promise((resolve) => setImmediate(resolve))
+  })
 
 const makeEditor = () => {
   const scrollIntoView = jest.fn()
@@ -61,6 +66,10 @@ const makeEditor = () => {
   }
 }
 
+beforeAll(() => {
+  Object.assign(globalThis, {self: happyWindow})
+})
+
 beforeEach(() => {
   jest.clearAllMocks()
   container = document.createElement('div')
@@ -71,50 +80,51 @@ beforeEach(() => {
 afterEach(() => {
   takePendingArrival('page:1')
   act(() => root.unmount())
+  destroyTestRouters()
   container.remove()
 })
 
-test('highlights the synced block named in the URL', () => {
+test('highlights the synced block named in the URL', async () => {
   mockFind.mockReturnValue([5, 30])
   const {editor, scrollIntoView} = makeEditor()
-  mount(editor, '#synced-block-9')
+  await mount(editor, '#synced-block-9')
   expect(mockFind).toHaveBeenCalledWith(editor.state.doc, 9)
   expect(showBlockArrival).toHaveBeenCalledWith(editor.view, [5])
   expect(scrollIntoView).toHaveBeenCalledWith({block: 'center'})
 })
 
-test('waits for the block to arrive in the doc', () => {
+test('waits for the block to arrive in the doc', async () => {
   mockFind.mockReturnValue([])
   const {editor, update} = makeEditor()
-  mount(editor, '#synced-block-9')
+  await mount(editor, '#synced-block-9')
   expect(showBlockArrival).not.toHaveBeenCalled()
   mockFind.mockReturnValue([7])
   act(update)
   expect(showBlockArrival).toHaveBeenCalledWith(editor.view, [7])
 })
 
-test('a pending move still wins', () => {
+test('a pending move still wins', async () => {
   setPendingArrival('page:1', [{client: 1, clock: 1, snapshot: ''}])
   const {editor} = makeEditor()
-  mount(editor, '#synced-block-9')
+  await mount(editor, '#synced-block-9')
   expect(mockFind).not.toHaveBeenCalled()
   expect(showBlockArrival).toHaveBeenCalledWith(editor.view, [42])
 })
 
-test('does nothing without a move or a block hash', () => {
+test('does nothing without a move or a block hash', async () => {
   const {editor} = makeEditor()
-  mount(editor)
+  await mount(editor)
   expect(showBlockArrival).not.toHaveBeenCalled()
   expect(clearBlockArrival).not.toHaveBeenCalled()
 })
 
-test('a new block hash on the open page highlights the new block', () => {
+test('a new block hash on the open page highlights the new block', async () => {
   mockFind.mockReturnValue([5])
   const {editor} = makeEditor()
-  mount(editor)
+  await mount(editor)
   expect(showBlockArrival).not.toHaveBeenCalled()
   mockFind.mockReturnValue([11])
-  act(() => navigateTo('/pages/runbook-1#synced-block-4'))
+  await navigateTo('/pages/runbook-1#synced-block-4')
   expect(mockFind).toHaveBeenLastCalledWith(editor.state.doc, 4)
   expect(showBlockArrival).toHaveBeenLastCalledWith(editor.view, [11])
 })

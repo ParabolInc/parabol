@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'

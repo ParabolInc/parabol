@@ -37,7 +37,7 @@ export const archiveTimelineEventNotificationUpdater: SharedUpdater<
 
 const handleRemoveTimelineEvent = (timelineEventId: string, store: RecordSourceSelectorProxy) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
-  const {teamIds, eventTypes} = parseQueryParams(viewer.getDataID(), window.location)
+  const {teamIds, eventTypes} = parseQueryParams(viewer.getDataID(), window.location.search)
   const activeTimelineEventsConn = getUserTimelineEventsConn(
     viewer,
     null,

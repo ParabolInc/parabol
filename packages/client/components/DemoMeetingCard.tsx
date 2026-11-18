@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import {TeamHealthDemo} from '../modules/demo/teamHealthDemoIds'
 import {cn} from '../ui/cn'
 import {meetingTypeToBgClass, meetingTypeToIllustration} from '../utils/meetings/lookups'

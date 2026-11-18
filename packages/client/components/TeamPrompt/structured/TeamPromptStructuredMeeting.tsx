@@ -1,7 +1,7 @@
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
 import type {TeamPromptStructuredMeeting_meeting$key} from '~/__generated__/TeamPromptStructuredMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useIsMobile from '~/hooks/useIsMobile'
@@ -86,7 +86,7 @@ const TeamPromptStructuredMeeting = (props: Props) => {
     isSeriesTemplate:
       !!meetingSeries && !meetingSeries.cancelledAt && meetingSeries.templateId === templateId
   })
-  const responseId = new URLSearchParams(location.search).get('responseId')
+  const responseId = new URLSearchParams(location.searchStr).get('responseId')
   const scrollRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLDivElement>(null)
   const composerApiRef = useRef<TeamPromptComposerApi | null>(null)

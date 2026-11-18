@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {ClickUpIntegrationResults_query$key} from '../../../__generated__/ClickUpIntegrationResults_query.graphql'
 import type {ClickUpIntegrationResultsPaginationQuery} from '../../../__generated__/ClickUpIntegrationResultsPaginationQuery.graphql'
@@ -90,7 +90,8 @@ const ClickUpIntegrationResults = (props: Props) => {
           {errorMessage ?? 'Looks like no ClickUp tasks assigned to you match your filter.'}
         </div>
         <Link
-          to={`/team/${teamId}/integrations`}
+          to='/team/$teamId/integrations'
+          params={{teamId}}
           className='mt-4 font-semibold text-accent hover:text-sky-400'
         >
           Review ClickUp integration settings

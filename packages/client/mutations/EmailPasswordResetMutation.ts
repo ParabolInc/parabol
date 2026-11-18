@@ -49,7 +49,7 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
         params.set('type', ForgotPasswordResType.SUCCESS)
         params.set('email', email)
       }
-      if (navigate) navigate(`/forgot-password/submitted?${params}`)
+      if (navigate) navigate({href: `/forgot-password/submitted?${params}`})
     }
   })
 }

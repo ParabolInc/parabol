@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import type {Editor} from '@tiptap/core'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {GQLID} from '../../../utils/GQLID'
 import {getPageSlug} from '../../getPageSlug'
@@ -54,9 +54,9 @@ export const useSyncedBlockMenuActions = (params: Params) => {
     goToOriginal: () => {
       if (!original) return
       const [originalPageCode] = GQLID.fromKey(original.pageId)
-      navigate(
-        `/pages/${getPageSlug(originalPageCode, original.title)}${getSyncedBlockHash(pageCode)}`
-      )
+      navigate({
+        href: `/pages/${getPageSlug(originalPageCode, original.title)}${getSyncedBlockHash(pageCode)}`
+      })
     },
     rename: () =>
       runAfterClose(() => withPos((pos) => startSyncedBlockRename(hostEditor.view, pos, pageCode))),

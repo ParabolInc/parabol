@@ -49,7 +49,7 @@ const mapMentionedToToast = (
   const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
-    navigate(actionUrl)
+    navigate({href: actionUrl})
   }
 
   return {

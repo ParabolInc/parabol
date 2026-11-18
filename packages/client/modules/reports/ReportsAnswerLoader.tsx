@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {Suspense, useMemo} from 'react'
-import {useNavigate} from 'react-router'
 import reportsAnswerQuery, {
   type ReportsAnswerQuery
 } from '../../__generated__/ReportsAnswerQuery.graphql'
@@ -32,7 +32,7 @@ const ReportsAnswerLoader = ({orgId, answer, period}: Props) => {
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
     toReportsHomePath(orgId, period, {spec: nextSpec, reportQuestionId: questionId})
   )
-  const onClose = () => navigate(toReportsHomePath(orgId, period))
+  const onClose = () => navigate({href: toReportsHomePath(orgId, period)})
   if (!queryRef) {
     return (
       <section className='rounded-md border border-hairline bg-surface-card px-5 py-4 shadow-xs'>

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {TeamHealthDetailsSidebar_teams$key} from '~/__generated__/TeamHealthDetailsSidebar_teams.graphql'
 import {
@@ -93,7 +93,10 @@ const TeamHealthDetailsSidebar = (props: Props) => {
       // an org leader can start a meeting for a team they are not on, & they cannot join that one
       const joinableMeeting = meetings.find(({team}) => team.isViewerOnTeam)
       if (!joinableMeeting) return undefined
-      return {label: 'Join now', callback: () => navigate(`/meet/${joinableMeeting.id}`)}
+      return {
+        label: 'Join now',
+        callback: () => navigate({to: '/meet/$meetingId', params: {meetingId: joinableMeeting.id}})
+      }
     }
     // no meeting yet: the series we just scheduled is the newest one awaiting its first meeting
     const [scheduledSeries] = startedTeam.activeMeetingSeries
@@ -108,7 +111,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
           onCompleted: (res) => {
             const {meeting} = res.startMeetingSeriesNow
             if (meeting) {
-              navigate(`/meet/${meeting.id}`)
+              navigate({to: '/meet/$meetingId', params: {meetingId: meeting.id}})
               return
             }
             atmosphere.eventEmitter.emit('addSnackbar', {
@@ -135,7 +138,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
       },
       onCompleted: (res) => {
         setIsScheduleOpen(false)
-        navigate('/meetings')
+        navigate({to: '/meetings'})
         const {meetings, teams: startedTeams} = res.startTeamHealth
         const teamCount = startedTeams.length
         const verb = meetings.length > 0 ? 'Started' : 'Scheduled'

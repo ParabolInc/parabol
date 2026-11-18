@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useClientQuery, useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import {Storage as StorageIcon} from '~/ui/icons'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
@@ -198,7 +198,8 @@ export const LeftNavPageLink = (props: Props) => {
         ></PageDropTarget>
         <Link
           draggable={false}
-          to={`/pages/${slug}`}
+          to='/pages/$pageSlug'
+          params={{pageSlug: slug}}
           key={slug}
           className={'ml-1 flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {

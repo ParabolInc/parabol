@@ -224,7 +224,7 @@ const stripeFailPaymentNotificationOnNext: OnNextHandler<
     action: {
       label: 'Fix it!',
       callback: () => {
-        navigate(`/me/organizations/${orgId}`)
+        navigate({to: '/me/organizations/$orgId', params: {orgId}})
       }
     }
   })
@@ -247,7 +247,7 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
     action: {
       label: 'Go there',
       callback: () => {
-        navigate(`/meet/${meetingId}`)
+        navigate({to: '/meet/$meetingId', params: {meetingId}})
       }
     }
   })

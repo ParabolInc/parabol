@@ -38,9 +38,9 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         <InvitationDialogCopy>
           The invitation to {teamName} has already been redeemed.
         </InvitationDialogCopy>
-        {meetingName ? (
+        {meetingName && meetingId ? (
           <>
-            <StyledLink to={`/meet/${meetingId}`} title={`Join ${meetingName}`}>
+            <StyledLink to='/meet/$meetingId' params={{meetingId}} title={`Join ${meetingName}`}>
               Join {meetingName}
             </StyledLink>{' '}
             <InvitationDialogCopy className='inline-block'>in progress…</InvitationDialogCopy>
@@ -48,7 +48,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         ) : (
           <>
             <InvitationDialogCopy className='inline-block'>Visit the</InvitationDialogCopy>{' '}
-            <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
+            <StyledLink to='/team/$teamId' params={{teamId}} title='Visit the Team Dashboard'>
               Team Dashboard
             </StyledLink>
           </>

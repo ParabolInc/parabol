@@ -17,6 +17,8 @@ describe('handleAuthenticationRedirect', () => {
     Object.assign(globalThis, {window: {location: new URL(pathname, 'https://parabol.test')}})
     const navigate = jest.fn()
     handleAuthenticationRedirect(acceptedInvitation, {atmosphere: {} as Atmosphere, navigate})
-    expect(navigate.mock.calls).toEqual([['/team/team-1', {replace}]])
+    expect(navigate.mock.calls).toEqual([
+      [{to: '/team/$teamId', params: {teamId: 'team-1'}, replace}]
+    ])
   })
 })

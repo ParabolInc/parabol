@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useState} from 'react'
-import {useNavigate} from 'react-router'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
@@ -20,7 +20,7 @@ const JiraExportUpgradeModal = (props: Props) => {
   const navigate = useNavigate()
   const goToUpgrade = () => {
     if (orgId) {
-      navigate(`/me/organizations/${orgId}`)
+      navigate({to: '/me/organizations/$orgId', params: {orgId}})
     }
     onClose()
   }

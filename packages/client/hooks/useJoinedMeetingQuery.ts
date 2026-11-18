@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect} from 'react'
 import {fetchQuery, useQueryLoader} from 'react-relay'
-import {useNavigate} from 'react-router'
 import meetingSelectorQuery, {
   type MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'

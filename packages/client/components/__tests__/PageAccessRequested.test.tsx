@@ -13,7 +13,10 @@ jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   useFragment: () => mockNotification
 }))
-jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../NotificationTemplate', () => ({
   __esModule: true,
   default: ({message}: {message: ReactNode}) => <div>{message}</div>

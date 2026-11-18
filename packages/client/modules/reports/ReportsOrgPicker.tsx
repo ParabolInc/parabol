@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {ExpandMore} from '~/ui/icons'
 import type {ReportsOrgPicker_viewer$key} from '../../__generated__/ReportsOrgPicker_viewer.graphql'
 import {Menu} from '../../ui/Menu/Menu'
@@ -48,7 +48,7 @@ const ReportsOrgPicker = ({viewerRef, orgId, period}: Props) => {
       <MenuContent align='start' sideOffset={4}>
         <DropdownMenu.RadioGroup
           value={orgId}
-          onValueChange={(nextOrgId) => navigate(toReportsHomePath(nextOrgId, period))}
+          onValueChange={(nextOrgId) => navigate({href: toReportsHomePath(nextOrgId, period)})}
         >
           {organizations.map(({id, name: orgName}) => (
             <MenuRadioItem key={id} value={id}>
