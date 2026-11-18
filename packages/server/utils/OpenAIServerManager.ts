@@ -397,13 +397,13 @@ ${previousCheck}`
     }
   }
 
-  async generateInspirationItems(
+  async generateRetroDrafts(
     issuesText: string,
     prompts: {question: string; description: string}[],
     userName: string,
     userPrompt?: string | null
   ): Promise<{
-    items: {title: string | null; content: string; promptIndex: number}[]
+    items: {workItemId: string; promptIndex: number; isColumnClear: boolean; content: string}[]
     tokenCost: number
   } | null> {
     if (!this.openAIApi) return null
@@ -416,42 +416,34 @@ ${previousCheck}`
           `${i}: "${prompt.question}"${prompt.description ? ` — ${prompt.description}` : ''}`
       )
       .join('\n')
-    const instructions = userPrompt
-      ? `${userPrompt}
+    const customInstructions = userPrompt?.trim()
+      ? `\n\n${userName} gave these instructions. Follow them, even where they override the rules above:\n<instructions>\n${userPrompt.trim()}\n</instructions>`
+      : ''
 
-You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. The retro categories are:
+    const instructions = `You are helping ${userName} prepare for a team retrospective, which asks how the last stretch of work went and what the team should change. You write AS ${userName}, in their voice. ${userName} will read and edit each draft before adding it to the retro board.
+
+The retro board has these columns:
 ${promptList}
 
-Produce MULTIPLE distinct reflections grounded ONLY in the work items below. For each, choose the single best-fitting category and return its index as "promptIndex".
-
-Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <category index> }] }`
-      : `You are helping ${userName} prepare for a team retrospective, grounded in their recent work. You are writing AS ${userName}, in the first person ("I", "my").
-
-A retrospective collects reflections into categories. The categories for this retro are:
-${promptList}
-
-Below is a list of ${userName}'s recent work items (issues, pull requests, calendar events, tasks, and their discussion threads). Based ONLY on this work, draft several short, first-person reflections that ${userName} could contribute to the retro.
+Below are ${userName}'s work items since the last retro, grouped by the tool they came from (issues, pull requests, calendar events, tasks, past standup answers). Each item has an id in brackets, like [W3]. Find the few items worth raising in the retro and draft a short reflection about each.
 
 Rules:
-- Produce MULTIPLE distinct reflections (typically one per meaningful theme in the work), not a single summary. Each reflection is one concise thought.
-- Do not just summarize the work done. If a work item does not convey sentiment towards the work that fits the prompt (e.g. what could have been done better), exclude it from consideration and do not use it to create a reflection.
-- For EACH reflection, choose the single best-fitting category and return its index ("promptIndex") from the list above.
-- Be terse and specific. Every reflection must reference concrete work. No filler, no generic statements.
-- Write in the first person ("I", "my"), as if ${userName} wrote it. NEVER refer to ${userName} in the third person.
-- Do NOT invent problems or wins that are not evident in the work items. If a category has nothing relevant, simply produce no reflections for it.
-- If the work items are empty or irrelevant, return an empty items array.
+- Raise an item only when it shows how the work went: something that dragged on, got blocked or waited on others, a long review, a repeated problem, a surprise, or a practice that clearly paid off. Routine work that went as expected gets no reflection, so most items get none.
+- Each reflection is about ONE work item. Return that item's id as "workItemId". Write at most one reflection per work item.
+- Return the index of the column the reflection belongs in as "promptIndex".
+- Rate how sure you are of that column as "columnConfidence": "high" only when exactly one column fits and the team would put it there too, otherwise "low".
+- One or two sentences, at most 40 words. Be specific: name the work and the fact that makes it worth raising, like how long it took or what it waited on.
+- Write in the first person ("I", "we"). NEVER refer to ${userName} in the third person.
+- Do not include links or URLs. The reflection is shown next to its work item.
+- Never invent problems, wins or feelings the work items don't show.
+- Each work item lists a Status and a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
 
-Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the reflection>", "promptIndex": <category index> }] }`
+Return JSON of the form: { "items": [{ "workItemId": "<work item id, e.g. W3>", "promptIndex": <column index>, "columnConfidence": "high" | "low", "content": "<the reflection>" }] }`
 
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: `${instructions}\n\nRecent work items:\n${issuesText}`
-          }
-        ],
+        messages: [{role: 'user', content: `${instructions}\n\nRecent work items:\n${issuesText}`}],
         response_format: {type: 'json_object'},
         reasoning_effort: 'low'
       })
@@ -459,26 +451,40 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
       const content = response.choices[0]?.message?.content
       if (!content) return null
 
-      let parsed: {items?: {title?: string | null; content?: string; promptIndex?: number}[]}
+      let parsed: {
+        items?: {
+          workItemId?: string
+          promptIndex?: number
+          columnConfidence?: string
+          content?: string
+        }[]
+      }
       try {
         parsed = JSON.parse(content)
       } catch {
-        logError(new Error('Failed to parse generateInspirationItems JSON response'))
+        logError(new Error('Failed to parse generateRetroDrafts JSON response'))
         return null
       }
 
-      const items = (parsed.items ?? [])
-        .filter((item) => !!item?.content?.trim())
-        .map((item) => {
-          const rawIndex = Number(item.promptIndex)
-          const promptIndex =
-            Number.isInteger(rawIndex) && rawIndex >= 0 && rawIndex < prompts.length ? rawIndex : 0
-          return {title: item.title?.trim() || null, content: item.content!.trim(), promptIndex}
-        })
+      const items = (parsed.items ?? []).flatMap((item) => {
+        const text = item?.content?.trim()
+        const promptIndex = Number(item?.promptIndex)
+        const isValidIndex =
+          Number.isInteger(promptIndex) && promptIndex >= 0 && promptIndex < prompts.length
+        if (!text || !item.workItemId || !isValidIndex) return []
+        return [
+          {
+            workItemId: item.workItemId,
+            promptIndex,
+            isColumnClear: item.columnConfidence === 'high',
+            content: text
+          }
+        ]
+      })
 
       return {items, tokenCost: response.usage?.total_tokens ?? 10_000}
     } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to generateInspirationItems')
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generateRetroDrafts')
       logError(error)
       return null
     }

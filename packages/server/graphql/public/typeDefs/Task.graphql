@@ -104,6 +104,11 @@ type Task implements Threadable {
   doneMeetingId: ID
 
   """
+  When the task was marked done. Null while it isn't done
+  """
+  doneAt: DateTime
+
+  """
   the plain text content of the task
   """
   plaintextContent: String!

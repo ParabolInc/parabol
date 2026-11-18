@@ -1,15 +1,19 @@
 import type {InspirationItem} from '../../../postgres/types'
 import type {GenerateInspirationItemsPayloadResolvers, ServiceEnum} from '../resolverTypes'
 
+export type InspirationItemSource = Omit<InspirationItem, 'id'> & {id: string}
+
 export type GenerateInspirationItemsPayloadSource = {
   meetingId: string
-  inspirationItems: (Omit<InspirationItem, 'id'> & {id: string})[]
+  inspirationItems: InspirationItemSource[]
   issues: {
     service: ServiceEnum
+    kind: string
     title: string
     url: string | null
     updatedAt: Date | null
     unusedReason: string | null
+    draft: InspirationItemSource | null
   }[]
 }
 

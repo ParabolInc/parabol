@@ -369,6 +369,7 @@ export const selectTasks = () =>
       'id',
       'createdAt',
       'createdBy',
+      'doneAt',
       'doneMeetingId',
       'dueDate',
       'integrationHash',

@@ -5,8 +5,8 @@ import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 export const NO_WORK_LINE =
   'No work was found. Try turning on more sources or widening the date range.'
 
-export const dateRangeLabel = (dateRange: WorkDrawerDateRange, isSinceLastStandup: boolean) => {
-  if (isSinceLastStandup) return 'Since last standup'
+export const dateRangeLabel = (dateRange: WorkDrawerDateRange, sinceLabel: string | null) => {
+  if (sinceLabel) return sinceLabel
   const from = dayjs(dateRange.startAt).format('MMM D')
   const to = dayjs(dateRange.endAt).format('MMM D')
   return from === to ? from : `${from} – ${to}`

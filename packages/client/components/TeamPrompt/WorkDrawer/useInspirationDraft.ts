@@ -24,6 +24,7 @@ interface Options {
   isMeetingMember: boolean
   sources: InspirationSourceInput[]
   instructions: string
+  lifespanMs?: number
 }
 
 const DRAFT_LIFESPAN_MS = 5 * 60 * 1000
@@ -39,7 +40,13 @@ const toKey = (sources: readonly InspirationSourceInput[]) =>
 // Right after a meeting is created the viewer is not a member of it yet, and the server only drafts
 // for members, so the first draft waits for the viewer to join.
 const useInspirationDraft = (options: Options) => {
-  const {meetingId, isMeetingMember, sources, instructions} = options
+  const {
+    meetingId,
+    isMeetingMember,
+    sources,
+    instructions,
+    lifespanMs = DRAFT_LIFESPAN_MS
+  } = options
   const {viewerId} = useAtmosphere()
   const [generate, drafting] = useGenerateInspirationItemsMutation()
   const [error, setError] = useState<string | null>(null)
@@ -51,7 +58,7 @@ const useInspirationDraft = (options: Options) => {
   const isKept =
     storedDraft?.viewerId === viewerId &&
     storedDraft.meetingId === meetingId &&
-    storedDraft.createdAt > openedAt - DRAFT_LIFESPAN_MS
+    storedDraft.createdAt > openedAt - lifespanMs
   const draft = isKept ? storedDraft : null
   const isStale = !draft || toKey(draft.sources) !== toKey(sources)
 

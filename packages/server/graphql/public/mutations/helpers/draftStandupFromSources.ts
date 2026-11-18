@@ -5,20 +5,14 @@ import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTi
 import {replaceCalloutsWithBlockquotes} from '../../../../../client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
 import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
-import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
-import {getServerIntegration} from '../../../../integrations/platform/registry'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
-import type {InspirationSourceInput, ServiceEnum} from '../../resolverTypes'
-import fetchIssues from './fetchIssues'
-import {formatIssuesForAI} from './issuesForAI'
-
-const sourceLabel = (service: ServiceEnum) =>
-  service === 'PARABOL' ? 'Parabol' : (getServerIntegration(service)?.title ?? service)
-
-// A standup's draft combines every source, so its items share this key instead of a service
-const INSPIRATION_DRAFT_SERVICE = 'draft'
+import type {InspirationSourceInput} from '../../resolverTypes'
+import gatherInspirationIssues, {
+  INSPIRATION_DRAFT_SERVICE,
+  type NumberedIssue
+} from './gatherInspirationIssues'
 
 interface Options {
   meetingId: string
@@ -31,12 +25,6 @@ interface Options {
   canDraft: boolean
   context: GQLContext
   info: GraphQLResolveInfo
-}
-
-interface NumberedIssue {
-  id: string
-  service: ServiceEnum
-  issue: InspirationIssue
 }
 
 const draftStandupFromSources = async (options: Options) => {
@@ -54,24 +42,22 @@ const draftStandupFromSources = async (options: Options) => {
   } = options
   const pg = getKysely()
 
-  const issuesBySource = await Promise.all(
-    sources.map(async ({service, searchQuery}) => ({
-      service,
-      searchQuery,
-      sourceIssues: await fetchIssues(service, searchQuery, teamId, viewerId, context, info)
-    }))
-  )
-  let nextId = 1
-  const numberedIssues = issuesBySource.flatMap(({service, sourceIssues}) =>
-    sourceIssues.map((issue): NumberedIssue => ({id: `W${nextId++}`, service, issue}))
+  const {numberedIssues, issuesText} = await gatherInspirationIssues(
+    sources,
+    teamId,
+    viewerId,
+    context,
+    info
   )
 
   const toIssue = ({service, issue}: NumberedIssue, unusedReason: string | null) => ({
     service,
+    kind: issue.kind,
     title: issue.title,
     url: issue.url || null,
     updatedAt: issue.updatedAt,
-    unusedReason
+    unusedReason,
+    draft: null
   })
 
   if (numberedIssues.length === 0) return {inspirationItems: [], issues: []}
@@ -81,16 +67,6 @@ const draftStandupFromSources = async (options: Options) => {
       issues: numberedIssues.map((numberedIssue) => toIssue(numberedIssue, null))
     }
   }
-
-  const issuesText = issuesBySource
-    .filter(({sourceIssues}) => sourceIssues.length > 0)
-    .map(({service, sourceIssues}) => {
-      const ids = numberedIssues
-        .filter((numberedIssue) => numberedIssue.service === service)
-        .map(({id}) => id)
-      return `## ${sourceLabel(service)}\n\n${formatIssuesForAI(sourceIssues, ids)}`
-    })
-    .join('\n\n')
 
   const pastResponseRows = await pg
     .selectFrom('TeamPromptResponse')

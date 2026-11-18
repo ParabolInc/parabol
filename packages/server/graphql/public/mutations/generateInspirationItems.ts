@@ -1,19 +1,12 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
-import {replaceCalloutsWithBlockquotes} from '../../../../client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
 import type {MutationResolvers} from '../resolverTypes'
+import draftRetroFromSources from './helpers/draftRetroFromSources'
 import draftStandupFromSources from './helpers/draftStandupFromSources'
-import fetchIssues from './helpers/fetchIssues'
-import {formatIssuesForAI} from './helpers/issuesForAI'
-
-const toTipTapDoc = (markdown: string) =>
-  JSON.stringify({type: 'doc', content: replaceCalloutsWithBlockquotes(markdownToTipTap(markdown))})
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,
@@ -36,20 +29,10 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
-  if (meeting.meetingType === 'retrospective' && sources.length !== 1) {
-    throw new GraphQLError('A retrospective drafts from one source at a time', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
   const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const canDraft = !!process.env.OPEN_AI_API_KEY && (await canAccessAI(team, dataLoader, true))
-  if (!canDraft && meeting.meetingType === 'retrospective') {
-    throw new GraphQLError('AI features are not enabled for this organization', {
-      extensions: {code: 'FORBIDDEN'}
-    })
-  }
 
   // AI quota
   const pg = getKysely()
@@ -77,94 +60,21 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // RESOLUTION
-  if (meeting.meetingType === 'teamPrompt') {
-    const draft = await draftStandupFromSources({
-      meetingId,
-      teamId,
-      viewerId,
-      viewerName: viewer.preferredName,
-      prompts,
-      sources,
-      userPrompt,
-      canDraft,
-      context,
-      info
-    })
-    return {meetingId, ...draft}
-  }
-
-  // Re-run the same search the user saw, server-side, fetching full content for each item.
-  const {service, searchQuery} = sources[0]!
-  const issues = await fetchIssues(service, searchQuery, teamId, viewerId, context, info)
-  const issuesText = formatIssuesForAI(issues)
-
-  if (!issuesText.trim()) {
-    await pg
-      .deleteFrom('InspirationItem')
-      .where('meetingId', '=', meetingId)
-      .where('userId', '=', viewerId)
-      .where('service', '=', service)
-      .execute()
-    dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
-    return {meetingId, inspirationItems: [], issues: []}
-  }
-
-  const manager = new OpenAIServerManager()
-  const result = await manager.generateInspirationItems(
-    issuesText,
-    prompts.map(({question, description}) => ({question, description})),
-    viewer.preferredName,
-    userPrompt
-  )
-  if (!result) {
-    throw new GraphQLError('Unable to draft a response right now. Please try again.', {
-      extensions: {code: 'SERVICE_UNAVAILABLE'}
-    })
-  }
-  const {tokenCost} = result
-  const generatedItems = result.items.map((item) => ({
-    title: item.title,
-    content: item.content,
-    promptId: prompts[item.promptIndex]!.id
-  }))
-
-  await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
-
-  if (generatedItems.length === 0) {
-    throw new GraphQLError('No suggestions could be drafted from your work. Please try again.', {
-      extensions: {code: 'SERVICE_UNAVAILABLE'}
-    })
-  }
-
-  // Replace any previous generation for this (meeting, viewer, service). OpenAI returns
-  // markdown; store it as a tiptap doc so it can be merged losslessly into a meeting response.
-  await pg.transaction().execute(async (trx) => {
-    await trx
-      .deleteFrom('InspirationItem')
-      .where('meetingId', '=', meetingId)
-      .where('userId', '=', viewerId)
-      .where('service', '=', service)
-      .execute()
-    await trx
-      .insertInto('InspirationItem')
-      .values(
-        generatedItems.map((item) => ({
-          meetingId,
-          userId: viewerId,
-          service,
-          title: item.title,
-          promptId: item.promptId,
-          content: toTipTapDoc(item.content)
-        }))
-      )
-      .execute()
+  const draftFromSources =
+    meeting.meetingType === 'teamPrompt' ? draftStandupFromSources : draftRetroFromSources
+  const draft = await draftFromSources({
+    meetingId,
+    teamId,
+    viewerId,
+    viewerName: viewer.preferredName,
+    prompts,
+    sources,
+    userPrompt,
+    canDraft,
+    context,
+    info
   })
-  dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
-  const inspirationItems = await dataLoader
-    .get('inspirationItemsByMeeting')
-    .load({meetingId, userId: viewerId, service})
-
-  return {meetingId, inspirationItems, issues: []}
+  return {meetingId, ...draft}
 }
 
 export default generateInspirationItems

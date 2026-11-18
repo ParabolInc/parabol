@@ -26,16 +26,23 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
           prevMeeting {
             createdAt
           }
+          prevCompletedMeeting {
+            createdAt
+          }
         }
       }
     `,
     meetingRef
   )
 
-  // Both standup and retro default the window to the previous meeting in the series. When there
-  // isn't one, retro falls back to the last two weeks; standup (and any other type) uses the
-  // meeting's own start time, then finally the last 24 hours.
-  const prevMeetingCreatedAt = 'prevMeeting' in meeting ? meeting.prevMeeting?.createdAt : undefined
+  // Both standup and retro default the window to the previous meeting in the series. A retro
+  // outside a series uses the team's last finished retro, then the last two weeks; standup (and any
+  // other type) uses the meeting's own start time, then finally the last 24 hours.
+  const prevMeetingCreatedAt =
+    'prevMeeting' in meeting
+      ? (meeting.prevMeeting?.createdAt ??
+        ('prevCompletedMeeting' in meeting ? meeting.prevCompletedMeeting?.createdAt : undefined))
+      : undefined
   const retroFallback = dayjs().subtract(2, 'week').toISOString()
   const defaultStartAt =
     meeting.meetingType === 'retrospective'

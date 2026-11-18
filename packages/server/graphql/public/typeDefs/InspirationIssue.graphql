@@ -1,11 +1,16 @@
 """
-An issue one of the viewer's sources matched while drafting their standup
+An issue one of the viewer's sources matched while drafting
 """
 type InspirationIssue {
   """
   The integration service the issue came from
   """
   service: ServiceEnum!
+
+  """
+  What the issue is, as its service names it, e.g. Pull Request or Calendar Event
+  """
+  kind: String!
 
   """
   The issue's title
@@ -23,7 +28,13 @@ type InspirationIssue {
   updatedAt: DateTime
 
   """
-  Why the AI left the issue out of the draft. Null if the draft uses it
+  Why the AI left the issue out of a standup draft. Null if the draft uses it, and in a retrospective
   """
   unusedReason: String
+
+  """
+  A retrospective's draft reflection about this issue. Null when the issue isn't worth raising,
+  when the AI isn't sure which column it belongs in, and in a standup
+  """
+  draft: InspirationItem
 }

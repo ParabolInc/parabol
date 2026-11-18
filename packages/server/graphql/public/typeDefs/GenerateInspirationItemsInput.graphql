@@ -9,8 +9,8 @@ input GenerateInspirationItemsInput {
   meetingId: ID!
 
   """
-  The searches to draft from. A retrospective drafts from exactly one; a standup drafts one
-  combined answer from all of them
+  The searches to draft from. A standup drafts one combined answer from all of them; a
+  retrospective drafts a reflection about each of the few issues worth raising
   """
   sources: [InspirationSourceInput!]!
 
