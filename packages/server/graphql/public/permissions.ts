@@ -411,12 +411,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     setDefaultSlackChannel: isTeamMember<'Mutation.setDefaultSlackChannel'>('args.teamId'),
     setJiraDisplayFieldIds: isTeamMember<'Mutation.setJiraDisplayFieldIds'>('args.teamId'),
     setMeetingMusic: isMeetingFacilitator<'Mutation.setMeetingMusic'>('args.meetingId'),
-    setMeetingSettings: and(
-      isTeamMember<'Mutation.setMeetingSettings'>('args.settingsId', 'meetingSettings'),
-      or(
-        isNull<'Mutation.setMeetingSettings'>('args.meetingId'),
-        isTeamMember<'Mutation.setMeetingSettings'>('args.meetingId', 'newMeetings')
-      )
+    setMeetingSettings: isTeamMember<'Mutation.setMeetingSettings'>(
+      'args.settingsId',
+      'meetingSettings'
     ),
     setNotificationStatus: and(
       hasUnrestrictedGrant,
