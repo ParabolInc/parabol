@@ -30,7 +30,7 @@ const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = 
     'incomplete',
     'incomplete_expired'
   ]
-  const isSubscriptionInvalid = invalidStatuses.some((status) => (subscription.status = status))
+  const isSubscriptionInvalid = invalidStatuses.includes(subscription.status)
   if (isSubscriptionInvalid) return false
 
   await getKysely()
