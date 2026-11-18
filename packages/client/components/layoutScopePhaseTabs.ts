@@ -1,3 +1,5 @@
+import rankServicesByOrgUse from '../utils/rankServicesByOrgUse'
+
 const PARABOL_TAB_KEY = 'parabol'
 const DEFAULT_TAB_KEY = 'jira'
 
@@ -94,13 +96,7 @@ const layoutScopePhaseTabs = <T extends ScopePhaseLayoutTab>(
     heldPickKey,
     savedActiveKey
   } = input
-  const orgUsageRank = ({key}: T) => {
-    const rank = orgServices.indexOf(key)
-    return rank < 0 ? orgServices.length : rank
-  }
-  const byOrgUse = [...integrations].sort((a, b) => orgUsageRank(a) - orgUsageRank(b))
-  const connected = byOrgUse.filter((tab) => tab.isConnected)
-  const unconnected = byOrgUse.filter((tab) => !tab.isConnected)
+  const {connected, unconnected} = rankServicesByOrgUse(integrations, orgServices, ({key}) => key)
   const ranked = [...connected, ...unconnected]
   const allTabs = [parabol, ...ranked]
   const savedKey = allTabs.some(({key}) => key === savedActiveKey) ? savedActiveKey : null

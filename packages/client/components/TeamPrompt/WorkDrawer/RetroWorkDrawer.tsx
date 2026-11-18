@@ -58,7 +58,7 @@ const RetroWorkDrawer = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             ...useInspirationSourceAvailability_teamMember
-            ...InspirationSourcePopover_teamMember
+            ...InspirationSourceTiles_teamMember
           }
         }
       }

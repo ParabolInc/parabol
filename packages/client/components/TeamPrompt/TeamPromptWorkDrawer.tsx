@@ -33,7 +33,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
         viewerMeetingMember {
           teamMember {
             ...useInspirationSourceAvailability_teamMember
-            ...InspirationSourcePopover_teamMember
+            ...InspirationSourceTiles_teamMember
           }
         }
       }

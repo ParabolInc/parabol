@@ -36,6 +36,21 @@ export const INSPIRATION_SOURCE_KINDS: Record<InspirationSourceService, Inspirat
   gcal: [{key: 'events', label: 'Meetings'}]
 }
 
+type InspirationSourceCategory = 'tracker' | 'code' | 'calendar'
+
+/** Services in one category stand in for each other: a team on Jira rarely also uses Linear */
+export const INSPIRATION_SOURCE_CATEGORIES: Record<
+  Exclude<InspirationSourceService, 'PARABOL'>,
+  InspirationSourceCategory
+> = {
+  jira: 'tracker',
+  linear: 'tracker',
+  azureDevOps: 'tracker',
+  clickup: 'tracker',
+  github: 'code',
+  gcal: 'calendar'
+}
+
 export interface InspirationSourceSettings {
   kinds: Record<InspirationSourceService, string[]>
   githubRepos: string[]
