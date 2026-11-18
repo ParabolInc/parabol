@@ -112,3 +112,14 @@ test('picking a row converts the block and puts the caret in it', async () => {
   expect(activeEditor.state.selection.$from.parent).toBe(block)
   expect(activeEditor.view.hasFocus()).toBe(true)
 })
+
+test('picking the current row leaves the focus in the editor', async () => {
+  const activeEditor = await renderMenu([p('word')], TITLE_SIZE + 1, TITLE_SIZE + 5)
+  await openMenu()
+  await act(async () => {
+    rowNamed('Text').click()
+    await tick()
+  })
+  expect(activeEditor.state.doc.child(1).type.name).toBe('paragraph')
+  expect(activeEditor.view.hasFocus()).toBe(true)
+})

@@ -1,8 +1,8 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type Editor, useEditorState} from '@tiptap/react'
 import {ExpandMore} from '~/ui/icons'
-import {getSelectionBlockPos} from '../../tiptap/extensions/dragHandleRules'
 import {dispatchBlockConversion} from '../../tiptap/extensions/turnInto/dispatchBlockConversion'
+import {getSelectionTurnIntoPos} from '../../tiptap/extensions/turnInto/getSelectionTurnIntoPos'
 import {getTurnIntoTarget, turnBlockInto} from '../../tiptap/extensions/turnInto/turnBlockInto'
 import {findTurnIntoRow, getTurnIntoRows} from '../../tiptap/extensions/turnInto/turnIntoRows'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -20,7 +20,7 @@ export const BubbleTurnIntoMenu = (props: Props) => {
   const selected = useEditorState({
     editor,
     selector: ({editor}) => {
-      const pos = getSelectionBlockPos(editor.view)
+      const pos = getSelectionTurnIntoPos(editor.view)
       const current = pos === null ? null : getTurnIntoTarget(editor.state.doc, pos)
       return pos === null || !current ? null : {pos, current}
     }
@@ -31,14 +31,14 @@ export const BubbleTurnIntoMenu = (props: Props) => {
   const rows = getTurnIntoRows(editor.state.doc, pos, current, canCreateSubPage)
   const currentRow = findTurnIntoRow(rows, current)
 
+  const focusEditor = () => editor.view.focus()
+
   const handleValueChange = (title: string) => {
     const target = rows.find((row) => row.title === title)?.target
-    if (!editor.isEditable || !target) return
-    const tr = turnBlockInto(editor.state, pos, target)
+    const tr = editor.isEditable && target ? turnBlockInto(editor.state, pos, target) : null
     if (tr) dispatchBlockConversion(editor, tr, pos)
+    else focusEditor()
   }
-
-  const focusEditor = () => editor.view.focus()
 
   return (
     <>
@@ -47,6 +47,7 @@ export const BubbleTurnIntoMenu = (props: Props) => {
           <BubbleMenuButton
             className='w-auto gap-0.5 whitespace-nowrap pr-0.5 pl-1.5 text-sm data-[state=open]:bg-surface-hover'
             title='Turn into'
+            aria-label={`Turn into, ${currentRow?.title ?? 'block'}`}
           >
             {currentRow?.title ?? 'Turn into'}
             <ExpandMore className='h-[18px] w-[18px] text-fg-secondary' />

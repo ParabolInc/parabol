@@ -5,6 +5,7 @@ import {useClientQuery} from 'react-relay'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'
+import {BubbleTurnIntoMenu} from '../../../components/TipTapEditor/BubbleTurnIntoMenu'
 import {TipTapEditor} from '../../../components/TipTapEditor/TipTapEditor'
 import {useTipTapPageEditor} from '../../../hooks/useTipTapPageEditor'
 import {getSyncedBlockDropRefusal} from '../../blockMove/getBlockDropRefusal'
@@ -91,6 +92,7 @@ export const SyncedBlockEditor = (props: Props) => {
     >
       <TipTapEditor
         editor={editor}
+        bubbleMenuStartContent={<BubbleTurnIntoMenu editor={editor} canCreateSubPage={false} />}
         className='page-editor [&>.tiptap]:-ml-[31px] @min-[852px]/page:[&>.tiptap]:-ml-9 relative flex w-full [&>.tiptap]:box-content @min-[852px]/page:[&>.tiptap]:pl-9 [&>.tiptap]:pl-[31px] [&_.tiptap>h1:first-child]:hidden'
       />
     </div>
