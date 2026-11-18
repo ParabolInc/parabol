@@ -118,7 +118,6 @@ const GroupingKanbanColumn = (props: Props) => {
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const columnRef = useRef<HTMLDivElement>(null)
-  const columnBodyRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const similarGroupIds = useMemo(() => {
@@ -140,7 +139,7 @@ const GroupingKanbanColumn = (props: Props) => {
     [groups]
   )
   const [isWidthExpanded, subColumnIndexes, toggleWidth] = useSubColumns(
-    columnBodyRef,
+    scrollContainerRef,
     phaseRef,
     reflectPromptsCount,
     filteredReflectionGroups,
@@ -185,7 +184,6 @@ const GroupingKanbanColumn = (props: Props) => {
                 isDesktop ? 'px-3' : 'px-2'
               )}
               key={`${promptId}-${subColumnIdx}`}
-              ref={subColumnIdx === 0 ? columnBodyRef : undefined}
               {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
             >
               {filteredReflectionGroups
