@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.0.1](https://github.com/ParabolInc/parabol/compare/v16.0.0...v16.0.1) (2026-11-18)
+
+
+### Fixed
+
+* **client:** expand a retro column to the fewest sub-columns that clear its scroll, up to what fits on screen ([#14294](https://github.com/ParabolInc/parabol/issues/14294)) ([b011221](https://github.com/ParabolInc/parabol/commit/b0112213f927721e01337fb9b4410c3fb5514b7b))
+* **client:** skip updating a service worker registration the browser has cleared ([#14291](https://github.com/ParabolInc/parabol/issues/14291)) ([a0cad27](https://github.com/ParabolInc/parabol/commit/a0cad27529dbb13f9ddd2e0ba445bc07d75bd2fa))
+* **server:** answer Stripe 200 for Team renewals and webhook failures a retry can't change ([#14292](https://github.com/ParabolInc/parabol/issues/14292)) ([73aa352](https://github.com/ParabolInc/parabol/commit/73aa352223487b86e393754899bac1a5d3c72fcf))
+* **server:** code masked errors from bad search cursors, URLs, dates and missing ids ([#14283](https://github.com/ParabolInc/parabol/issues/14283)) ([5e94fef](https://github.com/ParabolInc/parabol/commit/5e94fefb8f59a366a62a2247f6450b45306188ef))
+* **server:** compare a new Stripe subscription's status instead of assigning it, so its id is stored ([#14290](https://github.com/ParabolInc/parabol/issues/14290)) ([9a963ac](https://github.com/ParabolInc/parabol/commit/9a963ac413b3fcd8835f54ed5babc033ad92fbfe))
+* **server:** keep nested GitHub, GitLab and Linear fields selected under two names or batched with fragments ([#14284](https://github.com/ParabolInc/parabol/issues/14284)) ([6d979a7](https://github.com/ParabolInc/parabol/commit/6d979a7a28ef62d9834cac6734e377095b316f45))
+* **server:** list only the teams a viewer's token covers, so a stale session's dashboard loads ([#14275](https://github.com/ParabolInc/parabol/issues/14275)) ([81d60c8](https://github.com/ParabolInc/parabol/commit/81d60c805b1db2bf0b59053b4a17d0c5217cab2d))
+* **server:** refuse asset paths that climb out of the checked scope ([#14278](https://github.com/ParabolInc/parabol/issues/14278)) ([eb228bf](https://github.com/ParabolInc/parabol/commit/eb228bfa0c5d884a5969e79d1e48caad7c23920b))
+
+
+### Changed
+
+* **server:** throw coded GraphQLErrors instead of plain Errors under graphql ([#14281](https://github.com/ParabolInc/parabol/issues/14281)) ([a8f5bf2](https://github.com/ParabolInc/parabol/commit/a8f5bf260afbd6ecf177862378201517f341e4db))
+
 ## [16.0.0](https://github.com/ParabolInc/parabol/compare/v15.39.0...v16.0.0) (2026-11-17)
 
 
