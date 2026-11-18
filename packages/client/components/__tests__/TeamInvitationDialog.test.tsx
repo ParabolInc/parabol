@@ -1,7 +1,7 @@
 import {Outlet, RouterProvider, useLocation, useNavigate} from '@tanstack/react-router'
 import EventEmitter from 'eventemitter3'
 import {Window} from 'happy-dom'
-import {useState} from 'react'
+import {act, useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import type Atmosphere from '../../Atmosphere'
@@ -44,11 +44,6 @@ const MockAuthForm = () => {
 }
 
 const happyWindow = new Window({url: 'https://parabol.test/'})
-const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
-const waitUntil = async (isDone: () => boolean, timeoutMs = 1000) => {
-  const deadline = Date.now() + timeoutMs
-  while (!isDone() && Date.now() < deadline) await tick()
-}
 
 let currentPathname = ''
 const LocationSpy = () => {
@@ -98,10 +93,13 @@ const SpiedLayout = () => (
 )
 
 let mountedRoot: Root | undefined
-const renderInvitation = (verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key) => {
+const renderInvitation = async (
+  verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key
+) => {
   const container = document.createElement('div')
   document.body.appendChild(container)
-  mountedRoot = createRoot(container)
+  const root = createRoot(container)
+  mountedRoot = root
   const router = createTestRouter({
     rootComponent: SpiedLayout,
     routes: {
@@ -112,10 +110,12 @@ const renderInvitation = (verifiedInvitation: TeamInvitationDialog_verifiedInvit
       '/meet/$meetingId': <main>Meeting</main>
     }
   })
-  mountedRoot.render(
-    <IsAuthenticatedProvider>
-      <RouterProvider router={router} />
-    </IsAuthenticatedProvider>
+  await act(async () =>
+    root.render(
+      <IsAuthenticatedProvider>
+        <RouterProvider router={router} />
+      </IsAuthenticatedProvider>
+    )
   )
 }
 
@@ -135,7 +135,8 @@ beforeAll(() => {
   Object.assign(globalThis, {
     window: happyWindow,
     document: happyWindow.document,
-    self: happyWindow
+    self: happyWindow,
+    IS_REACT_ACT_ENVIRONMENT: true
   })
 })
 
@@ -143,10 +144,10 @@ beforeEach(() => {
   happyWindow.history.replaceState(null, '', '/team-invitation/token-1')
 })
 
-afterEach(() => {
+afterEach(async () => {
   jest.restoreAllMocks()
   mockAcceptTeamInvitation.mockClear()
-  mountedRoot?.unmount()
+  await act(async () => mountedRoot?.unmount())
   mountedRoot = undefined
   destroyTestRouters()
 })
@@ -163,21 +164,23 @@ describe('TeamInvitationDialog', () => {
     'navigates once when the invitee %s and the auth cookie lands before the login mutation completes',
     async (_flow, user, activeMeetingIds, nextPath) => {
       mockAtmosphere.authObj = null
-      renderInvitation(invitationFor(user))
-      await tick()
+      await renderInvitation(invitationFor(user))
       const navigations = recordNavigations()
 
       // the auth cookie lands before the login mutation, which accepts the invitation too, calls back
-      mockAtmosphere.authObj = {sub: 'invitee'}
-      mockAtmosphere.eventEmitter.emit('authChanged')
-      await tick()
-      handleAuthenticationRedirect(replyFor(activeMeetingIds), {
-        atmosphere: mockAtmosphere as unknown as Atmosphere,
-        navigate: authFormNavigate
+      await act(async () => {
+        mockAtmosphere.authObj = {sub: 'invitee'}
+        mockAtmosphere.eventEmitter.emit('authChanged')
       })
-      answerAcceptTeamInvitationRequests(activeMeetingIds)
-      await waitUntil(() => currentPathname === nextPath)
+      await act(async () => {
+        handleAuthenticationRedirect(replyFor(activeMeetingIds), {
+          atmosphere: mockAtmosphere as unknown as Atmosphere,
+          navigate: authFormNavigate
+        })
+        answerAcceptTeamInvitationRequests(activeMeetingIds)
+      })
 
+      expect(currentPathname).toBe(nextPath)
       expect(navigations).toEqual([`replaceState ${nextPath}`])
       expect(mockAcceptTeamInvitation).not.toHaveBeenCalled()
     }
@@ -185,15 +188,13 @@ describe('TeamInvitationDialog', () => {
 
   it('accepts once for a viewer who opens the invitation signed in', async () => {
     mockAtmosphere.authObj = {sub: 'invitee'}
-    renderInvitation(invitationFor({preferredName: 'Invitee'}))
-    await tick()
+    await renderInvitation(invitationFor({preferredName: 'Invitee'}))
     // a store update re-renders the dialog the same way
-    replaceInvitation(invitationFor({preferredName: 'Invitee'}))
-    await tick()
+    await act(async () => replaceInvitation(invitationFor({preferredName: 'Invitee'})))
     const navigations = recordNavigations()
-    answerAcceptTeamInvitationRequests(['meeting-1'])
-    await waitUntil(() => currentPathname === '/meet/meeting-1')
+    await act(async () => answerAcceptTeamInvitationRequests(['meeting-1']))
 
+    expect(currentPathname).toBe('/meet/meeting-1')
     expect(navigations).toEqual(['replaceState /meet/meeting-1'])
     expect(mockAcceptTeamInvitation).toHaveBeenCalledTimes(1)
     expect(mockAcceptTeamInvitation).toHaveBeenCalledWith(
