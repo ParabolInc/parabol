@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router'
 import type {Variables} from 'relay-runtime'
 import type {SubscriptionRequestor} from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'

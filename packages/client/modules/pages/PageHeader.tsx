@@ -1,8 +1,8 @@
 import * as Popover from '@radix-ui/react-popover'
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
 import {
   CloudUpload as CloudUploadIcon,
   MoreHoriz as MoreHorizIcon,
@@ -50,7 +50,7 @@ export const PageHeader = (props: Props) => {
   )
 
   const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
+  const searchParams = new URLSearchParams(location.searchStr)
   const sharePageDefaultOpen = searchParams.get('share') !== null
   const exportDeepLinked = searchParams.get('export') === 'confluence'
   const exportReport = searchParams.get('report') !== null
@@ -64,13 +64,13 @@ export const PageHeader = (props: Props) => {
   const openExportDialog = () => {
     setExportOpen(true)
   }
-  // keyed on location.key so a same-route navigation (e.g. the completion toast's
+  // keyed on the history entry so a same-route navigation (e.g. the completion toast's
   // "View report" while already on the page) still opens the dialog
   useEffect(() => {
     if (exportDeepLinked && canExportToConfluence) {
       setExportOpen(true)
     }
-  }, [location.key])
+  }, [location.state.__TSR_key])
   return (
     <div data-page-header className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>

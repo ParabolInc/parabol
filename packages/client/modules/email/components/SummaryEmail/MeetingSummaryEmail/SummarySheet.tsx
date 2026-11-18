@@ -1,3 +1,4 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
@@ -5,7 +6,7 @@ import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {PictureAsPdf, TableChart} from '~/ui/icons'
 import {PALETTE} from '../../../../../styles/paletteV3'
 import type {CorsOptions} from '../../../../../types/cors'
@@ -191,7 +192,7 @@ const SummarySheet = (props: Props) => {
                                 <td align='center' width='100%'>
                                   <div className='flex justify-center gap-4'>
                                     <Link
-                                      to={emailCSVUrl}
+                                      {...hrefOptions(emailCSVUrl)}
                                       className={
                                         'flex cursor-pointer items-center gap-2 rounded-full border border-slate-400 border-solid bg-white px-5 py-2 text-center font-sans font-semibold text-sm hover:bg-slate-100'
                                       }

@@ -1,8 +1,9 @@
+import {Link, useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link, Navigate, useLocation} from 'react-router'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
+import Redirect from '~/routing/Redirect'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
 import {cn} from '../../../ui/cn'
 import IconLabel from '../../IconLabel'
@@ -67,11 +68,11 @@ const ActivityDetails = (props: Props) => {
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
   const {activity, preferredTeamId, teams} = viewer
-  const location = useLocation() as {state?: {prevCategory?: string}}
+  const location = useLocation()
   const [isEditing, setIsEditing] = useState(false)
 
   if (!activity?.isActive) {
-    return <Navigate to='/activity-library' replace />
+    return <Redirect to='/activity-library' replace />
   }
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
@@ -83,7 +84,7 @@ const ActivityDetails = (props: Props) => {
   const teamHealthTeams = [...teams, ...orgTeams].filter(
     (team, index, arr) => arr.findIndex((t) => t.id === team.id) === index
   )
-  const prevCategory = location.state?.prevCategory
+  const prevCategory = location.state.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
   }`

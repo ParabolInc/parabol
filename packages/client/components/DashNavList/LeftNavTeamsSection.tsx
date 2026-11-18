@@ -1,7 +1,7 @@
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {ManageAccounts as ManageAccountsIcon} from '~/ui/icons'
 import type {LeftNavTeamsSection_viewer$key} from '../../__generated__/LeftNavTeamsSection_viewer.graphql'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -68,7 +68,7 @@ export const LeftNavTeamsSection = (props: Props) => {
             Icon={ManageAccountsIcon}
             onClick={(e) => {
               e.preventDefault()
-              navigate('/me/organizations')
+              navigate({to: '/me/organizations'})
             }}
             tooltip={'Manage Teams'}
           />

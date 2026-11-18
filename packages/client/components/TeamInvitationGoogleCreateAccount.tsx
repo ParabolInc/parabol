@@ -1,7 +1,7 @@
+import {useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router'
 import type {TeamInvitationGoogleCreateAccount_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
@@ -22,7 +22,7 @@ interface Props {
 
 const TeamInvitationGoogleCreateAccount = (props: Props) => {
   const [isEmailFallback, setIsEmailFallback] = useState(false)
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const invitationToken = token!
   const {verifiedInvitation: verifiedInvitationRef} = props
   const verifiedInvitation = useFragment(

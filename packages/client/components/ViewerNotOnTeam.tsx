@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -57,7 +57,7 @@ const ViewerNotOnTeam = (props: Props) => {
         commitLocalUpdate(atmosphere, (store) => {
           store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
         })
-        navigate(redirectTo, {replace: true})
+        navigate({href: redirectTo, replace: true})
       })
     } else if (teamInvitation) {
       if (hasAccepted.current) return

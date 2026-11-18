@@ -1,5 +1,6 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
@@ -15,7 +16,6 @@ import {type Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
-import {useLocation, useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {
@@ -108,11 +108,10 @@ export const useTipTapPageEditor = (
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {hash} = useLocation()
+  const hash = useLocation({select: (location) => (location.hash ? `#${location.hash}` : '')})
   const [executeArchive] = useArchivePageMutation()
   const [executeDuplicate] = useDuplicatePageMutation()
   const duplicatePage: DuplicateExecute = useEventCallback((config) => executeDuplicate(config))
-  const navigateToPath = useEventCallback((path: string) => navigate(path))
   const onSyncedBlockRemoved = useEventCallback(
     (removal: SyncedBlockRemoval, removedFrom: Editor) => {
       showSyncedBlockRemovalSnack({
@@ -185,7 +184,7 @@ export const useTipTapPageEditor = (
           atmosphere,
           isNested: !!nested,
           duplicatePage,
-          navigate: navigateToPath
+          navigate
         }),
         SyncedBlockDrops.configure({pageId, isNested: !!nested, onBlockDrop: moveDroppedBlocks}),
         BlockSelection,

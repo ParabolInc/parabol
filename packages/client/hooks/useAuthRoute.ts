@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router'
 import {AuthTokenRole} from '../types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
@@ -34,7 +34,7 @@ const useAuthRoute = (inOptions: Options = {}) => {
       // User is authenticated, check their authorization
       if (role && role !== authObj.rol) {
         atmosphere.eventEmitter.emit('addSnackbar', unauthorizedDefault)
-        navigate('/', {replace: true})
+        navigate({to: '/', replace: true})
       }
     } else if (authObj) {
       atmosphere.invalidateSession('Your session has expired. Please log in again.')
@@ -45,13 +45,10 @@ const useAuthRoute = (inOptions: Options = {}) => {
           atmosphere.eventEmitter.emit('addSnackbar', unauthenticatedDefault)
         })
       }
-      navigate(
-        {
-          pathname: '/',
-          search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-        },
-        {replace: true}
-      )
+      navigate({
+        href: `/?redirectTo=${encodeURIComponent(window.location.pathname)}`,
+        replace: true
+      })
     }
   }
 

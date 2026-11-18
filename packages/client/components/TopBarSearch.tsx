@@ -1,19 +1,19 @@
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {type Location, matchPath, useLocation} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useSearchDialog} from '~/modules/search/SearchContext'
 import {Input} from '~/ui/Input/Input'
 import {Close, Search} from '~/ui/icons'
+import matchPath from '~/utils/matchPath'
 import type Atmosphere from '../Atmosphere'
 import {cn} from '../ui/cn'
 
-const getShowSearch = (location: Location) => {
-  const {pathname} = location
+const getShowSearch = (pathname: string) => {
   return (
     pathname.includes('/me/tasks') ||
     !!matchPath('/team/:teamId', pathname) ||
@@ -71,7 +71,7 @@ const TopBarSearch = (props: Props) => {
     <div
       className={cn(
         'm-2 flex h-10 max-w-[480px] flex-1 items-center rounded bg-search-bg',
-        getShowSearch(location) ? 'visible' : 'invisible'
+        getShowSearch(location.pathname) ? 'visible' : 'invisible'
       )}
     >
       <Input

@@ -94,7 +94,6 @@
     "react-dom": "^19.3.1",
     "react-dom-confetti": "^0.2.0",
     "react-ga4": "^1.4.1",
-    "react-router": "^7.18.2",
     "react-textarea-autosize": "^8.5.9",
     "react-transition-group": "^4.3.0",
     "rrule": "^2.7.2",

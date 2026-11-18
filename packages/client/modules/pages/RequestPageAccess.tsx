@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useState} from 'react'
-import {useNavigate} from 'react-router'
 import {Lock as LockIcon} from '~/ui/icons'
 import BasicTextArea from '../../components/InputField/BasicTextArea'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -27,7 +27,7 @@ export const RequestPageAccess = (props: Props) => {
 
   const cancel = () => {
     if (submitting) return
-    navigate('/meetings')
+    navigate({to: '/meetings'})
   }
 
   const showRequestError = (code: unknown) => {

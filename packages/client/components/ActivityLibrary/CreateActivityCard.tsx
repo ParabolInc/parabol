@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import {Add as AddIcon} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 
@@ -16,7 +16,8 @@ const CreateActivityCard = (props: Props) => {
   return (
     <Link
       className={cn('flex rounded-2xl hover:bg-surface-hover focus:outline-accent', className)}
-      to={`/activity-library/new-activity/${category}`}
+      to='/activity-library/new-activity/$categoryId'
+      params={{categoryId: category}}
     >
       <ActivityCard
         className={

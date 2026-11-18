@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
@@ -57,7 +57,9 @@ const DiscussionMentioned = (props: Props) => {
   const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   const goThere = () => {
-    navigate(response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl)
+    navigate({
+      href: response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl
+    })
   }
 
   const {editor} = useTipTapCommentEditor(comment.content, {

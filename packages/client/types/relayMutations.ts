@@ -1,4 +1,4 @@
-import type {NavigateFunction} from 'react-router'
+import type {UseNavigateResult} from '@tanstack/react-router'
 import type {
   commitMutation,
   MutationParameters,
@@ -7,7 +7,7 @@ import type {
 } from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 
-export type NavigateFn = NavigateFunction
+export type NavigateFn = UseNavigateResult<string>
 
 export type CompletedHandler<TResponse = any> = (
   response: TResponse,

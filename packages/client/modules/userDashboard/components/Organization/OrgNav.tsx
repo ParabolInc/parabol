@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {NavigateNext} from '~/ui/icons'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
@@ -25,7 +25,7 @@ const OrgNav = (props: Props) => {
     <div className='flex max-w-full overflow-hidden py-4 text-[14px]'>
       <span
         className='text-nowrap font-normal hover:cursor-pointer'
-        onClick={() => navigate('/meetings')}
+        onClick={() => navigate({to: '/meetings'})}
       >
         Dashboard
       </span>
@@ -34,7 +34,7 @@ const OrgNav = (props: Props) => {
       </div>
       <span
         className='text-nowrap font-normal hover:cursor-pointer'
-        onClick={() => navigate('/me/organizations')}
+        onClick={() => navigate({to: '/me/organizations'})}
       >
         Organization
       </span>

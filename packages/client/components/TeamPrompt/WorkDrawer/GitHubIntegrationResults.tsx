@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {GitHubIntegrationResults_search$key} from '../../../__generated__/GitHubIntegrationResults_search.graphql'
 import type {GitHubIntegrationResultsQuery} from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
@@ -107,7 +107,8 @@ const GitHubIntegrationResults = (props: Props) => {
               <>
                 <div className='mt-7 w-2/3 text-center'>{errors[0].message}</div>
                 <Link
-                  to={`/team/${teamId}/integrations`}
+                  to='/team/$teamId/integrations'
+                  params={{teamId}}
                   className='mt-4 font-semibold text-accent hover:text-sky-400'
                 >
                   Review your GitHub configuration

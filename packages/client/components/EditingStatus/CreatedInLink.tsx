@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import {Link as LinkIcon} from '~/ui/icons'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'

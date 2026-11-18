@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -74,7 +74,7 @@ const TeamSettings = (props: Props) => {
                 variant='primary'
                 size='sm'
                 className='text-sm'
-                onClick={() => navigate(`/me/organizations/${orgId}`)}
+                onClick={() => navigate({to: '/me/organizations/$orgId', params: {orgId}})}
               >
                 {`Upgrade to ${TierLabel.TEAM} Plan`}
               </Button>

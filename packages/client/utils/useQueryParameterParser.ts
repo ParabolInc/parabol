@@ -1,14 +1,14 @@
+import {useLocation} from '@tanstack/react-router'
 import {useMemo} from 'react'
-import {type Location, useLocation} from 'react-router'
 import type {TimelineEventEnum} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 
 const useQueryParameterParser = (viewerId: string) => {
-  const location = useLocation()
-  return useMemo(() => parseQueryParams(viewerId, location), [viewerId, location])
+  const searchStr = useLocation({select: (location) => location.searchStr})
+  return useMemo(() => parseQueryParams(viewerId, searchStr), [viewerId, searchStr])
 }
 
-const parseQueryParams = (viewerId: string, location: Location | Window['location']) => {
-  const parsed = new URLSearchParams(location.search)
+const parseQueryParams = (viewerId: string, search: string) => {
+  const parsed = new URLSearchParams(search)
   const teamIds = parsed.has('teamIds') ? (parsed.get('teamIds') as string).split(',') : null
   const userIdsArray = parsed.has('userIds') ? (parsed.get('userIds') as string).split(',') : null
   const userIds = userIdsArray || (teamIds ? null : [viewerId])

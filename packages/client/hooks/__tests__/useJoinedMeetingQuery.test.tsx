@@ -1,6 +1,7 @@
+import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {createRoot} from 'react-dom/client'
-import {MemoryRouter} from 'react-router'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import {getBreadcrumbs} from '../../utils/clientBreadcrumbs'
 import useJoinedMeetingQuery from '../useJoinedMeetingQuery'
 
@@ -67,11 +68,8 @@ const renderJoinedMeeting = async () => {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(
-    <MemoryRouter>
-      <JoinedMeeting />
-    </MemoryRouter>
-  )
+  const router = createTestRouter({initialEntry: '/', routes: {'/': <JoinedMeeting />}})
+  root.render(<RouterProvider router={router} />)
   await tick()
   return root
 }
@@ -83,7 +81,11 @@ const acknowledgeSubscription = async () => {
 }
 
 beforeAll(() => {
-  Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
+  Object.assign(globalThis, {
+    window: happyWindow,
+    document: happyWindow.document,
+    self: happyWindow
+  })
 })
 
 afterAll(async () => {
@@ -95,6 +97,10 @@ beforeEach(() => {
   mockAtmosphere.subscriptions = {}
   mockAtmosphere.subscriptionAckHandlers.clear()
   mockAtmosphere.records = {}
+})
+
+afterEach(() => {
+  destroyTestRouters()
 })
 
 test('a viewer not yet in the meeting subscribes after joining, then fetches once the subscription listens', async () => {

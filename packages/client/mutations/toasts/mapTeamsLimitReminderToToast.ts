@@ -32,7 +32,7 @@ const mapTeamsLimitReminderToToast = (
     action: {
       label: 'Upgrade',
       callback: () => {
-        navigate(`/me/organizations/${orgId}`)
+        navigate({to: '/me/organizations/$orgId', params: {orgId}})
       }
     }
   }

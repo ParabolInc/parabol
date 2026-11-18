@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useClientQuery} from 'react-relay'
-import {Link} from 'react-router'
 import {
   Delete as DeleteIcon,
   Description as DescriptionIcon,
@@ -133,7 +133,8 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
       >
         <Link
           draggable={false}
-          to={`/pages/${pageSlug}`}
+          to='/pages/$pageSlug'
+          params={{pageSlug}}
           className={cn(
             'no-underline! flex w-full items-center',
             isOptimistic && 'pointer-events-none'

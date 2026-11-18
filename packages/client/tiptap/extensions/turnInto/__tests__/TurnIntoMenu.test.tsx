@@ -14,7 +14,10 @@ jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
 }))
 jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
 jest.mock('../../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
-jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../../../../mutations/useDuplicatePageMutation', () => ({
   useDuplicatePageMutation: () => [jest.fn(), false]
 }))

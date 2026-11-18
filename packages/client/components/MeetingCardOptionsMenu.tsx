@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useEndTeamHealthMutation from '~/mutations/useEndTeamHealthMutation'

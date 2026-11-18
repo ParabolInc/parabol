@@ -1,6 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {MeetingTypeEnum} from '../__generated__/MeetingSeriesGroupCard_series.graphql'
 import type {MeetingSeriesManager_user$key} from '../__generated__/MeetingSeriesManager_user.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

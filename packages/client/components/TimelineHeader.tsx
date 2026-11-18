@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import type {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -95,14 +95,14 @@ const TimelineHeader = (props: Props) => {
         <Select
           value={eventTypes?.[0] ?? ALL_EVENT_TYPES}
           onValueChange={(eventType) =>
-            navigate(
-              constructFilterQueryParamURL(
+            navigate({
+              href: constructFilterQueryParamURL(
                 teamIds,
                 userIds,
                 undefined,
                 eventType === ALL_EVENT_TYPES ? undefined : [eventType as TimelineEventEnum]
               )
-            )
+            })
           }
         >
           <SelectTrigger asChild>
@@ -121,7 +121,7 @@ const TimelineHeader = (props: Props) => {
           size='default'
           className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() =>
-            navigate(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
+            navigate({href: constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes)})
           }
         >
           <Checkbox

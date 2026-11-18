@@ -1,11 +1,11 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
 import newTeamQuery, {type NewTeamQuery} from '../../../../__generated__/NewTeamQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import NewTeam from '../../NewTeam'
 
 const NewTeamRoot = () => {
-  const {defaultOrgId} = useParams()
+  const {defaultOrgId} = useParams({strict: false})
   const queryRef = useQueryLoaderNow<NewTeamQuery>(newTeamQuery)
   return (
     <Suspense fallback={''}>

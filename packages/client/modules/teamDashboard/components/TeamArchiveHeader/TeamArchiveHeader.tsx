@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import {Archive} from '~/ui/icons'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 
@@ -9,7 +9,7 @@ interface Props {
 const TeamArchiveHeader = (props: Props) => {
   const {teamId} = props
   const navigate = useNavigate()
-  const goToTeamDash = () => navigate(`/team/${teamId}/tasks`)
+  const goToTeamDash = () => navigate({to: '/team/$teamId/tasks', params: {teamId}})
   return (
     <div className='flex w-full items-center py-4'>
       <div className='mr-8 flex items-center whitespace-nowrap'>

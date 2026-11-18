@@ -25,7 +25,10 @@ jest.mock('react-relay', () => ({
     viewer: {archivedPages: {edges: mockNodes.map((node) => ({node}))}}
   })
 }))
-jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../../../mutations/useArchivePageMutation', () => ({
   useArchivePageMutation: () => [mockExecute]
 }))

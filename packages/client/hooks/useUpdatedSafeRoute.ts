@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect, useRef} from 'react'
-import {useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import type {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
@@ -63,7 +63,7 @@ const useUpdatedSafeRoute = (
       }
       const nextPathname = fromStageIdToUrl(localStageId, meeting)
       if (nextPathname !== location.pathname) {
-        navigate(nextPathname, {replace: true})
+        navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)
         return
       }

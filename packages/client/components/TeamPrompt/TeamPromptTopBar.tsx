@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type ComponentPropsWithoutRef, forwardRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import {RRule} from 'rrule'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -185,7 +185,11 @@ const TeamPromptTopBar = (props: Props) => {
           <div>
             <div className='flex w-max gap-1'>
               {isRecurrenceEnabled && prevMeeting && (
-                <Link className='text-fg-secondary' to={`/meet/${prevMeeting.id}`}>
+                <Link
+                  className='text-fg-secondary'
+                  to='/meet/$meetingId'
+                  params={{meetingId: prevMeeting.id}}
+                >
                   <KeyboardArrowLeft />
                 </Link>
               )}
@@ -212,7 +216,11 @@ const TeamPromptTopBar = (props: Props) => {
                 )}
               </div>
               {isRecurrenceEnabled && nextMeeting && (
-                <Link className='text-fg-secondary' to={`/meet/${nextMeeting.id}`}>
+                <Link
+                  className='text-fg-secondary'
+                  to='/meet/$meetingId'
+                  params={{meetingId: nextMeeting.id}}
+                >
                   <KeyboardArrowRight />
                 </Link>
               )}

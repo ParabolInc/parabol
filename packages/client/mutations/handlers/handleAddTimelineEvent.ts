@@ -10,7 +10,10 @@ const handleAddTimelineEvent = (
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer || !meeting || !timelineEvent) return
   timelineEvent.setLinkedRecord(meeting, 'meeting')
-  const {teamIds, eventTypes, showArchived} = parseQueryParams(viewer.getDataID(), window.location)
+  const {teamIds, eventTypes, showArchived} = parseQueryParams(
+    viewer.getDataID(),
+    window.location.search
+  )
   const timelineConnection = getUserTimelineEventsConn(
     viewer,
     null,

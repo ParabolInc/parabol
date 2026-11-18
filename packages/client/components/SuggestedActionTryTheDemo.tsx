@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {SuggestedActionTryTheDemo_suggestedAction$key} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
@@ -33,7 +33,7 @@ const SuggestedActionTryTheDemo = (props: Props) => {
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
-    navigate('/retrospective-demo')
+    navigate({to: '/retrospective-demo'})
   }
   return (
     <SuggestedActionCard

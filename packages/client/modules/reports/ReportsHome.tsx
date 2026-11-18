@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import {Groups} from '~/ui/icons'
 import type {ReportsHomeQuery} from '../../__generated__/ReportsHomeQuery.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
@@ -70,7 +70,8 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
           )}
           {organization?.isBillingLeader && (
             <Link
-              to={`/me/organizations/${orgId}/teams`}
+              to='/me/organizations/$orgId/teams'
+              params={{orgId}}
               className='inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-md border border-hairline-strong pr-3 pl-2.5 font-semibold text-fg-primary text-sm hover:bg-surface-hover'
             >
               <Groups className='text-[18px] text-fg-secondary' />

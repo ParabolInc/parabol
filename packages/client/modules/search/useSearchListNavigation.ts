@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {type Ref, useImperativeHandle, useLayoutEffect} from 'react'
-import {useNavigate} from 'react-router'
 import type {getSearchResultHref_page$key} from '../../__generated__/getSearchResultHref_page.graphql'
 import {getSearchResultHref} from './getSearchResultHref'
 import {getSelection} from './getSelection'
@@ -50,7 +50,7 @@ export const useSearchListNavigation = (
         if (e.metaKey || e.ctrlKey) {
           window.open(href, '_blank')
         } else {
-          navigate(href)
+          navigate({href: href})
         }
         return true
       }

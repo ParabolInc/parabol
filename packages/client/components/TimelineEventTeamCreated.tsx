@@ -40,7 +40,7 @@ const TimelineEventTeamCreated = (props: Props) => {
         ) : (
           <>
             {'Visit your '}
-            <StyledLink className='font-semibold' to={`/team/${teamId}/tasks`}>
+            <StyledLink className='font-semibold' to='/team/$teamId/tasks' params={{teamId}}>
               team dashboard
             </StyledLink>
           </>

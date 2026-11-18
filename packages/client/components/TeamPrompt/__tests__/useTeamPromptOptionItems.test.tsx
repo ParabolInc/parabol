@@ -9,7 +9,10 @@ jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   useFragment: (_fragment: unknown, fragmentRef: unknown) => fragmentRef
 }))
-jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => jest.fn()
+}))
 jest.mock('../../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => ({viewerId: 'viewer'})

@@ -1,9 +1,9 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
+import {Link, useNavigate, useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ComponentPropsWithoutRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
@@ -173,7 +173,7 @@ export const CreateNewActivity = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<CreateNewActivityQuery>(query, queryRef)
 
-  const {categoryId} = useParams()
+  const {categoryId} = useParams({strict: false})
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
@@ -228,7 +228,9 @@ export const CreateNewActivity = (props: Props) => {
       onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
         onCompleted(res, errors)
         if (errors?.length) return
-        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+        navigate({
+          to: '/activity-library/details/$activityId',
+          params: {activityId: res.addPromptTemplate.template.id},
           state: {prevCategory: categoryId, edit: true}
         })
       }
@@ -247,7 +249,9 @@ export const CreateNewActivity = (props: Props) => {
       onCompleted: (res: useAddPokerTemplateMutation$data) => {
         const templateId = res.addPokerTemplate?.useAddPokerTemplateMutation_team?.pokerTemplate?.id
         if (templateId) {
-          navigate(`/activity-library/details/${templateId}`, {
+          navigate({
+            to: '/activity-library/details/$activityId',
+            params: {activityId: templateId},
             state: {prevCategory: categoryId, edit: true}
           })
         }
@@ -268,7 +272,9 @@ export const CreateNewActivity = (props: Props) => {
       onCompleted: (res: useAddPromptTemplateMutation$data, errors) => {
         onCompleted(res, errors)
         if (errors?.length) return
-        navigate(`/activity-library/details/${res.addPromptTemplate.template.id}`, {
+        navigate({
+          to: '/activity-library/details/$activityId',
+          params: {activityId: res.addPromptTemplate.template.id},
           state: {prevCategory: categoryId, edit: true}
         })
       }
@@ -287,7 +293,9 @@ export const CreateNewActivity = (props: Props) => {
       onCompleted: (res: useAddTeamHealthTemplateMutation$data) => {
         const templateId = res.addTeamHealthTemplate?.teamHealthTemplate?.id
         if (templateId) {
-          navigate(`/activity-library/details/${templateId}`, {
+          navigate({
+            to: '/activity-library/details/$activityId',
+            params: {activityId: templateId},
             state: {prevCategory: categoryId, edit: true}
           })
         }
@@ -297,7 +305,7 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
+    navigate({to: '/me/organizations/$orgId/billing', params: {orgId: selectedTeam.orgId}})
   }
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {
@@ -317,7 +325,7 @@ export const CreateNewActivity = (props: Props) => {
     <div className='flex h-full w-full flex-col bg-surface-card'>
       <div className='mx-1'>
         <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
-          <Link className='p-4' to={`/activity-library/`} replace={true}>
+          <Link className='p-4' to='/activity-library' replace={true}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
           <div className='hidden shrink-0 font-semibold text-lg lg:text-xl xl:block'>

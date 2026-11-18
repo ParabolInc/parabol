@@ -63,8 +63,8 @@ jest.mock('../../../../mutations/useRequestPageAccessMutation', () => ({
 jest.mock('../../../../mutations/useUnsyncSyncedBlockMutation', () => ({
   useUnsyncSyncedBlockMutation: () => [jest.fn(), false]
 }))
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
   useNavigate: () => jest.fn()
 }))
 jest.mock('../SyncedBlockWhoHasAccess', () => ({SyncedBlockWhoHasAccess: () => null}))

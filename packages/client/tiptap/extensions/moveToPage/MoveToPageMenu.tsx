@@ -1,5 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import {Suspense, useCallback, useRef, useState} from 'react'
-import {useNavigate} from 'react-router'
+import type {NavigateFn} from '~/types/relayMutations'
 import {useDebouncedSearch} from '../../../hooks/useDebouncedSearch'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -19,7 +20,7 @@ interface Props {
   heading: string
   confirmVerb?: string
   onClose: (returnFocus: boolean) => void
-  onPick: (pageId: string, title: string, navigate: (path: string) => void) => void
+  onPick: (pageId: string, title: string, navigate: NavigateFn) => void
 }
 
 const MoveToPageMenu = (props: Props) => {

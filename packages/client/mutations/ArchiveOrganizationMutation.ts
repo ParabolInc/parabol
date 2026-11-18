@@ -55,7 +55,7 @@ const popOrgArchivedToast: OnNextHandler<
         autoDismiss: 5,
         message: `${teamName} has been archived.`
       })
-      navigate?.('/meetings')
+      navigate?.({to: '/meetings'})
     }
   })
 }
@@ -106,7 +106,7 @@ const ArchiveOrganizationMutation: StandardMutation<
       if (payload) {
         popOrgArchivedToast(payload, {atmosphere, navigate})
       }
-      navigate('/meetings', {replace: true})
+      navigate({to: '/meetings', replace: true})
     },
     onError
   })

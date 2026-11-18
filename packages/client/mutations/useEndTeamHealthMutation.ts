@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, type UseMutationConfig, useMutation} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {RecordProxy} from 'relay-runtime'
 import type {useEndTeamHealthMutation_team$data} from '~/__generated__/useEndTeamHealthMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'

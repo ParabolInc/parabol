@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type * as Y from 'yjs'
 import {Add as AddIcon} from '~/ui/icons'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
@@ -63,7 +63,7 @@ export const PageActions = (props: Props) => {
           if (key === 'pageCode') {
             pageLinkBlock.unobserve(gotoNewPage)
             const pageCode = pageLinkBlock.getAttribute('pageCode')
-            navigate(`/pages/${pageCode}`)
+            navigate({to: '/pages/$pageSlug', params: {pageSlug: String(pageCode)}})
             expandChildren()
           }
         }

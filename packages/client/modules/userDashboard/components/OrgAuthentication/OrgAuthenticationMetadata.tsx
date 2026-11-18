@@ -1,8 +1,8 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import {UploadFile as UploadFileIcon} from '~/ui/icons'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
@@ -116,7 +116,8 @@ const OrgAuthenticationMetadata = (props: Props) => {
           {orgId ? (
             <Link
               className='font-semibold text-accent hover:text-sky-600'
-              to={`/me/organizations/${orgId}/members`}
+              to='/me/organizations/$orgId/members'
+              params={{orgId}}
             >
               Contact an Org Admin
             </Link>

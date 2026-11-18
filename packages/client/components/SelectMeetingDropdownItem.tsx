@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import {ArrowForward as ArrowForwardIcon, ChangeHistory, GroupWork, History} from '~/ui/icons'
 import getMeetingPhase from '~/utils/getMeetingPhase'
@@ -44,7 +44,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   }
   const {name: teamName} = team
   const gotoMeeting = () => {
-    navigate(`/meet/${meetingId}`)
+    navigate({to: '/meet/$meetingId', params: {meetingId}})
   }
   //FIXME 6062: change to React.ComponentType
   const IconOrSVG = meetingTypeToIcon[meetingType]!

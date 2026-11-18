@@ -3,9 +3,9 @@ import './monkeyPatchMonacoEnvironment'
 import './style.css'
 import {ToolbarButton} from '@graphiql/react'
 import {createGraphiQLFetcher, type FetcherOpts, type FetcherParams} from '@graphiql/toolkit'
+import {Link} from '@tanstack/react-router'
 import {GraphiQL} from 'graphiql'
 import {useCallback, useEffect, useState} from 'react'
-import {Link} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Button} from '~/ui/Button/Button'
 import {Dialog} from '~/ui/Dialog/Dialog'
@@ -133,7 +133,7 @@ const GraphqlContainer = () => {
       </Dialog>
       <GraphiQL fetcher={fetcher}>
         <GraphiQL.Logo>
-          <Link to={'/'}>
+          <Link to='/'>
             <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
           </Link>
         </GraphiQL.Logo>

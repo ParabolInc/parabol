@@ -1,18 +1,11 @@
+import {Outlet, useMatchRoute, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
-import {lazy, Suspense, useEffect} from 'react'
+import {Suspense, useEffect, useMemo} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {matchPath, Route, Routes, useNavigate} from 'react-router'
 import ErrorBoundary from '~/components/ErrorBoundary'
-import {TeamDashMainRoot} from '~/routing/legacyRouteComponents'
 import type {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
-
-const TeamSettings = lazy(
-  () => import(/* webpackChunkName: 'TeamIntegrationsRoot' */ '../../components/TeamSettingsRoot')
-)
-const ArchivedTasks = lazy(
-  () => import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../../../../components/ArchiveTaskRoot')
-)
+import {TeamOutletContext} from './useTeamOutlet'
 
 interface Props {
   teamId: string
@@ -39,34 +32,26 @@ const TeamContainer = (props: Props) => {
   const {viewer} = data
   const {team, canAccessTeam} = viewer
   const navigate = useNavigate()
-  const {location} = window
-  const {pathname} = location
+  const matchRoute = useMatchRoute()
+  const {pathname} = window.location
+  const teamOutlet = useMemo(() => (team ? {team, teamId} : null), [team, teamId])
   useEffect(() => {
     if (!canAccessTeam) {
-      navigate(
-        {
-          pathname: `/invitation-required`,
-          search: `?redirectTo=${pathname}&teamId=${teamId}`
-        },
-        {replace: true}
-      )
+      navigate({
+        href: `/invitation-required?redirectTo=${pathname}&teamId=${teamId}`,
+        replace: true
+      })
     }
   }, [canAccessTeam])
-  if (!team) return null
-
-  const isSettings = Boolean(matchPath('/team/:teamId/settings', pathname))
+  if (!teamOutlet) return null
+  const isSettings = Boolean(matchRoute({to: '/team/$teamId/settings'}))
   return (
     <ErrorBoundary>
-      <Team isSettings={isSettings} team={team}>
+      <Team isSettings={isSettings} team={teamOutlet.team}>
         <Suspense fallback={''}>
-          <Routes>
-            <Route path='settings' element={<TeamSettings teamId={teamId} />} />
-            <Route
-              path='archive'
-              element={<ArchivedTasks team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
-            />
-            <Route path='*' element={<TeamDashMainRoot />} />
-          </Routes>
+          <TeamOutletContext.Provider value={teamOutlet}>
+            <Outlet />
+          </TeamOutletContext.Provider>
         </Suspense>
       </Team>
     </ErrorBoundary>

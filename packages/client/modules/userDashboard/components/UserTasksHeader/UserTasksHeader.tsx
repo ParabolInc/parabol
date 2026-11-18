@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {
   UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
@@ -142,7 +142,9 @@ const UserTasksHeader = (props: Props) => {
         <Button
           size='default'
           className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
-          onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
+          onClick={() =>
+            navigate({href: constructFilterQueryParamURL(teamIds, userIds, !showArchived)})
+          }
         >
           <Checkbox className='mr-2 w-6 text-center text-[24px]' active={showArchived} />
           {'Archived'}

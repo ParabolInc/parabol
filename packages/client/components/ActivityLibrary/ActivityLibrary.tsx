@@ -1,4 +1,5 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
+import {Link, useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useState} from 'react'
 import {
@@ -7,12 +8,12 @@ import {
   usePreloadedQuery,
   useRefetchableFragment
 } from 'react-relay'
-import {Link, Navigate, useParams} from 'react-router'
 import type {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import type {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import type {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import type {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
 import type {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
+import Redirect from '~/routing/Redirect'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useSearchFilter from '../../hooks/useSearchFilter'
@@ -269,7 +270,7 @@ export const ActivityLibrary = (props: Props) => {
     return () => subscription.unsubscribe()
   }, [debouncedSearchQuery])
 
-  const {categoryId} = useParams()
+  const {categoryId} = useParams({strict: false})
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -312,7 +313,13 @@ export const ActivityLibrary = (props: Props) => {
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     const defaultCategoryId =
       viewer.favoriteTemplates.length > 0 ? FAVORITE_CATEGORY_ID : QUICK_START_CATEGORY_ID
-    return <Navigate to={`/activity-library/category/${defaultCategoryId}`} replace />
+    return (
+      <Redirect
+        to='/activity-library/category/$categoryId'
+        params={{categoryId: defaultCategoryId}}
+        replace
+      />
+    )
   }
 
   return (
@@ -341,7 +348,8 @@ export const ActivityLibrary = (props: Props) => {
 
             <Link
               className='rounded-md bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600'
-              to={`/activity-library/new-activity/${categoryId}`}
+              to='/activity-library/new-activity/$categoryId'
+              params={{categoryId}}
             >
               Create custom activity
             </Link>
@@ -371,7 +379,8 @@ export const ActivityLibrary = (props: Props) => {
                         ? 'text-white'
                         : 'text-tomato-500')
                   )}
-                  to={`/activity-library/category/${category}`}
+                  to='/activity-library/category/$categoryId'
+                  params={{categoryId: category}}
                   onClick={() => resetQuery()}
                   key={category}
                 >

@@ -1,5 +1,5 @@
+import {useNavigate, useParams} from '@tanstack/react-router'
 import type * as React from 'react'
-import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
@@ -23,7 +23,7 @@ const validatePassword = (password: string) => {
 
 const SetNewPassword = () => {
   const navigate = useNavigate()
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const atmosphere = useAtmosphere()
   useCanonical('reset-password')
   const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps({

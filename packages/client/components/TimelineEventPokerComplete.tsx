@@ -89,7 +89,7 @@ const TimelineEventPokerComplete = (props: Props) => {
         {locked ? (
           canUpgrade && (
             <>
-              <StyledLink className='font-semibold' to={`/me/organizations/${orgId}`}>
+              <StyledLink className='font-semibold' to='/me/organizations/$orgId' params={{orgId}}>
                 Upgrade now
               </StyledLink>{' '}
               to get access to the estimates and summary
@@ -97,7 +97,11 @@ const TimelineEventPokerComplete = (props: Props) => {
           )
         ) : (
           <>
-            <StyledLink className='font-semibold' to={`/meet/${meetingId}/estimate/1`}>
+            <StyledLink
+              className='font-semibold'
+              to='/meet/$meetingId/$'
+              params={{meetingId, _splat: 'estimate/1'}}
+            >
               See the estimates
             </StyledLink>
             {' in your meeting or '}

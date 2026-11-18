@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router'
+import matchPath from '~/utils/matchPath'
 import type {TaskInvolves_notification$data} from '../../__generated__/TaskInvolves_notification.graphql'
 import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import {MENTIONEE} from '../../utils/constants'
@@ -32,7 +32,7 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification$data, OnNextN
     action: {
       label: 'Check it out!',
       callback: () => {
-        navigate?.(`/team/${teamId}`)
+        navigate?.({to: '/team/$teamId', params: {teamId}})
       }
     }
   })

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useLayoutEffect, useRef} from 'react'
-import {useNavigate} from 'react-router'
 import {AddToPhotos, ArrowForward, Autorenew, ContentCopy, DeleteOutlined} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDuplicatePageMutation} from '../../mutations/useDuplicatePageMutation'

@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import TaskCardStatusIndicator from '~/modules/taskCard/components/TaskCardStatusIndicator/TaskCardStatusIndicator'
 import type {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
@@ -85,7 +85,7 @@ const TaskInvolves = (props: Props) => {
       {onError, onCompleted}
     )
     const archiveSuffix = tags.includes('archived') ? '/archive' : ''
-    navigate(`/team/${teamId}${archiveSuffix}`)
+    navigate({href: `/team/${teamId}${archiveSuffix}`})
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
   if (!editor) return null

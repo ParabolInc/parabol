@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
 import organizationQuery, {
   type OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
@@ -8,7 +8,7 @@ import {Loader} from '../../../../utils/relay/renderLoader'
 import Organization from '../../components/OrgBilling/Organization'
 
 const OrganizationRoot = () => {
-  const {orgId} = useParams()
+  const {orgId} = useParams({strict: false})
   const queryRef = useQueryLoaderNow<OrganizationQuery>(organizationQuery, {
     orgId: orgId!
   })

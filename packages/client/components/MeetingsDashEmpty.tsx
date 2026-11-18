@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -31,7 +31,7 @@ const MeetingsDashEmpty = (props: Props) => {
         {isTeamFilterSelected ? (
           <>
             <Link
-              to={'/meetings'}
+              to='/meetings'
               className='font-sans font-semibold text-accent no-underline'
               onClick={onClick}
             >

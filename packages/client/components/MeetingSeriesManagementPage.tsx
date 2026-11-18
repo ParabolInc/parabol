@@ -1,6 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Navigate, useNavigate} from 'react-router'
+import Redirect from '~/routing/Redirect'
 import type {MeetingSeriesManagementPageQuery} from '../__generated__/MeetingSeriesManagementPageQuery.graphql'
 import {MeetingSeriesEditForm} from './MeetingSeriesEditForm'
 
@@ -31,12 +32,12 @@ const MeetingSeriesManagementPage = (props: Props) => {
   const meetingSeries = data.viewer.meetingSeries
 
   if (!meetingSeries) {
-    return <Navigate replace to='/meetings' />
+    return <Redirect replace to='/meetings' />
   }
 
   const activeMeeting = meetingSeries.activeMeetings[0]
   if (activeMeeting) {
-    return <Navigate replace to={`/meet/${activeMeeting.id}`} />
+    return <Redirect replace to='/meet/$meetingId' params={{meetingId: activeMeeting.id}} />
   }
 
   return (
@@ -47,8 +48,8 @@ const MeetingSeriesManagementPage = (props: Props) => {
       </p>
       <MeetingSeriesEditForm
         seriesRef={meetingSeries}
-        onClose={() => navigate('/meetings')}
-        onCancelled={() => navigate('/meetings')}
+        onClose={() => navigate({to: '/meetings'})}
+        onCancelled={() => navigate({to: '/meetings'})}
       />
     </div>
   )

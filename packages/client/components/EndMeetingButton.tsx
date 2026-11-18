@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {forwardRef, type Ref} from 'react'
-import {useNavigate} from 'react-router'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import {Flag} from '~/ui/icons'

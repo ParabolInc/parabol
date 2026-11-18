@@ -1,6 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {ReportNotes_result$key} from '../../__generated__/ReportNotes_result.graphql'
 import {MIN_RESPONDENTS_FOR_SCORE} from '../../shared/utils/teamHealthAnonymity'
 import plural from '../../utils/plural'
@@ -40,7 +40,8 @@ const ReportNotes = ({orgId, resultRef, hasHiddenTeamRows}: Props) => {
             <>
               {count} {plural(count, 'team')} left out on the Starter plan.{' '}
               <Link
-                to={`/me/organizations/${orgId}/billing`}
+                to='/me/organizations/$orgId/billing'
+                params={{orgId}}
                 className='font-semibold text-sky-600 hover:underline dark:text-accent'
               >
                 Upgrade

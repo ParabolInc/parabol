@@ -186,7 +186,7 @@ export const removeOrgUsersOrganizationOnNext: OnNextHandler<
     removedUserIds.some((removedUserId) => removedUserId === viewerId) &&
     onExOrgRoute(pathname, affectedOrganizationId)
   ) {
-    navigate('/meetings')
+    navigate({to: '/meetings'})
   }
 }
 
@@ -212,11 +212,11 @@ export const removeOrgUsersNotificationOnNext: OnNextHandler<
     })
 
     if (onMeetingRoute(window.location.pathname, affectedMeetingIds)) {
-      navigate('/meetings')
+      navigate({to: '/meetings'})
       return
     }
     if (affectedTeamIds.some((teamId) => onTeamRoute(window.location.pathname, teamId))) {
-      navigate('/meetings')
+      navigate({to: '/meetings'})
       return
     }
   } else {

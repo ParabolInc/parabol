@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useRef, useState} from 'react'
-import {useNavigate} from 'react-router'
 import {
   AddToPhotos as CopyToIcon,
   Delete as DeleteIcon,

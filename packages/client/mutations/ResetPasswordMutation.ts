@@ -32,7 +32,7 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, NavigateLo
       onCompleted(res, errors)
       if (!userError && !errors) {
         const nextUrl = getValidRedirectParam() || '/meetings'
-        navigate(nextUrl)
+        navigate({href: nextUrl})
       }
     }
   })

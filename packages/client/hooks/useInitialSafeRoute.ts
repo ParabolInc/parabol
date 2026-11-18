@@ -1,6 +1,6 @@
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect, useRef} from 'react'
-import {useLocation, useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import type {
   useInitialSafeRoute_meeting$data,
@@ -87,7 +87,7 @@ const useInitialSafeRoute = (
     if (localStage && !phaseSlug) {
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, meeting)
-      navigate(nextUrl, {replace: true})
+      navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return
@@ -100,7 +100,7 @@ const useInitialSafeRoute = (
     // typo in url, send to the facilitator
     if (!phase) {
       const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
-      navigate(nextUrl, {replace: true})
+      navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return
@@ -117,7 +117,7 @@ const useInitialSafeRoute = (
           ? '/retrospective-demo/reflect'
           : fromStageIdToUrl(facilitatorStageId, meeting)
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
-      navigate(nextUrl, {replace: true})
+      navigate({href: nextUrl, replace: true})
       setSafeRoute(false)
       return
     }
@@ -127,7 +127,7 @@ const useInitialSafeRoute = (
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
-      navigate(nextUrl, {replace: true})
+      navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return

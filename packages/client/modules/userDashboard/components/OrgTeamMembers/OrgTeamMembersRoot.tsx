@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
 import orgTeamMembersQuery, {
   type OrgTeamMembersQuery
 } from '~/__generated__/OrgTeamMembersQuery.graphql'
@@ -9,7 +9,7 @@ import {Loader} from '../../../../utils/relay/renderLoader'
 import {OrgTeamMembers} from './OrgTeamMembers'
 
 const OrgTeamMembersRoot = () => {
-  const {teamId} = useParams()
+  const {teamId} = useParams({strict: false})
   const queryRef = useQueryLoaderNow<OrgTeamMembersQuery>(orgTeamMembersQuery, {
     teamId: teamId!
   })

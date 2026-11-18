@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamDashTasksTab_viewer$key} from '~/__generated__/TeamDashTasksTab_viewer.graphql'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
@@ -78,7 +78,7 @@ const TeamDashTasksTab = (props: Props) => {
           <DashNavControl
             icon='archive'
             label='Archived Tasks'
-            onClick={() => navigate(`/team/${teamId}/archive`)}
+            onClick={() => navigate({to: '/team/$teamId/archive', params: {teamId}})}
           />
         </DashSectionHeader>
         <div className='m-0 flex h-full min-h-0 w-full flex-1'>

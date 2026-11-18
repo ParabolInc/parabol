@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {PageDeletedHeader_page$key} from '../../__generated__/PageDeletedHeader_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
@@ -46,7 +46,7 @@ export const PageDeletedHeader = (props: Props) => {
   const deletePage = () => {
     const pageCode = GQLID.fromKey(pageId)[0]
     if (location.href.endsWith(`${pageCode}`)) {
-      navigate('/me')
+      navigate({to: '/me'})
     }
     execute({
       variables: {

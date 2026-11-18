@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {Navigate} from 'react-router'
+import Redirect from '~/routing/Redirect'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 
 export const MakePage = () => {
@@ -18,7 +18,7 @@ export const MakePage = () => {
     })
   }, [])
   if (pageCode) {
-    return <Navigate to={`/pages/${pageCode}`} replace />
+    return <Redirect to='/pages/$pageSlug' params={{pageSlug: String(pageCode)}} replace />
   }
   return <div>Creating page...</div>
 }

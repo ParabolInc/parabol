@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {
   SlackNotificationEventEnum,
   TeamHealthReminderPrompt_meeting$key
@@ -122,7 +122,7 @@ const TeamHealthReminderPrompt = (props: Props) => {
     if (submitting) return
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
-  const onConnectWebhook = () => navigate(`/team/${teamId}/integrations`)
+  const onConnectWebhook = () => navigate({to: '/team/$teamId/integrations', params: {teamId}})
   const buttonClassName = 'gap-2 [&_svg]:h-5 [&_svg]:w-5'
 
   return (

@@ -1,8 +1,8 @@
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation, useNavigate} from 'react-router'
 import type {PayloadError} from 'relay-runtime'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
@@ -169,8 +169,8 @@ export const TemplateDetails = (props: Props) => {
 
   const {teams, preferredTeamId} = viewer
   const navigate = useNavigate()
-  const location = useLocation() as {state?: {prevCategory?: string; edit?: boolean}}
-  const prevCategory = location.state?.prevCategory
+  const location = useLocation()
+  const prevCategory = location.state.prevCategory
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, error, submitting, submitMutation} = useMutationProps({
@@ -198,10 +198,11 @@ export const TemplateDetails = (props: Props) => {
       onCompleted: (res: unknown, errors?: readonly PayloadError[] | null) => {
         onCompleted(res, errors)
         if (errors?.length) return
-        navigate(
-          `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
-          {replace: true}
-        )
+        navigate({
+          to: '/activity-library/category/$categoryId',
+          params: {categoryId: prevCategory ?? category ?? QUICK_START_CATEGORY_ID},
+          replace: true
+        })
       }
     }
     removeTemplateMutation(atmosphere, {templateId: activityId}, mutationArgs)
@@ -222,8 +223,8 @@ export const TemplateDetails = (props: Props) => {
   const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
-    setIsEditing(!!location.state?.edit)
-  }, [location.state?.edit, activityId, setIsEditing])
+    setIsEditing(!!location.state.edit)
+  }, [location.state.edit, activityId, setIsEditing])
 
   useEffect(() => {
     setErrorActivityId(null)

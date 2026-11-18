@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamsLimitReminderNotification_notification$key} from '~/__generated__/TeamsLimitReminderNotification_notification.graphql'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import {Threshold} from '../types/constEnums'
@@ -31,7 +31,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
   const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   const onActionClick = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   return (

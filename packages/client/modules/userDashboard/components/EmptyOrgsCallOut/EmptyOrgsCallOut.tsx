@@ -1,11 +1,11 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import Panel from '../../../../components/Panel/Panel'
 import {Button} from '../../../../ui/Button/Button'
 
 const EmptyOrgsCallOut = () => {
   const navigate = useNavigate()
   const gotoNewTeam = () => {
-    navigate('/newteam')
+    navigate({to: '/newteam'})
   }
 
   const isSingleOrg = window.__ACTION__.IS_SINGLE_ORG

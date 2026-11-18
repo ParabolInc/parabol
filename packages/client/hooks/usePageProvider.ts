@@ -1,7 +1,7 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
+import {useNavigate} from '@tanstack/react-router'
 import {generateJSON, generateText} from '@tiptap/react'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {type NavigateFunction, useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -9,6 +9,7 @@ import {getTitleFromPageText} from '../shared/tiptap/getTitleFromPageText'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {getPageSlug} from '../tiptap/getPageSlug'
 import {providerManager} from '../tiptap/providerManager'
+import type {NavigateFn} from '../types/relayMutations'
 import useAtmosphere from './useAtmosphere'
 
 function observeFirstInnerXmlText(
@@ -41,7 +42,7 @@ function observeFirstInnerXmlText(
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
   pageCode: number,
-  navigate: NavigateFunction,
+  navigate: NavigateFn,
   atmosphere: Atmosphere
 ) => {
   const plaintext = generateText(
@@ -61,7 +62,7 @@ const updateUrlWithSlug = (
   const currentRoutePageCode = Number(pathname.slice(pageCodeIdx + 1))
   if (currentRoutePageCode === pageCode) {
     const nextSearch = new URLSearchParams(search).has('share') ? '?share' : ''
-    navigate(`/pages/${pageSlug}${nextSearch}${hash}`, {replace: true})
+    navigate({href: `/pages/${pageSlug}${nextSearch}${hash}`, replace: true})
   }
 }
 

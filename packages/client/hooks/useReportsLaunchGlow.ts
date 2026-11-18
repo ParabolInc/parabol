@@ -1,5 +1,5 @@
+import {useMatchRoute} from '@tanstack/react-router'
 import {useEffect, useState} from 'react'
-import {useMatch} from 'react-router'
 import {
   isReportsLaunchGlowActive,
   markReportsLaunchSeen,
@@ -12,7 +12,8 @@ const RETIRE_MS = 800
 const SUNSET_CHECK_MS = 60 * 60 * 1000
 
 const useReportsLaunchGlow = (lastMetAt: string | null) => {
-  const onReports = !!useMatch({path: '/reports', end: false})
+  const matchRoute = useMatchRoute()
+  const onReports = !!matchRoute({to: '/reports', fuzzy: true})
   const [state, setState] = useState<ReportsLaunchGlowState>(() =>
     !onReports && isReportsLaunchGlowActive(new Date(), readReportsLaunchSeen(), lastMetAt)
       ? 'glowing'

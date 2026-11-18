@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import {Lock} from '~/ui/icons'
 import plural from '../../../../utils/plural'
 
@@ -12,7 +12,7 @@ const TeaserOrgTeamsRow = (props: Props) => {
   const navigate = useNavigate()
 
   const handleParabolEnterpriseClick = () => {
-    navigate(`/me/organizations/${orgId}/billing`)
+    navigate({to: '/me/organizations/$orgId/billing', params: {orgId}})
   }
 
   return (

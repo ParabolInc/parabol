@@ -1,7 +1,7 @@
 import * as Toast from '@radix-ui/react-toast'
+import {useLocation} from '@tanstack/react-router'
 import {AnimatePresence, motion} from 'motion/react'
 import {memo, useEffect, useRef, useState} from 'react'
-import {useLocation} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'

@@ -132,7 +132,7 @@ export const removeTeamMemberNotificationOnNext: OnNextHandler<
     onTeamRoute(window.location.pathname, teamId) ||
     onMeetingRoute(window.location.pathname, meetingIds)
   ) {
-    navigate('/meetings')
+    navigate({to: '/meetings'})
   }
 }
 

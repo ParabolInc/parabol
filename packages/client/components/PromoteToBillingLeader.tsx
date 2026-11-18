@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {PromoteToBillingLeader_notification$key} from '~/__generated__/PromoteToBillingLeader_notification.graphql'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import NotificationAction from './NotificationAction'
@@ -31,7 +31,7 @@ const PromoteToBillingLeader = (props: Props) => {
   const {name: orgName, id: orgId, picture: orgPicture} = organization
 
   const goToOrg = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   return (

@@ -1,5 +1,5 @@
+import {Outlet} from '@tanstack/react-router'
 import {generateHTML, generateJSON} from '@tiptap/core'
-import {Outlet} from 'react-router'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {TipTapProvider} from './TipTapProvider'
 

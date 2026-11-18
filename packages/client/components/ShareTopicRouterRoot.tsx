@@ -1,5 +1,5 @@
+import {useNavigate, useParams} from '@tanstack/react-router'
 import {Suspense, useCallback} from 'react'
-import {useLocation, useNavigate, useParams} from 'react-router'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import shareTopicModalQuery, {
   type ShareTopicModalQuery
@@ -8,7 +8,7 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {Loader} from '../utils/relay/renderLoader'
 
 const ShareTopicRouterRoot = () => {
-  const {meetingId, stageId} = useParams()
+  const {meetingId, stageId} = useParams({strict: false})
 
   const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
     shareTopicModalQuery,
@@ -16,13 +16,11 @@ const ShareTopicRouterRoot = () => {
     'network-only'
   )
 
-  const location = useLocation()
   const navigate = useNavigate()
 
   const onClose = useCallback(() => {
-    const state = location.state as {backgroundLocation?: Location} | null
-    navigate(state?.backgroundLocation ?? `/new-summary/${meetingId}`, {replace: true})
-  }, [location])
+    navigate({to: '/new-summary/$meetingId', params: {meetingId: meetingId!}, replace: true})
+  }, [meetingId])
 
   return (
     <Suspense fallback={<Loader />}>

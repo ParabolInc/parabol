@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamPrivacyToggle_team$key} from '../../../../__generated__/TeamPrivacyToggle_team.graphql'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -65,7 +65,7 @@ const TeamPrivacyToggle = (props: Props) => {
   }
 
   const handleUpgradeClick = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   return (

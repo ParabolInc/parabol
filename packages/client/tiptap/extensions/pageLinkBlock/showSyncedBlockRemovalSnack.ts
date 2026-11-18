@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {fetchQuery, readInlineData} from 'relay-runtime'
+import type {NavigateFn} from '~/types/relayMutations'
 import syncedBlockPlacesPageFragment, {
   type SyncedBlockPlaces_page$key
 } from '../../../__generated__/SyncedBlockPlaces_page.graphql'
@@ -22,7 +23,7 @@ const SYNCED_BLOCK_REMOVED_SNACK_KEY = 'SyncedBlockRemoved'
 type Params = {
   atmosphere: Atmosphere
   editor: Editor
-  navigate: (path: string) => void
+  navigate: NavigateFn
   executeArchive: ReturnType<typeof useArchivePageMutation>[0]
   removal: SyncedBlockRemoval
 }
@@ -132,7 +133,10 @@ export const showSyncedBlockRemovalSnack = async ({
         callback: () => {
           removeSnack()
           const [successorCode] = GQLID.fromKey(successorLink.pageId)
-          navigate(`/pages/${getPageSlug(successorCode, successorLink.title)}`)
+          navigate({
+            to: '/pages/$pageSlug',
+            params: {pageSlug: getPageSlug(successorCode, successorLink.title)}
+          })
         }
       }
     : undefined

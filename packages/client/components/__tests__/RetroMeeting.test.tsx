@@ -1,8 +1,8 @@
+import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
-import {Component, type ReactNode} from 'react'
+import {Component, type ReactNode, useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {RelayEnvironmentProvider} from 'react-relay'
-import {BrowserRouter} from 'react-router'
 import {
   createOperationDescriptor,
   Environment,
@@ -13,6 +13,7 @@ import {
   Store
 } from 'relay-runtime'
 import type {RetroMeeting_meeting$key} from '../../__generated__/RetroMeeting_meeting.graphql'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import reportClientError from '../../utils/reportClientError'
 import RetroMeeting from '../RetroMeeting'
@@ -133,14 +134,26 @@ const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
 let root: Root
 let container: HTMLElement
 
+let replaceMeeting: (meetingRef: RetroMeeting_meeting$key) => void = () => {}
+const ReplaceableRetroMeeting = (props: {meetingRef: RetroMeeting_meeting$key}) => {
+  const [meetingRef, setMeetingRef] = useState(props.meetingRef)
+  replaceMeeting = setMeetingRef
+  return <RetroMeeting meeting={meetingRef} />
+}
+
 const renderMeeting = (meetingRef: RetroMeeting_meeting$key) => {
+  const router = createTestRouter({
+    routes: {
+      '/meet/$meetingId/$': (
+        <CrashBoundary>
+          <ReplaceableRetroMeeting meetingRef={meetingRef} />
+        </CrashBoundary>
+      )
+    }
+  })
   root.render(
     <RelayEnvironmentProvider environment={atmosphere}>
-      <BrowserRouter>
-        <CrashBoundary>
-          <RetroMeeting meeting={meetingRef} />
-        </CrashBoundary>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </RelayEnvironmentProvider>
   )
 }
@@ -155,6 +168,7 @@ beforeAll(() => {
   Object.assign(globalThis, {
     window: happyWindow,
     document: happyWindow.document,
+    self: happyWindow,
     location: happyWindow.location
   })
 })
@@ -173,6 +187,7 @@ beforeEach(() => {
 
 afterEach(() => {
   root.unmount()
+  destroyTestRouters()
   container.remove()
   jest.restoreAllMocks()
 })
@@ -184,7 +199,7 @@ test('a retro that has no phase to show reports its local stage and stages', asy
   expect(reportClientError).not.toHaveBeenCalled()
 
   // a second meeting given to the same RetroMeeting never had its local stage set
-  renderMeeting(loadMeeting('meeting2'))
+  replaceMeeting(loadMeeting('meeting2'))
   await tick()
   expect(reportClientError).toHaveBeenCalledWith(
     expect.objectContaining({

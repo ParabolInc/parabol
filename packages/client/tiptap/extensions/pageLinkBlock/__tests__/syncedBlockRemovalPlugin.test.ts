@@ -256,7 +256,10 @@ describe('the removal snack', () => {
     snack.onDismiss?.()
     expect(linksIn(page)).toEqual([{pos: original!.pos, pageCode: 7, canonical: false}])
     snack.link!.callback()
-    expect(navigate).toHaveBeenCalledWith('/pages/handbook-9')
+    expect(navigate).toHaveBeenCalledWith({
+      to: '/pages/$pageSlug',
+      params: {pageSlug: 'handbook-9'}
+    })
   })
 
   test('counts the places the server knows now, not the ones the store remembers', async () => {

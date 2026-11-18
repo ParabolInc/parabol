@@ -84,17 +84,17 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
-      navigate('/create-account')
+      navigate({to: '/create-account'})
     } else {
-      navigate('/retrospective-demo-summary')
+      navigate({to: '/retrospective-demo-summary'})
     }
   } else if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
-      navigate(`/team/${teamId}`)
+      navigate({to: '/team/$teamId', params: {teamId}})
       popEndMeetingToast(atmosphere, meetingId)
     } else if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      navigate(`/pages/${pageCode}`)
+      navigate({to: '/pages/$pageSlug', params: {pageSlug: String(pageCode)}})
     }
   }
 }

@@ -1,6 +1,6 @@
+import {useLocation, useNavigate} from '@tanstack/react-router'
 import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
-import {useLocation, useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -69,7 +69,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     isSSOAuthEnabled && !isGoogleAuthEnabled && !isMicrosoftAuthEnabled && !isInternalAuthEnabled
   const {getOffsetTop, isPrimary, isSignin, invitationToken, email, goToPage} = props
   const location = useLocation()
-  const params = new URLSearchParams(location.search)
+  const params = new URLSearchParams(location.searchStr)
   const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
   const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
   const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
@@ -194,7 +194,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       )
     } else {
       const nextUrl = getValidRedirectParam() || '/meetings'
-      navigate(nextUrl)
+      navigate({href: nextUrl})
     }
     return true
   }
@@ -236,7 +236,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken,
           pseudoId,
-          params: location.search
+          params: location.searchStr
         },
         {
           onError,

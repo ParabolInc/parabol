@@ -1,8 +1,8 @@
+import {Link, useParams} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import {ChevronRight} from '~/ui/icons'
 import plural from '~/utils/plural'
 import type {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
@@ -32,6 +32,7 @@ const OrgTeamsRow = (props: Props) => {
     teamRef
   )
   const {id: teamId, teamMembers, teamMembersCount, name, lastMetAt} = team
+  const {orgId} = useParams({strict: false})
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   const isLead = viewerTeamMember?.isLead
   const isMember = !!viewerTeamMember && !isLead
@@ -62,7 +63,8 @@ const OrgTeamsRow = (props: Props) => {
         <div className='flex items-center py-3 md:px-3'>
           {isLead || isMember || isOrgAdmin ? (
             <Link
-              to={teamId}
+              to='/me/organizations/$orgId/teams/$teamId'
+              params={{orgId: orgId!, teamId}}
               className='flex flex-1 items-center font-bold text-fg-primary text-lg md:flex-initial'
             >
               {teamNameAndTags}

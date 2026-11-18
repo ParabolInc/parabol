@@ -1,11 +1,11 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Button} from '../ui/Button/Button'
 import GiftSVG from './GiftSVG'
 
 const DemoCreateAccountButton = () => {
   const navigate = useNavigate()
-  const handleClick = () => navigate('/create-account?from=demo')
+  const handleClick = () => navigate({href: '/create-account?from=demo'})
   const isBreakpoint = useBreakpoint(480)
   return (
     <Button

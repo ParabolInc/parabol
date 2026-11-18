@@ -1,8 +1,9 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import DOMPurify from 'dompurify'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {Autorenew, Description as DescriptionIcon} from '~/ui/icons'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
 import TypeAheadLabel from '../../components/TypeAheadLabel'
@@ -86,7 +87,7 @@ export const SearchDialogResult = ({
       <Link
         tabIndex={-1}
         draggable={false}
-        to={getSearchResultHref(node)}
+        {...hrefOptions(getSearchResultHref(node))}
         className={'ml-1 flex w-full items-center'}
         onClick={closeSearch}
       >

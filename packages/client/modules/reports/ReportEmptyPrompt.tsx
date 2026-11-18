@@ -1,4 +1,5 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
+import hrefOptions from '~/routing/hrefOptions'
 import {ArrowForward} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
@@ -38,7 +39,7 @@ const ReportEmptyPrompt = ({title, description, actionLabel, action, isCompact}:
       <p className='mt-2 mb-0 text-fg-secondary text-sm'>{description}</p>
       {action && 'to' in action ? (
         <Button asChild {...buttonProps}>
-          <Link to={action.to}>{label}</Link>
+          <Link {...hrefOptions(action.to)}>{label}</Link>
         </Button>
       ) : (
         <Button {...buttonProps} onClick={action?.onClick} disabled={!action}>

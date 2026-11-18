@@ -1,5 +1,5 @@
+import {useNavigate, useParams} from '@tanstack/react-router'
 import {useEffect, useRef} from 'react'
-import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -15,7 +15,7 @@ import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
-  const {verificationToken, invitationToken} = useParams()
+  const {verificationToken, invitationToken} = useParams({strict: false})
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, error, submitMutation} = useMutationProps({errorDisplay: 'inline'})
   const calledRef = useRef(false)

@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {Suspense, useMemo} from 'react'
-import {useNavigate} from 'react-router'
 import reportPageQuery, {type ReportPageQuery} from '../../__generated__/ReportPageQuery.graphql'
 import {useQueryLoaderNowWithRetry} from '../../hooks/useQueryLoaderNow'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
@@ -30,12 +30,12 @@ const ReportPageLoader = ({orgId, spec, title, pinId, period, reportQuestionId}:
     {preventSuspense: true}
   )
   const onPeriodChange = (nextPeriod: ReportPagePeriod) => {
-    navigate(
-      pinId
+    navigate({
+      href: pinId
         ? toReportPinPath(orgId, pinId, nextPeriod)
         : toReportPagePath(orgId, spec, nextPeriod, reportQuestionId),
-      {replace: true}
-    )
+      replace: true
+    })
   }
   const onSpecChange = useReportSpecChange(orgId, reportQuestionId, (nextSpec, questionId) =>
     toReportPagePath(orgId, nextSpec, period, questionId)

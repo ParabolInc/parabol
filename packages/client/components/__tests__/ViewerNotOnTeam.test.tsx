@@ -1,7 +1,7 @@
+import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
 import {createRoot, type Root} from 'react-dom/client'
 import {loadQuery, RelayEnvironmentProvider} from 'react-relay'
-import {BrowserRouter} from 'react-router'
 import {
   createOperationDescriptor,
   Environment,
@@ -12,6 +12,7 @@ import {
   Store
 } from 'relay-runtime'
 import type {ViewerNotOnTeamQuery} from '../../__generated__/ViewerNotOnTeamQuery.graphql'
+import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import ViewerNotOnTeam from '../ViewerNotOnTeam'
 
 jest.mock('babel-plugin-relay/macro', () => ({
@@ -37,6 +38,7 @@ beforeAll(() => {
   Object.assign(globalThis, {
     window: happyWindow,
     document: happyWindow.document,
+    self: happyWindow,
     location: happyWindow.location
   })
 })
@@ -53,6 +55,7 @@ beforeEach(() => {
 
 afterEach(() => {
   root.unmount()
+  destroyTestRouters()
   container.remove()
 })
 
@@ -81,11 +84,15 @@ test('a teammate sent here by an older auth token goes back with a fresh one', a
   const queryRef = loadQuery<ViewerNotOnTeamQuery>(atmosphere, viewerNotOnTeamQuery, variables, {
     fetchPolicy: 'store-only'
   })
+  const router = createTestRouter({
+    routes: {
+      '/invitation-required': <ViewerNotOnTeam queryRef={queryRef} />,
+      '/team/$teamId': <main>Team</main>
+    }
+  })
   root.render(
     <RelayEnvironmentProvider environment={atmosphere}>
-      <BrowserRouter>
-        <ViewerNotOnTeam queryRef={queryRef} />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </RelayEnvironmentProvider>
   )
   for (let i = 0; i < 100 && refreshSession.mock.calls.length === 0; i++) await tick()

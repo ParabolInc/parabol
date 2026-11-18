@@ -1,5 +1,5 @@
+import {useNavigate} from '@tanstack/react-router'
 import {useEffect, useState} from 'react'
-import {useNavigate} from 'react-router'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
@@ -31,7 +31,7 @@ const SAMLRedirect = () => {
       if (!userId) {
         setError(error || 'Error logging in')
       } else {
-        navigate('/meetings', {replace: true})
+        navigate({to: '/meetings', replace: true})
       }
     }
   }, [])

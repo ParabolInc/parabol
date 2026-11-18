@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {RequestToJoinOrgNotification_notification$key} from '~/__generated__/RequestToJoinOrgNotification_notification.graphql'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
@@ -29,9 +29,13 @@ const RequestToJoinOrgNotification = (props: Props) => {
   const {name, email, picture, domainJoinRequestId} = notification
 
   const onActionClick = () => {
-    const {pathname, search, hash} = window.location
-    navigate(`/organization-join-request/${domainJoinRequestId}`, {
-      state: {backgroundLocation: {pathname, search, hash}}
+    navigate({
+      to: '.',
+      params: true,
+      search: true,
+      hash: true,
+      state: {orgJoinRequestId: domainJoinRequestId},
+      mask: {to: '/organization-join-request/$requestId', params: {requestId: domainJoinRequestId}}
     })
   }
 

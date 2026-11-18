@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'

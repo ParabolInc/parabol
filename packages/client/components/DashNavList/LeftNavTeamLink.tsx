@@ -1,7 +1,7 @@
+import {Link, useMatchRoute, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useClientQuery, useFragment} from 'react-relay'
-import {Link, useMatch, useNavigate} from 'react-router'
 import {Add as AddIcon, Group as GroupIcon, ManageAccounts as ManageAccountsIcon} from '~/ui/icons'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
@@ -51,8 +51,8 @@ export const LeftNavTeamLink = (props: Props) => {
   const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild, orgId} = team
   const isDraggingPageFromTheTeam = draggingPageParentSection === teamId
   const isViewerOwnerOrIsReorder = isViewerOwnerOfDraggingPage || isDraggingPageFromTheTeam
-  const match = useMatch({path: `/team/${teamId}`, end: false})
-  const isActive = !!match
+  const matchRoute = useMatchRoute()
+  const isActive = !!matchRoute({to: '/team/$teamId', params: {teamId}, fuzzy: true})
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
     setShowChildren(!showChildren)
@@ -70,7 +70,7 @@ export const LeftNavTeamLink = (props: Props) => {
         const {page} = createPage
         const {id} = page
         const [_, pageCode] = id.split(':')
-        navigate(`/pages/${pageCode}`)
+        navigate({to: '/pages/$pageSlug', params: {pageSlug: pageCode!}})
         setShowChildren(true)
       }
     })
@@ -103,7 +103,8 @@ export const LeftNavTeamLink = (props: Props) => {
         ></div>
         <Link
           draggable={false}
-          to={`/team/${teamId}`}
+          to='/team/$teamId'
+          params={{teamId}}
           className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {
             if (draggingPageId) {
@@ -126,7 +127,7 @@ export const LeftNavTeamLink = (props: Props) => {
               Icon={ManageAccountsIcon}
               onClick={(e) => {
                 e.preventDefault()
-                navigate(`/me/organizations/${orgId}/teams/${teamId}`)
+                navigate({to: '/me/organizations/$orgId/teams/$teamId', params: {orgId, teamId}})
               }}
               tooltip='Manage team'
             />

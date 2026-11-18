@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
@@ -38,7 +38,7 @@ const Organizations = (props: Props) => {
   const {viewer} = data
   const {organizations} = viewer
   const gotoNewTeam = () => {
-    navigate('/newteam')
+    navigate({to: '/newteam'})
   }
   const isSingleOrg = window.__ACTION__.IS_SINGLE_ORG
   const addNewOrg = isSingleOrg

@@ -1,13 +1,14 @@
+import {useLocation, useParams} from '@tanstack/react-router'
 import {useMemo} from 'react'
-import {useParams, useSearchParams} from 'react-router'
 import ReportLinkMissing from './ReportLinkMissing'
 import ReportPageLoader from './ReportPageLoader'
 import {parseReportPeriodParam} from './reportPeriodParam'
 import {readReportSpecParams} from './reportSpecParam'
 
 const ReportPageRoot = () => {
-  const {orgId} = useParams()
-  const [searchParams] = useSearchParams()
+  const {orgId} = useParams({strict: false})
+  const searchStr = useLocation({select: (location) => location.searchStr})
+  const searchParams = useMemo(() => new URLSearchParams(searchStr), [searchStr])
   const spec = useMemo(() => readReportSpecParams(searchParams), [searchParams])
   const period = parseReportPeriodParam(searchParams.get('period'))
   if (!spec) {

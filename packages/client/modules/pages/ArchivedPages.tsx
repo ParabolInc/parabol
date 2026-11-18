@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {Autorenew as AutorenewIcon, Description as DescriptionIcon} from '~/ui/icons'
 import menuSectionTitleClass from '~/ui/Menu/menuSectionTitleClass'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
@@ -60,7 +60,7 @@ export const ArchivedPages = (props: Props) => {
   const deletePage = (pageId: string) => {
     const pageCode = GQLID.fromKey(pageId)[0]
     if (location.href.endsWith(`${pageCode}`)) {
-      navigate('/me')
+      navigate({to: '/me'})
     }
     execute({
       variables: {

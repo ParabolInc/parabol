@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
@@ -43,7 +43,7 @@ const ResponseReplied = (props: Props) => {
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    navigate(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
+    navigate({href: `/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`})
   }
 
   const {editor} = useTipTapCommentEditor(comment.content, {

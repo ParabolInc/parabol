@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router'
 import {OpenInNew} from '~/ui/icons'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
@@ -105,7 +105,8 @@ const GCalIntegrationResults = (props: Props) => {
               Looks like you don’t have any events to display
             </div>
             <Link
-              to={`/team/${teamId}/integrations`}
+              to='/team/$teamId/integrations'
+              params={{teamId}}
               className='mt-4 font-semibold text-accent hover:text-sky-400'
             >
               Review your Google Calendar configuration

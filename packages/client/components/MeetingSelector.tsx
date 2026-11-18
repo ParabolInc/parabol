@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -56,13 +56,10 @@ const MeetingSelector = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
       })
-      navigate(
-        {
-          pathname: '/invitation-required',
-          search: `?redirectTo=${window.location.pathname}&meetingId=${meetingId}`
-        },
-        {replace: true}
-      )
+      navigate({
+        href: `/invitation-required?redirectTo=${window.location.pathname}&meetingId=${meetingId}`,
+        replace: true
+      })
     }
   }, [canAccessMeeting, meeting])
 

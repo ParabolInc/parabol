@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {PaymentRejected_notification$key} from '../__generated__/PaymentRejected_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
@@ -30,7 +30,7 @@ const PaymentRejected = (props: Props) => {
   const {id: orgId, creditCard} = organization
   const {last4, brand} = creditCard || {last4: '****', brand: 'Unknown'}
   const addBilling = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
   return (
     <NotificationTemplate

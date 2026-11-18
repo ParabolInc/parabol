@@ -1,9 +1,8 @@
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
-
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {useAddPokerTemplateMutation$data} from '../../__generated__/useAddPokerTemplateMutation.graphql'
@@ -83,7 +82,9 @@ const TeamPickerModal = (props: Props) => {
     }
     closeModal()
     if (templateId) {
-      navigate(`/activity-library/details/${templateId}`, {
+      navigate({
+        to: '/activity-library/details/$activityId',
+        params: {activityId: templateId},
         state: {prevCategory: category, edit: true}
       })
     }
@@ -129,7 +130,7 @@ const TeamPickerModal = (props: Props) => {
   }
 
   const handleUpgrade = () => {
-    navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
+    navigate({to: '/me/organizations/$orgId/billing', params: {orgId: selectedTeam.orgId}})
   }
 
   return (

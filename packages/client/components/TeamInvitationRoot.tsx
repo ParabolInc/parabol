@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
 import teamInvitationQuery, {
   type TeamInvitationQuery
 } from '~/__generated__/TeamInvitationQuery.graphql'
@@ -9,7 +9,7 @@ import TeamInvitation from './TeamInvitation'
 
 const TeamInvitationRoot = () => {
   useNoIndex()
-  const {token} = useParams()
+  const {token} = useParams({strict: false})
   const queryRef = useQueryLoaderNow<TeamInvitationQuery>(teamInvitationQuery, {
     token: token!
   })

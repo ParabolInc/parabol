@@ -1,7 +1,7 @@
+import {useLocation} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useLocation} from 'react-router'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {
@@ -68,7 +68,7 @@ const ProviderList = (props: Props) => {
   const {queryRef, teamId} = props
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
-  const {hash} = useLocation()
+  const hash = useLocation({select: (location) => (location.hash ? `#${location.hash}` : '')})
   useEffect(() => {
     if (!hash) return
     document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})

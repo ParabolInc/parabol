@@ -5,7 +5,10 @@ import {happyWindow} from '../../__tests__/installHappyDom'
 import MoveToPageMenu from '../MoveToPageMenu'
 
 const mockNavigate = jest.fn()
-jest.mock('react-router', () => ({useNavigate: () => mockNavigate}))
+jest.mock('@tanstack/react-router', () => ({
+  ...jest.requireActual('@tanstack/react-router'),
+  useNavigate: () => mockNavigate
+}))
 jest.mock('../MoveToPageResultsRoot', () => {
   const {createElement, useEffect} = jest.requireActual('react')
   const MoveToPageMenuItem = jest.requireActual('../MoveToPageMenuItem').default

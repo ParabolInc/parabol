@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import {Add} from '~/ui/icons'
 import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
@@ -7,7 +7,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   const navigate = useNavigate()
 
   const onClick = () => {
-    navigate('/activity-library')
+    navigate({to: '/activity-library'})
   }
   return (
     <div className='px-3'>

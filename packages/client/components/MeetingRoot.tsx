@@ -1,14 +1,14 @@
+import {useNavigate, useParams} from '@tanstack/react-router'
 import {Suspense, useEffect} from 'react'
-import {useNavigate, useParams} from 'react-router'
 import useJoinedMeetingQuery from '../hooks/useJoinedMeetingQuery'
 import MeetingSelector from './MeetingSelector'
 
 const MeetingRoot = () => {
   const navigate = useNavigate()
-  const {meetingId} = useParams()
+  const {meetingId} = useParams({strict: false})
   useEffect(() => {
     if (!meetingId) {
-      navigate('/meetings', {replace: true})
+      navigate({to: '/meetings', replace: true})
     }
   }, [])
   const queryRef = useJoinedMeetingQuery(meetingId)

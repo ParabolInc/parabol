@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
@@ -64,7 +64,7 @@ const UnpaidTeamModal = (props: Props) => {
   const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
   const goToBilling = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   if (organization.lockedAt) {

@@ -1,6 +1,6 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {SuggestedActionTryActionMeeting_suggestedAction$key} from '../__generated__/SuggestedActionTryActionMeeting_suggestedAction.graphql'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
@@ -29,7 +29,7 @@ const SuggestedActionTryActionMeeting = (props: Props) => {
   const {name: teamName} = team
 
   const onClick = () => {
-    navigate(`/activity-library/category/standup`)
+    navigate({href: `/activity-library/category/standup`})
   }
 
   return (

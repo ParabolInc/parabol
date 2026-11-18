@@ -1,5 +1,5 @@
+import {useParams} from '@tanstack/react-router'
 import {Suspense, useEffect} from 'react'
-import {useParams} from 'react-router'
 import setPreferredTeamId from '~/utils/relay/setPreferredTeamId'
 import teamDashMainQuery, {
   type TeamDashMainQuery
@@ -9,7 +9,7 @@ import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import TeamDashMain from './TeamDashMain/TeamDashMain'
 
 const TeamDashMainRoot = () => {
-  const {teamId} = useParams()
+  const {teamId} = useParams({strict: false})
   const atmosphere = useAtmosphere()
 
   useEffect(() => {

@@ -1,7 +1,7 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {TeamHealthResponseDue_notification$key} from '../__generated__/TeamHealthResponseDue_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
@@ -34,7 +34,7 @@ const TeamHealthResponseDue = (props: Props) => {
   const {id: meetingId, name: meetingName, scheduledEndTime, team} = meeting
   const closesAt = scheduledEndTime ? dayjs(scheduledEndTime).format('ddd h:mm A') : 'soon'
   const goThere = () => {
-    navigate(`/meet/${meetingId}/respond`)
+    navigate({href: `/meet/${meetingId}/respond`})
   }
 
   return (

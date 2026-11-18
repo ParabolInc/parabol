@@ -73,11 +73,11 @@ export const endSprintPokerTeamOnNext: OnNextHandler<
   const {id: meetingId, teamId, summaryPageId} = meeting
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
-      navigate(`/team/${teamId}`)
+      navigate({to: '/team/$teamId', params: {teamId}})
       popEndMeetingToast(atmosphere, meetingId)
     } else if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      navigate(`/pages/${pageCode}`)
+      navigate({to: '/pages/$pageSlug', params: {pageSlug: String(pageCode)}})
     }
   }
 }

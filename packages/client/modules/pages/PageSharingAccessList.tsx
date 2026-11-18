@@ -1,7 +1,7 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
 import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
 import type {PageSharingAccessList_page$key} from '../../__generated__/PageSharingAccessList_page.graphql'
@@ -107,7 +107,8 @@ export const PageSharingAccessList = (props: Props) => {
         <div className='mb-2 rounded-md border border-fg-primary p-2 text-fg-primary text-sm'>
           {'Share settings on this page differ from its '}
           <Link
-            to={`/pages/${parentPageId.split(':')[1]}`}
+            to='/pages/$pageSlug'
+            params={{pageSlug: parentPageId.split(':')[1]!}}
             className='font-semibold hover:text-accent'
           >
             {'parent page'}

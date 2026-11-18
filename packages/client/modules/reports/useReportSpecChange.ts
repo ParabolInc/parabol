@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router'
+import {useNavigate} from '@tanstack/react-router'
 import useLogReportQuestionUseMutation from '../../mutations/useLogReportQuestionUseMutation'
 import type {ReportSpec} from '../../shared/reports/reportCatalog'
 
@@ -12,7 +12,7 @@ const useReportSpecChange = (
   const [logUse] = useLogReportQuestionUseMutation()
   return (nextSpec: ReportSpec, nextTitle: string) => {
     const nextPath = toPath(nextSpec, reportQuestionId)
-    navigate(nextPath, {replace: true})
+    navigate({href: nextPath, replace: true})
     logUse({
       variables: {orgId, reportQuestionId, spec: nextSpec, title: nextTitle},
       onCompleted: (response) => {
@@ -20,7 +20,7 @@ const useReportSpecChange = (
         // a reply that lands after another edit, or after leaving the report, must not navigate
         const isStillShown = `${window.location.pathname}${window.location.search}` === nextPath
         if (builtId && builtId !== reportQuestionId && isStillShown) {
-          navigate(toPath(nextSpec, builtId), {replace: true})
+          navigate({href: toPath(nextSpec, builtId), replace: true})
         }
       }
     })

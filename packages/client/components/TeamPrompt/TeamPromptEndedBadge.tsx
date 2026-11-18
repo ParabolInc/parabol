@@ -1,4 +1,4 @@
-import {Link} from 'react-router'
+import {Link} from '@tanstack/react-router'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
 import {Breakpoint} from '../../types/constEnums'
@@ -13,7 +13,11 @@ interface NextMeetingLinkProps {
 export const NextMeetingLink = (props: NextMeetingLinkProps) => {
   const {closestActiveMeetingId} = props
   return (
-    <Link className='font-normal underline' to={`/meet/${closestActiveMeetingId}`}>
+    <Link
+      className='font-normal underline'
+      to='/meet/$meetingId'
+      params={{meetingId: closestActiveMeetingId}}
+    >
       Go to the current activity.
     </Link>
   )

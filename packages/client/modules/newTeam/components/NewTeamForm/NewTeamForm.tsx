@@ -1,3 +1,4 @@
+import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {
   type ChangeEvent,
@@ -10,7 +11,6 @@ import {
   useState
 } from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router'
 import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
@@ -214,7 +214,7 @@ const NewTeamForm = (props: Props) => {
   }
 
   const goToBilling = () => {
-    navigate(`/me/organizations/${orgId}`)
+    navigate({to: '/me/organizations/$orgId', params: {orgId}})
   }
 
   return (

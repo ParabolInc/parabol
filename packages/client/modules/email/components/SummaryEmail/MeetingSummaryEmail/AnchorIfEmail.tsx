@@ -1,5 +1,6 @@
+import {Link} from '@tanstack/react-router'
 import type {ReactNode} from 'react'
-import {Link} from 'react-router'
+import hrefOptions from '~/routing/hrefOptions'
 
 interface Props {
   isDemo?: boolean
@@ -17,7 +18,7 @@ const AnchorIfEmail = (props: Props) => {
   ) : isEmail ? (
     <a href={href} {...aProps} />
   ) : (
-    <Link to={href} {...aProps} />
+    <Link {...hrefOptions(href)} {...aProps} />
   )
 }
 
