@@ -23,6 +23,7 @@ const patchPageContent: MutationResolvers['patchPageContent'] = async (
     edits,
     userId: viewerId,
     resourceGrants: resourceGrants?.serialize(),
+    scopes: authToken.scope,
     canChangePageLinks: !resourceGrants || resourceGrants.isUnrestricted()
   })
   dataLoader.get('pages').clear(dbPageId)

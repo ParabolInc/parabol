@@ -322,6 +322,43 @@ test("checks another page's asset against the grants of the token that wrote it"
   expect(mockAccessCheckGrants).toEqual([null, grants, grants])
 })
 
+test('copies an org file only for a token writer that holds orgs:read', async () => {
+  const orgSrc = (name: string) =>
+    `https://parabol.test/assets/Organization/org-a/assets/${name}.png`
+  mockPageRoles.set(`org-a:${INSERTER_ID}`, 'member')
+  const {doc, frag} = makePage()
+  const writeAs = (name: string, scopes: string[]) =>
+    doc.transact(() => frag.insert(frag.length, [makeImage(orgSrc(name))]), {
+      source: 'local',
+      context: {userId: INSERTER_ID, scopes}
+    })
+  writeAs('without-orgs', ['pages:read', 'pages:write'])
+  rehostSeededAssets(
+    PAGE_ID,
+    [{type: 'imageBlock', attrs: {src: orgSrc('seed-without-orgs')}}],
+    INSERTER_ID,
+    undefined,
+    ['pages:write']
+  )
+  await flush()
+  expect(mockAccessCheckUserIds).toEqual([])
+  expect(mockCharges).toEqual([])
+  expect(getSrcs(frag)).toEqual([orgSrc('without-orgs')])
+
+  writeAs('with-orgs', ['pages:write', 'orgs:read'])
+  doc.transact(() => frag.insert(frag.length, [makeImage(orgSrc('by-session'))]), {
+    source: 'local',
+    context: {userId: INSERTER_ID}
+  })
+  await flush()
+  expect(mockAccessCheckUserIds).toEqual([INSERTER_ID, INSERTER_ID])
+  expect(getSrcs(frag)).toEqual([
+    orgSrc('without-orgs'),
+    'https://parabol.test/assets/Page/10/assets/with-orgs.png',
+    'https://parabol.test/assets/Page/10/assets/by-session.png'
+  ])
+})
+
 test('keeps a src that changed while its old one was being fetched', async () => {
   let release = () => {}
   mockFetchGate.wait = new Promise((resolve) => {

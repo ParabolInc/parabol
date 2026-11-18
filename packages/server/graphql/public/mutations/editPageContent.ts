@@ -39,7 +39,8 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
   await redisHocusPocus.handleEvent('replacePageContent', documentName, {
     content: jsonContent,
     userId: viewerId,
-    resourceGrants: resourceGrants?.serialize()
+    resourceGrants: resourceGrants?.serialize(),
+    scopes: authToken.scope
   })
 
   dataLoader.get('pages').clearAll()

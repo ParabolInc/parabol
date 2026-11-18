@@ -351,7 +351,25 @@ test('rehosts the assets a seed carries into the new page as the inserting user'
     NEW_PAGE_ID,
     [seedParagraph, {type: 'imageBlock', attrs: expect.objectContaining(image.attrs)}],
     EDITOR_ID,
+    undefined,
     undefined
+  )
+})
+
+test("rehosts a seed's assets with the grants and scopes of the token that wrote it", async () => {
+  const image = {type: 'imageBlock', attrs: {src: 'https://tracker.example/pixel.png'}}
+  const resourceGrants = {grantedOrgIds: ['org-a'], grantedTeamIds: [], grantedPageIds: null}
+  const scopes = ['pages:write']
+  await insertLink(makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, image]), {
+    source: 'local',
+    context: {userId: EDITOR_ID, resourceGrants, scopes}
+  })
+  expect(mockRehostSeededAssets).toHaveBeenCalledWith(
+    NEW_PAGE_ID,
+    expect.any(Array),
+    EDITOR_ID,
+    resourceGrants,
+    scopes
   )
 })
 

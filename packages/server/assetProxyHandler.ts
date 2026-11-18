@@ -15,6 +15,7 @@ import {getUserId, isTeamMember} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getAPIAuthToken from './utils/getAPIAuthToken'
 import getAPIGrant from './utils/getAPIGrant'
+import {canScopesReadAsset} from './utils/getAssetOwnerScope'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
@@ -120,6 +121,7 @@ const getBearerDenialStatus = async (
   try {
     const grant = await getAPIGrant(bearerToken, dataLoader)
     if (!grant) return '401'
+    if (!canScopesReadAsset(grant.scopes, scope, assetType)) return '403'
     const authToken = await getAPIAuthToken(grant, dataLoader)
     const canAccess = await checkAccess(
       authToken,

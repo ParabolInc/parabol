@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {checkAccess} from '../../../../assetProxyHandler'
 import type AuthToken from '../../../../database/types/AuthToken'
 import type {AssetType, PartialPath} from '../../../../fileStorage/FileStoreManager'
+import {canScopesReadAsset} from '../../../../utils/getAssetOwnerScope'
 import type {ResourceGrants} from '../../ResourceGrants'
 import type {AssetScopeEnum} from '../../resolverTypes'
 
@@ -28,13 +29,16 @@ export const checkSourceAssetAccess = async (
   ) {
     throw new GraphQLError('Invalid asset URL', {extensions: {code: 'BAD_USER_INPUT'}})
   }
-  const canAccessSource = await checkAccess(
-    authToken,
-    sourceScope,
-    sourceScopeCode,
-    assetType,
-    resourceGrants ?? undefined
-  )
+  const isAPIToken = authToken.aud !== 'action'
+  const canAccessSource =
+    (!isAPIToken || canScopesReadAsset(authToken.scope, sourceScope, assetType)) &&
+    (await checkAccess(
+      authToken,
+      sourceScope,
+      sourceScopeCode,
+      assetType,
+      resourceGrants ?? undefined
+    ))
   if (!canAccessSource) {
     throw new GraphQLError('Access denied to source asset', {extensions: {code: 'FORBIDDEN'}})
   }

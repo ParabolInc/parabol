@@ -14,6 +14,7 @@ import isExpectedError from '../isExpectedError'
 import {Logger} from '../Logger'
 import logError from '../logError'
 import {getResourceGrantsFromTransaction} from './getResourceGrantsFromTransaction'
+import {getTokenScopesFromTransaction} from './getTokenScopesFromTransaction'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {replacePageAssetSrc} from './hocusPocusHub'
@@ -96,7 +97,8 @@ const hostAsUser = async (
   pageId: number,
   sourceUrl: URL,
   userId: string,
-  grants: SerializedResourceGrants | undefined
+  grants: SerializedResourceGrants | undefined,
+  scopes: string[] | undefined
 ) => {
   const dataLoader = getNewDataLoader('rehostExternalAssets')
   try {
@@ -114,7 +116,9 @@ const hostAsUser = async (
       teamIds.map((teamId) => resourceGrants?.hasTeam(teamId) ?? true)
     )
     const tms = teamIds.filter((_, idx) => isTeamGranted[idx])
-    const authToken = new AuthToken({sub: userId, tms})
+    const authToken = scopes
+      ? new AuthToken({sub: userId, tms, scope: scopes, aud: 'action-pat'})
+      : new AuthToken({sub: userId, tms})
     const pageKey = CipherId.toClient(pageId, 'page')
     const scopeCode = await validateScope(authToken, 'Page', pageKey, dataLoader)
     return await hostUserAsset(sourceUrl, authToken, 'Page', scopeCode, dataLoader, resourceGrants)
@@ -130,13 +134,16 @@ const rehostAsset = (
   sourceUrl: URL,
   userId: string,
   grants: SerializedResourceGrants | undefined,
+  scopes: string[] | undefined,
   connection: Connection | undefined
 ) => {
   const key = `${pageId}:${userId}:${src}`
   if (inFlight.has(key)) return
   const rehost = async () => {
     try {
-      const {url} = await withUserLimit(userId, () => hostAsUser(pageId, sourceUrl, userId, grants))
+      const {url} = await withUserLimit(userId, () =>
+        hostAsUser(pageId, sourceUrl, userId, grants, scopes)
+      )
       await replacePageAssetSrc(pageId, src, url)
       return
     } catch (error) {
@@ -160,6 +167,7 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
   const userId = getUserIdFromTransaction(transaction)
   if (!userId) return
   const grants = getResourceGrantsFromTransaction(transaction)
+  const scopes = getTokenScopesFromTransaction(transaction)
   const {origin} = transaction
   const connection =
     isTransactionOrigin(origin) && origin.source === 'connection' ? origin.connection : undefined
@@ -173,7 +181,7 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
     if (typeof src !== 'string' || movedSrcs.has(src)) return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
-    rehostAsset(pageId, src, sourceUrl, userId, grants, connection)
+    rehostAsset(pageId, src, sourceUrl, userId, grants, scopes, connection)
   })
 }
 
@@ -181,7 +189,8 @@ export const rehostSeededAssets = (
   pageId: number,
   content: JSONContent[],
   userId: string,
-  grants: SerializedResourceGrants | undefined
+  grants: SerializedResourceGrants | undefined,
+  scopes?: string[]
 ) => {
   const pageCode = CipherId.encrypt(pageId)
   const srcs = [...PAGE_ASSET_ATTRS].flatMap(([nodeType, attr]) =>
@@ -193,6 +202,6 @@ export const rehostSeededAssets = (
     if (typeof src !== 'string') return
     const sourceUrl = getSourceUrl(src, pageCode)
     if (!sourceUrl) return
-    rehostAsset(pageId, src, sourceUrl, userId, grants, undefined)
+    rehostAsset(pageId, src, sourceUrl, userId, grants, scopes, undefined)
   })
 }

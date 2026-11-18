@@ -18,7 +18,7 @@ import {toYXmlNodes} from './toYXmlNodes'
 const withDoc = async <T>(
   documentName: string,
   fn: (doc: Document) => T,
-  context: {userId?: string; resourceGrants?: SerializedResourceGrants} = {}
+  context: {userId?: string; resourceGrants?: SerializedResourceGrants; scopes?: string[]} = {}
 ) => {
   const conn = await hocuspocus.openDirectConnection(documentName, context)
   let result!: T
@@ -252,9 +252,14 @@ export const updateUserMention = async (
 
 export const replacePageContent = async (
   documentName: string,
-  payload: {content: JSONContent; userId: string; resourceGrants?: SerializedResourceGrants}
+  payload: {
+    content: JSONContent
+    userId: string
+    resourceGrants?: SerializedResourceGrants
+    scopes?: string[]
+  }
 ) => {
-  const {content, userId, resourceGrants} = payload
+  const {content, userId, resourceGrants, scopes} = payload
   await withDoc(
     documentName,
     (doc) => {
@@ -268,7 +273,7 @@ export const replacePageContent = async (
         applyUpdate(doc, encodeStateAsUpdate(tempDoc))
       })
     },
-    {userId, resourceGrants}
+    {userId, resourceGrants, scopes}
   )
 }
 
@@ -278,12 +283,14 @@ export const patchPageContent = async (
     edits: PageContentEditInput[]
     userId: string
     resourceGrants?: SerializedResourceGrants
+    scopes?: string[]
     canChangePageLinks: boolean
   }
 ) => {
-  const {edits, userId, resourceGrants, canChangePageLinks} = payload
+  const {edits, userId, resourceGrants, scopes, canChangePageLinks} = payload
   await withDoc(documentName, (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}), {
     userId,
-    resourceGrants
+    resourceGrants,
+    scopes
   })
 }

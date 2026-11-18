@@ -60,7 +60,7 @@ const createToken = async (
 
 const uploadAsset = async (
   auth: {cookie?: string; bearerToken?: string},
-  scope: 'User' | 'Organization' | 'Team',
+  scope: 'User' | 'Organization' | 'Team' | 'Page',
   scopeKey: string
 ) => {
   const res = await sendPublic({
@@ -113,6 +113,54 @@ test('a PAT limited to another org cannot fetch an org asset', async () => {
   const limited = await createToken(cookie, ['ORGS_READ'], [otherOrgId])
   expect((await fetchAsset(path, {authorization: `Bearer ${allowed}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${limited}`})).status).toBe(403)
+})
+
+const CREATE_PAGE = `
+  mutation CreatePage($teamId: ID) {
+    createPage(teamId: $teamId) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const createPage = async (cookie: string, teamId?: string) => {
+  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
+  expect(res.errors).toBeUndefined()
+  return res.data.createPage.page.id as string
+}
+
+test('a PAT reads a page file only when it holds pages:read', async () => {
+  const {cookie} = await signUp()
+  const pageId = await createPage(cookie)
+  const path = await uploadAsset({cookie}, 'Page', pageId)
+  const withPages = await createToken(cookie, ['PAGES_READ'])
+  const withoutPages = await createToken(cookie, ['USERS_READ', 'PAGES_WRITE'])
+  expect((await fetchAsset(path, {authorization: `Bearer ${withPages}`})).status).toBe(307)
+  expect((await fetchAsset(path, {authorization: `Bearer ${withoutPages}`})).status).toBe(403)
+})
+
+test('a PAT reads a team file only with teams:read and an org file only with orgs:read', async () => {
+  const {userId, orgId, cookie} = await createOrgAdmin(getTestEmail())
+  const [team] = await getUserTeams(userId)
+  const teamPath = await uploadAsset({cookie}, 'Team', team!.id)
+  const orgPath = await uploadAsset({cookie}, 'Organization', orgId)
+  const withTeams = `Bearer ${await createToken(cookie, ['TEAMS_READ'])}`
+  const withOrgs = `Bearer ${await createToken(cookie, ['ORGS_READ'])}`
+  expect((await fetchAsset(teamPath, {authorization: withTeams})).status).toBe(307)
+  expect((await fetchAsset(teamPath, {authorization: withOrgs})).status).toBe(403)
+  expect((await fetchAsset(orgPath, {authorization: withOrgs})).status).toBe(307)
+  expect((await fetchAsset(orgPath, {authorization: withTeams})).status).toBe(403)
+})
+
+test('a PAT reads an avatar without any read scope', async () => {
+  const {userId, cookie} = await signUp()
+  const token = await createToken(cookie, ['PAGES_WRITE'])
+  const res = await fetchAsset(`/assets/User/${userId}/picture/avatar.png`, {
+    authorization: `Bearer ${token}`
+  })
+  expect(res.status).toBe(307)
 })
 
 test('a session cookie still fetches assets as before', async () => {
@@ -177,8 +225,8 @@ test('a PAT limited to one org still reads server-owned user assets', async () =
 test('a PAT limited to org A cannot embed an org B asset', async () => {
   const {userId, firstOrgId, secondOrgId, cookie} = await signUpWithTwoOrgs()
   const path = await uploadAsset({cookie}, 'Organization', secondOrgId)
-  const limited = await createToken(cookie, ['USERS_WRITE'], [firstOrgId])
-  const unrestricted = await createToken(cookie, ['USERS_WRITE'])
+  const limited = await createToken(cookie, ['USERS_WRITE', 'ORGS_READ'], [firstOrgId])
+  const unrestricted = await createToken(cookie, ['USERS_WRITE', 'ORGS_READ'])
   const embed = (bearerToken: string) =>
     sendPublic({
       query: EMBED_USER_ASSET,
@@ -188,6 +236,29 @@ test('a PAT limited to org A cannot embed an org B asset', async () => {
   const denied = await embed(limited)
   expect(JSON.stringify(denied)).toContain('Access denied to source asset')
   const allowed = await embed(unrestricted)
+  expect(allowed.errors).toBeUndefined()
+  expect(allowed.data.embedUserAsset.url).toEqual(expect.any(String))
+})
+
+test('embedding an org file into a page needs orgs:read', async () => {
+  const {firstOrgId, firstTeamId, cookie} = await signUpWithTwoOrgs()
+  const pageId = await createPage(cookie, firstTeamId)
+  const path = await uploadAsset({cookie}, 'Organization', firstOrgId)
+  const withoutOrgs = await createToken(cookie, ['USERS_WRITE', 'PAGES_WRITE'], [firstOrgId])
+  const withOrgs = await createToken(
+    cookie,
+    ['USERS_WRITE', 'PAGES_WRITE', 'ORGS_READ'],
+    [firstOrgId]
+  )
+  const embed = (bearerToken: string) =>
+    sendPublic({
+      query: EMBED_USER_ASSET,
+      variables: {url: `${PROTOCOL}://${HOST}${path}`, scope: 'Page', scopeKey: pageId},
+      bearerToken
+    })
+  const denied = await embed(withoutOrgs)
+  expect(JSON.stringify(denied)).toContain('Access denied to source asset')
+  const allowed = await embed(withOrgs)
   expect(allowed.errors).toBeUndefined()
   expect(allowed.data.embedUserAsset.url).toEqual(expect.any(String))
 })
@@ -276,16 +347,6 @@ test('an OAuth access token fetches an org asset only when it holds orgs:read', 
   expect((await fetchAsset(path, {authorization: `Bearer ${withoutOrgs}`})).status).toBe(403)
 })
 
-const CREATE_TEAM_PAGE = `
-  mutation CreateTeamPage($teamId: ID) {
-    createPage(teamId: $teamId) {
-      page {
-        id
-      }
-    }
-  }
-`
-
 const EDIT_PAGE_CONTENT = `
   mutation EditPageContent($pageId: ID!, $content: String!) {
     editPageContent(pageId: $pageId, content: $content, format: markdown) {
@@ -311,22 +372,18 @@ const imageBlockMarkdown = (src: string) => `:::imageBlock {src="${src}"}\n\n:::
 const setUpOrgAPage = async () => {
   const twoOrgs = await signUpWithTwoOrgs()
   const {cookie, firstOrgId, firstTeamId, secondOrgId} = twoOrgs
-  const created = await sendPublic({
-    query: CREATE_TEAM_PAGE,
-    variables: {teamId: firstTeamId},
-    cookie
-  })
-  const pageId = created.data.createPage.page.id as string
+  const pageId = await createPage(cookie, firstTeamId)
   const edited = await sendPublic({
     query: EDIT_PAGE_CONTENT,
-    variables: {pageId, content: '# Plan\n\nFirst step\n\nSecond step'},
+    variables: {pageId, content: '# Plan\n\nFirst step\n\nSecond step\n\nThird step'},
     cookie
   })
   expect(edited.errors).toBeUndefined()
   const orgBAssetPath = await uploadAsset({cookie}, 'Organization', secondOrgId)
   const limited = await createToken(cookie, ['PAGES_READ', 'PAGES_WRITE'], [firstOrgId], [])
-  const unrestricted = await createToken(cookie, ['PAGES_READ', 'PAGES_WRITE'])
-  return {...twoOrgs, pageId, orgBAssetPath, limited, unrestricted}
+  const withoutOrgs = await createToken(cookie, ['PAGES_READ', 'PAGES_WRITE'])
+  const unrestricted = await createToken(cookie, ['PAGES_READ', 'PAGES_WRITE', 'ORGS_READ'])
+  return {...twoOrgs, pageId, orgBAssetPath, limited, withoutOrgs, unrestricted}
 }
 
 const PAGE_CONTENT = `
@@ -378,8 +435,8 @@ test('a PAT limited to org A can write an org B asset src into an org A page, bu
   expect(await waitForCopy(pageId, cookie)).toMatch(COPIED_INTO_PAGE)
 }, 20_000)
 
-test('a PAT limited to org A patching an org B asset src into an org A page gets no copy', async () => {
-  const {cookie, pageId, orgBAssetPath, limited, unrestricted} = await setUpOrgAPage()
+test('a PAT limited to org A, or without orgs:read, patching an org B asset src into a page gets no copy', async () => {
+  const {cookie, pageId, orgBAssetPath, limited, withoutOrgs, unrestricted} = await setUpOrgAPage()
   const absoluteSrc = `${PROTOCOL}://${HOST}${orgBAssetPath}`
   const patch = (bearerToken: string, oldText: string) =>
     sendPublic({
@@ -392,6 +449,9 @@ test('a PAT limited to org A patching an org B asset src into an org A page gets
   expect(afterLimited).toContain(orgBAssetPath)
   expect(afterLimited).not.toMatch(COPIED_INTO_PAGE)
 
-  expect((await patch(unrestricted, 'Second step')).errors).toBeUndefined()
+  expect((await patch(withoutOrgs, 'Second step')).errors).toBeUndefined()
+  expect(await waitForCopy(pageId, cookie)).not.toMatch(COPIED_INTO_PAGE)
+
+  expect((await patch(unrestricted, 'Third step')).errors).toBeUndefined()
   expect(await waitForCopy(pageId, cookie)).toMatch(COPIED_INTO_PAGE)
-}, 20_000)
+}, 30_000)
