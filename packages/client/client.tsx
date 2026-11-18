@@ -1,11 +1,14 @@
 import {createRoot} from 'react-dom/client'
 import Root from './Root'
+import appRouter from './routing/appRouter'
 import './scrollIntoViewIfNeeded'
 import registerClientErrorHandlers from './utils/registerClientErrorHandlers'
 import retryChunkLoadErrorOnce from './utils/retryChunkLoadErrorOnce'
 
 registerClientErrorHandlers()
 retryChunkLoadErrorOnce()
+// The first page's loaders start its queries & chunks before React renders anything
+appRouter.load({sync: true}).catch(console.error)
 const container = document.getElementById('root')!
 createRoot(container).render(<Root />)
 // Browsers refuse a service worker from a self-signed certificate & log an error on every page load,

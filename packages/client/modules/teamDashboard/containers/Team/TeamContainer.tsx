@@ -3,12 +3,10 @@ import {lazy, Suspense, useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {matchPath, Route, Routes, useNavigate} from 'react-router'
 import ErrorBoundary from '~/components/ErrorBoundary'
+import {TeamDashMainRoot} from '~/routing/legacyRouteComponents'
 import type {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
 
-const TeamDashMain = lazy(
-  () => import(/* webpackChunkName: 'TeamDashMainRoot' */ '../../components/TeamDashMainRoot')
-)
 const TeamSettings = lazy(
   () => import(/* webpackChunkName: 'TeamIntegrationsRoot' */ '../../components/TeamSettingsRoot')
 )
@@ -67,7 +65,7 @@ const TeamContainer = (props: Props) => {
               path='archive'
               element={<ArchivedTasks team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
             />
-            <Route path='*' element={<TeamDashMain />} />
+            <Route path='*' element={<TeamDashMainRoot />} />
           </Routes>
         </Suspense>
       </Team>

@@ -11,6 +11,7 @@ import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import {useOpenSidebarForPagesTrash} from '../hooks/useOpenSidebarForPagesTrash'
 import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
+import {MeetingsDash, TeamRoot} from '../routing/legacyRouteComponents'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
@@ -18,10 +19,6 @@ import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import ThemeSync from './ThemeSync'
-
-const MeetingsDash = lazy(
-  () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
-)
 
 const NewMeetingSummary = lazy(
   () =>
@@ -35,9 +32,6 @@ const UserDashboard = lazy(
     import(
       /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
     )
-)
-const TeamRoot = lazy(
-  () => import(/* webpackChunkName: 'TeamRoot' */ '../modules/teamDashboard/components/TeamRoot')
 )
 const NewTeam = lazy(
   () =>
