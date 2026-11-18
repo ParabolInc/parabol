@@ -10,7 +10,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const editPageContent: MutationResolvers['editPageContent'] = async (
   _source,
   {pageId, content, format},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
@@ -38,7 +38,9 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
   const documentName = CipherId.toClient(dbPageId, 'page')
   await redisHocusPocus.handleEvent('replacePageContent', documentName, {
     content: jsonContent,
-    userId: viewerId
+    userId: viewerId,
+    resourceGrants: resourceGrants?.serialize(),
+    scopes: authToken.scope
   })
 
   dataLoader.get('pages').clearAll()

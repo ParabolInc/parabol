@@ -2,11 +2,18 @@ import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../../utils/CipherId'
 import type {DataLoaderWorker} from '../graphql'
 
+export interface SerializedResourceGrants {
+  grantedOrgIds: string[] | null
+  grantedTeamIds: string[] | null
+  grantedPageIds: string[] | null
+}
+
 export class ResourceGrants {
   private readonly userId: string
   private readonly grantedOrgIds: string[] | null
   private readonly grantedTeamIds: string[] | null
   private readonly grantedPageIds: Set<number> | null
+  private readonly grantedPageKeys: string[] | null
   private readonly dataLoader: DataLoaderWorker
 
   constructor(
@@ -22,7 +29,16 @@ export class ResourceGrants {
     this.grantedPageIds = grantedPageIds
       ? new Set(grantedPageIds.map((id) => CipherId.fromClient(id)[0]))
       : null
+    this.grantedPageKeys = grantedPageIds
     this.dataLoader = dataLoader
+  }
+
+  serialize(): SerializedResourceGrants {
+    return {
+      grantedOrgIds: this.grantedOrgIds,
+      grantedTeamIds: this.grantedTeamIds,
+      grantedPageIds: this.grantedPageKeys
+    }
   }
 
   async hasTeam(teamId: string): Promise<boolean> {

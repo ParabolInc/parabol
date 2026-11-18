@@ -6,6 +6,7 @@ import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLin
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
+import type {SerializedResourceGrants} from '../../graphql/public/ResourceGrants'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {hocuspocus} from '../../hocusPocus'
 import {applyPageContentEdits} from './applyPageContentEdits'
@@ -17,7 +18,7 @@ import {toYXmlNodes} from './toYXmlNodes'
 const withDoc = async <T>(
   documentName: string,
   fn: (doc: Document) => T,
-  context: {userId?: string} = {}
+  context: {userId?: string; resourceGrants?: SerializedResourceGrants; scopes?: string[]} = {}
 ) => {
   const conn = await hocuspocus.openDirectConnection(documentName, context)
   let result!: T
@@ -251,9 +252,14 @@ export const updateUserMention = async (
 
 export const replacePageContent = async (
   documentName: string,
-  payload: {content: JSONContent; userId: string}
+  payload: {
+    content: JSONContent
+    userId: string
+    resourceGrants?: SerializedResourceGrants
+    scopes?: string[]
+  }
 ) => {
-  const {content, userId} = payload
+  const {content, userId, resourceGrants, scopes} = payload
   await withDoc(
     documentName,
     (doc) => {
@@ -267,16 +273,24 @@ export const replacePageContent = async (
         applyUpdate(doc, encodeStateAsUpdate(tempDoc))
       })
     },
-    {userId}
+    {userId, resourceGrants, scopes}
   )
 }
 
 export const patchPageContent = async (
   documentName: string,
-  payload: {edits: PageContentEditInput[]; userId: string; canChangePageLinks: boolean}
+  payload: {
+    edits: PageContentEditInput[]
+    userId: string
+    resourceGrants?: SerializedResourceGrants
+    scopes?: string[]
+    canChangePageLinks: boolean
+  }
 ) => {
-  const {edits, userId, canChangePageLinks} = payload
+  const {edits, userId, resourceGrants, scopes, canChangePageLinks} = payload
   await withDoc(documentName, (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}), {
-    userId
+    userId,
+    resourceGrants,
+    scopes
   })
 }

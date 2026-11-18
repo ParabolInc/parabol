@@ -9,6 +9,7 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
+import getTokenContextFromTransaction from './getTokenContextFromTransaction'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {isRemovedFromDoc} from './isRemovedFromDoc'
@@ -34,6 +35,7 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
 
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
+  const {resourceGrants: grants, scopes} = getTokenContextFromTransaction(e.transaction)
   getAddedPageLinks(e).forEach(async (node) => {
     const seed = node.getAttribute('content')
     if (seed !== undefined) node.removeAttribute('content')
@@ -89,7 +91,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         }
         node.setAttribute('pageCode', CipherId.encrypt(newPage.id))
         if (isSyncedBlock) node.setAttribute('title', '')
-        rehostSeededAssets(newPage.id, seedContent, userId)
+        rehostSeededAssets(newPage.id, seedContent, userId, grants, scopes)
         await updateBacklinks(parentPageId, newPage.id)
         if (isSyncedBlock) publishSyncedBlockPlacementsChanged(newPage.id)
       } else {

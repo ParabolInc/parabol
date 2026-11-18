@@ -4,6 +4,7 @@ import {CipherId} from '../../../../../utils/CipherId'
 import {mapInBatches} from '../../../../../utils/mapInBatches'
 import {getPageScopedAssetSrcs} from '../../../../../utils/tiptap/getPageScopedAssetSrcs'
 import type {DataLoaderWorker} from '../../../../graphql'
+import type {ResourceGrants} from '../../../ResourceGrants'
 import {hostUserAsset} from '../hostUserAsset'
 
 const ASSET_COPIES_PER_BATCH = 10
@@ -13,13 +14,15 @@ interface Params {
   copyIdBySourceId: Map<number, number>
   authToken: AuthToken
   dataLoader: DataLoaderWorker
+  resourceGrants: ResourceGrants | null
 }
 
 export const rehostPageAssets = async ({
   states,
   copyIdBySourceId,
   authToken,
-  dataLoader
+  dataLoader,
+  resourceGrants
 }: Params) => {
   const assets = [...copyIdBySourceId].flatMap(([sourceId, copyId]) =>
     getPageScopedAssetSrcs(states.get(sourceId)!, CipherId.encrypt(sourceId)).map((src) => ({
@@ -28,7 +31,7 @@ export const rehostPageAssets = async ({
     }))
   )
   const hosted = await mapInBatches(assets, ASSET_COPIES_PER_BATCH, ({src, copyCode}) =>
-    hostUserAsset(new URL(src, appOrigin), authToken, 'Page', copyCode, dataLoader)
+    hostUserAsset(new URL(src, appOrigin), authToken, 'Page', copyCode, dataLoader, resourceGrants)
   )
   const hostedSrcs = new Map<string, string>()
   assets.forEach(({src}, idx) => {

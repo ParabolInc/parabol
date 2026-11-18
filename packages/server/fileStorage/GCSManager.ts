@@ -197,6 +197,25 @@ export default class GCSManager extends FileStoreManager {
     }
     return makeAppURL(appOrigin, `/assets/${newPartialPath}`)
   }
+  async getFileSize(partialPath: PartialPath) {
+    const fullPath = encodeURIComponent(this.prependPath(partialPath))
+    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${fullPath}?fields=size`
+    const accessToken = await this.getAccessToken()
+    const res = await fetchRetryingTransientErrors(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      },
+      logLabel: `GCS size check of ${partialPath}`
+    })
+    if (!res.ok) {
+      throw new Error(`GCS Size Error: ${res.status} ${await res.text()}. ${partialPath}`)
+    }
+    const {size} = (await res.json()) as {size: string}
+    return Number(size)
+  }
+
   async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath): Promise<void> {
     const accessToken = await this.getAccessToken()
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))

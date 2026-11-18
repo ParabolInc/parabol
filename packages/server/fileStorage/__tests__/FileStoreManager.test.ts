@@ -36,6 +36,9 @@ class RateLimitedFileStore extends FileStoreManager {
   async copyFile() {
     return ''
   }
+  async getFileSize() {
+    return 0
+  }
   async moveFile() {}
   async presignUrl() {
     return ''

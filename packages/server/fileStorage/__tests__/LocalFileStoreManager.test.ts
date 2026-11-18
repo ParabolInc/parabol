@@ -38,3 +38,9 @@ test('a copied file gets the same access-checked /assets/ URL as an upload', asy
   )
   expect(copied.toString()).toBe('image')
 })
+
+test('reports the size of a stored file', async () => {
+  const manager = new LocalFileStoreManager()
+  await manager.putUserFile(Buffer.from('image'), 'Page/1/assets/og.png' as PartialPath)
+  expect(await manager.getFileSize('Page/1/assets/og.png' as PartialPath)).toBe(5)
+})

@@ -6,6 +6,7 @@ const mockPublicRoles = new Map<number, string>()
 const mockCharges: [userId: string, bytes: number][] = []
 const mockFetchedUrls: string[] = []
 const mockAccessCheckUserIds: string[] = []
+const mockAccessCheckGrants: unknown[] = []
 const mockErrors: unknown[] = []
 const mockDocs: {current?: Y.Doc} = {}
 const mockFetchGate: {wait?: Promise<void>} = {}
@@ -87,19 +88,23 @@ jest.mock('../../../fileStorage/getFileStoreManager', () => ({
   default: () => ({
     putUserFile: async (_file: Buffer, partialPath: string) =>
       `https://parabol.test/assets/${partialPath}`,
-    copyFile: async (_from: string, to: string) => `https://parabol.test/assets/${to}`
+    copyFile: async (_from: string, to: string) => `https://parabol.test/assets/${to}`,
+    getFileSize: async () => 7
   })
 }))
 jest.mock('../../../assetProxyHandler', () => ({
-  checkAccess: async (authToken: {sub: string}, _scope: string, scopeCode: string) => {
+  checkAccess: async (
+    authToken: {sub: string},
+    _scope: string,
+    scopeCode: string,
+    _assetType: string,
+    resourceGrants?: {serialize: () => unknown}
+  ) => {
     mockAccessCheckUserIds.push(authToken.sub)
+    mockAccessCheckGrants.push(resourceGrants?.serialize() ?? null)
     return mockPageRoles.has(`${scopeCode}:${authToken.sub}`)
   }
 }))
-jest.mock('@whatwg-node/fetch', () => ({
-  fetch: async () => ({headers: new Headers({'content-length': '7', 'content-type': 'image/png'})})
-}))
-jest.mock('../../encodeAuthToken', () => ({__esModule: true, default: () => 'token'}))
 jest.mock('../../logError', () => ({
   __esModule: true,
   default: (error: unknown) => mockErrors.push(error)
@@ -174,6 +179,7 @@ beforeEach(() => {
   mockCharges.length = 0
   mockFetchedUrls.length = 0
   mockAccessCheckUserIds.length = 0
+  mockAccessCheckGrants.length = 0
   mockErrors.length = 0
   mockFetchGate.wait = undefined
   mockPageRoles.set(`${PAGE_ID}:${INSERTER_ID}`, 'editor')
@@ -290,6 +296,66 @@ test("copies another page's asset only with the access of the user who added it"
   ])
 })
 
+test("checks another page's asset against the grants of the token that wrote it", async () => {
+  const secretSrc = (name: string) =>
+    `https://parabol.test/assets/Page/${SECRET_PAGE_ID}/assets/${name}.png`
+  const grants = {grantedOrgIds: ['org-a'], grantedTeamIds: [], grantedPageIds: null}
+  const {doc, frag} = makePage()
+  doc.transact(
+    () => frag.insert(0, [makeImage(secretSrc('by-session'))]),
+    asConnection(INSERTER_ID).origin
+  )
+  doc.transact(() => frag.insert(1, [makeImage(secretSrc('by-token'))]), {
+    source: 'local',
+    context: {userId: INSERTER_ID, resourceGrants: grants}
+  })
+  rehostSeededAssets(
+    PAGE_ID,
+    [{type: 'imageBlock', attrs: {src: secretSrc('in-seed')}}],
+    INSERTER_ID,
+    grants
+  )
+  await flush()
+  expect(mockAccessCheckGrants).toEqual([null, grants, grants])
+})
+
+test('copies an org file only for a token writer that holds orgs:read', async () => {
+  const orgSrc = (name: string) =>
+    `https://parabol.test/assets/Organization/org-a/assets/${name}.png`
+  mockPageRoles.set(`org-a:${INSERTER_ID}`, 'member')
+  const {doc, frag} = makePage()
+  const writeAs = (name: string, scopes: string[]) =>
+    doc.transact(() => frag.insert(frag.length, [makeImage(orgSrc(name))]), {
+      source: 'local',
+      context: {userId: INSERTER_ID, scopes}
+    })
+  writeAs('without-orgs', ['pages:read', 'pages:write'])
+  rehostSeededAssets(
+    PAGE_ID,
+    [{type: 'imageBlock', attrs: {src: orgSrc('seed-without-orgs')}}],
+    INSERTER_ID,
+    undefined,
+    ['pages:write']
+  )
+  await flush()
+  expect(mockAccessCheckUserIds).toEqual([])
+  expect(mockCharges).toEqual([])
+  expect(getSrcs(frag)).toEqual([orgSrc('without-orgs')])
+
+  writeAs('with-orgs', ['pages:write', 'orgs:read'])
+  doc.transact(() => frag.insert(frag.length, [makeImage(orgSrc('by-session'))]), {
+    source: 'local',
+    context: {userId: INSERTER_ID}
+  })
+  await flush()
+  expect(mockAccessCheckUserIds).toEqual([INSERTER_ID, INSERTER_ID])
+  expect(getSrcs(frag)).toEqual([
+    orgSrc('without-orgs'),
+    'https://parabol.test/assets/Page/10/assets/with-orgs.png',
+    'https://parabol.test/assets/Page/10/assets/by-session.png'
+  ])
+})
+
 test('keeps a src that changed while its old one was being fetched', async () => {
   let release = () => {}
   mockFetchGate.wait = new Promise((resolve) => {
@@ -338,7 +404,8 @@ test('hosts the images a seed carries, nested or not, on the quota of the user w
       },
       {type: 'imageBlock', attrs: {src: hostedSrc}}
     ],
-    INSERTER_ID
+    INSERTER_ID,
+    undefined
   )
   await flush()
   expect(mockFetchedUrls).toEqual([EXTERNAL_SRC])
@@ -407,7 +474,8 @@ test('hosts the embed thumbnails a seed carries', async () => {
         attrs: {url: 'https://claude.example/a', thumbnailUrl: EXTERNAL_THUMBNAIL}
       }
     ],
-    INSERTER_ID
+    INSERTER_ID,
+    undefined
   )
   await flush()
   expect(mockFetchedUrls).toEqual([EXTERNAL_THUMBNAIL])

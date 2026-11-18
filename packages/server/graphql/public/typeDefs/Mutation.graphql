@@ -2447,7 +2447,7 @@ type Mutation {
     The client ID of the scope, e.g. userId, teamId, orgId, pageKey
     """
     scopeKey: ID!
-  ): UploadUserAssetPayload! @scope(name: USERS_WRITE)
+  ): UploadUserAssetPayload! @scope(ownerFromArg: "scope")
 
   """
   Upload any asset owned by a user
@@ -2465,7 +2465,7 @@ type Mutation {
     The client ID of the scope, e.g. userId, teamId, orgId, pageKey
     """
     scopeKey: ID!
-  ): UploadUserAssetPayload! @scope(name: USERS_WRITE)
+  ): UploadUserAssetPayload! @scope(ownerFromArg: "scope")
 
   """
   Upload an image for a user avatar
