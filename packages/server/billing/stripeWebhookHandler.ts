@@ -1,8 +1,17 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import type {GraphQLErrorExtensions} from 'graphql'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import {callGQL} from '../utils/callGQL'
 import {getStripeManager} from '../utils/stripe'
+
+// Stripe retries a non-2xx for up to 3 days, and a retry can't change these outcomes
+const nonRetryableErrorCodes = new Set<GraphQLErrorExtensions['code']>([
+  'BAD_USER_INPUT',
+  'CONFLICT',
+  'FORBIDDEN',
+  'NOT_FOUND'
+])
 
 interface InvoiceEventCallBackArg {
   id: string
@@ -153,7 +162,10 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
   const result = await callGQL(query, variables)
-  if (result?.data) {
+  const errors = result.errors ?? []
+  const isNonRetryableFailure =
+    errors.length > 0 && errors.every((error) => nonRetryableErrorCodes.has(error.extensions.code))
+  if (result.data || isNonRetryableFailure) {
     res.writeStatus('200').end()
   } else {
     res.writeStatus('500').end()

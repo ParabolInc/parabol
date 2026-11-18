@@ -84,9 +84,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       .where('removedAt', 'is', null)
       .execute()
   }
-  if (oldTier === 'team') {
-    throw new GraphQLError('Org is already on team tier', {extensions: {code: 'CONFLICT'}})
-  }
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
