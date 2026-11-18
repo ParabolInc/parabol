@@ -1,7 +1,12 @@
 import type Atmosphere from '../../Atmosphere'
 import {reportClientWarning} from '../reportClientError'
 
-type ClientOptions = {on: {closed: (event: unknown) => void}}
+type ClientOptions = {
+  on: {
+    closed: (event: unknown) => void
+    connected: (socket: unknown, payload: unknown, wasRetry: boolean) => Promise<void>
+  }
+}
 
 let clientOptions: ClientOptions
 const mockSockets: MockWebSocket[] = []
@@ -114,3 +119,48 @@ test.each([
     expect(loggedToConsole).not.toHaveBeenCalled()
   }
 )
+
+type Workers = {installing?: object; waiting?: object; active?: object}
+
+// the browser rejects an update of a registration with no worker left
+const createRegistration = ({installing, waiting, active}: Workers) => ({
+  installing: installing ?? null,
+  waiting: waiting ?? null,
+  active: active ?? null,
+  update: jest.fn(() =>
+    installing || waiting || active
+      ? Promise.resolve()
+      : Promise.reject(
+          Object.assign(new Error('newestWorker is null'), {name: 'InvalidStateError'})
+        )
+  )
+})
+
+const connectToNewerServer = async (registration: ReturnType<typeof createRegistration>) => {
+  Object.defineProperty(globalThis, 'navigator', {
+    value: {serviceWorker: {ready: Promise.resolve(registration)}},
+    configurable: true
+  })
+  const {createWSClient} = await import('../createWSClient')
+  const atmosphere = {authObj: {sub: 'user1'}} as unknown as Atmosphere
+  createWSClient(atmosphere)
+  await clientOptions.on.connected({}, {version: '15.17.0'}, false)
+  await jest.advanceTimersByTimeAsync(0)
+}
+
+test.each<Workers>([{installing: {}}, {waiting: {}}, {active: {}}])(
+  'an outdated client asks its service worker registration with %o for the newer build',
+  async (workers) => {
+    const registration = createRegistration(workers)
+    await connectToNewerServer(registration)
+    expect(registration.update).toHaveBeenCalledTimes(1)
+    expect(loggedToConsole).not.toHaveBeenCalled()
+  }
+)
+
+test('an outdated client whose service worker registration the browser cleared leaves it alone', async () => {
+  const registration = createRegistration({})
+  await connectToNewerServer(registration)
+  expect(registration.update).not.toHaveBeenCalled()
+  expect(loggedToConsole).not.toHaveBeenCalled()
+})
