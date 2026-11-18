@@ -3,7 +3,10 @@ import {useState} from 'react'
 import {useMutation} from 'react-relay'
 import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} from '~/ui/icons'
 import getMutationError from '~/utils/relay/getMutationError'
-import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
+import type {
+  OAuthAppFormContentCreateMutation,
+  OAuthScopeEnum
+} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -14,6 +17,7 @@ import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
+import {TokenScopesTable} from '../TokenScopesTable'
 
 export interface FormContentProps {
   orgId: string
@@ -26,8 +30,12 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const atmosphere = useAtmosphere()
   const [name, setName] = useState(initialData?.name || '')
   const [redirectUris, setRedirectUris] = useState((initialData?.redirectUris || []).join(', '))
-  const [scopes, setScopes] = useState<string[]>(
-    (initialData?.scopes || []).map((s: string) => s.replace(':', '_'))
+  const [scopes, setScopes] = useState<Set<OAuthScopeEnum>>(
+    new Set(
+      (initialData?.scopes ?? []).map(
+        (scope: string) => scope.toUpperCase().replace(':', '_') as OAuthScopeEnum
+      )
+    )
   )
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -120,7 +128,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       }
     }
 
-    if (scopes.length === 0) {
+    if (scopes.size === 0) {
       setIsSaving(false)
       setError('At least one scope is required')
       return
@@ -128,7 +136,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
     const providerId = initialData?.id
 
-    const mutationScopes = scopes as any
+    const mutationScopes = [...scopes]
 
     if (providerId) {
       commitUpdate({
@@ -185,12 +193,17 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     }
   }
 
-  const toggleScope = (scope: string) => {
-    if (scopes.includes(scope)) {
-      setScopes(scopes.filter((s) => s !== scope))
-    } else {
-      setScopes([...scopes, scope])
-    }
+  const toggleScope = (scope: OAuthScopeEnum, pairedRead?: OAuthScopeEnum) => {
+    setScopes((prev) => {
+      const next = new Set(prev)
+      if (next.has(scope)) {
+        next.delete(scope)
+      } else {
+        next.add(scope)
+        if (pairedRead) next.add(pairedRead)
+      }
+      return next
+    })
   }
 
   const handleRegenerateSecret = () => {
@@ -268,40 +281,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               />
             </div>
 
-            <div className='flex flex-col space-y-1'>
-              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
-                Scopes
-              </label>
-              <div className='flex gap-4'>
-                <label className='flex cursor-pointer items-center gap-2 text-fg-primary text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_query')}
-                    onChange={() => toggleScope('graphql_query')}
-                    className='rounded border-hairline text-accent focus:ring-accent'
-                  />
-                  graphql:query
-                </label>
-                <label className='flex cursor-pointer items-center gap-2 text-fg-primary text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_mutation')}
-                    onChange={() => toggleScope('graphql_mutation')}
-                    className='rounded border-hairline text-accent focus:ring-accent'
-                  />
-                  graphql:mutation
-                </label>
-                <div className='flex h-8 grow justify-end'>
-                  <button
-                    type='button'
-                    onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
-                  >
-                    <ContentCopyIcon className='text-[20px]' />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TokenScopesTable selectedScopes={scopes} toggleScope={toggleScope} />
 
             <div className='grid grid-cols-2 gap-6'>
               <div className='space-y-1'>
