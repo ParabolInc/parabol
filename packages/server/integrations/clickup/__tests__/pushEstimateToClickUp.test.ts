@@ -59,7 +59,7 @@ const clickUpTask = {
 
 const loaders = {
   freshAuth: {load: jest.fn()},
-  clickUpTask: {load: jest.fn()},
+  integrationIssue: {load: jest.fn()},
   clickUpSpace: {load: jest.fn()},
   integrationDimensionFieldMaps: {load: jest.fn()}
 }
@@ -124,7 +124,7 @@ beforeEach(() => {
     field: null
   })
   loaders.freshAuth.load.mockReset().mockResolvedValue(auth)
-  loaders.clickUpTask.load.mockReset().mockResolvedValue(clickUpTask)
+  loaders.integrationIssue.load.mockReset().mockResolvedValue(clickUpTask)
   loaders.clickUpSpace.load.mockReset()
   loaders.integrationDimensionFieldMaps.load.mockReset()
 })
@@ -289,7 +289,7 @@ describe('pushEstimateToClickUp to a custom field', () => {
 
   it('refuses a stored field that is no longer on the live task', async () => {
     mapDimensionTo('size-field', 'Size')
-    loaders.clickUpTask.load.mockResolvedValue({...clickUpTask, customFields: []})
+    loaders.integrationIssue.load.mockResolvedValue({...clickUpTask, customFields: []})
     const result = await pushEstimateToClickUp(buildCtx('3'))
     expect(result).toBeInstanceOf(Error)
     expect(result).toHaveProperty('message', 'Size is no longer on this ClickUp task')
@@ -298,7 +298,7 @@ describe('pushEstimateToClickUp to a custom field', () => {
 
   it('comments instead, with no error, once the stored field leaves the task', async () => {
     useStoredMapping('size-field', 'Size', 'number')
-    loaders.clickUpTask.load.mockResolvedValue({...clickUpTask, customFields: []})
+    loaders.integrationIssue.load.mockResolvedValue({...clickUpTask, customFields: []})
     await expect(pushEstimateToClickUp(buildCtx('3'))).resolves.toBeNull()
     expect(mockFetch).toHaveBeenCalledTimes(1)
     expect(readRequest()).toMatchObject({

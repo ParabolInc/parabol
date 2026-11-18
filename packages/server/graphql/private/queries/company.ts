@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import type {QueryResolvers} from '../resolverTypes'
 
@@ -7,8 +8,11 @@ export type CompanySource = {
 
 const company: QueryResolvers['company'] = async (_source, {domain, userId}, {dataLoader}) => {
   if (domain) return {id: domain}
-  const user = userId && (await dataLoader.get('users').load(userId))
-  if (!user) throw new Error('User not found')
+  if (!userId) {
+    throw new GraphQLError('Provide a domain or a userId', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
+  const user = await dataLoader.get('users').load(userId)
+  if (!user) throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   const {email} = user
   const userDomain = getDomainFromEmail(email)
 

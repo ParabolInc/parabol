@@ -15,10 +15,6 @@ graphql`
 const mutation = graphql`
   mutation DenyPushInvitationMutation($teamId: ID!, $userId: ID!) {
     denyPushInvitation(teamId: $teamId, userId: $userId) {
-      error {
-        message
-        title
-      }
       ...DenyPushInvitationMutation_team @relay(mask: false)
     }
   }

@@ -5,7 +5,7 @@ import type {SimpleMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment UpdateTemplatePromptGroupColorMutation_team on UpdateTemplatePromptGroupColorSuccess {
+  fragment UpdateTemplatePromptGroupColorMutation_team on UpdateTemplatePromptGroupColorPayload {
     prompt {
       groupColor
     }

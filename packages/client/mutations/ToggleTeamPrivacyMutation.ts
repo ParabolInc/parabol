@@ -4,7 +4,7 @@ import type {ToggleTeamPrivacyMutation as TToggleTeamPrivacyMutation} from '../_
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleTeamPrivacyMutation_team on ToggleTeamPrivacySuccess {
+  fragment ToggleTeamPrivacyMutation_team on ToggleTeamPrivacyPayload {
     team {
       isPublic
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleTeamPrivacyMutation($teamId: ID!) {
     toggleTeamPrivacy(teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleTeamPrivacyMutation_team @relay(mask: false) @alias
     }
   }

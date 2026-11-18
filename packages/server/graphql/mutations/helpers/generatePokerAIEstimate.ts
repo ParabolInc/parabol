@@ -196,7 +196,7 @@ export const generatePokerAIEstimate = async (options: Options) => {
     await getKysely().insertInto('Comment').values(comment).execute()
 
     const data = {commentId: comment.id, meetingId}
-    publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentPayload', data, subOptions)
   } finally {
     dataLoader.dispose()
   }

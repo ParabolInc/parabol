@@ -4,7 +4,7 @@ import type {RevealTeamHealthVotesMutation as TRevealTeamHealthVotesMutation} fr
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment RevealTeamHealthVotesMutation_meeting on RevealTeamHealthVotesSuccess {
+  fragment RevealTeamHealthVotesMutation_meeting on RevealTeamHealthVotesPayload {
     stage {
       ...TeamHealthLocalStage
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RevealTeamHealthVotesMutation($meetingId: ID!, $stageId: ID!) {
     revealTeamHealthVotes(meetingId: $meetingId, stageId: $stageId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...RevealTeamHealthVotesMutation_meeting @relay(mask: false) @alias
     }
   }

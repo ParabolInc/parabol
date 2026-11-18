@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
@@ -48,7 +49,9 @@ const removeFromOrg = async (
       `removeFromOrg: could not remove ${userIds.join(', ')} from every team in org ${orgId}`,
       teamFailures.map((res) => res.reason)
     )
-    throw new Error('Failed to remove the users from every team in the organization')
+    throw new GraphQLError('Failed to remove the users from every team in the organization', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
   const perTeamRes = perTeamSettled
     .filter((res) => res.status === 'fulfilled')
@@ -66,7 +69,9 @@ const removeFromOrg = async (
     .returning(['id', 'role', 'userId'])
     .execute()
   if (organizationUsers.length === 0) {
-    throw new Error('None of the users are members of the organization')
+    throw new GraphQLError('None of the users are members of the organization', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   const removedUserIds = organizationUsers.map(({userId}) => userId)
   const users = (await dataLoader.get('users').loadMany(removedUserIds)).filter(isValid)

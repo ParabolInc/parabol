@@ -11,7 +11,7 @@ type Props = {
   emailType: TeamLimitsEmailType
 }
 
-const sendTeamsLimitEmail = (props: Props) => {
+const sendTeamsLimitEmail = async (props: Props) => {
   const {user, orgName, orgId, emailType} = props
   const {preferredName, email} = user
   const {subject, body, html} = teamLimitsEmailCreator({
@@ -20,7 +20,8 @@ const sendTeamsLimitEmail = (props: Props) => {
     orgName,
     emailType
   })
-  return getMailManager().sendEmail({
+  const mailManager = await getMailManager()
+  return mailManager.sendEmail({
     to: email,
     subject,
     body,

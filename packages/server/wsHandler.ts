@@ -93,7 +93,6 @@ const dehydrateResult = (result: ExecutionResult) => {
 const secondsSinceUpgrade = ({upgradeStartedAt}: Pick<UpgradeData, 'upgradeStartedAt'>) =>
   (performance.now() - upgradeStartedAt) / 1000
 
-const documentCache = new Map()
 export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
@@ -168,8 +167,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as
       | {
+          fieldName?: string
           AuthTokenPayload?: {id: string}
-          InvalidateSessionsPayload?: any
         }
       | undefined
     const jwt = notificationSub?.AuthTokenPayload?.id
@@ -184,7 +183,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
           resubscribe[key]!()
         })
       }, 1000)
-    } else if (notificationSub?.InvalidateSessionsPayload) {
+    } else if (notificationSub?.fieldName === 'InvalidateSessionsPayload') {
+      // keyed on fieldName so a payload that fails to resolve, like a hard-deleted user's, still ends the session
       throw new GraphQLError('Session invalidated', {
         extensions: {
           code: 'SESSION_INVALIDATED'
@@ -223,11 +223,9 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       // like yoga's own context, so plugins can see the operation before it is parsed
       params: {query}
     })
-    let document = documentCache.get(docId!)
-    if (!document) {
-      document = parse(query)
-      documentCache.set(docId, document)
-    }
+    // Like yoga's HTTP path: its parser cache hands back the document without parsing it again,
+    // but every plugin's onParse still runs, and the Prometheus metrics only count operations they saw there
+    const document = parse(query)
 
     const rateLimiter = getRateLimiter()
     const isSubscription = docId.startsWith('s')
@@ -260,9 +258,9 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
       operationName: params.operationName,
       document,
       variableValues: params.variables,
-      // dataLoader will be null for subscriptions
-      contextValue: {
-        ...envelopeContext,
+      // the same object parse saw, because envelop plugins key what they learned while parsing on it
+      contextValue: Object.assign(envelopeContext, {
+        // dataLoader will be null for subscriptions
         dataLoader: extra.dataLoaders[id] || null,
         rateLimiter,
         ip,
@@ -274,7 +272,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string; sessionId
             ? params.extensions.traceparent
             : undefined,
         _wsAuthTokenAtStart: authToken
-      },
+      }),
       rootValue: {
         execute,
         subscribe

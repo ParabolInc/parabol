@@ -1,4 +1,9 @@
 """
-Return value for updateIntegrationProvider mutation
+Success result for updateIntegrationProvider mutation
 """
-union UpdateIntegrationProviderPayload = ErrorPayload | UpdateIntegrationProviderSuccess
+type UpdateIntegrationProviderPayload {
+  """
+  The provider that was updated
+  """
+  provider: IntegrationProvider!
+}

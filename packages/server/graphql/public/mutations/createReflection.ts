@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
@@ -30,22 +31,22 @@ const createReflection: MutationResolvers['createReflection'] = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!reflectPrompt) {
-    return {error: {message: 'Category not found'}}
+    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
+    throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
-    return {error: {message: 'Meeting already ended'}}
+    throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   }
   if (isPhaseComplete('group', phases)) {
-    return {error: {message: 'Meeting phase already completed'}}
+    throw new GraphQLError('Meeting phase already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
   if (content && content.length > 2000) {
-    return {error: {message: 'Reflection content is too long'}}
+    throw new GraphQLError('Reflection content is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const normalizedContent = convertToTipTap(content)

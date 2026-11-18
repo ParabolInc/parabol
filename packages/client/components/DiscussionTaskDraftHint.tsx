@@ -17,7 +17,7 @@ const DiscussionTaskDraftHint = (props: Props) => {
   return (
     <div className='text-center text-fg-muted text-xs'>
       Press{' '}
-      <button type='button' className='font-semibold text-accent' onClick={onCreate}>
+      <button type='button' className='font-semibold text-accent-active' onClick={onCreate}>
         {isInPlainLine ? 'Enter' : modEnter}
       </button>{' '}
       to create the task · Esc cancels

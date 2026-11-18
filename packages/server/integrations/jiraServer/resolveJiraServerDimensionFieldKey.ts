@@ -8,11 +8,9 @@ const resolveJiraServerDimensionFieldKey = async ({
 }: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
   const {integration} = task
   if (integration?.service !== 'jiraServer') return null
-  const {providerId, repositoryId, issueId, accessUserId} = integration
-  const jiraServerIssue = await dataLoader
-    .get('jiraServerIssue')
-    .load({providerId, teamId, userId: accessUserId, issueId})
-  if (!jiraServerIssue) return null
+  const {providerId, repositoryId} = integration
+  const jiraServerIssue = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (jiraServerIssue?.service !== 'jiraServer') return null
   const {issueType} = jiraServerIssue
   return {repoId: JiraServerProjectId.join(providerId, repositoryId), issueType}
 }

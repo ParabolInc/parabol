@@ -4,7 +4,7 @@ import type {StartCheckInMutation as TStartCheckInMutation} from '../__generated
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartCheckInMutation_team on StartCheckInSuccess {
+  fragment StartCheckInMutation_team on StartCheckInPayload {
     meeting {
       id
     }
@@ -22,17 +22,10 @@ const mutation = graphql`
     $ignoreSuggestedUpgrade: Boolean
   ) {
     startCheckIn(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartCheckInSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartCheckInMutation_team @relay(mask: false) @alias

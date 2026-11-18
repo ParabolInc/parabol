@@ -13,7 +13,7 @@ import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment useEndTeamHealthMutation_team on EndTeamHealthSuccess {
+  fragment useEndTeamHealthMutation_team on EndTeamHealthPayload {
     meeting {
       id
       endedAt
@@ -29,7 +29,7 @@ graphql`
 `
 
 graphql`
-  fragment useEndTeamHealthMutation_meeting on EndTeamHealthSuccess {
+  fragment useEndTeamHealthMutation_meeting on EndTeamHealthPayload {
     meeting {
       id
       endedAt

@@ -10,6 +10,19 @@ import DragHandleMenu from '../../DragHandleMenu'
 import {Callout} from '../Callout'
 import {CalloutStyleMenu} from '../CalloutStyleMenu'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
+jest.mock('../../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
+jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('../../../../mutations/useDuplicatePageMutation', () => ({
+  useDuplicatePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/usePageViewerAccess', () => ({lookupPageViewerGrant: () => undefined}))
+
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
 const titled = (text: string): Json => ({type: 'calloutTitle', content: [{type: 'text', text}]})
@@ -231,6 +244,7 @@ describe('the block handle menu', () => {
         onClose={jest.fn()}
         anchorElement={document.body.appendChild(document.createElement('div'))}
         canCreateSubPage
+        pageId='page:1'
       />
     )
     expect(byRole('menuitem', /Turn into/)).toBeDefined()

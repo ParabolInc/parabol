@@ -4,7 +4,7 @@ import type {UpdateMeetingSeriesMutation as TUpdateMeetingSeriesMutation} from '
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateMeetingSeriesMutation_series on UpdateMeetingSeriesSuccess {
+  fragment UpdateMeetingSeriesMutation_series on UpdateMeetingSeriesPayload {
     meetingSeries {
       id
       title
@@ -29,11 +29,6 @@ const mutation = graphql`
       rrule: $rrule
       disableAnonymity: $disableAnonymity
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateMeetingSeriesMutation_series @relay(mask: false) @alias
     }
   }

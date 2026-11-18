@@ -66,7 +66,7 @@ export const downloadAndCacheImage = async (
   const hash = createImageUrlHash(fetchUrl)
   const partialPath = `Team/${teamId}/assets/${hash}.${ext}` as PartialPath
 
-  const fileStoreManager = getFileStoreManager()
+  const fileStoreManager = await getFileStoreManager()
   const exists = await fileStoreManager.checkExists(partialPath)
   if (exists) {
     await res.body?.cancel()

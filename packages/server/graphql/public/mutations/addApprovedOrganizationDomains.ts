@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {domainRegex, domainWithWildcardRegex, emailRegex} from 'parabol-client/validation/regex'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -14,7 +15,9 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
 
   // VALIDATION
   if (emailDomains.length < 1) {
-    return {error: {message: 'Must include at least 1 email domain'}}
+    throw new GraphQLError('Must include at least 1 email domain', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const normalizedEmailDomains = emailDomains.map(normalizeDomain)
@@ -23,11 +26,9 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
       !emailRegex.test(domain) && !domainRegex.test(domain) && !domainWithWildcardRegex.test(domain)
   )
   if (invalidEmailDomain) {
-    return {
-      error: {
-        message: `${invalidEmailDomain} is not a valid domain or email`
-      }
-    }
+    throw new GraphQLError(`${invalidEmailDomain} is not a valid domain or email`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION

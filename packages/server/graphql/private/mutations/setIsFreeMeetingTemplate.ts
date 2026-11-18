@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import updateMeetingTemplateFreeStatusById from '../../../postgres/queries/updateMeetingTemplateFreeStatusById'
 import updateMeetingTemplateFreeStatusByName from '../../../postgres/queries/updateMeetingTemplateFreeStatusByName'
 import type {MutationResolvers} from '../resolverTypes'
@@ -8,12 +9,14 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
 ) => {
   // VALIDATION
   if (!templateIds?.length && !templateNames?.length) {
-    return {error: {message: 'Must provide template ids or names'}}
+    throw new GraphQLError('Must provide template ids or names', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   if (templateIds?.length && templateNames?.length) {
-    return {
-      error: {message: 'Please provide template ids or names, not both'}
-    }
+    throw new GraphQLError('Please provide template ids or names, not both', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // RESOLUTION
@@ -24,7 +27,7 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
     const updatedTemplateIds = await updateMeetingTemplateFreeStatusByName(templateNames, isFree)
     return {updatedTemplateIds}
   }
-  return {error: {message: 'Invalid args'}}
+  throw new GraphQLError('Invalid args', {extensions: {code: 'BAD_USER_INPUT'}})
 }
 
 export default setIsFreeMeetingTemplate

@@ -22,7 +22,7 @@ const mutation = graphql`
       pseudoId: $pseudoId
       params: $params
     ) {
-      error {
+      userErrors {
         message
       }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
@@ -42,10 +42,10 @@ const SignUpWithPasswordMutation: StandardMutation<
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, signUpWithPassword} = res
-      const {error: uiError} = signUpWithPassword
+      const [userError] = signUpWithPassword.userErrors
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!uiError && !errors) {
+      if (!userError && !errors) {
         handleSuccessfulLogin(atmosphere, signUpWithPassword)
         const redirectPath = '/meetings'
 

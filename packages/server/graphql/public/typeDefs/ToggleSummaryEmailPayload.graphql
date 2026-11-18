@@ -1,4 +1,7 @@
 """
-Return value for toggleSummaryEmail mutation
+Success result for toggleSummaryEmail mutation
 """
-union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess
+type ToggleSummaryEmailPayload {
+  "The user whose meeting summary email preference was updated"
+  user: User!
+}

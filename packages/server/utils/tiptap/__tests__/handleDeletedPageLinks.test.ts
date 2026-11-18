@@ -59,7 +59,12 @@ jest.mock('../../../dataloader/pageAccessByUserIdBatchFn', () => ({
 jest.mock('../../CipherId', () => ({
   CipherId: {encrypt: (id: number) => id, decrypt: (code: number) => code}
 }))
-const mockUpdateBacklinks = jest.fn(async (..._args: unknown[]) => {})
+const mockBacklinkDeletes: unknown[][] = []
+const mockUpdateBacklinks = jest.fn(async (...args: unknown[]) => {
+  await null
+  mockBacklinkDeletes.push(args)
+})
+const mockPlacementPings: {blockPageId: number; backlinkDeletes: unknown[][]}[] = []
 const mockAnnounce = jest.fn()
 const mockPromote = jest.fn(async (..._args: unknown[]): Promise<number | null> => null)
 jest.mock('../updateBacklinks', () => ({
@@ -69,7 +74,11 @@ jest.mock('../promoteSyncedBlock', () => ({
   promoteSyncedBlock: (...args: unknown[]) => mockPromote(...args),
   announcePromotedBlock: (...args: unknown[]) => mockAnnounce(...args)
 }))
-jest.mock('../hocusPocusHub', () => ({removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {})}))
+jest.mock('../hocusPocusHub', () => ({
+  removeAllBacklinkedPageLinkBlocks: jest.fn(async () => {}),
+  publishSyncedBlockPlacementsChanged: (blockPageId: number) =>
+    mockPlacementPings.push({blockPageId, backlinkDeletes: [...mockBacklinkDeletes]})
+}))
 
 const PARENT_PAGE_ID = 10
 const CHILD_PAGE_ID = 11
@@ -102,6 +111,8 @@ const addAndDeleteLink = async (pageId: number, linkedPageId: number, userId: st
 
 beforeEach(() => {
   mockUpdateBacklinks.mockClear()
+  mockBacklinkDeletes.length = 0
+  mockPlacementPings.length = 0
   mockAnnounce.mockClear()
   mockPromote.mockReset()
   mockPromote.mockResolvedValue(null)
@@ -237,10 +248,12 @@ test('promotes a copy on the same page in place and keeps the backlink', async (
   expect(mockArchivedPageIds).toEqual([])
 })
 
-test('removing a copy only drops the backlink', async () => {
+test('removing a copy only drops the backlink, then tells the block its placements changed', async () => {
   removeLink(asUser(EDITOR_ID), {canonical: false}, OTHER_PAGE_ID)
   await flush()
-  expect(mockUpdateBacklinks).toHaveBeenCalledWith(OTHER_PAGE_ID, null, CHILD_PAGE_ID)
+  expect(mockPlacementPings).toEqual([
+    {blockPageId: CHILD_PAGE_ID, backlinkDeletes: [[OTHER_PAGE_ID, null, CHILD_PAGE_ID]]}
+  ])
   expect(mockPromote).not.toHaveBeenCalled()
   expect(mockArchivedPageIds).toEqual([])
 })
@@ -284,4 +297,135 @@ test('removing a synced copy leaves the block alone while another link to it rem
   expect(mockPromote).not.toHaveBeenCalled()
   expect(mockArchivedPageIds).toEqual([])
   expect(linkAttrs(frag)).toEqual([{pageCode: CHILD_PAGE_ID, canonical: true, synced: true}])
+})
+
+const toggleWith = (...children: Y.XmlElement[]) => {
+  const details = new Y.XmlElement('details')
+  const content = new Y.XmlElement('detailsContent')
+  content.insert(0, [new Y.XmlElement('paragraph'), ...children])
+  details.insert(0, [new Y.XmlElement('detailsSummary'), content])
+  return details
+}
+const getToggleContent = (frag: Y.XmlFragment, index: number) =>
+  (frag.get(index) as Y.XmlElement).get(1) as Y.XmlElement
+const childLink = () => createPageLinkElement(CHILD_PAGE_ID, 'Linked page', false) as Y.XmlElement
+
+test('archives the child when its owner deletes the toggle holding its link', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => frag.insert(0, [toggleWith(childLink())]), asUser(OWNER_ID))
+  doc.transact(() => frag.delete(0, 1), asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([CHILD_PAGE_ID])
+})
+
+test('puts a nested link back where the toggle was when a non-owner deletes the toggle', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [
+      new Y.XmlElement('paragraph'),
+      toggleWith(childLink()),
+      new Y.XmlElement('paragraph')
+    ])
+  }, asUser(OWNER_ID))
+  doc.transact(() => frag.delete(1, 1), asUser(EDITOR_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  expect(frag.toArray().map((node) => (node as Y.XmlElement).nodeName)).toEqual([
+    'paragraph',
+    'pageLinkBlock',
+    'paragraph'
+  ])
+})
+
+test('does not archive a nested child page that is moving', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  const link = createPageLinkElement(CHILD_PAGE_ID, 'Linked page', false)
+  doc.transact(() => frag.insert(0, [toggleWith(link as Y.XmlElement)]), asUser(OWNER_ID))
+  doc.transact(() => {
+    link.setAttribute('isMoving', true)
+    getToggleContent(frag, 0).delete(1, 1)
+  })
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  expect(getToggleContent(frag, 0).length).toBe(1)
+})
+
+test('does not archive when a toggle is moved within the page', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [toggleWith(childLink()), new Y.XmlElement('paragraph')])
+  }, asUser(OWNER_ID))
+  doc.transact(() => {
+    frag.delete(0, 1)
+    frag.insert(1, [toggleWith(childLink())])
+  }, asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+})
+
+test('handles each deleted link once when one transaction touches several containers', async () => {
+  mockPages.push({id: OTHER_PAGE_ID, parentPageId: PARENT_PAGE_ID})
+  mockOwnerByPageId.set(OTHER_PAGE_ID, OWNER_ID)
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [
+      toggleWith(childLink()),
+      toggleWith(createPageLinkElement(OTHER_PAGE_ID, 'Other', false) as Y.XmlElement)
+    ])
+  }, asUser(OWNER_ID))
+  doc.transact(() => {
+    getToggleContent(frag, 0).delete(1, 1)
+    getToggleContent(frag, 1).delete(1, 1)
+  }, asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds.sort()).toEqual([CHILD_PAGE_ID, OTHER_PAGE_ID])
+})
+
+test('ignores a link created and deleted in the same transaction', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  doc.transact(() => {
+    frag.insert(0, [toggleWith(childLink())])
+    frag.delete(0, 1)
+  }, asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+})
+
+test('archives the child when its owner deletes the callout holding its link', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  const callout = new Y.XmlElement('callout')
+  callout.insert(0, [childLink()])
+  doc.transact(() => frag.insert(0, [callout]), asUser(OWNER_ID))
+  doc.transact(() => frag.delete(0, 1), asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([CHILD_PAGE_ID])
+})
+
+test('puts a link back at the start of a live callout when it was its first child', async () => {
+  const {doc, frag} = makePage(PARENT_PAGE_ID)
+  const callout = new Y.XmlElement('callout')
+  callout.insert(0, [childLink(), new Y.XmlElement('paragraph'), new Y.XmlElement('paragraph')])
+  doc.transact(() => frag.insert(0, [callout]), asUser(OWNER_ID))
+  doc.transact(() => callout.delete(0, 1), asUser(EDITOR_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  expect(callout.toArray().map((node) => (node as Y.XmlElement).nodeName)).toEqual([
+    'pageLinkBlock',
+    'paragraph',
+    'paragraph'
+  ])
+})
+
+test('archives the child when its owner deletes the toggle in a remote update', async () => {
+  const {doc: docB} = makePage(PARENT_PAGE_ID)
+  const docA = new Y.Doc()
+  const fragA = docA.getXmlFragment('default')
+  fragA.insert(0, [toggleWith(childLink())])
+  Y.applyUpdate(docB, Y.encodeStateAsUpdate(docA), asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([])
+  fragA.delete(0, 1)
+  Y.applyUpdate(docB, Y.encodeStateAsUpdate(docA, Y.encodeStateVector(docB)), asUser(OWNER_ID))
+  await flush()
+  expect(mockArchivedPageIds).toEqual([CHILD_PAGE_ID])
 })

@@ -16,7 +16,6 @@ import {Logger} from '../../utils/Logger'
 // Resolvers from SDL first definitions
 import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
-import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import schemaBuildOptions from '../schemaBuildOptions'
 import {applyScopeDirective} from './applyScopeDirective'
 import {typeDefs} from './importedTypeDefs'
@@ -59,14 +58,12 @@ const buildPublicSchema = (endpoints: NestedEndpoint[], nestedUsage: NestedUsage
   // IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
   // See https://github.com/ardatan/graphql-tools/issues/4367
   return applyScopeDirective(
-    resolveTypesForMutationPayloads(
-      addResolversToSchema({
-        schema: typeDefsWithNestedEndpoints,
-        resolvers: composeResolvers(resolvers, permissions, typeDefsWithNestedEndpoints),
-        inheritResolversFromInterfaces: true,
-        updateResolversInPlace: schemaBuildOptions.updateResolversInPlace
-      })
-    )
+    addResolversToSchema({
+      schema: typeDefsWithNestedEndpoints,
+      resolvers: composeResolvers(resolvers, permissions, typeDefsWithNestedEndpoints),
+      inheritResolversFromInterfaces: true,
+      updateResolversInPlace: schemaBuildOptions.updateResolversInPlace
+    })
   )
 }
 

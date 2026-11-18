@@ -1,11 +1,34 @@
 """
-Return type for the deleteComment mutation. Resolves to DeleteCommentSuccess on success
-or ErrorPayload when the operation fails.
+Returned by the deleteComment mutation when the comment is successfully soft-deleted.
+The comment record is retained so that reply threading is preserved, but its content
+is replaced with tombstone text and isActive is set to false on the Comment object.
 
-Common error cases:
-- The comment does not exist or is no longer active
-- The commentId does not belong to the specified meetingId
-- The viewer is not the author of the comment (only the original author or Parabol AI comment owners may delete)
-- The viewer is not a member of the meeting (enforced by the @scope directive)
+Mutation signature:
+  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
+
+Success conditions:
+  - The comment exists and is still active (isActive true).
+  - The comment belongs to a discussion whose meetingId matches the supplied meetingId.
+  - The viewer is the comment author, OR the comment was posted by the Parabol AI user.
+
+Failure conditions (the mutation fails with a GraphQL error instead):
+  - Comment does not exist or was already deleted.
+  - The comment's discussion is not associated with the provided meetingId.
+  - The viewer is not the comment author and the comment was not posted by the Parabol AI.
+
+A DeleteCommentPayload message is also broadcast on the MEETING subscription channel so
+all participants in the meeting receive the update in real time.
 """
-union DeleteCommentPayload = ErrorPayload | DeleteCommentSuccess
+type DeleteCommentPayload {
+  """
+  The ID of the comment that was deleted. Use this to remove or tombstone the comment
+  in client-side caches and optimistic updates without needing to read the full Comment object.
+  """
+  commentId: ID!
+
+  """
+  The full Comment object as it exists after deletion. isActive will be false and content
+  will contain tombstone placeholder text. Replies and other metadata are preserved.
+  """
+  comment: Comment!
+}

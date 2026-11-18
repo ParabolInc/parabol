@@ -32,17 +32,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
       variables: {url, scope: assetScope, scopeKey},
       onError: (error) => showEmbedError(getMutationError(error).message),
       onCompleted: (res) => {
-        const {embedUserAsset} = res
-        const message = embedUserAsset?.error?.message
-        if (message) {
-          showEmbedError(message)
-          return
-        }
-        const {url, name, type, size} = embedUserAsset!
-        const src = url!
-        const fileName = name!
-        const fileType = type!
-        const fileSize = size!
+        const {url: src, name: fileName, type: fileType, size: fileSize} = res.embedUserAsset
         if (targetType === 'image') {
           editor.chain().focus().setImageBlock({src}).run()
         } else {

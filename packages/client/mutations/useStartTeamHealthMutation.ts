@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import getMutationError from '../utils/relay/getMutationError'
 
 graphql`
-  fragment useStartTeamHealthMutation_success on StartTeamHealthSuccess {
+  fragment useStartTeamHealthMutation_success on StartTeamHealthPayload {
     meetings {
       id
       teamId

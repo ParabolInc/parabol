@@ -19,9 +19,6 @@ graphql`
 const mutation = graphql`
   mutation UpdateNewCheckInQuestionMutation($meetingId: ID!, $checkInQuestion: String!) {
     updateNewCheckInQuestion(meetingId: $meetingId, checkInQuestion: $checkInQuestion) {
-      error {
-        message
-      }
       ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
     }
   }

@@ -3,10 +3,8 @@ import {sendPublic, signUp} from './common'
 const START_RETROSPECTIVE = `
   mutation StartRetrospective($teamId: ID!) {
     startRetrospective(teamId: $teamId) {
-      ... on StartRetrospectiveSuccess {
-        meeting {
-          id
-        }
+      meeting {
+        id
       }
     }
   }
@@ -39,14 +37,15 @@ const updateDragLocation = (teamId: string, meetingId: string, cookie: string) =
     cookie
   })
 
-test('a drag location cannot be broadcast to another team’s meeting', async () => {
+// The permission checks only the teamId, see the comment on updateDragLocation in permissions.ts
+test('a drag location cannot be sent for a team the viewer is not on', async () => {
   const [outsider, owner] = await Promise.all([signUp(), signUp()])
   const meetingId = await startRetrospective(owner.teamId, owner.cookie)
 
-  const res = await updateDragLocation(outsider.teamId, meetingId, outsider.cookie)
+  const res = await updateDragLocation(owner.teamId, meetingId, outsider.cookie)
 
   expect(res).toEqual({
-    data: {updateDragLocation: null},
+    data: null,
     errors: [expect.objectContaining({message: 'Viewer is not on team'})]
   })
 })

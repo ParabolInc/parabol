@@ -2,7 +2,6 @@
 Result of removing an agenda item from a meeting
 """
 type RemoveAgendaItemPayload {
-  error: StandardMutationError
   agendaItem: AgendaItem
   meetingId: ID
 

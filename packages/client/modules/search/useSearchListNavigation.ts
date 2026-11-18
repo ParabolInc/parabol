@@ -1,17 +1,14 @@
 import {type Ref, useImperativeHandle, useLayoutEffect} from 'react'
 import {useNavigate} from 'react-router'
-import {getPageSlug} from '../../tiptap/getPageSlug'
-import {GQLID} from '../../utils/GQLID'
+import type {getSearchResultHref_page$key} from '../../__generated__/getSearchResultHref_page.graphql'
+import {getSearchResultHref} from './getSearchResultHref'
 import {getSelection} from './getSelection'
 import {ResultsListRefHandler} from './SearchDialogContent'
 
 export const useSearchListNavigation = (
   resultsListRef: Ref<ResultsListRefHandler>,
   edges: readonly {
-    node: {
-      id?: string | null | undefined
-      title?: string | null | undefined
-    }
+    node: getSearchResultHref_page$key & {id?: string | null | undefined}
   }[],
   closeSearch: () => void,
   selectedId: string | null,
@@ -48,15 +45,12 @@ export const useSearchListNavigation = (
         e.preventDefault()
         const selectedEdge = edges[selectedIndex]
         if (!selectedEdge) return false
-        const {node} = selectedEdge
-        const {id, title} = node
-        const [pageCode] = GQLID.fromKey(id!)
-        const slug = getPageSlug(Number(pageCode), title!)
+        const href = getSearchResultHref(selectedEdge.node)
         closeSearch()
         if (e.metaKey || e.ctrlKey) {
-          window.open(`/pages/${slug}`, '_blank')
+          window.open(href, '_blank')
         } else {
-          navigate(`/pages/${slug}`)
+          navigate(href)
         }
         return true
       }

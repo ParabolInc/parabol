@@ -3,23 +3,7 @@ import dayjs from 'dayjs'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../client/shared/rruleUtil'
 import getKysely from '../postgres/getKysely'
-import {sendIntranet, signUp} from './common'
-
-const PROCESS_RECURRENCE = `
-  mutation {
-    processRecurrence {
-      ... on ProcessRecurrenceSuccess {
-        meetingsStarted
-        meetingsEnded
-      }
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-    }
-  }
-`
+import {processRecurrence, signUp} from './common'
 
 // starts two days ago & recurs daily, so an occurrence is always due
 const dueRecurrenceRule = () => {
@@ -35,6 +19,8 @@ const addTeamMember = async (teamId: string, userId: string, isLead: boolean) =>
     .execute()
 }
 
+// A parallel suite's processRecurrence can start the series as soon as it exists, so each test
+// creates it last, once the team is in the state under test
 const createSeries = async (teamId: string, facilitatorId: string) => {
   return getKysely()
     .insertInto('MeetingSeries')
@@ -65,7 +51,6 @@ test('a removed facilitator hands the series to the team lead instead of ending 
   const lead = await signUp()
   const facilitator = await signUp()
   await addTeamMember(lead.teamId, facilitator.userId, false)
-  const series = await createSeries(lead.teamId, facilitator.userId)
 
   // the facilitator leaves the team
   await pg
@@ -73,8 +58,9 @@ test('a removed facilitator hands the series to the team lead instead of ending 
     .set({isNotRemoved: false})
     .where('id', '=', TeamMemberId.join(lead.teamId, facilitator.userId))
     .execute()
+  const series = await createSeries(lead.teamId, facilitator.userId)
 
-  await sendIntranet({query: PROCESS_RECURRENCE})
+  await processRecurrence()
 
   const after = await selectSeries(series.id)
   expect(after.cancelledAt).toBeNull()
@@ -96,15 +82,15 @@ test('a facilitator whose team member row is gone does not stall the series', as
   const lead = await signUp()
   const facilitator = await signUp()
   await addTeamMember(lead.teamId, facilitator.userId, false)
-  const series = await createSeries(lead.teamId, facilitator.userId)
 
   await pg
     .deleteFrom('TeamMember')
     .where('id', '=', TeamMemberId.join(lead.teamId, facilitator.userId))
     .execute()
+  const series = await createSeries(lead.teamId, facilitator.userId)
 
-  const res = await sendIntranet({query: PROCESS_RECURRENCE})
-  expect(res.data.processRecurrence.error).toBeUndefined()
+  const res = await processRecurrence()
+  expect(res.errors).toBeUndefined()
 
   const after = await selectSeries(series.id)
   expect(after.cancelledAt).toBeNull()
@@ -120,7 +106,6 @@ test('a series whose team has nobody left is cancelled', async () => {
     .values({id: teamId, name: `Abandoned ${teamId}`, orgId: owner.orgId})
     .execute()
   await addTeamMember(teamId, owner.userId, true)
-  const series = await createSeries(teamId, owner.userId)
 
   // every member leaves, so there is no successor to hand it to
   await pg
@@ -128,8 +113,9 @@ test('a series whose team has nobody left is cancelled', async () => {
     .set({isNotRemoved: false})
     .where('teamId', '=', teamId)
     .execute()
+  const series = await createSeries(teamId, owner.userId)
 
-  await sendIntranet({query: PROCESS_RECURRENCE})
+  await processRecurrence()
 
   const after = await selectSeries(series.id)
   expect(after.cancelledAt).not.toBeNull()

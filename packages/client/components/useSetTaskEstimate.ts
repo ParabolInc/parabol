@@ -9,6 +9,7 @@ import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MAX_FREE_JIRA_EXPORTS} from '../utils/constants'
 import getMutationError from '../utils/relay/getMutationError'
+import setStorageItem from '../utils/setStorageItem'
 
 export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
@@ -23,7 +24,7 @@ const useSetTaskEstimate = () => {
 
   const dismissUpgradeModal = useCallback(() => {
     setShowUpgradeModal(false)
-    sessionStorage.setItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
+    setStorageItem('sessionStorage', JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
   }, [])
 
   const setTaskEstimate = (
@@ -45,21 +46,17 @@ const useSetTaskEstimate = () => {
           return
         }
       }
-      const {setTaskEstimate} = res
-      const {error} = setTaskEstimate
-      if (!error) {
-        // Check if exportCount exceeds limit (soft prompt)
-        const exportCount = setTaskEstimate.SetTaskEstimateMutation_meeting?.exportCount ?? 0
-        if (
-          exportCount > MAX_FREE_JIRA_EXPORTS &&
-          !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
-        ) {
-          setUpgradeExportCount(exportCount)
-          setIsHardBlock(false)
-          setShowUpgradeModal(true)
-        }
-        onSuccess && onSuccess()
+      // Check if exportCount exceeds limit (soft prompt)
+      const exportCount = res.setTaskEstimate.SetTaskEstimateMutation_meeting.exportCount
+      if (
+        exportCount > MAX_FREE_JIRA_EXPORTS &&
+        !sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
+      ) {
+        setUpgradeExportCount(exportCount)
+        setIsHardBlock(false)
+        setShowUpgradeModal(true)
       }
+      onSuccess && onSuccess()
     }
 
     const handleError = (error: Error) => {

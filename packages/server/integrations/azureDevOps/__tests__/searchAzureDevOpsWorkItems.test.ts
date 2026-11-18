@@ -77,7 +77,7 @@ const useManager = (access: RepoAccess) => {
   const manager = {
     access,
     queryWorkItemIds: jest.fn<Promise<number[] | Error>, [string, string | null, string, number]>(),
-    getWorkItems: jest.fn<Promise<AzureDevOpsSharedWorkItem[] | Error>, [string, number[]]>(),
+    getIssues: jest.fn<Promise<AzureDevOpsSharedWorkItem[] | Error>, [string, number[]]>(),
     listOrganizations: jest.fn(),
     listProjects: jest.fn()
   }
@@ -130,7 +130,7 @@ describe('searchAzureDevOpsWorkItems', () => {
   it('searches an organization’s shared projects in one query and keeps the order it returns', async () => {
     const manager = useManager(sharesWebAndApi)
     manager.queryWorkItemIds.mockResolvedValue([3, 1, 4, 2])
-    manager.getWorkItems.mockResolvedValue([
+    manager.getIssues.mockResolvedValue([
       sharedWorkItem(1, WEB_PROJECT_ID, '2026-10-01T00:00:00Z'),
       sharedWorkItem(2, WEB_PROJECT_ID, '2026-10-04T00:00:00Z'),
       sharedWorkItem(3, API_PROJECT_ID, '2026-10-03T00:00:00Z'),
@@ -148,7 +148,7 @@ describe('searchAzureDevOpsWorkItems', () => {
         3
       ]
     ])
-    expect(manager.getWorkItems).toHaveBeenCalledWith(ACME, [3, 1, 4, 2])
+    expect(manager.getIssues).toHaveBeenCalledWith(ACME, [3, 1, 4, 2])
     expect(workItems[0]).toMatchObject({
       service: 'azureDevOps',
       instanceId: ACME,
@@ -164,7 +164,7 @@ describe('searchAzureDevOpsWorkItems', () => {
     manager.queryWorkItemIds.mockImplementation(async (instanceId) =>
       instanceId === ACME ? [2, 1] : [3]
     )
-    manager.getWorkItems.mockImplementation(async (instanceId) =>
+    manager.getIssues.mockImplementation(async (instanceId) =>
       instanceId === ACME
         ? [
             sharedWorkItem(1, WEB_PROJECT_ID, '2026-10-01T00:00:00Z'),
@@ -180,7 +180,7 @@ describe('searchAzureDevOpsWorkItems', () => {
     manager.queryWorkItemIds.mockImplementation(async (instanceId) =>
       instanceId === ACME ? [1, 2] : [3, 4]
     )
-    manager.getWorkItems.mockImplementation(async (instanceId) =>
+    manager.getIssues.mockImplementation(async (instanceId) =>
       instanceId === ACME
         ? [
             sharedWorkItem(1, WEB_PROJECT_ID, '2026-10-01T00:00:00Z'),
@@ -201,12 +201,12 @@ describe('searchAzureDevOpsWorkItems', () => {
     manager.queryWorkItemIds.mockImplementation(async (instanceId) =>
       instanceId === ACME ? organizationError : [7]
     )
-    manager.getWorkItems.mockResolvedValue([
+    manager.getIssues.mockResolvedValue([
       sharedWorkItem(7, OPS_PROJECT_ID, '2026-10-02T00:00:00Z', GLOBEX)
     ])
 
     expect(idsOf(await search())).toEqual(['7'])
-    expect(manager.getWorkItems).toHaveBeenCalledWith(GLOBEX, [7])
+    expect(manager.getIssues).toHaveBeenCalledWith(GLOBEX, [7])
     expect(logError).toHaveBeenCalledWith(
       organizationError,
       expect.objectContaining({userId: 'user1'})
@@ -255,7 +255,7 @@ describe('searchAzureDevOpsWorkItems on a connection that shares chosen projects
     ])
     expect(mockedLoadRepos).not.toHaveBeenCalled()
     expect(manager.listOrganizations).not.toHaveBeenCalled()
-    expect(manager.getWorkItems).not.toHaveBeenCalled()
+    expect(manager.getIssues).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -307,7 +307,7 @@ describe('searchAzureDevOpsWorkItems on a connection that shares everything', ()
     manager.queryWorkItemIds.mockImplementation(async (instanceId) =>
       instanceId === ACME ? [1] : [2]
     )
-    manager.getWorkItems.mockImplementation(async (instanceId) =>
+    manager.getIssues.mockImplementation(async (instanceId) =>
       instanceId === ACME
         ? [sharedWorkItem(1, WEB_PROJECT_ID, '2026-10-01T00:00:00Z')]
         : [sharedWorkItem(2, OPS_PROJECT_ID, '2026-10-02T00:00:00Z', GLOBEX)]

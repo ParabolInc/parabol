@@ -6,6 +6,7 @@ import useForm from '~/hooks/useForm'
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
+import isMSTeamsAppLink, {MS_TEAMS_APP_LINK_ERROR} from '~/utils/isMSTeamsAppLink'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -65,7 +66,8 @@ const MSTeamsPanel = (props: Props) => {
         return new Legitity(rawInput).test((maybeUrl) => {
           if (!maybeUrl) return 'No link provided'
           const links = linkify.match(maybeUrl)
-          return !links ? 'Not looking too linky' : ''
+          if (!links) return 'Not looking too linky'
+          return isMSTeamsAppLink(maybeUrl) ? MS_TEAMS_APP_LINK_ERROR : ''
         })
       }
     }

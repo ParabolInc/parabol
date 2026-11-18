@@ -10,7 +10,6 @@ import type {MutationResolvers} from '../resolverTypes'
 import {isConfluenceExportEnabled} from './helpers/confluenceExport/isConfluenceExportEnabled'
 import {loadPageExportTree} from './helpers/confluenceExport/loadPageExportTree'
 import {resolveConfluenceAuth} from './helpers/confluenceExport/resolveConfluenceAuth'
-import {runConfluenceExport} from './helpers/confluenceExport/runConfluenceExport'
 
 const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = async (
   _source,
@@ -32,6 +31,11 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
   }
   if (page.deletedAt) {
     throw new GraphQLError('Cannot export a page in the trash', {extensions: {code: 'CONFLICT'}})
+  }
+  if (page.isSyncedBlock) {
+    throw new GraphQLError('Export a page this synced block is on instead', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {auth, error: authError} = await resolveConfluenceAuth(
     dataLoader,
@@ -74,6 +78,11 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     )
   }
 
+  // the serializers bring megabytes of emoji data, so the first export evaluates them instead of every server's startup.
+  // Loaded before the row is made, so a failure here can't leave an export that never runs
+  const {runConfluenceExport} = await import(
+    /* webpackMode: "eager" */ './helpers/confluenceExport/runConfluenceExport'
+  )
   const pageExport = await pg
     .insertInto('PageExport')
     .values({
@@ -91,7 +100,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     .executeTakeFirstOrThrow()
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')
-  runConfluenceExport(pageExport.id, jobDataLoader)
+  runConfluenceExport(pageExport.id, jobDataLoader, {isTokenScoped: !!resourceGrants})
     .catch(Logger.error)
     .finally(() => jobDataLoader.dispose())
 

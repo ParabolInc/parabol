@@ -2,6 +2,20 @@ import type {Editor} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
 import {TextSelection} from '@tiptap/pm/state'
 
+const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList'])
+
+// In a mixed nest both isActive checks are true; only the innermost item drives Tab/Shift-Tab
+const getInnermostListItemType = (editor: Editor): 'listItem' | 'taskItem' | null => {
+  const {$from} = editor.state.selection
+  for (let d = $from.depth; d >= 1; d--) {
+    const name = $from.node(d).type.name
+    if (name === 'listItem' || name === 'taskItem') {
+      return LIST_TYPES.has($from.node(d - 1).type.name) ? name : null
+    }
+  }
+  return null
+}
+
 // See also: https://github.com/ueberdosis/tiptap/issues/457#issuecomment-2285456957
 // TipTap has troble receiving the Tab input in certain contexts
 
@@ -111,12 +125,9 @@ export const IndentHandler = Extension.create({
   addKeyboardShortcuts() {
     return {
       Tab: ({editor}) => {
-        if (editor.isActive('listItem')) {
-          editor.chain().sinkListItem('listItem').run()
-          return true
-        }
-        if (editor.isActive('taskItem')) {
-          editor.chain().sinkListItem('taskItem').run()
+        const itemType = getInnermostListItemType(editor)
+        if (itemType) {
+          editor.chain().sinkListItem(itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {
@@ -125,12 +136,9 @@ export const IndentHandler = Extension.create({
         return true
       },
       'Shift-Tab': ({editor}) => {
-        if (editor.isActive('listItem')) {
-          editor.chain().liftListItem('listItem').run()
-          return true
-        }
-        if (editor.isActive('taskItem')) {
-          editor.chain().liftListItem('taskItem').run()
+        const itemType = getInnermostListItemType(editor)
+        if (itemType) {
+          editor.chain().liftListItem(itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {

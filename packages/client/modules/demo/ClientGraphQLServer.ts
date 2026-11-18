@@ -20,6 +20,7 @@ import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 import findStageById from '../../utils/meetings/findStageById'
+import setStorageItem from '../../utils/setStorageItem'
 import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
@@ -258,10 +259,70 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
   }
 
+  private removeReflectionFromGroup(reflection: DemoReflection) {
+    const reflectionGroups = this.db.reflectionGroups
+    const oldReflectionGroup = reflectionGroups.find(
+      (group) => group.id === reflection.reflectionGroupId
+    )!
+    const oldReflections = oldReflectionGroup.reflections
+    if (oldReflections.length < 2) return
+    const now = new Date().toJSON()
+    const columnGroups = reflectionGroups.filter((group) => group.promptId === reflection.promptId)
+    const nextGroup = columnGroups[columnGroups.indexOf(oldReflectionGroup) + 1]
+    const sortOrder = nextGroup
+      ? (oldReflectionGroup.sortOrder + nextGroup.sortOrder) / 2 + dndNoise()
+      : oldReflectionGroup.sortOrder + 1 + dndNoise()
+    const reflectionGroupId = this.getTempId('group')
+    const reflectionGroup = {
+      __typename: 'RetroReflectionGroup',
+      id: reflectionGroupId,
+      reflectionGroupId,
+      smartTitle: null,
+      title: null,
+      commentors: null,
+      voteCount: 0,
+      viewerVoteCount: 0,
+      createdAt: now,
+      isActive: true,
+      meetingId: RetroDemo.MEETING_ID,
+      meeting: this.db.newMeeting,
+      prompt: reflection.prompt,
+      promptId: reflection.promptId,
+      reflections: [reflection],
+      sortOrder,
+      summary: null,
+      discussionPromptQuestion: null,
+      tasks: [],
+      thread: makeReflectionGroupThread(),
+      titleIsUserDefined: false,
+      updatedAt: now,
+      voterIds: []
+    } as DemoReflectionGroup
+    reflectionGroups.splice(reflectionGroups.indexOf(oldReflectionGroup) + 1, 0, reflectionGroup)
+    this.db.discussions.push(new DemoDiscussion(reflectionGroupId))
+    oldReflections.splice(
+      oldReflections.findIndex(({id}) => id === reflection.id),
+      1
+    )
+    Object.assign(reflection, {
+      sortOrder: 0,
+      reflectionGroupId,
+      retroReflectionGroup: reflectionGroup,
+      updatedAt: now
+    })
+    const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+    this.updateReflectionGroupTitle(reflectionGroup, [reflection.content])
+    this.updateReflectionGroupTitle(
+      oldReflectionGroup,
+      oldReflections.map(({content}) => content),
+      titleIsUserDefined
+    )
+  }
+
   startDemo() {
     this.startBot()
     this.db._started = true
-    window.localStorage.setItem('retroDemo', stringify(this.db))
+    setStorageItem('localStorage', 'retroDemo', stringify(this.db))
   }
 
   getUnlockedStages(stageIds: string[]) {
@@ -452,7 +513,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         thread.edges.push(new DemoThreadableEdge(newComment))
       }
       const data = {
-        __typename: 'AddCommentSuccess',
+        __typename: 'AddCommentPayload',
         error: null,
         meetingId: RetroDemo.MEETING_ID,
         comment: newComment
@@ -525,7 +586,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       const data = {
-        __typename: 'AddReactjiToReactableSuccess',
+        __typename: 'AddReactjiToReactablePayload',
         reactable
       }
       if (userId !== demoViewerId) {
@@ -762,7 +823,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const data = {
         discussionId,
         discussion,
-        __typename: 'EditCommentingSuccess'
+        __typename: 'EditCommentingPayload'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
@@ -798,7 +859,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         : readyUserIds.filter((id) => id !== userId)
 
       const data = {
-        __typename: 'FlagReadyToAdvanceSuccess',
+        __typename: 'FlagReadyToAdvancePayload',
         stage,
         meeting
       }
@@ -905,12 +966,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         totalVotes < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT ||
         maxVotesPerGroup < MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
       ) {
-        return {
-          updateRetroMaxVotes: {
-            __typename: 'ErrorPayload',
-            error: {message: 'Your team has already spent their votes'}
-          }
-        }
+        throw new Error('Your team has already spent their votes')
       }
       const totalDiff = totalVotes - (meeting as any).totalVotes
       meeting.totalVotes = totalVotes
@@ -923,7 +979,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         0
       )
       const data = {
-        __typename: 'UpdateRetroMaxVotesSuccess',
+        __typename: 'UpdateRetroMaxVotesPayload',
         meeting
       }
       return {updateRetroMaxVotes: data}
@@ -1008,7 +1064,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const meeting = this.db.newMeeting
       meeting.name = name
       const data = {
-        __typename: 'RenameMeetingSuccess',
+        __typename: 'RenameMeetingPayload',
         meeting
       }
       if (userId !== demoViewerId) {
@@ -1106,7 +1162,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }) => {
       return {
         setMeetingMusic: {
-          __typename: 'SetMeetingMusicSuccess',
+          __typename: 'SetMeetingMusicPayload',
           meetingId,
           trackSrc,
           isPlaying
@@ -1293,6 +1349,29 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {endDraggingReflection: data}
+    },
+    UngroupReflectionMutation: ({
+      reflectionGroupId,
+      reflectionId
+    }: {
+      reflectionGroupId?: string | null
+      reflectionId?: string | null
+    }) => {
+      const reflectionsToUngroup = reflectionId
+        ? this.db.reflections.filter(({id}) => id === reflectionId)
+        : (this.db.reflectionGroups
+            .find(({id}) => id === reflectionGroupId)
+            ?.reflections.slice(1) ?? [])
+      reflectionsToUngroup.forEach((reflection) => {
+        reflection.isHumanTouched = true
+        this.removeReflectionFromGroup(reflection)
+      })
+      return {
+        ungroupReflection: {
+          __typename: 'UngroupReflectionPayload',
+          meeting: this.db.newMeeting
+        }
+      }
     },
     UpdateDragLocationMutation: ({input}: {input: any}, userId: string) => {
       const {teamId, ...inputData} = input
@@ -1518,7 +1597,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       const data = {
-        __typename: 'DeleteCommentSuccess',
+        __typename: 'DeleteCommentPayload',
         error: null,
         comment
       }
@@ -1693,7 +1772,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         removedSuggestedActionId: null,
         timelineEvent: null,
         updatedTasks: this.db.tasks,
-        __typename: 'EndRetrospectiveSuccess'
+        __typename: 'EndRetrospectivePayload'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.TEAM, data)
@@ -1721,7 +1800,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.content = content
 
       const data = {
-        __typename: 'UpdateCommentContentSuccess',
+        __typename: 'UpdateCommentContentPayload',
         error: null,
         comment
       }

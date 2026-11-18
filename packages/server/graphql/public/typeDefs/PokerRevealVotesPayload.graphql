@@ -1,4 +1,9 @@
 """
-Result of revealing all hidden votes in a Poker meeting stage
+Successfully revealed all hidden votes in a Poker meeting stage
 """
-union PokerRevealVotesPayload = ErrorPayload | PokerRevealVotesSuccess
+type PokerRevealVotesPayload {
+  """
+  The stage that holds the updated isVoting step
+  """
+  stage: EstimateStage!
+}

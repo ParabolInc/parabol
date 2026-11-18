@@ -17,7 +17,7 @@ const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
   const {teamId} = newAgendaItem
   // VALIDATION
   if (newAgendaItem.content.length > 64) {
-    return {error: {message: 'Agenda item must be shorter'}}
+    throw new GraphQLError('Agenda item must be shorter', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const [teamMember, meeting] = await Promise.all([
     dataLoader.get('teamMembers').load(newAgendaItem.teamMemberId),

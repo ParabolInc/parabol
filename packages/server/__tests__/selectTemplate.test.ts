@@ -29,9 +29,6 @@ const SELECT_TEMPLATE_MUTATION = `
       meetingSettings {
         selectedTemplateId
       }
-      error {
-        message
-      }
     }
   }
 `
@@ -51,9 +48,7 @@ test('selectTemplate blocks selecting a template for a team the viewer is not a 
   })
 
   expect(selectTemplateRes).toEqual({
-    data: {
-      selectTemplate: null
-    },
+    data: null,
     errors: [
       expect.objectContaining({
         message: expect.stringMatching('Viewer is not on team')
@@ -80,7 +75,6 @@ test('select a public template', async () => {
   expect(selectTemplateRes).toEqual({
     data: {
       selectTemplate: {
-        error: null,
         meetingSettings: {
           selectedTemplateId: '360ReviewFeedbackOnDevelopmentTemplate'
         }

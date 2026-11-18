@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import type {EmbedAspectRatio} from '../../../shared/embed/embedTypes'
 import {ASPECT_RATIO_PADDING} from '../../../shared/tiptap/extensions/EmbedBlockBase'
 import {cn} from '../../../ui/cn'
+import {EmbedBlockImage} from './EmbedBlockImage'
 
 interface Props {
   embedSrc: string
@@ -62,12 +63,10 @@ export const EmbedBlockFrame = (props: Props) => {
       ) : (
         <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center'>
           {thumbnailUrl ? (
-            <img
+            <EmbedBlockImage
               src={thumbnailUrl}
-              alt=''
-              referrerPolicy='no-referrer'
-              loading='lazy'
               className='h-full w-full object-cover'
+              fallback={null}
             />
           ) : null}
         </div>

@@ -1,6 +1,9 @@
 """
-Return value for removeApprovedOrganizationDomains, which could be an error
+Successfully removed one or more approved email domains from an organization
 """
-union RemoveApprovedOrganizationDomainsPayload =
-  | ErrorPayload
-  | RemoveApprovedOrganizationDomainsSuccess
+type RemoveApprovedOrganizationDomainsPayload {
+  """
+  The organization with updated restrictions
+  """
+  organization: Organization!
+}

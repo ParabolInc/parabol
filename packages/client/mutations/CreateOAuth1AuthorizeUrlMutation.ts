@@ -9,10 +9,6 @@ const mutation = graphql`
   mutation CreateOAuth1AuthorizeUrlMutation($providerId: ID!, $teamId: ID!) {
     createOAuth1AuthorizeUrl(providerId: $providerId, teamId: $teamId) {
       url
-      error {
-        title
-        message
-      }
     }
   }
 `

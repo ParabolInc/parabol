@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {NotifyTeamHealthResponseDueResolvers} from '../resolverTypes'
 
 const NotifyTeamHealthResponseDue: NotifyTeamHealthResponseDueResolvers = {
@@ -5,7 +6,9 @@ const NotifyTeamHealthResponseDue: NotifyTeamHealthResponseDueResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamHealth') {
-      throw new Error('Notification meeting is not a Team Health meeting')
+      throw new GraphQLError('Notification meeting is not a Team Health meeting', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     }
     return meeting
   }

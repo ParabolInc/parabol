@@ -99,11 +99,8 @@ const NewClickUpTaskInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
-      const {error, task} = res.createTask
-      if (error) {
-        setCreateTaskError(error.message)
-      }
-      if (error || !task) return
+      const {task} = res.createTask
+      if (!task) return
       const {integrationHash} = task
       if (!integrationHash) return
       const pokerScopeVariables = {

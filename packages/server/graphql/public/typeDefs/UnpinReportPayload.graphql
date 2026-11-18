@@ -1,0 +1,6 @@
+type UnpinReportPayload {
+  """
+  The organization, with its pins
+  """
+  organization: Organization!
+}

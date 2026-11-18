@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
@@ -82,7 +83,9 @@ const attemptLogin = async (
     if (type === AuthIdentityTypeEnum.GOOGLE) return {error: AuthenticationError.USER_EXISTS_GOOGLE}
     if (type === AuthIdentityTypeEnum.MICROSOFT)
       return {error: AuthenticationError.USER_EXISTS_MICROSOFT}
-    throw new Error(`Unknown identity type: ${type}`)
+    throw new GraphQLError(`Unknown identity type: ${type}`, {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
   const {hashedPassword} = localIdentity
   if (!hashedPassword) {

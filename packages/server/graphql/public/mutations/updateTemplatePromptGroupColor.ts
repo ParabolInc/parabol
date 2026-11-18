@@ -25,7 +25,7 @@ const updateTemplatePromptGroupColor: MutationResolvers['updateTemplatePromptGro
   publish(
     SubscriptionChannel.TEAM,
     teamId,
-    'UpdateTemplatePromptGroupColorSuccess',
+    'UpdateTemplatePromptGroupColorPayload',
     data,
     subOptions
   )

@@ -6,12 +6,6 @@ credentials. The token is delivered via cookie, not as a field on this type.
 """
 type CreateImposterTokenPayload {
   """
-  Present when the mutation fails — for example when no user matches the supplied
-  userId or email. Null on success.
-  """
-  error: StandardMutationError
-
-  """
   The user whose identity was assumed. Use this to confirm which account the
   impersonation session was created for before redirecting or continuing.
   """

@@ -2,13 +2,11 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
-import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
@@ -84,8 +82,8 @@ const filterGrantedOrgIds = async (orgIds: string[], resourceGrants?: ResourceGr
 }
 
 const User: ReqResolvers<'User'> = {
-  organization: (_source, {orgId}, {dataLoader}) => {
-    return dataLoader.get('organizations').loadNonNull(orgId)
+  organization: async (_source, {orgId}, {dataLoader}) => {
+    return (await dataLoader.get('organizations').load(orgId)) ?? null
   },
   invoices,
   freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
@@ -276,8 +274,8 @@ const User: ReqResolvers<'User'> = {
     })
     return connectionFromTasks(filteredTasks, first)
   },
-  team: (_source, {teamId}, {dataLoader}) => {
-    return dataLoader.get('teams').loadNonNull(teamId)
+  team: async (_source, {teamId}, {dataLoader}) => {
+    return (await dataLoader.get('teams').load(teamId)) ?? null
   },
   createdAt: ({createdAt}) => createdAt || new Date('2016-06-01'),
 
@@ -484,26 +482,13 @@ const User: ReqResolvers<'User'> = {
   },
 
   similarReflectionGroups: async (
-    {id: userId},
+    _source,
     {reflectionGroupId, searchQuery: rawSearchQuery},
     {dataLoader}
   ) => {
     const searchQuery = rawSearchQuery.toLowerCase().trim()
-    const retroReflectionGroup = await dataLoader
-      .get('retroReflectionGroups')
-      .load(reflectionGroupId)
-    if (!retroReflectionGroup) {
-      throw new Error('Invalid reflection group id')
-    }
-    const {meetingId} = retroReflectionGroup
-    const meetingMemberId = MeetingMemberId.join(meetingId, userId)
-    const [viewerMeetingMember, reflections] = await Promise.all([
-      dataLoader.get('meetingMembers').load(meetingMemberId),
-      dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-    ])
-    if (!viewerMeetingMember) {
-      throw new Error('Not a member of meeting')
-    }
+    const {meetingId} = await dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId)
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
 
     if (searchQuery !== '') {
       const matchedReflections = reflections.filter(({plaintextContent}) =>
@@ -575,10 +560,9 @@ const User: ReqResolvers<'User'> = {
       if (!meeting) return {meetingId}
       teamId = meeting.teamId
     }
-    const teamMember = teamId
-      ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
-      : null
-    if (teamMember?.isNotRemoved) return {isOnTeam: true}
+    // the same teams the auth token lists, so a page that checks the token can't send the viewer straight back
+    const viewerTeamIds = await dataLoader.get('teamIdsByUserId').load(viewerId)
+    if (teamId && viewerTeamIds.includes(teamId)) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null
@@ -588,12 +572,10 @@ const User: ReqResolvers<'User'> = {
   },
 
   teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader, resourceGrants}) => {
-    const viewerId = getUserId(authToken)
     const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
-    const activeTeamIds =
-      viewerId === userId || isSuperUser(authToken)
-        ? allTms
-        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const activeTeamIds = isSuperUser(authToken)
+      ? allTms
+      : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
     let teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
@@ -693,9 +675,9 @@ const User: ReqResolvers<'User'> = {
   domainJoinRequest: async ({email}, {requestId}, {dataLoader}) => {
     const request = await dataLoader
       .get('domainJoinRequests')
-      .loadNonNull(DomainJoinRequestId.split(requestId))
+      .load(DomainJoinRequestId.split(requestId))
     const domain = getDomainFromEmail(email)
-    if (domain !== request.domain) {
+    if (!request || domain !== request.domain) {
       return null
     }
     return request
@@ -757,8 +739,9 @@ const User: ReqResolvers<'User'> = {
 
     if (!__PRODUCTION__) {
       if (parabolActivities!.length + allUserActivities.length > first) {
-        throw new Error(
-          'Please implement pagination for User.activities or increase `first` for the query'
+        throw new GraphQLError(
+          'Please implement pagination for User.activities or increase `first` for the query',
+          {extensions: {code: 'INTERNAL_SERVER_ERROR'}}
         )
       }
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {

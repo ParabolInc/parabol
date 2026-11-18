@@ -1,11 +1,9 @@
 import type {UpdateAgendaItemPayloadResolvers} from '../resolverTypes'
 
-export type UpdateAgendaItemPayloadSource =
-  | {
-      agendaItemId: string
-      meetingId?: string | null
-    }
-  | {error: {message: string}}
+export type UpdateAgendaItemPayloadSource = {
+  agendaItemId: string
+  meetingId?: string | null
+}
 
 const UpdateAgendaItemPayload: UpdateAgendaItemPayloadResolvers = {
   agendaItem: (source, _args, {dataLoader}) => {

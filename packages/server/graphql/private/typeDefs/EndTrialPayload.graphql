@@ -1,4 +1,11 @@
-"""
-Return value for endTrial, which could be an error
-"""
-union EndTrialPayload = ErrorPayload | EndTrialSuccess
+type EndTrialPayload {
+  """
+  The updated organization
+  """
+  organization: Organization!
+
+  """
+  The start time of the ended trial
+  """
+  trialStartDate: DateTime
+}

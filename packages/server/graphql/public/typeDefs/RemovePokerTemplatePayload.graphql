@@ -2,7 +2,6 @@
 Result of deleting a Poker meeting template
 """
 type RemovePokerTemplatePayload {
-  error: StandardMutationError
   pokerTemplate: PokerTemplate
   pokerMeetingSettings: PokerMeetingSettings
 }

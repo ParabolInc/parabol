@@ -9,6 +9,7 @@ import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
@@ -188,7 +189,9 @@ const OAuthProviderList = ({organizationRef}: Props) => {
 
       <Dialog isOpen={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogContent className='max-w-md'>
-          <h3 className='mb-4 font-semibold text-fg-primary text-lg'>Delete Application?</h3>
+          <DialogTitle className='mt-4.5 mb-4 text-fg-primary text-lg'>
+            Delete Application?
+          </DialogTitle>
           <p className='text-fg-secondary'>
             Are you sure you want to delete{' '}
             <span className='font-semibold'>{providerToDelete?.name}</span>? This action cannot be

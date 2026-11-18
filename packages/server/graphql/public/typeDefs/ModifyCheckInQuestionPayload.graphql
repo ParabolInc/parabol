@@ -1,4 +1,9 @@
 """
-Return value for modifyCheckInQuestion, which could be an error
+The result of modifying the check-in question for a meeting
 """
-union ModifyCheckInQuestionPayload = ErrorPayload | ModifyCheckInQuestionSuccess
+type ModifyCheckInQuestionPayload {
+  """
+  The updated check-in question text, null if unchanged
+  """
+  modifiedCheckInQuestion: String
+}

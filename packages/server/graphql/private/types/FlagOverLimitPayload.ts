@@ -1,11 +1,9 @@
 import isValid from '../../isValid'
 import type {FlagOverLimitPayloadResolvers} from '../resolverTypes'
 
-export type FlagOverLimitPayloadSource =
-  | {
-      userIds: string[]
-    }
-  | {error: {message: string}}
+export type FlagOverLimitPayloadSource = {
+  userIds: string[]
+}
 
 const FlagOverLimitPayload: FlagOverLimitPayloadResolvers = {
   users: async (source, _args, {dataLoader}) => {

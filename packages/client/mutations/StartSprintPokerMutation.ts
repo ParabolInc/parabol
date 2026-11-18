@@ -4,7 +4,7 @@ import type {StartSprintPokerMutation as TStartSprintPokerMutation} from '../__g
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {
+  fragment StartSprintPokerMutation_team on StartSprintPokerPayload {
     meeting {
       id
     }
@@ -22,17 +22,10 @@ const mutation = graphql`
     $ignoreSuggestedUpgrade: Boolean
   ) {
     startSprintPoker(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartSprintPokerSuccess {
-        meeting {
-          # lets useJoinedMeetingQuery subscribe while the starter joins
-          viewerMeetingMember {
-            id
-          }
+      meeting {
+        # lets useJoinedMeetingQuery subscribe while the starter joins
+        viewerMeetingMember {
+          id
         }
       }
       ...StartSprintPokerMutation_team @relay(mask: false) @alias

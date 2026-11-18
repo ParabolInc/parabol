@@ -1,0 +1,7 @@
+"""
+The payload returned by the duplicatePage mutation
+"""
+type DuplicatePagePayload {
+  "The new copy of the page"
+  page: Page!
+}

@@ -15,6 +15,7 @@ import {DialogTitle} from '~/ui/Dialog/DialogTitle'
 import {Key as KeyIcon} from '~/ui/icons'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import logoMarkDark from '../../../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+import setStorageItem from '../../../../utils/setStorageItem'
 
 const PAT_STORAGE_KEY = 'graphiql:personalAccessToken'
 
@@ -74,7 +75,7 @@ const GraphqlContainer = () => {
     setPatSubmitAttempted(true)
     const token = patInput.trim()
     if (!isValidPat) return
-    localStorage.setItem(PAT_STORAGE_KEY, token)
+    setStorageItem('localStorage', PAT_STORAGE_KEY, token)
     setAccessToken(token)
     setPatInput('')
     setPatSubmitAttempted(false)

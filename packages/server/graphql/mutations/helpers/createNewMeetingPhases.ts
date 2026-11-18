@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {InsertQueryBuilder} from 'kysely'
 import {
   AGENDA_ITEMS,
@@ -161,7 +162,9 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
         case 'SCOPE':
           return new GenericMeetingPhase(phaseType, durations)
         default:
-          throw new Error(`Unhandled phaseType: ${phaseType}`)
+          throw new GraphQLError(`Unhandled phaseType: ${phaseType}`, {
+            extensions: {code: 'INTERNAL_SERVER_ERROR'}
+          })
       }
     })
   )) as [T, ...T[]]

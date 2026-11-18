@@ -1,4 +1,14 @@
 """
-Return value for upgradeToTeamTier, which could be an error
+Success result for upgradeToTeamTier mutation
 """
-union UpgradeToTeamTierPayload = ErrorPayload | UpgradeToTeamTierSuccess
+type UpgradeToTeamTierPayload {
+  """
+  The new org on the team tier
+  """
+  organization: Organization!
+
+  """
+  The updated teams under the org
+  """
+  teams: [Team!]!
+}

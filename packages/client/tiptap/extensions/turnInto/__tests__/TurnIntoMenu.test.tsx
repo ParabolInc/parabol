@@ -8,6 +8,19 @@ import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExte
 import {happyWindow} from '../../__tests__/installHappyDom'
 import DragHandleMenu from '../../DragHandleMenu'
 
+jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
+  __esModule: true,
+  default: () => null
+}))
+jest.mock('../../../blockMove/openMoveToPageMenu', () => ({openMoveToPageMenu: jest.fn()}))
+jest.mock('../../moveToPage/openCopyToPageMenu', () => ({openCopyToPageMenu: jest.fn()}))
+jest.mock('react-router', () => ({useNavigate: () => jest.fn()}))
+jest.mock('../../../../mutations/useDuplicatePageMutation', () => ({
+  useDuplicatePageMutation: () => [jest.fn(), false]
+}))
+jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
+jest.mock('../../../../hooks/usePageViewerAccess', () => ({lookupPageViewerGrant: () => undefined}))
+
 type Json = Record<string, unknown>
 const p = (text = ''): Json => ({type: 'paragraph', content: text ? [{type: 'text', text}] : []})
 const h = (level: number, text: string): Json => ({
@@ -20,6 +33,10 @@ const ul = (...items: string[]): Json => ({
   content: items.map((text) => ({type: 'listItem', content: [p(text)]}))
 })
 const image: Json = {type: 'imageBlock', attrs: {src: 'https://example.com/a.png'}}
+const table: Json = {
+  type: 'table',
+  content: [{type: 'tableRow', content: [{type: 'tableCell', content: [p('cell')]}]}]
+}
 const TITLE_SIZE = 7
 const ROW_TITLES = [
   'Text',
@@ -53,7 +70,13 @@ let editor: Editor | undefined
 
 const openMenu = async (
   blocks: Json[],
-  {pos = TITLE_SIZE, canCreateSubPage = true}: {pos?: number; canCreateSubPage?: boolean} = {}
+  {
+    pos = TITLE_SIZE,
+    canCreateSubPage = true
+  }: {
+    pos?: number
+    canCreateSubPage?: boolean
+  } = {}
 ) => {
   const activeEditor = new Editor({
     element: document.body.appendChild(document.createElement('div')),
@@ -78,6 +101,7 @@ const openMenu = async (
         onClose={onClose}
         anchorElement={anchor}
         canCreateSubPage={canCreateSubPage}
+        pageId='page:1'
       />
     )
     await tick()
@@ -92,6 +116,12 @@ const itemNamed = (name: string) => {
   return item
 }
 const hasItem = (name: string) => items().some((item) => item.textContent?.startsWith(name))
+const submenuRows = () => {
+  const submenu = Array.from(document.querySelectorAll('[data-radix-menu-content]')).at(-1)
+  return Array.from(
+    submenu?.querySelectorAll<HTMLElement>('[role^="menuitem"], [role="separator"]') ?? []
+  )
+}
 const radios = () => Array.from(document.querySelectorAll<HTMLElement>('[role="menuitemradio"]'))
 const checkedRows = () =>
   radios()
@@ -127,7 +157,7 @@ const blockTypes = () => {
 }
 const rootContent = () => document.querySelector<HTMLElement>('[role="menu"]')!
 
-afterEach(async () => {
+const closeMenu = async () => {
   await act(async () => {
     root?.unmount()
     root = undefined
@@ -136,7 +166,9 @@ afterEach(async () => {
   editor?.destroy()
   editor = undefined
   document.body.replaceChildren()
-})
+}
+
+afterEach(closeMenu)
 
 const uncaught: unknown[] = []
 happyWindow.addEventListener('error', (event) => {
@@ -170,12 +202,13 @@ describe('what the menu offers', () => {
     expect(checkedRows()).toEqual(['Bullet list'])
   })
 
-  test('Page is hidden without a grant on the page', async () => {
+  test('Page and Synced block are hidden without a grant on the page', async () => {
     await openMenu([p('word')], {canCreateSubPage: false})
     await openTurnInto()
     expect(radios().map((row) => row.textContent)).toEqual(
       ROW_TITLES.filter((title) => title !== 'Page')
     )
+    expect(hasItem('Synced block')).toBe(false)
   })
 
   test('a block inside a callout has no Callout row', async () => {
@@ -201,9 +234,24 @@ describe('what the menu offers', () => {
     expect(caption()).toBeNull()
   })
 
+  test('offers Synced block last', async () => {
+    await openMenu([p('word')])
+    await openTurnInto()
+    const rows = submenuRows().map((row) => row.getAttribute('role'))
+    expect(rows).toEqual([...ROW_TITLES.map(() => 'menuitemradio'), 'separator', 'menuitem'])
+    expect(submenuRows().at(-1)?.textContent).toBe('Synced block')
+  })
+
+  test('a paragraph inside a table cell has no Synced block row', async () => {
+    await openMenu([table], {pos: TITLE_SIZE + 3})
+    expect(hasItem('Duplicate block')).toBe(true)
+    expect(hasItem('Turn into')).toBe(false)
+    expect(hasItem('Synced block')).toBe(false)
+  })
+
   test('an image keeps the menu it has today', async () => {
     await openMenu([image])
-    expect(hasItem('Turn into')).toBe(false)
+    expect(items().some((item) => item.textContent === 'Turn into')).toBe(false)
     expect(hasItem('Duplicate block')).toBe(true)
     expect(hasItem('Delete block')).toBe(true)
     expect(caption()).toBeNull()
@@ -239,6 +287,31 @@ describe('picking a row', () => {
     const link = activeEditor.state.doc.child(1)
     expect(link.type.name).toBe('pageLinkBlock')
     expect(link.attrs).toMatchObject({pageCode: -1, title: 'word', canonical: true})
+  })
+})
+
+describe('Synced block', () => {
+  test('moves the block into a new synced block and leaves the caret below it', async () => {
+    const {activeEditor} = await openMenu([p('word'), p('after')])
+    await openTurnInto()
+    await click(itemNamed('Synced block'))
+    const link = activeEditor.state.doc.child(1)
+    expect(link.type.name).toBe('pageLinkBlock')
+    expect(link.attrs).toMatchObject({pageCode: -1, canonical: true, synced: true, title: ''})
+    expect(link.attrs.content).toEqual([p('word')])
+    expect(activeEditor.state.selection.$from.parent.textContent).toBe('after')
+  })
+
+  test('does nothing when another edit moved the block', async () => {
+    const {activeEditor} = await openMenu([p('word'), p('after')])
+    await openTurnInto()
+    act(() => {
+      const {tr, schema} = activeEditor.state
+      activeEditor.view.dispatch(tr.insert(TITLE_SIZE, schema.nodeFromJSON(p('new'))))
+    })
+    const before = activeEditor.state.doc
+    await click(itemNamed('Synced block'))
+    expect(activeEditor.state.doc.eq(before)).toBe(true)
   })
 })
 

@@ -58,9 +58,9 @@ test('replaces generated ids that have no digit and keeps identifiers', () => {
   )
   expect(
     normalizeErrorMessage(
-      'Notification Subscription Payload received without field: DragEstimatingTaskSuccess'
+      'Notification Subscription Payload received without field: DragEstimatingTaskPayload'
     )
-  ).toBe('Notification Subscription Payload received without field: DragEstimatingTaskSuccess')
+  ).toBe('Notification Subscription Payload received without field: DragEstimatingTaskPayload')
   expect(normalizeErrorMessage('getElementById failed on innerHTML of existingIDs')).toBe(
     'getElementById failed on innerHTML of existingIDs'
   )
@@ -70,7 +70,7 @@ test.each([
   ['UZoObZMXvy', true],
   ['RJGnNXvvShY', true],
   ['FPoKiGQzbSQ', true],
-  ['DragEstimatingTaskSuccess', false],
+  ['DragEstimatingTaskPayload', false],
   ['getElementById', false],
   ['toAssigneeId', false],
   ['GraphQLHttpError', false],
@@ -86,7 +86,7 @@ test.each([
 // symbolicated top frames production logged for one console error, from Chrome, Safari and two Firefox releases
 test('a console error has one fingerprint in every browser and release', () => {
   const message =
-    'Notification Subscription Payload received without field: SetNotificationSettingSuccess'
+    'Notification Subscription Payload received without field: SetNotificationSettingPayload'
   const fingerprints = [
     '    at packages/client/utils/registerClientErrorHandlers.ts:29:19',
     '    at packages/client/utils/registerClientErrorHandlers.ts:29:24',

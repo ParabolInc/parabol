@@ -14,6 +14,8 @@ const ctx: StorageConversionCtx = {
       : null
 }
 
+const para = (text: string) => ({type: 'paragraph', content: [{type: 'text', text}]})
+
 describe('convertTipTapToConfluenceStorage', () => {
   it('matches the golden storage-format output byte-for-byte', () => {
     const {title, xhtml} = convertTipTapToConfluenceStorage(kitchenSink, ctx)
@@ -57,6 +59,71 @@ describe('convertTipTapToConfluenceStorage', () => {
     expect(xhtml).toContain('<ac:task-status>complete</ac:task-status>')
     expect(xhtml).toContain('<ac:task-status>incomplete</ac:task-status>')
     expect(xhtml).toContain('nested todo')
+  })
+
+  it('exports a task list holding a bullet or numbered list as checkbox bullets', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {type: 'taskItem', attrs: {checked: true}, content: [para('done')]},
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('parent'),
+                {type: 'orderedList', content: [{type: 'listItem', content: [para('sub one')]}]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain(
+      '<ul><li><p>☑ done</p></li><li><p>☐ parent</p><ol><li><p>sub one</p></li></ol></li></ul>'
+    )
+  })
+
+  it('looks through nested task lists for a bullet list', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'T'}]},
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: {checked: false},
+              content: [
+                para('outer'),
+                {
+                  type: 'taskList',
+                  content: [
+                    {
+                      type: 'taskItem',
+                      attrs: {checked: false},
+                      content: [
+                        para('inner'),
+                        {type: 'bulletList', content: [{type: 'listItem', content: [para('leaf')]}]}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const {xhtml} = convertTipTapToConfluenceStorage(doc, ctx)
+    expect(xhtml).not.toContain('<ac:task-list>')
+    expect(xhtml).toContain('<p>☐ outer</p><ul><li><p>☐ inner</p><ul><li><p>leaf</p>')
   })
 
   it('links exported children as ri:page and everything else back to Parabol', () => {
@@ -239,6 +306,103 @@ describe('convertTipTapToConfluenceStorage', () => {
         '<ac:structured-macro ac:name="tip"><ac:rich-text-body><blockquote><p>deep text</p></blockquote><p>after</p></ac:rich-text-body></ac:structured-macro>'
       )
       expect(xhtml).not.toContain('ac:adf-extension')
+    })
+  })
+
+  describe('synced blocks', () => {
+    const syncedLink = (synced: boolean) => ({
+      type: 'doc',
+      content: [
+        {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Host'}]},
+        {
+          type: 'pageLinkBlock',
+          attrs: {pageCode: 9, title: 'Escalation path', synced, canonical: true}
+        }
+      ]
+    })
+
+    it('flattens a block the exporter can open', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => (code === 9 ? [para('Call on-call first')] : null)
+      })
+      expect(xhtml).toContain('<p>Call on-call first</p>')
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded.find(({blockType}) => blockType === 'pageLinkBlock')).toBeUndefined()
+    })
+
+    it.each([
+      ['a block that does not resolve', {...ctx, resolveSyncedBlock: () => null}],
+      ['every block when there is no resolver', ctx]
+    ])('skips %s', (_case, conversionCtx) => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), conversionCtx)
+      expect(xhtml).not.toContain('/pages/9')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock',
+        count: 1,
+        treatment: 'skipped — not available to this export'
+      })
+    })
+
+    const linkTo = (pageCode: number) => ({
+      type: 'pageLinkBlock',
+      attrs: {pageCode, title: 'Block', synced: true, canonical: true}
+    })
+
+    it('terminates on a self-referencing block and counts a skip', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`body ${code}`), linkTo(code)]
+      })
+      expect(xhtml).toContain('<p>body 9</p>')
+      expect(degraded).toContainEqual({
+        blockType: 'syncedBlock:limit',
+        count: 1,
+        treatment: 'skipped — nested too deeply or repeated too often'
+      })
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('caps the total number of expansions so fan-out cannot multiply', () => {
+      let expansions = 0
+      const {degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => {
+          expansions += 1
+          if (code === 9) return Array.from({length: 20}, () => linkTo(10))
+          if (code === 10) return Array.from({length: 20}, () => linkTo(11))
+          return [para('leaf')]
+        }
+      })
+      expect(expansions).toBeLessThanOrEqual(100)
+      const skipped = degraded.find(({blockType}) => blockType === 'syncedBlock:limit')
+      expect(skipped!.count).toBeGreaterThan(0)
+      expect(degraded.find(({blockType}) => blockType === 'syncedBlock')).toBeUndefined()
+    })
+
+    it('stops a deep chain at the depth cap', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(true), {
+        ...ctx,
+        resolveSyncedBlock: (code) => [para(`level ${code}`), linkTo(code + 1)]
+      })
+      expect(xhtml).toContain('<p>level 11</p>')
+      expect(xhtml).not.toContain('level 12')
+      expect(degraded).toEqual([
+        {
+          blockType: 'syncedBlock:limit',
+          count: 1,
+          treatment: 'skipped — nested too deeply or repeated too often'
+        }
+      ])
+    })
+
+    it('leaves an ordinary page link unchanged', () => {
+      const {xhtml, degraded} = convertTipTapToConfluenceStorage(syncedLink(false), {
+        ...ctx,
+        resolveSyncedBlock: () => [para('Call on-call first')]
+      })
+      expect(xhtml).toContain('<a href="https://dev.parabol.co/pages/9">Escalation path</a>')
+      expect(degraded).toContainEqual(expect.objectContaining({blockType: 'pageLinkBlock'}))
     })
   })
 })

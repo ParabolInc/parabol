@@ -14,8 +14,8 @@ const makeSchema = () =>
   createSchema<TestContext>({
     typeDefs: `
       type Query { ping: String }
-      type StandardError { message: String }
-      type LoginPayload { userId: ID, error: StandardError }
+      type UserError { message: String! }
+      type LoginPayload { userId: ID, userErrors: [UserError!]! }
       type Mutation {
         ping: String
         renameTeam(teamId: ID!, name: String!): String
@@ -33,9 +33,9 @@ const makeSchema = () =>
           throw new TypeError('boom')
         },
         loginWithPassword: (_source, {password}, context) => {
-          if (password !== 'hunter2') return {error: {message: 'Invalid email or password'}}
+          if (password !== 'hunter2') return {userErrors: [{message: 'Invalid email or password'}]}
           context.authToken = {sub: 'user2'}
-          return {userId: 'user2'}
+          return {userId: 'user2', userErrors: []}
         },
         uploadOrgImage: () => 'https://example.com/logo.png'
       }
@@ -125,7 +125,7 @@ test('a denied or crashed field is audited as a failure with its reason', async 
   ])
 })
 
-test('an error payload is a failure even when the document does not select it', async () => {
+test('userErrors are a failure even when the document does not select them', async () => {
   await execute(
     'mutation { loginWithPassword(email: "jane@example.com", password: "wrong") { userId } }',
     {authToken: null}

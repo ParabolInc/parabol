@@ -5,7 +5,7 @@ import type {SetDefaultSlackChannelMutation as TSetDefaultSlackChannelMutation} 
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetDefaultSlackChannelMutation_team on SetDefaultSlackChannelSuccess {
+  fragment SetDefaultSlackChannelMutation_team on SetDefaultSlackChannelPayload {
     teamMember {
       integrations {
         slack {
@@ -22,11 +22,6 @@ graphql`
 const mutation = graphql`
   mutation SetDefaultSlackChannelMutation($slackChannelId: ID!, $teamId: ID!) {
     setDefaultSlackChannel(slackChannelId: $slackChannelId, teamId: $teamId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetDefaultSlackChannelMutation_team @relay(mask: false) @alias
     }
   }

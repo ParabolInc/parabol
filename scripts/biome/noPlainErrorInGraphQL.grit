@@ -1,0 +1,9 @@
+or {
+  `throw new Error($...)`,
+  `throw Error($...)`
+} as $throw where {
+  register_diagnostic(
+    span = $throw,
+    message = "Throw a GraphQLError with an extensions.code from ParabolGraphQLErrorCodes (packages/types/augments/index.d.ts). Yoga masks a plain Error as Unexpected error, so API callers cannot tell their own mistake from a server bug. A bug the server catches itself is INTERNAL_SERVER_ERROR."
+  )
+}

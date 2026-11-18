@@ -1,4 +1,10 @@
-import {createBlockMarkdownSpec, mergeAttributes, Node, parseAttributes} from '@tiptap/core'
+import {
+  createBlockMarkdownSpec,
+  type JSONContent,
+  mergeAttributes,
+  Node,
+  parseAttributes
+} from '@tiptap/core'
 
 export type PageLinkBlockAttrs = {
   pageCode: number
@@ -7,6 +13,7 @@ export type PageLinkBlockAttrs = {
   isMoving?: boolean
   database?: boolean
   synced?: boolean
+  content?: JSONContent[] | null
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -67,6 +74,11 @@ export const PageLinkBlockBase = Node.create({
         renderHTML: (attributes) => ({
           'data-synced': attributes.synced ? '' : undefined
         })
+      },
+      content: {
+        default: null,
+        rendered: false,
+        parseHTML: () => null
       }
     }
   },
@@ -82,7 +94,8 @@ export const PageLinkBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    return (node.attrs as PageLinkBlockAttrs).title || '<Untitled>'
+    const {synced, title} = node.attrs as PageLinkBlockAttrs
+    return synced ? '' : title || '<Untitled>'
   },
   ...createBlockMarkdownSpec({
     nodeName: 'pageLinkBlock',

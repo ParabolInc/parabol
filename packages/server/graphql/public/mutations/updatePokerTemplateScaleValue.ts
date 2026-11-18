@@ -1,33 +1,33 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {validateColorValue, validateScaleLabel} from '../../mutations/helpers/validateScaleValue'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScaleValue'] = async (
   _source,
   {scaleId, oldScaleValue, newScaleValue},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const viewerId = getUserId(authToken)
 
   // VALIDATION
   const existingScale = await dataLoader.get('templateScales').load(scaleId)
   if (!existingScale || existingScale.removedAt) {
-    return standardError(new Error('Did not find an active scale'), {userId: viewerId})
+    throw new GraphQLError('Did not find an active scale', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // VALIDATION
   const {label: oldScaleLabel} = oldScaleValue
   const {label: newScaleLabel} = newScaleValue
   if (isSpecialPokerLabel(oldScaleLabel) && oldScaleLabel !== newScaleLabel) {
-    return {error: {message: 'Cannot change the label for a special scale value'}}
+    throw new GraphQLError('Cannot change the label for a special scale value', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const {values: oldScaleValues} = existingScale
@@ -35,17 +35,17 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
     (scaleValue) => scaleValue.label === oldScaleLabel
   )
   if (oldScaleValueIndex === -1) {
-    return standardError(new Error('Did not find an existing scale value to update'), {
-      userId: viewerId
+    throw new GraphQLError('Did not find an existing scale value to update', {
+      extensions: {code: 'NOT_FOUND'}
     })
   }
 
   const {color, label} = newScaleValue
   if (!validateColorValue(color)) {
-    return standardError(new Error('Invalid scale color'), {userId: viewerId})
+    throw new GraphQLError('Invalid scale color', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
-    return standardError(new Error('Invalid scale label'), {userId: viewerId})
+    throw new GraphQLError('Invalid scale label', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   await pg
     .updateTable('TemplateScaleValue')

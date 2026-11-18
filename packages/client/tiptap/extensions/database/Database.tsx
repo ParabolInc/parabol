@@ -1,7 +1,7 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {Node} from '@tiptap/core'
 import {type NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
 import {lazy, Suspense} from 'react'
+import {DatabaseBase} from '../../../shared/tiptap/extensions/DatabaseBase'
 import {appendColumn, appendRow, getColumns, getRows} from './data'
 
 const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
@@ -32,12 +32,10 @@ function Component(props: NodeViewProps) {
 }
 
 export interface DatabaseOptions {
-  // provider doesn't exist on the server, but we still want to use this extension for parsing there
   provider?: HocuspocusProvider
   userId?: string
 }
-export const Database = Node.create<DatabaseOptions>({
-  name: 'database',
+export const Database = DatabaseBase.extend<DatabaseOptions>({
   onCreate() {
     // Add some initial content to make the first use easier
     const {provider, userId} = this.options
@@ -51,12 +49,6 @@ export const Database = Node.create<DatabaseOptions>({
       }
       appendRow(document, userId)
     }
-  },
-  renderHTML() {
-    return ['div']
-  },
-  parseHTML() {
-    return [{tag: 'database'}]
   },
   addNodeView() {
     return ReactNodeViewRenderer(Component, {

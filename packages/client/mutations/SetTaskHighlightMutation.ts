@@ -6,7 +6,7 @@ import type {SimpleMutation} from '../types/relayMutations'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment SetTaskHighlightMutation_meeting on SetTaskHighlightSuccess {
+  fragment SetTaskHighlightMutation_meeting on SetTaskHighlightPayload {
     task {
       __typename
       id

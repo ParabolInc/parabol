@@ -34,6 +34,25 @@ export async function sendIntranet(req: {query: string; variables?: Record<strin
   return response.json()
 }
 
+const PROCESS_RECURRENCE = `
+  mutation {
+    processRecurrence {
+      meetingsStarted
+      meetingsEnded
+    }
+  }
+`
+
+// processRecurrence refuses to run while another call holds its lock, e.g. one from a suite running in parallel
+export const processRecurrence = async () => {
+  let res = await sendIntranet({query: PROCESS_RECURRENCE})
+  while (res.errors?.[0]?.message === 'Mutation processRecurrence is already running') {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    res = await sendIntranet({query: PROCESS_RECURRENCE})
+  }
+  return res
+}
+
 const persistFunction = (text: string) => {
   const hasher = crypto.createHash('md5')
   hasher.update(text)
@@ -145,8 +164,8 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
     $params: String!
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, pseudoId: $pseudoId, params: $params) {
-      error {
-        message
+      userErrors {
+        code
       }
       user {
         tms
@@ -164,9 +183,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
-      }
       meetingId
       team {
         id
@@ -203,8 +219,8 @@ const completeEmailVerification = async (
         $verificationToken: ID!
       ) {
         verifyEmail(verificationToken: $verificationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
           user {
             tms
@@ -232,7 +248,7 @@ const completeEmailVerification = async (
     cookie: expect.anything(),
     data: {
       verifyEmail: {
-        error: null,
+        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -275,9 +291,7 @@ export const signUpWithPasswordMutation = async (emailInput: string) => {
   expect(signUp).toMatchObject({
     data: {
       signUpWithPassword: {
-        error: {
-          message: 'Verification required. Check your inbox.'
-        },
+        userErrors: [{code: 'EMAIL_VERIFICATION_REQUIRED'}],
         user: null
       }
     }
@@ -328,11 +342,6 @@ export const createOrgAdmin = async (email: string) => {
       mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
         setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `,
@@ -346,7 +355,7 @@ export const createOrgAdmin = async (email: string) => {
   expect(promoteToOrgAdmin).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })
@@ -438,4 +447,36 @@ export const truncatePGTables = async (...tables: string[]) => {
       return sql`TRUNCATE TABLE ${sql.table(table)} CASCADE`.execute(pg)
     })
   )
+}
+
+export const subscribeToNotifications = async (token: string, query: string) => {
+  const docId = await persistQuery(query)
+  const socket = new WebSocket(`${WS_PROTOCOL}://${HOST}/`, 'graphql-transport-ws')
+  const messages: {type: string; payload?: any}[] = []
+  const listeners: (() => void)[] = []
+  socket.addEventListener('message', (event) => {
+    messages.push(JSON.parse(String(event.data)))
+    listeners.forEach((listener) => listener())
+  })
+  const waitFor = (predicate: (message: {type: string; payload?: any}) => boolean) =>
+    new Promise<{type: string; payload?: any}>((resolve) => {
+      const check = () => {
+        const message = messages.find(predicate)
+        if (message) resolve(message)
+      }
+      listeners.push(check)
+      check()
+    })
+  await new Promise((resolve) => socket.addEventListener('open', resolve))
+  socket.send(JSON.stringify({type: 'connection_init', payload: {token}}))
+  await waitFor(({type}) => type === 'connection_ack')
+  socket.send(
+    JSON.stringify({
+      id: '1',
+      type: 'subscribe',
+      payload: {query: '', docId, extensions: {ackId: 'listening'}}
+    })
+  )
+  await waitFor(({type, payload}) => type === 'ping' && payload?.ackId === 'listening')
+  return {socket, waitFor}
 }

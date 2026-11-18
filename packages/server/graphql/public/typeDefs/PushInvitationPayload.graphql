@@ -2,7 +2,6 @@
 Result of pushing a team invitation to a user who is already a member
 """
 type PushInvitationPayload {
-  error: StandardMutationError
   """
   The user who received the invitation push
   """

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -9,8 +10,8 @@ import type {SlackNotification, Team, User} from '../../../../postgres/types'
 import type {IntegrationProviderMattermost} from '../../../../postgres/types/IntegrationProvider'
 import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
-import logError from '../../../../utils/logError'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import {logWebhookError} from '../../../../utils/postWebhook'
 import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import type {SlackNotificationEventEnum} from '../../../public/resolverTypes'
@@ -50,7 +51,7 @@ const notifyMattermost = async (
   const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
-    logError(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
+    logWebhookError(result, notifyUrl, {userId: user.id, tags: {teamId, event}})
     return {
       error: result
     }
@@ -111,7 +112,7 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
       return makeHackedButtonPairFields(resultsButton, summaryButton)
     }
     default:
-      throw new Error('Invalid meeting type')
+      throw new GraphQLError('Invalid meeting type', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
   }
 }
 

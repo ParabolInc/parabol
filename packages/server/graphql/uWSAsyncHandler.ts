@@ -10,7 +10,8 @@ const uWSAsyncHandler =
     const authToken = getReqAuth(req, false)
     try {
       await handler(res, req)
-      if (!ignoreDone && !res.done) {
+      if (!ignoreDone && !res.done && !res.aborted) {
+        // biome-ignore lint/plugin/noPlainErrorInGraphQL: an HTTP handler, not a GraphQL resolver
         throw new Error('Async handler did not respond')
       }
     } catch (e) {

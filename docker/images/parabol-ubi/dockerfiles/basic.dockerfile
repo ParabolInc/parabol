@@ -18,6 +18,8 @@ COPY --chown=1000:1000 .env.example pnpm-lock.yaml ./
 COPY --chown=1000:1000 build ./build
 COPY --chown=1000:1000 dist ./dist
 RUN --mount=type=bind,source=docker/images/parabol-ubi/compileBundles.js,target=/tmp/compileBundles.js ["node", "/tmp/compileBundles.js"]
+# Kargo's ironbank and big-bang Stages copy LICENSE out of the image's last layer, so it must stay the last layer
+COPY --chown=1000:1000 LICENSE ./
 
 EXPOSE ${PORT}
 

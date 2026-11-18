@@ -1,7 +1,6 @@
 import {Database} from '@hocuspocus/extension-database'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
 import {pack, unpack} from 'msgpackr'
 import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
@@ -16,6 +15,7 @@ import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
 import {afterLoadDocument, afterUnloadDocument} from './utils/tiptap/afterLoadDocument'
 import {authenticateYjsConnection, type YjsContext} from './utils/tiptap/authenticateYjsConnection'
+import {getEmptyPageDocState} from './utils/tiptap/getEmptyPageDocState'
 import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
 import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
@@ -98,17 +98,7 @@ export const hocuspocus = new SafeHocuspocus<YjsContext>({
           .where('id', '=', dbId)
           .executeTakeFirst()
         if (res?.yDoc) return res.yDoc
-        // Return a page with a heading by default so we can insert child page links at position 1
-        // Without a heading at pos 0, position 1 is out of range
-        const yDoc = TiptapTransformer.toYdoc(
-          {
-            type: 'doc',
-            content: [{type: 'heading', attrs: {level: 1}, content: []}]
-          },
-          undefined,
-          [StarterKit]
-        )
-        return Buffer.from(encodeStateAsUpdate(yDoc))
+        return Buffer.from(getEmptyPageDocState())
       },
       store: async ({documentName, state, document}) => {
         // Must not throw: hocuspocus v4's debouncer leaks `runningExecutions` on error,

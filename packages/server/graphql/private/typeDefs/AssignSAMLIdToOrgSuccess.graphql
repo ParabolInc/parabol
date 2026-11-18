@@ -1,6 +1,0 @@
-type AssignSAMLIdToOrgSuccess {
-  """
-  Updated organization
-  """
-  organization: Organization!
-}

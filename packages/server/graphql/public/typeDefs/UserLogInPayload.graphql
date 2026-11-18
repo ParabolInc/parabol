@@ -2,8 +2,10 @@
 Generic payload to send when user signs up
 """
 type UserLogInPayload {
-  "Error details, if sign-in failed"
-  error: StandardMutationError
+  """
+  Why sign-in failed, if the user can fix it. Empty on success
+  """
+  userErrors: [UserError!]!
 
   "ID of the signed-in user"
   userId: ID

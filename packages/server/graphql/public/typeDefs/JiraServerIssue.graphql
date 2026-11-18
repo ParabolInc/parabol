@@ -71,6 +71,11 @@ type JiraServerIssue implements TaskIntegration {
   possibleEstimationFieldNames: [String!]!
 
   """
+  The issue's current workflow status
+  """
+  status: JiraIssueStatus
+
+  """
   The timestamp the issue was last updated
   """
   updatedAt: DateTime!

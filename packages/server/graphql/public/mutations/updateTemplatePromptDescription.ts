@@ -27,7 +27,7 @@ const updateTemplatePromptDescription: MutationResolvers['updateTemplatePromptDe
     publish(
       SubscriptionChannel.TEAM,
       teamId,
-      'UpdateTemplatePromptDescriptionSuccess',
+      'UpdateTemplatePromptDescriptionPayload',
       data,
       subOptions
     )

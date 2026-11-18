@@ -8,14 +8,11 @@ const resolveAzureDevOpsDimensionFieldKey = async ({
 }: DimensionFieldCtx): Promise<DimensionFieldKey | null> => {
   const {integration} = task
   if (integration?.service !== 'azureDevOps') return null
-  const {instanceId, issueKey, accessUserId} = integration
-  const workItem = await dataLoader
-    .get('azureDevOpsWorkItem')
-    .load({teamId, userId: accessUserId, instanceId, workItemId: issueKey})
-  if (!workItem) return null
+  const issue = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (issue?.service !== 'azureDevOps') return null
   return {
-    repoId: AzureDevOpsProjectId.join(instanceId, workItem.teamProject),
-    issueType: workItem.type
+    repoId: AzureDevOpsProjectId.join(integration.instanceId, issue.teamProject),
+    issueType: issue.type
   }
 }
 

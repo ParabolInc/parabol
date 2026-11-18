@@ -4,7 +4,7 @@ import type {TogglePageInvitationEmailMutation as TTogglePageInvitationEmailMuta
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment TogglePageInvitationEmailMutation_team on TogglePageInvitationEmailSuccess {
+  fragment TogglePageInvitationEmailMutation_team on TogglePageInvitationEmailPayload {
     user {
       sendPageInvitationEmail
     }
@@ -14,11 +14,6 @@ graphql`
 const mutation = graphql`
   mutation TogglePageInvitationEmailMutation {
     togglePageInvitationEmail {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...TogglePageInvitationEmailMutation_team @relay(mask: false) @alias
     }
   }

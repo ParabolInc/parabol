@@ -1,0 +1,11 @@
+"""
+Success result for updateIntegrationDimensionField mutation
+"""
+type UpdateIntegrationDimensionFieldPayload {
+  team: Team!
+
+  """
+  The poker meeting the field was updated from
+  """
+  meeting: PokerMeeting!
+}

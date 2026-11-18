@@ -1,10 +1,8 @@
 import type {AddPokerTemplateScaleValuePayloadResolvers} from '../resolverTypes'
 
-export type AddPokerTemplateScaleValuePayloadSource =
-  | {
-      scaleId: string
-    }
-  | {error: {message: string}}
+export type AddPokerTemplateScaleValuePayloadSource = {
+  scaleId: string
+}
 
 const AddPokerTemplateScaleValuePayload: AddPokerTemplateScaleValuePayloadResolvers = {
   scale: (source, _args, {dataLoader}) => {

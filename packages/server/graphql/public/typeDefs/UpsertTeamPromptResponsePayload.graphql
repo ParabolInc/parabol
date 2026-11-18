@@ -1,0 +1,14 @@
+"""
+Success result for upsertTeamPromptResponse mutation
+"""
+type UpsertTeamPromptResponsePayload {
+  """
+  The created/updated team prompt response
+  """
+  teamPromptResponse: TeamPromptResponse!
+
+  """
+  The updated meeting
+  """
+  meeting: TeamPromptMeeting!
+}

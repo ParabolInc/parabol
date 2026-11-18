@@ -12,7 +12,7 @@ import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
 graphql`
-  fragment SetOrgUserRoleMutation_organization on SetOrgUserRoleSuccess {
+  fragment SetOrgUserRoleMutation_organization on SetOrgUserRolePayload {
     organization {
       ...CompleteOrganizationFrag @relay(mask: false)
     }
@@ -33,11 +33,6 @@ graphql`
 const mutation = graphql`
   mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
     setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetOrgUserRoleMutation_organization @relay(mask: false) @alias
     }
   }

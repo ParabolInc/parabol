@@ -135,13 +135,7 @@ graphql`
           folderName
           clickUpUrl: url
         }
-        ...TaskIntegrationLinkIntegrationGitHub @alias
-        ...TaskIntegrationLinkIntegrationJira @alias
-        ...TaskIntegrationLinkIntegrationJiraServer @alias
-        ...TaskIntegrationLinkIntegrationGitLab @alias
-        ...TaskIntegrationLinkIntegrationAzure @alias
-        ...TaskIntegrationLinkIntegrationLinear @alias
-        ...TaskIntegrationLinkIntegrationClickUp @alias
+        ...TaskIntegrationLink_integration
       }
       updatedAt
       teamId
@@ -163,9 +157,6 @@ const mutation = graphql`
       integrationRepoId: $integrationRepoId
       taskId: $taskId
     ) {
-      error {
-        message
-      }
       ...CreateTaskIntegrationMutation_task @relay(mask: false)
     }
   }

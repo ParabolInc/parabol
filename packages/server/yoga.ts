@@ -20,6 +20,7 @@ import {getFullSchema} from './graphql/private/rootSchema'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
+import {useLicenseReadOnly} from './license/useLicenseReadOnly'
 import {ENABLE_METRICS, graphqlPrometheusPlugin} from './metricsHandler'
 import getKysely from './postgres/getKysely'
 import {TRACING_ENABLED} from './tracing/initTracing'
@@ -37,6 +38,7 @@ import {useErrorLogging} from './utils/useErrorLogging'
 import {useNestedSchemaFallback} from './utils/useNestedSchemaFallback'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 import {useSchemaLink} from './utils/useSchemaLink'
+import {useVendorWait} from './utils/vendorWait'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
@@ -217,7 +219,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useErrorLogging(),
     ...(TRACING_ENABLED ? [useTracing()] : []),
-    ...(ENABLE_METRICS ? [graphqlPrometheusPlugin] : []),
+    ...(ENABLE_METRICS ? [useVendorWait(), graphqlPrometheusPlugin] : []),
     useDeferStream(),
     usePersistedOperations({
       async allowArbitraryOperations(request) {
@@ -237,6 +239,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     useCheckBlacklist(),
+    useLicenseReadOnly(),
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {

@@ -95,6 +95,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       )
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
+    signUsageReport: and(
+      or(isSuperUser, isViewerBillingLeader<'Mutation.signUsageReport'>('args.orgId')),
+      rateLimit({perMinute: 5, perHour: 30})
+    ),
     addOrg: and(
       hasUnrestrictedGrant,
       not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
@@ -171,9 +175,18 @@ const permissionMap: PermissionMap<Resolvers> = {
         isTeamMember<'Mutation.createPage'>('args.teamId')
       )
     ),
+    duplicatePage: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.duplicatePage'>('args.pageId', 'viewer', {ignorePublicLink: true}),
+      hasPageAccess<'Mutation.duplicatePage'>('args.parentPageId', 'editor'),
+      rateLimit({perMinute: 10, perHour: 50})
+    ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
-    createStripeSubscription: isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+    createStripeSubscription: and(
+      isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
+      not(isOrgTier<'Mutation.createStripeSubscription'>('args.orgId', 'enterprise'))
+    ),
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
@@ -192,7 +205,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
       isSuperUser,
-      isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
+      and(
+        isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId'),
+        not(isOrgTier<'Mutation.downgradeToStarter'>('args.orgId', 'enterprise'))
+      )
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragTeamHealthResultStage:
@@ -281,6 +297,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
+    patchPageContent: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.patchPageContent'>('args.pageId', 'editor'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
     pokerAnnounceDeckHover:
@@ -454,9 +475,17 @@ const permissionMap: PermissionMap<Resolvers> = {
       'agendaItems'
     ),
     updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
-    updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
-    updateDragLocation:
-      isTeamMemberOfMeeting<'Mutation.updateDragLocation'>('args.input.meetingId'),
+    updateCreditCard: and(
+      isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+      not(isOrgTier<'Mutation.updateCreditCard'>('args.orgId', 'enterprise'))
+    ),
+    // A drag update is a broadcast that must not touch Postgres or a dataloader, so this checks
+    // only the teams in the auth token, not that meetingId belongs to teamId. A user who knows
+    // another team's meetingId can broadcast fake drag positions into that meeting. The payload is
+    // only coordinates, so nothing is read or changed, and the risk is worth it: checking the
+    // meeting (isTeamMemberOfMeeting, #14104) loaded it on each of ~2,400 updates a minute during
+    // a retro of ~35 people on 2026-11-13 and grew each production web server by ~1 GiB.
+    updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
     updateFacilitatorRotation:
       isTeamMemberOfMeeting<'Mutation.updateFacilitatorRotation'>('args.meetingId'),
     updateIntegrationRepoAccess:
@@ -500,6 +529,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     updatePageParentLink: and(
       isAuthenticated,
       hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner')
+    ),
+    unsyncSyncedBlock: and(
+      isAuthenticated,
+      hasPageAccess<'Mutation.unsyncSyncedBlock'>('args.pageId', 'owner')
     ),
     updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
     updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
@@ -746,14 +779,23 @@ const permissionMap: PermissionMap<Resolvers> = {
     teamMember: and(isUserSelf, isTeamMember<'User.teamMember'>('args.teamId'))
   },
   // Anyone handed a Page (an ancestor in a breadcrumb, a notification) gets the fields to show and
-  // link to it, plus their own access to it
+  // link to it, plus their own access to it. A synced block page's title is withheld unless the viewer can open it
   Page: {
     '*': redactUnless(hasPageAccess<'Page.id'>('source.id', 'viewer')),
     access: allow,
+    content: and(
+      hasPageAccess<'Page.content'>('source.id', 'viewer'),
+      rateLimit({perMinute: 100, perHour: 1000, cache: 'strict'})
+    ),
     id: allow,
     team: allow,
     teamId: allow,
-    title: allow
+    title: redactUnless(
+      or(
+        not(isTrue<'Page.title'>('source.isSyncedBlock')),
+        hasPageAccess<'Page.title'>('source.id', 'viewer')
+      )
+    )
   },
   // Who has access is for those granted access. Anyone with a public link only sees what the link grants
   PageAccess: {

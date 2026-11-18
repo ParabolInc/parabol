@@ -1,4 +1,6 @@
-"""
-Return value for assignSAMLIdToOrg, which could be an error
-"""
-union AssignSAMLIdToOrgPayload = ErrorPayload | AssignSAMLIdToOrgSuccess
+type AssignSAMLIdToOrgPayload {
+  """
+  Updated organization
+  """
+  organization: Organization!
+}

@@ -6,7 +6,7 @@ import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemoveTemplatePrompt from './handlers/handleRemoveTemplatePrompt'
 
 graphql`
-  fragment RemoveTemplatePromptMutation_team on RemoveTemplatePromptSuccess {
+  fragment RemoveTemplatePromptMutation_team on RemoveTemplatePromptPayload {
     prompt {
       id
       templateId

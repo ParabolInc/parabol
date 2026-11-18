@@ -8,6 +8,7 @@ import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
+import {useOpenSidebarForPagesTrash} from '../hooks/useOpenSidebarForPagesTrash'
 import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
 import DashSidebar from './Dashboard/DashSidebar'
@@ -114,6 +115,7 @@ const Dashboard = (props: Props) => {
   const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
+  useOpenSidebarForPagesTrash(isOpen, toggle)
   const reportsGlow = useReportsLaunchGlow(viewer.lastMetAt ?? null)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy

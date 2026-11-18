@@ -1,12 +1,18 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
-import {SwapHoriz} from '~/ui/icons'
-import {MENU_ITEM_ICON} from '../../../ui/Menu/MenuItem'
+import {Autorenew, SwapHoriz} from '~/ui/icons'
+import {MENU_ITEM_ICON, MenuItem} from '../../../ui/Menu/MenuItem'
 import {MenuRadioItem} from '../../../ui/Menu/MenuRadioItem'
 import {MenuSeparator} from '../../../ui/Menu/MenuSeparator'
 import {MenuSubContent} from '../../../ui/Menu/MenuSubContent'
 import {MenuSubTrigger} from '../../../ui/Menu/MenuSubTrigger'
+import {dispatchBlockConversion} from './dispatchBlockConversion'
+import {
+  dispatchSyncedBlockConversion,
+  getBlockRange,
+  getSyncedBlockConversion
+} from './getSyncedBlockConversion'
 import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
 import {turnIntoRows} from './turnIntoRows'
 
@@ -16,16 +22,6 @@ interface Props {
   pos: number
   current: TurnIntoTarget
   canCreateSubPage: boolean
-}
-
-const saveScroll = (element: Element) => {
-  const scrolled: [Element, number, number][] = []
-  for (let ancestor: Element | null = element; ancestor; ancestor = ancestor.parentElement) {
-    scrolled.push([ancestor, ancestor.scrollLeft, ancestor.scrollTop])
-  }
-  return () => {
-    for (const [ancestor, left, top] of scrolled) ancestor.scrollTo(left, top)
-  }
 }
 
 export const TurnIntoMenu = (props: Props) => {
@@ -39,30 +35,20 @@ export const TurnIntoMenu = (props: Props) => {
     ({target}) => target.type === current.type && target.level === current.level
   )
 
+  const getRange = () => getBlockRange(editor, node, pos)
+  const showSyncedBlock = canCreateSubPage && !!getSyncedBlockConversion(editor, getRange())
+
+  const isStale = () => !editor.isEditable || !getRange()
+
   const handleValueChange = (title: string) => {
-    const {doc} = editor.state
-    if (!editor.isEditable || pos > doc.content.size || !doc.nodeAt(pos)?.eq(node)) return
+    if (isStale()) return
     const target = rows.find((row) => row.title === title)?.target
     const tr = target && turnBlockInto(editor.state, pos, target)
-    if (!tr) return
-    const caret = tr.selection.from
-    const isHandleOnAnotherBlock = tr.mapping.map(pos) !== pos
-    const {dom} = editor.view
-    // New node views start out short, and a page scrolled to its end would clamp to that height
-    dom.style.minHeight = `${dom.offsetHeight}px`
-    editor.view.dispatch(tr)
-    // Focusing before new node views render makes WebKit jump near the end of the page
-    setTimeout(() => {
-      dom.style.minHeight = ''
-      // WebKit scrolls to the caret when the editor takes focus, whatever preventScroll says
-      const restoreScroll = saveScroll(dom)
-      editor
-        .chain()
-        .setMeta('hideDragHandle', isHandleOnAnotherBlock)
-        .focus(caret, {scrollIntoView: false})
-        .run()
-      restoreScroll()
-    })
+    if (tr) dispatchBlockConversion(editor, tr, pos)
+  }
+
+  const handleSyncedBlock = () => {
+    dispatchSyncedBlockConversion(editor, getRange(), pos)
   }
 
   return (
@@ -86,6 +72,15 @@ export const TurnIntoMenu = (props: Props) => {
               </MenuRadioItem>
             ))}
           </DropdownMenu.RadioGroup>
+          {showSyncedBlock && (
+            <>
+              <MenuSeparator />
+              <MenuItem onSelect={handleSyncedBlock}>
+                <Autorenew className={MENU_ITEM_ICON} />
+                Synced block
+              </MenuItem>
+            </>
+          )}
         </MenuSubContent>
       </DropdownMenu.Sub>
       <MenuSeparator />

@@ -22,12 +22,7 @@ const authTokenFor = async (userId: string) => {
 const UPDATE_MEETING_SERIES = `
   mutation UpdateMeetingSeries($meetingSeriesId: ID!, $name: String, $rrule: RRule) {
     updateMeetingSeries(meetingSeriesId: $meetingSeriesId, name: $name, rrule: $rrule) {
-      ... on ErrorPayload {
-        error { message }
-      }
-      ... on UpdateMeetingSeriesSuccess {
-        meetingSeriesId
-      }
+      meetingSeriesId
     }
   }
 `
@@ -94,7 +89,7 @@ test('renaming one series of a group renames every sibling', async () => {
     },
     bearerToken: await authTokenFor(userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -125,7 +120,7 @@ test('cancelling a series group cancels every team on it', async () => {
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), rrule: null},
     bearerToken: await authTokenFor(userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -165,7 +160,7 @@ test('a team member who does not own the series cannot change it', async () => {
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(participant.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -210,7 +205,7 @@ test('a series with no owner is still administered by anyone on its team', async
     },
     bearerToken: await authTokenFor(participant.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -518,12 +513,7 @@ const departFromOrg = async (orgId: string, userId: string) => {
 const REMOVE_ORG_USERS = `
   mutation RemoveOrgUsers($userIds: [ID!]!, $orgId: ID!) {
     removeOrgUsers(userIds: $userIds, orgId: $orgId) {
-      ... on ErrorPayload {
-        error { message }
-      }
-      ... on RemoveOrgUsersSuccess {
-        removedUserIds
-      }
+      removedUserIds
     }
   }
 `
@@ -543,7 +533,7 @@ test('leaving the org hands an owned series to a billing leader', async () => {
     variables: {userIds: [owner.userId], orgId: owner.orgId},
     bearerToken: await authTokenFor(owner.userId)
   })
-  expect(res.data.removeOrgUsers.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -583,7 +573,7 @@ test('a departed owner does not strand the group, a billing leader can still man
     },
     bearerToken: await authTokenFor(successor.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -623,7 +613,7 @@ test('a departed owner does not hand the group to a member of one of its teams',
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
 // A hard-deleted owner nulls ownerUserId via ON DELETE SET NULL. Team membership must still not
@@ -659,7 +649,7 @@ test('an ownerless group is not administered by a member of one of its teams', a
     variables: {meetingSeriesId: MeetingSeriesId.join(rows[0]!.id), name: 'Hijacked'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(res.data.updateMeetingSeries.error).toBeTruthy()
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
 // A series scheduled as a group stays a group for life. Handing the last survivor back to its
@@ -703,7 +693,7 @@ test('the last live series of a group is administered by the org, not its team',
     variables: {meetingSeriesId: MeetingSeriesId.join(ownTeamSeries.id), name: 'Ours Now'},
     bearerToken: await authTokenFor(teamMember.userId)
   })
-  expect(memberRes.data.updateMeetingSeries.error).toBeTruthy()
+  expect(memberRes.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 
   // the org's billing leader still administers it, so it is never stranded
   const leaderRes = await sendPublic({
@@ -715,7 +705,7 @@ test('the last live series of a group is administered by the org, not its team',
     },
     bearerToken: await authTokenFor(owner.userId)
   })
-  expect(leaderRes.data.updateMeetingSeries.error).toBeUndefined()
+  expect(leaderRes.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')
@@ -728,12 +718,7 @@ test('the last live series of a group is administered by the org, not its team',
 const UPDATE_RECURRENCE_SETTINGS = `
   mutation UpdateRecurrenceSettings($meetingId: ID!, $name: String, $rrule: RRule) {
     updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
-      ... on ErrorPayload {
-        error { message }
-      }
-      ... on UpdateRecurrenceSettingsSuccess {
-        meeting { id }
-      }
+      meeting { id }
     }
   }
 `
@@ -770,7 +755,7 @@ test('updateRecurrenceSettings fans out over the group like updateMeetingSeries'
     variables: {meetingId, name: 'Renamed By Meeting', rrule: NEW_RRULE},
     bearerToken: await authTokenFor(userId)
   })
-  expect(res.data.updateRecurrenceSettings.error).toBeUndefined()
+  expect(res.errors).toBeUndefined()
 
   const after = await pg
     .selectFrom('MeetingSeries')

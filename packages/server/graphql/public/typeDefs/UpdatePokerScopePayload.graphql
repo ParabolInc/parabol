@@ -1,0 +1,11 @@
+type UpdatePokerScopePayload {
+  """
+  The meeting with the updated estimate phases
+  """
+  meeting: PokerMeeting!
+
+  """
+  The estimate stages added to the meeting
+  """
+  newStages: [EstimateStage!]!
+}

@@ -12,7 +12,7 @@ import {snackOnError} from './handlers/snackOnError'
 // which means we have to iterate over each stage & remove it from all others (because mouseEnter/mouseLeave are not always reliable)
 
 graphql`
-  fragment PokerAnnounceDeckHoverMutation_meeting on PokerAnnounceDeckHoverSuccess {
+  fragment PokerAnnounceDeckHoverMutation_meeting on PokerAnnounceDeckHoverPayload {
     meetingId
     user {
       id
@@ -26,11 +26,6 @@ graphql`
 const mutation = graphql`
   mutation PokerAnnounceDeckHoverMutation($meetingId: ID!, $stageId: ID!, $isHover: Boolean!) {
     pokerAnnounceDeckHover(meetingId: $meetingId, stageId: $stageId, isHover: $isHover) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false) @alias
     }
   }
@@ -99,7 +94,7 @@ const PokerAnnounceDeckHoverMutation: SimpleMutation<TPokerAnnounceDeckHoverMuta
     onError: snackOnError(atmosphere),
     optimisticUpdater: (store) => {
       const {stageId, meetingId, isHover} = variables
-      const payload = createProxyRecord(store, 'PokerAnnounceDeckHoverSuccess', {
+      const payload = createProxyRecord(store, 'PokerAnnounceDeckHoverPayload', {
         meetingId,
         stageId,
         isHover

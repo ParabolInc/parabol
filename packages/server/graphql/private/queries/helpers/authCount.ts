@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getPg from '../../../../postgres/getPg'
 
 const filterFields = ['createdAt', 'lastSeenAt'] as const
@@ -9,7 +10,8 @@ const authCount = async (
   filterField: FilterField
 ) => {
   // This function is only used internally, but that might change
-  if (!filterFields.includes(filterField)) throw new Error('Possible SQL injection')
+  if (!filterFields.includes(filterField))
+    throw new GraphQLError('Possible SQL injection', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
 
   const pg = getPg()
 

@@ -27,7 +27,7 @@ const forEachUpload = async <T>(items: T[], upload: (item: T) => Promise<unknown
 const isPrecompressed = (name: string) => name.endsWith('.br')
 
 const pushClientAssetsToCDN = async () => {
-  const fileStoreManager = getFileStoreManager()
+  const fileStoreManager = await getFileStoreManager()
   const localClientAssetsDir = path.join(PROJECT_ROOT, 'build')
   if (process.env.FILE_STORE_PROVIDER === 'local') {
     Logger.log('⛅️ Using Local File Store for client assets. Skipping...')
@@ -66,7 +66,7 @@ const pushClientAssetsToCDN = async () => {
 }
 
 const pushServerAssetsToCDN = async () => {
-  const fileStoreManager = getFileStoreManager()
+  const fileStoreManager = await getFileStoreManager()
   const templatesContext = (require as any).context(
     '../../static/images/illustrations',
     false,

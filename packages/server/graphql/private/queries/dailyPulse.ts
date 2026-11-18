@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {toEpochSeconds} from '../../../utils/epochTime'
@@ -87,11 +88,11 @@ const dailyPulse: QueryResolvers['dailyPulse'] = async (
   {dataLoader}
 ) => {
   const user = await getUserByEmail(email)
-  if (!user) throw new Error('Bad user')
+  if (!user) throw new GraphQLError('User not found', {extensions: {code: 'NOT_FOUND'}})
   const {id: userId} = user
   const slackAuths = await dataLoader.get('slackAuthByUserId').load(userId)
   const slackAuth = slackAuths.find((auth) => auth.isActive && auth.botAccessToken)
-  if (!slackAuth) throw new Error('No Slack Auth Found!')
+  if (!slackAuth) throw new GraphQLError('No Slack Auth Found!', {extensions: {code: 'NOT_FOUND'}})
   const {botAccessToken} = slackAuth
   const [rawSignups, rawLogins] = await Promise.all([
     authCountByDomain(after, true, 'createdAt'),

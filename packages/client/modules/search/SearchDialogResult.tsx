@@ -3,11 +3,10 @@ import DOMPurify from 'dompurify'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
-import {Description as DescriptionIcon} from '~/ui/icons'
+import {Autorenew, Description as DescriptionIcon} from '~/ui/icons'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
 import TypeAheadLabel from '../../components/TypeAheadLabel'
-import {getPageSlug} from '../../tiptap/getPageSlug'
-import {GQLID} from '../../utils/GQLID'
+import {getSearchResultHref} from './getSearchResultHref'
 
 interface Props {
   edgeRef: SearchDialogResult_edge$key
@@ -32,6 +31,8 @@ export const SearchDialogResult = ({
       ... on Page {
         id
         title
+        isSyncedBlock
+        ...getSearchResultHref_page
       }
       ... on MeetingTemplate {
         id
@@ -43,9 +44,9 @@ export const SearchDialogResult = ({
     edgeRef
   )
   const {snippets, node} = data
-  const {__typename, title, id} = node
+  const {__typename, title} = node
   const iconLookup = {
-    Page: <DescriptionIcon />
+    Page: node.isSyncedBlock ? <Autorenew /> : <DescriptionIcon />
   } satisfies Record<Exclude<typeof __typename, '%other'>, ReactNode>
   const icon = iconLookup[__typename as keyof typeof iconLookup]
   // snippets are page text with <b> highlights, so any other markup came from the page itself
@@ -70,8 +71,6 @@ export const SearchDialogResult = ({
     console.error('No icon provided for', __typename)
     return null
   }
-  const [pageCode] = GQLID.fromKey(id!)
-  const slug = getPageSlug(Number(pageCode), title)
   return (
     <div
       ref={itemRef}
@@ -87,7 +86,7 @@ export const SearchDialogResult = ({
       <Link
         tabIndex={-1}
         draggable={false}
-        to={`/pages/${slug}`}
+        to={getSearchResultHref(node)}
         className={'ml-1 flex w-full items-center'}
         onClick={closeSearch}
       >

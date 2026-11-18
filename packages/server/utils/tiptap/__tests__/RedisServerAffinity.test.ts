@@ -1,4 +1,5 @@
 import type {onConfigurePayload} from '@hocuspocus/server'
+import {GraphQLError} from 'graphql'
 import type RedisClient from 'ioredis'
 import {getLogContext, runWithLogContext} from '../../requestLogContext'
 import {RedisServerAffinity} from '../RedisServerAffinity'
@@ -70,4 +71,47 @@ test('a proxied socket handles its messages as its own user, ip and tab session'
     sessionId: 'tab-1',
     component: 'yjs'
   })
+})
+
+test('a custom event that throws on the server that owns the doc rejects on the caller', async () => {
+  const handlers: Record<string, (channel: Buffer, packedMessage: Buffer) => Promise<void>> = {}
+  const makeRedis = (serverId: string) => ({
+    subscribe: () => Promise.resolve(),
+    on: (event: string, handler: (channel: Buffer, packedMessage: Buffer) => Promise<void>) => {
+      if (event === 'messageBuffer') handlers[serverId] = handler
+    },
+    set: () => Promise.resolve('owner'),
+    publish: (channel: string, message: string) => {
+      const target = channel.split(':')[1]!
+      handlers[target]!(Buffer.from(channel), Buffer.from(message))
+      return Promise.resolve(1)
+    }
+  })
+  const makeAffinity = (serverId: string) =>
+    new RedisServerAffinity({
+      redis: {duplicate: () => makeRedis(serverId)} as unknown as RedisClient,
+      serverId,
+      pack: (message) => JSON.stringify(message),
+      unpack: (packedMessage) => JSON.parse(packedMessage.toString()),
+      customEvents: {
+        refuse: async () => {
+          throw new GraphQLError('No edits allowed', {extensions: {code: 'BAD_USER_INPUT'}})
+        },
+        crash: async () => {
+          throw new Error('Boom')
+        }
+      }
+    })
+  const owner = makeAffinity('owner')
+  const caller = makeAffinity('caller')
+  const instance = {documents: new Map()}
+  await owner.onConfigure({instance} as unknown as onConfigurePayload)
+  await caller.onConfigure({instance} as unknown as onConfigurePayload)
+  const refused = caller.handleEvent('refuse', 'page:1', {})
+  await expect(refused).rejects.toBeInstanceOf(GraphQLError)
+  await expect(refused).rejects.toMatchObject({
+    message: 'No edits allowed',
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+  await expect(caller.handleEvent('crash', 'page:1', {})).rejects.toThrow('Boom')
 })

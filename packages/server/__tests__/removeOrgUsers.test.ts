@@ -16,8 +16,8 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          error {
-            message
+          userErrors {
+            code
           }
         }
       }
@@ -25,7 +25,7 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     variables: {invitationToken: token},
     cookie: invitee.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.error).toBeNull()
+  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
   const authToken = accepted.cookie.split('__Host-Http-authToken=')[1].split(';')[0]
   return {...invitee, cookie: `__Host-Http-authToken=${authToken}`}
 }
@@ -60,16 +60,14 @@ const createTeamOfInvitees = async (memberCount: number) => {
     query: `
       mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
         removeTeamMember(teamId: $teamId, userId: $userId) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
     variables: {teamId, userId},
     cookie
   })
-  expect(ownerLeft.data.removeTeamMember.error).toBeNull()
+  expect(ownerLeft.errors).toBeUndefined()
   return {cookie, orgId, teamId, members}
 }
 
@@ -78,9 +76,7 @@ const createTask = async (teamId: string, member: {cookie: string; userId: strin
     query: `
       mutation CreateTask($newTask: CreateTaskInput!) {
         createTask(newTask: $newTask) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
@@ -88,7 +84,6 @@ const createTask = async (teamId: string, member: {cookie: string; userId: strin
     cookie: member.cookie
   })
   expect(created.errors).toBeUndefined()
-  expect(created.data.createTask.error).toBeNull()
 }
 
 const removeOrgUsers = async (cookie: string, orgId: string, userIds: string[]) => {
@@ -103,7 +98,7 @@ const removeOrgUsers = async (cookie: string, orgId: string, userIds: string[]) 
     variables: {orgId, userIds},
     cookie
   })
-  expect(removed.data.removeOrgUsers.__typename).toBe('RemoveOrgUsersSuccess')
+  expect(removed.data.removeOrgUsers.__typename).toBe('RemoveOrgUsersPayload')
 }
 
 test('Removing the lead with another member hands the lead and their tasks to a member who stays', async () => {
@@ -113,16 +108,14 @@ test('Removing the lead with another member hands the lead and their tasks to a 
     query: `
       mutation PromoteToTeamLead($teamId: ID!, $userId: ID!) {
         promoteToTeamLead(teamId: $teamId, userId: $userId) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
     variables: {teamId, userId: lead!.userId},
     cookie
   })
-  expect(promoted.data.promoteToTeamLead.error).toBeNull()
+  expect(promoted.errors).toBeUndefined()
   await createTask(teamId, lead!)
   await createTask(teamId, oldestMember!)
 

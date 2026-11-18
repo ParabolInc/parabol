@@ -1,7 +1,0 @@
-"""
-Success result for uploadIdPMetadata mutation
-"""
-type UploadIdPMetadataSuccess {
-  "URL of the uploaded IdP metadata"
-  url: String!
-}

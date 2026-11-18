@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
-import {AuthenticationError, Security, Threshold} from 'parabol-client/types/constEnums'
+import {Security, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../../client/utils/getSSODomainFromEmail'
 // TODO: AuthIdentityLocal is from the deprecated /database directory — replace when postgres type exists
@@ -10,7 +11,12 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import normalizeEmail from '../../../utils/normalizeEmail'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
-import type {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers, UserErrorCode} from '../resolverTypes'
+
+const noEmailSent = (code: UserErrorCode, message: string) => ({
+  success: false,
+  userErrors: [{code, message}]
+})
 
 const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
   _source,
@@ -18,7 +24,9 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
   {ip, dataLoader}
 ) => {
   if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
-    return {error: {message: 'Resetting password is disabled'}}
+    throw new GraphQLError('Resetting password is disabled', {
+      extensions: {code: 'NOT_IMPLEMENTED'}
+    })
   }
   const email = normalizeEmail(denormEmail)
 
@@ -43,28 +51,35 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
       .executeTakeFirstOrThrow()
   ])
   if (failOnAccount.res || failOnTime.res) {
-    return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
+    return noEmailSent(
+      'TOO_MANY_ATTEMPTS',
+      'Too many reset password attempts. Please try again later.'
+    )
   }
   const domain = getSSODomainFromEmail(email)
   const saml = domain ? await dataLoader.get('samlByDomain').load(domain) : null
   const samlDomainExists = !!saml?.metadata
 
-  if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
-  if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
+  if (samlDomainExists) {
+    return noEmailSent('SIGN_IN_WITH_SSO', 'Your organization requires you to login with SSO')
+  }
+  if (!user) {
+    return noEmailSent('USER_NOT_FOUND', 'We couldn’t find that email. Please try again.')
+  }
   const {id: userId, identities} = user
 
   const googleIdentity = identities.find(
     (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
   )
   if (googleIdentity) {
-    return {error: {message: AuthenticationError.USER_EXISTS_GOOGLE}}
+    return noEmailSent('SIGN_IN_WITH_GOOGLE', 'Try logging in with Google')
   }
 
   const microsoftIdentity = identities.find(
     (identity) => identity.type === AuthIdentityTypeEnum.MICROSOFT
   )
   if (microsoftIdentity) {
-    return {error: {message: AuthenticationError.USER_EXISTS_MICROSOFT}}
+    return noEmailSent('SIGN_IN_WITH_MICROSOFT', 'Try logging in with Microsoft')
   }
 
   const localIdentity = identities.find(
@@ -79,10 +94,15 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
       id: identityId,
       isEmailVerified: false
     })
-    const newIdentities = [...identities, newIdentity]
-    return await processEmailPasswordReset(ip, email, newIdentities, userId)
+    identities.push(newIdentity)
   }
-  return await processEmailPasswordReset(ip, email, identities, userId)
+  const res = await processEmailPasswordReset(ip, email, identities, userId)
+  if ('error' in res) {
+    throw new GraphQLError('Unable to send the password reset email', {
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
+  }
+  return {success: true, userErrors: []}
 }
 
 export default emailPasswordReset

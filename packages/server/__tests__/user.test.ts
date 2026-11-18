@@ -229,9 +229,6 @@ test('Creating and archiving teams updates User.tms', async () => {
           team {
             id
           }
-          error {
-            message
-          }
         }
       }
     `,
@@ -281,9 +278,7 @@ test('Creating and archiving teams updates User.tms', async () => {
     query: `
       mutation ArchiveTeam($teamId: ID!) {
         archiveTeam(teamId: $teamId) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
@@ -295,7 +290,7 @@ test('Creating and archiving teams updates User.tms', async () => {
   expect(archivedTeam).toMatchObject({
     data: {
       archiveTeam: {
-        error: null
+        __typename: 'ArchiveTeamPayload'
       }
     }
   })
@@ -351,9 +346,7 @@ test('Leaving a team updates User.tms', async () => {
     query: `
       mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
         removeTeamMember(teamId: $teamId, userId: $userId) {
-          error {
-            message
-          }
+          __typename
         }
       }
     `,
@@ -366,7 +359,7 @@ test('Leaving a team updates User.tms', async () => {
   expect(leftTeam).toMatchObject({
     data: {
       removeTeamMember: {
-        error: null
+        __typename: 'RemoveTeamMemberPayload'
       }
     }
   })

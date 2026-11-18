@@ -1,10 +1,8 @@
 import type {AddPokerTemplateDimensionPayloadResolvers} from '../resolverTypes'
 
-export type AddPokerTemplateDimensionPayloadSource =
-  | {
-      dimensionId: string
-    }
-  | {error: {message: string}}
+export type AddPokerTemplateDimensionPayloadSource = {
+  dimensionId: string
+}
 
 const AddPokerTemplateDimensionPayload: AddPokerTemplateDimensionPayloadResolvers = {
   dimension: (source, _args, {dataLoader}) => {

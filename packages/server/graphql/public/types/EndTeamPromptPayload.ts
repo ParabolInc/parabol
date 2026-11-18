@@ -1,0 +1,30 @@
+import {GraphQLError} from 'graphql'
+import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import {getUserId} from '../../../utils/authorization'
+import type {EndTeamPromptPayloadResolvers} from '../resolverTypes'
+
+export type EndTeamPromptPayloadSource = {
+  meetingId: string
+  teamId: string
+}
+
+const EndTeamPromptPayload: EndTeamPromptPayloadResolvers = {
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
+    return dataLoader.get('newMeetings').loadNonNull<TeamPromptMeeting>(meetingId)
+  },
+  team: async ({teamId}, _args, {dataLoader}) => {
+    return await dataLoader.get('teams').loadNonNull(teamId)
+  },
+  timelineEvent: async ({meetingId}, _args, {dataLoader, authToken}) => {
+    const viewerId = getUserId(authToken)
+    const timelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
+    const timelineEvent = timelineEvents.find(
+      (event) => event.type === 'TEAM_PROMPT_COMPLETE' && event.userId === viewerId
+    )
+    if (!timelineEvent)
+      throw new GraphQLError('Timeline event not found', {extensions: {code: 'NOT_FOUND'}})
+    return await dataLoader.get('timelineEvents').loadNonNull(timelineEvent.id)
+  }
+}
+
+export default EndTeamPromptPayload

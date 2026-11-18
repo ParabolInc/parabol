@@ -1,5 +1,5 @@
 """
-The format of the content string provided to editPageContent
+The format of a page content string
 """
 enum PageContentFormatEnum {
   markdown

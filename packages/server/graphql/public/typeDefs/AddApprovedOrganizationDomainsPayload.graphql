@@ -1,4 +1,14 @@
 """
-Return value for addApprovedOrganizationDomains mutation. Returns either an error or the updated organization after new email domains are approved for auto-join.
+Successful result of addApprovedOrganizationDomains. The specified email domains have been added to the organization's approved list, allowing users with matching email addresses to auto-join.
 """
-union AddApprovedOrganizationDomainsPayload = ErrorPayload | AddApprovedOrganizationDomainsSuccess
+type AddApprovedOrganizationDomainsPayload {
+  """
+  The ID of the organization whose approved domains were updated
+  """
+  orgId: ID!
+
+  """
+  Organization with the updated approved domain list
+  """
+  organization: Organization!
+}

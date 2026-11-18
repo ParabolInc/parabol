@@ -1,5 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import type {OAuth2Error, OAuth2Success} from '../../types/custom'
+import {OAuth2TokenError} from '../../utils/OAuth2TokenError'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 
 type OAuth2Response = OAuth2Success | OAuth2Error
@@ -78,7 +79,7 @@ export const authorizeOAuth2 = async <
     // any logging should be performed by the caller
     const errorMessage =
       tokenJson.error_description || tokenJson.error || `Received OAuth2 Error from ${authUrl}`
-    return new Error(errorMessage)
+    return new OAuth2TokenError(errorMessage, tokenJson.error)
   }
   if (!tokenJson.access_token) {
     const response = await readThirdPartyResponse('oauth2', unreadResponse, {method: 'POST', url})

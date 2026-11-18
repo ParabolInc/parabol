@@ -11,7 +11,8 @@ const PokerMeeting: PokerMeetingResolvers = {
   },
   storyCount: ({storyCount}) => storyCount || 0,
   story: async ({id: meetingId}, {storyId: taskId}, {dataLoader}) => {
-    const task = await dataLoader.get('tasks').loadNonNull(taskId)
+    const task = await dataLoader.get('tasks').load(taskId)
+    if (!task) return null
     if (task.meetingId !== meetingId) {
       Logger.log('naughty storyId supplied to PokerMeeting')
       return null

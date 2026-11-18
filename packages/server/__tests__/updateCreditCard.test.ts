@@ -4,18 +4,15 @@ import {addResolversToSchema} from '@graphql-tools/schema'
 import {buildSchema, execute, parse} from 'graphql'
 import TeamSubscriptionQuery from 'parabol-client/__generated__/TeamSubscription.graphql'
 import generateUID from '../generateUID'
-import UpdateCreditCardSuccess from '../graphql/public/types/UpdateCreditCardSuccess'
-import resolveTypesForMutationPayloads from '../graphql/resolveTypesForMutationPayloads'
+import UpdateCreditCardPayload from '../graphql/public/types/UpdateCreditCardPayload'
 
 // rootSchema loads its resolvers with webpack's require.context, so add the ones this test needs onto the built SDL
-const schema = resolveTypesForMutationPayloads(
-  addResolversToSchema({
-    schema: buildSchema(
-      readFileSync(path.join(__dirname, '../graphql/public/schema.graphql'), 'utf8')
-    ),
-    resolvers: {UpdateCreditCardSuccess}
-  })
-)
+const schema = addResolversToSchema({
+  schema: buildSchema(
+    readFileSync(path.join(__dirname, '../graphql/public/schema.graphql'), 'utf8')
+  ),
+  resolvers: {UpdateCreditCardPayload}
+})
 
 // the client sends the TeamSubscription it persisted at build time
 const getPersistedTeamSubscription = () => {

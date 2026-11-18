@@ -1,7 +1,6 @@
 import {useState} from 'react'
 import {useMatch} from 'react-router'
 import {Lock, MailOutline} from '~/ui/icons'
-import type {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
@@ -21,14 +20,9 @@ const RequestToJoinComponent = () => {
       {teamId},
       {
         onError,
-        onCompleted: (res: PushInvitationMutation$data) => {
-          if (res.pushInvitation?.error) {
-            const error = new Error(res.pushInvitation?.error?.message)
-            onError(error)
-          } else {
-            setIsRequestSent(true)
-            onCompleted()
-          }
+        onCompleted: () => {
+          setIsRequestSent(true)
+          onCompleted()
         }
       }
     )

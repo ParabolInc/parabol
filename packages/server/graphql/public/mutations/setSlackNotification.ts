@@ -1,7 +1,7 @@
+import {GraphQLError} from 'graphql'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
@@ -17,9 +17,7 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   const slackAuth = slackAuths.find((auth) => auth.teamId === teamId)
 
   if (!slackAuth) {
-    return standardError(new Error('Slack authentication not found'), {
-      userId: viewerId
-    })
+    throw new GraphQLError('Slack authentication not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

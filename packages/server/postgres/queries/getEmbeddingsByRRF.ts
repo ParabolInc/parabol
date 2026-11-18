@@ -4,7 +4,6 @@ import {sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../embedder/getEmbeddingsTableName'
 import {getTSV} from '../../../embedder/getSupportedLanguages'
-import {inferLanguage} from '../../../embedder/inferLanguage'
 import type {SearchTypeEnum} from '../../graphql/public/resolverTypes'
 import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
 import getKysely from '../getKysely'
@@ -37,6 +36,8 @@ export const getEmbeddingsByRRF = async (params: Params) => {
       extensions: {code: 'NOT_IMPLEMENTED'}
     })
   }
+  // franc's language models are only needed to search, so the first search evaluates them instead of every server's startup
+  const {inferLanguage} = await import(/* webpackMode: "eager" */ '../../../embedder/inferLanguage')
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'
 

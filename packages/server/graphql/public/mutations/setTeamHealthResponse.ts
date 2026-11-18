@@ -115,7 +115,7 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
     teamId,
     stage: {...stage, meetingId, teamId}
   }
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthResponseSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthResponsePayload', data, subOptions)
   return data
 }
 

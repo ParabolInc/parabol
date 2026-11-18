@@ -7,9 +7,7 @@ import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedAction
 const mutation = graphql`
   mutation DismissSuggestedActionMutation($suggestedActionId: ID!) {
     dismissSuggestedAction(suggestedActionId: $suggestedActionId) {
-      error {
-        title
-      }
+      removedSuggestedActionId
     }
   }
 `

@@ -87,10 +87,8 @@ const REMOVE_PROMPT = `
 const ADD_POKER_TEMPLATE = `
   mutation AddPokerTemplate($teamId: ID!) {
     addPokerTemplate(teamId: $teamId) {
-      ... on AddPokerTemplateSuccess {
-        pokerTemplate {
-          id
-        }
+      pokerTemplate {
+        id
       }
     }
   }
@@ -102,9 +100,6 @@ const SELECT_TEMPLATE = `
       meetingSettings {
         selectedTemplateId
       }
-      error {
-        message
-      }
     }
   }
 `
@@ -112,27 +107,20 @@ const SELECT_TEMPLATE = `
 const UPDATE_TEMPLATE_SCOPE = `
   mutation UpdateTemplateScope($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
+      template {
+        id
+        isActive
+        scope
       }
-      ... on UpdateTemplateScopeSuccess {
-        template {
-          id
-          isActive
-          scope
-        }
-        clonedTemplate {
-          __typename
-          id
-          isActive
-          scope
-          ... on PromptTemplate {
-            prompts {
-              question
-              groupColor
-            }
+      clonedTemplate {
+        __typename
+        id
+        isActive
+        scope
+        ... on PromptTemplate {
+          prompts {
+            question
+            groupColor
           }
         }
       }
@@ -143,16 +131,9 @@ const UPDATE_TEMPLATE_SCOPE = `
 const UPDATE_TEMPLATE_CATEGORY = `
   mutation UpdateTemplateCategory($templateId: ID!, $mainCategory: String!) {
     updateTemplateCategory(templateId: $templateId, mainCategory: $mainCategory) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateTemplateCategorySuccess {
-        template {
-          id
-          category
-        }
+      template {
+        id
+        category
       }
     }
   }
@@ -415,7 +396,7 @@ test('selectTemplate persists the standup template for the team', async () => {
     variables: {selectedTemplateId: ENTERPRISE_TEMPLATE_ID, teamId},
     cookie
   })
-  expect(res.data.selectTemplate.error).toBeNull()
+  expect(res.errors).toBeUndefined()
   const viewer = await getStandupSettings(teamId, cookie)
   expect(viewer.team.meetingSettings.selectedTemplate).toMatchObject({
     id: ENTERPRISE_TEMPLATE_ID,
@@ -597,9 +578,10 @@ test('updateTemplateCategory keeps standup templates in the standup category', a
     variables: {templateId, mainCategory: 'retrospective'},
     cookie
   })
-  expect(rejected.data.updateTemplateCategory.error.message).toBe(
-    'Standup templates stay in the standup category'
-  )
+  expect(rejected.errors?.[0]).toMatchObject({
+    message: 'Standup templates stay in the standup category',
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
 
   const allowed = await sendPublic({
     query: UPDATE_TEMPLATE_CATEGORY,

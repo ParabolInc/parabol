@@ -1,46 +1,48 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateReflectionGroupTitle: MutationResolvers['updateReflectionGroupTitle'] = async (
   _source,
   {reflectionGroupId, title},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
   const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
   if (!reflectionGroup) {
-    return standardError(new Error('Reflection group not found'), {userId: viewerId})
+    throw new GraphQLError('Reflection group not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {meetingId, title: oldTitle} = reflectionGroup
-  if (oldTitle === title) return {error: {message: 'Group already renamed'}}
+  if (oldTitle === title)
+    throw new GraphQLError('Group already renamed', {extensions: {code: 'CONFLICT'}})
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases} = meeting
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (isPhaseComplete('vote', phases)) {
-    return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+    throw new GraphQLError('Meeting phase already completed', {extensions: {code: 'CONFLICT'}})
   }
 
   // VALIDATION
   const normalizedTitle = title.trim()
   if (normalizedTitle.length < 1) {
-    return standardError(new Error('Reflection group title required'), {userId: viewerId})
+    throw new GraphQLError('Reflection group title required', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
-  if (normalizedTitle.length > 200) return {error: {message: 'Title is too long'}}
+  if (normalizedTitle.length > 200)
+    throw new GraphQLError('Title is too long', {extensions: {code: 'BAD_USER_INPUT'}})
 
   const allGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const allTitles = allGroups.map((g) => g.title)
   if (allTitles.includes(normalizedTitle)) {
-    return standardError(new Error('Group titles must be unique'), {userId: viewerId})
+    throw new GraphQLError('Group titles must be unique', {extensions: {code: 'CONFLICT'}})
   }
 
   // RESOLUTION

@@ -28,7 +28,7 @@ describe('makeConnectAttemptProps', () => {
 
   it('shows the server’s error in the menu, not on the card', () => {
     const {base, setState, props} = setUp()
-    props.onCompleted({addTeamMemberIntegrationAuth: {error: {message: 'Bad code'}}})
+    props.onCompleted({}, [{message: 'Bad code'}])
     expect(base.onCompleted).toHaveBeenCalledWith()
     expect(base.onError).not.toHaveBeenCalled()
     expect(setState).toHaveBeenCalledWith({

@@ -28,7 +28,10 @@ const loadDimensionFieldCtx = async (
   const integration = task?.integration
   if (!task || !integration) return null
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  if (meeting.meetingType !== 'poker') throw new Error('Meeting is not a poker meeting')
+  if (meeting.meetingType !== 'poker')
+    throw new GraphQLError('Meeting is not a poker meeting', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(meeting.templateRefId)
   const {name: dimensionName} = templateRef.dimensions[dimensionRefIdx]!
   return {

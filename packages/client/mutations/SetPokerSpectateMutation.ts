@@ -4,7 +4,7 @@ import type {SetPokerSpectateMutation as TSetPokerSpectateMutation} from '../__g
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment SetPokerSpectateMutation_team on SetPokerSpectateSuccess {
+  fragment SetPokerSpectateMutation_team on SetPokerSpectatePayload {
     meetingMember {
       isSpectating
     }
@@ -19,11 +19,6 @@ graphql`
 const mutation = graphql`
   mutation SetPokerSpectateMutation($meetingId: ID!, $isSpectating: Boolean!) {
     setPokerSpectate(meetingId: $meetingId, isSpectating: $isSpectating) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...SetPokerSpectateMutation_team @relay(mask: false) @alias
     }
   }

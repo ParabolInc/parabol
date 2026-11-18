@@ -2,9 +2,15 @@ import data from '@emoji-mart/data'
 import type {JSONContent} from '@tiptap/core'
 import {toSafeHref} from 'parabol-client/shared/embed/normalizeEmbedUrl'
 import {toCalloutTone} from 'parabol-client/shared/tiptap/calloutTones'
+import {MAX_SYNCED_BLOCK_DEPTH} from 'parabol-client/shared/tiptap/syncedBlockDepth'
 import {escapeHtml} from '../escapeHtml'
 import {escapeCdata} from './escapeXhtml'
-import type {ExportAsset, StorageConversionCtx, StorageConversionResult} from './types'
+import {
+  type ExportAsset,
+  MAX_SYNCED_BLOCK_EXPANSIONS,
+  type StorageConversionCtx,
+  type StorageConversionResult
+} from './types'
 
 type Census = Map<string, {count: number; treatment: string}>
 
@@ -14,6 +20,8 @@ type EmitState = {
   census: Census
   blockquoteDepth: number
   listDepth: number
+  syncedChain: number[]
+  syncedExpansions: number
 }
 
 const TREATMENTS = {
@@ -23,6 +31,8 @@ const TREATMENTS = {
   highlight: 'highlight exported as plain text',
   taskBlock: 'exported as static content — not a Confluence task',
   pageLinkBlock: 'linked to the Parabol page',
+  syncedBlock: 'skipped — not available to this export',
+  syncedBlockLimit: 'skipped — nested too deeply or repeated too often',
   fileUpload: 'in-progress upload skipped',
   calloutInBlockquote: 'exported as plain paragraphs — panels cannot sit inside a quote',
   calloutInList: 'exported as plain paragraphs — panels cannot sit inside a list',
@@ -162,6 +172,30 @@ const emitTaskItem = (node: JSONContent, state: EmitState): string => {
   return `<ac:task><ac:task-status>${status}</ac:task-status><ac:task-body>${inlineParts.join(' ')}${nestedLists.join('')}</ac:task-body></ac:task>`
 }
 
+const holdsBulletOrNumberedList = (taskList: JSONContent): boolean =>
+  (taskList.content ?? []).some((item) =>
+    (item.content ?? []).some(
+      (child) =>
+        child.type === 'bulletList' ||
+        child.type === 'orderedList' ||
+        (child.type === 'taskList' && holdsBulletOrNumberedList(child))
+    )
+  )
+
+// Confluence turns a list inside a task into an uneditable legacy block, so that task list becomes ☐/☑ bullets
+const toCheckboxBulletList = (taskList: JSONContent): JSONContent => ({
+  type: 'bulletList',
+  content: (taskList.content ?? []).map((item) => {
+    const box = {type: 'text', text: item.attrs?.checked ? '☑ ' : '☐ '}
+    const [first, ...rest] = item.content ?? []
+    const content =
+      first?.type === 'paragraph'
+        ? [{...first, content: [box, ...(first.content ?? [])]}, ...rest]
+        : [{type: 'paragraph', content: [box]}, ...(item.content ?? [])]
+    return {type: 'listItem', content}
+  })
+})
+
 const emitCell = (node: JSONContent, state: EmitState): string => {
   const tag = node.type === 'tableHeader' ? 'th' : 'td'
   const colspan = Number(node.attrs?.colspan ?? 1)
@@ -199,6 +233,26 @@ const emitFile = (node: JSONContent, state: EmitState): string => {
 const emitPageLink = (node: JSONContent, state: EmitState): string => {
   const {attrs} = node
   const pageCode = Number(attrs?.pageCode)
+  if (attrs?.synced === true) {
+    const isWithinLimits =
+      !state.syncedChain.includes(pageCode) &&
+      state.syncedChain.length < MAX_SYNCED_BLOCK_DEPTH &&
+      state.syncedExpansions < MAX_SYNCED_BLOCK_EXPANSIONS
+    if (!isWithinLimits) {
+      addCensus(state, 'syncedBlock:limit', TREATMENTS.syncedBlockLimit)
+      return ''
+    }
+    const body = Number.isFinite(pageCode) ? state.ctx.resolveSyncedBlock?.(pageCode) : null
+    if (body) {
+      state.syncedExpansions += 1
+      state.syncedChain.push(pageCode)
+      const emitted = emitBlocks(body, state)
+      state.syncedChain.pop()
+      return emitted
+    }
+    addCensus(state, 'syncedBlock', TREATMENTS.syncedBlock)
+    return ''
+  }
   const title = String(attrs?.title ?? 'Untitled page')
   const resolved = Number.isFinite(pageCode) ? state.ctx.resolvePageLink?.(pageCode) : null
   if (resolved?.confluenceTitle) {
@@ -299,6 +353,7 @@ const emitBlock = (node: JSONContent, state: EmitState): string => {
       return `<li>${item}</li>`
     }
     case 'taskList':
+      if (holdsBulletOrNumberedList(node)) return emitBlock(toCheckboxBulletList(node), state)
       return `<ac:task-list>${(node.content ?? []).map((item) => emitTaskItem(item, state)).join('')}</ac:task-list>`
     case 'blockquote': {
       state.blockquoteDepth += 1
@@ -384,7 +439,15 @@ export const convertTipTapToConfluenceStorage = (
   doc: JSONContent,
   ctx: StorageConversionCtx
 ): StorageConversionResult => {
-  const state: EmitState = {ctx, assets: [], census: new Map(), blockquoteDepth: 0, listDepth: 0}
+  const state: EmitState = {
+    ctx,
+    assets: [],
+    census: new Map(),
+    blockquoteDepth: 0,
+    listDepth: 0,
+    syncedChain: [],
+    syncedExpansions: 0
+  }
   const content = doc.content ?? []
   const titleNode = content[0]
   const title = titleNode ? getNodeText(titleNode).trim() : ''

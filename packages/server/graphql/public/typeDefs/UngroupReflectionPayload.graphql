@@ -1,0 +1,7 @@
+"""
+Success result for ungroupReflection mutation
+"""
+type UngroupReflectionPayload {
+  "The meeting where the reflection was ungrouped"
+  meeting: RetrospectiveMeeting!
+}

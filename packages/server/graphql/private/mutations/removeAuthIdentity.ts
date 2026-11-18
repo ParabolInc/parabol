@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import {GraphQLError} from 'graphql'
 import {AuthIdentityTypeEnum, Security} from 'parabol-client/types/constEnums'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'
@@ -26,7 +27,7 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   )
 
   if (!users.length) {
-    return {error: {message: 'No user emails match that domain'}}
+    throw new GraphQLError('No user emails match that domain', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

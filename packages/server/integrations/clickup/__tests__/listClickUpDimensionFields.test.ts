@@ -9,7 +9,7 @@ const SPRINT_POINTS_HELP_URL =
   'https://help.clickup.com/hc/en-us/articles/6303883602327-Use-Sprint-Points'
 
 const loaders = {
-  clickUpTask: {load: jest.fn()},
+  integrationIssue: {load: jest.fn()},
   clickUpSpace: {load: jest.fn()}
 }
 
@@ -75,7 +75,7 @@ const customFieldOptions = [
 ]
 
 beforeEach(() => {
-  loaders.clickUpTask.load.mockReset().mockResolvedValue(clickUpTask())
+  loaders.integrationIssue.load.mockReset().mockResolvedValue(clickUpTask())
   loaders.clickUpSpace.load.mockReset().mockResolvedValue(space({points: {enabled: true}}))
 })
 
@@ -84,10 +84,9 @@ describe('listClickUpDimensionFields', () => {
     await expect(listClickUpDimensionFields(buildCtx())).resolves.toEqual({
       options: [sprintPoints, ...customFieldOptions]
     })
-    expect(loaders.clickUpTask.load).toHaveBeenCalledWith({
+    expect(loaders.integrationIssue.load).toHaveBeenCalledWith({
       teamId: 'team1',
-      userId: 'user1',
-      taskId: '86abc'
+      integration: clickUpIntegration
     })
     expect(loaders.clickUpSpace.load).toHaveBeenCalledWith({
       teamId: 'team1',
@@ -118,7 +117,7 @@ describe('listClickUpDimensionFields', () => {
   })
 
   it('offers nothing, without reading the Space, when the task cannot be read', async () => {
-    loaders.clickUpTask.load.mockResolvedValue(null)
+    loaders.integrationIssue.load.mockResolvedValue(null)
     await expect(listClickUpDimensionFields(buildCtx())).resolves.toEqual({options: []})
     expect(loaders.clickUpSpace.load).not.toHaveBeenCalled()
   })
@@ -127,7 +126,7 @@ describe('listClickUpDimensionFields', () => {
     await expect(
       listClickUpDimensionFields(buildCtx({service: 'linear', accessUserId: 'user1'}))
     ).resolves.toEqual({options: []})
-    expect(loaders.clickUpTask.load).not.toHaveBeenCalled()
+    expect(loaders.integrationIssue.load).not.toHaveBeenCalled()
   })
 })
 
@@ -137,7 +136,7 @@ describe('resolveClickUpDimensionFieldKey', () => {
     [null, null],
     [1001, '1001']
   ])('keys the mapping by List, with custom_item_id %p as issue type %p', async (id, type) => {
-    loaders.clickUpTask.load.mockResolvedValue(clickUpTask(id))
+    loaders.integrationIssue.load.mockResolvedValue(clickUpTask(id))
     await expect(resolveClickUpDimensionFieldKey(buildCtx())).resolves.toMatchObject({
       repoId: '1000',
       issueType: type
@@ -175,7 +174,7 @@ describe('resolveClickUpDimensionFieldKey', () => {
   })
 
   it('has no key when the task cannot be read', async () => {
-    loaders.clickUpTask.load.mockResolvedValue(null)
+    loaders.integrationIssue.load.mockResolvedValue(null)
     await expect(resolveClickUpDimensionFieldKey(buildCtx())).resolves.toBeNull()
   })
 })

@@ -88,8 +88,8 @@ const INVALIDATE_SESSIONS = `
 const DELETE_USER = `
   mutation DeleteUser($userId: ID!) {
     deleteUser(userId: $userId) {
-      error {
-        message
+      user {
+        id
       }
     }
   }
@@ -109,9 +109,6 @@ const ADD_ORG = `
 const ADD_TEAM = `
   mutation AddTeam($newTeam: NewTeamInput!) {
     addTeam(newTeam: $newTeam) {
-      error {
-        message
-      }
       team {
         id
       }
@@ -162,8 +159,8 @@ const VIEWER_PERSONAL_ACCESS_TOKENS = `
 const ACCEPT_TEAM_INVITATION = `
   mutation AcceptTeamInvitation($invitationToken: ID!) {
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      error {
-        message
+      userErrors {
+        code
       }
     }
   }
@@ -178,9 +175,7 @@ const MOVE_TEAM_TO_ORG = `
 const REMOVE_TEAM_MEMBER = `
   mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
     removeTeamMember(teamId: $teamId, userId: $userId) {
-      error {
-        message
-      }
+      __typename
     }
   }
 `
@@ -192,11 +187,6 @@ const createOrgAdmin = async () => {
       mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
         setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
           __typename
-          ... on ErrorPayload {
-            error {
-              message
-            }
-          }
         }
       }
     `,
@@ -210,7 +200,7 @@ const createOrgAdmin = async () => {
   expect(promoteToOrgAdmin).toMatchObject({
     data: {
       setOrgUserRole: {
-        __typename: 'SetOrgUserRoleSuccess'
+        __typename: 'SetOrgUserRolePayload'
       }
     }
   })

@@ -14,19 +14,12 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=${WEEKDAY_CODES[start.day()]}`
 const START_RETRO = `
   mutation StartRetro($teamId: ID!, $rrule: RRule) {
     startRetrospective(teamId: $teamId, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartRetrospectiveSuccess {
-        meeting {
+      meeting {
+        id
+        meetingSeries {
           id
-          meetingSeries {
-            id
-            recurrenceRule
-            disableAnonymity
-          }
+          recurrenceRule
+          disableAnonymity
         }
       }
     }
@@ -36,17 +29,10 @@ const START_RETRO = `
 const START_TEAM_PROMPT = `
   mutation StartTeamPrompt($teamId: ID!, $rrule: RRule) {
     startTeamPrompt(teamId: $teamId, rrule: $rrule) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on StartTeamPromptSuccess {
-        meetingSeries {
-          id
-          recurrenceRule
-          disableAnonymity
-        }
+      meetingSeries {
+        id
+        recurrenceRule
+        disableAnonymity
       }
     }
   }
@@ -65,16 +51,9 @@ const UPDATE_MEETING_SERIES = `
       rrule: $rrule
       disableAnonymity: $disableAnonymity
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on UpdateMeetingSeriesSuccess {
-        meetingSeries {
-          id
-          disableAnonymity
-        }
+      meetingSeries {
+        id
+        disableAnonymity
       }
     }
   }
@@ -83,11 +62,7 @@ const UPDATE_MEETING_SERIES = `
 const END_RETRO = `
   mutation EndRetro($meetingId: ID!) {
     endRetrospective(meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
+      isKill
     }
   }
 `
@@ -138,7 +113,6 @@ test('a recurring retro turns off anonymity for its upcoming meetings, not the o
     ...auth
   })
   expect(renamed.errors).toBeUndefined()
-  expect(renamed.data.updateMeetingSeries.error).toBeUndefined()
   expect(await selectSeriesDisableAnonymity(meetingSeries.id)).toBeNull()
 
   const updated = await sendPublic({

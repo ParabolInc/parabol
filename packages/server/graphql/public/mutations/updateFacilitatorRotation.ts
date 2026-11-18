@@ -58,12 +58,12 @@ const updateFacilitatorRotation: MutationResolvers['updateFacilitatorRotation'] 
   }
 
   const data = {teamId, meetingId: isHandoff ? meetingId : null}
-  publish(SubscriptionChannel.TEAM, teamId, 'UpdateFacilitatorRotationSuccess', data, subOptions)
+  publish(SubscriptionChannel.TEAM, teamId, 'UpdateFacilitatorRotationPayload', data, subOptions)
   if (isHandoff) {
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'UpdateFacilitatorRotationSuccess',
+      'UpdateFacilitatorRotationPayload',
       data,
       subOptions
     )

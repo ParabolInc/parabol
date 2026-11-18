@@ -1,4 +1,6 @@
-"""
-Return value for getSAMLForDomain, which could be an error
-"""
-union GetSAMLForDomainPayload = ErrorPayload | GetSAMLForDomainSuccess
+type GetSAMLForDomainPayload {
+  """
+  The SAML configuration
+  """
+  saml: SAML!
+}

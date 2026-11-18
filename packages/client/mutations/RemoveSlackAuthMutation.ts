@@ -14,9 +14,6 @@ graphql`
 const mutation = graphql`
   mutation RemoveSlackAuthMutation($teamId: ID!) {
     removeSlackAuth(teamId: $teamId) {
-      error {
-        message
-      }
       ...RemoveSlackAuthMutation_team @relay(mask: false)
     }
   }

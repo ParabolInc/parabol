@@ -10,7 +10,7 @@ import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
 import {snackOnError} from './handlers/snackOnError'
 
 graphql`
-  fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventSuccess {
+  fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventPayload {
     timelineEvent {
       id
       isActive
@@ -21,11 +21,6 @@ graphql`
 const mutation = graphql`
   mutation ArchiveTimelineEventMutation($timelineEventId: ID!) {
     archiveTimelineEvent(timelineEventId: $timelineEventId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ArchiveTimelineEventMutation_notification @relay(mask: false) @alias
     }
   }

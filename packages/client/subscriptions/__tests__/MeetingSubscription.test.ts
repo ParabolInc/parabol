@@ -36,11 +36,11 @@ describe('MeetingSubscription', () => {
     errorSpy.mockRestore()
   })
 
-  it('selects the field of a DragEstimatingTaskSuccess payload', async () => {
+  it('selects the field of a DragEstimatingTaskPayload payload', async () => {
     const atmosphere = createTestAtmosphere({
       meetingSubscription: {
-        fieldName: 'DragEstimatingTaskSuccess',
-        DragEstimatingTaskSuccess: {
+        fieldName: 'DragEstimatingTaskPayload',
+        DragEstimatingTaskPayload: {
           meeting: {
             id: meetingId,
             __typename: 'PokerMeeting',
@@ -58,7 +58,7 @@ describe('MeetingSubscription', () => {
     MeetingSubscription(atmosphere, {meetingId}, {navigate: jest.fn()})
     expect(errorSpy).not.toHaveBeenCalledWith(
       'Notification Subscription Payload received without field:',
-      'DragEstimatingTaskSuccess'
+      'DragEstimatingTaskPayload'
     )
   })
 })

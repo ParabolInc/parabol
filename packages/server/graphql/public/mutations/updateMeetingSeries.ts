@@ -4,9 +4,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import type {MutationResolvers} from '../resolverTypes'
@@ -17,22 +15,21 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   {meetingSeriesId, name, rrule: rruleString, disableAnonymity},
   {authToken, dataLoader, socketId: mutatorId, resourceGrants}
 ) => {
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const rrule = rruleString ? RRuleSet.parse(rruleString) : null
 
   const numericId = MeetingSeriesId.split(meetingSeriesId)
   if (!Number.isFinite(numericId)) {
-    return standardError(new Error('Invalid meeting series id'), {userId: viewerId})
+    throw new GraphQLError('Invalid meeting series id', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
   if (!meetingSeries) {
-    return standardError(new Error('Meeting series not found'), {userId: viewerId})
+    throw new GraphQLError('Meeting series not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!(await canAdminMeetingSeries(meetingSeries, authToken, dataLoader, resourceGrants))) {
-    return standardError(new Error('Only the owner of this meeting series can change it'), {
-      userId: viewerId
+    throw new GraphQLError('Only the owner of this meeting series can change it', {
+      extensions: {code: 'FORBIDDEN'}
     })
   }
 
@@ -60,7 +57,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
 
   const data = {meetingSeriesId: numericId}
   for (const seriesTeamId of seriesTeamIds) {
-    publish(SubscriptionChannel.TEAM, seriesTeamId, 'UpdateMeetingSeriesSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, seriesTeamId, 'UpdateMeetingSeriesPayload', data, subOptions)
   }
   return data
 }

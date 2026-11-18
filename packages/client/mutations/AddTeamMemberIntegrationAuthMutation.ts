@@ -4,7 +4,7 @@ import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAu
 import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthSuccess {
+  fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthPayload {
     teamMember {
       ...useIsIntegrated_teamMember
       services {
@@ -71,14 +71,7 @@ const mutation = graphql`
       oauthVerifier: $oauthVerifier
       teamId: $teamId
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on AddTeamMemberIntegrationAuthSuccess {
-        ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
-      }
+      ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
     }
   }
 `

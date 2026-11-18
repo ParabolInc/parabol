@@ -1,10 +1,9 @@
-import Oy from 'oy-vey'
-import TeamInvite, {type TeamInviteProps} from 'parabol-client/modules/email/components/TeamInvite'
-import {headCSS} from 'parabol-client/modules/email/styles'
+import ReactDOMServer from 'react-dom/server'
+import TeamInvite, {type TeamInviteProps} from './TeamInvite'
 
 const subjectLine = (inviterName: string): string => `${inviterName} has invited you to Parabol`
 
-const teamInviteText = (props: TeamInviteProps) => {
+const teamInviteText = (props: Omit<TeamInviteProps, 'title'>) => {
   const {inviteeName, inviteeEmail, inviterName, inviterEmail, inviteLink, teamName} = props
   return `
 Hello ${inviteeName || inviteeEmail},
@@ -20,15 +19,16 @@ The Parabol Product Team
 `
 }
 
-export default (props: TeamInviteProps) => {
+const teamInviteEmailCreator = (props: Omit<TeamInviteProps, 'title'>) => {
   const subject = subjectLine(props.inviterName)
+  const rawHTML = ReactDOMServer.renderToStaticMarkup(<TeamInvite {...props} title={subject} />)
+  const doctype =
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
   return {
     subject,
     body: teamInviteText(props),
-    html: Oy.renderTemplate(<TeamInvite {...props} />, {
-      headCSS,
-      title: subject,
-      previewText: subject
-    })
+    html: `${doctype}${rawHTML.replace(/<!DOCTYPE.*?>/, '')}`
   }
 }
+
+export default teamInviteEmailCreator

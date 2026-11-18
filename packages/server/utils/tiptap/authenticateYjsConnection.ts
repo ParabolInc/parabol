@@ -22,7 +22,7 @@ const rejectConnection = (message: string, reason: string) =>
   Object.assign(new Error(message), {reason})
 
 // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
-const getMeetingTeamId = (meetingId: string) =>
+export const getMeetingTeamId = (meetingId: string) =>
   redisStoreOrNetwork(
     `meetingTeamId:${meetingId}`,
     async () => {
@@ -37,6 +37,17 @@ const getMeetingTeamId = (meetingId: string) =>
     },
     ms('3h')
   )
+
+export const isActiveTeamMember = async (teamId: string, userId: string) => {
+  const teamMember = await getKysely()
+    .selectFrom('TeamMember')
+    .select('id')
+    .where('teamId', '=', teamId)
+    .where('userId', '=', userId)
+    .where('isNotRemoved', '=', true)
+    .executeTakeFirst()
+  return !!teamMember
+}
 
 export const authenticateYjsConnection = async ({
   documentName,
@@ -59,14 +70,7 @@ export const authenticateYjsConnection = async ({
       throw rejectConnection(`Meeting awareness requires a userId`, 'Unauthorized')
     }
     const meetingTeamId = await getMeetingTeamId(meetingId)
-    const teamMember = await getKysely()
-      .selectFrom('TeamMember')
-      .select('id')
-      .where('teamId', '=', meetingTeamId)
-      .where('userId', '=', userId)
-      .where('isNotRemoved', '=', true)
-      .executeTakeFirst()
-    if (!teamMember) {
+    if (!(await isActiveTeamMember(meetingTeamId, userId))) {
       throw rejectConnection(
         `Meeting awareness requires being on the team: ${userId} ${meetingTeamId}`,
         'Unauthorized'
@@ -78,7 +82,7 @@ export const authenticateYjsConnection = async ({
   }
   const [dbId] = CipherId.fromClient(documentName)
   // aliases like page:0123 would load a second copy of the page that overwrites it on store
-  if (documentName !== CipherId.toClient(dbId, 'page') || dbId < 1 || dbId > 2 ** 31 - 1) {
+  if (dbId < 1 || documentName !== CipherId.toClient(dbId, 'page')) {
     const error = rejectConnection(
       `Invalid document request from client: ${documentName}`,
       'InvalidDocument'

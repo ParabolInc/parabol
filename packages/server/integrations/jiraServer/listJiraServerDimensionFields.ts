@@ -8,11 +8,9 @@ const listJiraServerDimensionFields = async ({
 }: DimensionFieldCtx): Promise<ServiceFieldListing> => {
   const {integration} = task
   if (integration?.service !== 'jiraServer') return {options: []}
-  const {providerId, issueId, accessUserId} = integration
-  const issue = await dataLoader
-    .get('jiraServerIssue')
-    .load({providerId, teamId, userId: accessUserId, issueId})
-  if (!issue) return {options: []}
+  const {providerId, accessUserId} = integration
+  const issue = await dataLoader.get('integrationIssue').load({teamId, integration})
+  if (issue?.service !== 'jiraServer') return {options: []}
   const {issueType, projectId} = issue
   const fieldTypes = await dataLoader
     .get('jiraServerFieldTypes')

@@ -48,7 +48,7 @@ const setTeamHealthSpectate: MutationResolvers['setTeamHealthSpectate'] = async 
   meetingMember.isSpectating = isSpectating
 
   const data = {meetingId, teamId, userId: viewerId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthSpectateSuccess', data, subOptions)
+  publish(SubscriptionChannel.MEETING, meetingId, 'SetTeamHealthSpectatePayload', data, subOptions)
   return data
 }
 
