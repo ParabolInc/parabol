@@ -16,7 +16,7 @@ interface Props {
 const TeamHealthResponseCardHeader = (props: Props) => {
   const {categoryId, categoryName, orderedCategoryIds, stageIndex, stageCount} = props
   return (
-    <div className='flex items-center justify-between'>
+    <div className='flex flex-col items-start justify-between gap-y-2 sm:flex-row sm:items-center'>
       <div
         className={cn(
           'flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold',

@@ -20,7 +20,7 @@ const BottomNavControl = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       disabled={disabled || waiting}
       ref={ref}
       className={cn(
-        'min-h-14 w-24 origin-bottom rounded-none border-0 p-0',
+        'min-h-14 w-24 shrink single-reflection-column:shrink-0 origin-bottom rounded-none border-0 p-0',
         confirming ? 'opacity-50' : 'opacity-100',
         !visuallyDisabled &&
           'hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover',
