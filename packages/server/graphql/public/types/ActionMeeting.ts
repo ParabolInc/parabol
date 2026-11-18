@@ -5,8 +5,8 @@ import type {ActionMeetingResolvers} from '../resolverTypes'
 
 const ActionMeeting: ActionMeetingResolvers = {
   agendaItem: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
-    const agendaItem = await dataLoader.get('agendaItems').loadNonNull(agendaItemId)
-    if (agendaItem.meetingId !== meetingId) return null
+    const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
+    if (!agendaItem || agendaItem.meetingId !== meetingId) return null
     return agendaItem
   },
   agendaItemCount: async ({agendaItemCount}) => {

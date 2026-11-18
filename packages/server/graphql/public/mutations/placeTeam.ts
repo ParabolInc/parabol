@@ -9,7 +9,9 @@ const placeTeam: MutationResolvers['placeTeam'] = async (
   {dataLoader}
 ) => {
   // VALIDATION
-  const {orgId} = await dataLoader.get('teams').loadNonNull(teamId)
+  const team = await dataLoader.get('teams').load(teamId)
+  if (!team) throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
+  const {orgId} = team
   const {levels} = await dataLoader.get('orgStructureByOrgId').load(orgId)
   const levelId = fromOrgStructureKey(levelKey, 'OrgStructureLevel')
   const level = levels.find(({id}) => id === levelId)

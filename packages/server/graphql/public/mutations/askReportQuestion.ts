@@ -31,7 +31,10 @@ const askReportQuestion: MutationResolvers['askReportQuestion'] = async (
   }
   if (!isTimeZone(timeZone))
     throw new GraphQLError(`${timeZone} isn't a time zone`, {extensions: {code: 'BAD_USER_INPUT'}})
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const organization = await dataLoader.get('organizations').load(orgId)
+  if (!organization) {
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
+  }
   if (!organization.useAI) {
     throw new GraphQLError(
       `AI is turned off for ${organization.name}. It can be turned on in Organization Settings`,

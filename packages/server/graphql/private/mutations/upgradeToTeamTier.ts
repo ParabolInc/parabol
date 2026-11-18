@@ -38,7 +38,12 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const organization = await dataLoader.get('organizations').load(orgId)
+  if (!organization) {
+    throw new GraphQLError(`Organization not found for orgId ${orgId}`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
+  }
   const {tier: oldTier} = organization
 
   if (oldTier === 'enterprise') {

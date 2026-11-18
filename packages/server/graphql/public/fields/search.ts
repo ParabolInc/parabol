@@ -43,9 +43,16 @@ const getPageSearchCursor = (after: string | null | undefined) => {
   return cursor
 }
 
+const SEARCH_CURSOR_ERROR = 'after must be an endCursor from the same search'
+
 const decodeCursor = (after: string | null | undefined) => {
   if (!after) return null
-  const decodedAfter = JSON.parse(atob(after))
+  let decodedAfter: unknown
+  try {
+    decodedAfter = JSON.parse(atob(after))
+  } catch {
+    throw new GraphQLError(SEARCH_CURSOR_ERROR, {extensions: {code: 'BAD_USER_INPUT'}})
+  }
   if (!decodedAfter) return null
   const {codes, maxScore} = decodedAfter as {codes: (number | string)[]; maxScore: number}
   if (!Array.isArray(codes) || codes.length < 1 || !maxScore) return null

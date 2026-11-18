@@ -5,7 +5,7 @@ import type {DateTimeScalarConfig} from '../resolverTypes'
 
 function parseDate(value: string) {
   const result = new Date(value)
-  if (!isValidDate(result) || Number.isNaN(result.getTime())) {
+  if (!isValidDate(result)) {
     throw new GraphQLError(`Invalid date: ${value}`, {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (value !== result.toJSON()) {
