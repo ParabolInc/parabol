@@ -1,5 +1,11 @@
 import type {GraphQLSchema} from 'graphql'
-import {defaultFieldResolver, GraphQLError, getDirectiveValues, isObjectType} from 'graphql'
+import {
+  defaultFieldResolver,
+  GraphQLError,
+  getDirectiveValues,
+  getNamedType,
+  isObjectType
+} from 'graphql'
 import getAssetOwnerScope from '../../utils/getAssetOwnerScope'
 import type {AssetScopeEnum, OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
@@ -33,6 +39,16 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
         throw new Error(
           `@scope on ${type.name}.${field.name} needs exactly one of name or ownerFromArg`
         )
+      }
+
+      if (ownerFromArg) {
+        const ownerArg = field.args.find((arg) => arg.name === ownerFromArg)
+        if (!ownerArg || getNamedType(ownerArg.type).name !== 'AssetScopeEnum') {
+          // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
+          throw new Error(
+            `@scope ownerFromArg on ${type.name}.${field.name} must name an AssetScopeEnum argument`
+          )
+        }
       }
 
       // FIXME: https://github.com/ardatan/graphql-tools/pull/8117

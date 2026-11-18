@@ -23,7 +23,7 @@ export const canScopesReadAsset = (
   scopeCode: string,
   assetType: AssetType
 ) =>
-  assetType === 'picture' ||
+  (assetType === 'picture' && assetScope !== 'Page') ||
   SERVER_OWNER_CODES[assetScope] === scopeCode ||
   !!scopes?.includes(getAssetOwnerScope(assetScope, 'read'))
 

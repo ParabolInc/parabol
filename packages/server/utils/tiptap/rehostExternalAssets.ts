@@ -13,8 +13,7 @@ import {CipherId} from '../CipherId'
 import isExpectedError from '../isExpectedError'
 import {Logger} from '../Logger'
 import logError from '../logError'
-import {getResourceGrantsFromTransaction} from './getResourceGrantsFromTransaction'
-import {getTokenScopesFromTransaction} from './getTokenScopesFromTransaction'
+import getTokenContextFromTransaction from './getTokenContextFromTransaction'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {replacePageAssetSrc} from './hocusPocusHub'
@@ -166,8 +165,7 @@ export const rehostExternalAssets = (e: Y.YEvent<any>, pageId: number) => {
   const {transaction} = e
   const userId = getUserIdFromTransaction(transaction)
   if (!userId) return
-  const grants = getResourceGrantsFromTransaction(transaction)
-  const scopes = getTokenScopesFromTransaction(transaction)
+  const {resourceGrants: grants, scopes} = getTokenContextFromTransaction(transaction)
   const {origin} = transaction
   const connection =
     isTransactionOrigin(origin) && origin.source === 'connection' ? origin.connection : undefined

@@ -164,7 +164,10 @@ export default class S3Manager extends FileStoreManager {
     const {ContentLength} = await this.s3.send(
       new HeadObjectCommand({Bucket: this.bucket, Key: decodeURI(this.prependPath(partialPath))})
     )
-    return ContentLength ?? 0
+    if (ContentLength === undefined) {
+      throw new Error(`S3 Size Error: no ContentLength. ${partialPath}`)
+    }
+    return ContentLength
   }
 
   async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {

@@ -17,6 +17,7 @@ const CREATE_PERSONAL_ACCESS_TOKEN = `
     $expiresAt: DateTime!
     $grantedOrgIds: [ID!]
     $grantedTeamIds: [ID!]
+    $grantedPageIds: [ID!]
   ) {
     createPersonalAccessToken(
       name: $name
@@ -24,6 +25,7 @@ const CREATE_PERSONAL_ACCESS_TOKEN = `
       expiresAt: $expiresAt
       grantedOrgIds: $grantedOrgIds
       grantedTeamIds: $grantedTeamIds
+      grantedPageIds: $grantedPageIds
     ) {
       token
     }
@@ -42,7 +44,8 @@ const createToken = async (
   cookie: string,
   scopes: string[],
   grantedOrgIds?: string[],
-  grantedTeamIds?: string[]
+  grantedTeamIds?: string[],
+  grantedPageIds?: string[]
 ) => {
   const res = await sendPublic({
     query: CREATE_PERSONAL_ACCESS_TOKEN,
@@ -51,6 +54,7 @@ const createToken = async (
       scopes,
       grantedOrgIds,
       grantedTeamIds,
+      grantedPageIds,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     },
     cookie
@@ -140,6 +144,32 @@ test('a PAT reads a page file only when it holds pages:read', async () => {
   const withoutPages = await createToken(cookie, ['USERS_READ', 'PAGES_WRITE'])
   expect((await fetchAsset(path, {authorization: `Bearer ${withPages}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${withoutPages}`})).status).toBe(403)
+})
+
+test('a PAT with pages:read granted one page reads that page file, not another page file', async () => {
+  const {cookie} = await signUp()
+  const grantedPageId = await createPage(cookie)
+  const otherPageId = await createPage(cookie)
+  const grantedPath = await uploadAsset({cookie}, 'Page', grantedPageId)
+  const otherPath = await uploadAsset({cookie}, 'Page', otherPageId)
+  const token = await createToken(cookie, ['PAGES_READ'], undefined, undefined, [grantedPageId])
+  const authorization = `Bearer ${token}`
+  expect((await fetchAsset(grantedPath, {authorization})).status).toBe(307)
+  expect((await fetchAsset(otherPath, {authorization})).status).toBe(403)
+})
+
+test('a PAT without pages:read cannot read a page picture, but reads a user avatar', async () => {
+  const {userId, cookie} = await signUp()
+  const pageId = await createPage(cookie)
+  const pageCode = (await uploadAsset({cookie}, 'Page', pageId)).split('/')[3]
+  const token = await createToken(cookie, ['USERS_READ'])
+  const authorization = `Bearer ${token}`
+  const pagePicture = await fetchAsset(`/assets/Page/${pageCode}/picture/cover.png`, {
+    authorization
+  })
+  const avatar = await fetchAsset(`/assets/User/${userId}/picture/avatar.png`, {authorization})
+  expect(pagePicture.status).toBe(403)
+  expect(avatar.status).toBe(307)
 })
 
 test('a PAT reads a team file only with teams:read and an org file only with orgs:read', async () => {

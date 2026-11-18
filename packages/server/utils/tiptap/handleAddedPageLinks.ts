@@ -9,8 +9,7 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
-import {getResourceGrantsFromTransaction} from './getResourceGrantsFromTransaction'
-import {getTokenScopesFromTransaction} from './getTokenScopesFromTransaction'
+import getTokenContextFromTransaction from './getTokenContextFromTransaction'
 import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {publishSyncedBlockPlacementsChanged} from './hocusPocusHub'
 import {isRemovedFromDoc} from './isRemovedFromDoc'
@@ -36,8 +35,7 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
 
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
-  const grants = getResourceGrantsFromTransaction(e.transaction)
-  const scopes = getTokenScopesFromTransaction(e.transaction)
+  const {resourceGrants: grants, scopes} = getTokenContextFromTransaction(e.transaction)
   getAddedPageLinks(e).forEach(async (node) => {
     const seed = node.getAttribute('content')
     if (seed !== undefined) node.removeAttribute('content')

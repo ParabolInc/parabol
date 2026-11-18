@@ -54,10 +54,8 @@ export const hostUserAsset = async (
     )
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
-      const [newUrl, sizeInBytes] = await Promise.all([
-        manager.copyFile(sourcePartialPath, targetPartialPath),
-        manager.getFileSize(sourcePartialPath)
-      ])
+      const sizeInBytes = await manager.getFileSize(sourcePartialPath)
+      const newUrl = await manager.copyFile(sourcePartialPath, targetPartialPath)
       const contentType = mime.lookup(filename) || 'application/octet-stream'
       if (sizeInBytes > 0) {
         await incrementUserBytesUploaded(viewerId, sizeInBytes)
