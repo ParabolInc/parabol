@@ -17,7 +17,10 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const organization = await dataLoader.get('organizations').load(orgId)
+  if (!organization) {
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
+  }
   const {tier} = organization
   if (tier !== 'starter') {
     throw new GraphQLError('You must first downgrade before archiving', {

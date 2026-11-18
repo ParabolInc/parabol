@@ -82,8 +82,8 @@ const filterGrantedOrgIds = async (orgIds: string[], resourceGrants?: ResourceGr
 }
 
 const User: ReqResolvers<'User'> = {
-  organization: (_source, {orgId}, {dataLoader}) => {
-    return dataLoader.get('organizations').loadNonNull(orgId)
+  organization: async (_source, {orgId}, {dataLoader}) => {
+    return (await dataLoader.get('organizations').load(orgId)) ?? null
   },
   invoices,
   freeCustomRetroTemplatesRemaining: ({id: userId}, _args, {dataLoader}) =>
@@ -274,8 +274,8 @@ const User: ReqResolvers<'User'> = {
     })
     return connectionFromTasks(filteredTasks, first)
   },
-  team: (_source, {teamId}, {dataLoader}) => {
-    return dataLoader.get('teams').loadNonNull(teamId)
+  team: async (_source, {teamId}, {dataLoader}) => {
+    return (await dataLoader.get('teams').load(teamId)) ?? null
   },
   createdAt: ({createdAt}) => createdAt || new Date('2016-06-01'),
 
