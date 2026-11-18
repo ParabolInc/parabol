@@ -88,7 +88,8 @@ jest.mock('../../../fileStorage/getFileStoreManager', () => ({
   default: () => ({
     putUserFile: async (_file: Buffer, partialPath: string) =>
       `https://parabol.test/assets/${partialPath}`,
-    copyFile: async (_from: string, to: string) => `https://parabol.test/assets/${to}`
+    copyFile: async (_from: string, to: string) => `https://parabol.test/assets/${to}`,
+    getFileSize: async () => 7
   })
 }))
 jest.mock('../../../assetProxyHandler', () => ({
@@ -104,10 +105,6 @@ jest.mock('../../../assetProxyHandler', () => ({
     return mockPageRoles.has(`${scopeCode}:${authToken.sub}`)
   }
 }))
-jest.mock('@whatwg-node/fetch', () => ({
-  fetch: async () => ({headers: new Headers({'content-length': '7', 'content-type': 'image/png'})})
-}))
-jest.mock('../../encodeAuthToken', () => ({__esModule: true, default: () => 'token'}))
 jest.mock('../../logError', () => ({
   __esModule: true,
   default: (error: unknown) => mockErrors.push(error)

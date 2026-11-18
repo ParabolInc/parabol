@@ -36,6 +36,7 @@ export default abstract class FileStoreManager {
   ): Promise<string>
 
   abstract copyFile(oldKey: PartialPath, newKey: PartialPath): Promise<string>
+  abstract getFileSize(partialPath: PartialPath): Promise<number>
   abstract moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void>
   abstract presignUrl(partialPath: PartialPath, expiresIn?: number): Promise<string>
   // in seconds. S3 refuses to sign for longer than 7 days

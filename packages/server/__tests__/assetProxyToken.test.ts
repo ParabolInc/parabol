@@ -1,3 +1,4 @@
+import getKysely from '../postgres/getKysely'
 import {
   createOrgAdmin,
   getTestEmail,
@@ -184,6 +185,8 @@ const EMBED_USER_ASSET = `
   mutation EmbedUserAssetMutation($url: String!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
     embedUserAsset(url: $url, scope: $scope, scopeKey: $scopeKey) {
       url
+      size
+      type
     }
   }
 `
@@ -220,6 +223,46 @@ test('a PAT limited to one org still reads server-owned user assets', async () =
     authorization: `Bearer ${limited}`
   })
   expect(res.status).toBe(307)
+})
+
+test('a PAT without users:read or orgs:read still reads server-owned assets, not IdP metadata', async () => {
+  const {orgId, cookie} = await createOrgAdmin(getTestEmail())
+  const authorization = `Bearer ${await createToken(cookie, ['PAGES_WRITE'])}`
+  const ghostUser = await fetchAsset('/assets/User/aGhostUser/assets/seeded.png', {authorization})
+  const ghostOrg = await fetchAsset('/assets/Organization/aGhostOrg/template/seeded.png', {
+    authorization
+  })
+  const idpMetadataPath = `/assets/Organization/${orgId}/idpMetadata/metadata.xml`
+  const idpMetadata = await fetchAsset(idpMetadataPath, {authorization})
+  const withOrgs = `Bearer ${await createToken(cookie, ['ORGS_READ'])}`
+  expect(ghostUser.status).toBe(307)
+  expect(ghostOrg.status).toBe(307)
+  expect(idpMetadata.status).toBe(403)
+  expect((await fetchAsset(idpMetadataPath, {authorization: withOrgs})).status).toBe(307)
+})
+
+const getBytesUploaded = async (userId: string) => {
+  const userDetail = await getKysely()
+    .selectFrom('UserDetail')
+    .select('bytesUploaded')
+    .where('id', '=', userId)
+    .executeTakeFirst()
+  return Number(userDetail?.bytesUploaded ?? 0)
+}
+
+test('a token-driven embed charges the asset size to the user', async () => {
+  const {userId, cookie} = await signUp()
+  const path = await uploadAsset({cookie}, 'User', userId)
+  const token = await createToken(cookie, ['USERS_WRITE', 'USERS_READ'])
+  const before = await getBytesUploaded(userId)
+  const res = await sendPublic({
+    query: EMBED_USER_ASSET,
+    variables: {url: `${PROTOCOL}://${HOST}${path}`, scope: 'User', scopeKey: userId},
+    bearerToken: token
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.embedUserAsset).toMatchObject({size: 5, type: 'text/plain'})
+  expect((await getBytesUploaded(userId)) - before).toBe(5)
 })
 
 test('a PAT limited to org A cannot embed an org B asset', async () => {
@@ -413,7 +456,7 @@ const waitForCopy = async (pageId: string, cookie: string) => {
 }
 
 test('a PAT limited to org A can write an org B asset src into an org A page, but it is never copied in', async () => {
-  const {cookie, pageId, orgBAssetPath, limited, unrestricted} = await setUpOrgAPage()
+  const {userId, cookie, pageId, orgBAssetPath, limited, unrestricted} = await setUpOrgAPage()
   const edit = (bearerToken: string) =>
     sendPublic({
       query: EDIT_PAGE_CONTENT,
@@ -431,8 +474,10 @@ test('a PAT limited to org A can write an org B asset src into an org A page, bu
     cookie
   })
   expect(reset.errors).toBeUndefined()
+  const before = await getBytesUploaded(userId)
   expect((await edit(unrestricted)).errors).toBeUndefined()
   expect(await waitForCopy(pageId, cookie)).toMatch(COPIED_INTO_PAGE)
+  expect((await getBytesUploaded(userId)) - before).toBe(5)
 }, 20_000)
 
 test('a PAT limited to org A, or without orgs:read, patching an org B asset src into a page gets no copy', async () => {

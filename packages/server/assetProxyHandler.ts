@@ -121,7 +121,7 @@ const getBearerDenialStatus = async (
   try {
     const grant = await getAPIGrant(bearerToken, dataLoader)
     if (!grant) return '401'
-    if (!canScopesReadAsset(grant.scopes, scope, assetType)) return '403'
+    if (!canScopesReadAsset(grant.scopes, scope, scopeCode, assetType)) return '403'
     const authToken = await getAPIAuthToken(grant, dataLoader)
     const canAccess = await checkAccess(
       authToken,

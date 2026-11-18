@@ -37,6 +37,11 @@ export default class LocalFileStoreManager extends FileStoreManager {
     return makeAppURL(appOrigin, `/assets/${newKey}`)
   }
 
+  async getFileSize(partialPath: PartialPath) {
+    const {size} = await fs.promises.stat(this.prependPath(partialPath))
+    return size
+  }
+
   async moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void> {
     const oldFullPath = this.prependPath(oldKey)
     const newFullPath = this.prependPath(newKey)

@@ -31,7 +31,7 @@ export const checkSourceAssetAccess = async (
   }
   const isAPIToken = authToken.aud !== 'action'
   const canAccessSource =
-    (!isAPIToken || canScopesReadAsset(authToken.scope, sourceScope, assetType)) &&
+    (!isAPIToken || canScopesReadAsset(authToken.scope, sourceScope, sourceScopeCode, assetType)) &&
     (await checkAccess(
       authToken,
       sourceScope,

@@ -1,4 +1,3 @@
-import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {createHash} from 'crypto'
 import {GraphQLError} from 'graphql'
@@ -15,7 +14,6 @@ import getFileStoreManager from '../../../../fileStorage/getFileStoreManager'
 import {isParabolHostedAsset} from '../../../../fileStorage/isParabolHostedAsset'
 import {getUserId} from '../../../../utils/authorization'
 import {compressImage} from '../../../../utils/compressImage'
-import encodeAuthToken from '../../../../utils/encodeAuthToken'
 import {fetchUntrusted} from '../../../../utils/fetchUntrusted'
 import getUserDetail from '../../../../utils/getUserDetail'
 import {Logger} from '../../../../utils/Logger'
@@ -56,16 +54,11 @@ export const hostUserAsset = async (
     )
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
-      const [newUrl, localRes] = await Promise.all([
+      const [newUrl, sizeInBytes] = await Promise.all([
         manager.copyFile(sourcePartialPath, targetPartialPath),
-        fetch(url, {
-          method: 'HEAD',
-          headers: {Authorization: `Bearer ${encodeAuthToken(authToken)}`}
-        })
+        manager.getFileSize(sourcePartialPath)
       ])
-      const {headers} = localRes
-      const sizeInBytes = Number(headers.get('content-length')) || 0
-      const contentType = headers.get('content-type') || mime.lookup(filename) || ''
+      const contentType = mime.lookup(filename) || 'application/octet-stream'
       if (sizeInBytes > 0) {
         await incrementUserBytesUploaded(viewerId, sizeInBytes)
       }
