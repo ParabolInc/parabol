@@ -70,7 +70,7 @@ export const startNewMeetingSeries = async (
     facilitatorUserId: facilitatorId
   } = meeting
   if (!facilitatorId) {
-    throw new Error('No facilitatorId')
+    throw new GraphQLError('The meeting has no facilitator', {extensions: {code: 'CONFLICT'}})
   }
   const newMeetingSeries = await createMeetingSeries({
     meetingType,

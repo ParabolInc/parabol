@@ -232,6 +232,9 @@ export function createWSClient(atmosphere: Atmosphere): Client {
           // ready will wait indefinitely if the service worker is not registered, so do not await
           // The new worker caches the new build, so the quiet reload is quick
           navigator.serviceWorker.ready.then((registration) => {
+            // ready keeps the registration it first resolved with, which has no worker left once the browser clears it
+            const {installing, waiting, active} = registration
+            if (!installing && !waiting && !active) return
             registration.update().catch((error) => {
               console.error('Error updating service worker:', error)
             })

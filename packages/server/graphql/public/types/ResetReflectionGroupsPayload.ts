@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {ResetReflectionGroupsPayloadResolvers} from '../resolverTypes'
 
 export type ResetReflectionGroupsPayloadSource = {
@@ -7,7 +8,10 @@ export type ResetReflectionGroupsPayloadSource = {
 const ResetReflectionGroupsPayload: ResetReflectionGroupsPayloadResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
+    if (meeting.meetingType !== 'retrospective')
+      throw new GraphQLError('Not a retrospective meeting', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     return meeting
   }
 }

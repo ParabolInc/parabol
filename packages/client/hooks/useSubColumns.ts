@@ -2,7 +2,7 @@ import {type RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import type {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import getBBox from '~/components/RetroReflectPhase/getBBox'
-import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementWidth, MeetingControlBarEnum} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 import useResizeObserver from './useResizeObserver'
@@ -12,9 +12,24 @@ const DEFAULT_EXPANDED_SUB_COLUMNS = 2
 const DEFAULT_SUB_COLUMNS = 1
 const COLUMN_MARGIN = 16
 const COLUMN_WIDTH = ElementWidth.REFLECTION_COLUMN + COLUMN_MARGIN
+const EXPANDED_SUB_COLUMN_VERTICAL_PADDING = 24
+
+const getFewestSubColumnsWithoutVerticalScroll = (
+  groupHeights: number[],
+  availableHeight: number
+) => {
+  for (let subColumnCount = 1; subColumnCount < groupHeights.length; subColumnCount++) {
+    const subColumnHeights = new Array<number>(subColumnCount).fill(0)
+    groupHeights.forEach((groupHeight, idx) => {
+      subColumnHeights[idx % subColumnCount]! += groupHeight
+    })
+    if (Math.max(...subColumnHeights) <= availableHeight) return subColumnCount
+  }
+  return groupHeights.length
+}
 
 const useSubColumns = (
-  columnBodyRef: RefObject<HTMLDivElement | null>,
+  columnScrollRef: RefObject<HTMLDivElement | null>,
   phaseRef: RefObject<HTMLDivElement | null>,
   reflectPromptsCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups$data,
@@ -34,32 +49,6 @@ const useSubColumns = (
       })
     })
   }
-  const getMaxSubColumnCount = () => {
-    if (!columnBodyRef.current || !columnsRef.current || !phaseRef.current)
-      return DEFAULT_EXPANDED_SUB_COLUMNS
-    const columnBodyEl = columnBodyRef.current
-    const subColumnCountWithoutScroll = Math.ceil(
-      columnBodyEl.scrollHeight / (columnBodyEl.clientHeight - ElementHeight.REFLECTION_CARD)
-    )
-    const maxSubColumnCount = Math.max(subColumnCountWithoutScroll, DEFAULT_EXPANDED_SUB_COLUMNS)
-    const columnsWidth = columnsRef.current.clientWidth
-    const phaseWidth = phaseRef.current.clientWidth
-    const maxSubColumnsInPhase = Math.floor(phaseWidth / COLUMN_WIDTH)
-    const scrollbarExists = phaseWidth < columnsWidth
-    if (!scrollbarExists) {
-      const scrollbarWillExist = willScrollbarExist(maxSubColumnCount, columnsWidth, phaseWidth)
-      // if expanding to maxWidth creates a horizontal scrollbar, check if DEFAULT_EXPANDED_SUB_COLUMNS does not
-      if (scrollbarWillExist && maxSubColumnCount > DEFAULT_EXPANDED_SUB_COLUMNS) {
-        const scrollbarWillStillExist = willScrollbarExist(
-          DEFAULT_EXPANDED_SUB_COLUMNS,
-          columnsWidth,
-          phaseWidth
-        )
-        if (!scrollbarWillStillExist) return DEFAULT_EXPANDED_SUB_COLUMNS
-      }
-    }
-    return Math.min(maxSubColumnCount, maxSubColumnsInPhase)
-  }
 
   const [subColumnCount, setSubColumnCount] = useState(() => {
     const phaseBBox = getBBox(phaseRef.current)
@@ -70,10 +59,9 @@ const useSubColumns = (
       Math.floor(maxSubColumnsInPhase / reflectPromptsCount),
       DEFAULT_SUB_COLUMNS
     )
-    const maxSubColumnCount = getMaxSubColumnCount()
-    const colCount = Math.min(maxSubColumnCount, maxSubColumnsPerColumn)
-    sortSubColumns(colCount)
-    return colCount
+    const initialSubColumnCount = Math.min(DEFAULT_EXPANDED_SUB_COLUMNS, maxSubColumnsPerColumn)
+    sortSubColumns(initialSubColumnCount)
+    return initialSubColumnCount
   })
   const subColumnIndexes = useMemo(() => {
     return [...Array(subColumnCount).keys()]
@@ -81,20 +69,39 @@ const useSubColumns = (
 
   useSortNewReflectionGroup(subColumnCount, subColumnIndexes, reflectionGroups)
 
-  const willScrollbarExist = (
-    newSubColumnCount: number,
-    columnsWidth: number,
-    phaseWidth: number
-  ) => {
-    const newColumnWidth = COLUMN_WIDTH * newSubColumnCount
-    return columnsWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
+  const getExpandedSubColumnCount = () => {
+    const columnsEl = columnsRef.current
+    const kanbanScrollEl = columnsEl?.parentElement
+    const columnScrollEl = columnScrollRef.current
+    if (!columnsEl || !kanbanScrollEl || !columnScrollEl) return DEFAULT_EXPANDED_SUB_COLUMNS
+    const spareWidth = kanbanScrollEl.clientWidth - columnsEl.offsetWidth
+    const subColumnCountThatFits =
+      subColumnCount + Math.floor(spareWidth / ElementWidth.REFLECTION_COLUMN)
+    const groupHeights = Array.from(columnScrollEl.children).flatMap((subColumnEl) =>
+      Array.from(subColumnEl.children, (groupEl) => groupEl.getBoundingClientRect().height)
+    )
+    // a wider column can end up under the control bar, which shortens it by COVER_HEIGHT
+    const columnShortening =
+      columnsEl.getBoundingClientRect().bottom - columnScrollEl.getBoundingClientRect().bottom
+    const availableHeight =
+      columnScrollEl.clientHeight -
+      (MeetingControlBarEnum.COVER_HEIGHT - columnShortening) -
+      EXPANDED_SUB_COLUMN_VERTICAL_PADDING
+    const subColumnCountWithoutVerticalScroll = getFewestSubColumnsWithoutVerticalScroll(
+      groupHeights,
+      availableHeight
+    )
+    return Math.max(
+      Math.min(subColumnCountThatFits, subColumnCountWithoutVerticalScroll),
+      DEFAULT_EXPANDED_SUB_COLUMNS
+    )
   }
 
   const toggleWidth = () => {
-    const maxSubColumnCount = getMaxSubColumnCount()
     if (subColumnCount === DEFAULT_SUB_COLUMNS) {
-      setSubColumnCount(maxSubColumnCount)
-      sortSubColumns(maxSubColumnCount)
+      const expandedSubColumnCount = getExpandedSubColumnCount()
+      setSubColumnCount(expandedSubColumnCount)
+      sortSubColumns(expandedSubColumnCount)
     } else setSubColumnCount(DEFAULT_SUB_COLUMNS)
   }
 

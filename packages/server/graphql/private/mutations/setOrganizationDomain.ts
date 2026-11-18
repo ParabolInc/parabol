@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -10,7 +11,7 @@ const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async 
   const organization = await dataLoader.get('organizations').load(orgId)
   dataLoader.get('organizations').clear(orgId)
   if (!organization) {
-    throw new Error('Organization not found')
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
   // RESOLUTION

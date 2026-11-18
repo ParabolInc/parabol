@@ -1,29 +1,26 @@
+import {GraphQLError} from 'graphql'
 import updateSubscriptionQuantity from '../../../billing/helpers/updateSubscriptionQuantity'
-import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import type {MutationResolvers} from '../resolverTypes'
 
 const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   _source,
-  {invoiceId},
-  {authToken}
+  {invoiceId}
 ) => {
-  // AUTH
-  if (!isSuperUser(authToken)) {
-    throw new Error('Don’t be rude.')
-  }
-
   // RESOLUTION
   const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
   const stripeCustomer = await manager.retrieveCustomer(invoice.customer as string)
   if (stripeCustomer.deleted) {
-    throw new Error('Customer was deleted')
+    throw new GraphQLError('Customer was deleted', {extensions: {code: 'NOT_FOUND'}})
   }
   const {
     metadata: {orgId}
   } = stripeCustomer
-  if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
+  if (!orgId)
+    throw new GraphQLError(`orgId not found on metadata for invoice ${invoiceId}`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
 
   await updateSubscriptionQuantity(orgId, true)
   await manager.updateInvoice(invoiceId, orgId)

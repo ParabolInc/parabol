@@ -1,38 +1,59 @@
-import {Kind} from 'graphql'
+import {GraphQLError, Kind} from 'graphql'
 import {Frequency, RRuleSet} from 'rrule-rust'
 import type {RRuleScalarConfig} from '../resolverTypes'
 
+const parseRRuleSet = (raw: string) => {
+  try {
+    return RRuleSet.parse(raw)
+  } catch (e) {
+    const reason = e instanceof Error ? e.message : String(e)
+    throw new GraphQLError(`RRULE could not be parsed: ${reason}`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+}
+
 const validateRRule = (raw: string) => {
-  const rrule = RRuleSet.parse(raw)
+  const rrule = parseRRuleSet(raw)
   const {tzid, rrules} = rrule
   const [firstRule] = rrules
   if (!firstRule || rrules.length > 1) {
     // this is just for us, it's not part of the spec
-    throw new Error('Exactly 1 RRule must exist in an RRule Set')
+    throw new GraphQLError('Exactly 1 RRule must exist in an RRule Set', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {interval, frequency, count} = firstRule
   if (!Number.isSafeInteger(interval)) {
-    throw new Error('RRULE interval must be an integer')
+    throw new GraphQLError('RRULE interval must be an integer', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   const isWithinRange = interval && interval >= 1 && interval <= 52
   if (!isWithinRange) {
-    throw new Error('RRULE interval must be between 1 and 52')
+    throw new GraphQLError('RRULE interval must be between 1 and 52', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   if (frequency !== Frequency.Weekly) {
-    throw new Error('RRULE frequency must be WEEKLY')
+    throw new GraphQLError('RRULE frequency must be WEEKLY', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   // using count option is not allowed
   if (count !== null && count !== undefined) {
-    throw new Error('RRULE count option is not supported')
+    throw new GraphQLError('RRULE count option is not supported', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 
   try {
     Intl.DateTimeFormat(undefined, {timeZone: tzid!})
   } catch {
-    throw new Error('RRULE time zone is invalid')
+    throw new GraphQLError('RRULE time zone is invalid', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   return raw
 }
@@ -42,7 +63,9 @@ const RRuleScalarType: RRuleScalarConfig = {
   description: 'A custom scalar type for representing RRule strings',
   parseValue(value: unknown) {
     if (typeof value !== 'string') {
-      throw new Error(`RRule is not a string, it is a: ${typeof value}`)
+      throw new GraphQLError(`RRule is not a string, it is a: ${typeof value}`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     return validateRRule(value)
   },
@@ -51,7 +74,9 @@ const RRuleScalarType: RRuleScalarConfig = {
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-      throw new Error(`RRule is not a string, it is a: ${ast.kind}`)
+      throw new GraphQLError(`RRule is not a string, it is a: ${ast.kind}`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     return validateRRule(ast.value)
   }

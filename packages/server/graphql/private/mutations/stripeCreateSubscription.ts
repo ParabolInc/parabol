@@ -1,31 +1,27 @@
+import {GraphQLError} from 'graphql'
 import type Stripe from 'stripe'
 import getKysely from '../../../postgres/getKysely'
-import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import type {MutationResolvers} from '../resolverTypes'
 
 const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = async (
   _source,
-  {customerId, subscriptionId},
-  {authToken}
+  {customerId, subscriptionId}
 ) => {
-  // AUTH
-  if (!isSuperUser(authToken)) {
-    throw new Error('Don’t be rude.')
-  }
-
   // RESOLUTION
   const manager = getStripeManager()
   const stripeCustomer = await manager.retrieveCustomer(customerId)
   if (stripeCustomer.deleted) {
-    throw new Error('Customer was deleted')
+    throw new GraphQLError('Customer was deleted', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {
     metadata: {orgId}
   } = stripeCustomer
   if (!orgId) {
-    throw new Error(`orgId not found on metadata for customer ${customerId}`)
+    throw new GraphQLError(`orgId not found on metadata for customer ${customerId}`, {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
 
   const subscription = await manager.retrieveSubscription(subscriptionId)
@@ -34,7 +30,7 @@ const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = 
     'incomplete',
     'incomplete_expired'
   ]
-  const isSubscriptionInvalid = invalidStatuses.some((status) => (subscription.status = status))
+  const isSubscriptionInvalid = invalidStatuses.includes(subscription.status)
   if (isSubscriptionInvalid) return false
 
   await getKysely()

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
@@ -12,10 +13,16 @@ export const isViewerTeamLead = <T>(teamIdDotPath: ResolverDotPath<T>) =>
       const viewerId = getUserId(authToken)
       const teamMemberId = TeamMemberId.join(teamId, viewerId)
       const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-      if (!teamMember?.isLead) return new Error('User is not team lead')
-      if (!teamMember?.isNotRemoved) return new Error('User is not team lead anymore')
+      if (!teamMember?.isLead) {
+        return new GraphQLError('User is not team lead', {extensions: {code: 'FORBIDDEN'}})
+      }
+      if (!teamMember?.isNotRemoved) {
+        return new GraphQLError('User is not team lead anymore', {extensions: {code: 'FORBIDDEN'}})
+      }
       if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-        return new Error(`PAT does not grant access to this team`)
+        return new GraphQLError(`PAT does not grant access to this team`, {
+          extensions: {code: 'FORBIDDEN'}
+        })
       }
       return true
     }

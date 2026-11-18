@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -161,7 +162,7 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
       return makeButtons([resultsButton, summaryButton])
     }
     default:
-      throw new Error('Invalid meeting type')
+      throw new GraphQLError('Invalid meeting type', {extensions: {code: 'INTERNAL_SERVER_ERROR'}})
   }
 }
 
@@ -686,14 +687,14 @@ export const SlackNotifier = {
     ])
     const slackAuth = userSlackAuths.find((auth) => auth.teamId === teamId)
     if (!slackAuth) {
-      throw new Error('Slack auth not found')
+      throw new GraphQLError('Slack auth not found', {extensions: {code: 'NOT_FOUND'}})
     }
 
     const {botAccessToken} = slackAuth
     const manager = new SlackServerManager(botAccessToken!)
     const joinRes = await joinSlackChannel(manager, channelId)
     if (!joinRes.ok) {
-      throw new Error(joinRes.error)
+      throw new GraphQLError(joinRes.error, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
     }
 
     const topic = reflectionGroup.title

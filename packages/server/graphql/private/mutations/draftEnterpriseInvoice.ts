@@ -18,14 +18,16 @@ const getBillingLeaderUser = async (
   if (email) {
     const user = await getUserByEmail(email)
     if (!user) {
-      throw new Error('User for email not found')
+      throw new GraphQLError('User for email not found', {extensions: {code: 'NOT_FOUND'}})
     }
     const {id: userId} = user
     const organizationUser = await dataLoader
       .get('organizationUsersByUserIdOrgId')
       .load({userId, orgId})
     if (!organizationUser) {
-      throw new Error('Email not associated with a user on that org')
+      throw new GraphQLError('Email not associated with a user on that org', {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     if (organizationUser.role !== 'ORG_ADMIN') {
       await pg

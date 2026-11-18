@@ -21,7 +21,11 @@ const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
     throw new GraphQLError('Other tool name is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
-  const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').loadNonNull(orgId)
+  const organization = await dataLoader.get('organizations').load(orgId)
+  if (!organization) {
+    throw new GraphQLError('Organization not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  const {stripeSubscriptionId, tier} = organization
   dataLoader.get('organizations').clear(orgId)
 
   if (tier === 'starter') {
