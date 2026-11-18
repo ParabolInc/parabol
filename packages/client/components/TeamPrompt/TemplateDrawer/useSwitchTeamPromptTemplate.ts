@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import type {PayloadError} from 'relay-runtime'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import useUpdateMeetingTemplateMutation from '../../../mutations/useUpdateMeetingTemplateMutation'
+import useSetMeetingSettingsMutation from '../../../mutations/useSetMeetingSettingsMutation'
 import GraphQLServerError from '../../../utils/relay/GraphQLServerError'
 import type {SwitchTemplateConfirmation} from './TeamPromptSwitchTemplateDialog'
 
@@ -16,14 +16,15 @@ export type SwitchProblem =
 
 interface Options {
   meetingId: string
-  applyToSeries: boolean
+  // the team's standup settings, which setMeetingSettings is keyed by
+  settingsId: string
   onSwitched: () => void
 }
 
 const useSwitchTeamPromptTemplate = (options: Options) => {
-  const {meetingId, applyToSeries, onSwitched} = options
+  const {meetingId, settingsId, onSwitched} = options
   const atmosphere = useAtmosphere()
-  const [updateMeetingTemplate, submitting] = useUpdateMeetingTemplateMutation()
+  const [setMeetingSettings, submitting] = useSetMeetingSettingsMutation()
   const [pendingTemplateId, setPendingTemplateId] = useState<string | null>(null)
   const [confirmation, setConfirmation] = useState<SwitchTemplateConfirmation | null>(null)
   const [problem, setProblem] = useState<SwitchProblem | null>(null)
@@ -58,8 +59,8 @@ const useSwitchTeamPromptTemplate = (options: Options) => {
     setPendingTemplateId(template.id)
     setProblem(null)
     setConfirmation(null)
-    updateMeetingTemplate({
-      variables: {meetingId, templateId: template.id, applyToSeries, clearTeamPromptResponses},
+    setMeetingSettings({
+      variables: {settingsId, meetingId, templateId: template.id, clearTeamPromptResponses},
       onCompleted: (_res, errors) => {
         setPendingTemplateId(null)
         if (errors?.[0]) {

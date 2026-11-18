@@ -224,6 +224,12 @@ type RetrospectiveMeeting implements NewMeeting {
   templateId: ID!
 
   """
+  The template whose prompts this meeting reflects on
+  """
+  # Nullable like TeamPromptMeeting.template, so a query that spreads both shares a response shape
+  template: PromptTemplate
+
+  """
   The number of topics generated in the meeting
   """
   topicCount: Int!

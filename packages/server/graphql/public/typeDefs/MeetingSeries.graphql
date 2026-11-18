@@ -42,10 +42,15 @@ type MeetingSeries {
   groupId: ID
 
   """
-  The template the series was started with. Stand-ups and teamHealth build every meeting from it;
-  a retrospective copies the template of its previous meeting instead, so this can go stale there.
+  The template the series builds its next meeting from. A retrospective falls back to its previous
+  meeting's template when this is null or no longer available.
   """
   templateId: ID
+
+  """
+  The template the series builds its next meeting from
+  """
+  template: MeetingTemplate
 
   """
   The name of the meeting series used to generate the names of the recurring meetings

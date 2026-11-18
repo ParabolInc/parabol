@@ -63,5 +63,6 @@ type MeetingSubscriptionPayload {
   UpsertTeamPromptResponsePayload: UpsertTeamPromptResponsePayload
   ShareTeamPromptResponsesPayload: ShareTeamPromptResponsesPayload
   UpdateMeetingTemplatePayload: UpdateMeetingTemplatePayload
+  SetMeetingSettingsPayload: SetMeetingSettingsPayload
   SuggestedGroupsPayload: SuggestedGroupsPayload
 }

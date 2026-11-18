@@ -26,10 +26,11 @@ interface Props {
   meeting: TeamHealth_meeting$key
   toggleSidebar: () => void
   gotoStageId?: ReturnType<typeof useGotoStageId>
+  openSettings?: () => void
 }
 
 const TeamHealth = (props: Props) => {
-  const {avatarGroup, meeting: meetingRef, toggleSidebar} = props
+  const {avatarGroup, meeting: meetingRef, toggleSidebar, openSettings} = props
   const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
@@ -90,6 +91,7 @@ const TeamHealth = (props: Props) => {
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
+          onOpenSettings={openSettings}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>
         </MeetingTopBar>

@@ -24,7 +24,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroReflectPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
   const meeting = useFragment(
     graphql`
       fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
@@ -68,7 +68,7 @@ const RetroReflectPhase = (props: Props) => {
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
-          meetingId={meeting.id}
+          onOpenSettings={openSettings}
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           rightDrawerOpen={rightDrawerOpen}

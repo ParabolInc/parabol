@@ -23,6 +23,8 @@ interface Props {
   threadHeader?: ReactNode
   // When provided a Your Work tab is inserted between Discussion and Transcription.
   workContent?: ReactNode
+  // When provided a Settings tab follows Transcription.
+  settingsContent?: ReactNode
   // When set, the Discussion tab is omitted entirely (e.g. retro reflect/group phases, which have
   // no discussion thread — only Inspiration and Transcription).
   hideDiscussion?: boolean
@@ -44,6 +46,7 @@ const DiscussionDrawer = ({
   meetingId,
   threadHeader,
   workContent,
+  settingsContent,
   activeTab,
   onChangeTab,
   hideDiscussion,
@@ -53,7 +56,8 @@ const DiscussionDrawer = ({
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
     ...(workContent ? [{id: 'inspiration', label: 'Inspiration'}] : []),
-    {id: 'transcription', label: 'Transcription'}
+    {id: 'transcription', label: 'Transcription'},
+    ...(settingsContent ? [{id: 'settings', label: 'Settings'}] : [])
   ]
   const defaultTabId = hideDiscussion ? 'inspiration' : 'discussion'
   const [storedTabId, setStoredTabId] = useSessionStorageState<string>(
@@ -101,6 +105,8 @@ const DiscussionDrawer = ({
       </div>
       {activeTabId === 'inspiration' ? (
         workContent
+      ) : activeTabId === 'settings' ? (
+        settingsContent
       ) : activeTabId === 'transcription' ? (
         <DiscussionDrawerTranscripts meetingRef={meetingRef} />
       ) : activeTabId === 'discussion' && discussionId ? (

@@ -102,8 +102,9 @@ const startRecurringMeeting = async (
         retroLastMeeting?.maxVotesPerGroup ??
         meetingSettings?.maxVotesPerGroup ??
         MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
+      // the team's settings come first: a retro's Settings tab writes its future-meeting choices there
       const disableAnonymity =
-        retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
+        meetingSettings?.disableAnonymity ?? retroLastMeeting?.disableAnonymity ?? false
       if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
         logError(new Error('startRecurringMeeting: seeding retrospective with defaults'), {
           tags: {meetingSeriesId, teamId}
