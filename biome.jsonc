@@ -274,6 +274,10 @@
       "plugins": ["./scripts/biome/requireGraphQLErrorCode.grit"]
     },
     {
+      "includes": ["packages/server/graphql/**", "!**/__tests__/**"],
+      "plugins": ["./scripts/biome/noPlainErrorInGraphQL.grit"]
+    },
+    {
       "includes": ["packages/server/**"],
       "linter": {
         "rules": {

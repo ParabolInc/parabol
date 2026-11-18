@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import type {EndTeamPromptPayloadResolvers} from '../resolverTypes'
@@ -20,7 +21,8 @@ const EndTeamPromptPayload: EndTeamPromptPayloadResolvers = {
     const timelineEvent = timelineEvents.find(
       (event) => event.type === 'TEAM_PROMPT_COMPLETE' && event.userId === viewerId
     )
-    if (!timelineEvent) throw new Error('Timeline event not found')
+    if (!timelineEvent)
+      throw new GraphQLError('Timeline event not found', {extensions: {code: 'NOT_FOUND'}})
     return await dataLoader.get('timelineEvents').loadNonNull(timelineEvent.id)
   }
 }

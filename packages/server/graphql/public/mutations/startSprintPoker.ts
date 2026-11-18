@@ -95,7 +95,9 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   if (unpaidError) throw new GraphQLError(unpaidError, {extensions: {code: 'FORBIDDEN'}})
   const {selectedTemplateId} = meetingSettings
   if (!selectedTemplateId) {
-    throw new Error('selectedTemplateId is required')
+    throw new GraphQLError('The team has no poker template selected', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
   if (!teamMember.isNotRemoved) {
     throw new GraphQLError('Team member was removed', {extensions: {code: 'FORBIDDEN'}})

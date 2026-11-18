@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
 import {canShowTeamHealthScore} from '../../../../../client/shared/utils/teamHealthAnonymity'
@@ -82,7 +83,9 @@ const getSummaryText = async (meeting: AnyMeeting) => {
     const scoreText = averageScore === null ? '' : ` with an average score of ${averageScore}/5`
     return `${respondentCount} ${plural(respondentCount, 'team member')} responded${scoreText}.\nYou added ${commentCount} ${plural(commentCount, 'comment')}.`
   } else {
-    throw new Error(`Meeting type not supported ${(meeting as any).meetingType}`)
+    throw new GraphQLError(`Meeting type not supported ${(meeting as AnyMeeting).meetingType}`, {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
 }
 

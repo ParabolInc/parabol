@@ -94,7 +94,10 @@ const inviteToTeamHelper = async (
   const now = Date.now()
   const emails = Array.from(new Set(invitees.map(normalizeEmail)))
   // The Email scalar already rejected anything else. This keeps a bad address out of a mail header if a caller skips it
-  if (!emails.every(isValidEmail)) throw new Error('inviteToTeamHelper received an invalid email')
+  if (!emails.every(isValidEmail))
+    throw new GraphQLError('inviteToTeamHelper received an invalid email', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   if (emails.length === 0) return {invitees: [], removedSuggestedActionId: undefined}
 
   const [

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {IntegrationProviderGitLabOAuth2} from '../../postgres/types/IntegrationProvider'
 import type {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
@@ -13,10 +14,11 @@ export const nestGitLab = () =>
       {dataLoader}: GQLContext
     ) => {
       const token = await dataLoader.get('freshAuth').load({service: 'gitlab', teamId, userId})
-      if (!token) throw new Error('No GitLab token found')
+      if (!token) throw new GraphQLError('No GitLab token found', {extensions: {code: 'NOT_FOUND'}})
       const {accessToken, providerId} = token
       const provider = await dataLoader.get('integrationProviders').load(providerId)
-      if (!provider) throw new Error('No GitLab provider found')
+      if (!provider)
+        throw new GraphQLError('No GitLab provider found', {extensions: {code: 'NOT_FOUND'}})
       const {serverBaseUrl} = provider as IntegrationProviderGitLabOAuth2
       return {
         accessToken: accessToken!,

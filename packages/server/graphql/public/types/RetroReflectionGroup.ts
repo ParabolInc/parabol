@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import type {Selectable} from 'kysely'
 import isGroupTitleUserDefined from 'parabol-client/utils/smartGroup/isGroupTitleUserDefined'
 import type {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/types/pg'
@@ -9,7 +10,10 @@ export interface RetroReflectionGroupSource extends Selectable<TRetroReflectionG
 const RetroReflectionGroup: RetroReflectionGroupResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const retroMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (retroMeeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
+    if (retroMeeting.meetingType !== 'retrospective')
+      throw new GraphQLError('Not a retrospective meeting', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     return retroMeeting
   },
   prompt: ({promptId}, _args, {dataLoader}) => {

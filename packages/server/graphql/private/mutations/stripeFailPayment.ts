@@ -4,7 +4,6 @@ import type Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import type {MutationResolvers} from '../resolverTypes'
@@ -19,13 +18,8 @@ export type StripeFailPaymentPayloadSource =
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  // AUTH
-  if (!isSuperUser(authToken)) {
-    throw new Error('Don’t be rude.')
-  }
-
   const pg = getKysely()
   const manager = getStripeManager()
 

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import MeetingTeamHealth from '../../../database/types/MeetingTeamHealth'
 import TeamHealthIntroPhase from '../../../database/types/TeamHealthIntroPhase'
 import TeamHealthResponsePhase from '../../../database/types/TeamHealthResponsePhase'
@@ -39,7 +40,9 @@ const safeCreateTeamHealth = async (
     )
   ).filter(isValid)
   if (questions.length === 0) {
-    throw new Error(`Team health template ${templateId} has no questions`)
+    throw new GraphQLError(`Team health template ${templateId} has no questions`, {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   // stages reference the immutable question by its raw id, one least-asked question per category

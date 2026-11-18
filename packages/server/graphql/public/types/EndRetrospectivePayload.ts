@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
 import type {EndRetrospectivePayloadResolvers} from '../resolverTypes'
 
@@ -24,7 +25,8 @@ const EndRetrospectivePayload: EndRetrospectivePayloadResolvers = {
     const timelineEvent = timelineEvents.find(
       (event) => event.type === 'retroComplete' && event.userId === viewerId
     )
-    if (!timelineEvent) throw new Error('Timeline event not found')
+    if (!timelineEvent)
+      throw new GraphQLError('Timeline event not found', {extensions: {code: 'NOT_FOUND'}})
     return timelineEvent as typeof timelineEvent & {meetingId: string}
   }
 }

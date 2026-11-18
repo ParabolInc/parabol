@@ -1,15 +1,19 @@
+import {GraphQLError} from 'graphql'
 import {Kind} from 'graphql/language'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import type {DateTimeScalarConfig} from '../resolverTypes'
 
 function parseDate(value: string) {
   const result = new Date(value)
-  if (!isValidDate(result)) {
-    throw new Error(`Invalid date: ${value}`)
+  if (!isValidDate(result) || Number.isNaN(result.getTime())) {
+    throw new GraphQLError(`Invalid date: ${value}`, {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (value !== result.toJSON()) {
     if (!result.toJSON().startsWith(value)) {
-      throw new Error(`Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ: ${value}`)
+      throw new GraphQLError(
+        `Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ: ${value}`,
+        {extensions: {code: 'BAD_USER_INPUT'}}
+      )
     }
   }
   return result
@@ -21,27 +25,29 @@ const DateTime: DateTimeScalarConfig = {
   serialize(value) {
     const date = new Date(value as string)
     if (isNaN(date.getTime())) {
-      throw new Error('Field error: value is an invalid Date')
+      throw new GraphQLError('Field error: value is an invalid Date', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     }
     return date.toJSON()
   },
 
   parseValue(value) {
     if (typeof value !== 'string') {
-      throw new Error('Field error: value is not an instance of string')
+      throw new GraphQLError(`DateTime must be a string, not ${typeof value}`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
     return parseDate(value)
   },
 
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-      throw new Error(`Query error: Can only parse strings to dates but got a: ${ast.kind}`)
+      throw new GraphQLError(`DateTime must be a string, not a ${ast.kind}`, {
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
     }
-    try {
-      return parseDate(ast.value)
-    } catch (e) {
-      throw new Error(`Query error: ${e instanceof Error ? e.message : 'Unable to parseDate'}`)
-    }
+    return parseDate(ast.value)
   }
 }
 
