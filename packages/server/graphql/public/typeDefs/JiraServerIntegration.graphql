@@ -18,7 +18,8 @@ type JiraServerIntegration {
   sharedProviders: [IntegrationProviderOAuth1!]!
 
   """
-  A list of issues coming straight from the jira integration for a specific team member
+  A list of issues coming straight from the jira integration for a specific team member.
+  Null, with a coded error, when Jira Data Center fails the search
   """
   issues(
     first: Int = 25
@@ -34,7 +35,7 @@ type JiraServerIntegration {
     """
     isJQL: Boolean!
     projectKeyFilters: [ID!]
-  ): JiraServerIssueConnection!
+  ): JiraServerIssueConnection
 
   """
   A list of projects accessible by this team member. empty if viewer is not the user

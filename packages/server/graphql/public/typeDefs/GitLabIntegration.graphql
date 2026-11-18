@@ -17,6 +17,10 @@ type GitLabIntegration {
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
 
+  """
+  Issues from the given GitLab projects, or the most recently used ones.
+  Null, with a coded error, when GitLab fails every project it searched
+  """
   projectsIssues(
     first: Int!
 
@@ -44,5 +48,5 @@ type GitLabIntegration {
     the state of issues, e.g. opened or closed
     """
     state: String!
-  ): GitLabIntegrationConnection!
+  ): GitLabIntegrationConnection
 }

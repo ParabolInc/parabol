@@ -8,12 +8,10 @@ import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
 import type {MutationResolvers} from '../resolverTypes'
 
-export type StripeFailPaymentPayloadSource =
-  | {
-      orgId: string
-      notificationId?: string
-    }
-  | {error: {message: string}}
+export type StripeFailPaymentPayloadSource = {
+  orgId: string
+  notificationId?: string
+}
 
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
@@ -56,7 +54,7 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   if (paymentIntent && paymentIntent.status === 'requires_action') {
     // The payment failed because it requires 3D Secure
     // Don't cancel the subscription. Wait for the client to authenticate
-    return {error: {message: 'Required 3D Secure auth'}, orgId}
+    return {orgId}
   }
 
   if (paid || stripeSubscriptionId !== subscription || !stripeSubscriptionId) {
@@ -84,12 +82,12 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     ? await manager.retrieveCardDetails(default_source as string)
     : null
   if (creditCardRes instanceof Error) {
-    return {error: {message: creditCardRes.message}, orgId}
+    throw new GraphQLError(creditCardRes.message, {extensions: {code: 'SERVICE_UNAVAILABLE'}})
   }
   // customers that used the new checkout flow with Stripe Elements will have a default_source. Previously, we'd store their creditCard in the org table
   const creditCard = creditCardRes ?? org.creditCard
   if (!creditCard) {
-    return {error: {message: 'No credit card found'}, orgId}
+    throw new GraphQLError('No credit card found', {extensions: {code: 'CONFLICT'}})
   }
   const {last4, brand} = creditCard
 

@@ -7,6 +7,7 @@ import type {GitLabScopingResultsAdapterQuery} from '../../__generated__/GitLabS
 import type {GQLType} from '../../types/generics'
 import getNonNullEdges from '../../utils/getNonNullEdges'
 import {parseWebPath} from '../../utils/parseWebPath'
+import getCaughtErrorMessage from '../../utils/relay/getCaughtErrorMessage'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 import GitLabIssueId from './shared/GitLabIssueId'
 
@@ -47,10 +48,7 @@ const GitLabScopingResultsAdapter = (
                   searchQuery: $queryString
                   state: $state
                   sort: $sort
-                ) @connection(key: "GitLabScopingSearchResults_projectsIssues") {
-                  error {
-                    message
-                  }
+                ) @connection(key: "GitLabScopingSearchResults_projectsIssues") @catch {
                   edges {
                     node {
                       __typename
@@ -72,9 +70,9 @@ const GitLabScopingResultsAdapter = (
     `,
     queryData
   )
-  const projectsIssues = data.viewer.teamMember?.integrations.gitlab.projectsIssues
-  const error = projectsIssues?.error?.message ?? undefined
-  const edges = projectsIssues?.edges
+  const projectsIssuesResult = data.viewer.teamMember?.integrations.gitlab.projectsIssues
+  const error = getCaughtErrorMessage(projectsIssuesResult)
+  const edges = projectsIssuesResult?.ok ? projectsIssuesResult.value?.edges : undefined
   const items = useMemo(
     () =>
       getNonNullEdges(edges ?? [])

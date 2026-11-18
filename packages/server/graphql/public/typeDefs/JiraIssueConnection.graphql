@@ -11,9 +11,4 @@ type JiraIssueConnection {
   A list of edges.
   """
   edges: [JiraIssueEdge!]!
-
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
 }

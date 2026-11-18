@@ -6,7 +6,7 @@ import makeGcalCalendar from '../../../integrations/gcal/makeGcalCalendar'
 import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
-import type {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
+import type {CreateGcalEventInput} from '../../public/resolverTypes'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10
@@ -47,7 +47,7 @@ type Input = {
 
 const createGcalEvent = async (
   input: Input
-): Promise<{gcalSeriesId?: string; error?: StandardMutationError}> => {
+): Promise<{gcalSeriesId?: string; error?: {message: string}}> => {
   const {name, gcalInput, meetingId, meetingSeriesId, viewerId, dataLoader, teamId, rrule} = input
   if (!gcalInput) {
     return {}

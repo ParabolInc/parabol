@@ -1,4 +1,6 @@
+import {GraphQLError} from 'graphql'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import toCodedIntegrationError from '../platform/toCodedIntegrationError'
 import type {ClickUpTaskSource} from './mapClickUpTask'
 import searchClickUpTasks from './searchClickUpTasks'
 
@@ -21,16 +23,9 @@ interface ClickUpTaskConnection {
     startCursor?: string | null
     endCursor?: string | null
   }
-  error?: {message: string}
 }
 
 const MAX_TASKS = 100
-
-const makeFailedConnection = (error: Error): ClickUpTaskConnection => ({
-  edges: [],
-  pageInfo: {hasNextPage: false, hasPreviousPage: false},
-  error: {message: error.message}
-})
 
 const makeClickUpTaskConnection = async (
   ctx: GqlIntegrationCtx,
@@ -39,8 +34,9 @@ const makeClickUpTaskConnection = async (
   const {first, after, queryString, listIds, assignedToViewer} = args
   const {updatedAfter, updatedBefore, includeClosed} = args
   const page = after ? Number(after) : 0
-  if (!Number.isSafeInteger(page) || page < 0)
-    return makeFailedConnection(new Error('Invalid cursor'))
+  if (!Number.isSafeInteger(page) || page < 0) {
+    throw new GraphQLError('Invalid cursor', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
   const res = await searchClickUpTasks(ctx, {
     queryString: queryString?.trim() ?? '',
     listIds: listIds ? [...listIds] : [],
@@ -51,7 +47,7 @@ const makeClickUpTaskConnection = async (
     page,
     minResults: Math.min(Math.max(first, 1), MAX_TASKS)
   })
-  if (res instanceof Error) return makeFailedConnection(res)
+  if (res instanceof Error) throw toCodedIntegrationError(res)
   const endCursor = res.nextPage === null ? null : String(res.nextPage)
   return {
     edges: res.tasks.map((node) => ({node, cursor: endCursor})),

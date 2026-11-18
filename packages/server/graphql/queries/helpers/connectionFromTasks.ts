@@ -3,8 +3,7 @@ import type {Task} from '../../../postgres/types'
 
 const connectionFromTasks = <T extends {updatedAt: Date} = Task>(
   tasks: T[],
-  first: number = Threshold.MAX_NUMBER_OF_TASKS_TO_LOAD,
-  error?: {message: string}
+  first: number = Threshold.MAX_NUMBER_OF_TASKS_TO_LOAD
 ) => {
   const nodes = tasks.slice(0, first)
   const edges = nodes.map((node) => ({
@@ -12,10 +11,7 @@ const connectionFromTasks = <T extends {updatedAt: Date} = Task>(
     node
   }))
   const firstEdge = edges[0]
-  // If we return a real error, yoga will thow and mask it
-  const sanitizedError = error instanceof Error ? {message: error.message} : error
   return {
-    error: sanitizedError,
     edges,
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,

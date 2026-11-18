@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {usePreloadedQuery} from 'react-relay'
 import type {AzureDevOpsScopingResultsAdapterQuery} from '../../__generated__/AzureDevOpsScopingResultsAdapterQuery.graphql'
+import getCaughtErrorMessage from '../../utils/relay/getCaughtErrorMessage'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 
 const query = graphql`
@@ -21,10 +22,7 @@ const query = graphql`
               queryString: $queryString
               projectKeyFilters: $projectKeyFilters
               isWIQL: $isWIQL
-            ) @connection(key: "AzureDevOpsScopingSearchResults_workItems") {
-              error {
-                message
-              }
+            ) @connection(key: "AzureDevOpsScopingSearchResults_workItems") @catch {
               edges {
                 cursor
                 node {
@@ -50,9 +48,9 @@ const AzureDevOpsScopingResultsAdapter = (
 ) => {
   const {queryRef, children} = props
   const data = usePreloadedQuery<AzureDevOpsScopingResultsAdapterQuery>(query, queryRef)
-  const workItems = data.viewer.teamMember?.integrations.azureDevOps.workItems
-  const error = workItems?.error?.message
-  const edges = workItems?.edges
+  const workItemsResult = data.viewer.teamMember?.integrations.azureDevOps.workItems
+  const error = getCaughtErrorMessage(workItemsResult)
+  const edges = workItemsResult?.ok ? workItemsResult.value?.edges : undefined
   const items = useMemo(
     () =>
       (edges ?? []).map(({node}) => ({

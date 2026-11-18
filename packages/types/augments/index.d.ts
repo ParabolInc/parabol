@@ -40,6 +40,7 @@ declare module 'relay-runtime' {
     path?: Array<string | number>
     extensions?: {
       code?: ParabolGraphQLErrorCodes
+      message?: string
     }
   }
 }

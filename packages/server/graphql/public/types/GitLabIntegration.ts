@@ -1,6 +1,7 @@
 import GitLabServerManager, {
   GitLabRateLimitError
 } from '../../../integrations/gitlab/GitLabServerManager'
+import toCodedIntegrationError from '../../../integrations/platform/toCodedIntegrationError'
 import type {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
 import logError from '../../../utils/logError'
 import type {GitLabIntegrationResolvers} from '../resolverTypes'
@@ -153,10 +154,11 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       })
     }
 
+    const [firstError] = errors
+    if (projectsIssues.length === 0 && firstError) throw toCodedIntegrationError(firstError)
     const firstEdge = projectsIssues[0]
     const stringifiedEndCursor = JSON.stringify(endCursor)
     return {
-      error: errors[0] && {message: errors[0].message},
       edges: projectsIssues as any,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,

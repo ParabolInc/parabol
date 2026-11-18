@@ -78,7 +78,7 @@ type AtlassianIntegration {
 
   """
   A paginated list of Jira issues fetched live from the Jira API for this team member.
-  Returns an empty connection if the viewer is not the owner of this integration.
+  Null, with a coded error, when the viewer does not own this integration or every Jira site fails the search.
   Use this to let users search for and select Jira issues to bring into a Parabol meeting.
   """
   issues(
@@ -112,7 +112,7 @@ type AtlassianIntegration {
     specific projects. When omitted, issues from all accessible projects are returned.
     """
     projectKeyFilters: [ID!]
-  ): JiraIssueConnection!
+  ): JiraIssueConnection
 
   """
   The OAuth scopes Atlassian granted this connection, as returned by the token handshake.

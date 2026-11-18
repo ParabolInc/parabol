@@ -4,6 +4,7 @@ import {usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {ClickUpScopingResultsAdapter_query$key} from '../../__generated__/ClickUpScopingResultsAdapter_query.graphql'
 import type {ClickUpScopingResultsAdapterPaginationQuery} from '../../__generated__/ClickUpScopingResultsAdapterPaginationQuery.graphql'
 import type {ClickUpScopingResultsAdapterQuery} from '../../__generated__/ClickUpScopingResultsAdapterQuery.graphql'
+import getCaughtErrorMessage from '../../utils/relay/getCaughtErrorMessage'
 import type {ResultsAdapterProps} from '../platform/ScopingSearchState'
 import getClickUpTaskLinkTitle from './getClickUpTaskLinkTitle'
 import readClickUpTaskLookup from './shared/readClickUpTaskLookup'
@@ -41,10 +42,7 @@ const ClickUpScopingResultsAdapter = (
             integrations {
               clickup {
                 tasks(first: $first, after: $after, queryString: $queryString, listIds: $listIds)
-                  @connection(key: "ClickUpScopingSearchResults_tasks") {
-                  error {
-                    message
-                  }
+                  @connection(key: "ClickUpScopingSearchResults_tasks") @catch {
                   edges {
                     node {
                       id
@@ -65,12 +63,13 @@ const ClickUpScopingResultsAdapter = (
     `,
     queryData
   )
-  const tasks = data.viewer.teamMember?.integrations.clickup.tasks
-  const edges = tasks?.edges
+  const tasksResult = data.viewer.teamMember?.integrations.clickup.tasks
+  const edges = tasksResult?.ok ? tasksResult.value?.edges : undefined
   const queryString = queryRef.variables.queryString ?? ''
   const isTextSearch = !!queryString
   const error =
-    tasks?.error?.message ?? (edges?.length ? undefined : getEmptyMessage(queryString, hasNext))
+    getCaughtErrorMessage(tasksResult) ??
+    (edges?.length ? undefined : getEmptyMessage(queryString, hasNext))
   const items = useMemo(
     () =>
       (edges ?? []).map(({node}) => ({

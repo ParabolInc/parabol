@@ -2,8 +2,6 @@
 The details associated with the possible repo and project integrations
 """
 type RepoIntegrationQueryPayload {
-  error: StandardMutationError
-
   """
   true if the items returned are a subset of all the possible integration, else false (all possible integrations)
   """

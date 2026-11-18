@@ -7,7 +7,6 @@ import {
   serverIntegrations
 } from '../../../integrations/platform/registry'
 import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import getPrevUsedRepoIntegrations from '../../queries/helpers/getPrevUsedRepoIntegrations'
 import type {TeamMemberResolvers} from '../resolverTypes'
@@ -42,18 +41,7 @@ const TeamMember: TeamMemberResolvers = {
     return meetingId ? dataLoader.get('meetingMembers').loadNonNull(meetingMemberId) : null
   },
 
-  prevUsedRepoIntegrations: async ({teamId, userId}, {first}, context) => {
-    const {authToken, dataLoader} = context
-    const viewerId = getUserId(authToken)
-    if (userId !== viewerId) {
-      const tms = await dataLoader.get('teamIdsByUserId').load(userId)
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
-      if (!onTeam) {
-        return standardError(new Error('Not on same team as user'), {
-          userId: viewerId
-        })
-      }
-    }
+  prevUsedRepoIntegrations: async ({teamId}, {first}) => {
     const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
     if (!prevUsedRepoIntegrations) return {hasMore: false, items: []}
     if (prevUsedRepoIntegrations.length > first) {
