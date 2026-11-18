@@ -71,13 +71,13 @@ type JiraIssue implements TaskIntegration {
   Field names that exists on the issue and can be used as estimation fields
   """
   possibleEstimationFields: [JiraIssueField!]!
-    @deprecated(reason: "Use EstimateStage.serviceFieldListing")
+    @deprecated(reason: "Use EstimateStage.serviceFieldListing", deletionDate: "2026-12-02")
 
   """
   Missing estimation field
   """
   missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum
-    @deprecated(reason: "Use EstimateStage.serviceFieldListing.helpUrl")
+    @deprecated(reason: "Use EstimateStage.serviceFieldListing.helpUrl", deletionDate: "2026-12-02")
 
   """
   The stringified ADF of the jira issue description

@@ -1714,6 +1714,7 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
     @deprecated(
       reason: "Use generateSuggestedGroups, which suggests groups without rearranging the board and also supports similarity mode, a custom instruction, and a same-column constraint. Kept so clients loaded before the SuggestedGroups release keep working."
+      deletionDate: "2026-12-02"
     )
 
   """

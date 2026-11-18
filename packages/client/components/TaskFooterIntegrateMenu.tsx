@@ -30,10 +30,7 @@ const query = graphql`
         ...useIsIntegrated_teamMember
       }
       team(teamId: $teamId) {
-        recentOrgTaskCounts {
-          service
-          taskCount
-        }
+        recentOrgServices
       }
     }
   }
@@ -90,7 +87,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      orgServices={getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])}
+      orgServices={getOrgSendServices(viewer.team?.recentOrgServices ?? [])}
       teamMemberRef={viewerTeamMember}
     />
   )

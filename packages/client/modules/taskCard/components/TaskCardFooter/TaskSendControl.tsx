@@ -47,10 +47,7 @@ export const taskSendControlQuery = graphql`
         }
       }
       team(teamId: $teamId) {
-        recentOrgTaskCounts {
-          service
-          taskCount
-        }
+        recentOrgServices
       }
     }
   }
@@ -77,7 +74,7 @@ const TaskSendControl = (props: Props) => {
     if (!menuQueryRef) loadMenuQuery({teamId}, {fetchPolicy: 'store-or-network'})
   }
   const services = getSendServices(viewer.teamMember?.services ?? [])
-  const orgServices = getOrgSendServices(viewer.team?.recentOrgTaskCounts ?? [])
+  const orgServices = getOrgSendServices(viewer.team?.recentOrgServices ?? [])
   const suggestedServices = orgServices.length > 0 ? orgServices : SUGGESTED_SEND_SERVICES
   const label = services.length > 0 ? getSendToLabel(services) : getConnectLabel(suggestedServices)
   return (

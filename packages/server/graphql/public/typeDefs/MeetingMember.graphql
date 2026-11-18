@@ -13,6 +13,7 @@ interface MeetingMember {
   isCheckedIn: Boolean
     @deprecated(
       reason: "Members are checked in when they enter the meeting now & not created beforehand"
+      deletionDate: "2026-12-02"
     )
 
   """

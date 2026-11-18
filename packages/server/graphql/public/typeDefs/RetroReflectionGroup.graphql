@@ -11,7 +11,10 @@ type RetroReflectionGroup {
   A list of users currently commenting
   """
   commentors: [CommentorDetails!]
-    @deprecated(reason: "Moved to ThreadConnection. Can remove Jun-01-2021")
+    @deprecated(
+      reason: "Moved to ThreadConnection. Can remove Jun-01-2021"
+      deletionDate: "2026-12-02"
+    )
 
   """
   The timestamp the meeting was created

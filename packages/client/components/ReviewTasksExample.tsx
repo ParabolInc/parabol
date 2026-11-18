@@ -23,10 +23,7 @@ export const reviewTasksExampleQuery = graphql`
         }
       }
       team(teamId: $teamId) {
-        recentOrgTaskCounts {
-          service
-          taskCount
-        }
+        recentOrgServices
         teamMembers {
           userId
           user {
@@ -58,7 +55,7 @@ const ReviewTasksExample = (props: Props) => {
   const owner =
     teamMembers.find(({userId}) => userId === (ownerUserId ?? teamMember.userId)) ?? teamMembers[0]
   const newService = services.find((service) => !servicesAtStart.includes(service))
-  const orgServices = getOrgSendServices(team.recentOrgTaskCounts)
+  const orgServices = getOrgSendServices(team.recentOrgServices)
   return render(
     <section className='flex w-full flex-col items-center overflow-auto px-4 sidebar-left:px-6 pt-8 sidebar-left:pt-[88px] pb-32 text-center'>
       <h2 className='font-semibold sidebar-left:text-xl text-fg-primary text-lg leading-6 sidebar-left:leading-7'>

@@ -32,7 +32,11 @@ type PokerMeeting implements NewMeeting {
   """
   The ID of the template used for the meeting. Note the underlying template could have changed!
   """
-  templateId: ID! @deprecated(reason: "The underlying template could be mutated. Use templateRefId")
+  templateId: ID!
+    @deprecated(
+      reason: "The underlying template could be mutated. Use templateRefId"
+      deletionDate: "2026-12-02"
+    )
 
   """
   The ID of the immutable templateRef used for the meeting

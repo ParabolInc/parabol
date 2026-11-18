@@ -15,8 +15,9 @@ import getRotationOrder from '../mutations/helpers/getRotationOrder'
 import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
-  recentOrgTaskCounts: ({orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('recentIntegrationTaskCountsByOrgId').load(orgId)
+  recentOrgTaskCounts: () => [],
+  recentOrgServices: ({orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('recentIntegrationServicesByOrgId').load(orgId)
   },
   activeMeetings: async ({id: teamId}, _args, {dataLoader}) => {
     // this is by team, not by meeting member, which caused an err in dev, not sure about prod

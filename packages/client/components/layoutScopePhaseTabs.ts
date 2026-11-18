@@ -5,7 +5,6 @@ export interface ScopePhaseLayoutTab {
   key: string
   title: string
   isConnected: boolean
-  orgTaskCount: number
 }
 
 type Widths = Record<string, number>
@@ -13,6 +12,7 @@ type Widths = Record<string, number>
 interface Input<T extends ScopePhaseLayoutTab> {
   integrations: readonly T[]
   parabol: T
+  orgServices: readonly string[]
   widths: Widths
   barWidth: number
   triggerWidth: number
@@ -84,8 +84,21 @@ const getDefaultKey = (barTabs: readonly ScopePhaseLayoutTab[]) => {
 const layoutScopePhaseTabs = <T extends ScopePhaseLayoutTab>(
   input: Input<T>
 ): ScopePhaseTabLayout<T> => {
-  const {integrations, parabol, widths, barWidth, triggerWidth, heldPickKey, savedActiveKey} = input
-  const byOrgUse = [...integrations].sort((a, b) => b.orgTaskCount - a.orgTaskCount)
+  const {
+    integrations,
+    parabol,
+    orgServices,
+    widths,
+    barWidth,
+    triggerWidth,
+    heldPickKey,
+    savedActiveKey
+  } = input
+  const orgUsageRank = ({key}: T) => {
+    const rank = orgServices.indexOf(key)
+    return rank < 0 ? orgServices.length : rank
+  }
+  const byOrgUse = [...integrations].sort((a, b) => orgUsageRank(a) - orgUsageRank(b))
   const connected = byOrgUse.filter((tab) => tab.isConnected)
   const unconnected = byOrgUse.filter((tab) => !tab.isConnected)
   const ranked = [...connected, ...unconnected]
@@ -98,7 +111,7 @@ const layoutScopePhaseTabs = <T extends ScopePhaseLayoutTab>(
   }
 
   const available = barWidth - triggerWidth
-  const usedByOrg = ranked.filter((tab) => tab.orgTaskCount > 0)
+  const usedByOrg = ranked.filter(({key}) => orgServices.includes(key))
   const parabolFits = sumWidths([parabol, ...usedByOrg], widths) <= available
   const usualBar = fillBar(ranked, parabol, widths, available, parabolFits)
   const activeKey = savedKey ?? getDefaultKey(usualBar)

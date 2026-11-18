@@ -11,6 +11,7 @@ interface Measurements {
 interface Params<T extends ScopePhaseLayoutTab> {
   integrations: readonly T[]
   parabol: T
+  orgServices: readonly string[]
   heldPickKey: string | null
   savedActiveKey: string | null
 }
@@ -19,7 +20,7 @@ const measuredWidth = (element: Element | null) =>
   element ? Math.ceil(element.getBoundingClientRect().width) : 0
 
 const useScopePhaseTabLayout = <T extends ScopePhaseLayoutTab>(params: Params<T>) => {
-  const {integrations, parabol, heldPickKey, savedActiveKey} = params
+  const {integrations, parabol, orgServices, heldPickKey, savedActiveKey} = params
   const barRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
   const [measurements, setMeasurements] = useState<Measurements | null>(null)
@@ -44,7 +45,14 @@ const useScopePhaseTabLayout = <T extends ScopePhaseLayoutTab>(params: Params<T>
   useResizeObserver(measure, measureRef)
 
   const layout = measurements
-    ? layoutScopePhaseTabs({integrations, parabol, heldPickKey, savedActiveKey, ...measurements})
+    ? layoutScopePhaseTabs({
+        integrations,
+        parabol,
+        orgServices,
+        heldPickKey,
+        savedActiveKey,
+        ...measurements
+      })
     : null
   return {barRef, measureRef, layout}
 }
