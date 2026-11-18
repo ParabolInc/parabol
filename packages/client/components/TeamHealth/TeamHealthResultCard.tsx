@@ -113,7 +113,7 @@ const TeamHealthResultCard = (props: Props) => {
         </span>
       </div>
       <h2 className='mt-6 font-bold text-2xl text-fg-primary'>{question.question}</h2>
-      <div className='mt-6 flex items-end gap-3'>
+      <div className='mt-6 flex flex-wrap items-end gap-x-3 gap-y-1'>
         <span className='font-bold text-5xl text-fg-primary leading-none'>
           {score?.toFixed(1) ?? '—'}
         </span>
