@@ -229,6 +229,7 @@
           "NotifyTeamHealthResponseDue": "../../postgres/types/Notification.d#TeamHealthResponseDueNotification as TeamHealthResponseDueNotificationDB",
           "ExportPagesToConfluencePayload": "./types/ExportPagesToConfluencePayload#ExportPagesToConfluencePayloadSource",
           "OAuthAPIProvider": "../../postgres/types/index#OAuthAPIProvider as OAuthAPIProviderDB",
+          "OAuthAuthorizationOrganization": "./types/OAuthAuthorizationOrganization#OAuthAuthorizationOrganizationSource",
           "OAuthAuthorizationRequest": "./types/OAuthAuthorizationRequest#OAuthAuthorizationRequestSource",
           "OAuthClientTypeEnum": "../../postgres/types/pg#Oauthclienttypeenum",
           "OAuthScopeEnum": "../../postgres/types/pg#Oauthscopeenum",

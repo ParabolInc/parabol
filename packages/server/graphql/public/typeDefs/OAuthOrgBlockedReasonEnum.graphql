@@ -1,0 +1,14 @@
+"""
+Why an organization doesn't let an AI app reach it
+"""
+enum OAuthOrgBlockedReasonEnum {
+  """
+  The organization's admins don't allow any AI apps
+  """
+  NO_APPS
+
+  """
+  The organization allows only AI apps Parabol has verified, and this one isn't
+  """
+  VERIFIED_ONLY
+}

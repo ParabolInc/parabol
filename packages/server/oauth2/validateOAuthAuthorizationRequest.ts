@@ -22,7 +22,7 @@ export interface OAuthAuthorizationRequestParams {
 
 type AuthorizingProvider = Pick<
   OAuthAPIProvider,
-  'clientId' | 'clientType' | 'name' | 'orgId' | 'redirectUris' | 'scopes'
+  'clientId' | 'clientType' | 'name' | 'orgId' | 'redirectUris' | 'scopes' | 'verifiedAt'
 >
 
 type ValidationResult =
@@ -49,7 +49,8 @@ const getMetadataDocumentProvider = async (
     name: metadata.clientName,
     orgId: null,
     redirectUris: metadata.redirectUris,
-    scopes: aiAppScopes
+    scopes: aiAppScopes,
+    verifiedAt: null
   }
 }
 

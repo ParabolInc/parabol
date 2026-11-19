@@ -21,8 +21,11 @@ const CLAUDE: Client = {
 const NOT_ALLOWED_MESSAGE = 'None of the organizations this app was connected to allow it anymore'
 
 const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
+  mutation CreateOAuthAPICode(
+    $request: OAuthAuthorizationRequestInput!
+    $includePrivate: Boolean! = false
+  ) {
+    createOAuthAPICode(request: $request, includePrivate: $includePrivate) {
       redirectUri
     }
   }
@@ -102,7 +105,11 @@ const connect = async (client: Client, cookie: string, scope?: string) => {
   const codeVerifier = crypto.randomBytes(32).toString('base64url')
   const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
   const request = {...client, scope, state: 'xyz', codeChallenge, codeChallengeMethod: 'S256'}
-  const approved = await sendPublic({query: CREATE_OAUTH_API_CODE, variables: {request}, cookie})
+  const approved = await sendPublic({
+    query: CREATE_OAUTH_API_CODE,
+    variables: {request, includePrivate: true},
+    cookie
+  })
   expect(approved.errors).toBeUndefined()
   const redirectUrl = new URL(approved.data.createOAuthAPICode.redirectUri)
   const response = await fetch(`${ORIGIN}/oauth/token`, {

@@ -5,8 +5,16 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {snackOnError} from './handlers/snackOnError'
 
 const mutation = graphql`
-  mutation useCreateOAuthAPICodeMutation($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
+  mutation useCreateOAuthAPICodeMutation(
+    $request: OAuthAuthorizationRequestInput!
+    $grantedOrgIds: [ID!]
+    $includePrivate: Boolean!
+  ) {
+    createOAuthAPICode(
+      request: $request
+      grantedOrgIds: $grantedOrgIds
+      includePrivate: $includePrivate
+    ) {
       redirectUri
     }
   }

@@ -1,0 +1,17 @@
+"""
+One of the viewer's organizations, as an OAuth 2.0 authorization request sees it
+"""
+type OAuthAuthorizationOrganization {
+  """
+  The organization
+  """
+  organization: Organization!
+  """
+  Why the organization doesn't let the application reach it, or null if it does
+  """
+  blockedReason: OAuthOrgBlockedReasonEnum
+  """
+  The preferred name of the organization's longest-serving admin, who can change its AI apps policy. Null unless the organization blocks the application
+  """
+  adminName: String
+}

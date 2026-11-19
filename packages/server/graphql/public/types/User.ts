@@ -896,7 +896,15 @@ const User: ReqResolvers<'User'> = {
     const authorization = await validateOAuthAuthorizationRequest(request, userId, dataLoader)
     if ('error' in authorization) return null
     const {provider, scopes} = authorization
-    return {name: provider.name, orgId: provider.orgId, scopes, redirectUri: request.redirectUri}
+    return {
+      name: provider.name,
+      clientId: provider.clientId,
+      orgId: provider.orgId,
+      verifiedAt: provider.verifiedAt,
+      scopes,
+      redirectUri: request.redirectUri,
+      userId
+    }
   }
 }
 

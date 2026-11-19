@@ -11,6 +11,18 @@ type OAuthAuthorizationRequest {
   """
   organization: Organization
   """
+  When Parabol verified who runs the application, or null if nobody has checked it
+  """
+  verifiedAt: DateTime
+  """
+  The host of the application's client_id URL, or of its redirect_uri when the client_id isn't a URL
+  """
+  clientHost: String!
+  """
+  The viewer's organizations and whether each lets this application reach it. Empty for an application an organization registered
+  """
+  organizations: [OAuthAuthorizationOrganization!]!
+  """
   The scopes the application asks for
   """
   scopes: [OAuthScopeEnum!]!

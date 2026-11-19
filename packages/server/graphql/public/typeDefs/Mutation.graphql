@@ -213,8 +213,17 @@ type Mutation {
   """
   Approve an OAuth 2.0 authorization request, issuing the application a single-use authorization code
   """
-  createOAuthAPICode(request: OAuthAuthorizationRequestInput!): CreateOAuthAPICodePayload!
-    @scope(name: USERS_WRITE)
+  createOAuthAPICode(
+    request: OAuthAuthorizationRequestInput!
+    """
+    The organizations an app any Parabol user can connect may reach. Null means every organization of the viewer's that allows the app, now and later. Ignored for an app an organization registered
+    """
+    grantedOrgIds: [ID!]
+    """
+    true to let an app any Parabol user can connect reach the viewer's private pages and invitations. Ignored for an app an organization registered
+    """
+    includePrivate: Boolean! = false
+  ): CreateOAuthAPICodePayload! @scope(name: USERS_WRITE)
 
   """
   Create a new OAuth 2.0 Application

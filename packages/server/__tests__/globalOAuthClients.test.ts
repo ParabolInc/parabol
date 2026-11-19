@@ -23,8 +23,11 @@ const CLAUDE: Client = {
 }
 
 const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
+  mutation CreateOAuthAPICode(
+    $request: OAuthAuthorizationRequestInput!
+    $includePrivate: Boolean! = false
+  ) {
+    createOAuthAPICode(request: $request, includePrivate: $includePrivate) {
       redirectUri
     }
   }
@@ -122,7 +125,11 @@ const authorize = async (client: Client, cookie: string, options: AuthorizeOptio
   expect(authorizeResponse.status).toBe(302)
   expect(new URL(authorizeResponse.headers.get('Location')!).pathname).toBe('/authorize-app')
 
-  const approved = await sendPublic({query: CREATE_OAUTH_API_CODE, variables: {request}, cookie})
+  const approved = await sendPublic({
+    query: CREATE_OAUTH_API_CODE,
+    variables: {request, includePrivate: true},
+    cookie
+  })
   expect(approved.errors).toBeUndefined()
   return {redirectUrl: new URL(approved.data.createOAuthAPICode.redirectUri), codeVerifier}
 }
