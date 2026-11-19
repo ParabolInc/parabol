@@ -11,7 +11,6 @@ import {Button} from '../../../../ui/Button/Button'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import makeAppURL from '../../../../utils/makeAppURL'
 import {TokenScopesTable} from '../TokenScopesTable'
 import OAuthCopyField from './OAuthCopyField'
 
@@ -143,8 +142,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     })
   }
 
-  const appOrigin = window.location.origin
-
   return (
     <>
       <DialogContent>
@@ -205,23 +202,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               <b>No client secret.</b> The app must send a PKCE code challenge (S256) when it signs
               in. Parabol refuses sign-ins without one.
             </TipBanner>
-            <div className='flex flex-col gap-4'>
-              <OAuthCopyField
-                label='Authorize endpoint'
-                name='authorizeEndpoint'
-                value={makeAppURL(appOrigin, '/oauth/authorize')}
-              />
-              <OAuthCopyField
-                label='Token endpoint'
-                name='tokenEndpoint'
-                value={makeAppURL(appOrigin, '/oauth/token')}
-              />
-              <OAuthCopyField
-                label='GraphQL endpoint'
-                name='graphqlEndpoint'
-                value={makeAppURL(appOrigin, '/graphql')}
-              />
-            </div>
           </div>
 
           <DialogActions>
