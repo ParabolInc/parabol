@@ -1368,21 +1368,6 @@
     box-shadow 300ms;
 }
 
-.page-editor .block-selected {
-  background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  box-shadow:
-    -6px 0 0 0 color-mix(in srgb, var(--color-accent) 14%, var(--color-surface-document)),
-    -8px 0 0 0 var(--color-accent-strong);
-  border-radius: 0.25rem;
-}
-
-.theme-dark .page-editor .block-selected {
-  background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
-  box-shadow:
-    -6px 0 0 0 color-mix(in srgb, var(--color-accent) 22%, var(--color-surface-document)),
-    -8px 0 0 0 var(--color-accent-strong);
-}
-
 .page-editor .has-block-selection {
   caret-color: transparent;
 }
@@ -1392,7 +1377,7 @@
 }
 
 .page-editor:has(.has-block-selection) .drag-handle {
-  transform: translateX(-11px);
+  transform: translateX(-14px);
 }
 
 .page-editor:has(.has-block-selection) .drag-handle::after {
@@ -1400,7 +1385,7 @@
   position: absolute;
   inset-block: 0;
   left: 100%;
-  width: 12px;
+  width: 15px;
 }
 
 /* If a page title is empty, always show it */

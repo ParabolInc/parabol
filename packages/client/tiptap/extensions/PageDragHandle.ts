@@ -21,6 +21,7 @@ import {
   createBlockSelection,
   getBlockSelectionAround,
   getDroppedBlockRange,
+  getSelectedBlockRange,
   isBlockRun,
   selectBlocksThrough
 } from '../blockSelection/blockSelectionState'
@@ -193,13 +194,26 @@ type Options = {
   duplicatePage: DuplicateExecute
   navigate: NavigateFn
 }
-export const PageDragHandle = Extension.create<Options>({
+type PageDragHandleStorage = {
+  dragHandleElement: HTMLDivElement | null
+  closeMenu: (() => void) | null
+  toggleSelectionMenu: ((editor: Editor, anchorElement: HTMLElement) => void) | null
+}
+
+declare module '@tiptap/core' {
+  interface Storage {
+    PageDragHandle: PageDragHandleStorage
+  }
+}
+
+export const PageDragHandle = Extension.create<Options, PageDragHandleStorage>({
   name: 'PageDragHandle',
 
   addStorage() {
     return {
-      dragHandleElement: null as HTMLDivElement | null,
-      closeMenu: null as (() => void) | null
+      dragHandleElement: null,
+      closeMenu: null,
+      toggleSelectionMenu: null
     }
   },
 
@@ -285,7 +299,6 @@ export const PageDragHandle = Extension.create<Options>({
 
   addExtensions() {
     const dragHandleElement = document.createElement('div')
-    this.storage.dragHandleElement = dragHandleElement
     if (!this.options.isNested) dragHandleElement.dataset.hostHandle = ''
     let dragHandleNode: Node | null = null
     let dragHandleNodePos: number = -1
@@ -304,7 +317,35 @@ export const PageDragHandle = Extension.create<Options>({
       editorRef?.commands.unlockDragHandle()
     }
 
-    this.storage.closeMenu = closeMenu
+    const openMenu = (editor: Editor, node: Node, pos: number, anchorElement: HTMLElement) => {
+      const {state} = editor
+      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
+      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
+      const selection =
+        selected && !isSelectedAlone
+          ? {range: selected, count: countBlocks(state.doc, selected)}
+          : null
+
+      editor.commands.lockDragHandle()
+
+      const canCreateSubPage =
+        !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+      menuRenderer = new ReactRenderer(DragHandleMenu, {
+        editor,
+        props: {
+          editor,
+          node,
+          pos,
+          onClose: closeMenu,
+          anchorElement,
+          canCreateSubPage,
+          selection,
+          pageId
+        }
+      })
+
+      document.body.appendChild(menuRenderer.element)
+    }
 
     const handleDragHandleClick = (e: MouseEvent) => {
       e.preventDefault()
@@ -329,32 +370,19 @@ export const PageDragHandle = Extension.create<Options>({
         return
       }
 
-      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
-      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
-      const selection =
-        selected && !isSelectedAlone
-          ? {range: selected, count: countBlocks(state.doc, selected)}
-          : null
+      openMenu(editorRef, node, pos, dragHandleElement)
+    }
 
-      editorRef.commands.lockDragHandle()
-
-      const canCreateSubPage =
-        !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
-      menuRenderer = new ReactRenderer(DragHandleMenu, {
-        editor: editorRef,
-        props: {
-          editor: editorRef,
-          node,
-          pos,
-          onClose: closeMenu,
-          anchorElement: dragHandleElement,
-          canCreateSubPage,
-          selection,
-          pageId
-        }
-      })
-
-      document.body.appendChild(menuRenderer.element)
+    const toggleSelectionMenu = (editor: Editor, anchorElement: HTMLElement) => {
+      if (menuRenderer) {
+        closeMenu()
+        return
+      }
+      const range = getSelectedBlockRange(editor.state)
+      const node = range && editor.state.doc.nodeAt(range.from)
+      if (!range || !node) return
+      editorRef = editor
+      openMenu(editor, node, range.from, anchorElement)
     }
 
     dragHandleElement.addEventListener('click', handleDragHandleClick)
@@ -510,8 +538,20 @@ export const PageDragHandle = Extension.create<Options>({
       ]
     })
 
+    const storageBridge = Extension.create({
+      name: 'pageDragHandleStorage',
+      onBeforeCreate() {
+        Object.assign(this.editor.storage.PageDragHandle, {
+          dragHandleElement,
+          closeMenu,
+          toggleSelectionMenu
+        })
+      }
+    })
+
     return [
       selectionDrag,
+      storageBridge,
       DragHandle.configure({
         computePositionConfig: {
           placement: 'left'

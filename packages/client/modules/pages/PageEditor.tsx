@@ -8,6 +8,7 @@ import {cn} from '../../ui/cn'
 import {BlockDropHint} from './BlockDropHint'
 import {BlockMarquee} from './BlockMarquee'
 import {BlockSelectionAnnouncer} from './BlockSelectionAnnouncer'
+import {BlockSelectionGroup} from './BlockSelectionGroup'
 import {StarterActions} from './StarterActions'
 import {useEditablePage} from './useEditablePage'
 
@@ -25,13 +26,14 @@ export const PageEditor = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   if (!editor) return <div>No editor</div>
   return (
-    <div ref={containerRef} className='flex w-full flex-col'>
+    <div ref={containerRef} className='relative isolate flex w-full flex-col'>
       <TipTapEditor
         editor={editor}
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
       <BlockDropHint />
       <BlockMarquee editor={editor} containerRef={containerRef} />
+      <BlockSelectionGroup editor={editor} containerRef={containerRef} pageId={pageId} />
       <BlockSelectionAnnouncer editor={editor} />
       {isEditable && <StarterActions editor={editor} />}
     </div>
