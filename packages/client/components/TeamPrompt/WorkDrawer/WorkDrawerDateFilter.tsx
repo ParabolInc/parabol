@@ -12,9 +12,15 @@ export interface WorkDrawerDateRange {
   endAt: string
 }
 
+export interface WorkDrawerSincePreset {
+  label: string
+  startAt: string
+}
+
 interface Props {
   dateRange: WorkDrawerDateRange | undefined
   setDateRange: (range: WorkDrawerDateRange | undefined) => void
+  sincePreset?: WorkDrawerSincePreset
 }
 
 const PRESETS = [
@@ -23,14 +29,11 @@ const PRESETS = [
   {label: 'Last 2 weeks', hours: 24 * 14}
 ]
 
-export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
+export const WorkDrawerDateFilter = ({dateRange, setDateRange, sincePreset}: Props) => {
   const [open, setOpen] = useState(false)
 
-  const handlePreset = (hours: number) => {
-    setDateRange({
-      startAt: dayjs().subtract(hours, 'hour').toISOString(),
-      endAt: dayjs().endOf('day').toISOString()
-    })
+  const selectSince = (startAt: string) => {
+    setDateRange({startAt, endAt: dayjs().endOf('day').toISOString()})
     setOpen(false)
   }
 
@@ -39,9 +42,18 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
     to: dateRange?.endAt ? new Date(dateRange.endAt) : undefined
   }
 
-  const dateRangeText = dateRange
-    ? `${dayjs(dateRange.startAt).format('MMM DD')} - ${dayjs(dateRange.endAt).format('MMM DD')}`
-    : 'Any time'
+  const dateRangeText = !dateRange
+    ? 'Any time'
+    : dateRange.startAt === sincePreset?.startAt
+      ? sincePreset.label
+      : `${dayjs(dateRange.startAt).format('MMM DD')} - ${dayjs(dateRange.endAt).format('MMM DD')}`
+  const presets = [
+    ...(sincePreset ? [{label: sincePreset.label, startAt: sincePreset.startAt}] : []),
+    ...PRESETS.map(({label, hours}) => ({
+      label,
+      startAt: dayjs().subtract(hours, 'hour').toISOString()
+    }))
+  ]
 
   return (
     <Menu
@@ -73,11 +85,11 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
             )}
           </div>
           <div className='flex justify-evenly pb-0.5'>
-            {PRESETS.map((preset) => (
+            {presets.map((preset) => (
               <button
                 key={preset.label}
                 className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-hover'
-                onClick={() => handlePreset(preset.hours)}
+                onClick={() => selectSince(preset.startAt)}
               >
                 {preset.label}
               </button>

@@ -11,9 +11,10 @@ const fetchIssues = async (
   teamId: string,
   viewerId: string,
   context: GQLContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
-  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery)
+  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery, before)
   const issueList = getServerIntegration(service)?.capabilities.issueList
   if (!issueList) {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`, {
@@ -21,7 +22,11 @@ const fetchIssues = async (
     })
   }
   const {dataLoader} = context
-  return issueList.listIssues({dataLoader, teamId, userId: viewerId, context, info}, searchQuery)
+  return issueList.listIssues(
+    {dataLoader, teamId, userId: viewerId, context, info},
+    searchQuery,
+    before
+  )
 }
 
 export default fetchIssues

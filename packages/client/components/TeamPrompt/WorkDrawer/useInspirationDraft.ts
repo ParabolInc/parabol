@@ -17,6 +17,7 @@ export interface InspirationDraft {
   sources: InspirationSourceInput[]
   items: {id: string; content: string; promptId: string | null}[]
   issues: Payload['issues'][number][]
+  nextBefore?: string | null
 }
 
 interface Options {
@@ -32,8 +33,12 @@ const DRAFT_LIFESPAN_MS = 5 * 60 * 1000
 const toKey = (sources: readonly InspirationSourceInput[]) =>
   JSON.stringify(sources.map(({service, searchQuery}) => [service, searchQuery]))
 
+const toItems = (inspirationItems: Payload['inspirationItems']) =>
+  inspirationItems.map(({id, content, promptId}) => ({id, content, promptId: promptId ?? null}))
+
 // The draft is never saved to the server. It is kept in local storage so a reload within a few
 // minutes doesn't spend another AI request; after that, opening the drawer drafts again.
+// A retro's timeline drafts a page at a time, and each older page joins the stored draft.
 // The draft is stale when the viewer's sources no longer match the searches it was written from.
 // Opening the drawer on a stale draft redrafts once; after that a redraft waits for the viewer to
 // finish changing a source or the settings, so toggling switches never burns an AI request each.
@@ -49,7 +54,9 @@ const useInspirationDraft = (options: Options) => {
   } = options
   const {viewerId} = useAtmosphere()
   const [generate, drafting] = useGenerateInspirationItemsMutation()
+  const [generateOlder, loadingOlder] = useGenerateInspirationItemsMutation()
   const [error, setError] = useState<string | null>(null)
+  const [olderError, setOlderError] = useState<string | null>(null)
   const [storedDraft, setStoredDraft] = useLocalStorageState<InspirationDraft | null>(
     'Inspiration:draft',
     null
@@ -61,6 +68,7 @@ const useInspirationDraft = (options: Options) => {
     storedDraft.createdAt > openedAt - lifespanMs
   const draft = isKept ? storedDraft : null
   const isStale = !draft || toKey(draft.sources) !== toKey(sources)
+  const userPrompt = instructions.trim() || null
 
   // drafting only flips on the next render, so effects that run in the same commit need this
   const isRequestingRef = useRef(false)
@@ -68,8 +76,9 @@ const useInspirationDraft = (options: Options) => {
     if (isRequestingRef.current) return
     isRequestingRef.current = true
     setError(null)
+    setOlderError(null)
     generate({
-      variables: {input: {meetingId, sources, userPrompt: instructions.trim() || null}},
+      variables: {input: {meetingId, sources, userPrompt}},
       onError: (e) => {
         isRequestingRef.current = false
         setError(getMutationError(e).message)
@@ -80,22 +89,48 @@ const useInspirationDraft = (options: Options) => {
           setError(errors[0]?.message ?? 'Something went wrong')
           return
         }
-        const {inspirationItems, issues} = res.generateInspirationItems
+        const {inspirationItems, issues, nextBefore} = res.generateInspirationItems
         setStoredDraft({
           viewerId,
           meetingId,
           createdAt: Date.now(),
           sources,
-          items: inspirationItems.map(({id, content, promptId}) => ({
-            id,
-            content,
-            promptId: promptId ?? null
-          })),
-          issues: [...issues]
+          items: toItems(inspirationItems),
+          issues: [...issues],
+          nextBefore: nextBefore ?? null
         })
       }
     })
   }
+
+  const loadOlder = () => {
+    if (!draft?.nextBefore || isStale || drafting || loadingOlder) return
+    const {createdAt, nextBefore} = draft
+    setOlderError(null)
+    generateOlder({
+      variables: {input: {meetingId, sources: draft.sources, userPrompt, before: nextBefore}},
+      onError: (e) => setOlderError(getMutationError(e).message),
+      onCompleted: (res, errors) => {
+        if (errors) {
+          setOlderError(errors[0]?.message ?? 'Something went wrong')
+          return
+        }
+        const page = res.generateInspirationItems
+        // a redraft while this page was on its way replaced the timeline it belongs to
+        setStoredDraft((prev) =>
+          prev?.createdAt === createdAt && prev.meetingId === meetingId
+            ? {
+                ...prev,
+                items: [...prev.items, ...toItems(page.inspirationItems)],
+                issues: [...prev.issues, ...page.issues],
+                nextBefore: page.nextBefore ?? null
+              }
+            : prev
+        )
+      }
+    })
+  }
+
   const latest = useRef({redraft, isStale, drafting})
   latest.current = {redraft, isStale, drafting}
   const pendingRef = useRef(false)
@@ -124,7 +159,16 @@ const useInspirationDraft = (options: Options) => {
     if (isMeetingMember && latest.current.isStale) latest.current.redraft()
   }, [isMeetingMember])
 
-  return {draft, requestRedraft, drafting: drafting || (!isMeetingMember && isStale), error}
+  return {
+    draft,
+    requestRedraft,
+    drafting: drafting || (!isMeetingMember && isStale),
+    error,
+    hasOlder: !!draft?.nextBefore && !isStale,
+    loadOlder,
+    loadingOlder,
+    olderError
+  }
 }
 
 export default useInspirationDraft

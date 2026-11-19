@@ -39,14 +39,14 @@ describe('tagIssueLinks', () => {
     const serviceByLinkText = getServiceByLinkText(
       'Notes are in the [handbook](https://example.com/handbook).'
     )
-    expect(serviceByLinkText).toEqual({handbook: undefined})
+    expect(serviceByLinkText).toEqual({handbook: null})
   })
 
   it('leaves a link that shows its own URL alone', () => {
     const serviceByLinkText = getServiceByLinkText(
       `See [${PULL_REQUEST_URL}](${PULL_REQUEST_URL}).`
     )
-    expect(serviceByLinkText).toEqual({[PULL_REQUEST_URL]: undefined})
+    expect(serviceByLinkText).toEqual({[PULL_REQUEST_URL]: null})
   })
 
   it('keeps the rest of the link', () => {

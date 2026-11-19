@@ -15,6 +15,7 @@ export type GenerateInspirationItemsPayloadSource = {
     unusedReason: string | null
     draft: InspirationItemSource | null
   }[]
+  nextBefore: Date | null
 }
 
 const GenerateInspirationItemsPayload: GenerateInspirationItemsPayloadResolvers = {

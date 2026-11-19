@@ -18,4 +18,10 @@ input GenerateInspirationItemsInput {
   An optional custom prompt that overrides the default generation prompt
   """
   userPrompt: String
+
+  """
+  A retrospective drafts its timeline a page at a time, newest first. Omit this for the newest
+  page, then pass each page's nextBefore to draft the work just older than it
+  """
+  before: DateTime
 }

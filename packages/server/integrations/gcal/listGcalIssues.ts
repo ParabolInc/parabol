@@ -1,7 +1,12 @@
+import type {calendar_v3} from 'googleapis/build/src/apis/calendar'
 import {Logger} from '../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import {compareNewestFirst, type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import makeGcalCalendar from './makeGcalCalendar'
+
+// Google Calendar only lists events oldest first, so finding the newest means reading the whole window
+const MAX_EVENTS = 1000
+const EVENTS_PER_REQUEST = 250
 
 // Re-runs the Google Calendar search the user saw in the Your Work drawer, server-side, fetching
 // each event's full description, location, and attendees so the AI has enough context to draft a
@@ -10,7 +15,8 @@ import makeGcalCalendar from './makeGcalCalendar'
 // or [] if there's nothing.
 const listGcalIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
   const {dataLoader, teamId, userId} = ctx
   const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
@@ -27,18 +33,25 @@ const listGcalIssues = async (
   if (!startDate || !endDate) return []
 
   const calendar = makeGcalCalendar(gcalAuth)
+  const end = new Date(endDate)
 
   const now = Date.now()
   try {
-    const response = await calendar.events.list({
-      calendarId: 'primary',
-      maxResults: MAX_ISSUES,
-      orderBy: 'startTime',
-      singleEvents: true,
-      timeMin: new Date(startDate).toISOString(),
-      timeMax: new Date(endDate).toISOString()
-    })
-    const events = response.data.items ?? []
+    const events: calendar_v3.Schema$Event[] = []
+    let pageToken: string | undefined
+    do {
+      const response = await calendar.events.list({
+        calendarId: 'primary',
+        maxResults: EVENTS_PER_REQUEST,
+        orderBy: 'startTime',
+        singleEvents: true,
+        timeMin: new Date(startDate).toISOString(),
+        timeMax: (before && before < end ? before : end).toISOString(),
+        pageToken
+      })
+      events.push(...(response.data.items ?? []))
+      pageToken = response.data.nextPageToken ?? undefined
+    } while (pageToken && events.length < MAX_EVENTS)
     const items = events.map((event): InspirationIssue => {
       const startString = event.start?.dateTime ?? event.start?.date
       const endString = event.end?.dateTime ?? event.end?.date
@@ -74,7 +87,7 @@ const listGcalIssues = async (
         description: event.description
       }
     })
-    return items
+    return items.sort(compareNewestFirst).slice(0, MAX_ISSUES)
   } catch (e) {
     Logger.error(e instanceof Error ? e.message : String(e))
     return []

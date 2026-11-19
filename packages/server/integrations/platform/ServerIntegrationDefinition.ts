@@ -134,8 +134,12 @@ export interface EstimatePushCapability {
 }
 
 export interface IssueListCapability {
-  /** Re-runs a drawer search for the viewer with enough detail to draft from; [] when not connected or the service fails */
-  listIssues(ctx: GqlIntegrationCtx, searchQuery: string): Promise<InspirationIssue[]>
+  /** Re-runs a drawer search for the viewer with enough detail to draft from: its newest MAX_ISSUES, newest first, and with before only those dated no later than it. Returning MAX_ISSUES means older ones may remain. [] when not connected or the service fails */
+  listIssues(
+    ctx: GqlIntegrationCtx,
+    searchQuery: string,
+    before: Date | null
+  ): Promise<InspirationIssue[]>
 }
 
 /** What a service stores for a linked issue: the private dedup key and the parts the Task row keeps */

@@ -35,19 +35,25 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
     meetingRef
   )
 
-  // Both standup and retro default the window to the previous meeting in the series. A retro
-  // outside a series uses the team's last finished retro, then the last two weeks; standup (and any
-  // other type) uses the meeting's own start time, then finally the last 24 hours.
-  const prevMeetingCreatedAt =
-    'prevMeeting' in meeting
-      ? (meeting.prevMeeting?.createdAt ??
-        ('prevCompletedMeeting' in meeting ? meeting.prevCompletedMeeting?.createdAt : undefined))
-      : undefined
-  const retroFallback = dayjs().subtract(2, 'week').toISOString()
+  // Both standup and retro default the window to the team's last meeting of the kind: the previous
+  // one in the series or, for a retro, the team's last finished retro, whichever started later.
+  // Without one, a retro uses the last two weeks; standup (and any other type) uses the meeting's
+  // own start time, then finally the last 24 hours. Fallbacks start on a whole day or hour, so a
+  // reload builds the same searches and keeps the stored draft.
+  const lastMeetingStartAt = [
+    'prevMeeting' in meeting ? meeting.prevMeeting?.createdAt : undefined,
+    'prevCompletedMeeting' in meeting ? meeting.prevCompletedMeeting?.createdAt : undefined
+  ]
+    .filter((createdAt): createdAt is string => !!createdAt)
+    .sort()
+    .at(-1)
+  const retroFallback = dayjs().subtract(2, 'week').startOf('day').toISOString()
   const defaultStartAt =
     meeting.meetingType === 'retrospective'
-      ? (prevMeetingCreatedAt ?? retroFallback)
-      : (prevMeetingCreatedAt ?? meeting.createdAt ?? dayjs().subtract(24, 'hour').toISOString())
+      ? (lastMeetingStartAt ?? retroFallback)
+      : (lastMeetingStartAt ??
+        meeting.createdAt ??
+        dayjs().subtract(24, 'hour').startOf('hour').toISOString())
   const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
     `Inspiration:${service}:dateRange:${meeting.id}`,
     () => ({
@@ -68,7 +74,14 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
 
   const isDefaultRange = dateRange?.startAt === defaultStartAt
 
-  return {dateRange, setDateRange, isDefaultRange, onResultCount, getResultCount} as const
+  return {
+    dateRange,
+    setDateRange,
+    isDefaultRange,
+    lastMeetingStartAt,
+    onResultCount,
+    getResultCount
+  } as const
 }
 
 export default useInspirationDrawer

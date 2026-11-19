@@ -1,5 +1,5 @@
-// How many issues / comments each integration pulls. Kept here so every service stays
-// consistent about how much context it sends to the AI.
+// How many issues / comments each integration pulls for one page of drafting. Kept here so every
+// service stays consistent about how much context it sends to the AI.
 export const MAX_ISSUES = 20
 // Fetch the most recent comments rather than the first: on long threads the latest discussion
 // carries the current state, which is what the AI needs to draft a response.
@@ -9,6 +9,11 @@ export interface IssueComment {
   author: string
   body: string
 }
+
+const toTime = ({updatedAt}: InspirationIssue) => updatedAt?.getTime() || 0
+
+export const compareNewestFirst = (a: InspirationIssue, b: InspirationIssue) =>
+  toTime(b) - toTime(a)
 
 export interface InspirationIssue {
   // Heading label, e.g. 'Issue' or 'Pull Request'
