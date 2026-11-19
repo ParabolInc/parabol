@@ -10,6 +10,7 @@ import ToggleAIFeaturesMutation from '../../../../mutations/ToggleAIFeaturesMuta
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
+import OrgAIAppsStatusRoot from './OrgAIAppsStatusRoot'
 
 interface Props {
   organizationRef: OrgFeatures_organization$key
@@ -56,6 +57,7 @@ const OrgFeatures = (props: Props) => {
           <Toggle active={useAI} onClick={handleToggle} />
         </div>
       </div>
+      <OrgAIAppsStatusRoot orgId={orgId} />
     </Panel>
   )
 }

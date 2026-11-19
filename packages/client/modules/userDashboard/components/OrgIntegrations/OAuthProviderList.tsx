@@ -1,3 +1,4 @@
+import {Link} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
@@ -127,8 +128,16 @@ const OAuthProviderList = ({organizationRef}: Props) => {
   return (
     <Panel className='max-w-[976px]' label='OAuth 2.0 API' controls={controls}>
       <div className='border-hairline border-t px-4 py-3 text-fg-secondary text-sm'>
-        Configure your organization as an OAuth 2.0 provider to allow external applications to
-        authenticate with your Parabol organization.
+        Register your organization’s own apps so they can sign in to Parabol. Members connect apps
+        like Claude and ChatGPT themselves; you choose which in{' '}
+        <Link
+          to='/me/organizations/$orgId/integrations'
+          params={{orgId: data.id}}
+          className='font-semibold text-accent hover:underline'
+        >
+          Integration Settings
+        </Link>
+        .
       </div>
       {providers.length === 0 ? (
         <div className='border-hairline border-t p-8 text-center text-fg-muted text-sm'>
