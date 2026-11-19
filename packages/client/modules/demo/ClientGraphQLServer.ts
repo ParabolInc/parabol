@@ -1532,6 +1532,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         user
       }
       this.db.tasks.push(task as any)
+      this.db.newMeeting.tasks!.push(task as any)
       const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
       const {thread} = discussion
       const {edges} = thread
@@ -1694,6 +1695,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       edges.splice(
         edges.findIndex((edge) => edge.node === task),
         1
+      )
+      this.db.newMeeting.tasks = this.db.newMeeting.tasks!.filter(
+        (meetingTask) => meetingTask !== task
       )
       const data = {
         __typename: 'DeleteTaskPayload',
