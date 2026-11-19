@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroTemplatePromptList_template$key} from '../../__generated__/RetroTemplatePromptList_template.graphql'
-import RetroTemplateMatchText from './RetroTemplateMatchText'
+import HighlightedText from '../HighlightedText'
 
 interface Props {
   templateRef: RetroTemplatePromptList_template$key
@@ -38,13 +38,17 @@ const RetroTemplatePromptList = ({templateRef, searchQuery}: Props) => {
             style={{backgroundColor: groupColor}}
           />
           <span className='flex flex-col gap-0.5'>
-            <span className='font-semibold text-fg-primary text-sm'>
-              <RetroTemplateMatchText text={question} searchQuery={searchQuery} />
-            </span>
+            <HighlightedText
+              text={question}
+              query={searchQuery}
+              className='font-semibold text-fg-primary text-sm'
+            />
             {description && (
-              <span className='text-[13px] text-fg-secondary leading-[18px]'>
-                <RetroTemplateMatchText text={description} searchQuery={searchQuery} />
-              </span>
+              <HighlightedText
+                text={description}
+                query={searchQuery}
+                className='text-[13px] text-fg-secondary leading-[18px]'
+              />
             )}
           </span>
         </li>

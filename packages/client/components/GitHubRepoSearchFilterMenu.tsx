@@ -8,7 +8,7 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 const getValue = (item: {nameWithOwner?: string}) => {
   return item.nameWithOwner || 'Unknown Repo'
@@ -72,7 +72,7 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
             onClick={() => onToggleRepo(repo, isSelected)}
           >
             <Checkbox className='-ml-2 mr-2' active={isSelected} />
-            <TypeAheadLabel query={searchQuery} label={repo} />
+            <HighlightedText query={searchQuery} text={repo} className='truncate' />
           </MenuItem>
         )
       })}

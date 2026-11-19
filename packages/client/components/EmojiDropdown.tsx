@@ -2,7 +2,7 @@ import type {MentionNodeAttrs} from '@tiptap/extension-mention'
 import type {SuggestionProps} from '@tiptap/suggestion'
 import type React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 export default forwardRef(
   (props: SuggestionProps<{id: string; native: string}, MentionNodeAttrs>, ref) => {
@@ -67,7 +67,7 @@ export default forwardRef(
               onMouseMove={() => setSelectedIndex(idx)}
             >
               <span>{item.native}</span>
-              <TypeAheadLabel label={`:${item.id}:`} query={query} className='pl-3' />
+              <HighlightedText text={`:${item.id}:`} query={query} className='truncate pl-3' />
             </div>
           )
         })}
