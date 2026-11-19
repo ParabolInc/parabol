@@ -4,6 +4,7 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
+import OrgAIAppsRoot from '../OrgAIApps/OrgAIAppsRoot'
 import GitLabProviders from './GitLabProviders'
 
 type Props = {
@@ -82,6 +83,7 @@ const OrgIntegrations = (props: Props) => {
               ) : null}
             </div>
           )}
+          {isOrgAdmin && <OrgAIAppsRoot orgId={orgId} />}
           <GitLabProviders organizationRef={organization} />
         </div>
       </div>
