@@ -44,6 +44,9 @@ jest.mock('../../../../hooks/useTipTapPageEditor', () => ({
 jest.mock('../../../../components/TipTapEditor/TipTapEditor', () => ({
   TipTapEditor: () => null
 }))
+jest.mock('../../../../modules/pages/BlockSelectionGroup', () => ({
+  BlockSelectionGroup: () => null
+}))
 jest.mock('../../../../hooks/useAtmosphere', () => ({
   __esModule: true,
   default: () => ({eventEmitter: {emit: jest.fn()}})

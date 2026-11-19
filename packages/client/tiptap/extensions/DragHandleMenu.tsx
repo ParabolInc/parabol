@@ -41,10 +41,21 @@ interface DragHandleMenuProps {
   canCreateSubPage: boolean
   selection?: {range: BlockRange; count: number} | null
   pageId: string
+  omitBarActions?: boolean
 }
 
 const DragHandleMenu = (props: DragHandleMenuProps) => {
-  const {editor, node, pos, onClose, anchorElement, canCreateSubPage, selection, pageId} = props
+  const {
+    editor,
+    node,
+    pos,
+    onClose,
+    anchorElement,
+    canCreateSubPage,
+    selection,
+    pageId,
+    omitBarActions
+  } = props
   const atmosphere = useAtmosphere()
   const [duplicatePage] = useDuplicatePageMutation()
   const navigate = useNavigate()
@@ -241,13 +252,15 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
           {!selection && node.type.name === 'callout' && (
             <CalloutStyleSubMenu editor={editor} node={node} pos={pos} onClose={onClose} />
           )}
-          <MenuItem onSelect={handleDuplicate}>
-            <ContentCopy className={MENU_ITEM_ICON} />
-            <span className='flex-1 text-left'>
-              {pageToDuplicate ? 'Duplicate page' : `Duplicate ${blocks}`}
-            </span>
-            <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
-          </MenuItem>
+          {!omitBarActions && (
+            <MenuItem onSelect={handleDuplicate}>
+              <ContentCopy className={MENU_ITEM_ICON} />
+              <span className='flex-1 text-left'>
+                {pageToDuplicate ? 'Duplicate page' : `Duplicate ${blocks}`}
+              </span>
+              <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
+            </MenuItem>
+          )}
           {pageToDuplicate && (
             <MenuItem onSelect={handleCopyTo}>
               <AddToPhotos className={MENU_ITEM_ICON} />
@@ -260,7 +273,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
               Turn into synced block
             </MenuItem>
           )}
-          {showMoveTo && (
+          {showMoveTo && !omitBarActions && (
             <MenuItem onSelect={handleMoveTo}>
               <ArrowForward className={MENU_ITEM_ICON} />
               <span className='flex-1 text-left'>Move to…</span>
@@ -271,7 +284,7 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
           {showMoveTo && (
             <BlockMoveMenuItem direction='down' canMove={canMoveDown} onMove={moveBy} />
           )}
-          {showDelete && (
+          {showDelete && !omitBarActions && (
             <MenuItem onSelect={handleDelete}>
               <DeleteOutlined className={MENU_ITEM_ICON} />
               <span className='flex-1 text-left'>Delete {blocks}</span>
