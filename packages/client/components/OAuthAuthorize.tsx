@@ -8,6 +8,7 @@ import type {
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {useCreateOAuthAPICodeMutation} from '../mutations/useCreateOAuthAPICodeMutation'
 import getMutationError from '../utils/relay/getMutationError'
+import DialogContent from './DialogContent'
 import InviteDialog from './InviteDialog'
 import OAuthConsentBanner from './OAuthConsent/OAuthConsentBanner'
 import OAuthConsentFooter from './OAuthConsent/OAuthConsentFooter'
@@ -89,19 +90,24 @@ const OAuthAuthorize = (props: Props) => {
 
   return (
     <TeamInvitationWrapper>
-      <InviteDialog className='w-[480px] max-w-full gap-5 px-7 pt-7 pb-6'>
-        <OAuthConsentHeader requestRef={oauthAuthorizationRequest} email={email} />
-        <OAuthConsentBanner requestRef={oauthAuthorizationRequest} />
-        <OAuthConsentPermissions requestRef={oauthAuthorizationRequest} />
-        <OAuthConsentOrgPicker requestRef={oauthAuthorizationRequest} choice={choice} />
-        <OAuthConsentFooter
-          canDisconnectInProfile={!organization}
-          errorMessage={errorMessage}
-          isAllowDisabled={isNothingChosen || submitting || isLeaving}
-          isCancelDisabled={isLeaving}
-          onAllow={authorize}
-          onCancel={cancel}
-        />
+      <InviteDialog className='w-[480px] max-w-full'>
+        <OAuthConsentHeader requestRef={oauthAuthorizationRequest} />
+        <DialogContent className='flex flex-col gap-5'>
+          <p className='wrap-anywhere m-0 text-fg-secondary'>
+            Signed in as <b className='font-semibold text-fg-primary'>{email}</b>
+          </p>
+          <OAuthConsentBanner requestRef={oauthAuthorizationRequest} />
+          <OAuthConsentPermissions requestRef={oauthAuthorizationRequest} />
+          <OAuthConsentOrgPicker requestRef={oauthAuthorizationRequest} choice={choice} />
+          <OAuthConsentFooter
+            canDisconnectInProfile={!organization}
+            errorMessage={errorMessage}
+            isAllowDisabled={isNothingChosen || submitting || isLeaving}
+            isCancelDisabled={isLeaving}
+            onAllow={authorize}
+            onCancel={cancel}
+          />
+        </DialogContent>
       </InviteDialog>
     </TeamInvitationWrapper>
   )

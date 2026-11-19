@@ -24,10 +24,12 @@ const OAuthConsentBanner = ({requestRef}: Props) => {
   return (
     <div
       role='note'
-      className='flex items-start gap-2.5 rounded-lg bg-callout-warning-fill px-3.5 py-3 text-sm shadow-[inset_3px_0_0_var(--color-callout-warning-edge)]'
+      className='flex items-center gap-3 rounded-md bg-gold-100 px-4 py-2.5 text-gold-900 dark:bg-gold-900 dark:text-gold-100'
     >
-      <Warning className='text-callout-warning-icon text-xl' />
-      <span className='wrap-anywhere'>Only allow it if you trust {clientHost}.</span>
+      <Warning className='shrink-0 text-[20px] text-gold-700 dark:text-gold-300' />
+      <span className='wrap-anywhere'>
+        <b className='font-semibold'>Unverified app.</b> Only allow it if you trust {clientHost}.
+      </span>
     </div>
   )
 }

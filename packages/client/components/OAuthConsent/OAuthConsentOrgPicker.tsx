@@ -44,13 +44,13 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
     row.organization.name.toLowerCase().includes(normalizedFilter)
   )
   return (
-    <section aria-labelledby='oauth-consent-orgs' className='flex flex-col gap-2 text-sm'>
-      <h2
+    <section aria-labelledby='oauth-consent-orgs' className='flex flex-col gap-3'>
+      <h3
         id='oauth-consent-orgs'
-        className='m-0 font-semibold text-fg-muted text-xs uppercase leading-4 tracking-[0.08em]'
+        className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wider'
       >
         Organizations
-      </h2>
+      </h3>
       {organization ? (
         <p className='wrap-anywhere m-0'>Only {organization.name}, which registered it.</p>
       ) : (
@@ -73,10 +73,8 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
             role='list'
             aria-label='Your organizations'
             className={cn(
-              'flex flex-col',
-              isMany
-                ? 'max-h-[248px] overflow-y-auto rounded-lg border border-hairline-strong px-3 pb-2'
-                : 'mt-2 border-hairline border-t'
+              'flex flex-col rounded-md border border-hairline',
+              isMany && 'max-h-64 overflow-y-auto'
             )}
           >
             {visibleOrganizations.map((row) => (

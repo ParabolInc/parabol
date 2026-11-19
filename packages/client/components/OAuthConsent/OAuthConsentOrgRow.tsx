@@ -1,14 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {OAuthConsentOrgRow_organization$key} from '../../__generated__/OAuthConsentOrgRow_organization.graphql'
-import {initials} from '../../shared/initials'
 import {Checkbox} from '../../ui/Checkbox/Checkbox'
 import {cn} from '../../ui/cn'
-import {CheckCircle, Lock, Person} from '../../ui/icons'
-import getTileColorClass from './getTileColorClass'
-import OAuthConsentChip from './OAuthConsentChip'
-
-const NOTE_CLASS = 'mt-0.5 flex items-start gap-1.5 text-[13px] text-fg-secondary leading-[18px]'
 
 interface Props {
   organizationRef: OAuthConsentOrgRow_organization$key
@@ -36,55 +30,32 @@ const OAuthConsentOrgRow = ({organizationRef, isPicking, isPicked, onTogglePicke
   const reason =
     blockedReason === 'VERIFIED_ONLY' ? 'Only verified apps allowed' : 'No apps allowed'
   return (
-    <div role='listitem' className='border-hairline border-b py-2 last:border-b-0 last:pb-0'>
+    <div role='listitem' className='border-hairline border-b last:border-0'>
       <label
-        className={cn('flex items-start gap-2.5', isPicking && !isBlocked && 'cursor-pointer')}
+        className={cn(
+          'flex items-start gap-2 px-3 py-2',
+          isPicking && !isBlocked && 'cursor-pointer select-none'
+        )}
       >
         {isPicking && (
           <Checkbox
             checked={isPicked && !isBlocked}
             disabled={isBlocked}
             onCheckedChange={() => onTogglePicked(orgId)}
-            className='mt-0.5 shrink-0 disabled:opacity-50'
+            className='mt-0.5 shrink-0'
           />
         )}
-        <span
-          aria-hidden='true'
-          className={cn(
-            'flex size-6 shrink-0 items-center justify-center rounded-md font-bold text-[11px] text-white',
-            getTileColorClass(orgId)
-          )}
-        >
-          {initials(name)}
-        </span>
-        <span className='min-w-0 flex-1'>
-          <span
-            className={cn(
-              'wrap-anywhere block font-semibold text-sm leading-5',
-              isBlocked && 'text-fg-muted'
-            )}
-          >
+        <span className='flex min-w-0 flex-col'>
+          <span className={cn('wrap-anywhere font-medium', isBlocked && 'text-fg-muted')}>
             {name}
           </span>
           {isBlocked && (
-            <span className={NOTE_CLASS}>
-              <Lock className='mt-px text-base' />
-              <span>{reason}</span>
-            </span>
-          )}
-          {isBlocked && adminName && (
-            <span className={NOTE_CLASS}>
-              <Person className='mt-px text-base' />
-              <span>Ask {adminName}, an org admin</span>
+            <span className='text-fg-secondary text-xs'>
+              {reason}
+              {adminName && ` · Ask ${adminName}, an org admin`}
             </span>
           )}
         </span>
-        {!isPicking &&
-          (isBlocked ? (
-            <OAuthConsentChip tone='block' Icon={Lock} label='Blocked' />
-          ) : (
-            <OAuthConsentChip tone='ok' Icon={CheckCircle} label='Included' />
-          ))}
       </label>
     </div>
   )

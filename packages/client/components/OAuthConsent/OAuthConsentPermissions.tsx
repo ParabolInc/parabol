@@ -26,19 +26,16 @@ const OAuthConsentPermissions = ({requestRef}: Props) => {
   })
   return (
     <section aria-labelledby='oauth-consent-permissions' className='flex flex-col gap-2'>
-      <h2
+      <h3
         id='oauth-consent-permissions'
-        className='m-0 font-semibold text-fg-muted text-xs uppercase leading-4 tracking-[0.08em]'
+        className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wider'
       >
         It will be able to
-      </h2>
+      </h3>
       {permissions.length > 0 ? (
         <ul className='m-0 grid list-none grid-cols-[auto_auto_1fr] gap-x-3 p-0'>
           {permissions.map(({resource, title, Icon, description}) => (
-            <li
-              key={resource}
-              className='col-span-3 grid grid-cols-subgrid items-center py-1 text-sm'
-            >
+            <li key={resource} className='col-span-3 grid grid-cols-subgrid items-center py-1'>
               <Icon className='text-fg-secondary text-xl' />
               <span className='font-semibold'>{title}</span>
               <span className='text-fg-secondary'>{description}</span>
@@ -46,7 +43,7 @@ const OAuthConsentPermissions = ({requestRef}: Props) => {
           ))}
         </ul>
       ) : (
-        <p className='m-0 text-sm'>No permissions requested.</p>
+        <p className='m-0'>No permissions requested.</p>
       )}
     </section>
   )
