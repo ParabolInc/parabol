@@ -81,7 +81,7 @@ const ConnectedAppRow = ({grantRef}: Props) => {
           grantId={id}
           appName={clientName}
           includesPrivatePages={!!personalGrantedAt}
-          hasOrganizations={!grantedOrganizations || grantedOrganizations.length > 0}
+          grantedOrganizationNames={grantedOrganizations?.map(({name}) => name) ?? null}
           onClose={() => setIsDialogOpen(false)}
           onCloseAutoFocus={(event) => {
             event.preventDefault()

@@ -8,7 +8,7 @@ import type {
 import Panel from '../../../../components/Panel/Panel'
 import useUpdateOrgAIAppsPolicyMutation from '../../../../mutations/useUpdateOrgAIAppsPolicyMutation'
 import getEffectiveAIAppsPolicy from './getEffectiveAIAppsPolicy'
-import isAIAppGrantBlocked from './isAIAppGrantBlocked'
+import getNewlyBlockedGrants from './getNewlyBlockedGrants'
 import OrgAIAppsPolicyConfirmDialog from './OrgAIAppsPolicyConfirmDialog'
 import OrgAIAppsPolicyHelp from './OrgAIAppsPolicyHelp'
 import OrgAIAppsPolicyRadios from './OrgAIAppsPolicyRadios'
@@ -54,11 +54,7 @@ const OrgAIAppsPolicyPanel = ({organizationRef}: Props) => {
   }
 
   const handleChange = (policy: OrgAIAppsPolicyEnum) => {
-    const newlyBlocked = aiAppGrants.filter(
-      ({clientVerifiedAt}) =>
-        !isAIAppGrantBlocked(effectivePolicy, clientVerifiedAt) &&
-        isAIAppGrantBlocked(policy, clientVerifiedAt)
-    )
+    const newlyBlocked = getNewlyBlockedGrants(aiAppGrants, effectivePolicy, policy)
     if (newlyBlocked.length === 0) {
       commitPolicy(policy)
       return

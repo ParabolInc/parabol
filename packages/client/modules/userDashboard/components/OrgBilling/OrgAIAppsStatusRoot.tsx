@@ -10,7 +10,11 @@ interface Props {
 }
 
 const OrgAIAppsStatusRoot = ({orgId}: Props) => {
-  const queryRef = useQueryLoaderNow<OrgAIAppsStatusRowQuery>(orgAIAppsStatusRowQuery, {orgId})
+  const queryRef = useQueryLoaderNow<OrgAIAppsStatusRowQuery>(
+    orgAIAppsStatusRowQuery,
+    {orgId},
+    'network-only'
+  )
   return <Suspense fallback={''}>{queryRef && <OrgAIAppsStatusRow queryRef={queryRef} />}</Suspense>
 }
 

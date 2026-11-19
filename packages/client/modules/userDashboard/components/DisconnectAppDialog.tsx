@@ -10,14 +10,24 @@ interface Props {
   grantId: string
   appName: string
   includesPrivatePages: boolean
-  hasOrganizations: boolean
+  grantedOrganizationNames: string[] | null
   onClose: () => void
   onCloseAutoFocus: (event: Event) => void
 }
 
 const DisconnectAppDialog = (props: Props) => {
-  const {grantId, appName, includesPrivatePages, hasOrganizations, onClose, onCloseAutoFocus} =
-    props
+  const {
+    grantId,
+    appName,
+    includesPrivatePages,
+    grantedOrganizationNames,
+    onClose,
+    onCloseAutoFocus
+  } = props
+  const hasOrganizations = !grantedOrganizationNames || grantedOrganizationNames.length > 0
+  const organizationScope = grantedOrganizationNames
+    ? `in ${grantedOrganizationNames.join(', ')}`
+    : 'in all your organizations'
   const [disconnect, submitting] = useDisconnectOAuthAPIGrantMutation()
   const handleDisconnect = () => {
     disconnect({variables: {grantId}, onCompleted: onClose})
@@ -28,7 +38,7 @@ const DisconnectAppDialog = (props: Props) => {
         <DialogTitle>Disconnect {appName}?</DialogTitle>
         <DialogDescription className='text-fg-secondary'>
           {hasOrganizations
-            ? `${appName} loses access to your Parabol account in all your organizations${includesPrivatePages ? ' and your private pages' : ''}.`
+            ? `${appName} loses access to your Parabol account ${organizationScope}${includesPrivatePages ? ' and your private pages' : ''}.`
             : includesPrivatePages
               ? `${appName} loses access to your private pages.`
               : `${appName} loses access to your Parabol account.`}{' '}
