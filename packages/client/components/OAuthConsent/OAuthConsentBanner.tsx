@@ -32,7 +32,7 @@ const OAuthConsentBanner = ({requestRef}: Props) => {
       {!verifiedAt && (
         <div
           role='note'
-          className='flex items-start gap-2.5 rounded-lg bg-callout-warning-fill px-3.5 py-3 text-sm shadow-[inset_3px_0_0_var(--color-gold-500)] dark:shadow-[inset_3px_0_0_var(--color-gold-400)]'
+          className='flex items-start gap-2.5 rounded-lg bg-callout-warning-fill px-3.5 py-3 text-sm shadow-[inset_3px_0_0_var(--color-callout-warning-edge)]'
         >
           <Warning className='text-callout-warning-icon text-xl' />
           <span className='wrap-anywhere'>
@@ -44,9 +44,9 @@ const OAuthConsentBanner = ({requestRef}: Props) => {
       {isEveryOrgBlocked && (
         <div
           role='note'
-          className='flex items-start gap-2.5 rounded-lg bg-slate-200 px-3.5 py-3 text-sm ring-1 ring-hairline-strong ring-inset dark:bg-lilac-300/12'
+          className='flex items-start gap-2.5 rounded-lg bg-callout-plain-fill px-3.5 py-3 text-sm ring-1 ring-hairline-strong ring-inset'
         >
-          <Lock className='text-fg-secondary text-xl' />
+          <Lock className='text-callout-plain-icon text-xl' />
           <span>
             <b className='font-semibold'>Every organization you’re in blocks this app.</b> You can
             still let it reach your private pages and invitations.
