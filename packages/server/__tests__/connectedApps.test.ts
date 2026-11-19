@@ -106,6 +106,17 @@ const DISCONNECT = `
   }
 `
 
+const ORG_NAME = `
+  query OrgName($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        id
+        name
+      }
+    }
+  }
+`
+
 const VIEWER_ID = `
   query ViewerId {
     viewer {
@@ -319,6 +330,51 @@ test("revoking an all-orgs connection keeps the member's other orgs", async () =
   expect(after.revokedAt).toBeNull()
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: member.token})
   expect(viewer.errors).toBeUndefined()
+  const ownOrg = await sendPublic({
+    query: ORG_NAME,
+    variables: {orgId: member.ownOrgId},
+    bearerToken: member.token
+  })
+  expect(ownOrg.errors).toBeUndefined()
+  expect(ownOrg.data.viewer.organization.id).toBe(member.ownOrgId)
+  const adminOrg = await sendPublic({
+    query: ORG_NAME,
+    variables: {orgId: admin.orgId},
+    bearerToken: member.token
+  })
+  expect(adminOrg.data?.viewer?.organization ?? null).toBeNull()
+  expect(adminOrg.errors?.length).toBeGreaterThan(0)
+})
+
+test("a disconnected connection can't be revoked from an org afterwards", async () => {
+  const admin = await createOrgAdmin(getTestEmail())
+  const member = await createMember(admin.orgId, {grantedOrgIds: null})
+  const disconnected = await sendPublic({
+    query: DISCONNECT,
+    variables: {grantId: toClientId(member.grant.id)},
+    cookie: member.cookie
+  })
+  expect(disconnected.errors).toBeUndefined()
+  const before = await getGrant(member.userId)
+  expect(before.revokedAt).not.toBeNull()
+
+  const res = await sendPublic({
+    query: REVOKE_FROM_ORG,
+    variables: {grantId: toClientId(member.grant.id), orgId: admin.orgId},
+    cookie: admin.cookie
+  })
+  expect(res.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
+  const after = await getGrant(member.userId)
+  expect(after.revokedAt).not.toBeNull()
+  expect(after.grantedOrgIds).toEqual(before.grantedOrgIds)
+})
+
+test('an app token cannot read the grant list', async () => {
+  const admin = await createOrgAdmin(getTestEmail())
+  const member = await createMember(admin.orgId, {grantedOrgIds: null})
+  const res = await sendPublic({query: VIEWER_AI_APP_GRANTS, bearerToken: member.token})
+  expect(res.errors?.length).toBeGreaterThan(0)
+  expect(res.errors![0]!.extensions.code).toBe('FORBIDDEN')
 })
 
 test('revoking the last org leaves a private-pages connection working', async () => {

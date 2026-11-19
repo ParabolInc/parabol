@@ -4,24 +4,12 @@ import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
 import type {MutationResolvers} from '../resolverTypes'
 
-const throwNotReached = (): never => {
-  throw new GraphQLError('That connection does not reach this organization', {
-    extensions: {code: 'BAD_USER_INPUT'}
-  })
-}
-
 const revokeOAuthAPIGrantFromOrg: MutationResolvers['revokeOAuthAPIGrantFromOrg'] = async (
   _source,
   {grantId, orgId},
   {dataLoader}
 ) => {
-  const dbGrantId = (() => {
-    try {
-      return CipherId.fromClient(grantId)[0]
-    } catch {
-      return throwNotReached()
-    }
-  })()
+  const [dbGrantId] = CipherId.fromClient(grantId)
   const remainingOrgIds = sql`array_remove(
     COALESCE(
       "grantedOrgIds",
@@ -39,7 +27,7 @@ const revokeOAuthAPIGrantFromOrg: MutationResolvers['revokeOAuthAPIGrantFromOrg'
       "revokedAt" = CASE
         WHEN cardinality(${remainingOrgIds}) = 0 AND "personalGrantedAt" IS NULL
         THEN CURRENT_TIMESTAMP
-        ELSE NULL
+        ELSE "revokedAt"
       END
     WHERE "id" = ${dbGrantId}
       AND "revokedAt" IS NULL
@@ -57,7 +45,11 @@ const revokeOAuthAPIGrantFromOrg: MutationResolvers['revokeOAuthAPIGrantFromOrg'
       )
     RETURNING "id"
   `.execute(getKysely())
-  if (rows.length === 0) return throwNotReached()
+  if (rows.length === 0) {
+    throw new GraphQLError('That connection does not reach this organization', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
   dataLoader.get('oauthAPIGrants').clear(dbGrantId)
   return {orgId}
 }
