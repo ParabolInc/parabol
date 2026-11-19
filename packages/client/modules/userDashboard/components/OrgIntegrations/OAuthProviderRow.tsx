@@ -21,10 +21,10 @@ const OAuthProviderRow = ({name, updatedAt, onEdit, onDelete}: Props) => {
       <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
         {new Date(updatedAt).toLocaleDateString()}
       </td>
-      <td className='px-4 py-3 text-right' onClick={(e: MouseEvent) => e.stopPropagation()}>
+      <td className='px-4 py-3' onClick={(e: MouseEvent) => e.stopPropagation()}>
         <Menu
           trigger={
-            <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-fg-muted outline-none hover:bg-surface-hover hover:text-fg-secondary'>
+            <button className='ml-auto flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-fg-muted outline-none hover:bg-surface-hover hover:text-fg-secondary'>
               <MoreVertIcon className='size-5' />
             </button>
           }
