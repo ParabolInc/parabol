@@ -1,12 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroTemplatePromptList_template$key} from '../../__generated__/RetroTemplatePromptList_template.graphql'
+import RetroTemplateMatchText from './RetroTemplateMatchText'
 
 interface Props {
   templateRef: RetroTemplatePromptList_template$key
+  searchQuery: string
 }
 
-const RetroTemplatePromptList = ({templateRef}: Props) => {
+const RetroTemplatePromptList = ({templateRef, searchQuery}: Props) => {
   const template = useFragment(
     graphql`
       fragment RetroTemplatePromptList_template on MeetingTemplate {
@@ -36,9 +38,13 @@ const RetroTemplatePromptList = ({templateRef}: Props) => {
             style={{backgroundColor: groupColor}}
           />
           <span className='flex flex-col gap-0.5'>
-            <span className='font-semibold text-fg-primary text-sm'>{question}</span>
+            <span className='font-semibold text-fg-primary text-sm'>
+              <RetroTemplateMatchText text={question} searchQuery={searchQuery} />
+            </span>
             {description && (
-              <span className='text-[13px] text-fg-secondary leading-[18px]'>{description}</span>
+              <span className='text-[13px] text-fg-secondary leading-[18px]'>
+                <RetroTemplateMatchText text={description} searchQuery={searchQuery} />
+              </span>
             )}
           </span>
         </li>
