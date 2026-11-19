@@ -1,4 +1,5 @@
 import type {Organization} from '../../../postgres/types'
+import {getUserId} from '../../../utils/authorization'
 import type {
   OAuthAuthorizationOrganizationResolvers,
   OAuthOrgBlockedReasonEnum
@@ -10,15 +11,11 @@ export interface OAuthAuthorizationOrganizationSource {
 }
 
 const OAuthAuthorizationOrganization: OAuthAuthorizationOrganizationResolvers = {
-  adminName: async ({organization, blockedReason}, _args, {dataLoader}) => {
+  adminName: ({organization, blockedReason}, _args, {authToken, dataLoader}) => {
     if (!blockedReason) return null
-    const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(organization.id)
-    const [earliestAdmin] = organizationUsers
-      .filter(({role}) => role === 'ORG_ADMIN')
-      .sort((a, b) => a.joinedAt.getTime() - b.joinedAt.getTime())
-    if (!earliestAdmin) return null
-    const admin = await dataLoader.get('users').load(earliestAdmin.userId)
-    return admin?.preferredName ?? null
+    return dataLoader
+      .get('earliestOrgAdminNameExcludingUser')
+      .load({orgId: organization.id, userId: getUserId(authToken)})
   }
 }
 

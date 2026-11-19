@@ -506,8 +506,6 @@ export const selectOAuthAPIProvider = () => {
       'clientSecret',
       'clientType',
       'createdAt',
-      'homepageUrl',
-      'logoUrl',
       'name',
       'orgId',
       'redirectUris',

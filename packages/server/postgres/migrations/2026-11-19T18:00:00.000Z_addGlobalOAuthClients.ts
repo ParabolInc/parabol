@@ -27,12 +27,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .alterTable('OAuthAPIProvider')
     .alterColumn('orgId', (col) => col.dropNotNull())
     .execute()
-  await db.schema
-    .alterTable('OAuthAPIProvider')
-    .addColumn('verifiedAt', 'timestamptz')
-    .addColumn('logoUrl', 'text')
-    .addColumn('homepageUrl', 'text')
-    .execute()
+  await db.schema.alterTable('OAuthAPIProvider').addColumn('verifiedAt', 'timestamptz').execute()
   await db.schema
     .alterTable('OAuthAPIGrant')
     .addColumn('personalGrantedAt', 'timestamptz')
@@ -56,17 +51,16 @@ export async function up(db: Kysely<any>): Promise<void> {
         ...globalClient,
         clientId: 'https://claude.ai/oauth/mcp-oauth-client-metadata',
         name: 'Claude',
-        redirectUris: ['https://claude.ai/api/mcp/auth_callback'],
-        homepageUrl: 'https://claude.ai'
+        redirectUris: ['https://claude.ai/api/mcp/auth_callback']
       },
       {
         ...globalClient,
         clientId: 'https://chatgpt.com/oauth/client.json',
         name: 'ChatGPT',
-        redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
-        homepageUrl: 'https://chatgpt.com'
+        redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect']
       }
     ])
+    .onConflict((oc) => oc.column('clientId').doNothing())
     .execute()
 }
 
@@ -78,12 +72,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     .dropColumn('grantedOrgIds')
     .execute()
   await db.schema.alterTable('OAuthAPIGrant').dropColumn('personalGrantedAt').execute()
-  await db.schema
-    .alterTable('OAuthAPIProvider')
-    .dropColumn('homepageUrl')
-    .dropColumn('logoUrl')
-    .dropColumn('verifiedAt')
-    .execute()
+  await db.schema.alterTable('OAuthAPIProvider').dropColumn('verifiedAt').execute()
   await db.schema
     .alterTable('OAuthAPIProvider')
     .alterColumn('orgId', (col) => col.setNotNull())

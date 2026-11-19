@@ -389,3 +389,74 @@ test('a private-pages-only connection reaches private pages and nothing in any o
   expect(teams.errors).toBeUndefined()
   expect(teams.data.viewer.teams).toEqual([])
 })
+
+test('a blocked org names its earliest current admin other than the viewer', async () => {
+  const viewer = await createOrgAdmin(getTestEmail())
+  await setPolicy(viewer.orgId, 'none')
+  const adminNameFor = async () => {
+    const {organizations} = await requestConsent(CLAUDE, viewer.cookie)
+    expect(organizations).toHaveLength(1)
+    expect(organizations[0].organization.id).toBe(viewer.orgId)
+    return organizations[0].adminName
+  }
+  expect(await adminNameFor()).toBeNull()
+
+  const laterAdmin = await signUp()
+  const earlierAdmin = await signUp()
+  await getKysely()
+    .insertInto('OrganizationUser')
+    .values([
+      {id: generateUID(), orgId: viewer.orgId, userId: laterAdmin.userId, role: 'ORG_ADMIN'},
+      {
+        id: generateUID(),
+        orgId: viewer.orgId,
+        userId: earlierAdmin.userId,
+        role: 'ORG_ADMIN',
+        joinedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+      }
+    ])
+    .execute()
+  expect(await adminNameFor()).toBe(await selectPreferredName(earlierAdmin.userId))
+
+  await getKysely()
+    .updateTable('OrganizationUser')
+    .set({removedAt: new Date()})
+    .where('orgId', '=', viewer.orgId)
+    .where('userId', '=', earlierAdmin.userId)
+    .execute()
+  expect(await adminNameFor()).toBe(await selectPreferredName(laterAdmin.userId))
+})
+
+test('an org-owned client ignores the organizations and private pages chosen at consent', async () => {
+  const {userId, cookie, orgId} = await createOrgAdmin(getTestEmail())
+  const stranger = await createOrgAdmin(getTestEmail())
+  const clientId = `org-test-${generateUID()}`
+  const redirectUri = 'https://app.example.com/callback'
+  await getKysely()
+    .insertInto('OAuthAPIProvider')
+    .values({
+      clientId,
+      name: 'Org app',
+      clientType: 'public',
+      clientSecret: null,
+      orgId,
+      redirectUris: [redirectUri],
+      scopes: aiAppScopes
+    })
+    .execute()
+  const orgClient = {clientId, redirectUri, scope: 'users:read'}
+  const token = await connect(orgClient, cookie, {
+    grantedOrgIds: [stranger.orgId],
+    includePrivate: true
+  })
+  expect(await selectGrant(userId, clientId)).toEqual({
+    grantedOrgIds: [orgId],
+    personalGrantedAt: null
+  })
+  const notifications = await sendPublic({query: VIEWER_NOTIFICATIONS, bearerToken: token})
+  expect(notifications.data).toBeNull()
+  expect(notifications.errors?.[0]).toMatchObject({
+    message: "This access token doesn't include your private pages and invitations",
+    extensions: {code: 'FORBIDDEN'}
+  })
+})

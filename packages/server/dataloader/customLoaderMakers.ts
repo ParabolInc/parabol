@@ -700,6 +700,38 @@ export const billingLeadersIdsByOrgId = (parent: RootDataLoader, dependsOn: Regi
   )
 }
 
+export const earliestOrgAdminNameExcludingUser = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn(['organizationUsers', 'users'])
+  return new DataLoader<{orgId: string; userId: string}, string | null, string>(
+    async (keys) => {
+      const pg = getKysely()
+      return Promise.all(
+        keys.map(async ({orgId, userId}) => {
+          const admin = await pg
+            .selectFrom('OrganizationUser')
+            .innerJoin('User', 'User.id', 'OrganizationUser.userId')
+            .select('User.preferredName')
+            .where('OrganizationUser.orgId', '=', orgId)
+            .where('OrganizationUser.role', '=', 'ORG_ADMIN')
+            .where('OrganizationUser.removedAt', 'is', null)
+            .where('OrganizationUser.userId', '<>', userId)
+            .orderBy('OrganizationUser.joinedAt')
+            .limit(1)
+            .executeTakeFirst()
+          return admin?.preferredName ?? null
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.orgId}:${key.userId}`
+    }
+  )
+}
+
 export const samlByDomain = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('saml')
   return new NullableDataLoader<string, SAMLSource | null, string>(

@@ -5,11 +5,12 @@ interface OrgPolicy {
   useAI: boolean
 }
 
+export const getEffectiveAIAppsPolicy = (org: OrgPolicy): Orgaiappspolicyenum =>
+  org.aiAppsPolicy ?? (org.useAI ? 'all' : 'none')
+
 const isAIAppAllowedByOrg = (org: OrgPolicy, provider: {verifiedAt: Date | null}) => {
-  const policy = org.aiAppsPolicy ?? (org.useAI ? 'all' : 'none')
-  if (policy === 'all') return true
-  if (policy === 'verified') return !!provider.verifiedAt
-  return false
+  const policy = getEffectiveAIAppsPolicy(org)
+  return policy === 'all' || (policy === 'verified' && !!provider.verifiedAt)
 }
 
 export default isAIAppAllowedByOrg

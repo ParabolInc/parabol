@@ -1,4 +1,4 @@
-import {type Kysely, sql} from 'kysely'
+import type {Kysely} from 'kysely'
 import type {DB} from '../postgres/types/pg'
 import aiAppScopes from './aiAppScopes'
 
@@ -24,10 +24,7 @@ const upsertMetadataDocumentProvider = (db: Kysely<DB>, {clientId, name, redirec
     .onConflict((oc) =>
       oc
         .column('clientId')
-        .doUpdateSet((eb) => ({
-          redirectUris: eb.ref('excluded.redirectUris'),
-          updatedAt: sql`now()`
-        }))
+        .doUpdateSet((eb) => ({redirectUris: eb.ref('excluded.redirectUris')}))
         .where('OAuthAPIProvider.verifiedAt', 'is', null)
     )
     .execute()

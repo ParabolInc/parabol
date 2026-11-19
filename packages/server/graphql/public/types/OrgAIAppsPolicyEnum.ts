@@ -1,9 +1,9 @@
-import type {Orgaiappspolicyenum} from '../../../postgres/types/pg'
+import type {OrgAiAppsPolicyEnumResolvers} from '../resolverTypes'
 
-const OrgAIAppsPolicyEnum: Record<string, Orgaiappspolicyenum> = {
+const OrgAIAppsPolicyEnum = {
   ALL: 'all',
   VERIFIED: 'verified',
   NONE: 'none'
-}
+} satisfies Required<OrgAiAppsPolicyEnumResolvers>
 
 export default OrgAIAppsPolicyEnum

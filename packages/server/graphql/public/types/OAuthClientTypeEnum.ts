@@ -1,8 +1,8 @@
-import type {Oauthclienttypeenum} from '../../../postgres/types/pg'
+import type {OAuthClientTypeEnumResolvers} from '../resolverTypes'
 
-const OAuthClientTypeEnum: Record<string, Oauthclienttypeenum> = {
+const OAuthClientTypeEnum = {
   CONFIDENTIAL: 'confidential',
   PUBLIC: 'public'
-}
+} satisfies OAuthClientTypeEnumResolvers
 
 export default OAuthClientTypeEnum

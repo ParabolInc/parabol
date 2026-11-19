@@ -1,9 +1,9 @@
-import isAIAppAllowedByOrg from '../../../oauth2/isAIAppAllowedByOrg'
+import isAIAppAllowedByOrg, {getEffectiveAIAppsPolicy} from '../../../oauth2/isAIAppAllowedByOrg'
 import {isClientMetadataDocumentUrl} from '../../../oauth2/validateClientMetadataDocument'
 import type {Organization} from '../../../postgres/types'
 import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import isValid from '../../isValid'
-import type {OAuthAuthorizationRequestResolvers} from '../resolverTypes'
+import type {OAuthAuthorizationRequestResolvers, OAuthOrgBlockedReasonEnum} from '../resolverTypes'
 
 export interface OAuthAuthorizationRequestSource {
   name: string
@@ -15,10 +15,12 @@ export interface OAuthAuthorizationRequestSource {
   userId: string
 }
 
-const getBlockedReason = (organization: Organization, provider: {verifiedAt: Date | null}) => {
+const getBlockedReason = (
+  organization: Organization,
+  provider: {verifiedAt: Date | null}
+): OAuthOrgBlockedReasonEnum | null => {
   if (isAIAppAllowedByOrg(organization, provider)) return null
-  const allowsVerifiedApps = isAIAppAllowedByOrg(organization, {verifiedAt: new Date()})
-  return allowsVerifiedApps ? 'VERIFIED_ONLY' : 'NO_APPS'
+  return getEffectiveAIAppsPolicy(organization) === 'verified' ? 'VERIFIED_ONLY' : 'NO_APPS'
 }
 
 const OAuthAuthorizationRequest: OAuthAuthorizationRequestResolvers = {
