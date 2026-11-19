@@ -1,5 +1,9 @@
 import {sql} from 'kysely'
-import {type InspirationIssue, MAX_ISSUES} from '../../../../integrations/platform/InspirationIssue'
+import {
+  compareNewestFirst,
+  type InspirationIssue,
+  MAX_ISSUES
+} from '../../../../integrations/platform/InspirationIssue'
 import getKysely from '../../../../postgres/getKysely'
 import {Logger} from '../../../../utils/Logger'
 
@@ -13,7 +17,8 @@ type ParabolWorkKind = 'tasks' | 'standups'
 const fetchParabolIssues = async (
   teamId: string,
   userId: string,
-  searchQuery: string
+  searchQuery: string,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
   let range: {startAt?: string; endAt?: string; include?: ParabolWorkKind[]}
   try {
@@ -25,7 +30,7 @@ const fetchParabolIssues = async (
   const {startAt, endAt, include = ['tasks', 'standups']} = range
   if (!startAt || !endAt || include.length === 0) return []
   const start = new Date(startAt)
-  const end = new Date(endAt)
+  const end = before && before < new Date(endAt) ? before : new Date(endAt)
   const pg = getKysely()
 
   const [tasks, responses] = await Promise.all([
@@ -88,7 +93,7 @@ const fetchParabolIssues = async (
     })
   )
 
-  return [...taskItems, ...responseItems]
+  return [...taskItems, ...responseItems].sort(compareNewestFirst).slice(0, MAX_ISSUES)
 }
 
 export default fetchParabolIssues

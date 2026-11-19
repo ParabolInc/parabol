@@ -47,7 +47,8 @@ const draftStandupFromSources = async (options: Options) => {
     teamId,
     viewerId,
     context,
-    info
+    info,
+    null
   )
 
   const toIssue = ({service, issue}: NumberedIssue, unusedReason: string | null) => ({
@@ -60,11 +61,12 @@ const draftStandupFromSources = async (options: Options) => {
     draft: null
   })
 
-  if (numberedIssues.length === 0) return {inspirationItems: [], issues: []}
+  if (numberedIssues.length === 0) return {inspirationItems: [], issues: [], nextBefore: null}
   if (!canDraft) {
     return {
       inspirationItems: [],
-      issues: numberedIssues.map((numberedIssue) => toIssue(numberedIssue, null))
+      issues: numberedIssues.map((numberedIssue) => toIssue(numberedIssue, null)),
+      nextBefore: null
     }
   }
 
@@ -128,7 +130,7 @@ const draftStandupFromSources = async (options: Options) => {
       }
     ]
   })
-  return {inspirationItems, issues}
+  return {inspirationItems, issues, nextBefore: null}
 }
 
 export default draftStandupFromSources

@@ -15,7 +15,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   info
 ) => {
   const {authToken, dataLoader} = context
-  const {meetingId, sources, userPrompt} = input
+  const {meetingId, sources, userPrompt, before} = input
   const viewerId = getUserId(authToken)
 
   // VALIDATION
@@ -28,6 +28,11 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       'Inspiration items are only available in standup and retrospective meetings',
       {extensions: {code: 'BAD_USER_INPUT'}}
     )
+  }
+  if (before && meeting.meetingType !== 'retrospective') {
+    throw new GraphQLError('Only a retrospective timeline goes back in pages', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {teamId} = meeting
 
@@ -60,9 +65,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // RESOLUTION
-  const draftFromSources =
-    meeting.meetingType === 'teamPrompt' ? draftStandupFromSources : draftRetroFromSources
-  const draft = await draftFromSources({
+  const draftOptions = {
     meetingId,
     teamId,
     viewerId,
@@ -73,7 +76,11 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     canDraft,
     context,
     info
-  })
+  }
+  const draft =
+    meeting.meetingType === 'teamPrompt'
+      ? await draftStandupFromSources(draftOptions)
+      : await draftRetroFromSources({...draftOptions, before: before ?? null})
   return {meetingId, ...draft}
 }
 

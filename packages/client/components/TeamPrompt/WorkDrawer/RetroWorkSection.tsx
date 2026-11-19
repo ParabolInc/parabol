@@ -11,10 +11,24 @@ interface Props {
   error: string | null
   aiOffMessage: string | null
   dateRange: WorkDrawerDateRange
+  hasOlder: boolean
+  loadingOlder: boolean
+  olderError: string | null
+  loadOlder: () => void
 }
 
 const RetroWorkSection = (props: Props) => {
-  const {draft, drafting, error, aiOffMessage, dateRange} = props
+  const {
+    draft,
+    drafting,
+    error,
+    aiOffMessage,
+    dateRange,
+    hasOlder,
+    loadingOlder,
+    olderError,
+    loadOlder
+  } = props
   const issues = drafting ? [] : (draft?.issues ?? [])
   const draftCount = issues.filter((issue) => issue.draft).length
   const isEmpty = !!draft && !drafting && issues.length === 0
@@ -60,7 +74,17 @@ const RetroWorkSection = (props: Props) => {
             {NO_WORK_LINE}
           </p>
         )}
-        {issues.length > 0 && <RetroTimeline issues={issues} dateRange={dateRange} />}
+        {issues.length > 0 && (
+          <RetroTimeline
+            issues={issues}
+            dateRange={dateRange}
+            hasOlder={hasOlder}
+            loadingOlder={loadingOlder}
+            olderError={olderError}
+            loadingOlderLabel={aiOffMessage ? 'Finding older work' : 'Drafting from older work'}
+            loadOlder={loadOlder}
+          />
+        )}
       </div>
     </section>
   )

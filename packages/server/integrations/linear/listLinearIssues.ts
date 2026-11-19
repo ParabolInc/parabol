@@ -9,7 +9,8 @@ import LinearServerManager from './LinearServerManager'
 // same query. Returns the normalized issues, or [] if there's nothing.
 const listLinearIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
   const {context, dataLoader, info, teamId, userId} = ctx
   const auth = await dataLoader.get('freshAuth').load({service: 'linear', teamId, userId})
@@ -22,10 +23,11 @@ const listLinearIssues = async (
     Logger.error('listLinearIssues: could not parse searchQuery as a Linear filter')
     return []
   }
+  const beforeFilter = before && {updatedAt: {lte: before.toISOString()}}
 
   const manager = new LinearServerManager(auth, context, info)
   const [data, error] = await manager.getIssues({
-    filter,
+    filter: beforeFilter ? (filter ? {and: [filter, beforeFilter]} : beforeFilter) : filter,
     first: MAX_ISSUES,
     commentLast: MAX_ISSUE_COMMENTS
   })

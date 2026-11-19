@@ -434,7 +434,7 @@ Rules:
 - Rate how sure you are of that column as "columnConfidence": "high" only when exactly one column fits and the team would put it there too, otherwise "low".
 - One or two sentences, at most 40 words. Be specific: name the work and the fact that makes it worth raising, like how long it took or what it waited on.
 - Write in the first person ("I", "we"). NEVER refer to ${userName} in the third person.
-- Do not include links or URLs. The reflection is shown next to its item.
+- If the item has a URL, mention it as a markdown link woven into the sentence. The link text names the item briefly: a pull request or issue by its number or key and a few words ("[#13502 template editor](url)", "[PAR-812 standup templates](url)"), a calendar event by its day and title ("[Tue · Design review](url)"). The link shows the team which item the reflection is about once it is on the retro board.
 - Never invent problems, wins or feelings the items don't show.
 - Each item lists a Status and a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
 

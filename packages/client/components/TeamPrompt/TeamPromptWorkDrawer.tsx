@@ -12,6 +12,8 @@ import InspirationWorkSection from './WorkDrawer/InspirationWorkSection'
 import {dateRangeLabel} from './WorkDrawer/inspirationCopy'
 import useInspirationSourceDraft from './WorkDrawer/useInspirationSourceDraft'
 
+const SINCE_LAST_STANDUP = 'Since last standup'
+
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
 }
@@ -43,7 +45,10 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
   const {id: meetingId, prompts} = meeting
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const composer = useTeamPromptComposerApi()
-  const {dateRange, setDateRange, isDefaultRange} = useInspirationDrawer('draft', meeting)
+  const {dateRange, setDateRange, isDefaultRange, lastMeetingStartAt} = useInspirationDrawer(
+    'draft',
+    meeting
+  )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     availability,
@@ -84,7 +89,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
           />
         )}
         <InspirationSettingsButton
-          dateLabel={dateRangeLabel(draftRange, isDefaultRange ? 'Since last standup' : null)}
+          dateLabel={dateRangeLabel(draftRange, isDefaultRange ? SINCE_LAST_STANDUP : null)}
           hasInstructions={canDraft && !!instructions.trim()}
           canDraft={canDraft}
           onClick={() => setSettingsOpen(true)}
@@ -112,6 +117,11 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
           meetingKind='standup'
           onClose={() => setSettingsOpen(false)}
           dateRange={dateRange}
+          sincePreset={
+            lastMeetingStartAt
+              ? {label: SINCE_LAST_STANDUP, startAt: lastMeetingStartAt}
+              : undefined
+          }
           instructions={instructions}
           canDraft={canDraft}
           onSave={(nextRange, nextInstructions) => {

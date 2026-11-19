@@ -18,6 +18,7 @@ import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
+import {LinkBase} from './extensions/LinkBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {PopoverMentionBase} from './extensions/PopoverMentionBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
@@ -36,11 +37,8 @@ export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   }
 }
 export const serverTipTapExtensions: Extensions = [
-  StarterKit.configure({
-    link: {
-      isAllowedUri: isAllowedLinkHref
-    }
-  }),
+  StarterKit.configure({link: false}),
+  LinkBase.configure({isAllowedUri: isAllowedLinkHref}),
   Details.configure({
     persist: true
   }),

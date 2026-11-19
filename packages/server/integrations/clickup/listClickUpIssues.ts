@@ -24,15 +24,18 @@ const parseSearchQuery = (searchQuery: string) => {
 
 const listClickUpIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
   const params = parseSearchQuery(searchQuery)
   if (!params) {
     Logger.error('listClickUpIssues: could not parse searchQuery')
     return []
   }
+  const {updatedBefore} = params
   const res = await searchClickUpTasks(ctx, {
     ...params,
+    updatedBefore: before && (!updatedBefore || before < updatedBefore) ? before : updatedBefore,
     queryString: '',
     assignedToViewer: true,
     includeClosed: true,

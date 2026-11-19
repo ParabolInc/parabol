@@ -31,6 +31,7 @@ const mutation = graphql`
           promptId
         }
       }
+      nextBefore
     }
   }
 `

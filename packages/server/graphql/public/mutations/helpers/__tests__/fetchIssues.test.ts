@@ -28,27 +28,29 @@ const issue = {
 describe('fetchIssues', () => {
   it('reads Parabol tasks without the registry', async () => {
     jest.mocked(fetchParabolIssues).mockResolvedValue([issue])
-    await expect(fetchIssues('PARABOL', 'q', 'team1', 'user1', context, info)).resolves.toEqual([
-      issue
-    ])
-    expect(fetchParabolIssues).toHaveBeenCalledWith('team1', 'user1', 'q')
+    await expect(
+      fetchIssues('PARABOL', 'q', 'team1', 'user1', context, info, null)
+    ).resolves.toEqual([issue])
+    expect(fetchParabolIssues).toHaveBeenCalledWith('team1', 'user1', 'q', null)
   })
 
   it('dispatches an integration through its issueList capability', async () => {
     const listIssues = jest
       .spyOn(serverIntegrations.github.capabilities.issueList, 'listIssues')
       .mockResolvedValue([issue])
-    await expect(fetchIssues('github', 'is:pr', 'team1', 'user1', context, info)).resolves.toEqual([
-      issue
-    ])
+    const before = new Date('2026-11-10T12:00:00Z')
+    await expect(
+      fetchIssues('github', 'is:pr', 'team1', 'user1', context, info, before)
+    ).resolves.toEqual([issue])
     expect(listIssues).toHaveBeenCalledWith(
       {dataLoader, teamId: 'team1', userId: 'user1', context, info},
-      'is:pr'
+      'is:pr',
+      before
     )
   })
 
   it('rejects a service that lists no issues', async () => {
-    await expect(fetchIssues('gitlab', 'q', 'team1', 'user1', context, info)).rejects.toThrow(
+    await expect(fetchIssues('gitlab', 'q', 'team1', 'user1', context, info, null)).rejects.toThrow(
       'Inspiration items are not yet supported for gitlab'
     )
   })

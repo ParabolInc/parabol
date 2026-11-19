@@ -45,14 +45,19 @@ const parseSearchQuery = (searchQuery: string) => {
 // WHERE clause, so the draft and the list match. Returns [] if there's nothing.
 const listAzureDevOpsIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  before: Date | null
 ): Promise<InspirationIssue[]> => {
   const params = parseSearchQuery(searchQuery)
   if (!params) {
     Logger.error('listAzureDevOpsIssues: could not parse searchQuery')
     return []
   }
-  const {kinds, startAt, endAt, projects} = params
+  const {kinds, startAt, projects} = params
+  const endAt =
+    before && (!params.endAt || before < new Date(params.endAt))
+      ? before.toISOString()
+      : params.endAt
   if (kinds.length === 0) return []
   const [manager, workItems] = await Promise.all([
     getAzureDevOpsManager(ctx),

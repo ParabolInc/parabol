@@ -229,9 +229,12 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
-          className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
-            'min-h-16': isFocused
-          })}
+          className={cn(
+            'issue-chips issue-chips-wrap flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all',
+            {
+              'min-h-16': isFocused
+            }
+          )}
           editor={editor}
         />
         <div
