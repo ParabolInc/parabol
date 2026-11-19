@@ -18,22 +18,22 @@ interface Props {
   canDraft: boolean
   settings: InspirationSourceSettings
   setSettings: (update: (prev: InspirationSourceSettings) => InspirationSourceSettings) => void
-  onClose: () => void
+  onOpenChange: (open: boolean) => void
   teamMemberRef: InspirationSourcePopover_teamMember$key
 }
 
 const InspirationSourceTile = (props: Props) => {
-  const {service, isConnected, issueCount, isCounting, canDraft, settings, onClose} = props
+  const {service, isConnected, issueCount, isCounting, canDraft, settings, onOpenChange} = props
   const [open, setOpen] = useState(false)
   const isIncluded = isConnected && settings.kinds[service].length > 0
   const label = inspirationServiceLabel(service)
   const status = !isConnected ? 'Connect' : isIncluded ? (issueCount ?? '–') : 'Off'
-  const onOpenChange = (nextOpen: boolean) => {
+  const changeOpen = (nextOpen: boolean) => {
     setOpen(nextOpen)
-    if (!nextOpen) onClose()
+    onOpenChange(nextOpen)
   }
   return (
-    <RadixPopover.Root open={open} onOpenChange={onOpenChange}>
+    <RadixPopover.Root open={open} onOpenChange={changeOpen}>
       <RadixPopover.Trigger asChild>
         <button
           type='button'
