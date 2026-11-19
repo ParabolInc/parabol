@@ -1,37 +1,23 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
+import {Suspense} from 'react'
 import {ExpandMore, FilterList} from '~/ui/icons'
-import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
-import useLinearProjectsAndTeams, {
-  type LinearProjectOrTeam
-} from '../../../hooks/useLinearProjectsAndTeams'
+import type {LinearProjectOrTeam} from '../../../hooks/useLinearProjectsAndTeams'
 import getLinearSelectorItemId from '../../../integrations/linear/getLinearSelectorItemId'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
-import LinearSelectorMenu from '../../LinearSelectorMenu'
+import LinearProjectAndTeamMenuRoot from '../../LinearProjectAndTeamMenuRoot'
+import MockFieldList from '../../MockFieldList'
 
 interface Props {
-  teamMemberRef: LinearProjectFilterBar_teamMember$key
+  teamId: string
   selectedLinearIds: string[]
   setSelectedLinearIds: (ids: string[]) => void
   className?: string
 }
 
 const LinearProjectFilterBar = (props: Props) => {
-  const {teamMemberRef, selectedLinearIds, setSelectedLinearIds, className} = props
-  const teamMember = useFragment(
-    graphql`
-      fragment LinearProjectFilterBar_teamMember on TeamMember {
-        ...useLinearProjectsAndTeams_teamMember @defer
-      }
-    `,
-    teamMemberRef
-  )
-
-  const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
-    useLinearProjectsAndTeams(teamMember)
+  const {teamId, selectedLinearIds, setSelectedLinearIds, className} = props
 
   const handleSelectItem = (item: LinearProjectOrTeam, isSelected: boolean) => {
     const itemId = getLinearSelectorItemId(item)
@@ -69,15 +55,13 @@ const LinearProjectFilterBar = (props: Props) => {
       }
     >
       <MenuContent align='start' className='max-w-full'>
-        <LinearSelectorMenu
-          items={filteredProjectsAndTeams}
-          selectedItemIds={selectedLinearIds}
-          onSelectItem={handleSelectItem}
-          searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
-          placeholder='Search Linear projects or teams'
-          emptyStateMessage='No projects or teams found!'
-        />
+        <Suspense fallback={<MockFieldList />}>
+          <LinearProjectAndTeamMenuRoot
+            teamId={teamId}
+            selectedItemIds={selectedLinearIds}
+            onSelectItem={handleSelectItem}
+          />
+        </Suspense>
       </MenuContent>
     </Menu>
   )

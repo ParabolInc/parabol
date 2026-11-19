@@ -4,11 +4,11 @@ import {useFragment} from 'react-relay'
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import AzureDevOpsProjectFilterBarRoot from './AzureDevOpsProjectFilterBarRoot'
+import ClickUpListFilterBar from './ClickUpListFilterBar'
+import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
-import InspirationSourceFilterRoot, {
-  isInspirationFilterService
-} from './InspirationSourceFilterRoot'
 import InspirationSourceLogo from './InspirationSourceLogo'
 import {issueCountLabel} from './inspirationCopy'
 import inspirationServiceLabel from './inspirationServiceLabel'
@@ -17,6 +17,8 @@ import {
   type InspirationSourceService,
   type InspirationSourceSettings
 } from './inspirationSources'
+import JiraProjectFilterBar from './JiraProjectFilterBar'
+import LinearProjectFilterBar from './LinearProjectFilterBar'
 
 interface Props {
   service: InspirationSourceService
@@ -49,6 +51,7 @@ const InspirationSourcePopover = (props: Props) => {
     `,
     teamMemberRef
   )
+  const {teamId} = teamMember
   const label = inspirationServiceLabel(service)
   const destination = canDraft ? 'draft' : 'list'
   const enabledKinds = settings.kinds[service]
@@ -95,15 +98,49 @@ const InspirationSourcePopover = (props: Props) => {
               />
             ))}
           </div>
-          {isInspirationFilterService(service) && (
+          {service === 'github' && (
+            <GitHubRepoFilterBar
+              teamId={teamId}
+              selectedRepos={settings.githubRepos}
+              setSelectedRepos={(githubRepos) => setSettings((prev) => ({...prev, githubRepos}))}
+            />
+          )}
+          {service === 'jira' && (
+            <JiraProjectFilterBar
+              teamId={teamId}
+              selectedProjectIds={settings.jiraProjectIds}
+              setSelectedProjectIds={(jiraProjectIds) =>
+                setSettings((prev) => ({...prev, jiraProjectIds}))
+              }
+            />
+          )}
+          {service === 'linear' && (
+            <LinearProjectFilterBar
+              className='m-0'
+              teamId={teamId}
+              selectedLinearIds={settings.linearIds}
+              setSelectedLinearIds={(linearIds) => setSettings((prev) => ({...prev, linearIds}))}
+            />
+          )}
+          {service === 'azureDevOps' && (
             <Suspense fallback={<Spinner className='size-5 self-center' />}>
-              <InspirationSourceFilterRoot
-                service={service}
-                teamId={teamMember.teamId}
-                settings={settings}
-                setSettings={setSettings}
+              <AzureDevOpsProjectFilterBarRoot
+                teamId={teamId}
+                selectedProjectIds={settings.azureDevOpsProjectIds}
+                setSelectedProjectIds={(azureDevOpsProjectIds) =>
+                  setSettings((prev) => ({...prev, azureDevOpsProjectIds}))
+                }
               />
             </Suspense>
+          )}
+          {service === 'clickup' && (
+            <ClickUpListFilterBar
+              teamId={teamId}
+              selectedListIds={settings.clickupListIds}
+              setSelectedListIds={(clickupListIds) =>
+                setSettings((prev) => ({...prev, clickupListIds}))
+              }
+            />
           )}
           <p className='m-0 text-fg-muted text-xs'>
             {kinds.length > 1

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {useFragment} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
-import type {AzureDevOpsProjectFilterBar_teamMember$key} from '../../../__generated__/AzureDevOpsProjectFilterBar_teamMember.graphql'
+import type {AzureDevOpsProjectFilterBarQuery} from '../../../__generated__/AzureDevOpsProjectFilterBarQuery.graphql'
 import AzureDevOpsProjectAccessDialog from '../../../integrations/azureDevOps/AzureDevOpsProjectAccessDialog'
 import {getAzureDevOpsSharedProjects} from '../../../integrations/azureDevOps/azureDevOpsSharedProjects'
 import {Button} from '../../../ui/Button/Button'
@@ -13,27 +13,30 @@ import plural from '../../../utils/plural'
 import Checkbox from '../../Checkbox'
 
 interface Props {
-  teamMemberRef: AzureDevOpsProjectFilterBar_teamMember$key
+  teamId: string
+  queryRef: PreloadedQuery<AzureDevOpsProjectFilterBarQuery>
   selectedProjectIds: string[]
   setSelectedProjectIds: (integrationRepoIds: string[]) => void
 }
 
 const AzureDevOpsProjectFilterBar = (props: Props) => {
-  const {teamMemberRef, selectedProjectIds, setSelectedProjectIds} = props
-  const teamMember = useFragment(
+  const {teamId, queryRef, selectedProjectIds, setSelectedProjectIds} = props
+  const data = usePreloadedQuery<AzureDevOpsProjectFilterBarQuery>(
     graphql`
-      fragment AzureDevOpsProjectFilterBar_teamMember on TeamMember {
-        teamId
-        services {
-          service
-          ...azureDevOpsSharedProjects_service @relay(mask: false)
+      query AzureDevOpsProjectFilterBarQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            services {
+              service
+              ...azureDevOpsSharedProjects_service @relay(mask: false)
+            }
+          }
         }
       }
     `,
-    teamMemberRef
+    queryRef
   )
-  const {teamId, services} = teamMember
-  const {projects, isListed} = getAzureDevOpsSharedProjects(services)
+  const {projects, isListed} = getAzureDevOpsSharedProjects(data.viewer.teamMember?.services)
   const [isAccessOpen, setIsAccessOpen] = useState(false)
   const sharedIds = projects.map(({integrationRepoId}) => integrationRepoId)
   const selectedIds = selectedProjectIds.filter((id) => sharedIds.includes(id))

@@ -23,7 +23,7 @@ const query = graphql`
         }
         viewerMeetingMember {
           teamMember {
-            ...LinearProjectFilterBar_teamMember
+            id
           }
         }
       }
@@ -54,7 +54,7 @@ const LinearIntegrationPanel = (props: WorkDrawerQueryPanelProps<LinearIntegrati
   const filterBar = teamMember ? (
     <>
       <LinearProjectFilterBar
-        teamMemberRef={teamMember}
+        teamId={teamId}
         selectedLinearIds={selectedLinearIds}
         setSelectedLinearIds={setSelectedLinearIds}
       />

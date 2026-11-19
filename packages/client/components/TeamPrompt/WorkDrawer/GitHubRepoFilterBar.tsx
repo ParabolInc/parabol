@@ -1,29 +1,20 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
+import {Suspense} from 'react'
 import {ExpandMore, FilterList} from '~/ui/icons'
-import type {GitHubRepoFilterBar_teamMember$key} from '../../../__generated__/GitHubRepoFilterBar_teamMember.graphql'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
-import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
+import GitHubRepoSearchFilterMenuRoot from '../../GitHubRepoSearchFilterMenuRoot'
+import MockFieldList from '../../MockFieldList'
 
 interface Props {
-  teamMemberRef: GitHubRepoFilterBar_teamMember$key
+  teamId: string
   selectedRepos: string[]
   setSelectedRepos: (repos: string[]) => void
 }
 
 const GitHubRepoFilterBar = (props: Props) => {
-  const {teamMemberRef, selectedRepos, setSelectedRepos} = props
-  const teamMember = useFragment(
-    graphql`
-      fragment GitHubRepoFilterBar_teamMember on TeamMember {
-        ...GitHubRepoSearchFilterMenu_teamMember
-      }
-    `,
-    teamMemberRef
-  )
+  const {teamId, selectedRepos, setSelectedRepos} = props
 
   return (
     <Menu
@@ -48,18 +39,20 @@ const GitHubRepoFilterBar = (props: Props) => {
       }
     >
       <MenuContent align='start' className='max-h-full min-w-[300px] max-w-full p-2'>
-        <GitHubRepoSearchFilterMenu
-          menuLabel='Select repositories'
-          selectedRepos={selectedRepos}
-          onToggleRepo={(repoName, isSelected) => {
-            if (!isSelected) {
-              setSelectedRepos([...selectedRepos, repoName])
-            } else {
-              setSelectedRepos(selectedRepos.filter((repo) => repo !== repoName))
-            }
-          }}
-          teamMemberRef={teamMember}
-        />
+        <Suspense fallback={<MockFieldList />}>
+          <GitHubRepoSearchFilterMenuRoot
+            teamId={teamId}
+            menuLabel='Select repositories'
+            selectedRepos={selectedRepos}
+            onToggleRepo={(repoName, isSelected) => {
+              if (!isSelected) {
+                setSelectedRepos([...selectedRepos, repoName])
+              } else {
+                setSelectedRepos(selectedRepos.filter((repo) => repo !== repoName))
+              }
+            }}
+          />
+        </Suspense>
       </MenuContent>
     </Menu>
   )

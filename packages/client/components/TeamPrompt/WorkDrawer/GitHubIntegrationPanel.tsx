@@ -41,7 +41,7 @@ const query = graphql`
         }
         viewerMeetingMember {
           teamMember {
-            ...GitHubRepoFilterBar_teamMember
+            id
           }
         }
       }
@@ -81,7 +81,7 @@ const GitHubIntegrationPanel = (props: WorkDrawerQueryPanelProps<GitHubIntegrati
   const filterBar = teamMember ? (
     <>
       <GitHubRepoFilterBar
-        teamMemberRef={teamMember}
+        teamId={teamId}
         selectedRepos={selectedRepos}
         setSelectedRepos={setSelectedRepos}
       />

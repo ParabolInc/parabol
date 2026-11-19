@@ -1,7 +1,6 @@
 import '../../../../tiptap/extensions/__tests__/installHappyDom'
 import {act, type ReactNode} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import type {ClickUpListFilterBar_teamMember$key} from '../../../../__generated__/ClickUpListFilterBar_teamMember.graphql'
 import {happyWindow} from '../../../../tiptap/extensions/__tests__/installHappyDom'
 import ClickUpListFilterBar from '../ClickUpListFilterBar'
 
@@ -15,17 +14,28 @@ const mockClickUpService: {service: string; repos: typeof REPOS | null} = {
   service: 'clickup',
   repos: REPOS
 }
-const mockTeamMember = {services: [{service: 'github'}, mockClickUpService]}
+const mockData = {viewer: {teamMember: {services: [{service: 'github'}, mockClickUpService]}}}
 
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
-  useFragment: () => {
+  usePreloadedQuery: () => {
     mockRenders.count++
     if (mockRenders.count > MAX_RENDERS) throw new Error(`over ${MAX_RENDERS} renders`)
-    return mockTeamMember
+    return mockData
   }
 }))
+jest.mock('../../../ClickUpListSearchFilterMenuRoot', () => {
+  const {default: ClickUpListSearchFilterMenu} = jest.requireActual(
+    '../../../ClickUpListSearchFilterMenu'
+  )
+  return {
+    __esModule: true,
+    default: ({teamId: _teamId, ...menuProps}: {teamId: string}) => (
+      <ClickUpListSearchFilterMenu queryRef={{}} {...menuProps} />
+    )
+  }
+})
 jest.mock('../../../../ui/Menu/Menu', () => ({
   Menu: ({trigger, children}: {trigger: ReactNode; children: ReactNode}) => (
     <>
@@ -53,7 +63,6 @@ jest.mock('../../../Checkbox', () => ({
   default: ({active}: {active: boolean}) => <span data-checked={String(active)} />
 }))
 
-const teamMemberRef = {} as ClickUpListFilterBar_teamMember$key
 const mockSetSelectedListIds = jest.fn()
 let root: Root
 let container: ReturnType<typeof happyWindow.document.createElement>
@@ -62,7 +71,7 @@ const renderBar = (selectedListIds: string[]) =>
   act(async () =>
     root.render(
       <ClickUpListFilterBar
-        teamMemberRef={teamMemberRef}
+        teamId='team1'
         selectedListIds={selectedListIds}
         setSelectedListIds={mockSetSelectedListIds}
       />
