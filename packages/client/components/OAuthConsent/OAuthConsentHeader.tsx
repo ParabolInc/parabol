@@ -3,13 +3,14 @@ import {useFragment} from 'react-relay'
 import type {OAuthConsentHeader_request$key} from '../../__generated__/OAuthConsentHeader_request.graphql'
 import DialogTitle from '../DialogTitle'
 import BaseTag from '../Tag/BaseTag'
-import TagBlock from '../Tag/TagBlock'
+import OAuthConsentAppTiles from './OAuthConsentAppTiles'
 
 interface Props {
   requestRef: OAuthConsentHeader_request$key
+  email: string
 }
 
-const OAuthConsentHeader = ({requestRef}: Props) => {
+const OAuthConsentHeader = ({requestRef, email}: Props) => {
   const {name, verifiedAt, organization, organizations} = useFragment(
     graphql`
       fragment OAuthConsentHeader_request on OAuthAuthorizationRequest {
@@ -28,18 +29,20 @@ const OAuthConsentHeader = ({requestRef}: Props) => {
   const isGlobal = !organization
   const reachesNoOrg = isGlobal && organizations.every(({blockedReason}) => blockedReason)
   return (
-    <DialogTitle className='flex-col items-start gap-1'>
-      <span className='wrap-anywhere min-w-0'>
+    <div className='flex flex-col items-center gap-3 px-6 pt-7 text-center'>
+      <OAuthConsentAppTiles appName={name} isUnverified={isGlobal && !verifiedAt} />
+      <DialogTitle className='wrap-anywhere block p-0'>
         {reachesNoOrg
           ? `${name} can’t reach any of your organizations`
           : `${name} wants to use your Parabol account`}
-      </span>
+      </DialogTitle>
       {isGlobal && verifiedAt && (
-        <TagBlock>
-          <BaseTag className='ml-0 bg-jade-700 text-white'>Verified</BaseTag>
-        </TagBlock>
+        <BaseTag className='ml-0 bg-jade-700 text-white'>Verified</BaseTag>
       )}
-    </DialogTitle>
+      <p className='wrap-anywhere m-0 text-fg-secondary text-sm'>
+        Signed in as <b className='font-semibold text-fg-primary'>{email}</b>
+      </p>
+    </div>
   )
 }
 

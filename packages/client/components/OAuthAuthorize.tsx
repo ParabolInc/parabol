@@ -91,11 +91,8 @@ const OAuthAuthorize = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <InviteDialog className='w-[480px] max-w-full'>
-        <OAuthConsentHeader requestRef={oauthAuthorizationRequest} />
-        <DialogContent className='flex flex-col gap-5'>
-          <p className='wrap-anywhere m-0 text-fg-secondary'>
-            Signed in as <b className='font-semibold text-fg-primary'>{email}</b>
-          </p>
+        <OAuthConsentHeader requestRef={oauthAuthorizationRequest} email={email} />
+        <DialogContent className='flex flex-col gap-5 pt-5'>
           <OAuthConsentBanner requestRef={oauthAuthorizationRequest} />
           <OAuthConsentPermissions requestRef={oauthAuthorizationRequest} />
           <OAuthConsentOrgPicker requestRef={oauthAuthorizationRequest} choice={choice} />
