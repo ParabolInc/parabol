@@ -126,23 +126,50 @@ test('authorization server metadata lists S256 and both grant types', async () =
 })
 
 test('protected resource metadata names the /mcp resource and this server', async () => {
+  const response = await fetch(`${ORIGIN}/.well-known/oauth-protected-resource/mcp`)
+  expect(response.status).toBe(200)
+  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
+  expect(response.headers.get('Content-Type')).toContain('application/json')
+  const metadata = await response.json()
+  expect(metadata).toMatchObject({
+    resource: MCP_RESOURCE,
+    authorization_servers: [ORIGIN],
+    bearer_methods_supported: ['header'],
+    resource_name: 'Parabol'
+  })
+  expect(metadata.scopes_supported).toHaveLength(18)
+})
+
+test('the origin itself is not described as a protected resource', async () => {
+  const response = await fetch(`${ORIGIN}/.well-known/oauth-protected-resource`)
+  expect(response.headers.get('Content-Type') ?? '').not.toContain('application/json')
+})
+
+test('a browser client can preflight the token and metadata endpoints', async () => {
   for (const path of [
-    '/.well-known/oauth-protected-resource',
+    '/oauth/token',
+    '/.well-known/oauth-authorization-server',
     '/.well-known/oauth-protected-resource/mcp'
   ]) {
-    const response = await fetch(`${ORIGIN}${path}`)
-    expect(response.status).toBe(200)
-    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
-    expect(response.headers.get('Content-Type')).toContain('application/json')
-    const metadata = await response.json()
-    expect(metadata).toMatchObject({
-      resource: MCP_RESOURCE,
-      authorization_servers: [ORIGIN],
-      bearer_methods_supported: ['header'],
-      resource_name: 'Parabol'
+    const response = await fetch(`${ORIGIN}${path}`, {
+      method: 'OPTIONS',
+      headers: {
+        origin: 'http://localhost:6274',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type, mcp-protocol-version'
+      }
     })
-    expect(metadata.scopes_supported).toHaveLength(18)
+    expect(response.status).toBe(204)
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
+    expect(response.headers.get('Access-Control-Allow-Headers')).toContain('mcp-protocol-version')
   }
+})
+
+test('token endpoint answers, errors included, can be read by a browser client', async () => {
+  const response = await postToken({grant_type: 'authorization_code', client_id: 'nobody'})
+  expect(response.status).toBe(401)
+  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
+  expect(response.headers.get('Cache-Control')).toBe('no-store')
 })
 
 test('a resource other than /mcp is refused at authorize', async () => {
@@ -188,8 +215,8 @@ test('a token request naming a different resource than the code is refused', asy
 
 test('an OAuth access token can run a query that is not persisted', async () => {
   const app = await createApp()
-  const code = await getCode(app, MCP_RESOURCE)
-  const tokens = await (await exchange(app, code, MCP_RESOURCE)).json()
+  const code = await getCode(app)
+  const tokens = await (await exchange(app, code)).json()
   const response = await fetch(`${ORIGIN}/graphql`, {
     method: 'POST',
     headers: {
@@ -220,10 +247,21 @@ const queryRaw = (headers: Record<string, string>) =>
     body: JSON.stringify({query: '{viewer{id}}'})
   }).then((response) => response.json())
 
-const getAccessToken = async (app: App) => {
-  const code = await getCode(app, MCP_RESOURCE)
-  return (await (await exchange(app, code, MCP_RESOURCE)).json()).access_token as string
+const getAccessToken = async (app: App, resource?: string) => {
+  const code = await getCode(app, resource)
+  return (await (await exchange(app, code, resource)).json()).access_token as string
 }
+
+test('a token bound to /mcp is refused at /graphql', async () => {
+  const app = await createApp()
+  const accessToken = await getAccessToken(app, MCP_RESOURCE)
+  const body = await queryRaw({authorization: `Bearer ${accessToken}`})
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors?.[0]).toMatchObject({
+    message: `This access token is for ${MCP_RESOURCE}`,
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+})
 
 test('a session cookie does not lend its authority to an OAuth bearer on a non-persisted query', async () => {
   const app = await createApp()

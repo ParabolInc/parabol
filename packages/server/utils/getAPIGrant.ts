@@ -94,8 +94,13 @@ const getOAuthAccessTokenGrant = async (
 ): Promise<APIGrant | null> => {
   const accessToken = getVerifiedAuthToken(jwt, false, 'action-oauth2', true)
   if (!accessToken) return null
-  if (!getVerifiedAuthToken(jwt, false, 'action-oauth2')) {
+  if (accessToken.exp * 1000 + ms('10s') < Date.now()) {
     throw new GraphQLError('OAuth access token expired', {extensions: {code: 'UNAUTHENTICATED'}})
+  }
+  if (accessToken.resource) {
+    throw new GraphQLError(`This access token is for ${accessToken.resource}`, {
+      extensions: {code: 'UNAUTHENTICATED'}
+    })
   }
   const {client_id: clientId, grant_id: grantCode, sub: userId} = accessToken
   if (!clientId || grantCode === undefined) return throwInvalidOAuthToken()

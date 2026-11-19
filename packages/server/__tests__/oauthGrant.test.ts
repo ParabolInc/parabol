@@ -392,3 +392,23 @@ test("a refresh after narrowing an app's scopes only carries the scopes it still
   const authToken = getVerifiedAuthToken(second.access_token, true, 'action-oauth2')!
   expect(authToken.scope).toEqual(['teams:read'])
 })
+
+test('issuing a refresh token clears expired ones, even from other connections', async () => {
+  const admin = await createOrgAdmin()
+  const abandoned = await consent(await createApp(admin))
+  const abandonedHash = crypto.createHash('sha256').update(abandoned.refresh_token).digest('hex')
+  await getKysely()
+    .updateTable('OAuthAPIRefreshToken')
+    .set({expiresAt: new Date(Date.now() - ms('1d'))})
+    .where('tokenHash', '=', abandonedHash)
+    .execute()
+
+  await consent(await createApp(admin))
+
+  const remaining = await getKysely()
+    .selectFrom('OAuthAPIRefreshToken')
+    .select('id')
+    .where('tokenHash', '=', abandonedHash)
+    .execute()
+  expect(remaining).toHaveLength(0)
+})

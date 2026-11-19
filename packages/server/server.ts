@@ -18,6 +18,7 @@ import listenHandler from './listenHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
 import authorizationServerMetadataHandler from './oauth2/authorizationServerMetadataHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
+import oauthPreflightHandler from './oauth2/oauthPreflightHandler'
 import protectedResourceMetadataHandler from './oauth2/protectedResourceMetadataHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
@@ -108,13 +109,12 @@ const app = uws
   .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))
   .post('/oauth/token', traceHttpRoute('/oauth/token', tokenHandler))
+  .options('/oauth/token', oauthPreflightHandler)
+  .options('/.well-known/oauth-authorization-server', oauthPreflightHandler)
+  .options('/.well-known/oauth-protected-resource/mcp', oauthPreflightHandler)
   .get(
     '/.well-known/oauth-authorization-server',
     traceHttpRoute('/.well-known/oauth-authorization-server', authorizationServerMetadataHandler)
-  )
-  .get(
-    '/.well-known/oauth-protected-resource',
-    traceHttpRoute('/.well-known/oauth-protected-resource', protectedResourceMetadataHandler)
   )
   .get(
     '/.well-known/oauth-protected-resource/mcp',

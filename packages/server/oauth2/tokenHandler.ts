@@ -22,14 +22,9 @@ const isEqualSecret = (expected: string | null | undefined, actual: string) => {
   return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)
 }
 
-const writeJSON = (res: HttpResponse, status: string, body: Record<string, string>) => {
+const writeJSON = (res: HttpResponse, status: string, body: Record<string, string | number>) => {
   res.writeStatus(status)
-  res.writeHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(body))
-}
-
-const writeTokens = (res: HttpResponse, body: Record<string, string | number>) => {
-  res.writeStatus('200 OK')
+  res.writeHeader('Access-Control-Allow-Origin', '*')
   res.writeHeader('Content-Type', 'application/json')
   res.writeHeader('Cache-Control', 'no-store')
   res.end(JSON.stringify(body))
@@ -54,11 +49,10 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   })
 
   if (!rawBody) {
-    res.writeStatus('400 Bad Request')
-    res.writeHeader('Content-Type', 'application/json')
-    res.end(
-      JSON.stringify({error: 'invalid_request', error_description: 'Request body is missing'})
-    )
+    writeJSON(res, '400 Bad Request', {
+      error: 'invalid_request',
+      error_description: 'Request body is missing'
+    })
     return
   }
 
@@ -152,8 +146,9 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       writeJSON(res, '400 Bad Request', {error: 'invalid_grant'})
       return
     }
-    writeTokens(
+    writeJSON(
       res,
+      '200 OK',
       issueOAuthTokens({
         ...rotated,
         scopes: rotated.scopes.filter((scope) => provider.scopes.includes(scope)),
@@ -227,8 +222,9 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     grantedOrgIds: [provider.orgId],
     resource: resource || null
   })
-  writeTokens(
+  writeJSON(
     res,
+    '200 OK',
     issueOAuthTokens({
       grantId,
       userId,

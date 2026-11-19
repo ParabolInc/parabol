@@ -17,7 +17,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     ADD CONSTRAINT "OAuthAPIProvider_secret_matches_type"
     CHECK (("clientType" = 'public') = ("clientSecret" IS NULL))
   `.execute(db)
-  await db.schema.alterTable('OAuthAPICode').addColumn('resource', 'varchar(2048)').execute()
+  await db.schema.alterTable('OAuthAPICode').addColumn('resource', 'text').execute()
   await db.schema
     .createTable('OAuthAPIGrant')
     .addColumn('id', 'serial', (col) => col.primaryKey())
@@ -29,7 +29,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('scopes', sql`"OAuthScopeEnum"[]`, (col) => col.notNull())
     .addColumn('grantedOrgIds', sql`varchar(100)[]`)
-    .addColumn('resource', 'varchar(2048)')
+    .addColumn('resource', 'text')
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn('lastUsedAt', 'timestamptz')
     .addColumn('revokedAt', 'timestamptz')
@@ -46,7 +46,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('grantId', 'integer', (col) =>
       col.notNull().references('OAuthAPIGrant.id').onDelete('cascade')
     )
-    .addColumn('tokenHash', 'varchar(64)', (col) => col.notNull().unique())
+    .addColumn('tokenHash', 'text', (col) => col.notNull().unique())
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('rotatedAt', 'timestamptz')
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
@@ -55,6 +55,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createIndex('idx_OAuthAPIRefreshToken_grantId')
     .on('OAuthAPIRefreshToken')
     .column('grantId')
+    .execute()
+  await db.schema
+    .createIndex('idx_OAuthAPIRefreshToken_expiresAt')
+    .on('OAuthAPIRefreshToken')
+    .column('expiresAt')
     .execute()
 }
 
