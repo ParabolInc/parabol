@@ -7,6 +7,7 @@ import type {ClickUpIntegrationResults_query$key} from '../../../__generated__/C
 import type {ClickUpIntegrationResultsPaginationQuery} from '../../../__generated__/ClickUpIntegrationResultsPaginationQuery.graphql'
 import type {ClickUpIntegrationResultsQuery} from '../../../__generated__/ClickUpIntegrationResultsQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
+import getCaughtErrorMessage from '../../../utils/relay/getCaughtErrorMessage'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import ClickUpObjectCard from './ClickUpObjectCard'
 
@@ -52,10 +53,7 @@ const ClickUpIntegrationResults = (props: Props) => {
                   includeClosed: true
                   updatedAfter: $updatedAfter
                   updatedBefore: $updatedBefore
-                ) @connection(key: "ClickUpIntegrationResults_tasks") {
-                  error {
-                    message
-                  }
+                ) @connection(key: "ClickUpIntegrationResults_tasks") @catch {
                   edges {
                     node {
                       id
@@ -73,9 +71,10 @@ const ClickUpIntegrationResults = (props: Props) => {
   )
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 25)
   const {data, hasNext} = paginationRes
-  const tasks = data.viewer.teamMember?.integrations.clickup.tasks
+  const tasksResult = data.viewer.teamMember?.integrations.clickup.tasks
+  const tasks = tasksResult?.ok ? tasksResult.value : null
   const edges = tasks?.edges ?? []
-  const errorMessage = tasks?.error?.message
+  const errorMessage = getCaughtErrorMessage(tasksResult)
 
   const resultCount = edges.length
   useEffect(() => {

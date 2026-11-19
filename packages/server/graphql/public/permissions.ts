@@ -695,6 +695,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    prevUsedRepoIntegrations: isTeamMember<'TeamMember.prevUsedRepoIntegrations'>('source.teamId'),
     repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
   },

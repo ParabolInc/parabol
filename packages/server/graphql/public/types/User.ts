@@ -236,7 +236,7 @@ const User: ReqResolvers<'User'> = {
           teamIds: JSON.stringify(teamIds)
         }
       })
-      return connectionFromTasks([], 0, err)
+      return connectionFromTasks([], 0)
     }
     // common queries
     // - give me all the tasks for a particular team (users: all, team: abc)

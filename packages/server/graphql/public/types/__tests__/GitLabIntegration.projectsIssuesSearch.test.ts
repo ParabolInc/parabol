@@ -14,6 +14,7 @@ const projects = [
 ]
 const requests: {kind: 'group' | 'project'; fullPath: string; after?: string | null}[] = []
 let groupIssuesError: Error | null = null
+let projectIssuesError: Error | null = null
 
 const issuesPage = (fullPath: string) => ({
   fullPath,
@@ -38,6 +39,7 @@ jest.mock('../../../../integrations/gitlab/GitLabServerManager', () => ({
     }
     async getProjectIssues({fullPath, after}: GetProjectIssuesQueryVariables) {
       requests.push({kind: 'project', fullPath, after})
+      if (projectIssuesError) return [null, projectIssuesError]
       return [{project: issuesPage(fullPath)}, null]
     }
   }
@@ -70,6 +72,7 @@ describe('GitLabIntegration.projectsIssues', () => {
   beforeEach(() => {
     requests.length = 0
     groupIssuesError = null
+    projectIssuesError = null
   })
 
   it('searches each outermost group once and only projects outside a group one by one', async () => {
@@ -79,8 +82,8 @@ describe('GitLabIntegration.projectsIssues', () => {
       {kind: 'group', fullPath: 'beta', after: ''},
       {kind: 'project', fullPath: 'alice/notes', after: ''}
     ])
-    expect(connection.edges).toHaveLength(3)
-    expect(JSON.parse(connection.pageInfo.endCursor!)).toEqual([
+    expect(connection?.edges).toHaveLength(3)
+    expect(JSON.parse(connection?.pageInfo.endCursor ?? '')).toEqual([
       {fullPath: 'acme', cursor: 'c1'},
       {fullPath: 'beta', cursor: 'c1'},
       {fullPath: 'alice/notes', cursor: 'c1'}
@@ -108,9 +111,17 @@ describe('GitLabIntegration.projectsIssues', () => {
 
   it("passes GitLab's rate limit on to the viewer without logging it as an error", async () => {
     groupIssuesError = new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
-    const connection = await run({searchQuery: 'bug'})
+    projectIssuesError = groupIssuesError
+    await expect(run({searchQuery: 'bug'})).rejects.toMatchObject({
+      message: 'GitLab rate limit reached, try again in a minute',
+      extensions: {code: 'SERVICE_UNAVAILABLE'}
+    })
     expect(logError).not.toHaveBeenCalled()
-    expect(connection.error).toEqual({message: 'GitLab rate limit reached, try again in a minute'})
-    expect(connection.edges).toHaveLength(1)
+  })
+
+  it('returns the issues it found when only some searches are rate limited', async () => {
+    groupIssuesError = new GitLabRateLimitError('GitLab rate limit reached, try again in a minute')
+    const connection = await run({searchQuery: 'bug'})
+    expect(connection?.edges).toHaveLength(1)
   })
 })

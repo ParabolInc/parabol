@@ -1,5 +1,7 @@
+import {GraphQLError} from 'graphql'
 import {buildAzureDevOpsSearchWiql} from '../../../integrations/azureDevOps/buildAzureDevOpsWiql'
 import searchAzureDevOpsWorkItems from '../../../integrations/azureDevOps/searchAzureDevOpsWorkItems'
+import toCodedIntegrationError from '../../../integrations/platform/toCodedIntegrationError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import type {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
 
@@ -28,12 +30,14 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
     const {dataLoader} = context
     const limit = Math.min(Math.max(first ?? MAX_WORK_ITEMS, 1), MAX_WORK_ITEMS)
     const wiql = buildAzureDevOpsSearchWiql(queryString ?? null, isWIQL)
-    if (wiql instanceof Error) return connectionFromTasks([], 0, wiql)
+    if (wiql instanceof Error) {
+      throw new GraphQLError(wiql.message, {extensions: {code: 'BAD_USER_INPUT'}})
+    }
     const workItems = await searchAzureDevOpsWorkItems(
       {dataLoader, teamId, userId, context, info},
       {...wiql, projects: projectKeyFilters, limit}
     )
-    if (workItems instanceof Error) return connectionFromTasks([], 0, workItems)
+    if (workItems instanceof Error) throw toCodedIntegrationError(workItems)
     return connectionFromTasks(workItems, limit)
   },
 

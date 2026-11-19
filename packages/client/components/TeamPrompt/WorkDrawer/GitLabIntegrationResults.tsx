@@ -6,6 +6,7 @@ import type {GitLabIntegrationResults_search$key} from '../../../__generated__/G
 import type {GitLabIntegrationResultsQuery} from '../../../__generated__/GitLabIntegrationResultsQuery.graphql'
 import type {GitLabIntegrationResultsSearchPaginationQuery} from '../../../__generated__/GitLabIntegrationResultsSearchPaginationQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
+import getCaughtErrorMessage from '../../../utils/relay/getCaughtErrorMessage'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import GitLabObjectCard from './GitLabObjectCard'
 
@@ -47,10 +48,7 @@ const GitLabIntegrationResults = (props: Props) => {
                   searchQuery: ""
                   state: "opened"
                   sort: "UPDATED_DESC"
-                ) @connection(key: "GitLabIntegrationResults_projectsIssues") {
-                  error {
-                    message
-                  }
+                ) @connection(key: "GitLabIntegrationResults_projectsIssues") @catch {
                   edges {
                     node {
                       ... on _xGitLabIssue {
@@ -72,9 +70,10 @@ const GitLabIntegrationResults = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
 
-  const gitlab = data.viewer.teamMember?.integrations.gitlab
-  const gitlabResults = gitlab?.projectsIssues?.edges?.map((edge) => edge?.node)
-  const error = gitlab?.projectsIssues?.error ?? null
+  const projectsIssuesResult = data.viewer.teamMember?.integrations.gitlab.projectsIssues
+  const projectsIssues = projectsIssuesResult?.ok ? projectsIssuesResult.value : null
+  const gitlabResults = projectsIssues?.edges?.map((edge) => edge?.node)
+  const errorMessage = getCaughtErrorMessage(projectsIssuesResult)
 
   return (
     <>
@@ -91,7 +90,7 @@ const GitLabIntegrationResults = (props: Props) => {
           <div className='flex flex-col items-center pt-12'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
             <div className='mt-7 w-2/3 text-center'>
-              {error?.message ? error.message : `Looks like you don’t have any issues to display.`}
+              {errorMessage ?? `Looks like you don’t have any issues to display.`}
             </div>
             <Link
               to='/team/$teamId/integrations'

@@ -4,6 +4,7 @@ import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {AzureDevOpsIntegrationResultsQuery} from '../../../__generated__/AzureDevOpsIntegrationResultsQuery.graphql'
+import getCaughtErrorMessage from '../../../utils/relay/getCaughtErrorMessage'
 import AzureDevOpsObjectCard from './AzureDevOpsObjectCard'
 
 interface Props {
@@ -32,10 +33,7 @@ const AzureDevOpsIntegrationResults = (props: Props) => {
                   queryString: $where
                   projectKeyFilters: $projectIds
                   isWIQL: true
-                ) {
-                  error {
-                    message
-                  }
+                ) @catch {
                   edges {
                     node {
                       id
@@ -51,9 +49,10 @@ const AzureDevOpsIntegrationResults = (props: Props) => {
     `,
     queryRef
   )
-  const workItems = data.viewer.teamMember?.integrations.azureDevOps.workItems
+  const workItemsResult = data.viewer.teamMember?.integrations.azureDevOps.workItems
+  const workItems = workItemsResult?.ok ? workItemsResult.value : null
   const edges = workItems?.edges ?? []
-  const errorMessage = workItems?.error?.message
+  const errorMessage = getCaughtErrorMessage(workItemsResult)
 
   // Report how many work items this search returned so the parent can hide the AI draft UI
   // when there's no work to draft from.

@@ -11,6 +11,7 @@ import {
   type FetchQueryFetchPolicy,
   fetchQuery,
   type GraphQLResponse,
+  type GraphQLSingularResponse,
   type GraphQLTaggedNode,
   Network,
   type NormalizationLinkedField,
@@ -101,6 +102,27 @@ const failIfEndedEarly = (name: string, response: ObservableFromValue<GraphQLRes
     })
     return () => subscription.unsubscribe()
   })
+
+// @catch hands a component its errors without their messages, but keeps their extensions
+const copyErrorMessagesIntoExtensions = (
+  response: GraphQLSingularResponse
+): GraphQLSingularResponse => {
+  if (!('errors' in response) || !response.errors) return response
+  const errors = response.errors.map((error) => ({
+    ...error,
+    extensions: {...error.extensions, message: error.message}
+  }))
+  return {...response, errors}
+}
+
+const isBatchedResponse = (
+  response: GraphQLResponse
+): response is readonly GraphQLSingularResponse[] => Array.isArray(response)
+
+const keepErrorMessagesForCatch = (response: GraphQLResponse): GraphQLResponse =>
+  isBatchedResponse(response)
+    ? response.map(copyErrorMessagesIntoExtensions)
+    : copyErrorMessagesIntoExtensions(response)
 
 interface RetainedSubscription {
   disposable: Disposable
@@ -201,9 +223,11 @@ export default class Atmosphere extends Environment {
           failIfEndedEarly(
             request.name,
             atmosphere!.fetchFunction(request, variables, cacheConfig, uploadables)
-          ),
+          ).map(keepErrorMessagesForCatch),
         (operation, variables, cacheConfig) =>
-          atmosphere!.fetchOrSubscribe(operation, variables, cacheConfig)
+          atmosphere!
+            .fetchOrSubscribe(operation, variables, cacheConfig)
+            .map(keepErrorMessagesForCatch)
       ),
       log: logRelayEvent
     })

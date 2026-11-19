@@ -1,5 +1,5 @@
 """
-A Relay-style paginated connection for Azure DevOps work items fetched from a user's Azure DevOps integration. Use this type when listing work items to import as Parabol tasks or when searching for work items to link to a task. Pagination is cursor-based using ISO8601 date cursors. Check the error field before iterating edges — if the integration is misconfigured or the request fails, edges will be empty and error will explain why.
+A Relay-style paginated connection for Azure DevOps work items fetched from a user's Azure DevOps integration. Use this type when listing work items to import as Parabol tasks or when searching for work items to link to a task. Pagination is cursor-based using ISO8601 date cursors.
 """
 type AzureDevOpsWorkItemConnection {
   """
@@ -11,9 +11,4 @@ type AzureDevOpsWorkItemConnection {
   The list of work item edges on this page. Each edge wraps a single AzureDevOpsWorkItem node and a cursor that can be used to resume pagination from that position.
   """
   edges: [AzureDevOpsWorkItemEdge!]!
-
-  """
-  Present when the connection could not be loaded, for example when the Azure DevOps integration is missing, the access token has expired, or the requested project does not exist. When this field is non-null, edges will be empty and pageInfo will be absent.
-  """
-  error: StandardMutationError
 }

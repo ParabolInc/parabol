@@ -10,7 +10,8 @@ type ClickUpIntegration {
   """
   Tasks from the ClickUp workspaces this connection authorized, most recently updated first.
   ClickUp has no text search, so a query matches the names, ids and custom ids of the most
-  recently updated tasks, and a task link or id is also looked up directly
+  recently updated tasks, and a task link or id is also looked up directly.
+  Null, with a coded error, when ClickUp fails the search
   """
   tasks(
     """
@@ -52,5 +53,5 @@ type ClickUpIntegration {
     true to include tasks with a closed status
     """
     includeClosed: Boolean = false
-  ): ClickUpTaskConnection!
+  ): ClickUpTaskConnection
 }
