@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   OrgAIAppsPolicyEnum,
@@ -49,11 +49,17 @@ const OrgAIAppsPolicyPanel = ({organizationRef}: Props) => {
   const effectivePolicy = getEffectiveAIAppsPolicy(aiAppsPolicy, useAI)
   const isFollowing = !aiAppsPolicy
 
+  useEffect(() => {
+    if (!submitting && document.activeElement === document.body) returnFocusRef.current?.focus()
+  }, [submitting])
+
   const commitPolicy = (policy: OrgAIAppsPolicyEnum) => {
     updatePolicy({variables: {orgId, policy}, onCompleted: () => setPending(null)})
   }
 
   const handleChange = (policy: OrgAIAppsPolicyEnum) => {
+    const {activeElement} = document
+    returnFocusRef.current = activeElement instanceof HTMLElement ? activeElement : null
     const newlyBlocked = aiAppGrants.filter(
       ({clientVerifiedAt}) =>
         !isAIAppGrantBlocked(effectivePolicy, clientVerifiedAt) &&
@@ -63,8 +69,6 @@ const OrgAIAppsPolicyPanel = ({organizationRef}: Props) => {
       commitPolicy(policy)
       return
     }
-    const {activeElement} = document
-    returnFocusRef.current = activeElement instanceof HTMLElement ? activeElement : null
     const memberCount = new Set(newlyBlocked.map(({user}) => user.id)).size
     setPending({policy, connectionCount: newlyBlocked.length, memberCount})
   }
@@ -82,6 +86,7 @@ const OrgAIAppsPolicyPanel = ({organizationRef}: Props) => {
           labelId='org-ai-apps-policy-label'
           value={effectivePolicy}
           isFollowing={isFollowing}
+          disabled={submitting}
           onChange={handleChange}
         />
       </div>

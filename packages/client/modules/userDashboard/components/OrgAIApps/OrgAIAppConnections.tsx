@@ -84,6 +84,13 @@ const OrgAIAppConnections = ({organizationRef}: Props) => {
                     orgName={name}
                   />
                 ))}
+                {visibleGrants.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className='p-8 text-center text-fg-muted text-sm'>
+                      No connections match your filter.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
