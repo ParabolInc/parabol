@@ -19,23 +19,13 @@ const mockData = {viewer: {teamMember: {services: [{service: 'github'}, mockClic
 jest.mock('babel-plugin-relay/macro', () => ({__esModule: true, default: () => ({})}))
 jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
+  useQueryLoader: () => [{}, () => {}],
   usePreloadedQuery: () => {
     mockRenders.count++
     if (mockRenders.count > MAX_RENDERS) throw new Error(`over ${MAX_RENDERS} renders`)
     return mockData
   }
 }))
-jest.mock('../../../ClickUpListSearchFilterMenuRoot', () => {
-  const {default: ClickUpListSearchFilterMenu} = jest.requireActual(
-    '../../../ClickUpListSearchFilterMenu'
-  )
-  return {
-    __esModule: true,
-    default: ({teamId: _teamId, ...menuProps}: {teamId: string}) => (
-      <ClickUpListSearchFilterMenu queryRef={{}} {...menuProps} />
-    )
-  }
-})
 jest.mock('../../../../ui/Menu/Menu', () => ({
   Menu: ({trigger, children}: {trigger: ReactNode; children: ReactNode}) => (
     <>

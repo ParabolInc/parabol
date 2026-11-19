@@ -1,12 +1,16 @@
 import {Suspense} from 'react'
+import {useQueryLoader} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
+import linearProjectAndTeamMenuQuery, {
+  type LinearProjectAndTeamMenuQuery
+} from '../../../__generated__/LinearProjectAndTeamMenuQuery.graphql'
 import type {LinearProjectOrTeam} from '../../../hooks/useLinearProjectsAndTeams'
 import getLinearSelectorItemId from '../../../integrations/linear/getLinearSelectorItemId'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
-import LinearProjectAndTeamMenuRoot from '../../LinearProjectAndTeamMenuRoot'
+import LinearProjectAndTeamMenu from '../../LinearProjectAndTeamMenu'
 import MockFieldList from '../../MockFieldList'
 
 interface Props {
@@ -18,6 +22,12 @@ interface Props {
 
 const LinearProjectFilterBar = (props: Props) => {
   const {teamId, selectedLinearIds, setSelectedLinearIds, className} = props
+  const [queryRef, loadQuery] = useQueryLoader<LinearProjectAndTeamMenuQuery>(
+    linearProjectAndTeamMenuQuery
+  )
+  const preload = () => {
+    if (!queryRef) loadQuery({teamId}, {fetchPolicy: 'store-or-network'})
+  }
 
   const handleSelectItem = (item: LinearProjectOrTeam, isSelected: boolean) => {
     const itemId = getLinearSelectorItemId(item)
@@ -35,8 +45,11 @@ const LinearProjectFilterBar = (props: Props) => {
 
   return (
     <Menu
+      onOpenChange={(isOpen) => isOpen && preload()}
       trigger={
         <button
+          onMouseEnter={preload}
+          onFocus={preload}
           className={cn(
             'group mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent',
             className
@@ -56,11 +69,15 @@ const LinearProjectFilterBar = (props: Props) => {
     >
       <MenuContent align='start' className='max-w-full'>
         <Suspense fallback={<MockFieldList />}>
-          <LinearProjectAndTeamMenuRoot
-            teamId={teamId}
-            selectedItemIds={selectedLinearIds}
-            onSelectItem={handleSelectItem}
-          />
+          {queryRef ? (
+            <LinearProjectAndTeamMenu
+              queryRef={queryRef}
+              selectedItemIds={selectedLinearIds}
+              onSelectItem={handleSelectItem}
+            />
+          ) : (
+            <MockFieldList />
+          )}
         </Suspense>
       </MenuContent>
     </Menu>
