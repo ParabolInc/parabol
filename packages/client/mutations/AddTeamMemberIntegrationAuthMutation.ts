@@ -78,14 +78,16 @@ const mutation = graphql`
   }
 `
 
-// Everything read while the service was disconnected (empty project lists, null APIs) stays in the
-// store, so it is marked stale and the next query that reads it fetches it again
+// What the service returned while disconnected (empty project lists, null APIs) stays in the store,
+// so the service's records are marked stale and the next query that reads them fetches them again.
+// TeamMemberIntegrations names each field after its service, except Jira's, which is atlassian.
 export const addTeamMemberIntegrationAuthNotificationUpdater: SharedUpdater<
   AddTeamMemberIntegrationAuthMutation_notification$data
 > = (payload) => {
   const service = payload.getValue('service')
   const teamMember = payload.getLinkedRecord('teamMember')
-  teamMember.getLinkedRecord('integrations').invalidateRecord()
+  const integrationField = service === 'jira' ? 'atlassian' : service
+  teamMember.getLinkedRecord('integrations').getLinkedRecord(integrationField)?.invalidateRecord()
   teamMember
     .getLinkedRecords('services')
     .find((integrationService) => integrationService.getValue('service') === service)
