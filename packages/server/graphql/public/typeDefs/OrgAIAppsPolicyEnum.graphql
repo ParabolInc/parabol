@@ -1,0 +1,19 @@
+"""
+Which AI apps, such as Claude and ChatGPT, members of an organization may connect to it
+"""
+enum OrgAIAppsPolicyEnum {
+  """
+  Any AI app
+  """
+  ALL
+
+  """
+  Only AI apps Parabol has verified
+  """
+  VERIFIED
+
+  """
+  No AI apps
+  """
+  NONE
+}

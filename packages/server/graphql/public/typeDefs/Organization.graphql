@@ -230,6 +230,11 @@ type Organization {
   useAI: Boolean!
 
   """
+  Which AI apps may connect to the org. Null follows useAI. Only visible to org admins
+  """
+  aiAppsPolicy: OrgAIAppsPolicyEnum
+
+  """
   The tier used for billing purposes (may differ from tier during trials or grace periods)
   """
   billingTier: TierEnum!

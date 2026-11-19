@@ -1380,6 +1380,21 @@ type Mutation {
   ): ToggleAIFeaturesPayload! @scope(name: ORGS_WRITE)
 
   """
+  Choose which AI apps members of the organization may connect to it. Requires an org admin session
+  """
+  updateOrgAIAppsPolicy(
+    """
+    The organization being updated
+    """
+    orgId: ID!
+
+    """
+    Which AI apps may connect to the organization
+    """
+    policy: OrgAIAppsPolicyEnum!
+  ): UpdateOrgAIAppsPolicyPayload! @scope(name: ORGS_WRITE)
+
+  """
   Toggle the team's privacy between public (joinable without invitation) and private
   """
   toggleTeamPrivacy(

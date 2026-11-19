@@ -1,0 +1,9 @@
+"""
+Return value for updateOrgAIAppsPolicy
+"""
+type UpdateOrgAIAppsPolicyPayload {
+  """
+  The organization with the updated AI apps policy
+  """
+  organization: Organization!
+}

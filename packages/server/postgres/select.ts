@@ -229,6 +229,7 @@ export const selectOrganizations = () =>
       'scheduledLockAt',
       'lockedAt',
       'useAI',
+      'aiAppsPolicy',
       'unpaidMessageHTML',
       'updatedAt',
       'couponId'

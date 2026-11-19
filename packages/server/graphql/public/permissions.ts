@@ -508,6 +508,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId')
     ),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
+    updateOrgAIAppsPolicy: and(
+      hasTokenAudience(['action']),
+      hasOrgRole<'Mutation.updateOrgAIAppsPolicy'>('args.orgId', 'ORG_ADMIN')
+    ),
     exportPagesToConfluence: and(
       isAuthenticated,
       hasPageAccess<'Mutation.exportPagesToConfluence'>('args.pageId', 'viewer'),
@@ -612,6 +616,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   Organization: {
     '*': redactUnless(or(isSuperUser, isViewerOnOrg<'Organization.id'>('source.id'))),
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
+    aiAppsPolicy: hasOrgRole<'Organization.aiAppsPolicy'>('source.id', 'ORG_ADMIN'),
     id: allow,
     isBillingLeader: allow,
     isOrgAdmin: allow,

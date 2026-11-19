@@ -57,6 +57,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "enumValues": {
+          "OrgAIAppsPolicyEnum": "../../postgres/types/pg#Orgaiappspolicyenum",
           "OAuthClientTypeEnum": {
             "CONFIDENTIAL": "confidential",
             "PUBLIC": "public"
@@ -231,6 +232,7 @@
           "OAuthAuthorizationRequest": "./types/OAuthAuthorizationRequest#OAuthAuthorizationRequestSource",
           "OAuthClientTypeEnum": "../../postgres/types/pg#Oauthclienttypeenum",
           "OAuthScopeEnum": "../../postgres/types/pg#Oauthscopeenum",
+          "OrgAIAppsPolicyEnum": "../../postgres/types/pg#Orgaiappspolicyenum",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
           "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
@@ -391,6 +393,7 @@
           "UpdateIntegrationProviderPayload": "./types/UpdateIntegrationProviderPayload#UpdateIntegrationProviderPayloadSource",
           "UpdateMeetingTemplatePayload": "./types/UpdateMeetingTemplatePayload#UpdateMeetingTemplatePayloadSource",
           "UpdateOAuthAPIProviderPayload": "./types/UpdateOAuthAPIProviderPayload#UpdateOAuthAPIProviderPayloadSource",
+          "UpdateOrgAIAppsPolicyPayload": "./types/UpdateOrgAIAppsPolicyPayload#UpdateOrgAIAppsPolicyPayloadSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
           "PageExport": "../../postgres/types/index#PageExport as PageExportDB",
           "UpdatePageAccessPayload": "./types/UpdatePageAccessPayload#UpdatePageAccessPayloadSource",

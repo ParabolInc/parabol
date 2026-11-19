@@ -18,6 +18,11 @@ const aiAppScopes = [
 ]
 
 export async function up(db: Kysely<any>): Promise<void> {
+  await sql`CREATE TYPE "OrgAIAppsPolicyEnum" AS ENUM ('all', 'verified', 'none')`.execute(db)
+  await db.schema
+    .alterTable('Organization')
+    .addColumn('aiAppsPolicy', sql`"OrgAIAppsPolicyEnum"`)
+    .execute()
   await db.schema
     .alterTable('OAuthAPIProvider')
     .alterColumn('orgId', (col) => col.dropNotNull())
@@ -83,4 +88,6 @@ export async function down(db: Kysely<any>): Promise<void> {
     .alterTable('OAuthAPIProvider')
     .alterColumn('orgId', (col) => col.setNotNull())
     .execute()
+  await db.schema.alterTable('Organization').dropColumn('aiAppsPolicy').execute()
+  await sql`DROP TYPE "OrgAIAppsPolicyEnum"`.execute(db)
 }
