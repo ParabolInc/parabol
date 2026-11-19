@@ -8,10 +8,12 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
         updatedAt
         body
         issueState: state
+        viewerDidAuthor
         repository {
           nameWithOwner
         }
         comments(last: $commentLast) {
+          totalCount
           nodes {
             author {
               login
@@ -26,10 +28,17 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
         updatedAt
         body
         prState: state
+        viewerDidAuthor
+        additions
+        deletions
+        reviews {
+          totalCount
+        }
         repository {
           nameWithOwner
         }
         comments(last: $commentLast) {
+          totalCount
           nodes {
             author {
               login

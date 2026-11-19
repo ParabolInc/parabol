@@ -1,0 +1,15 @@
+"""
+One page of a retrospective's inspiration timeline, listed before any of it is drafted from
+"""
+type InspirationIssuePage {
+  """
+  The issues the viewer's sources matched on this page, newest first
+  """
+  issues: [InspirationIssue!]!
+
+  """
+  Where the next older page starts, to pass as before. Null once the page reaches the start of the
+  sources' date range
+  """
+  nextBefore: DateTime
+}

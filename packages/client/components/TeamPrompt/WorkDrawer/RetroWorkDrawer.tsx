@@ -86,6 +86,7 @@ const RetroWorkDrawer = (props: Props) => {
     draft,
     requestRedraft,
     drafting,
+    draftingPages,
     error,
     hasOlder,
     loadOlder,
@@ -99,6 +100,7 @@ const RetroWorkDrawer = (props: Props) => {
     isOrgAIEnabled: meeting.organization.useAI,
     dateRange,
     instructionsKey: 'Inspiration:retroInstructions',
+    isPaged: true,
     lifespanMs: RETRO_DRAFT_LIFESPAN_MS
   })
 
@@ -162,9 +164,9 @@ const RetroWorkDrawer = (props: Props) => {
         <RetroWorkSection
           draft={draft}
           drafting={drafting}
+          draftingPages={draftingPages}
           error={error}
           aiOffMessage={aiOffMessage}
-          dateRange={draftRange}
           hasOlder={hasOlder}
           loadingOlder={loadingOlder}
           olderError={olderError}

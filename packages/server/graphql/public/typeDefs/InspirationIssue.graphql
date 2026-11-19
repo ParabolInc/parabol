@@ -28,6 +28,12 @@ type InspirationIssue {
   updatedAt: DateTime
 
   """
+  How notable the issue looks before the AI reads it, higher first: the viewer's own work, finished
+  work, long discussions and big changes rank first
+  """
+  importance: Float!
+
+  """
   Why the AI left the issue out of a standup draft. Null if the draft uses it, and in a retrospective
   """
   unusedReason: String

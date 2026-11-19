@@ -3,14 +3,13 @@ import Ellipsis from '../../Ellipsis/Ellipsis'
 import {issueCountLabel, NO_WORK_LINE} from './inspirationCopy'
 import RetroTimeline from './RetroTimeline'
 import type {InspirationDraft} from './useInspirationDraft'
-import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 interface Props {
   draft: InspirationDraft | null
   drafting: boolean
+  draftingPages: boolean
   error: string | null
   aiOffMessage: string | null
-  dateRange: WorkDrawerDateRange
   hasOlder: boolean
   loadingOlder: boolean
   olderError: string | null
@@ -21,9 +20,9 @@ const RetroWorkSection = (props: Props) => {
   const {
     draft,
     drafting,
+    draftingPages,
     error,
     aiOffMessage,
-    dateRange,
     hasOlder,
     loadingOlder,
     olderError,
@@ -32,11 +31,6 @@ const RetroWorkSection = (props: Props) => {
   const issues = drafting ? [] : (draft?.issues ?? [])
   const draftCount = issues.filter((issue) => issue.draft).length
   const isEmpty = !!draft && !drafting && issues.length === 0
-  const heading = drafting
-    ? aiOffMessage
-      ? 'Finding your work'
-      : 'Drafting from your work'
-    : 'Your work'
   const countLabel =
     issues.length === 0
       ? ''
@@ -45,11 +39,11 @@ const RetroWorkSection = (props: Props) => {
         : `${issueCountLabel(issues.length)} · ${draftCount === 1 ? '1 draft' : `${draftCount} drafts`}`
   const note =
     aiOffMessage ??
-    (issues.length > 0 && draftCount === 0
-      ? 'Nothing stood out clearly enough to draft. Use + on any item to start a reflection.'
+    (!draftingPages && issues.length > 0 && draftCount === 0
+      ? 'Nothing stood out clearly enough to draft.'
       : null)
   return (
-    <section aria-labelledby='retro-work-heading' aria-busy={drafting}>
+    <section aria-labelledby='retro-work-heading' aria-busy={drafting || draftingPages}>
       <div className='flex flex-col gap-1 px-4 pt-[18px]'>
         <div className='flex items-baseline justify-between gap-2'>
           <h3
@@ -57,11 +51,17 @@ const RetroWorkSection = (props: Props) => {
             className='m-0 flex items-center gap-1.5 font-semibold text-fg-primary text-sm'
           >
             {!aiOffMessage && <AutoAwesome className='size-[18px] text-accent' />}
-            {heading}
+            {drafting ? 'Finding your work' : 'Your work'}
             {drafting && <Ellipsis />}
           </h3>
           {countLabel && <span className='shrink-0 text-fg-muted text-xs'>{countLabel}</span>}
         </div>
+        {draftingPages && issues.length > 0 && (
+          <p role='status' className='m-0 text-fg-muted text-xs'>
+            Drafting reflections from your most notable work
+            <Ellipsis />
+          </p>
+        )}
         {note && <p className='m-0 text-fg-muted text-xs'>{note}</p>}
       </div>
       <div className='flex flex-col px-4 pb-4'>
@@ -77,11 +77,9 @@ const RetroWorkSection = (props: Props) => {
         {issues.length > 0 && (
           <RetroTimeline
             issues={issues}
-            dateRange={dateRange}
             hasOlder={hasOlder}
             loadingOlder={loadingOlder}
             olderError={olderError}
-            loadingOlderLabel={aiOffMessage ? 'Finding older work' : 'Drafting from older work'}
             loadOlder={loadOlder}
           />
         )}

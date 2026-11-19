@@ -1,25 +1,21 @@
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import {Button} from '../../../ui/Button/Button'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import groupIssuesByWeek from './groupIssuesByWeek'
-import RetroTimelineEvent from './RetroTimelineEvent'
+import groupIssuesByDay from './groupIssuesByDay'
+import RetroTimelineDay from './RetroTimelineDay'
 import type {InspirationDraft} from './useInspirationDraft'
-import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 interface Props {
   issues: InspirationDraft['issues']
-  dateRange: WorkDrawerDateRange
   hasOlder: boolean
   loadingOlder: boolean
   olderError: string | null
-  loadingOlderLabel: string
   loadOlder: () => void
 }
 
 const RetroTimeline = (props: Props) => {
-  const {issues, dateRange, hasOlder, loadingOlder, olderError, loadingOlderLabel, loadOlder} =
-    props
-  const weeks = groupIssuesByWeek(issues, dateRange.startAt, dateRange.endAt)
+  const {issues, hasOlder, loadingOlder, olderError, loadOlder} = props
+  const days = groupIssuesByDay(issues)
   const loadOlderTrigger = useLoadNextOnScrollBottom({
     hasNext: hasOlder && !olderError,
     isLoadingNext: loadingOlder,
@@ -27,23 +23,13 @@ const RetroTimeline = (props: Props) => {
   })
   return (
     <div className='flex flex-col'>
-      {weeks.map(({key, label, issues: weekIssues}) => (
-        <div key={key} className='flex flex-col'>
-          <h4 className='m-0 pt-3.5 pb-1.5 font-semibold text-fg-secondary text-xs'>{label}</h4>
-          <ul className='m-0 flex list-none flex-col p-0'>
-            {weekIssues.map((issue) => (
-              <RetroTimelineEvent
-                key={`${issue.service}:${issue.url || issue.title}:${issue.updatedAt}`}
-                issue={issue}
-              />
-            ))}
-          </ul>
-        </div>
+      {days.map(({key, label, issues: dayIssues}) => (
+        <RetroTimelineDay key={key} label={label} issues={dayIssues} />
       ))}
       {loadOlderTrigger}
       {loadingOlder && (
         <p role='status' className='m-0 pt-3.5 font-semibold text-fg-secondary text-xs'>
-          {loadingOlderLabel}
+          Finding older work
           <Ellipsis />
         </p>
       )}

@@ -18,11 +18,20 @@ interface Options {
   isOrgAIEnabled: boolean
   dateRange: WorkDrawerDateRange | undefined
   instructionsKey: string
+  isPaged?: boolean
   lifespanMs?: number
 }
 
 const useInspirationSourceDraft = (options: Options) => {
-  const {meetingId, teamMemberRef, isOrgAIEnabled, dateRange, instructionsKey, lifespanMs} = options
+  const {
+    meetingId,
+    teamMemberRef,
+    isOrgAIEnabled,
+    dateRange,
+    instructionsKey,
+    isPaged,
+    lifespanMs
+  } = options
   const availability = useInspirationSourceAvailability(teamMemberRef)
   const [storedSettings, setStoredSettings] = useLocalStorageState<
     Partial<InspirationSourceSettings>
@@ -50,14 +59,25 @@ const useInspirationSourceDraft = (options: Options) => {
       service,
       searchQuery: buildInspirationSearchQuery(service, settings, draftRange)
     }))
-  const {draft, requestRedraft, drafting, error, hasOlder, loadOlder, loadingOlder, olderError} =
-    useInspirationDraft({
-      meetingId,
-      isMeetingMember: !!teamMemberRef,
-      sources,
-      instructions: canDraft ? instructions : '',
-      lifespanMs
-    })
+  const {
+    draft,
+    requestRedraft,
+    drafting,
+    draftingPages,
+    error,
+    hasOlder,
+    loadOlder,
+    loadingOlder,
+    olderError
+  } = useInspirationDraft({
+    meetingId,
+    isMeetingMember: !!teamMemberRef,
+    sources,
+    instructions: canDraft ? instructions : '',
+    canDraft,
+    isPaged,
+    lifespanMs
+  })
   const draftedIssues = draft?.issues ?? []
   const draftedQueries = new Map(
     (draft?.sources ?? []).map(({service, searchQuery}) => [service, searchQuery])
@@ -85,6 +105,7 @@ const useInspirationSourceDraft = (options: Options) => {
     draft,
     requestRedraft,
     drafting,
+    draftingPages,
     error,
     hasOlder,
     loadOlder,

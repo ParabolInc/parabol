@@ -7,6 +7,8 @@ import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import {resolveForSU} from '../../resolvers'
+import gatherInspirationIssues from '../mutations/helpers/gatherInspirationIssues'
+import toInspirationIssue from '../mutations/helpers/toInspirationIssue'
 import type {RetrospectiveMeetingResolvers} from '../resolverTypes'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
@@ -25,6 +27,21 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       .limit(1)
       .executeTakeFirst()
     return (meeting as RetrospectiveMeetingSource) || null
+  },
+  viewerInspirationIssues: async ({teamId}, {sources, before}, context, info) => {
+    const viewerId = getUserId(context.authToken)
+    const {numberedIssues, nextBefore} = await gatherInspirationIssues(
+      sources,
+      teamId,
+      viewerId,
+      context,
+      info,
+      {before: before ?? null}
+    )
+    return {
+      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue, null)),
+      nextBefore
+    }
   },
   prevCompletedMeeting: async ({teamId, createdAt}) => {
     // finds the id first, so only that meeting's phases are read out of the team's history

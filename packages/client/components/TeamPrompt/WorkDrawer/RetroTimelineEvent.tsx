@@ -1,11 +1,8 @@
-import dayjs from 'dayjs'
 import {cn} from '../../../ui/cn'
 import InspirationSourceLogo from './InspirationSourceLogo'
 import inspirationServiceLabel from './inspirationServiceLabel'
 import parseInspirationContent from './parseInspirationContent'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
-import RetroStartReflectionMenu from './RetroStartReflectionMenu'
-import reflectionStarterContent from './reflectionStarterContent'
 import type {InspirationDraft} from './useInspirationDraft'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
@@ -17,13 +14,10 @@ const toSentenceCase = (text: string) => text.charAt(0) + text.slice(1).toLowerC
 
 const RetroTimelineEvent = (props: Props) => {
   const {issue} = props
-  const {service, kind, title, url, updatedAt, draft} = issue
+  const {service, kind, title, url, draft} = issue
   const {meetingId} = useWorkDrawerConsume()
   return (
-    <li className='group grid grid-cols-[44px_16px_minmax(0,1fr)] gap-x-1.5 py-1.5'>
-      <span className='text-right text-fg-muted text-xs leading-5'>
-        {updatedAt && dayjs(updatedAt).format('MMM D')}
-      </span>
+    <li className='grid grid-cols-[16px_minmax(0,1fr)] gap-x-1.5 py-1.5'>
       <span
         aria-hidden
         className='before:-inset-y-1.5 relative flex justify-center before:absolute before:w-0.5 before:bg-hairline'
@@ -62,11 +56,6 @@ const RetroTimelineEvent = (props: Props) => {
             )}
             <span className='text-fg-muted text-xs'>{toSentenceCase(kind)}</span>
           </div>
-          <RetroStartReflectionMenu
-            subject={title}
-            content={reflectionStarterContent(title, url, service)}
-            revealOnHover
-          />
         </div>
         {draft && (
           <RetroInspirationItemCard

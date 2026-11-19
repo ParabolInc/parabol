@@ -12,6 +12,7 @@ export type GenerateInspirationItemsPayloadSource = {
     title: string
     url: string | null
     updatedAt: Date | null
+    importance: number
     unusedReason: string | null
     draft: InspirationItemSource | null
   }[]

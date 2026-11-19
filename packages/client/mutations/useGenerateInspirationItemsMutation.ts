@@ -24,6 +24,7 @@ const mutation = graphql`
         title
         url
         updatedAt
+        importance
         unusedReason
         draft {
           id

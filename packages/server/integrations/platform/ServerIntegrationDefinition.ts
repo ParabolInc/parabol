@@ -6,7 +6,7 @@ import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
-import type {InspirationIssue} from './InspirationIssue'
+import type {InspirationIssue, IssuePage} from './InspirationIssue'
 import type {TaskIntegrationManager} from './TaskIntegrationManager'
 
 export interface ServiceRepo {
@@ -134,11 +134,11 @@ export interface EstimatePushCapability {
 }
 
 export interface IssueListCapability {
-  /** Re-runs a drawer search for the viewer with enough detail to draft from: its newest MAX_ISSUES, newest first, and with before only those dated no later than it. Returning MAX_ISSUES means older ones may remain. [] when not connected or the service fails */
+  /** Re-runs a drawer search for the viewer with enough detail to draft from: the page's first issues, newest first, dated no later than its before. Returning a full page means older ones may remain. [] when not connected or the service fails */
   listIssues(
     ctx: GqlIntegrationCtx,
     searchQuery: string,
-    before: Date | null
+    page: IssuePage
   ): Promise<InspirationIssue[]>
 }
 
