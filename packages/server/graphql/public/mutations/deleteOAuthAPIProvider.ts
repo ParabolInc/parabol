@@ -11,19 +11,12 @@ const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = asyn
   const [providerId] = CipherId.fromClient(args.providerId)
   const {dataLoader} = context
 
-  const pg = getKysely()
-
-  const provider = await pg
-    .selectFrom('OAuthAPIProvider')
-    .select('orgId')
-    .where('id', '=', providerId)
-    .executeTakeFirst()
-
+  const provider = await dataLoader.get('oAuthProviders').load(providerId)
   if (!provider) {
     throw new GraphQLError('Provider not found', {extensions: {code: 'NOT_FOUND'}})
   }
 
-  await pg.deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()
+  await getKysely().deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()
   dataLoader.get('oAuthProviders').clear(providerId)
 
   return {success: true, deletedProviderId: args.providerId}

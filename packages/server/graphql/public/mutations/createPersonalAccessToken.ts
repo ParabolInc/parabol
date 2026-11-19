@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import getKysely from '../../../postgres/getKysely'
-import hashPersonalAccessToken from '../../../utils/hashPersonalAccessToken'
+import hashRandomToken from '../../../utils/hashRandomToken'
 import type {MutationResolvers} from '../resolverTypes'
 
 let enabled = true
@@ -52,7 +52,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   }
   const rawToken = crypto.randomBytes(32).toString('base64url')
   const prefix = rawToken.slice(0, 8)
-  const hashedToken = hashPersonalAccessToken(rawToken)
+  const hashedToken = hashRandomToken(rawToken)
 
   const pg = getKysely()
   const pat = await pg

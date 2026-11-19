@@ -1,54 +1,93 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import type {Oauthscopeenum} from '../postgres/types/pg'
-import {hashOAuthRefreshToken, isOAuthRefreshToken} from './credentials'
+import hashRandomToken from '../utils/hashRandomToken'
+import {isOAuthRefreshToken} from './credentials'
 import insertOAuthRefreshToken from './insertOAuthRefreshToken'
 
-const rotateOAuthRefreshToken = async (refreshToken: string, clientId: string) => {
+interface Input {
+  refreshToken: string
+  clientId: string
+  orgId: string
+}
+
+const rotateOAuthRefreshToken = async ({refreshToken, clientId, orgId}: Input) => {
   if (!isOAuthRefreshToken(refreshToken)) return null
-  const tokenHash = hashOAuthRefreshToken(refreshToken)
+  const tokenHash = hashRandomToken(refreshToken)
   return getKysely()
     .transaction()
     .execute(async (trx) => {
-      const rotated = await trx
-        .updateTable('OAuthAPIRefreshToken')
-        .set({rotatedAt: sql`now()`})
-        .where('tokenHash', '=', tokenHash)
-        .where('rotatedAt', 'is', null)
-        .where('expiresAt', '>', sql<Date>`now()`)
-        .where('grantId', 'in', (eb) =>
-          eb
-            .selectFrom('OAuthAPIGrant')
-            .select('id')
-            .where('clientId', '=', clientId)
-            .where('revokedAt', 'is', null)
+      // lock the grant in its own statement, so the token read below sees a rotation that committed while this one waited
+      const lockedGrant = await trx
+        .selectFrom('OAuthAPIGrant')
+        .select('id')
+        .where('clientId', '=', clientId)
+        .where('id', '=', (eb) =>
+          eb.selectFrom('OAuthAPIRefreshToken').select('grantId').where('tokenHash', '=', tokenHash)
         )
-        .returning('grantId')
+        .forUpdate()
         .executeTakeFirst()
-      if (!rotated) {
-        await trx
-          .updateTable('OAuthAPIGrant')
-          .set({revokedAt: sql`now()`})
-          .where('clientId', '=', clientId)
-          .where('revokedAt', 'is', null)
-          .where('id', 'in', (eb) =>
-            eb
-              .selectFrom('OAuthAPIRefreshToken')
-              .select('grantId')
-              .where('tokenHash', '=', tokenHash)
-              .where('rotatedAt', 'is not', null)
-          )
-          .execute()
+      if (!lockedGrant) return null
+      const grantId = lockedGrant.id
+      const token = await trx
+        .selectFrom('OAuthAPIRefreshToken')
+        .select((eb) => [
+          'id',
+          'parentId',
+          'rotatedAt',
+          sql<boolean>`"expiresAt" > now()`.as('isUnexpired'),
+          sql<boolean>`"rotatedAt" > now() - interval '30 seconds'`.as('isInRetryWindow'),
+          eb
+            .exists(
+              eb
+                .selectFrom('OAuthAPIRefreshToken as child')
+                .select('child.id')
+                .whereRef('child.parentId', '=', 'OAuthAPIRefreshToken.id')
+                .where('child.rotatedAt', 'is', null)
+            )
+            .as('hasUnusedChild')
+        ])
+        .where('tokenHash', '=', tokenHash)
+        .executeTakeFirst()
+      if (!token) return null
+      // a retry within 30 seconds, before its new token is used, mints a sibling; the first sibling used revokes the rest
+      const isRetry = !!token.rotatedAt && token.isInRetryWindow && token.hasUnusedChild
+      if (token.rotatedAt && !isRetry) {
+        await trx.deleteFrom('OAuthAPIGrant').where('id', '=', grantId).execute()
         return null
       }
-      const {grantId} = rotated
+      if (!token.isUnexpired) return null
+      if (!token.rotatedAt) {
+        const {parentId} = token
+        await trx
+          .updateTable('OAuthAPIRefreshToken')
+          .set({rotatedAt: sql`now()`})
+          .where('rotatedAt', 'is', null)
+          .where((eb) =>
+            parentId === null
+              ? eb('id', '=', token.id)
+              : eb.or([eb('id', '=', token.id), eb('parentId', '=', parentId)])
+          )
+          .execute()
+      }
       const grant = await trx
         .updateTable('OAuthAPIGrant')
         .set({lastUsedAt: sql`now()`})
         .where('id', '=', grantId)
         .returning(['userId', 'resource', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
         .executeTakeFirstOrThrow()
-      const nextRefreshToken = await insertOAuthRefreshToken(trx, grantId)
+      const organizationUser = await trx
+        .selectFrom('OrganizationUser')
+        .select('id')
+        .where('orgId', '=', orgId)
+        .where('userId', '=', grant.userId)
+        .where('removedAt', 'is', null)
+        .executeTakeFirst()
+      if (!organizationUser) {
+        await trx.deleteFrom('OAuthAPIGrant').where('id', '=', grantId).execute()
+        return null
+      }
+      const nextRefreshToken = await insertOAuthRefreshToken(trx, grantId, token.id)
       return {grantId, ...grant, refreshToken: nextRefreshToken}
     })
 }

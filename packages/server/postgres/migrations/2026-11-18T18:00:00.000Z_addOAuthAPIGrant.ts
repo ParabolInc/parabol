@@ -1,22 +1,12 @@
 import {type Kysely, sql} from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
-  await db.schema.createType('OAuthClientTypeEnum').asEnum(['confidential', 'public']).execute()
+  await db.schema.alterTable('OAuthAPIProvider').dropColumn('clientSecret').execute()
+  await db.deleteFrom('OAuthAPICode').where('codeChallenge', 'is', null).execute()
   await db.schema
-    .alterTable('OAuthAPIProvider')
-    .addColumn('clientType', sql`"OAuthClientTypeEnum"`, (col) =>
-      col.notNull().defaultTo('confidential')
-    )
+    .alterTable('OAuthAPICode')
+    .alterColumn('codeChallenge', (col) => col.setNotNull())
     .execute()
-  await db.schema
-    .alterTable('OAuthAPIProvider')
-    .alterColumn('clientSecret', (col) => col.dropNotNull())
-    .execute()
-  await sql`
-    ALTER TABLE "OAuthAPIProvider"
-    ADD CONSTRAINT "OAuthAPIProvider_secret_matches_type"
-    CHECK (("clientType" = 'public') = ("clientSecret" IS NULL))
-  `.execute(db)
   await db.schema.alterTable('OAuthAPICode').addColumn('resource', 'text').execute()
   await db.schema
     .createTable('OAuthAPIGrant')
@@ -28,11 +18,9 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.notNull().references('User.id').onDelete('cascade')
     )
     .addColumn('scopes', sql`"OAuthScopeEnum"[]`, (col) => col.notNull())
-    .addColumn('grantedOrgIds', sql`varchar(100)[]`)
     .addColumn('resource', 'text')
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
     .addColumn('lastUsedAt', 'timestamptz')
-    .addColumn('revokedAt', 'timestamptz')
     .addUniqueConstraint('OAuthAPIGrant_clientId_userId_key', ['clientId', 'userId'])
     .execute()
   await db.schema
@@ -46,6 +34,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('grantId', 'integer', (col) =>
       col.notNull().references('OAuthAPIGrant.id').onDelete('cascade')
     )
+    // no foreign key: pruning deletes an expired parent while its children live on, still linked as siblings
+    .addColumn('parentId', 'integer')
     .addColumn('tokenHash', 'text', (col) => col.notNull().unique())
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('rotatedAt', 'timestamptz')
@@ -55,6 +45,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createIndex('idx_OAuthAPIRefreshToken_grantId')
     .on('OAuthAPIRefreshToken')
     .column('grantId')
+    .execute()
+  await db.schema
+    .createIndex('idx_OAuthAPIRefreshToken_parentId')
+    .on('OAuthAPIRefreshToken')
+    .column('parentId')
     .execute()
   await db.schema
     .createIndex('idx_OAuthAPIRefreshToken_expiresAt')
@@ -67,14 +62,13 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('OAuthAPIRefreshToken').execute()
   await db.schema.dropTable('OAuthAPIGrant').execute()
   await db.schema.alterTable('OAuthAPICode').dropColumn('resource').execute()
-  await db.deleteFrom('OAuthAPIProvider').where('clientType', '=', 'public').execute()
-  await sql`
-    ALTER TABLE "OAuthAPIProvider" DROP CONSTRAINT "OAuthAPIProvider_secret_matches_type"
-  `.execute(db)
+  await db.schema
+    .alterTable('OAuthAPICode')
+    .alterColumn('codeChallenge', (col) => col.dropNotNull())
+    .execute()
+  await db.deleteFrom('OAuthAPIProvider').execute()
   await db.schema
     .alterTable('OAuthAPIProvider')
-    .alterColumn('clientSecret', (col) => col.setNotNull())
+    .addColumn('clientSecret', 'varchar(43)', (col) => col.notNull())
     .execute()
-  await db.schema.alterTable('OAuthAPIProvider').dropColumn('clientType').execute()
-  await db.schema.dropType('OAuthClientTypeEnum').execute()
 }

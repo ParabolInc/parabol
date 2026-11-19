@@ -116,10 +116,24 @@ const ADD_TEAM = `
   }
 `
 
-const REGENERATE_OAUTH_API_PROVIDER_SECRET = `
-  mutation RegenerateOAuthAPIProviderSecret($providerId: ID!) {
-    regenerateOAuthAPIProviderSecret(providerId: $providerId) {
-      clientSecret
+const UPDATE_OAUTH_API_PROVIDER_NAME = `
+  mutation UpdateOAuthAPIProviderName($providerId: ID!, $name: String) {
+    updateOAuthAPIProvider(providerId: $providerId, name: $name) {
+      provider {
+        name
+      }
+    }
+  }
+`
+
+const ORG_OAUTH_APPLICATIONS = `
+  query OrgOAuthApplications($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        oauthApplications {
+          id
+        }
+      }
     }
   }
 `
@@ -238,7 +252,6 @@ const createAppWithScope = async ({
             updatedAt
           }
           clientId
-          clientSecret
         }
       }
     `,
@@ -258,15 +271,22 @@ const createAppWithScope = async ({
           name: 'Test OAuth App',
           updatedAt: expect.anything()
         },
-        clientId: expect.anything(),
-        clientSecret: expect.anything()
+        clientId: expect.anything()
       }
     }
   })
 
-  const {clientId, clientSecret, provider} = oauthApp.data.createOAuthAPIProvider
-  return {clientId, clientSecret, redirectUri, providerId: provider.id as string}
+  const {clientId, provider} = oauthApp.data.createOAuthAPIProvider
+  return {clientId, redirectUri, providerId: provider.id as string}
 }
+
+const createPKCEPair = () => {
+  const codeVerifier = crypto.randomBytes(32).toString('base64url')
+  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
+  return {codeVerifier, codeChallenge}
+}
+
+const defaultPKCEPair = createPKCEPair()
 
 interface AuthorizationRequest {
   clientId: string
@@ -278,17 +298,22 @@ interface AuthorizationRequest {
 }
 
 const getAuthorizeUrl = (request: AuthorizationRequest) => {
-  const {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod} = request
+  const {
+    clientId,
+    redirectUri,
+    scope,
+    state,
+    codeChallenge = defaultPKCEPair.codeChallenge,
+    codeChallengeMethod = 'S256'
+  } = request
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
   authorizeUrl.searchParams.set('scope', scope)
   if (state) authorizeUrl.searchParams.set('state', state)
-  if (codeChallenge) authorizeUrl.searchParams.set('code_challenge', codeChallenge)
-  if (codeChallengeMethod) {
-    authorizeUrl.searchParams.set('code_challenge_method', codeChallengeMethod)
-  }
+  authorizeUrl.searchParams.set('code_challenge', codeChallenge)
+  authorizeUrl.searchParams.set('code_challenge_method', codeChallengeMethod)
   return authorizeUrl
 }
 
@@ -304,7 +329,13 @@ const approve = async (request: AuthorizationRequest, cookie: string) => {
   expect(consentUrl.searchParams.get('code')).toBeNull()
   expect(consentUrl.searchParams.get('client_id')).toBe(request.clientId)
 
-  const {clientId, redirectUri, scope, codeChallenge, codeChallengeMethod} = request
+  const {
+    clientId,
+    redirectUri,
+    scope,
+    codeChallenge = defaultPKCEPair.codeChallenge,
+    codeChallengeMethod = 'S256'
+  } = request
   const approved = await sendPublic({
     query: CREATE_OAUTH_API_CODE,
     variables: {
@@ -327,7 +358,11 @@ const exchangeCode = (params: Record<string, string>) =>
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: new URLSearchParams({grant_type: 'authorization_code', ...params})
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code_verifier: defaultPKCEPair.codeVerifier,
+      ...params
+    })
   })
 
 const getAccessToken = async ({
@@ -341,33 +376,29 @@ const getAccessToken = async ({
   scopes: string[]
   scope: string
 }) => {
-  const {redirectUri, clientId, clientSecret} = await createAppWithScope({orgId, cookie, scopes})
+  const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes})
   const code = await approve({clientId, redirectUri, scope}, cookie)
-  const tokenResponse = await exchangeCode({
-    code,
-    redirect_uri: redirectUri,
-    client_id: clientId,
-    client_secret: clientSecret
-  })
+  const tokenResponse = await exchangeCode({code, redirect_uri: redirectUri, client_id: clientId})
   expect(tokenResponse.status).toBe(200)
   const {access_token} = await tokenResponse.json()
   return access_token as string
 }
 
-const createPKCEPair = () => {
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-  return {codeVerifier, codeChallenge}
-}
-
 test('Create app and token', async () => {
   const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId, clientSecret} = await createAppWithScope({
+  const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
     scopes: ['USERS_READ', 'USERS_WRITE']
   })
-  const request = {clientId, redirectUri, scope: 'users:read users:write', state: 'xyz'}
+  const request = {
+    clientId,
+    redirectUri,
+    scope: 'users:read users:write',
+    state: 'xyz',
+    codeChallenge: defaultPKCEPair.codeChallenge,
+    codeChallengeMethod: 'S256'
+  }
 
   const consent = await sendPublic({
     query: OAUTH_AUTHORIZATION_REQUEST,
@@ -391,8 +422,7 @@ test('Create app and token', async () => {
   const tokenResponse = await exchangeCode({
     code: authCode,
     redirect_uri: redirectUri,
-    client_id: clientId,
-    client_secret: clientSecret
+    client_id: clientId
   })
 
   expect(tokenResponse.status).toBe(200)
@@ -441,7 +471,7 @@ test('Request more scope than allowed fails', async () => {
 test('Request less scope than allowed succeeds', async () => {
   const {cookie, orgId} = await createOrgAdmin()
 
-  const {redirectUri, clientId, clientSecret} = await createAppWithScope({
+  const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
     scopes: ['USERS_READ', 'USERS_WRITE']
@@ -452,8 +482,7 @@ test('Request less scope than allowed succeeds', async () => {
   const tokenResponse = await exchangeCode({
     code: authCode,
     redirect_uri: redirectUri,
-    client_id: clientId,
-    client_secret: clientSecret
+    client_id: clientId
   })
 
   expect(tokenResponse.status).toBe(200)
@@ -506,10 +535,20 @@ test('Only members of the registering organization can authorize an app', async 
 
   const approved = await sendPublic({
     query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope: 'users:read', state: 'xyz'}},
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        scope: 'users:read',
+        state: 'xyz',
+        codeChallenge: defaultPKCEPair.codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
     cookie: outsider.cookie
   })
   expect(approved.data).toBeNull()
+  expect(approved.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
 test('An OAuth access token cannot call a mutation outside its scope', async () => {
@@ -597,7 +636,7 @@ test('An OAuth access token is not a session', async () => {
 
 test('PKCE verifier must match the challenge', async () => {
   const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId, clientSecret} = await createAppWithScope({
+  const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
     scopes: ['USERS_READ']
@@ -610,7 +649,7 @@ test('PKCE verifier must match the challenge', async () => {
     codeChallenge,
     codeChallengeMethod: 'S256'
   }
-  const credentials = {redirect_uri: redirectUri, client_id: clientId, client_secret: clientSecret}
+  const credentials = {redirect_uri: redirectUri, client_id: clientId}
 
   const plainResponse = await requestAuthorization(
     {...request, codeChallenge: codeVerifier, codeChallengeMethod: 'plain', state: 'xyz'},
@@ -626,7 +665,11 @@ test('PKCE verifier must match the challenge', async () => {
   expect(mismatched.status).toBe(400)
   expect(await mismatched.json()).toMatchObject({error: 'invalid_grant'})
 
-  const missing = await exchangeCode({...credentials, code: await approve(request, cookie)})
+  const missing = await exchangeCode({
+    ...credentials,
+    code: await approve(request, cookie),
+    code_verifier: ''
+  })
   expect(missing.status).toBe(400)
 
   const matched = await exchangeCode({
@@ -635,13 +678,6 @@ test('PKCE verifier must match the challenge', async () => {
     code_verifier: codeVerifier
   })
   expect(matched.status).toBe(200)
-
-  const unexpectedVerifier = await exchangeCode({
-    ...credentials,
-    code: await approve({clientId, redirectUri, scope: 'users:read'}, cookie),
-    code_verifier: codeVerifier
-  })
-  expect(unexpectedVerifier.status).toBe(400)
 })
 
 test('A code can only be exchanged by the client it was issued to', async () => {
@@ -656,24 +692,14 @@ test('A code can only be exchanged by the client it was issued to', async () => 
   const stolen = await exchangeCode({
     code,
     redirect_uri: victimApp.redirectUri,
-    client_id: otherApp.clientId,
-    client_secret: otherApp.clientSecret
+    client_id: otherApp.clientId
   })
   expect(stolen.status).toBe(400)
-
-  const wrongSecret = await exchangeCode({
-    code,
-    redirect_uri: victimApp.redirectUri,
-    client_id: victimApp.clientId,
-    client_secret: otherApp.clientSecret
-  })
-  expect(wrongSecret.status).toBe(401)
 
   const legitimate = await exchangeCode({
     code,
     redirect_uri: victimApp.redirectUri,
-    client_id: victimApp.clientId,
-    client_secret: victimApp.clientSecret
+    client_id: victimApp.clientId
   })
   expect(legitimate.status).toBe(200)
 })
@@ -740,25 +766,38 @@ test('An OAuth access token cannot delete its user or end their sessions', async
   expect(viewer.data.viewer.id).toBe(userId)
 })
 
-test('An OAuth access token cannot manage OAuth applications', async () => {
+test('An OAuth access token cannot list or manage OAuth applications', async () => {
   const {cookie, orgId} = await createOrgAdmin()
   const {providerId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
-  const token = await getAccessToken({orgId, cookie, scopes: ['ORGS_WRITE'], scope: 'orgs:write'})
+  const token = await getAccessToken({
+    orgId,
+    cookie,
+    scopes: ['USERS_READ', 'ORGS_READ', 'ORGS_WRITE'],
+    scope: 'users:read orgs:read orgs:write'
+  })
 
-  const regenerated = await sendPublic({
-    query: REGENERATE_OAUTH_API_PROVIDER_SECRET,
-    variables: {providerId},
+  const renamed = await sendPublic({
+    query: UPDATE_OAUTH_API_PROVIDER_NAME,
+    variables: {providerId, name: 'Renamed by token'},
     bearerToken: token
   })
-  expect(regenerated.data).toBeNull()
-  expect(regenerated.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(renamed.data).toBeNull()
+  expect(renamed.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
+  const listed = await sendPublic({
+    query: ORG_OAUTH_APPLICATIONS,
+    variables: {orgId},
+    bearerToken: token
+  })
+  expect(listed.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(listed.data?.viewer?.organization?.oauthApplications).toBeUndefined()
 
   const asSession = await sendPublic({
-    query: REGENERATE_OAUTH_API_PROVIDER_SECRET,
-    variables: {providerId},
+    query: UPDATE_OAUTH_API_PROVIDER_NAME,
+    variables: {providerId, name: 'Renamed'},
     cookie
   })
-  expect(asSession.data.regenerateOAuthAPIProviderSecret.clientSecret).toEqual(expect.any(String))
+  expect(asSession.data.updateOAuthAPIProvider.provider.name).toBe('Renamed')
 })
 
 test('An OAuth access token cannot create or join another organization', async () => {
@@ -868,18 +907,6 @@ test('An OAuth access token cannot take a team or its user out of another organi
   const teams = await getUserTeams(userId)
   expect(teams).toContainEqual({id: otherTeamId})
 })
-
-const ORG_OAUTH_APPLICATIONS = `
-  query OrgOAuthApplications($orgId: ID!) {
-    viewer {
-      organization(orgId: $orgId) {
-        oauthApplications {
-          id
-        }
-      }
-    }
-  }
-`
 
 test('Only an org admin can list the organization’s OAuth applications', async () => {
   const admin = await createOrgAdmin()

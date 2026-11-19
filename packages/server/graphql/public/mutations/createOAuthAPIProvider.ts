@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
+import {generateOAuthClientId} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -8,11 +8,9 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
   args,
   {dataLoader}
 ) => {
-  let {scopes} = args
-  const {orgId, name, redirectUris, clientType} = args
+  const {orgId, name, redirectUris, scopes} = args
 
   const clientId = generateOAuthClientId()
-  const clientSecret = clientType === 'public' ? null : generateOAuthClientSecret()
 
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick a scope', {extensions: {code: 'BAD_USER_INPUT'}})
@@ -24,8 +22,6 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
     orgId,
     name,
     clientId,
-    clientSecret,
-    clientType,
     redirectUris,
     scopes
   }
@@ -41,8 +37,7 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
 
   return {
     providerId: provider.id,
-    clientId,
-    clientSecret
+    clientId
   }
 }
 

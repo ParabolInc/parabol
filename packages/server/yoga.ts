@@ -176,7 +176,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'moveTeamToOrg',
         'promoteToTeamLead',
         'pushInvitation',
-        'regenerateOAuthAPIProviderSecret',
         'removeAllSlackAuths',
         'removeApprovedOrganizationDomains',
         'removeAuthIdentity',

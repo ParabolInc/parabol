@@ -1,10 +1,11 @@
 import {GraphQLError, Kind} from 'graphql'
+import isLoopbackHostname from '../../../oauth2/isLoopbackHostname'
 import type {RedirectUriScalarConfig} from '../resolverTypes'
 
 const isRedirectUriValid = (uri: string): boolean => {
   try {
     const url = new URL(uri)
-    const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+    const isLocalhost = isLoopbackHostname(url.hostname)
     const hasValidProtocol = url.protocol === 'https:' || (isLocalhost && url.protocol === 'http:')
 
     if (!hasValidProtocol) {

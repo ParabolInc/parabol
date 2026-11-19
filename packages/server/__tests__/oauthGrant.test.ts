@@ -5,7 +5,8 @@ import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import hashRandomToken from '../utils/hashRandomToken'
+import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendIntranet, sendPublic} from './common'
 
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
 
@@ -26,7 +27,6 @@ const CREATE_OAUTH_API_PROVIDER = `
         id
       }
       clientId
-      clientSecret
     }
   }
 `
@@ -49,6 +49,20 @@ const CREATE_OAUTH_API_CODE = `
   }
 `
 
+const INVALIDATE_SESSIONS = `
+  mutation InvalidateSessions {
+    invalidateSessions {
+      __typename
+    }
+  }
+`
+
+const PRUNE_PG = `
+  mutation PrunePG($before: DateTime!) {
+    prunePG(before: $before)
+  }
+`
+
 const VIEWER_ID = `
   query ViewerId {
     viewer {
@@ -57,41 +71,27 @@ const VIEWER_ID = `
   }
 `
 
-const createOrgAdmin = async () => {
-  const {userId, cookie, orgId} = await signUp()
-  const promoted = await sendIntranet({
-    query: `
-      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
-        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-          __typename
-        }
-      }
-    `,
-    variables: {orgId, userId, role: 'ORG_ADMIN'}
-  })
-  expect(promoted.errors).toBeUndefined()
-  return {cookie, orgId, userId}
-}
-
 interface App {
   cookie: string
   providerId: string
   clientId: string
-  clientSecret: string
   redirectUri: string
 }
 
-const createApp = async (admin: {cookie: string; orgId: string}): Promise<App> => {
+const createApp = async (
+  admin: {cookie: string; orgId: string},
+  scopes = ['USERS_READ']
+): Promise<App> => {
   const {cookie, orgId} = admin
   const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
   const created = await sendPublic({
     query: CREATE_OAUTH_API_PROVIDER,
-    variables: {orgId, name: 'Grant test app', redirectUris: [redirectUri], scopes: ['USERS_READ']},
+    variables: {orgId, name: 'Grant test app', redirectUris: [redirectUri], scopes},
     cookie
   })
   expect(created.errors).toBeUndefined()
-  const {clientId, clientSecret, provider} = created.data.createOAuthAPIProvider
-  return {cookie, providerId: provider.id, clientId, clientSecret, redirectUri}
+  const {clientId, provider} = created.data.createOAuthAPIProvider
+  return {cookie, providerId: provider.id, clientId, redirectUri}
 }
 
 const postToken = (params: Record<string, string>) =>
@@ -101,49 +101,62 @@ const postToken = (params: Record<string, string>) =>
     body: new URLSearchParams(params)
   })
 
-const consent = async (app: App) => {
-  const {cookie, clientId, clientSecret, redirectUri} = app
+const getCode = async (app: App, codeChallenge: string, scope = 'users:read') => {
+  const {cookie, clientId, redirectUri} = app
   const approved = await sendPublic({
     query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope: 'users:read', state: 'xyz'}},
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        scope,
+        state: 'xyz',
+        codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
     cookie
   })
   expect(approved.errors).toBeUndefined()
-  const code = new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
+  return new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
+}
+
+const consent = async (app: App, scope?: string) => {
+  const codeVerifier = crypto.randomBytes(32).toString('base64url')
+  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
   const response = await postToken({
     grant_type: 'authorization_code',
-    code,
-    redirect_uri: redirectUri,
-    client_id: clientId,
-    client_secret: clientSecret
+    code: await getCode(app, codeChallenge, scope),
+    redirect_uri: app.redirectUri,
+    client_id: app.clientId,
+    code_verifier: codeVerifier
   })
   expect(response.status).toBe(200)
   return response.json()
 }
 
 const refresh = (app: App, refreshToken: string) =>
-  postToken({
-    grant_type: 'refresh_token',
-    refresh_token: refreshToken,
-    client_id: app.clientId,
-    client_secret: app.clientSecret
-  })
+  postToken({grant_type: 'refresh_token', refresh_token: refreshToken, client_id: app.clientId})
 
 const getGrants = (clientId: string) =>
-  getKysely()
-    .selectFrom('OAuthAPIGrant')
-    .select(['id', 'revokedAt'])
-    .where('clientId', '=', clientId)
-    .execute()
+  getKysely().selectFrom('OAuthAPIGrant').select('id').where('clientId', '=', clientId).execute()
 
 const getViewerErrorCode = async (accessToken: string) => {
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: accessToken})
   return viewer.errors?.[0]?.extensions?.code
 }
 
+const ageRotation = (refreshToken: string) =>
+  getKysely()
+    .updateTable('OAuthAPIRefreshToken')
+    .set({rotatedAt: new Date(Date.now() - ms('1m'))})
+    .where('tokenHash', '=', hashRandomToken(refreshToken))
+    .execute()
+
+const signUpOrgAdmin = () => createOrgAdmin(getTestEmail())
+
 test('the token response carries a refresh token and a one-hour access token', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+  const app = await createApp(await signUpOrgAdmin())
   const tokens = await consent(app)
   expect(tokens).toMatchObject({
     token_type: 'Bearer',
@@ -158,8 +171,8 @@ test('the token response carries a refresh token and a one-hour access token', a
   expect(authToken.resource).toBeUndefined()
 })
 
-test('a refresh token is swapped for new tokens and the old one stops working', async () => {
-  const admin = await createOrgAdmin()
+test('a refresh token is swapped for new tokens', async () => {
+  const admin = await signUpOrgAdmin()
   const app = await createApp(admin)
   const first = await consent(app)
 
@@ -176,44 +189,79 @@ test('a refresh token is swapped for new tokens and the old one stops working', 
   expect(second.refresh_token).not.toBe(first.refresh_token)
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: second.access_token})
   expect(viewer.data.viewer.id).toBe(admin.userId)
+})
+
+test('a refresh retried within 30 seconds gets new tokens and keeps the connection', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const first = await consent(app)
+  const second = await (await refresh(app, first.refresh_token)).json()
+
+  const retried = await refresh(app, first.refresh_token)
+  expect(retried.status).toBe(200)
+  const sibling = await retried.json()
+  expect(sibling.refresh_token).not.toBe(second.refresh_token)
+  expect(await getViewerErrorCode(second.access_token)).toBeUndefined()
+  expect(await getViewerErrorCode(sibling.access_token)).toBeUndefined()
+  expect(await getGrants(app.clientId)).toHaveLength(1)
+})
+
+test('two simultaneous refreshes with one token both succeed', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const {refresh_token} = await consent(app)
+
+  const responses = await Promise.all([refresh(app, refresh_token), refresh(app, refresh_token)])
+  expect(responses.map(({status}) => status)).toEqual([200, 200])
+  expect(await getGrants(app.clientId)).toHaveLength(1)
+})
+
+test('reusing a refresh token after 30 seconds disconnects the app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const first = await consent(app)
+  const second = await (await refresh(app, first.refresh_token)).json()
+  expect(await getViewerErrorCode(second.access_token)).toBeUndefined()
+  await ageRotation(first.refresh_token)
 
   const reused = await refresh(app, first.refresh_token)
   expect(reused.status).toBe(400)
   expect(await reused.json()).toMatchObject({error: 'invalid_grant'})
+
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(second.access_token)).toBe('UNAUTHENTICATED')
+  expect((await refresh(app, second.refresh_token)).status).toBe(400)
 })
 
-test('reusing a rotated refresh token revokes the connection', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+test('after a retry, using one new refresh token makes the other disconnect the app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
   const first = await consent(app)
   const second = await (await refresh(app, first.refresh_token)).json()
-  expect(await getViewerErrorCode(second.access_token)).toBeUndefined()
+  const sibling = await (await refresh(app, first.refresh_token)).json()
 
-  const reused = await refresh(app, first.refresh_token)
-  expect(reused.status).toBe(400)
+  const third = await refresh(app, sibling.refresh_token)
+  expect(third.status).toBe(200)
+  const {access_token} = await third.json()
 
-  expect(await getViewerErrorCode(second.access_token)).toBe('UNAUTHENTICATED')
-  const afterRevoke = await refresh(app, second.refresh_token)
-  expect(afterRevoke.status).toBe(400)
-  const [grant] = await getGrants(app.clientId)
-  expect(grant!.revokedAt).not.toBeNull()
+  const forked = await refresh(app, second.refresh_token)
+  expect(forked.status).toBe(400)
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(access_token)).toBe('UNAUTHENTICATED')
 })
 
-test('two simultaneous refreshes with one token: exactly one succeeds and the connection is revoked', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
-  const {refresh_token} = await consent(app)
+test('replaying a refresh token within 30 seconds after its new token was used disconnects the app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const first = await consent(app)
+  const second = await (await refresh(app, first.refresh_token)).json()
+  const third = await refresh(app, second.refresh_token)
+  expect(third.status).toBe(200)
+  const {access_token} = await third.json()
 
-  const responses = await Promise.all([refresh(app, refresh_token), refresh(app, refresh_token)])
-  expect(responses.map(({status}) => status).sort()).toEqual([200, 400])
-
-  const grants = await getGrants(app.clientId)
-  expect(grants).toHaveLength(1)
-  expect(grants[0]!.revokedAt).not.toBeNull()
+  const replayed = await refresh(app, first.refresh_token)
+  expect(replayed.status).toBe(400)
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(access_token)).toBe('UNAUTHENTICATED')
 })
 
 test('a refresh token only works for its own client', async () => {
-  const admin = await createOrgAdmin()
+  const admin = await signUpOrgAdmin()
   const app = await createApp(admin)
   const otherApp = await createApp(admin)
   const {refresh_token} = await consent(app)
@@ -221,43 +269,35 @@ test('a refresh token only works for its own client', async () => {
   const stolen = await refresh(otherApp, refresh_token)
   expect(stolen.status).toBe(400)
   expect(await stolen.json()).toMatchObject({error: 'invalid_grant'})
-  const [grant] = await getGrants(app.clientId)
-  expect(grant!.revokedAt).toBeNull()
+  expect(await getGrants(app.clientId)).toHaveLength(1)
 
   const legitimate = await refresh(app, refresh_token)
   expect(legitimate.status).toBe(200)
 })
 
 test('consenting again updates the connection rather than adding one', async () => {
-  const admin = await createOrgAdmin()
+  const admin = await signUpOrgAdmin()
   const app = await createApp(admin)
   await consent(app)
   const second = await consent(app)
 
-  const grants = await getGrants(app.clientId)
-  expect(grants).toHaveLength(1)
-  expect(grants[0]!.revokedAt).toBeNull()
+  expect(await getGrants(app.clientId)).toHaveLength(1)
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: second.access_token})
   expect(viewer.data.viewer.id).toBe(admin.userId)
 })
 
-test('an access token stops working as soon as its connection is revoked', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+test('an access token stops working as soon as its connection is removed', async () => {
+  const app = await createApp(await signUpOrgAdmin())
   const {access_token} = await consent(app)
   expect(await getViewerErrorCode(access_token)).toBeUndefined()
 
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
 
   expect(await getViewerErrorCode(access_token)).toBe('UNAUTHENTICATED')
 })
 
 test('an access token from before grants existed is refused', async () => {
-  const admin = await createOrgAdmin()
+  const admin = await signUpOrgAdmin()
   const app = await createApp(admin)
   const legacyToken = encodeAuthToken(
     new AuthToken({
@@ -272,8 +312,7 @@ test('an access token from before grants existed is refused', async () => {
 })
 
 test('two devices consenting to the same client keep independent refresh tokens', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+  const app = await createApp(await signUpOrgAdmin())
   const firstDevice = await consent(app)
   const secondDevice = await consent(app)
 
@@ -282,51 +321,73 @@ test('two devices consenting to the same client keep independent refresh tokens'
   const secondRefresh = await refresh(app, secondDevice.refresh_token)
   expect(secondRefresh.status).toBe(200)
 
-  const [grant] = await getGrants(app.clientId)
-  expect(grant!.revokedAt).toBeNull()
+  expect(await getGrants(app.clientId)).toHaveLength(1)
   const {access_token} = await firstRefresh.json()
   expect(await getViewerErrorCode(access_token)).toBeUndefined()
 })
 
-test('a made-up refresh token never revokes anything', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+test('a made-up refresh token never disconnects anything', async () => {
+  const app = await createApp(await signUpOrgAdmin())
   const {refresh_token} = await consent(app)
 
   const madeUp = await refresh(app, `prt_${crypto.randomBytes(32).toString('base64url')}`)
   expect(madeUp.status).toBe(400)
   expect(await madeUp.json()).toMatchObject({error: 'invalid_grant'})
-  const [grant] = await getGrants(app.clientId)
-  expect(grant!.revokedAt).toBeNull()
+  expect(await getGrants(app.clientId)).toHaveLength(1)
 
   const legitimate = await refresh(app, refresh_token)
   expect(legitimate.status).toBe(200)
 })
 
-test('reconnecting after a revocation does not revive old access tokens', async () => {
-  const admin = await createOrgAdmin()
-  const app = await createApp(admin)
+test('reconnecting after a disconnect does not revive old access tokens', async () => {
+  const app = await createApp(await signUpOrgAdmin())
   const before = await consent(app)
-  const [revokedGrant] = await getGrants(app.clientId)
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  const [removedGrant] = await getGrants(app.clientId)
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
 
   const after = await consent(app)
   expect(await getViewerErrorCode(before.access_token)).toBe('UNAUTHENTICATED')
   expect(await getViewerErrorCode(after.access_token)).toBeUndefined()
   const grants = await getGrants(app.clientId)
   expect(grants).toHaveLength(1)
-  expect(grants[0]!.id).not.toBe(revokedGrant!.id)
-  expect(grants[0]!.revokedAt).toBeNull()
+  expect(grants[0]!.id).not.toBe(removedGrant!.id)
   expect((await refresh(app, before.refresh_token)).status).toBe(400)
 })
 
-test("narrowing an app's scopes takes effect on the next request", async () => {
-  const admin = await createOrgAdmin()
+test('signing out everywhere disconnects every OAuth app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const tokens = await consent(app)
+  expect(await getViewerErrorCode(tokens.access_token)).toBeUndefined()
+
+  const invalidated = await sendPublic({query: INVALIDATE_SESSIONS, cookie: app.cookie})
+  expect(invalidated.errors).toBeUndefined()
+
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(tokens.access_token)).toBe('UNAUTHENTICATED')
+  const refreshed = await refresh(app, tokens.refresh_token)
+  expect(refreshed.status).toBe(400)
+  expect(await refreshed.json()).toMatchObject({error: 'invalid_grant'})
+})
+
+test("leaving the app's organization disconnects it at the next refresh", async () => {
+  const admin = await signUpOrgAdmin()
   const app = await createApp(admin)
+  const tokens = await consent(app)
+  await getKysely()
+    .updateTable('OrganizationUser')
+    .set({removedAt: new Date()})
+    .where('orgId', '=', admin.orgId)
+    .where('userId', '=', admin.userId)
+    .execute()
+
+  const refreshed = await refresh(app, tokens.refresh_token)
+  expect(refreshed.status).toBe(400)
+  expect(await refreshed.json()).toMatchObject({error: 'invalid_grant'})
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+})
+
+test("narrowing an app's scopes takes effect on the next request", async () => {
+  const app = await createApp(await signUpOrgAdmin())
   const {access_token} = await consent(app)
   expect(await getViewerErrorCode(access_token)).toBeUndefined()
 
@@ -345,37 +406,8 @@ test("narrowing an app's scopes takes effect on the next request", async () => {
 })
 
 test("a refresh after narrowing an app's scopes only carries the scopes it still allows", async () => {
-  const admin = await createOrgAdmin()
-  const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
-  const created = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {
-      orgId: admin.orgId,
-      name: 'Narrowing test app',
-      redirectUris: [redirectUri],
-      scopes: ['USERS_READ', 'TEAMS_READ']
-    },
-    cookie: admin.cookie
-  })
-  expect(created.errors).toBeUndefined()
-  const {clientId, clientSecret, provider} = created.data.createOAuthAPIProvider
-  const app = {cookie: admin.cookie, providerId: provider.id, clientId, clientSecret, redirectUri}
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope: 'users:read teams:read', state: 'xyz'}},
-    cookie: admin.cookie
-  })
-  expect(approved.errors).toBeUndefined()
-  const code = new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
-  const first = await (
-    await postToken({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      client_secret: clientSecret
-    })
-  ).json()
+  const app = await createApp(await signUpOrgAdmin(), ['USERS_READ', 'TEAMS_READ'])
+  const first = await consent(app, 'users:read teams:read')
   expect(first.scope).toBe('users:read teams:read')
 
   const narrowed = await sendPublic({
@@ -393,22 +425,39 @@ test("a refresh after narrowing an app's scopes only carries the scopes it still
   expect(authToken.scope).toEqual(['teams:read'])
 })
 
-test('issuing a refresh token clears expired ones, even from other connections', async () => {
-  const admin = await createOrgAdmin()
-  const abandoned = await consent(await createApp(admin))
-  const abandonedHash = crypto.createHash('sha256').update(abandoned.refresh_token).digest('hex')
+test('the prune job deletes expired refresh tokens and authorization codes', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const tokens = await consent(app)
+  const abandonedCode = await getCode(
+    app,
+    crypto.createHash('sha256').update(crypto.randomBytes(32)).digest('base64url')
+  )
+  const expiredAt = new Date(Date.now() - ms('1d'))
   await getKysely()
     .updateTable('OAuthAPIRefreshToken')
-    .set({expiresAt: new Date(Date.now() - ms('1d'))})
-    .where('tokenHash', '=', abandonedHash)
+    .set({expiresAt: expiredAt})
+    .where('tokenHash', '=', hashRandomToken(tokens.refresh_token))
+    .execute()
+  await getKysely()
+    .updateTable('OAuthAPICode')
+    .set({expiresAt: expiredAt})
+    .where('id', '=', abandonedCode)
     .execute()
 
-  await consent(await createApp(admin))
+  const pruned = await sendIntranet({query: PRUNE_PG, variables: {before: expiredAt.toJSON()}})
+  expect(pruned.errors).toBeUndefined()
+  expect(pruned.data.prunePG).toBeGreaterThanOrEqual(2)
 
-  const remaining = await getKysely()
+  const remainingTokens = await getKysely()
     .selectFrom('OAuthAPIRefreshToken')
     .select('id')
-    .where('tokenHash', '=', abandonedHash)
+    .where('tokenHash', '=', hashRandomToken(tokens.refresh_token))
     .execute()
-  expect(remaining).toHaveLength(0)
+  const remainingCodes = await getKysely()
+    .selectFrom('OAuthAPICode')
+    .select('id')
+    .where('id', '=', abandonedCode)
+    .execute()
+  expect(remainingTokens).toHaveLength(0)
+  expect(remainingCodes).toHaveLength(0)
 })

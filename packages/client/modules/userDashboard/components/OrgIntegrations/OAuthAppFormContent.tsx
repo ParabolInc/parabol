@@ -6,18 +6,12 @@ import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import TipBanner from '../../../../components/TipBanner'
 import useCreateOAuthAPIProviderMutation from '../../../../mutations/useCreateOAuthAPIProviderMutation'
-import useRegenerateOAuthAPIProviderSecretMutation from '../../../../mutations/useRegenerateOAuthAPIProviderSecretMutation'
 import useUpdateOAuthAPIProviderMutation from '../../../../mutations/useUpdateOAuthAPIProviderMutation'
 import {Button} from '../../../../ui/Button/Button'
-import {cn} from '../../../../ui/cn'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import makeAppURL from '../../../../utils/makeAppURL'
 import {TokenScopesTable} from '../TokenScopesTable'
-import OAuthClientSecretField, {MASKED_SECRET} from './OAuthClientSecretField'
-import OAuthClientTypeField, {type OAuthClientType} from './OAuthClientTypeField'
-import OAuthClientTypeSwitchDialog from './OAuthClientTypeSwitchDialog'
 import OAuthCopyField from './OAuthCopyField'
 
 export interface FormContentProps {
@@ -37,26 +31,12 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       )
     )
   )
-  const initialClientType: OAuthClientType = initialData?.clientType ?? 'CONFIDENTIAL'
-  const [clientType, setClientType] = useState<OAuthClientType>(initialClientType)
-  const [savedClientType, setSavedClientType] = useState<OAuthClientType>(initialClientType)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [switchConfirmOpen, setSwitchConfirmOpen] = useState(false)
   const [clientId, setClientId] = useState(initialData?.clientId || '')
-  const [clientSecret, setClientSecret] = useState(
-    isNew || initialClientType === 'PUBLIC' ? '' : MASKED_SECRET
-  )
-  const [showSecret, setShowSecret] = useState(false)
 
   const [createProvider] = useCreateOAuthAPIProviderMutation()
   const [updateProvider] = useUpdateOAuthAPIProviderMutation()
-  const [regenerateSecret] = useRegenerateOAuthAPIProviderSecretMutation()
-
-  const revealSecret = (secret: string) => {
-    setClientSecret(secret)
-    setShowSecret(true)
-  }
 
   const onSaveError = (err: Error) => {
     console.error(err)
@@ -64,7 +44,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     setError(getMutationError(err).message)
   }
 
-  const handleSave = (isClientTypeSwitchConfirmed = false) => {
+  const handleSave = () => {
     setIsSaving(true)
     setError(null)
     const uriList = redirectUris
@@ -95,13 +75,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     }
 
     const providerId = initialData?.id
-    const isSwitchingClientType = !!providerId && clientType !== savedClientType
-    if (isSwitchingClientType && !isClientTypeSwitchConfirmed) {
-      setIsSaving(false)
-      setSwitchConfirmOpen(true)
-      return
-    }
-
     const mutationScopes = [...scopes]
 
     if (providerId) {
@@ -110,20 +83,13 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           providerId,
           name,
           redirectUris: uriList,
-          scopes: mutationScopes,
-          clientType: isSwitchingClientType ? clientType : undefined
+          scopes: mutationScopes
         },
-        onCompleted: (response, errors) => {
+        onCompleted: (_response, errors) => {
           setIsSaving(false)
           const firstError = errors?.[0]
           if (firstError) {
             setError(firstError.message)
-            return
-          }
-          const newSecret = response.updateOAuthAPIProvider.clientSecret
-          if (newSecret) {
-            setSavedClientType('CONFIDENTIAL')
-            revealSecret(newSecret)
             return
           }
           onClose()
@@ -136,8 +102,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           orgId,
           name,
           redirectUris: uriList,
-          scopes: mutationScopes,
-          clientType
+          scopes: mutationScopes
         },
         updater: (store) => {
           const payload = store.getRootField('createOAuthAPIProvider')
@@ -157,9 +122,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             setError(firstError.message)
             return
           }
-          const payload = response.createOAuthAPIProvider
-          setClientId(payload.clientId)
-          if (payload.clientSecret) revealSecret(payload.clientSecret)
+          setClientId(response.createOAuthAPIProvider.clientId)
         },
         onError: onSaveError
       })
@@ -178,20 +141,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       return next
     })
   }
-
-  const handleRegenerate = () => {
-    if (!initialData?.id) return
-    regenerateSecret({
-      variables: {providerId: initialData.id},
-      onCompleted: (response) => {
-        const secret = response.regenerateOAuthAPIProviderSecret?.clientSecret
-        if (secret) revealSecret(secret)
-      }
-    })
-  }
-
-  const isConfidential = clientType === 'CONFIDENTIAL'
-  const appOrigin = window.location.origin
 
   return (
     <>
@@ -241,53 +190,18 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               />
             </div>
 
-            <OAuthClientTypeField
-              value={clientType}
-              onChange={setClientType}
-              disabled={isNew && !!clientId}
-            />
-
             <TokenScopesTable selectedScopes={scopes} toggleScope={toggleScope} />
 
-            <div className={cn('grid gap-6', isConfidential && 'grid-cols-2')}>
-              <OAuthCopyField
-                label='Client ID'
-                name='clientId'
-                value={clientId}
-                placeholder='Save to reveal...'
-              />
-              {isConfidential && (
-                <OAuthClientSecretField
-                  clientSecret={clientSecret}
-                  showSecret={showSecret}
-                  canRegenerate={!isNew && savedClientType === 'CONFIDENTIAL'}
-                  onRegenerate={handleRegenerate}
-                />
-              )}
-            </div>
-            {!isConfidential && (
-              <TipBanner>
-                <b>No client secret.</b> This app must send a PKCE code challenge (S256) when it
-                signs in. Parabol refuses sign-ins from it without one.
-              </TipBanner>
-            )}
-            <div className='flex flex-col gap-4'>
-              <OAuthCopyField
-                label='Authorize endpoint'
-                name='authorizeEndpoint'
-                value={makeAppURL(appOrigin, '/oauth/authorize')}
-              />
-              <OAuthCopyField
-                label='Token endpoint'
-                name='tokenEndpoint'
-                value={makeAppURL(appOrigin, '/oauth/token')}
-              />
-              <OAuthCopyField
-                label='GraphQL endpoint'
-                name='graphqlEndpoint'
-                value={makeAppURL(appOrigin, '/graphql')}
-              />
-            </div>
+            <OAuthCopyField
+              label='Client ID'
+              name='clientId'
+              value={clientId}
+              placeholder='Save to reveal...'
+            />
+            <TipBanner>
+              <b>No client secret.</b> The app must send a PKCE code challenge (S256) when it signs
+              in. Parabol refuses sign-ins without one.
+            </TipBanner>
           </div>
 
           <DialogActions>
@@ -301,16 +215,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </Button>
           </DialogActions>
         </form>
-        <OAuthClientTypeSwitchDialog
-          appName={name || initialData?.name || ''}
-          clientType={clientType}
-          isOpen={switchConfirmOpen}
-          onClose={() => setSwitchConfirmOpen(false)}
-          onConfirm={() => {
-            setSwitchConfirmOpen(false)
-            handleSave(true)
-          }}
-        />
       </DialogContent>
     </>
   )

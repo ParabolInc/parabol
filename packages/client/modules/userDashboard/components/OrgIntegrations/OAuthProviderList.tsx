@@ -27,7 +27,6 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           id
           name
           updatedAt
-          clientType
         }
       }
     `,
@@ -140,7 +139,6 @@ const OAuthProviderList = ({organizationRef}: Props) => {
             <thead>
               <tr className='border-hairline border-b bg-surface-raised text-left text-fg-muted text-xs uppercase tracking-wider'>
                 <th className='px-4 py-2 font-semibold'>Name</th>
-                <th className='px-4 py-2 font-semibold'>Authentication</th>
                 <th className='px-4 py-2 font-semibold'>Last Updated</th>
                 <th className='px-4 py-2' />
               </tr>
@@ -150,7 +148,6 @@ const OAuthProviderList = ({organizationRef}: Props) => {
                 <OAuthProviderRow
                   key={provider.id}
                   name={provider.name}
-                  clientType={provider.clientType}
                   updatedAt={provider.updatedAt}
                   onEdit={() => handleEdit(provider.id)}
                   onDelete={() => handleDeleteClick(provider)}

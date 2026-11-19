@@ -12,6 +12,7 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 import issueOAuthTokens from './issueOAuthTokens'
 import rotateOAuthRefreshToken from './rotateOAuthRefreshToken'
 import upsertOAuthAPIGrant from './upsertOAuthAPIGrant'
+import writeJSON from './writeJSON'
 
 const CODE_VERIFIER = /^[A-Za-z0-9\-._~]{43,128}$/
 
@@ -20,26 +21,6 @@ const isEqualSecret = (expected: string | null | undefined, actual: string) => {
   const expectedBytes = Buffer.from(expected)
   const actualBytes = Buffer.from(actual)
   return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)
-}
-
-const writeJSON = (res: HttpResponse, status: string, body: Record<string, string | number>) => {
-  res.writeStatus(status)
-  res.writeHeader('Access-Control-Allow-Origin', '*')
-  res.writeHeader('Content-Type', 'application/json')
-  res.writeHeader('Cache-Control', 'no-store')
-  res.end(JSON.stringify(body))
-}
-
-const getAuthenticatedClient = async (clientId: string, clientSecret: string | undefined) => {
-  const provider = await selectOAuthAPIProvider()
-    .where('clientId', '=', clientId)
-    .executeTakeFirst()
-  if (!provider) return null
-  const isAuthenticated =
-    provider.clientType === 'public'
-      ? !clientSecret
-      : !!clientSecret && isEqualSecret(provider.clientSecret, clientSecret)
-  return isAuthenticated ? provider : null
 }
 
 const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest) => {
@@ -69,16 +50,12 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   // SCIM OAuth client credentials
   if (grant_type === 'client_credentials') {
     if (!client_id || !client_secret) {
-      res.writeStatus('400 Bad Request')
-      res.writeHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({error: 'invalid_request'}))
+      writeJSON(res, '400 Bad Request', {error: 'invalid_request'})
       return
     }
 
     if (client_id.startsWith('prbl-scim-cid-') === false) {
-      res.writeStatus('401 Unauthorized')
-      res.writeHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({error: 'invalid_client'}))
+      writeJSON(res, '401 Unauthorized', {error: 'invalid_client'})
       return
     }
 
@@ -89,9 +66,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       .where('scimOAuthClientId', '=', client_id)
       .executeTakeFirst()
     if (!saml || !saml.orgId || !isEqualSecret(saml.scimOAuthClientSecret, client_secret)) {
-      res.writeStatus('401 Unauthorized')
-      res.writeHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({error: 'invalid_client'}))
+      writeJSON(res, '401 Unauthorized', {error: 'invalid_client'})
       return
     }
 
@@ -103,19 +78,12 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       lifespan_ms: ms('30d'),
       aud: 'action-scim'
     })
-    const accessToken = encodeAuthToken(authToken)
-
-    res.writeStatus('200 OK')
-    res.writeHeader('Content-Type', 'application/json')
-    res.writeHeader('Cache-Control', 'no-store')
-    res.end(
-      JSON.stringify({
-        access_token: accessToken,
-        token_type: 'Bearer',
-        expires_in: ms('30d') / 1000,
-        scope: scopes.join(' ')
-      })
-    )
+    writeJSON(res, '200 OK', {
+      access_token: encodeAuthToken(authToken),
+      token_type: 'Bearer',
+      expires_in: ms('30d') / 1000,
+      scope: scopes.join(' ')
+    })
     return
   }
 
@@ -130,7 +98,17 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  const provider = await getAuthenticatedClient(client_id, client_secret)
+  if (client_secret) {
+    writeJSON(res, '401 Unauthorized', {
+      error: 'invalid_client',
+      error_description: 'Clients authenticate with PKCE, not a client_secret'
+    })
+    return
+  }
+
+  const provider = await selectOAuthAPIProvider()
+    .where('clientId', '=', client_id)
+    .executeTakeFirst()
   if (!provider) {
     writeJSON(res, '401 Unauthorized', {error: 'invalid_client'})
     return
@@ -141,7 +119,11 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       writeJSON(res, '400 Bad Request', {error: 'invalid_request'})
       return
     }
-    const rotated = await rotateOAuthRefreshToken(refresh_token, provider.clientId)
+    const rotated = await rotateOAuthRefreshToken({
+      refreshToken: refresh_token,
+      clientId: provider.clientId,
+      orgId: provider.orgId
+    })
     if (!rotated) {
       writeJSON(res, '400 Bad Request', {error: 'invalid_grant'})
       return
@@ -196,12 +178,13 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  const {codeChallenge} = oauthCode
-  const isCodeVerifierValid = codeChallenge
-    ? !!code_verifier &&
-      CODE_VERIFIER.test(code_verifier) &&
-      isEqualSecret(codeChallenge, createHash('sha256').update(code_verifier).digest('base64url'))
-    : provider.clientType === 'confidential' && !code_verifier
+  const isCodeVerifierValid =
+    !!code_verifier &&
+    CODE_VERIFIER.test(code_verifier) &&
+    isEqualSecret(
+      oauthCode.codeChallenge,
+      createHash('sha256').update(code_verifier).digest('base64url')
+    )
   if (!isCodeVerifierValid) {
     writeJSON(res, '400 Bad Request', {
       error: 'invalid_grant',
@@ -219,7 +202,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     clientId: provider.clientId,
     userId,
     scopes,
-    grantedOrgIds: [provider.orgId],
     resource: resource || null
   })
   writeJSON(

@@ -24,7 +24,6 @@ const CREATE_OAUTH_API_PROVIDER = `
       scopes: $scopes
     ) {
       clientId
-      clientSecret
     }
   }
 `
@@ -62,8 +61,10 @@ const createApp = async () => {
     cookie
   })
   expect(created.errors).toBeUndefined()
-  const {clientId, clientSecret} = created.data.createOAuthAPIProvider
-  return {userId, cookie, clientId, clientSecret, redirectUri}
+  const {clientId} = created.data.createOAuthAPIProvider
+  const codeVerifier = crypto.randomBytes(32).toString('base64url')
+  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
+  return {userId, cookie, clientId, redirectUri, codeVerifier, codeChallenge}
 }
 
 type App = Awaited<ReturnType<typeof createApp>>
@@ -77,6 +78,8 @@ const authorize = (app: App, resource?: string) =>
         redirectUri: app.redirectUri,
         scope: 'users:read',
         state: 'xyz',
+        codeChallenge: app.codeChallenge,
+        codeChallengeMethod: 'S256',
         resource
       }
     },
@@ -102,7 +105,7 @@ const exchange = (app: App, code: string, resource?: string) =>
     code,
     redirect_uri: app.redirectUri,
     client_id: app.clientId,
-    client_secret: app.clientSecret,
+    code_verifier: app.codeVerifier,
     ...(resource && {resource})
   })
 
@@ -119,7 +122,7 @@ test('authorization server metadata lists S256 and both grant types', async () =
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
-    token_endpoint_auth_methods_supported: ['client_secret_post', 'none']
+    token_endpoint_auth_methods_supported: ['none']
   })
   expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
   expect(metadata.scopes_supported).toHaveLength(18)
@@ -193,8 +196,7 @@ test('the access token carries the resource it was issued for', async () => {
   const refreshed = await postToken({
     grant_type: 'refresh_token',
     refresh_token: tokens.refresh_token,
-    client_id: app.clientId,
-    client_secret: app.clientSecret
+    client_id: app.clientId
   })
   expect(refreshed.status).toBe(200)
   const refreshedToken = getVerifiedAuthToken(
@@ -272,28 +274,20 @@ test('a session cookie does not lend its authority to an OAuth bearer on a non-p
   expect(body.data?.viewer?.id).toBe(app.userId)
 })
 
-test('an OAuth token with a revoked grant cannot run a non-persisted query', async () => {
+test('an OAuth token whose grant was removed cannot run a non-persisted query', async () => {
   const app = await createApp()
   const accessToken = await getAccessToken(app)
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
   const body = await queryRaw({authorization: `Bearer ${accessToken}`})
   expect(body.data?.viewer?.id).toBeUndefined()
   expect(body.errors).toBeDefined()
 })
 
-test('a revoked OAuth token alongside a cookie cannot run a non-persisted query', async () => {
+test('an OAuth token whose grant was removed cannot borrow a cookie on a non-persisted query', async () => {
   const app = await createApp()
   const other = await createApp()
   const accessToken = await getAccessToken(app)
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
   const body = await queryRaw({authorization: `Bearer ${accessToken}`, cookie: other.cookie})
   expect(body.data?.viewer?.id).toBeUndefined()
 })
