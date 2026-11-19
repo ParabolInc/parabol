@@ -19,7 +19,7 @@ input OAuthAuthorizationRequestInput {
   """
   state: String!
   """
-  The PKCE code challenge, base64url(SHA-256(code_verifier))
+  The PKCE code challenge, base64url(SHA-256(code_verifier)). Required
   """
   codeChallenge: String
   """

@@ -529,7 +529,10 @@ type Mutation {
     samlId: ID
   ): AssignSAMLIdToOrgPayload!
 
-  pruneFailedEmbeddingJobs(before: DateTime!): Int
+  """
+  Delete embedding failures last seen before `before`, and expired OAuth codes and refresh tokens
+  """
+  prunePG(before: DateTime!): Int
   buildEmbeddings(input: BuildEmbeddingsInput!): Int
 
   """

@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import getKysely from '../postgres/getKysely'
 import {
   createOrgAdmin,
@@ -357,7 +358,6 @@ const CREATE_OAUTH_API_PROVIDER = `
       scopes: $scopes
     ) {
       clientId
-      clientSecret
     }
   }
 `
@@ -383,10 +383,21 @@ const getOAuthAccessToken = async (
     cookie
   })
   expect(app.errors).toBeUndefined()
-  const {clientId, clientSecret} = app.data.createOAuthAPIProvider
+  const {clientId} = app.data.createOAuthAPIProvider
+  const codeVerifier = crypto.randomBytes(32).toString('base64url')
+  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
   const approved = await sendPublic({
     query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope, state: 'xyz'}},
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        scope,
+        state: 'xyz',
+        codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
     cookie
   })
   expect(approved.errors).toBeUndefined()
@@ -399,7 +410,7 @@ const getOAuthAccessToken = async (
       code,
       redirect_uri: redirectUri,
       client_id: clientId,
-      client_secret: clientSecret
+      code_verifier: codeVerifier
     })
   })
   expect(tokenResponse.status).toBe(200)

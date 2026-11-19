@@ -3,7 +3,6 @@ import type {CreateOAuthApiProviderPayloadResolvers} from '../resolverTypes'
 export type CreateOAuthApiProviderPayloadSource = {
   providerId: number
   clientId: string
-  clientSecret: string | null
 }
 
 const CreateOAuthAPIProviderPayload: CreateOAuthApiProviderPayloadResolvers = {

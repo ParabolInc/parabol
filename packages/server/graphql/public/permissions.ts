@@ -320,10 +320,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     pushInvitation: and(hasUnrestrictedGrant, rateLimit({perMinute: 10, perHour: 20})),
     refreshSession: and(isAuthenticated, hasTokenAudience(['action'])),
-    regenerateOAuthAPIProviderSecret: and(
-      hasTokenAudience(['action']),
-      hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId')
-    ),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
@@ -615,8 +611,14 @@ const permissionMap: PermissionMap<Resolvers> = {
     isBillingLeader: allow,
     isOrgAdmin: allow,
     name: allow,
-    oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
-    oauthApplications: hasOrgRole<'Organization.oauthApplications'>('source.id', 'ORG_ADMIN'),
+    oauthAPIProvider: and(
+      hasTokenAudience(['action']),
+      hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId')
+    ),
+    oauthApplications: and(
+      hasTokenAudience(['action']),
+      hasOrgRole<'Organization.oauthApplications'>('source.id', 'ORG_ADMIN')
+    ),
     picture: allow,
     report: and(
       or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),

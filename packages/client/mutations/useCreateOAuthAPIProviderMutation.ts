@@ -10,14 +10,12 @@ const mutation = graphql`
     $name: String!
     $redirectUris: [RedirectURI!]!
     $scopes: [OAuthScopeEnum!]!
-    $clientType: OAuthClientTypeEnum!
   ) {
     createOAuthAPIProvider(
       orgId: $orgId
       name: $name
       redirectUris: $redirectUris
       scopes: $scopes
-      clientType: $clientType
     ) {
       provider {
         ...OAuthAppFormEdit_oauthProvider
@@ -26,7 +24,6 @@ const mutation = graphql`
         updatedAt
       }
       clientId
-      clientSecret
     }
   }
 `

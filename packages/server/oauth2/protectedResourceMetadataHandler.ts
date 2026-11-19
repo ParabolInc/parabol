@@ -2,10 +2,10 @@ import type {HttpResponse} from 'uWebSockets.js'
 import appOrigin from '../appOrigin'
 import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
 import {MCP_RESOURCE} from './validateOAuthAuthorizationRequest'
-import writeMetadata from './writeMetadata'
+import writeJSON from './writeJSON'
 
 const protectedResourceMetadataHandler = (res: HttpResponse) => {
-  writeMetadata(res, {
+  writeJSON(res, '200 OK', {
     resource: MCP_RESOURCE,
     authorization_servers: [appOrigin],
     bearer_methods_supported: ['header'],

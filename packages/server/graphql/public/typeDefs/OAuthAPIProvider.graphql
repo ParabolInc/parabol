@@ -18,11 +18,6 @@ type OAuthAPIProvider {
   clientId: String!
 
   """
-  Whether the application keeps a client secret or authenticates with PKCE alone
-  """
-  clientType: OAuthClientTypeEnum!
-
-  """
   The allowed redirect URIs for the OAuth flow
   """
   redirectUris: [RedirectURI!]!

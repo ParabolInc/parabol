@@ -224,7 +224,6 @@ type Mutation {
     name: String!
     redirectUris: [RedirectURI!]!
     scopes: [OAuthScopeEnum!]!
-    clientType: OAuthClientTypeEnum! = CONFIDENTIAL
   ): CreateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
@@ -235,23 +234,12 @@ type Mutation {
     name: String
     redirectUris: [RedirectURI!]
     scopes: [OAuthScopeEnum!]
-
-    """
-    Switching to PUBLIC deletes the client secret; switching to CONFIDENTIAL issues a new one
-    """
-    clientType: OAuthClientTypeEnum
   ): UpdateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
   Delete an OAuth 2.0 Application
   """
   deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Regenerate the OAuth 2.0 client secret for an application
-  """
-  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
-    @scope(name: ORGS_WRITE)
 
   """
   Update SCIM settings for a SAML identity provider

@@ -11,7 +11,6 @@ graphql`
     clientId
     redirectUris
     scopes
-    clientType
   }
 `
 

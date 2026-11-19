@@ -11,7 +11,7 @@ import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/sel
 import {CipherId} from './CipherId'
 import checkBlacklistJWT from './checkBlacklistJWT'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
-import hashPersonalAccessToken from './hashPersonalAccessToken'
+import hashRandomToken from './hashRandomToken'
 import {Logger} from './Logger'
 
 export interface APIGrant {
@@ -47,7 +47,7 @@ const getPersonalAccessTokenGrant = async (
     .where('expiresAt', '>', sql<Date>`CURRENT_TIMESTAMP`)
     .executeTakeFirst()
 
-  const hashedToken = hashPersonalAccessToken(rawToken)
+  const hashedToken = hashRandomToken(rawToken)
   if (!token || !(await isTokenMatch(rawToken, hashedToken, token.hashedToken))) {
     throw new GraphQLError('Invalid or revoked personal access token', {
       extensions: {code: 'UNAUTHENTICATED'}
@@ -114,7 +114,6 @@ const getOAuthAccessTokenGrant = async (
     isBlacklisted ||
     !provider ||
     !grant ||
-    grant.revokedAt ||
     grant.clientId !== clientId ||
     grant.userId !== userId
   ) {
@@ -136,13 +135,7 @@ const getOAuthAccessTokenGrant = async (
     aud: 'action-oauth2',
     clientId,
     grantId: grant.id,
-    resourceGrants: new ResourceGrants(
-      userId,
-      grant.grantedOrgIds ?? [provider.orgId],
-      [],
-      null,
-      dataLoader
-    )
+    resourceGrants: new ResourceGrants(userId, [provider.orgId], [], null, dataLoader)
   }
 }
 
