@@ -22,7 +22,7 @@ const query = graphql`
         }
         viewerMeetingMember {
           teamMember {
-            ...ClickUpListFilterBar_teamMember
+            id
           }
         }
       }
@@ -55,7 +55,7 @@ const ClickUpIntegrationPanel = (
     <>
       <div className='px-4 pt-4 pb-2'>
         <ClickUpListFilterBar
-          teamMemberRef={teamMember}
+          teamId={teamId}
           selectedListIds={selectedListIds}
           setSelectedListIds={setSelectedListIds}
         />

@@ -7,7 +7,7 @@ import {getAzureDevOpsSharedProjects} from '../../../integrations/azureDevOps/az
 import buildAzureDevOpsWorkWiql from '../../../integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import type {WorkDrawerQueryPanelProps} from '../../../integrations/platform/ClientIntegrationDefinition'
 import AzureDevOpsIntegrationResultsRoot from './AzureDevOpsIntegrationResultsRoot'
-import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
+import AzureDevOpsProjectFilterBarRoot from './AzureDevOpsProjectFilterBarRoot'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
@@ -28,7 +28,6 @@ const query = graphql`
               service
               ...azureDevOpsSharedProjects_service @relay(mask: false)
             }
-            ...AzureDevOpsProjectFilterBar_teamMember
           }
         }
       }
@@ -68,8 +67,8 @@ const AzureDevOpsIntegrationPanel = (
   return (
     <>
       <div className='px-4 pt-4 pb-2'>
-        <AzureDevOpsProjectFilterBar
-          teamMemberRef={teamMember}
+        <AzureDevOpsProjectFilterBarRoot
+          teamId={teamId}
           selectedProjectIds={selectedProjectIds}
           setSelectedProjectIds={setSelectedProjectIds}
         />

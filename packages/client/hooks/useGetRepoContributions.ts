@@ -9,7 +9,9 @@ export type Repo = {
   readonly nameWithOwner: string
 }
 
-const useGetRepoContributions = (teamMemberRef: useGetRepoContributions_teamMember$key): Repo[] => {
+const useGetRepoContributions = (
+  teamMemberRef: useGetRepoContributions_teamMember$key | null
+): Repo[] => {
   const teamMember = useFragment(
     graphql`
       fragment useGetRepoContributions_teamMember on TeamMember {

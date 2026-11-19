@@ -43,7 +43,7 @@ const scoping: ScopingCapability = {
   FilterMenu: lazyPreload(
     () =>
       import(
-        /* webpackChunkName: 'GitHubScopingSearchFilterMenuRoot' */ '../../components/GitHubScopingSearchFilterMenuRoot'
+        /* webpackChunkName: 'GitHubScopingSearchFilterMenu' */ '../../components/GitHubScopingSearchFilterMenu'
       )
   ),
   NewRecordInput: lazy(

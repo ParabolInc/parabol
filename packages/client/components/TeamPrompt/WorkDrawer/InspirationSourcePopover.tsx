@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
+import AzureDevOpsProjectFilterBarRoot from './AzureDevOpsProjectFilterBarRoot'
 import ClickUpListFilterBar from './ClickUpListFilterBar'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
@@ -45,16 +45,13 @@ const InspirationSourcePopover = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment InspirationSourcePopover_teamMember on TeamMember {
+        teamId
         ...InspirationSourceConnectButton_teamMember
-        ...GitHubRepoFilterBar_teamMember
-        ...JiraProjectFilterBar_teamMember @defer
-        ...LinearProjectFilterBar_teamMember
-        ...AzureDevOpsProjectFilterBar_teamMember
-        ...ClickUpListFilterBar_teamMember @defer
       }
     `,
     teamMemberRef
   )
+  const {teamId} = teamMember
   const label = inspirationServiceLabel(service)
   const destination = canDraft ? 'draft' : 'list'
   const enabledKinds = settings.kinds[service]
@@ -101,50 +98,50 @@ const InspirationSourcePopover = (props: Props) => {
               />
             ))}
           </div>
-          <Suspense fallback={<Spinner className='size-5 self-center' />}>
-            {service === 'github' && (
-              <GitHubRepoFilterBar
-                teamMemberRef={teamMember}
-                selectedRepos={settings.githubRepos}
-                setSelectedRepos={(githubRepos) => setSettings((prev) => ({...prev, githubRepos}))}
-              />
-            )}
-            {service === 'jira' && (
-              <JiraProjectFilterBar
-                teamMemberRef={teamMember}
-                selectedProjectIds={settings.jiraProjectIds}
-                setSelectedProjectIds={(jiraProjectIds) =>
-                  setSettings((prev) => ({...prev, jiraProjectIds}))
-                }
-              />
-            )}
-            {service === 'linear' && (
-              <LinearProjectFilterBar
-                className='m-0'
-                teamMemberRef={teamMember}
-                selectedLinearIds={settings.linearIds}
-                setSelectedLinearIds={(linearIds) => setSettings((prev) => ({...prev, linearIds}))}
-              />
-            )}
-            {service === 'azureDevOps' && (
-              <AzureDevOpsProjectFilterBar
-                teamMemberRef={teamMember}
+          {service === 'github' && (
+            <GitHubRepoFilterBar
+              teamId={teamId}
+              selectedRepos={settings.githubRepos}
+              setSelectedRepos={(githubRepos) => setSettings((prev) => ({...prev, githubRepos}))}
+            />
+          )}
+          {service === 'jira' && (
+            <JiraProjectFilterBar
+              teamId={teamId}
+              selectedProjectIds={settings.jiraProjectIds}
+              setSelectedProjectIds={(jiraProjectIds) =>
+                setSettings((prev) => ({...prev, jiraProjectIds}))
+              }
+            />
+          )}
+          {service === 'linear' && (
+            <LinearProjectFilterBar
+              className='m-0'
+              teamId={teamId}
+              selectedLinearIds={settings.linearIds}
+              setSelectedLinearIds={(linearIds) => setSettings((prev) => ({...prev, linearIds}))}
+            />
+          )}
+          {service === 'azureDevOps' && (
+            <Suspense fallback={<Spinner className='size-5 self-center' />}>
+              <AzureDevOpsProjectFilterBarRoot
+                teamId={teamId}
                 selectedProjectIds={settings.azureDevOpsProjectIds}
                 setSelectedProjectIds={(azureDevOpsProjectIds) =>
                   setSettings((prev) => ({...prev, azureDevOpsProjectIds}))
                 }
               />
-            )}
-            {service === 'clickup' && (
-              <ClickUpListFilterBar
-                teamMemberRef={teamMember}
-                selectedListIds={settings.clickupListIds}
-                setSelectedListIds={(clickupListIds) =>
-                  setSettings((prev) => ({...prev, clickupListIds}))
-                }
-              />
-            )}
-          </Suspense>
+            </Suspense>
+          )}
+          {service === 'clickup' && (
+            <ClickUpListFilterBar
+              teamId={teamId}
+              selectedListIds={settings.clickupListIds}
+              setSelectedListIds={(clickupListIds) =>
+                setSettings((prev) => ({...prev, clickupListIds}))
+              }
+            />
+          )}
           <p className='m-0 text-fg-muted text-xs'>
             {kinds.length > 1
               ? `Turn everything off to leave ${label} out of your ${destination}.`
