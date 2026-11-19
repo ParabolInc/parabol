@@ -1,9 +1,8 @@
 import crypto from 'node:crypto'
-import bcrypt from 'bcryptjs'
 import {GraphQLError} from 'graphql'
 import ms from 'ms'
-import {Security} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import hashPersonalAccessToken from '../../../utils/hashPersonalAccessToken'
 import type {MutationResolvers} from '../resolverTypes'
 
 let enabled = true
@@ -53,7 +52,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   }
   const rawToken = crypto.randomBytes(32).toString('base64url')
   const prefix = rawToken.slice(0, 8)
-  const hashedToken = await bcrypt.hash(rawToken, Security.SALT_ROUNDS)
+  const hashedToken = hashPersonalAccessToken(rawToken)
 
   const pg = getKysely()
   const pat = await pg
