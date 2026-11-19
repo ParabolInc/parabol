@@ -1,10 +1,10 @@
 import {useState} from 'react'
-import {Info as InfoIcon} from '~/ui/icons'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthAppFormEdit_oauthProvider$data} from '../../../../__generated__/OAuthAppFormEdit_oauthProvider.graphql'
 import type {OAuthScopeEnum} from '../../../../__generated__/useCreateOAuthAPIProviderMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import TipBanner from '../../../../components/TipBanner'
 import useCreateOAuthAPIProviderMutation from '../../../../mutations/useCreateOAuthAPIProviderMutation'
 import useRegenerateOAuthAPIProviderSecretMutation from '../../../../mutations/useRegenerateOAuthAPIProviderSecretMutation'
 import useUpdateOAuthAPIProviderMutation from '../../../../mutations/useUpdateOAuthAPIProviderMutation'
@@ -266,16 +266,10 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               )}
             </div>
             {!isConfidential && (
-              <div
-                role='note'
-                className='flex items-start gap-2 rounded-lg border border-callout-info-edge bg-callout-info-fill p-3 text-fg-primary text-sm'
-              >
-                <InfoIcon className='mt-0.5 text-[18px] text-callout-info-icon' />
-                <span>
-                  <b>No client secret.</b> This app must send a PKCE code challenge (S256) when it
-                  signs in. Parabol refuses sign-ins from it without one.
-                </span>
-              </div>
+              <TipBanner>
+                <b>No client secret.</b> This app must send a PKCE code challenge (S256) when it
+                signs in. Parabol refuses sign-ins from it without one.
+              </TipBanner>
             )}
             <div className='flex flex-col gap-4'>
               <OAuthCopyField
