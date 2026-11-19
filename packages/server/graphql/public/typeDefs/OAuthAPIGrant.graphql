@@ -1,0 +1,54 @@
+"""
+A member's connection of an AI app to Parabol
+"""
+type OAuthAPIGrant {
+  """
+  The unique grant ID
+  """
+  id: ID!
+
+  """
+  The name of the connected app
+  """
+  clientName: String!
+
+  """
+  The host the connected app lives on
+  """
+  clientHost: String!
+
+  """
+  When Parabol verified the app. Null for unverified apps
+  """
+  clientVerifiedAt: DateTime
+
+  """
+  The member who connected the app
+  """
+  user: User!
+
+  """
+  The permissions the member gave the app
+  """
+  scopes: [OAuthScopeEnum!]!
+
+  """
+  The organizations the app may reach for the member. Null means all of the member's organizations. Only visible to the member
+  """
+  grantedOrganizations: [Organization!]
+
+  """
+  When the member gave the app access to their private pages. Null if they did not. Only visible to the member
+  """
+  personalGrantedAt: DateTime
+
+  """
+  When the member connected the app
+  """
+  createdAt: DateTime!
+
+  """
+  When the app last used the connection
+  """
+  lastUsedAt: DateTime
+}

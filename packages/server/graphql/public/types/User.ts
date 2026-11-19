@@ -20,6 +20,7 @@ import {
 import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
+import selectAIAppGrants from '../../../oauth2/selectAIAppGrants'
 import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
 import {
@@ -887,6 +888,12 @@ const User: ReqResolvers<'User'> = {
   aiPrompts,
   pages,
   search,
+  aiAppGrants: ({id: userId}) => {
+    return selectAIAppGrants()
+      .where('OAuthAPIGrant.userId', '=', userId)
+      .orderBy('OAuthAPIGrant.createdAt', 'desc')
+      .execute()
+  },
   personalAccessTokens: async (_source, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
     const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()

@@ -512,6 +512,14 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId')
     ),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
+    revokeOAuthAPIGrantFromOrg: and(
+      hasTokenAudience(['action']),
+      hasOrgRole<'Mutation.revokeOAuthAPIGrantFromOrg'>('args.orgId', 'ORG_ADMIN')
+    ),
+    disconnectOAuthAPIGrant: and(
+      hasTokenAudience(['action']),
+      isUserViewer<'Mutation.disconnectOAuthAPIGrant'>('args.grantId', 'oauthAPIGrants')
+    ),
     updateOrgAIAppsPolicy: and(
       hasTokenAudience(['action']),
       hasOrgRole<'Mutation.updateOrgAIAppsPolicy'>('args.orgId', 'ORG_ADMIN')
@@ -621,6 +629,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': redactUnless(or(isSuperUser, isViewerOnOrg<'Organization.id'>('source.id'))),
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
     aiAppsPolicy: hasOrgRole<'Organization.aiAppsPolicy'>('source.id', 'ORG_ADMIN'),
+    aiAppGrants: hasOrgRole<'Organization.aiAppGrants'>('source.id', 'ORG_ADMIN'),
     id: allow,
     isBillingLeader: allow,
     isOrgAdmin: allow,
@@ -704,6 +713,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     tier: isOnTeamOrg,
     viewerTeamMember: allow
   },
+  OAuthAPIGrant: {
+    grantedOrganizations: isUserViewer<'OAuthAPIGrant.grantedOrganizations'>('source.userId'),
+    personalGrantedAt: isUserViewer<'OAuthAPIGrant.personalGrantedAt'>('source.userId')
+  },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
     prevUsedRepoIntegrations: isTeamMember<'TeamMember.prevUsedRepoIntegrations'>('source.teamId'),
@@ -769,6 +782,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasTokenAudience(['action']),
       rateLimit({perMinute: 30, perHour: 300})
     ),
+    aiAppGrants: and(isUserSelf, hasTokenAudience(['action'])),
     personalAccessTokens: and(isUserSelf, hasTokenAudience(['action'])),
     picture: allow,
     preferredName: allow,

@@ -1,0 +1,9 @@
+"""
+Return value for revokeOAuthAPIGrantFromOrg
+"""
+type RevokeOAuthAPIGrantFromOrgPayload {
+  """
+  The organization the app can no longer reach through that connection
+  """
+  organization: Organization!
+}

@@ -1,0 +1,9 @@
+"""
+Return value for disconnectOAuthAPIGrant
+"""
+type DisconnectOAuthAPIGrantPayload {
+  """
+  The user who disconnected the app
+  """
+  user: User!
+}

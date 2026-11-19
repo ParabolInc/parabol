@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {getUsageReportLevel} from '../../../license/instanceLicense'
+import {selectAIAppGrantsReachingOrg} from '../../../oauth2/selectAIAppGrants'
 import getKysely from '../../../postgres/getKysely'
 import {selectPinnedReports} from '../../../reports/pinnedReports'
 import readReportSpecInput from '../../../reports/readReportSpecInput'
@@ -20,6 +21,9 @@ import type {OrganizationResolvers} from '../resolverTypes'
 const MAX_ACTIVE_USER_COUNT_TIMES = 366
 
 const Organization: OrganizationResolvers = {
+  aiAppGrants: ({id: orgId}) => {
+    return selectAIAppGrantsReachingOrg(orgId).orderBy('OAuthAPIGrant.createdAt', 'desc').execute()
+  },
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('organizationApprovedDomainsByOrgId').load(orgId)
   },

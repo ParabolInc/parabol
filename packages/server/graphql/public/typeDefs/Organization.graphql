@@ -235,6 +235,11 @@ type Organization {
   aiAppsPolicy: OrgAIAppsPolicyEnum
 
   """
+  The AI app connections that reach the org, newest first. Only visible to org admins
+  """
+  aiAppGrants: [OAuthAPIGrant!]!
+
+  """
   The tier used for billing purposes (may differ from tier during trials or grace periods)
   """
   billingTier: TierEnum!

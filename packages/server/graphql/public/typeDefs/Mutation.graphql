@@ -1404,6 +1404,31 @@ type Mutation {
   ): UpdateOrgAIAppsPolicyPayload! @scope(name: ORGS_WRITE)
 
   """
+  Stop an AI app from reaching an organization through a member's connection. Requires an org admin session
+  """
+  revokeOAuthAPIGrantFromOrg(
+    """
+    The connection being narrowed
+    """
+    grantId: ID!
+
+    """
+    The organization the app loses access to
+    """
+    orgId: ID!
+  ): RevokeOAuthAPIGrantFromOrgPayload! @scope(name: ORGS_WRITE)
+
+  """
+  Disconnect one of the viewer's AI apps from every organization and from their private pages. Requires the viewer's own session
+  """
+  disconnectOAuthAPIGrant(
+    """
+    The connection being removed
+    """
+    grantId: ID!
+  ): DisconnectOAuthAPIGrantPayload! @scope(name: USERS_WRITE)
+
+  """
   Toggle the team's privacy between public (joinable without invitation) and private
   """
   toggleTeamPrivacy(
