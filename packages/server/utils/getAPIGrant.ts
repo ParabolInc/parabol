@@ -24,6 +24,7 @@ export interface APIGrant {
 
 const PREFIX_LENGTH = 8
 // older tokens were hashed with bcrypt, and are rehashed the first time they're used
+// TODO: remove the bcrypt check after 2027-11-18; any token still on bcrypt then just stops working
 const isBcryptHash = (storedHash: string) => storedHash.startsWith('$2')
 const isTokenMatch = async (rawToken: string, hashedToken: string, storedHash: string) => {
   if (isBcryptHash(storedHash)) return bcrypt.compare(rawToken, storedHash)
