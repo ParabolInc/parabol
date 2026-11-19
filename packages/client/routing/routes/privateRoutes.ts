@@ -153,8 +153,15 @@ export const newMeetingRoute = createRoute({
 export const meetingRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'meet/$meetingId',
+  // everyone in the meeting sees the viewer join, so only a visit joins, never a preload
+  preload: false,
+  loader: async ({context: {joinedMeetings}, params: {meetingId}, abortController}) => ({
+    queryRef: await joinedMeetings.join(meetingId, abortController.signal)
+  }),
+  // a meeting replaces the whole page, so the page that opened it stays up until the meeting can show
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'MeetingRoot' */ '../../components/MeetingRoot')
+    () => import(/* webpackChunkName: 'MeetingRoute' */ '../../components/MeetingRoute')
   )
 })
 export const meetingIndexRoute = createRoute({

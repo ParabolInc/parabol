@@ -3,17 +3,21 @@ import type {TeamInviteeResult} from '../hooks/useTeamInviteeDrafts'
 import matchReportedRoute from '../utils/matchReportedRoute'
 import {startNavigation} from '../utils/navigationTimings'
 import appAtmosphere from './appAtmosphere'
+import {createJoinedMeetings} from './joinedMeetings'
 import {createQueryRefs} from './queryRefs'
 import RethrowRouteError from './RethrowRouteError'
 import {routeTree} from './routeTree'
 import {parseSearch, stringifySearch} from './searchParams'
 
 const queryRefs = createQueryRefs(appAtmosphere, appAtmosphere.retries)
+const joinedMeetings = createJoinedMeetings(appAtmosphere, queryRefs, {
+  navigate: (options) => appRouter.navigate(options)
+})
 
 const appRouter = createRouter({
   routeTree,
   history: createBrowserHistory(),
-  context: {atmosphere: appAtmosphere, queryRefs},
+  context: {atmosphere: appAtmosphere, joinedMeetings, queryRefs},
   parseSearch,
   stringifySearch,
   // The registry caches route queries, so the router keeps no loader data of its own

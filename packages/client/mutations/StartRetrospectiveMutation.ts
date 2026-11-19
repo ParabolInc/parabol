@@ -43,7 +43,7 @@ const mutation = graphql`
       ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
     ) {
       meeting {
-        # lets useJoinedMeetingQuery subscribe while the starter joins
+        # lets joinMeeting subscribe while the starter joins
         viewerMeetingMember {
           id
         }
