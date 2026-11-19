@@ -14,5 +14,4 @@ type OrganizationSubscriptionPayload {
   UpdateOrgPayload: UpdateOrgPayload
   UpdateTemplateScopePayload: UpdateTemplateScopePayload
   UpgradeToTeamTierPayload: UpgradeToTeamTierPayload
-  UpdateOAuthAPIProviderPayload: UpdateOAuthAPIProviderPayload
 }

@@ -401,3 +401,20 @@ test('a public client registered on [::1] may use any port there', async () => {
   const response = await authorizeAt(app, 'http://[::1]:53111/callback')
   expect(response.errors).toBeUndefined()
 })
+
+test('a code issued before a client type switch cannot be exchanged after it', async () => {
+  const app = await createApp('CONFIDENTIAL')
+  const {codeVerifier, codeChallenge} = createPKCEPair()
+  const code = await getCode(app, codeChallenge)
+
+  await switchClientType(app, 'PUBLIC')
+
+  const response = await exchangeCode({
+    code,
+    redirect_uri: app.redirectUri,
+    client_id: app.clientId,
+    code_verifier: codeVerifier
+  })
+  expect(response.status).toBe(400)
+  expect(await response.json()).toMatchObject({error: 'invalid_grant'})
+})

@@ -6,8 +6,15 @@ const insertOAuthRefreshToken = async (db: Kysely<DB>, grantId: number) => {
   const {refreshToken, tokenHash} = generateOAuthRefreshToken()
   await db
     .deleteFrom('OAuthAPIRefreshToken')
-    .where('grantId', '=', grantId)
-    .where('expiresAt', '<', sql<Date>`now()`)
+    .where('id', 'in', (eb) =>
+      eb
+        .selectFrom('OAuthAPIRefreshToken')
+        .select('id')
+        .where('expiresAt', '<', sql<Date>`now()`)
+        .limit(100)
+        .forUpdate()
+        .skipLocked()
+    )
     .execute()
   await db
     .insertInto('OAuthAPIRefreshToken')

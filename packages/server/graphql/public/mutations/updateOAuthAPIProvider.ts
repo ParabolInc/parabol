@@ -1,10 +1,8 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
-import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = async (
@@ -14,7 +12,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
 ) => {
   const {name, redirectUris, scopes, clientType} = args
   const [providerId] = CipherId.fromClient(args.providerId)
-  const {dataLoader, socketId} = context
+  const {dataLoader} = context
 
   const pg = getKysely()
 
@@ -54,20 +52,12 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
         .where('clientId', '=', provider.clientId)
         .where('revokedAt', 'is', null)
         .execute()
+      await trx.deleteFrom('OAuthAPICode').where('clientId', '=', provider.clientId).execute()
     }
   })
   dataLoader.get('oAuthProviders').clear(providerId)
 
-  const data = {
-    organizationId: provider.orgId,
-    providerId
-  }
-
-  publish(SubscriptionChannel.ORGANIZATION, provider.orgId, 'UpdateOAuthAPIProviderPayload', data, {
-    mutatorId: socketId
-  })
-
-  return {...data, clientSecret}
+  return {organizationId: provider.orgId, providerId, clientSecret}
 }
 
 export default updateOAuthAPIProvider
