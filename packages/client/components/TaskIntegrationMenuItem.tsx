@@ -1,9 +1,9 @@
 import {forwardRef} from 'react'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {MenuItem} from '../ui/Menu/MenuItem'
+import HighlightedText from './HighlightedText'
 import MenuItemAvatar from './MenuItemAvatar'
 import TaskServiceIcon from './TaskServiceIcon'
-import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
   label: string
@@ -19,7 +19,7 @@ const TaskIntegrationMenuItem = forwardRef<HTMLDivElement, Props>((props, ref) =
       <MenuItemAvatar>
         <TaskServiceIcon service={service} />
       </MenuItemAvatar>
-      <TypeAheadLabel query={query} label={label} />
+      <HighlightedText query={query} text={label} className='truncate' />
     </MenuItem>
   )
 })
