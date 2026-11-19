@@ -230,6 +230,36 @@ test('reusing a refresh token after 30 seconds disconnects the app', async () =>
   expect((await refresh(app, second.refresh_token)).status).toBe(400)
 })
 
+test('after a retry, using one new refresh token makes the other disconnect the app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const first = await consent(app)
+  const second = await (await refresh(app, first.refresh_token)).json()
+  const sibling = await (await refresh(app, first.refresh_token)).json()
+
+  const third = await refresh(app, sibling.refresh_token)
+  expect(third.status).toBe(200)
+  const {access_token} = await third.json()
+
+  const forked = await refresh(app, second.refresh_token)
+  expect(forked.status).toBe(400)
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(access_token)).toBe('UNAUTHENTICATED')
+})
+
+test('replaying a refresh token within 30 seconds after its new token was used disconnects the app', async () => {
+  const app = await createApp(await signUpOrgAdmin())
+  const first = await consent(app)
+  const second = await (await refresh(app, first.refresh_token)).json()
+  const third = await refresh(app, second.refresh_token)
+  expect(third.status).toBe(200)
+  const {access_token} = await third.json()
+
+  const replayed = await refresh(app, first.refresh_token)
+  expect(replayed.status).toBe(400)
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(access_token)).toBe('UNAUTHENTICATED')
+})
+
 test('a refresh token only works for its own client', async () => {
   const admin = await signUpOrgAdmin()
   const app = await createApp(admin)

@@ -24,7 +24,7 @@ const upsertOAuthAPIGrant = async ({clientId, userId, scopes, resource}: Input) 
         )
         .returning('id')
         .executeTakeFirstOrThrow()
-      const refreshToken = await insertOAuthRefreshToken(trx, grantId)
+      const refreshToken = await insertOAuthRefreshToken(trx, grantId, null)
       return {grantId, refreshToken}
     })
 

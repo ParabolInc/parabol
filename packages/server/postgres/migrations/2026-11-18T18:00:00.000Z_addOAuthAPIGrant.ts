@@ -34,6 +34,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('grantId', 'integer', (col) =>
       col.notNull().references('OAuthAPIGrant.id').onDelete('cascade')
     )
+    // no foreign key: pruning deletes an expired parent while its children live on, still linked as siblings
+    .addColumn('parentId', 'integer')
     .addColumn('tokenHash', 'text', (col) => col.notNull().unique())
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('rotatedAt', 'timestamptz')
@@ -43,6 +45,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createIndex('idx_OAuthAPIRefreshToken_grantId')
     .on('OAuthAPIRefreshToken')
     .column('grantId')
+    .execute()
+  await db.schema
+    .createIndex('idx_OAuthAPIRefreshToken_parentId')
+    .on('OAuthAPIRefreshToken')
+    .column('parentId')
     .execute()
   await db.schema
     .createIndex('idx_OAuthAPIRefreshToken_expiresAt')
