@@ -1,21 +1,39 @@
+import filterPillClass from '../../../../ui/filterPillClass'
 import {Input} from '../../../../ui/Input/Input'
-import plural from '../../../../utils/plural'
+
+export type AIAppStatusFilter = 'all' | 'verified' | 'unverified'
+
+const OPTIONS = [
+  {value: 'all', label: 'All'},
+  {value: 'verified', label: 'Verified'},
+  {value: 'unverified', label: 'Unverified'}
+] as const
 
 interface Props {
-  connectionCount: number
-  memberCount: number
+  counts: Record<AIAppStatusFilter, number>
+  status: AIAppStatusFilter
+  onStatusChange: (status: AIAppStatusFilter) => void
   filter: string
   onFilterChange: (filter: string) => void
 }
 
 const OrgAIAppConnectionsFilter = (props: Props) => {
-  const {connectionCount, memberCount, filter, onFilterChange} = props
+  const {counts, status, onStatusChange, filter, onFilterChange} = props
   return (
-    <div className='flex items-center gap-3'>
-      <span className='whitespace-nowrap text-fg-secondary'>
-        {connectionCount} {plural(connectionCount, 'connection')} · {memberCount}{' '}
-        {plural(memberCount, 'member')}
-      </span>
+    <div className='flex flex-wrap items-center gap-2 border-hairline border-t px-4 py-2'>
+      <div role='group' aria-label='Show connections' className='flex items-center gap-2'>
+        {OPTIONS.map(({value, label}) => (
+          <button
+            key={value}
+            type='button'
+            aria-pressed={status === value}
+            onClick={() => onStatusChange(value)}
+            className={filterPillClass}
+          >
+            {label} · {counts[value]}
+          </button>
+        ))}
+      </div>
       <Input
         type='search'
         value={filter}
@@ -23,7 +41,7 @@ const OrgAIAppConnectionsFilter = (props: Props) => {
         placeholder='Filter by member or app'
         aria-label='Filter by member or app'
         maxLength={100}
-        className='h-9 w-56 min-w-0'
+        className='ml-auto h-8 w-56 min-w-0'
       />
     </div>
   )

@@ -21,6 +21,7 @@ const OrgAIAppConnectionRow = ({grantRef, isBlocked, orgId, orgName}: Props) => 
       fragment OrgAIAppConnectionRow_grant on OAuthAPIGrant {
         id
         clientName
+        clientHost
         clientVerifiedAt
         scopes
         createdAt
@@ -33,7 +34,7 @@ const OrgAIAppConnectionRow = ({grantRef, isBlocked, orgId, orgName}: Props) => 
     `,
     grantRef
   )
-  const {id, clientName, clientVerifiedAt, scopes, createdAt, lastUsedAt, user} = grant
+  const {id, clientName, clientHost, clientVerifiedAt, scopes, createdAt, lastUsedAt, user} = grant
   const dataCellClass = cn('px-4 py-3', isBlocked && 'opacity-50')
   return (
     <tr className='border-hairline border-b last:border-0'>
@@ -44,7 +45,7 @@ const OrgAIAppConnectionRow = ({grantRef, isBlocked, orgId, orgName}: Props) => 
         </div>
       </td>
       <td className={dataCellClass}>
-        <AIAppIdentity name={clientName} verifiedAt={clientVerifiedAt} />
+        <AIAppIdentity name={clientName} host={clientHost} verifiedAt={clientVerifiedAt} />
       </td>
       <td className={dataCellClass}>
         <AIAppScopeList scopes={scopes} />

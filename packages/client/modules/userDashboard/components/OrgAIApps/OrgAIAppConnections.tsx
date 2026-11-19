@@ -3,10 +3,12 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgAIAppConnections_organization$key} from '../../../../__generated__/OrgAIAppConnections_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
+import plural from '../../../../utils/plural'
 import getEffectiveAIAppsPolicy from './getEffectiveAIAppsPolicy'
 import isAIAppGrantBlocked from './isAIAppGrantBlocked'
 import OrgAIAppConnectionRow from './OrgAIAppConnectionRow'
-import OrgAIAppConnectionsFilter from './OrgAIAppConnectionsFilter'
+import OrgAIAppConnectionsFilter, {type AIAppStatusFilter} from './OrgAIAppConnectionsFilter'
+import OrgAIAppConnectionsTable from './OrgAIAppConnectionsTable'
 import OrgAIAppsEmptyState from './OrgAIAppsEmptyState'
 import OrgAIAppsNoAppsBanner from './OrgAIAppsNoAppsBanner'
 
@@ -37,63 +39,56 @@ const OrgAIAppConnections = ({organizationRef}: Props) => {
     organizationRef
   )
   const {id: orgId, name, useAI, aiAppsPolicy, aiAppGrants} = organization
+  const [status, setStatus] = useState<AIAppStatusFilter>('all')
   const [filter, setFilter] = useState('')
   const effectivePolicy = getEffectiveAIAppsPolicy(aiAppsPolicy, useAI)
+  const connectionCount = aiAppGrants.length
+  const memberCount = new Set(aiAppGrants.map(({user}) => user.id)).size
+  const verifiedCount = aiAppGrants.filter(({clientVerifiedAt}) => clientVerifiedAt).length
   const normalizedFilter = filter.trim().toLowerCase()
-  const visibleGrants = aiAppGrants.filter(
-    ({clientName, user}) =>
+  const visibleGrants = aiAppGrants.filter(({clientName, clientVerifiedAt, user}) => {
+    const matchesStatus =
+      status === 'all' || (status === 'verified' ? !!clientVerifiedAt : !clientVerifiedAt)
+    const matchesKeyword =
       clientName.toLowerCase().includes(normalizedFilter) ||
       user.preferredName.toLowerCase().includes(normalizedFilter)
-  )
-  const controls = aiAppGrants.length > 0 && (
-    <OrgAIAppConnectionsFilter
-      connectionCount={aiAppGrants.length}
-      memberCount={new Set(aiAppGrants.map(({user}) => user.id)).size}
-      filter={filter}
-      onFilterChange={setFilter}
-    />
+    return matchesStatus && matchesKeyword
+  })
+  const controls = connectionCount > 0 && (
+    <span className='whitespace-nowrap text-fg-secondary'>
+      {connectionCount} {plural(connectionCount, 'connection')} · {memberCount}{' '}
+      {plural(memberCount, 'member')}
+    </span>
   )
   return (
     <Panel className='max-w-[976px]' label='App connections' controls={controls}>
-      {aiAppGrants.length === 0 ? (
+      {connectionCount === 0 ? (
         <OrgAIAppsEmptyState orgName={name} />
       ) : (
         <>
           {effectivePolicy === 'NONE' && <OrgAIAppsNoAppsBanner orgName={name} />}
-          <div className='overflow-x-auto border-hairline border-t'>
-            <table className='w-full border-collapse text-sm'>
-              <thead>
-                <tr className='border-hairline border-b bg-surface-raised text-left text-fg-muted text-xs uppercase tracking-wider'>
-                  <th className='px-4 py-2 font-semibold'>Member</th>
-                  <th className='px-4 py-2 font-semibold'>App</th>
-                  <th className='px-4 py-2 font-semibold'>Can do</th>
-                  <th className='px-4 py-2 font-semibold'>Connected</th>
-                  <th className='px-4 py-2 font-semibold'>Last used</th>
-                  <th className='px-4 py-2'>
-                    <span className='sr-only'>Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleGrants.map((grant) => (
-                  <OrgAIAppConnectionRow
-                    key={grant.id}
-                    grantRef={grant}
-                    isBlocked={isAIAppGrantBlocked(effectivePolicy, grant.clientVerifiedAt)}
-                    orgId={orgId}
-                    orgName={name}
-                  />
-                ))}
-                {visibleGrants.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className='p-8 text-center text-fg-muted text-sm'>
-                      No connections match your filter.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <OrgAIAppConnectionsFilter
+            counts={{
+              all: connectionCount,
+              verified: verifiedCount,
+              unverified: connectionCount - verifiedCount
+            }}
+            status={status}
+            onStatusChange={setStatus}
+            filter={filter}
+            onFilterChange={setFilter}
+          />
+          <OrgAIAppConnectionsTable isEmpty={visibleGrants.length === 0}>
+            {visibleGrants.map((grant) => (
+              <OrgAIAppConnectionRow
+                key={grant.id}
+                grantRef={grant}
+                isBlocked={isAIAppGrantBlocked(effectivePolicy, grant.clientVerifiedAt)}
+                orgId={orgId}
+                orgName={name}
+              />
+            ))}
+          </OrgAIAppConnectionsTable>
         </>
       )}
     </Panel>

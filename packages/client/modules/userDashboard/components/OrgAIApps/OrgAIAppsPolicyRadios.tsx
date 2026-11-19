@@ -1,6 +1,5 @@
 import type {OrgAIAppsPolicyEnum} from '../../../../__generated__/OrgAIAppsPolicyPanel_organization.graphql'
 import BaseTag from '../../../../components/Tag/BaseTag'
-import {cn} from '../../../../ui/cn'
 import {Link as LinkIcon} from '../../../../ui/icons'
 import {RadioGroup, RadioGroupItem} from '../../../../ui/RadioGroup/RadioGroup'
 
@@ -18,11 +17,10 @@ interface Props {
   labelId: string
   value: OrgAIAppsPolicyEnum
   isFollowing: boolean
-  disabled: boolean
   onChange: (policy: OrgAIAppsPolicyEnum) => void
 }
 
-const OrgAIAppsPolicyRadios = ({labelId, value, isFollowing, disabled, onChange}: Props) => (
+const OrgAIAppsPolicyRadios = ({labelId, value, isFollowing, onChange}: Props) => (
   <RadioGroup
     aria-labelledby={labelId}
     value={value}
@@ -30,19 +28,12 @@ const OrgAIAppsPolicyRadios = ({labelId, value, isFollowing, disabled, onChange}
       const option = OPTIONS.find((option) => option.value === next)
       if (option) onChange(option.value)
     }}
-    disabled={disabled}
     className='flex flex-col gap-3'
   >
     {OPTIONS.map(({value: optionValue, label, description}) => {
       const isFollowedChoice = isFollowing && optionValue === value
       return (
-        <label
-          key={optionValue}
-          className={cn(
-            'flex cursor-pointer items-start gap-3 text-sm',
-            disabled && 'cursor-not-allowed opacity-50'
-          )}
-        >
+        <label key={optionValue} className='flex cursor-pointer items-start gap-3 text-sm'>
           <RadioGroupItem
             value={optionValue}
             onClick={isFollowedChoice ? () => onChange(optionValue) : undefined}

@@ -1,4 +1,5 @@
 import {cn} from '../ui/cn'
+import filterPillClass from '../ui/filterPillClass'
 import Warning from '../ui/icons/Warning'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
@@ -14,9 +15,6 @@ interface Props {
   onChange: (value: DiscussionThreadFilterValue) => void
 }
 
-const pillClass =
-  'inline-flex h-7 items-center gap-1 rounded-md border border-hairline-strong px-2.5 font-semibold text-fg-secondary text-xs leading-4 not-aria-pressed:hover:bg-surface-hover aria-pressed:border-surface-selected aria-pressed:bg-surface-selected aria-pressed:text-fg-selected'
-
 const goldClass =
   'border-gold-300 bg-gold-100 text-gold-700 not-aria-pressed:hover:bg-gold-100 dark:border-gold-500/45 dark:bg-gold-500/20 dark:text-gold-200 dark:not-aria-pressed:hover:bg-gold-500/20'
 
@@ -31,7 +29,7 @@ const DiscussionThreadFilter = (props: Props) => {
         isGold ? `Tasks: none yet, after ${peopleCommentCount} comments` : `Tasks: ${taskCount}`
       }
       onClick={() => onChange('tasks')}
-      className={cn(pillClass, isGold && goldClass)}
+      className={cn(filterPillClass, isGold && goldClass)}
     >
       {isGold && <Warning className='h-3.5 w-3.5' />}
       Tasks · {taskCount}
@@ -47,7 +45,7 @@ const DiscussionThreadFilter = (props: Props) => {
         type='button'
         aria-pressed={value === 'all'}
         onClick={() => onChange('all')}
-        className={pillClass}
+        className={filterPillClass}
       >
         All · {allCount}
       </button>
