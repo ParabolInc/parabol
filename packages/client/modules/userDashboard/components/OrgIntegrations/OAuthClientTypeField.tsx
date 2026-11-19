@@ -1,4 +1,3 @@
-import {Key as KeyIcon, Public as PublicIcon} from '~/ui/icons'
 import {cn} from '../../../../ui/cn'
 import {RadioGroup, RadioGroupItem} from '../../../../ui/RadioGroup/RadioGroup'
 
@@ -13,17 +12,15 @@ interface Props {
 const OPTIONS = [
   {
     value: 'CONFIDENTIAL',
-    label: 'Confidential',
-    Icon: KeyIcon,
+    label: 'Secret',
     description:
-      'Runs on a server that can keep a secret. Signs in with a client ID and client secret.'
+      'For an app on a server that can keep a secret. Signs in with a client ID and client secret.'
   },
   {
     value: 'PUBLIC',
-    label: 'Public',
-    Icon: PublicIcon,
+    label: 'PKCE',
     description:
-      'A desktop, command-line or browser app that can’t keep a secret. Signs in with PKCE instead.'
+      'For a desktop, command-line or browser app that can’t keep a secret. Signs in with a PKCE code challenge instead.'
   }
 ] as const
 
@@ -34,7 +31,7 @@ const OAuthClientTypeField = ({value, onChange, disabled}: Props) => {
         id='oauth-client-type-label'
         className='font-semibold text-fg-muted text-xs uppercase tracking-wider'
       >
-        Client type
+        Client authentication
       </span>
       <RadioGroup
         aria-labelledby='oauth-client-type-label'
@@ -43,17 +40,14 @@ const OAuthClientTypeField = ({value, onChange, disabled}: Props) => {
           if (next === 'CONFIDENTIAL' || next === 'PUBLIC') onChange(next)
         }}
         disabled={disabled}
-        className='grid grid-cols-2 gap-3'
+        className='flex flex-col gap-3'
       >
-        {OPTIONS.map(({value: optionValue, label, Icon, description}) => (
+        {OPTIONS.map(({value: optionValue, label, description}) => (
           <label
             key={optionValue}
             htmlFor={`oauth-client-type-${optionValue}`}
             className={cn(
-              'flex cursor-pointer items-start gap-3 rounded-lg border p-3',
-              value === optionValue
-                ? 'border-accent bg-accent/10'
-                : 'border-hairline bg-surface-card hover:bg-surface-hover',
+              'flex cursor-pointer items-start gap-3 text-sm',
               disabled && 'cursor-not-allowed opacity-50'
             )}
           >
@@ -62,12 +56,9 @@ const OAuthClientTypeField = ({value, onChange, disabled}: Props) => {
               value={optionValue}
               className='mt-0.5 shrink-0'
             />
-            <span className='flex flex-col gap-1'>
-              <span className='flex items-center gap-1.5 font-semibold text-fg-primary text-sm'>
-                <Icon className='text-[18px]' />
-                {label}
-              </span>
-              <span className='text-fg-secondary text-xs'>{description}</span>
+            <span className='flex flex-col'>
+              <span className='font-semibold text-fg-primary'>{label}</span>
+              <span className='text-fg-secondary'>{description}</span>
             </span>
           </label>
         ))}
