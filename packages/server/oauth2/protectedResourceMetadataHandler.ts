@@ -1,6 +1,6 @@
 import type {HttpResponse} from 'uWebSockets.js'
 import appOrigin from '../appOrigin'
-import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
+import aiAppScopes from './aiAppScopes'
 import {MCP_RESOURCE} from './validateOAuthAuthorizationRequest'
 import writeMetadata from './writeMetadata'
 
@@ -10,7 +10,7 @@ const protectedResourceMetadataHandler = (res: HttpResponse) => {
     authorization_servers: [appOrigin],
     bearer_methods_supported: ['header'],
     resource_name: 'Parabol',
-    scopes_supported: Object.values(OAuthScopeEnum)
+    scopes_supported: aiAppScopes
   })
 }
 

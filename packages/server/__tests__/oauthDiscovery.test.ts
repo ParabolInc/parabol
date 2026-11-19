@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import faker from 'faker'
 import AuthToken from '../database/types/AuthToken'
+import aiAppScopes from '../oauth2/aiAppScopes'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
@@ -119,7 +120,8 @@ test('authorization server metadata lists S256 and both grant types', async () =
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
-    token_endpoint_auth_methods_supported: ['client_secret_post', 'none']
+    token_endpoint_auth_methods_supported: ['client_secret_post', 'none'],
+    authorization_response_iss_parameter_supported: true
   })
   expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
   expect(metadata.scopes_supported).toHaveLength(18)
@@ -137,7 +139,7 @@ test('protected resource metadata names the /mcp resource and this server', asyn
     bearer_methods_supported: ['header'],
     resource_name: 'Parabol'
   })
-  expect(metadata.scopes_supported).toHaveLength(18)
+  expect(metadata.scopes_supported).toEqual(aiAppScopes)
 })
 
 test('the origin itself is not described as a protected resource', async () => {

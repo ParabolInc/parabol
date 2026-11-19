@@ -3,13 +3,14 @@ import type {OAuthAuthorizationRequestResolvers} from '../resolverTypes'
 
 export interface OAuthAuthorizationRequestSource {
   name: string
-  orgId: string
+  orgId: string | null
   scopes: Oauthscopeenum[]
   redirectUri: string
 }
 
 const OAuthAuthorizationRequest: OAuthAuthorizationRequestResolvers = {
-  organization: ({orgId}, _args, {dataLoader}) => dataLoader.get('organizations').loadNonNull(orgId)
+  organization: ({orgId}, _args, {dataLoader}) =>
+    orgId ? dataLoader.get('organizations').loadNonNull(orgId) : null
 }
 
 export default OAuthAuthorizationRequest

@@ -76,6 +76,19 @@ test('the pages list includes private pages only with personal access', async ()
   dataLoader.dispose()
 })
 
+test('the pages list includes team pages of a granted org when no teams are granted', async () => {
+  const {privatePageId, teamPageId, grantsFor, dataLoader} = await setup()
+  expect(await visiblePageIds(grantsFor(false), [privatePageId, teamPageId])).toEqual([teamPageId])
+  dataLoader.dispose()
+})
+
+test('a grant with no orgs, teams, pages or private access lists no pages', async () => {
+  const {userId, privatePageId, teamPageId, dataLoader} = await setup()
+  const nothing = new ResourceGrants(userId, [], [], null, dataLoader, false)
+  expect(await visiblePageIds(nothing, [privatePageId, teamPageId])).toEqual([])
+  dataLoader.dispose()
+})
+
 test('personal access, not an unrestricted grant, is what the rule checks', async () => {
   const {grantsFor, dataLoader} = await setup()
   const run = (resourceGrants: ResourceGrants | undefined) =>

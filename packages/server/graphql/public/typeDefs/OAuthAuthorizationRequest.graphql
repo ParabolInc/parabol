@@ -3,13 +3,13 @@ An OAuth 2.0 application asking the viewer for access to their Parabol account
 """
 type OAuthAuthorizationRequest {
   """
-  The application name, set by the organization that registered it
+  The application name
   """
   name: String!
   """
-  The organization that registered the application. Its access tokens only reach this organization's data
+  The organization that registered the application, whose data its access tokens are limited to. Null for an app any Parabol user can connect, like Claude
   """
-  organization: Organization!
+  organization: Organization
   """
   The scopes the application asks for
   """

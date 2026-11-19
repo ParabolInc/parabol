@@ -108,8 +108,8 @@ const decodePartialPath = (rawPath: string) => {
   return segments.every(isPlainSegment) ? (segments.join('/') as PartialPath) : null
 }
 
-const isUnauthenticated = (error: unknown) =>
-  error instanceof GraphQLError && error.extensions.code === 'UNAUTHENTICATED'
+const getErrorCode = (error: unknown) =>
+  error instanceof GraphQLError ? error.extensions.code : undefined
 
 const getBearerDenialStatus = async (
   bearerToken: string,
@@ -133,7 +133,9 @@ const getBearerDenialStatus = async (
     )
     return canAccess ? null : '403'
   } catch (error) {
-    if (isUnauthenticated(error)) return '401'
+    const code = getErrorCode(error)
+    if (code === 'UNAUTHENTICATED') return '401'
+    if (code === 'FORBIDDEN') return '403'
     Logger.error('Asset proxy could not check an access token', error)
     return '500'
   } finally {

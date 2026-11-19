@@ -109,6 +109,7 @@ const OAuthAuthorize = (props: Props) => {
     const deniedUrl = new URL(redirectUri)
     deniedUrl.searchParams.set('error', 'access_denied')
     deniedUrl.searchParams.set('state', request.state)
+    deniedUrl.searchParams.set('iss', window.location.origin)
     setIsLeaving(true)
     window.location.assign(deniedUrl.toString())
   }
@@ -122,10 +123,12 @@ const OAuthAuthorize = (props: Props) => {
             <span className='font-semibold'>{name}</span> wants to use your Parabol account,{' '}
             <span className='font-semibold'>{email}</span>.
           </p>
-          <p className='wrap-anywhere m-0 text-fg-secondary'>
-            It was registered by {organization.name}, so it can only reach {organization.name}
-            ’s teams and pages.
-          </p>
+          {organization && (
+            <p className='wrap-anywhere m-0 text-fg-secondary'>
+              It was registered by {organization.name}, so it can only reach {organization.name}
+              ’s teams and pages.
+            </p>
+          )}
           <div>
             <h3 className='m-0 pb-1 font-semibold text-fg-muted text-xs uppercase tracking-wider'>
               It will be able to

@@ -64,13 +64,21 @@ export const validateOAuthAuthorizationRequest = async (
       code: 'BAD_USER_INPUT'
     }
   }
-  const scopes = [...new Set(scope?.split(' ').filter(Boolean))]
-  if (scopes.some((requestedScope) => !provider.scopes.includes(requestedScope))) {
+  const requestedScopes = [...new Set(scope?.split(' ').filter(Boolean))]
+  const isGlobal = !provider.orgId
+  if (
+    !isGlobal &&
+    requestedScopes.some((requestedScope) => !provider.scopes.includes(requestedScope))
+  ) {
     return {
       error: 'Invalid scope: this client is not allowed to ask for every requested scope',
       code: 'BAD_USER_INPUT'
     }
   }
+  const scopes =
+    isGlobal && requestedScopes.length === 0
+      ? provider.scopes
+      : requestedScopes.filter((requestedScope) => provider.scopes.includes(requestedScope))
   if (!state) return {error: 'Invalid state: state is required', code: 'BAD_USER_INPUT'}
   if (provider.clientType === 'public' && !codeChallenge) {
     return {
@@ -92,13 +100,15 @@ export const validateOAuthAuthorizationRequest = async (
   if (resource && resource !== MCP_RESOURCE) {
     return {error: 'Invalid resource: only <origin>/mcp is served', code: 'BAD_USER_INPUT'}
   }
-  const organizationUser = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .load({orgId: provider.orgId, userId})
-  if (!organizationUser) {
-    return {
-      error: 'Only members of the organization that registered this client can authorize it',
-      code: 'FORBIDDEN'
+  if (provider.orgId) {
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({orgId: provider.orgId, userId})
+    if (!organizationUser) {
+      return {
+        error: 'Only members of the organization that registered this client can authorize it',
+        code: 'FORBIDDEN'
+      }
     }
   }
   return {provider, scopes: scopes as Oauthscopeenum[]}

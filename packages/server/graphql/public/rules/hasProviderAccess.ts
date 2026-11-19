@@ -21,9 +21,12 @@ export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>
       return true
     }
 
-    const isGranted =
-      !context.resourceGrants || (await context.resourceGrants.hasOrg(provider.orgId))
-    if (!isGranted || !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
+    const {orgId} = provider
+    if (
+      !orgId ||
+      (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) ||
+      !(await isUserOrgAdmin(viewerId, orgId, dataLoader))
+    ) {
       return new GraphQLError('Insufficient permission', {
         extensions: {
           code: 'FORBIDDEN'

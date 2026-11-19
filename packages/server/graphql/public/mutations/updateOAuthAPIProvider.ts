@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
+import {type NotNull, sql} from 'kysely'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
@@ -20,6 +20,8 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     .selectFrom('OAuthAPIProvider')
     .select(['orgId', 'clientId', 'clientType'])
     .where('id', '=', providerId)
+    .where('orgId', 'is not', null)
+    .$narrowType<{orgId: NotNull}>()
     .executeTakeFirst()
 
   if (!provider) {

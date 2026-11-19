@@ -34,6 +34,15 @@ export const buildGrantFilter = (
           .where('orgId', 'in', orgIds)
       )
     )
+    conditions.push(
+      eb.exists(
+        eb
+          .selectFrom('PageTeamAccess')
+          .select(sql.lit(1).as('one'))
+          .whereRef('pageId', '=', ref)
+          .where('teamId', 'in', eb.selectFrom('Team').select('id').where('orgId', 'in', orgIds))
+      )
+    )
   }
 
   if (teamIds !== null && orgIds !== null && teamIds.length > 0) {
@@ -78,7 +87,7 @@ export const buildGrantFilter = (
     )
   }
 
-  if (conditions.length === 0) return eb.lit(true)
+  if (conditions.length === 0) return eb.lit(false)
   return eb.or(conditions)
 }
 

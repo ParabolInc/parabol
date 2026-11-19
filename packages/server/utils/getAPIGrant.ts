@@ -6,6 +6,7 @@ import ms from 'ms'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import {PAT_PREFIX} from '../graphql/public/applyScopeDirective'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
+import getEffectiveOrgIds from '../oauth2/getEffectiveOrgIds'
 import getKysely from '../postgres/getKysely'
 import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/select'
 import {CipherId} from './CipherId'
@@ -121,6 +122,19 @@ const getOAuthAccessTokenGrant = async (
   ) {
     return throwInvalidOAuthToken()
   }
+  const effectiveOrgIds = await getEffectiveOrgIds({
+    provider,
+    grantedOrgIds: grant.grantedOrgIds,
+    userId,
+    dataLoader
+  })
+  const isGlobal = !provider.orgId
+  const personalGranted = isGlobal && !!grant.personalGrantedAt
+  if (isGlobal && effectiveOrgIds.length === 0 && !personalGranted) {
+    throw new GraphQLError('None of the organizations this app was connected to allow it anymore', {
+      extensions: {code: 'FORBIDDEN'}
+    })
+  }
   if (!grant.lastUsedAt || Date.now() - grant.lastUsedAt.getTime() > ms('5m')) {
     getKysely()
       .updateTable('OAuthAPIGrant')
@@ -139,11 +153,11 @@ const getOAuthAccessTokenGrant = async (
     grantId: grant.id,
     resourceGrants: new ResourceGrants(
       userId,
-      grant.grantedOrgIds ?? [provider.orgId],
+      effectiveOrgIds,
       [],
       null,
       dataLoader,
-      false
+      personalGranted
     )
   }
 }

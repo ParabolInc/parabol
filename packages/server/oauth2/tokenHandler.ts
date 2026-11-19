@@ -175,6 +175,8 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       'redirectUri',
       'codeChallenge',
       'resource',
+      'grantedOrgIds',
+      'personalGrantedAt',
       sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')
     ])
     .executeTakeFirst()
@@ -210,7 +212,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  const {scopes, userId, resource} = oauthCode
+  const {scopes, userId, resource, grantedOrgIds, personalGrantedAt} = oauthCode
   if (requestedResource && requestedResource !== resource) {
     writeJSON(res, '400 Bad Request', {error: 'invalid_target'})
     return
@@ -219,7 +221,8 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     clientId: provider.clientId,
     userId,
     scopes,
-    grantedOrgIds: [provider.orgId],
+    grantedOrgIds,
+    personalGrantedAt,
     resource: resource || null
   })
   writeJSON(

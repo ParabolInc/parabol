@@ -358,7 +358,12 @@ test('rehosts the assets a seed carries into the new page as the inserting user'
 
 test("rehosts a seed's assets with the grants and scopes of the token that wrote it", async () => {
   const image = {type: 'imageBlock', attrs: {src: 'https://tracker.example/pixel.png'}}
-  const resourceGrants = {grantedOrgIds: ['org-a'], grantedTeamIds: [], grantedPageIds: null}
+  const resourceGrants = {
+    grantedOrgIds: ['org-a'],
+    grantedTeamIds: [],
+    grantedPageIds: null,
+    personalGranted: false
+  }
   const scopes = ['pages:write']
   await insertLink(makeSeededLink(NEW_PAGE_SENTINEL_CODE, [seedParagraph, image]), {
     source: 'local',

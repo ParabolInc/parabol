@@ -1,6 +1,8 @@
 import crypto from 'crypto'
 import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
 import ms from 'ms'
+import appOrigin from '../../../appOrigin'
 import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -29,12 +31,15 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
       scopes,
       codeChallenge,
       resource: resource || null,
+      grantedOrgIds: provider.orgId ? [provider.orgId] : null,
+      personalGrantedAt: provider.orgId ? null : sql`now()`,
       expiresAt: new Date(Date.now() + ms('10m'))
     })
     .execute()
   const redirectUrl = new URL(redirectUri)
   redirectUrl.searchParams.set('code', code)
   redirectUrl.searchParams.set('state', state)
+  redirectUrl.searchParams.set('iss', appOrigin)
   return {redirectUri: redirectUrl.toString()}
 }
 

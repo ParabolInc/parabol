@@ -1,0 +1,86 @@
+import {type Kysely, sql} from 'kysely'
+
+const aiAppScopes = [
+  'meetings:read',
+  'meetings:write',
+  'tasks:read',
+  'tasks:write',
+  'pages:read',
+  'pages:write',
+  'comments:read',
+  'comments:write',
+  'templates:read',
+  'templates:write',
+  'teams:read',
+  'reports:read',
+  'users:read',
+  'orgs:read'
+]
+
+export async function up(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .alterTable('OAuthAPIProvider')
+    .alterColumn('orgId', (col) => col.dropNotNull())
+    .execute()
+  await db.schema
+    .alterTable('OAuthAPIProvider')
+    .addColumn('verifiedAt', 'timestamptz')
+    .addColumn('logoUrl', 'text')
+    .addColumn('homepageUrl', 'text')
+    .execute()
+  await db.schema
+    .alterTable('OAuthAPIGrant')
+    .addColumn('personalGrantedAt', 'timestamptz')
+    .execute()
+  await db.schema
+    .alterTable('OAuthAPICode')
+    .addColumn('grantedOrgIds', sql`varchar(100)[]`)
+    .addColumn('personalGrantedAt', 'timestamptz')
+    .execute()
+  const globalClient = {
+    clientType: 'public',
+    clientSecret: null,
+    orgId: null,
+    scopes: aiAppScopes,
+    verifiedAt: sql`now()`
+  }
+  await db
+    .insertInto('OAuthAPIProvider')
+    .values([
+      {
+        ...globalClient,
+        clientId: 'https://claude.ai/oauth/mcp-oauth-client-metadata',
+        name: 'Claude',
+        redirectUris: ['https://claude.ai/api/mcp/auth_callback'],
+        homepageUrl: 'https://claude.ai'
+      },
+      {
+        ...globalClient,
+        clientId: 'https://chatgpt.com/oauth/client.json',
+        name: 'ChatGPT',
+        redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+        homepageUrl: 'https://chatgpt.com'
+      }
+    ])
+    .execute()
+}
+
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.deleteFrom('OAuthAPIProvider').where('orgId', 'is', null).execute()
+  await db.schema
+    .alterTable('OAuthAPICode')
+    .dropColumn('personalGrantedAt')
+    .dropColumn('grantedOrgIds')
+    .execute()
+  await db.schema.alterTable('OAuthAPIGrant').dropColumn('personalGrantedAt').execute()
+  await db.schema
+    .alterTable('OAuthAPIProvider')
+    .dropColumn('homepageUrl')
+    .dropColumn('logoUrl')
+    .dropColumn('verifiedAt')
+    .execute()
+  await db.schema
+    .alterTable('OAuthAPIProvider')
+    .alterColumn('orgId', (col) => col.setNotNull())
+    .execute()
+}
