@@ -182,13 +182,14 @@ const createGlobalClient = async (
 const createMetadataDocumentUrl = () =>
   `https://${crypto.randomBytes(8).toString('hex')}.invalid/oauth/client.json`
 
+const hashClientId = (clientId: string) =>
+  crypto.createHash('sha256').update(clientId).digest('hex')
+
 const cacheMetadataDocument = (clientId: string, document: Record<string, unknown>) =>
-  getRedis().set(
-    `oauth:cimd:${crypto.createHash('sha256').update(clientId).digest('hex')}`,
-    JSON.stringify(document),
-    'EX',
-    300
-  )
+  getRedis().set(`oauth:cimd:${hashClientId(clientId)}`, JSON.stringify(document), 'EX', 300)
+
+const getFailureTTL = (clientId: string) =>
+  getRedis().ttl(`oauth:cimdFailure:${hashClientId(clientId)}`)
 
 const toRequest = (client: Client) => ({
   ...client,
@@ -407,6 +408,29 @@ test('an https client_id whose document cannot be fetched is refused at consent'
     extensions: {code: 'BAD_USER_INPUT'}
   })
   expect(await selectProvider(clientId)).toBeUndefined()
+  const failureTTL = await getFailureTTL(clientId)
+  expect(failureTTL).toBeGreaterThan(0)
+  expect(failureTTL).toBeLessThanOrEqual(60)
+})
+
+test('an https client_id is not fetched for a request that fails the checks needing no document', async () => {
+  const {cookie} = await signUp()
+  const clientId = createMetadataDocumentUrl()
+  const client = {clientId, redirectUri: 'https://app.example.com/callback'}
+  const send = (request: Record<string, unknown>) =>
+    sendPublic({query: CREATE_OAUTH_API_CODE, variables: {request}, cookie})
+
+  const withoutPKCE = await send({...client, state: 'xyz'})
+  expect(withoutPKCE.errors?.[0]?.message).toBe(
+    'Invalid code_challenge: public clients must use PKCE'
+  )
+  const otherResource = await send({...toRequest(client), resource: `${ORIGIN}/other`})
+  expect(otherResource.errors?.[0]?.message).toBe('Invalid resource: only <origin>/mcp is served')
+  const plainHttpRedirect = await send(
+    toRequest({...client, redirectUri: 'http://app.example.com/cb'})
+  )
+  expect(plainHttpRedirect.errors?.[0]?.message).toMatch('Invalid redirect_uri')
+  expect(await getFailureTTL(clientId)).toBe(-2)
 })
 
 test('an unverified https client is fetched again even when its row exists', async () => {

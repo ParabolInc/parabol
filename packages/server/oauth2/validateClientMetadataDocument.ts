@@ -1,5 +1,4 @@
 import {isRedirectUriValid} from '../graphql/public/types/RedirectURI'
-import isRegisteredRedirectUri from './isRegisteredRedirectUri'
 
 const MAX_CLIENT_ID_LENGTH = 255
 const MAX_REDIRECT_URI_LENGTH = 2048
@@ -22,14 +21,21 @@ export const isClientMetadataDocumentUrl = (url: string) => {
   }
 }
 
+export const isMetadataDocumentRedirectUri = (uri: string) =>
+  uri.length <= MAX_REDIRECT_URI_LENGTH && isRedirectUriValid(uri)
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
+export interface ClientMetadata {
+  clientName: string
+  redirectUris: string[]
+}
+
 const validateClientMetadataDocument = (
   url: string,
-  json: unknown,
-  redirectUri: string
-): {clientName: string; redirectUris: string[]} | {error: string} => {
+  json: unknown
+): ClientMetadata | {error: string} => {
   if (!isClientMetadataDocumentUrl(url)) {
     return {
       error: 'Invalid client_id: a metadata document URL is https, with a path and no fragment'
@@ -50,12 +56,7 @@ const validateClientMetadataDocument = (
       error: 'Invalid client_id: its metadata document must use token_endpoint_auth_method none'
     }
   }
-  const redirectUris = listedRedirectUris.filter(
-    (uri) => uri.length <= MAX_REDIRECT_URI_LENGTH && isRedirectUriValid(uri)
-  )
-  if (!isRegisteredRedirectUri({clientType: 'public', redirectUris}, redirectUri)) {
-    return {error: 'Invalid redirect_uri: the client metadata document does not list it'}
-  }
+  const redirectUris = listedRedirectUris.filter(isMetadataDocumentRedirectUri)
   return {clientName: new URL(url).host, redirectUris}
 }
 

@@ -6,8 +6,9 @@ import type {Oauthscopeenum} from '../postgres/types/pg'
 import aiAppScopes from './aiAppScopes'
 import fetchClientMetadataDocument from './fetchClientMetadataDocument'
 import isRegisteredRedirectUri from './isRegisteredRedirectUri'
-import validateClientMetadataDocument, {
-  isClientMetadataDocumentUrl
+import {
+  isClientMetadataDocumentUrl,
+  isMetadataDocumentRedirectUri
 } from './validateClientMetadataDocument'
 
 export interface OAuthAuthorizationRequestParams {
@@ -34,14 +35,15 @@ export const MCP_RESOURCE = `${appOrigin}/mcp`
 // base64url(SHA-256(code_verifier)) is always 43 characters
 const S256_CODE_CHALLENGE = /^[A-Za-z0-9_-]{43}$/
 
+const UNREGISTERED_REDIRECT_URI = 'Invalid redirect_uri: it is not registered for this client'
+
 const getMetadataDocumentProvider = async (
   clientId: string,
   redirectUri: string
 ): Promise<AuthorizingProvider | {error: string}> => {
   if (!isClientMetadataDocumentUrl(clientId)) return {error: 'Invalid client_id'}
-  const fetched = await fetchClientMetadataDocument(clientId)
-  if ('error' in fetched) return fetched
-  const metadata = validateClientMetadataDocument(clientId, fetched.document, redirectUri)
+  if (!isMetadataDocumentRedirectUri(redirectUri)) return {error: UNREGISTERED_REDIRECT_URI}
+  const metadata = await fetchClientMetadataDocument(clientId)
   if ('error' in metadata) return metadata
   return {
     clientId,
@@ -65,34 +67,9 @@ export const validateOAuthAuthorizationRequest = async (
     .where('clientId', '=', clientId)
     .executeTakeFirst()
   const isMetadataDocumentClient = clientId.startsWith('https://') && !storedProvider?.verifiedAt
-  const provider = isMetadataDocumentClient
-    ? await getMetadataDocumentProvider(clientId, redirectUri)
-    : storedProvider
-  if (!provider) return {error: 'Invalid client_id', code: 'BAD_USER_INPUT'}
-  if ('error' in provider) return {error: provider.error, code: 'BAD_USER_INPUT'}
-  if (!isRegisteredRedirectUri(provider, redirectUri)) {
-    return {
-      error: 'Invalid redirect_uri: it is not registered for this client',
-      code: 'BAD_USER_INPUT'
-    }
-  }
-  const requestedScopes = [...new Set(scope?.split(' ').filter(Boolean))]
-  const isGlobal = !provider.orgId
-  if (
-    !isGlobal &&
-    requestedScopes.some((requestedScope) => !provider.scopes.includes(requestedScope))
-  ) {
-    return {
-      error: 'Invalid scope: this client is not allowed to ask for every requested scope',
-      code: 'BAD_USER_INPUT'
-    }
-  }
-  const scopes =
-    isGlobal && requestedScopes.length === 0
-      ? provider.scopes
-      : requestedScopes.filter((requestedScope) => provider.scopes.includes(requestedScope))
+  const clientType = isMetadataDocumentClient ? 'public' : storedProvider?.clientType
   if (!state) return {error: 'Invalid state: state is required', code: 'BAD_USER_INPUT'}
-  if (provider.clientType === 'public' && !codeChallenge) {
+  if (clientType === 'public' && !codeChallenge) {
     return {
       error: 'Invalid code_challenge: public clients must use PKCE',
       code: 'BAD_USER_INPUT'
@@ -112,6 +89,29 @@ export const validateOAuthAuthorizationRequest = async (
   if (resource && resource !== MCP_RESOURCE) {
     return {error: 'Invalid resource: only <origin>/mcp is served', code: 'BAD_USER_INPUT'}
   }
+  const provider = isMetadataDocumentClient
+    ? await getMetadataDocumentProvider(clientId, redirectUri)
+    : storedProvider
+  if (!provider) return {error: 'Invalid client_id', code: 'BAD_USER_INPUT'}
+  if ('error' in provider) return {error: provider.error, code: 'BAD_USER_INPUT'}
+  if (!isRegisteredRedirectUri(provider, redirectUri)) {
+    return {error: UNREGISTERED_REDIRECT_URI, code: 'BAD_USER_INPUT'}
+  }
+  const requestedScopes = [...new Set(scope?.split(' ').filter(Boolean))]
+  const isGlobal = !provider.orgId
+  if (
+    !isGlobal &&
+    requestedScopes.some((requestedScope) => !provider.scopes.includes(requestedScope))
+  ) {
+    return {
+      error: 'Invalid scope: this client is not allowed to ask for every requested scope',
+      code: 'BAD_USER_INPUT'
+    }
+  }
+  const scopes =
+    isGlobal && requestedScopes.length === 0
+      ? provider.scopes
+      : requestedScopes.filter((requestedScope) => provider.scopes.includes(requestedScope))
   if (provider.orgId) {
     const organizationUser = await dataLoader
       .get('organizationUsersByUserIdOrgId')

@@ -154,7 +154,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
-    createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),
+    createOAuthAPICode: and(
+      isAuthenticated,
+      hasTokenAudience(['action']),
+      rateLimit({perMinute: 30, perHour: 300})
+    ),
     createOAuthAPIProvider: and(
       hasTokenAudience(['action']),
       hasOrgRole<'Mutation.createOAuthAPIProvider'>('args.orgId', 'ORG_ADMIN')
@@ -760,7 +764,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       and(isUserSelf, isViewerOnOrg<'User.organizationUser'>('args.orgId'))
     ),
     notifications: and(isUserSelf, hasPersonalGrant),
-    oauthAuthorizationRequest: and(isUserSelf, hasTokenAudience(['action'])),
+    oauthAuthorizationRequest: and(
+      isUserSelf,
+      hasTokenAudience(['action']),
+      rateLimit({perMinute: 30, perHour: 300})
+    ),
     personalAccessTokens: and(isUserSelf, hasTokenAudience(['action'])),
     picture: allow,
     preferredName: allow,

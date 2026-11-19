@@ -3,9 +3,13 @@ import {SIGNIN_SLUG} from '../../client/utils/constants'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
+import getRateLimiter from '../graphql/getRateLimiter'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import getReqAuth from '../utils/getReqAuth'
 import {validateOAuthAuthorizationRequest} from './validateOAuthAuthorizationRequest'
+
+const MAX_REQUESTS_PER_MINUTE = 30
+const MAX_REQUESTS_PER_HOUR = 300
 
 const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getReqAuth(req)
@@ -19,6 +23,14 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     res.writeStatus('302 Found')
     res.writeHeader('Location', loginUrl)
     res.end()
+    return
+  }
+
+  const {lastMinute, lastHour = 0} = getRateLimiter().log(authToken.sub, 'oauthAuthorize', true)
+  if (lastMinute > MAX_REQUESTS_PER_MINUTE || lastHour > MAX_REQUESTS_PER_HOUR) {
+    res.writeStatus('429 Too Many Requests')
+    res.writeHeader('Content-Type', 'text/plain; charset=utf-8')
+    res.end('Too many authorization requests. Try again later')
     return
   }
 
