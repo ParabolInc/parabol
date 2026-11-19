@@ -2,8 +2,8 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type Editor, useEditorState} from '@tiptap/react'
 import {ExpandMore} from '~/ui/icons'
 import {dispatchBlockConversion} from '../../tiptap/extensions/turnInto/dispatchBlockConversion'
-import {getSelectionTurnIntoPos} from '../../tiptap/extensions/turnInto/getSelectionTurnIntoPos'
-import {getTurnIntoTarget, turnBlockInto} from '../../tiptap/extensions/turnInto/turnBlockInto'
+import {getSelectionTurnInto} from '../../tiptap/extensions/turnInto/getSelectionTurnInto'
+import {turnBlockInto} from '../../tiptap/extensions/turnInto/turnBlockInto'
 import {findTurnIntoRow, getTurnIntoRows} from '../../tiptap/extensions/turnInto/turnIntoRows'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MENU_ITEM_ICON} from '../../ui/Menu/MenuItem'
@@ -19,11 +19,7 @@ export const BubbleTurnIntoMenu = (props: Props) => {
   const {editor, canCreateSubPage} = props
   const selected = useEditorState({
     editor,
-    selector: ({editor}) => {
-      const pos = getSelectionTurnIntoPos(editor.view)
-      const current = pos === null ? null : getTurnIntoTarget(editor.state.doc, pos)
-      return pos === null || !current ? null : {pos, current}
-    }
+    selector: ({editor}) => getSelectionTurnInto(editor.view)
   })
 
   if (!selected) return null

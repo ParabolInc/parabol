@@ -5,7 +5,7 @@ import {EditorState, TextSelection} from '@tiptap/pm/state'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {isLocalEmbedSource, localEmbedSourcesPlugin} from '../../fileBlock/localEmbedSources'
-import {getSelectionTurnIntoPos} from '../getSelectionTurnIntoPos'
+import {getSelectionTurnInto} from '../getSelectionTurnInto'
 import {
   canTurnIntoPage,
   getTurnIntoTarget,
@@ -553,7 +553,7 @@ describe('the block a text selection turns', () => {
     '%s',
     (_name, blocks, label, type, blockStart) => {
       const view = selectText(blocks, label)
-      expect(getSelectionTurnIntoPos(view)).toBe(findPos(view.state.doc, blockStart, type))
+      expect(getSelectionTurnInto(view)?.pos).toBe(findPos(view.state.doc, blockStart, type))
     }
   )
 
@@ -566,13 +566,13 @@ describe('the block a text selection turns', () => {
   ] as [string, Json[], string, string][])(
     'nothing when the selection %s',
     (_name, blocks, from, to) => {
-      expect(getSelectionTurnIntoPos(selectText(blocks, from, to))).toBeNull()
+      expect(getSelectionTurnInto(selectText(blocks, from, to))).toBeNull()
     }
   )
 
   test('the picked block converts', () => {
     const view = selectText([ul('one', 'word', 'three')], 'word')
-    const tr = convert(view.state, getSelectionTurnIntoPos(view)!, H2)
+    const tr = convert(view.state, getSelectionTurnInto(view)!.pos, H2)
     expectBlocks(tr.doc, ul('one'), h(2, 'word'), ul('three'))
   })
 })
