@@ -317,7 +317,13 @@ export const PageDragHandle = Extension.create<Options, PageDragHandleStorage>({
       editorRef?.commands.unlockDragHandle()
     }
 
-    const openMenu = (editor: Editor, node: Node, pos: number, anchorElement: HTMLElement) => {
+    const openMenu = (
+      editor: Editor,
+      node: Node,
+      pos: number,
+      anchorElement: HTMLElement,
+      omitBarActions = false
+    ) => {
       const {state} = editor
       const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
       const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
@@ -340,7 +346,8 @@ export const PageDragHandle = Extension.create<Options, PageDragHandleStorage>({
           anchorElement,
           canCreateSubPage,
           selection,
-          pageId
+          pageId,
+          omitBarActions
         }
       })
 
@@ -382,7 +389,7 @@ export const PageDragHandle = Extension.create<Options, PageDragHandleStorage>({
       const node = range && editor.state.doc.nodeAt(range.from)
       if (!range || !node) return
       editorRef = editor
-      openMenu(editor, node, range.from, anchorElement)
+      openMenu(editor, node, range.from, anchorElement, true)
     }
 
     dragHandleElement.addEventListener('click', handleDragHandleClick)
