@@ -53,7 +53,7 @@ export const checkAccess = async (
       return true
     } else {
       if (scopeCode === 'aGhostUser') return true
-      if (resourceGrants && !resourceGrants.isUnrestricted()) return false
+      if (resourceGrants && !resourceGrants.hasPersonal()) return false
       if (scopeCode === viewerId) return true
     }
   } else if (scope === 'Team') {

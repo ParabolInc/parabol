@@ -67,6 +67,14 @@ const UPDATE_OAUTH_API_PROVIDER = `
   }
 `
 
+const UPLOAD_USER_ASSET = `
+  mutation UploadUserAssetMutation($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
+    uploadUserAsset(file: $file, scope: $scope, scopeKey: $scopeKey) {
+      url
+    }
+  }
+`
+
 const OAUTH_AUTHORIZATION_REQUEST = `
   query OAuthAuthorizationRequest($request: OAuthAuthorizationRequestInput!) {
     viewer {
@@ -382,6 +390,24 @@ test('the asset proxy answers a refused connection 403', async () => {
     redirect: 'manual'
   })
   expect(asset.status).toBe(403)
+})
+
+test('a connection with private pages reads the user’s own files, one without does not', async () => {
+  const {userId, cookie} = await signUp()
+  const uploaded = await sendPublic({
+    query: UPLOAD_USER_ASSET,
+    variables: {file: null, scope: 'User', scopeKey: userId},
+    uploadables: {file: new File(['hello'], 'notes.txt', {type: 'text/plain'})},
+    cookie
+  })
+  expect(uploaded.errors).toBeUndefined()
+  const assetUrl = new URL(uploaded.data.uploadUserAsset.url, ORIGIN)
+  const {access_token} = await connect(CLAUDE, cookie)
+  const fetchAsset = () =>
+    fetch(assetUrl, {headers: {authorization: `Bearer ${access_token}`}, redirect: 'manual'})
+  expect((await fetchAsset()).status).toBe(307)
+  await updateClaudeGrant(userId, {personalGrantedAt: null})
+  expect((await fetchAsset()).status).toBe(403)
 })
 
 test('a verified client with an https client_id authorizes without fetching its document', async () => {

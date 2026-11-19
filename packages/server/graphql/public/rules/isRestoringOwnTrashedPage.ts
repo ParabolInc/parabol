@@ -12,8 +12,15 @@ export const isRestoringOwnTrashedPage = rule(`isRestoringOwnTrashedPage`, {cach
     {authToken, dataLoader, resourceGrants}: RuleContext
   ) => {
     if (action !== 'restore') return false
-    if (resourceGrants && !resourceGrants.hasPersonal()) return false
-    const page = await dataLoader.get('pages').load(CipherId.fromClient(pageId)[0])
+    const [dbPageId] = CipherId.fromClient(pageId)
+    if (
+      resourceGrants &&
+      !resourceGrants.isUnrestricted() &&
+      !(await resourceGrants.hasPage(dbPageId))
+    ) {
+      return false
+    }
+    const page = await dataLoader.get('pages').load(dbPageId)
     return !!page?.deletedAt && page.deletedBy === getUserId(authToken)
   }
 )

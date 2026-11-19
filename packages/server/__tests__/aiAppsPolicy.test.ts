@@ -4,7 +4,15 @@ import aiAppScopes from '../oauth2/aiAppScopes'
 import isAIAppAllowedByOrg from '../oauth2/isAIAppAllowedByOrg'
 import getKysely from '../postgres/getKysely'
 import {CipherId} from '../utils/CipherId'
-import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {
+  createOrgAdmin,
+  getTestEmail,
+  getUserTeams,
+  HOST,
+  PROTOCOL,
+  sendPublic,
+  signUp
+} from './common'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
 
@@ -100,6 +108,56 @@ const VIEWER_TEAMS = `
     }
   }
 `
+
+const CREATE_PAGE = `
+  mutation CreatePage($teamId: ID) {
+    createPage(teamId: $teamId) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const PAGE = `
+  query Page($pageId: ID!) {
+    public {
+      page(pageId: $pageId) {
+        id
+      }
+    }
+  }
+`
+
+const ARCHIVE_PAGE = `
+  mutation ArchivePage($pageId: ID!, $action: ArchivePageActionEnum!) {
+    archivePage(pageId: $pageId, action: $action) {
+      pageId
+    }
+  }
+`
+
+const createPage = async (cookie: string, teamId?: string) => {
+  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
+  expect(res.errors).toBeUndefined()
+  return res.data.createPage.page.id as string
+}
+
+const createPrivateAndTeamPages = async (userId: string, cookie: string) => {
+  const [team] = await getUserTeams(userId)
+  const privatePageId = await createPage(cookie)
+  const teamPageId = await createPage(cookie, team!.id)
+  return {privatePageId, teamPageId}
+}
+
+const isInTrash = async (pageId: string) => {
+  const {deletedAt} = await getKysely()
+    .selectFrom('Page')
+    .select('deletedAt')
+    .where('id', '=', CipherId.fromClient(pageId)[0])
+    .executeTakeFirstOrThrow()
+  return deletedAt !== null
+}
 
 const connect = async (client: Client, cookie: string, scope?: string) => {
   const codeVerifier = crypto.randomBytes(32).toString('base64url')
@@ -210,11 +268,51 @@ test('turning off AI features blocks the app while no policy is set', async () =
 
 test('a connection with private pages still reaches them after every org blocks the app', async () => {
   const {userId, cookie, orgId} = await createOrgAdmin(getTestEmail())
+  const {privatePageId, teamPageId} = await createPrivateAndTeamPages(userId, cookie)
   const token = await connect(CLAUDE, cookie)
   await setPolicy(orgId, 'NONE', cookie)
-  const viewer = await sendPublic({query: VIEWER_ID, bearerToken: token})
-  expect(viewer.errors).toBeUndefined()
-  expect(viewer.data.viewer.id).toBe(userId)
+
+  const privatePage = await sendPublic({
+    query: PAGE,
+    variables: {pageId: privatePageId},
+    bearerToken: token
+  })
+  expect(privatePage.errors).toBeUndefined()
+  expect(privatePage.data.public.page.id).toBe(privatePageId)
+  const teamPage = await sendPublic({
+    query: PAGE,
+    variables: {pageId: teamPageId},
+    bearerToken: token
+  })
+  expect(teamPage.data?.public?.page ?? null).toBeNull()
+  const teams = await sendPublic({query: VIEWER_TEAMS, bearerToken: token})
+  expect(teams.errors).toBeUndefined()
+  expect(teams.data.viewer.teams).toEqual([])
+})
+
+test('a connection with private pages restores a trashed private page, not a trashed page in a blocked org', async () => {
+  const {userId, cookie, orgId} = await createOrgAdmin(getTestEmail())
+  const {privatePageId, teamPageId} = await createPrivateAndTeamPages(userId, cookie)
+  const token = await connect(CLAUDE, cookie)
+  for (const pageId of [privatePageId, teamPageId]) {
+    const trashed = await sendPublic({
+      query: ARCHIVE_PAGE,
+      variables: {pageId, action: 'archive'},
+      cookie
+    })
+    expect(trashed.errors).toBeUndefined()
+  }
+  await setPolicy(orgId, 'NONE', cookie)
+
+  const restoreWithToken = (pageId: string) =>
+    sendPublic({query: ARCHIVE_PAGE, variables: {pageId, action: 'restore'}, bearerToken: token})
+  const teamRestore = await restoreWithToken(teamPageId)
+  expect(teamRestore.data).toBeNull()
+  expect(teamRestore.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(await isInTrash(teamPageId)).toBe(true)
+  const privateRestore = await restoreWithToken(privatePageId)
+  expect(privateRestore.errors).toBeUndefined()
+  expect(await isInTrash(privatePageId)).toBe(false)
 })
 
 test('Verified apps blocks a CIMD client but not Claude', async () => {

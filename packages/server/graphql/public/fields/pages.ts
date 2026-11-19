@@ -45,6 +45,20 @@ export const buildGrantFilter = (
     )
   }
 
+  if (orgIds === null) {
+    conditions.push(
+      eb.exists(
+        eb.selectFrom('PageTeamAccess').select(sql.lit(1).as('one')).whereRef('pageId', '=', ref)
+      ),
+      eb.exists(
+        eb
+          .selectFrom('PageOrganizationAccess')
+          .select(sql.lit(1).as('one'))
+          .whereRef('pageId', '=', ref)
+      )
+    )
+  }
+
   if (teamIds !== null && orgIds !== null && teamIds.length > 0) {
     conditions.push(
       eb.exists(

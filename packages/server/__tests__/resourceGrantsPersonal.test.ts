@@ -1,7 +1,6 @@
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import {buildGrantFilter} from '../graphql/public/fields/pages'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
-import {hasPersonalGrant} from '../graphql/public/rules/hasPersonalGrant'
 import getKysely from '../postgres/getKysely'
 import {CipherId} from '../utils/CipherId'
 import {sendPublic, signUp} from './common'
@@ -89,25 +88,20 @@ test('a grant with no orgs, teams, pages or private access lists no pages', asyn
   dataLoader.dispose()
 })
 
-test('personal access, not an unrestricted grant, is what the rule checks', async () => {
+test('a token for every org but no pages lists the team pages it can open, not private ones', async () => {
+  const {userId, privatePageId, teamPageId, dataLoader} = await setup()
+  const everyOrgNoPages = new ResourceGrants(userId, null, null, [], dataLoader, false)
+  expect(await everyOrgNoPages.hasPage(teamPageId)).toBe(true)
+  expect(await everyOrgNoPages.hasPage(privatePageId)).toBe(false)
+  expect(await visiblePageIds(everyOrgNoPages, [privatePageId, teamPageId])).toEqual([teamPageId])
+  dataLoader.dispose()
+})
+
+test('personal access is separate from an unrestricted grant', async () => {
   const {grantsFor, dataLoader} = await setup()
-  const run = (resourceGrants: ResourceGrants | undefined) =>
-    hasPersonalGrant.resolve(
-      {},
-      {},
-      {resourceGrants, _shield: {cache: {}}} as never,
-      {} as never,
-      {debug: true} as never
-    )
   expect(grantsFor(true).isUnrestricted()).toBe(false)
   expect(grantsFor(true).hasPersonal()).toBe(true)
   expect(grantsFor(false).hasPersonal()).toBe(false)
-  expect(await run(undefined)).toBe(true)
-  expect(await run(grantsFor(true))).toBe(true)
-  expect(await run(grantsFor(false))).toMatchObject({
-    message: "This access token doesn't include your private pages and invitations",
-    extensions: {code: 'FORBIDDEN'}
-  })
   dataLoader.dispose()
 })
 
