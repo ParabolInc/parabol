@@ -10,7 +10,8 @@ import type {TaskFooterIntegrateMenuListRetryQuery} from '../__generated__/TaskF
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {
   isTaskClientIntegration,
-  listClientIntegrationServices
+  listClientIntegrationServices,
+  type RegisteredClientIntegration
 } from '../integrations/platform/registry'
 import type {BeginConnect, ConnectInMenuState} from '../integrations/platform/useConnectInMenu'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
@@ -44,6 +45,7 @@ interface Props {
   onConnect?: BeginConnect
   mutationProps: MenuMutationProps
   placeholder: string
+  refetchingService?: RegisteredClientIntegration | null
   teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
   label?: string
   onPushToIntegration: (
@@ -64,6 +66,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     mutationProps,
     onPushToIntegration,
     placeholder,
+    refetchingService,
     teamMemberRef,
     label
   } = props
@@ -150,11 +153,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 
   return (
     <>
-      {services.map((service) => (
-        <Suspense key={service.service} fallback={null}>
-          <TaskFooterIntegrateMenuServiceRepos serviceRef={service} onRepos={onRepos} />
-        </Suspense>
-      ))}
+      {services.map((service) =>
+        service.service === refetchingService ? null : (
+          <Suspense key={service.service} fallback={null}>
+            <TaskFooterIntegrateMenuServiceRepos serviceRef={service} onRepos={onRepos} />
+          </Suspense>
+        )
+      )}
       {failure && <TaskFooterIntegrateMenuConnectFailed failure={failure} />}
       {label && (
         <>
