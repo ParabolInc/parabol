@@ -83,7 +83,8 @@ const place = async (
         [],
         [],
         grantedPageIds.map((id) => CipherId.toClient(id, 'page')),
-        dataLoader
+        dataLoader,
+        false
       )
     : null
   const destination = destinationPageId

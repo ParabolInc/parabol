@@ -299,7 +299,12 @@ test("copies another page's asset only with the access of the user who added it"
 test("checks another page's asset against the grants of the token that wrote it", async () => {
   const secretSrc = (name: string) =>
     `https://parabol.test/assets/Page/${SECRET_PAGE_ID}/assets/${name}.png`
-  const grants = {grantedOrgIds: ['org-a'], grantedTeamIds: [], grantedPageIds: null}
+  const grants = {
+    grantedOrgIds: ['org-a'],
+    grantedTeamIds: [],
+    grantedPageIds: null,
+    personalGranted: false
+  }
   const {doc, frag} = makePage()
   doc.transact(
     () => frag.insert(0, [makeImage(secretSrc('by-session'))]),

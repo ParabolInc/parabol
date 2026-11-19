@@ -77,7 +77,8 @@ const getPersonalAccessTokenGrant = async (
       token.grantedOrgIds,
       token.grantedTeamIds,
       token.grantedPageIds,
-      dataLoader
+      dataLoader,
+      token.grantedOrgIds === null && token.grantedTeamIds === null && token.grantedPageIds === null
     )
   }
 }
@@ -141,7 +142,8 @@ const getOAuthAccessTokenGrant = async (
       grant.grantedOrgIds ?? [provider.orgId],
       [],
       null,
-      dataLoader
+      dataLoader,
+      false
     )
   }
 }

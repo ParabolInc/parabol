@@ -11,12 +11,12 @@ import type {UserResolvers} from '../resolverTypes'
 
 type PageGrantCriteria = NonNullable<ReturnType<ResourceGrants['getPageGrantCriteria']>>
 
-const buildGrantFilter = (
+export const buildGrantFilter = (
   eb: ExpressionBuilder<DB, any>,
   pageIdRef: string,
   criteria: PageGrantCriteria
 ): Expression<SqlBool> => {
-  const {pageIds, teamIds, orgIds} = criteria
+  const {pageIds, teamIds, orgIds, includePrivate} = criteria
   const conditions: Expression<SqlBool>[] = []
   const ref = sql.ref(pageIdRef)
 
@@ -53,6 +53,27 @@ const buildGrantFilter = (
           .select(sql.lit(1).as('one'))
           .whereRef('pageId', '=', ref)
           .where('orgId', 'in', eb.selectFrom('Team').select('orgId').where('id', 'in', teamIds))
+      )
+    )
+  }
+
+  if (includePrivate) {
+    conditions.push(
+      eb.not(
+        eb.or([
+          eb.exists(
+            eb
+              .selectFrom('PageTeamAccess')
+              .select(sql.lit(1).as('one'))
+              .whereRef('pageId', '=', ref)
+          ),
+          eb.exists(
+            eb
+              .selectFrom('PageOrganizationAccess')
+              .select(sql.lit(1).as('one'))
+              .whereRef('pageId', '=', ref)
+          )
+        ])
       )
     )
   }

@@ -6,6 +6,7 @@ export interface SerializedResourceGrants {
   grantedOrgIds: string[] | null
   grantedTeamIds: string[] | null
   grantedPageIds: string[] | null
+  personalGranted: boolean
 }
 
 export class ResourceGrants {
@@ -15,13 +16,15 @@ export class ResourceGrants {
   private readonly grantedPageIds: Set<number> | null
   private readonly grantedPageKeys: string[] | null
   private readonly dataLoader: DataLoaderWorker
+  private readonly personalGranted: boolean
 
   constructor(
     userId: string,
     grantedOrgIds: string[] | null,
     grantedTeamIds: string[] | null,
     grantedPageIds: string[] | null,
-    dataLoader: DataLoaderWorker
+    dataLoader: DataLoaderWorker,
+    personalGranted: boolean
   ) {
     this.userId = userId
     this.grantedOrgIds = grantedOrgIds
@@ -31,13 +34,15 @@ export class ResourceGrants {
       : null
     this.grantedPageKeys = grantedPageIds
     this.dataLoader = dataLoader
+    this.personalGranted = personalGranted
   }
 
   serialize(): SerializedResourceGrants {
     return {
       grantedOrgIds: this.grantedOrgIds,
       grantedTeamIds: this.grantedTeamIds,
-      grantedPageIds: this.grantedPageKeys
+      grantedPageIds: this.grantedPageKeys,
+      personalGranted: this.personalGranted
     }
   }
 
@@ -69,16 +74,22 @@ export class ResourceGrants {
     )
   }
 
+  hasPersonal() {
+    return this.isUnrestricted() || this.personalGranted
+  }
+
   getPageGrantCriteria(): null | {
     pageIds: Set<number> | null
     teamIds: string[] | null
     orgIds: string[] | null
+    includePrivate: boolean
   } {
     if (this.isUnrestricted()) return null
     return {
       pageIds: this.grantedPageIds,
       teamIds: this.grantedTeamIds,
-      orgIds: this.grantedOrgIds
+      orgIds: this.grantedOrgIds,
+      includePrivate: this.hasPersonal()
     }
   }
 
@@ -118,6 +129,8 @@ export class ResourceGrants {
       const teams = await Promise.all(teamIds.map((id) => this.dataLoader.get('teams').load(id)))
       if (teams.some((team) => team && this.grantedOrgIds!.includes(team.orgId))) return true
     }
+
+    if (teamAccess.length === 0 && orgAccess.length === 0) return this.hasPersonal()
 
     return false
   }

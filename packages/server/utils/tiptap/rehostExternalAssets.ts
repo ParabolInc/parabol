@@ -107,7 +107,8 @@ const hostAsUser = async (
           grants.grantedOrgIds,
           grants.grantedTeamIds,
           grants.grantedPageIds,
-          dataLoader
+          dataLoader,
+          grants.personalGranted
         )
       : null
     const teamIds = await dataLoader.get('teamIdsByUserId').load(userId)

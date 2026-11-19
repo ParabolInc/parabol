@@ -313,7 +313,7 @@ test('a token with no team or page grants only copies what it can open', async (
     .execute()
   await setDoc(rootId, [heading('A'), pageLink(childId)])
   await setDoc(childId, [heading('Private child')])
-  const resourceGrants = new ResourceGrants(viewerId, null, [], null, dataLoader)
+  const resourceGrants = new ResourceGrants(viewerId, null, [], null, dataLoader, false)
   const before = await countViewerPages()
 
   const copy = await duplicate(rootId, {resourceGrants})
@@ -459,7 +459,8 @@ test('skips sub-pages outside the token grant', async () => {
     [],
     [],
     [CipherId.toClient(rootId, 'page')],
-    dataLoader
+    dataLoader,
+    false
   )
   const before = await countViewerPages()
 
