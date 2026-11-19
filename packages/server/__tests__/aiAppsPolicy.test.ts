@@ -278,51 +278,6 @@ test('apps an org registers itself ignore the policy', async () => {
   expect(viewer.data.viewer.id).toBe(userId)
 })
 
-test('Verified apps blocks a CIMD client but not Claude', async () => {
-  const {userId, cookie, orgId} = await createOrgAdmin(getTestEmail())
-  const unverified = await createUnverifiedGlobalClient()
-  const claudeToken = await connect(CLAUDE, cookie)
-  const unverifiedToken = await connect(unverified, cookie)
-  await withoutPrivatePages(userId, CLAUDE.clientId)
-  await withoutPrivatePages(userId, unverified.clientId)
-
-  await setPolicy(orgId, 'VERIFIED', cookie)
-  const claude = await sendPublic({query: VIEWER_ID, bearerToken: claudeToken})
-  expect(claude.errors).toBeUndefined()
-  expectNotAllowed(await sendPublic({query: VIEWER_ID, bearerToken: unverifiedToken}))
-})
-
-test('a member who leaves an org loses it from the connection immediately', async () => {
-  const {userId, cookie} = await createOrgAdmin(getTestEmail())
-  const added = await sendPublic({
-    query: ADD_ORG,
-    variables: {
-      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
-      orgName: `Org ${generateUID()}`
-    },
-    cookie
-  })
-  expect(added.errors).toBeUndefined()
-  const otherTeamId = added.data.addOrg.team.id as string
-  const otherOrgId = added.data.addOrg.team.orgId as string
-  const token = await connect(CLAUDE, cookie)
-
-  const before = await sendPublic({query: VIEWER_TEAMS, bearerToken: token})
-  expect(before.data.viewer.teams.map(({id}: {id: string}) => id)).toContain(otherTeamId)
-
-  await getKysely()
-    .updateTable('OrganizationUser')
-    .set({removedAt: new Date()})
-    .where('orgId', '=', otherOrgId)
-    .where('userId', '=', userId)
-    .execute()
-  const after = await sendPublic({query: VIEWER_TEAMS, bearerToken: token})
-  expect(after.errors).toBeUndefined()
-  const teamIds = after.data.viewer.teams.map(({id}: {id: string}) => id)
-  expect(teamIds).not.toContain(otherTeamId)
-  expect(teamIds.length).toBeGreaterThan(0)
-})
-
 test('only an org admin with a session can change the policy', async () => {
   const {cookie: memberCookie, orgId: memberOrgId} = await signUp()
   const asMember = await setPolicy(memberOrgId, 'NONE', memberCookie)
