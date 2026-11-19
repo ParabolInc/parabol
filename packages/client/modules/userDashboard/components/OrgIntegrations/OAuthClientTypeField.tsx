@@ -3,6 +3,11 @@ import {RadioGroup, RadioGroupItem} from '../../../../ui/RadioGroup/RadioGroup'
 
 export type OAuthClientType = 'CONFIDENTIAL' | 'PUBLIC'
 
+export const CLIENT_TYPE_LABELS = {
+  CONFIDENTIAL: 'Confidential (has secret)',
+  PUBLIC: 'Public (PKCE)'
+} as const satisfies Record<OAuthClientType, string>
+
 interface Props {
   value: OAuthClientType
   onChange: (value: OAuthClientType) => void
@@ -12,13 +17,13 @@ interface Props {
 const OPTIONS = [
   {
     value: 'CONFIDENTIAL',
-    label: 'Secret',
+    label: CLIENT_TYPE_LABELS.CONFIDENTIAL,
     description:
       'For an app on a server that can keep a secret. Signs in with a client ID and client secret.'
   },
   {
     value: 'PUBLIC',
-    label: 'PKCE',
+    label: CLIENT_TYPE_LABELS.PUBLIC,
     description:
       'For a desktop, command-line or browser app that can’t keep a secret. Signs in with a PKCE code challenge instead.'
   }
