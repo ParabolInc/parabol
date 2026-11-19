@@ -60,6 +60,15 @@ describe('fetchUntrusted', () => {
             return res.end()
           }
           return json({ok: true})
+        case '/rate-limited-long':
+          rateLimitedCalls++
+          res.writeHead(429, {'retry-after': '30'})
+          return res.end()
+        case '/hang':
+          return
+        case '/stalled-body':
+          res.writeHead(200, {'Content-Type': 'application/json'})
+          return res.write('{"ok":')
         case '/redirect-once':
           return redirect('/ok')
         case '/redirect-twice':
@@ -215,6 +224,66 @@ describe('fetchUntrusted', () => {
       expect(res?.buffer.toString()).toBe('{"ok":true}')
       expect(rateLimitedCalls).toBe(2)
     }, 10_000)
+  })
+
+  describe('deadline', () => {
+    const timed = async <T>(work: () => Promise<T>) => {
+      const startedAt = Date.now()
+      const result = await work()
+      return {result, elapsedMs: Date.now() - startedAt}
+    }
+
+    test('a 429 is final instead of waiting out Retry-After', async () => {
+      const mod = loadFetchUntrusted(LOOPBACK_HOSTS)
+      const {result, elapsedMs} = await timed(() =>
+        get(mod, '/rate-limited-long', 1000, {deadlineMs: 5000})
+      )
+      expect(result).toBe(null)
+      expect(rateLimitedCalls).toBe(1)
+      expect(elapsedMs).toBeLessThan(1000)
+    })
+
+    test('bounds a server that never answers', async () => {
+      const mod = loadFetchUntrusted(LOOPBACK_HOSTS)
+      const {result, elapsedMs} = await timed(() => get(mod, '/hang', 1000, {deadlineMs: 300}))
+      expect(result).toBe(null)
+      expect(elapsedMs).toBeLessThan(2000)
+    })
+
+    test('bounds a body that stalls', async () => {
+      const mod = loadFetchUntrusted(LOOPBACK_HOSTS)
+      const {result, elapsedMs} = await timed(() =>
+        get(mod, '/stalled-body', 1000, {deadlineMs: 300})
+      )
+      expect(result).toBe(null)
+      expect(elapsedMs).toBeLessThan(2000)
+    })
+
+    test('bounds the wait behind another request to the same host', async () => {
+      const mod = loadFetchUntrusted(LOOPBACK_HOSTS)
+      const blocker = get(mod, '/hang', 1000)
+      const {result, elapsedMs} = await timed(() => get(mod, '/ok', 1000, {deadlineMs: 300}))
+      expect(result).toBe(null)
+      expect(elapsedMs).toBeLessThan(2000)
+      server.closeAllConnections()
+      expect(await blocker).toBe(null)
+    })
+
+    test('bounds DNS that never answers', async () => {
+      jest.resetModules()
+      const never = () => new Promise<never>(() => {})
+      jest.doMock('dns/promises', () => ({
+        __esModule: true,
+        default: {resolve4: never, resolve6: never, lookup: never}
+      }))
+      const mod = require('../fetchUntrusted') as typeof import('../fetchUntrusted')
+      const {result, elapsedMs} = await timed(() =>
+        mod.fetchUntrusted('http://never-resolves.example/doc.json', 1000, {deadlineMs: 300})
+      )
+      jest.dontMock('dns/promises')
+      expect(result).toBe(null)
+      expect(elapsedMs).toBeLessThan(2000)
+    })
   })
 
   describe('postUntrusted', () => {

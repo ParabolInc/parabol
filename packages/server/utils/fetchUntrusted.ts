@@ -224,6 +224,20 @@ const fetchOnce = async (
   })
 }
 
+// Neither the domain lock nor DNS takes a signal, so a deadline settles the call itself and leaves
+// the abandoned work to finish or abort on its own
+const raceDeadline = <T>(deadline: AbortSignal | undefined, work: () => Promise<T>) => {
+  if (!deadline) return work()
+  if (deadline.aborted) return Promise.reject<T>(deadline.reason)
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(deadline.reason)
+    deadline.addEventListener('abort', onAbort, {once: true})
+    work()
+      .then(resolve, reject)
+      .finally(() => deadline.removeEventListener('abort', onAbort))
+  })
+}
+
 /**
  * Read a body with a hard size cap. Always settles the stream so keepAlive sockets are released
  * rather than left half-read in the pool.
@@ -262,7 +276,9 @@ export const fetchUntrusted = async (
     headers?: Record<string, string>
     maxRedirects?: number
     onOverflow?: 'throw' | 'truncate'
-    timeoutMs?: number
+    // One budget for the whole call, lock wait & DNS included. A 429 is final, since Retry-After
+    // could outlast it
+    deadlineMs?: number
   }
 ) => {
   try {
@@ -270,66 +286,66 @@ export const fetchUntrusted = async (
     let currentHeaders = options?.headers
     let redirectsLeft = options?.maxRedirects ?? 0
     const onOverflow = options?.onOverflow ?? 'throw'
-    const timeoutMs = options?.timeoutMs ?? TIMEOUT_MS
+    const deadline = options?.deadlineMs ? AbortSignal.timeout(options.deadlineMs) : undefined
+    const max429Retries = deadline ? 0 : MAX_429_RETRIES
+
+    const fetchHop = async () => {
+      let response = await fetchOnce(currentUrl, {headers: currentHeaders, signal: deadline})
+
+      for (let attempt = 0; response.status === 429 && attempt < max429Retries; attempt++) {
+        await response.body?.cancel()
+        const delay = getRetryDelayMs(response.headers.get('retry-after'), attempt)
+        await new Promise((resolve) => setTimeout(resolve, delay))
+        response = await fetchOnce(currentUrl, {headers: currentHeaders, signal: deadline})
+      }
+
+      if (response.status >= 300 && response.status < 400) {
+        const location = response.headers.get('location')
+        await response.body?.cancel()
+        // Return a sentinel so we can release the domain lock before re-resolving
+        return {redirect: location}
+      }
+
+      if (!response.ok) {
+        await response.body?.cancel()
+        throw new Error(`HTTP error: ${response.status}`)
+      }
+
+      const contentType = response.headers.get('content-type')
+      if (!contentType) {
+        await response.body?.cancel()
+        throw new Error('Missing Content-Type')
+      }
+
+      // Pre-check the declared size before streaming. The cap below is the real enforcement,
+      // since content-length is both optional and pre-decompression.
+      const declaredSize = Number(response.headers.get('content-length'))
+      if (onOverflow === 'throw' && declaredSize > maxSize) {
+        await response.body?.cancel()
+        throw new Error('File too large')
+      }
+
+      // widened so callers can pass it alongside other Buffers (e.g. compressImage output)
+      const buffer: Buffer<ArrayBufferLike> = await readBodyCapped(
+        response.body,
+        maxSize,
+        onOverflow
+      )
+      return {
+        buffer,
+        contentType: contentType.split(';')[0]!.trim().toLowerCase(),
+        cacheControl: response.headers.get('cache-control'),
+        size: buffer.byteLength
+      }
+    }
 
     while (true) {
       // Serialize per-domain: same-host requests queue, different hosts run concurrently.
-      // The timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
-      const outcome = await withDomainLimit(getHostname(currentUrl), async () => {
-        let response = await fetchOnce(currentUrl, {
-          headers: currentHeaders,
-          signal: AbortSignal.timeout(timeoutMs)
-        })
-
-        for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
-          await response.body?.cancel()
-          const delay = getRetryDelayMs(response.headers.get('retry-after'), attempt)
-          await new Promise((resolve) => setTimeout(resolve, delay))
-          response = await fetchOnce(currentUrl, {
-            headers: currentHeaders,
-            signal: AbortSignal.timeout(timeoutMs)
-          })
-        }
-
-        if (response.status >= 300 && response.status < 400) {
-          const location = response.headers.get('location')
-          await response.body?.cancel()
-          // Return a sentinel so we can release the domain lock before re-resolving
-          return {redirect: location}
-        }
-
-        if (!response.ok) {
-          await response.body?.cancel()
-          throw new Error(`HTTP error: ${response.status}`)
-        }
-
-        const contentType = response.headers.get('content-type')
-        if (!contentType) {
-          await response.body?.cancel()
-          throw new Error('Missing Content-Type')
-        }
-
-        // Pre-check the declared size before streaming. The cap below is the real enforcement,
-        // since content-length is both optional and pre-decompression.
-        const declaredSize = Number(response.headers.get('content-length'))
-        if (onOverflow === 'throw' && declaredSize > maxSize) {
-          await response.body?.cancel()
-          throw new Error('File too large')
-        }
-
-        // widened so callers can pass it alongside other Buffers (e.g. compressImage output)
-        const buffer: Buffer<ArrayBufferLike> = await readBodyCapped(
-          response.body,
-          maxSize,
-          onOverflow
-        )
-        return {
-          buffer,
-          contentType: contentType.split(';')[0]!.trim().toLowerCase(),
-          cacheControl: response.headers.get('cache-control'),
-          size: buffer.byteLength
-        }
-      })
+      // Without a deadline, the timeout starts AFTER acquiring the lock so queued requests don't
+      // expire while waiting.
+      const outcome = await raceDeadline(deadline, () =>
+        withDomainLimit(getHostname(currentUrl), () => raceDeadline(deadline, fetchHop))
+      )
 
       if ('redirect' in outcome) {
         if (redirectsLeft <= 0 || !outcome.redirect) {

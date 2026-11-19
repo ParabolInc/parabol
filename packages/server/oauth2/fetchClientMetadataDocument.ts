@@ -4,7 +4,7 @@ import getRedis from '../utils/getRedis'
 import cimdCacheSeconds from './cimdCacheSeconds'
 
 const MAX_DOCUMENT_BYTES = 64 * 1024
-const TIMEOUT_MS = 5000
+const DEADLINE_MS = 5000
 
 const parseJSON = (text: string): {document: unknown} | null => {
   try {
@@ -21,7 +21,7 @@ const fetchClientMetadataDocument = async (
   const key = `oauth:cimd:${crypto.createHash('sha256').update(url).digest('hex')}`
   const cached = await redis.get(key)
   if (cached !== null) return {document: JSON.parse(cached)}
-  const response = await fetchUntrusted(url, MAX_DOCUMENT_BYTES, {timeoutMs: TIMEOUT_MS})
+  const response = await fetchUntrusted(url, MAX_DOCUMENT_BYTES, {deadlineMs: DEADLINE_MS})
   if (!response) return {error: 'Invalid client_id: its metadata document could not be fetched'}
   const text = response.buffer.toString('utf8')
   const parsed = parseJSON(text)

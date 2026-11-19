@@ -50,7 +50,7 @@ test('a document over 64 KB is refused', async () => {
   expect(mockFetchUntrusted).toHaveBeenCalledWith(
     CLIENT_ID,
     64 * 1024,
-    expect.objectContaining({timeoutMs: 5000})
+    expect.objectContaining({deadlineMs: 5000})
   )
   expect(redis.set).not.toHaveBeenCalled()
 })
