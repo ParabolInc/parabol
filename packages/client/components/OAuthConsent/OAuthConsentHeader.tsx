@@ -64,7 +64,7 @@ const OAuthConsentHeader = ({requestRef, email}: Props) => {
         <h1 className='wrap-anywhere m-0 font-semibold text-fg-primary text-xl leading-7'>
           {title}
         </h1>
-        {isUnverified && (
+        {isUnverified && clientHost !== name && (
           <span className='wrap-anywhere rounded-md bg-surface-well px-2 py-0.5 font-medium font-mono text-[15px] text-fg-primary'>
             {clientHost}
           </span>

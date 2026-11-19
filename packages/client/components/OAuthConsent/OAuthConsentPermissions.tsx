@@ -33,21 +33,20 @@ const OAuthConsentPermissions = ({requestRef}: Props) => {
         It will be able to
       </h2>
       {permissions.length > 0 ? (
-        <ul className='m-0 list-none p-0'>
+        <ul className='m-0 grid list-none grid-cols-[auto_auto_1fr] gap-x-3 p-0'>
           {permissions.map(({resource, title, Icon, description}) => (
-            <li key={resource} className='flex items-start gap-3 py-1.5 text-sm'>
-              <Icon className='mt-px text-fg-secondary text-xl' />
-              <span>
-                <span className='block font-semibold'>{title}</span>
-                <span className='block text-[13px] text-fg-secondary leading-[18px]'>
-                  {description}
-                </span>
-              </span>
+            <li
+              key={resource}
+              className='col-span-3 grid grid-cols-subgrid items-center py-1 text-sm'
+            >
+              <Icon className='text-fg-secondary text-xl' />
+              <span className='font-semibold'>{title}</span>
+              <span className='text-fg-secondary'>{description}</span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className='m-0 text-sm'>Nothing yet. It isn’t asking for any permissions.</p>
+        <p className='m-0 text-sm'>No permissions requested.</p>
       )}
     </section>
   )

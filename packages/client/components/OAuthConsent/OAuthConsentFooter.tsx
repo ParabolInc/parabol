@@ -1,7 +1,6 @@
 import {Button} from '../../ui/Button/Button'
 
 interface Props {
-  redirectHost: string
   canDisconnectInProfile: boolean
   errorMessage: string | null
   isAllowDisabled: boolean
@@ -11,17 +10,17 @@ interface Props {
 }
 
 const OAuthConsentFooter = (props: Props) => {
-  const {redirectHost, canDisconnectInProfile, errorMessage} = props
+  const {canDisconnectInProfile, errorMessage} = props
   const {isAllowDisabled, isCancelDisabled, onAllow, onCancel} = props
   // A framed consent page could be clickjacked, so it only accepts a decision in its own window
   const isFramed = window.self !== window.top
   return (
     <>
-      <p className='wrap-anywhere m-0 text-center text-[13px] text-fg-secondary leading-[18px]'>
-        Either way, you’ll be sent to{' '}
-        <b className='font-semibold text-fg-primary'>{redirectHost}</b>.
-        {canDisconnectInProfile && ' You can disconnect it any time in My Profile.'}
-      </p>
+      {canDisconnectInProfile && (
+        <p className='m-0 text-center text-[13px] text-fg-secondary leading-[18px]'>
+          You can disconnect it any time in My Profile.
+        </p>
+      )}
       {errorMessage && (
         <p role='alert' className='m-0 text-fg-error text-sm'>
           {errorMessage}

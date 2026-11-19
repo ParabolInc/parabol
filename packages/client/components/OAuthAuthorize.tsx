@@ -95,7 +95,6 @@ const OAuthAuthorize = (props: Props) => {
         <OAuthConsentPermissions requestRef={oauthAuthorizationRequest} />
         <OAuthConsentOrgPicker requestRef={oauthAuthorizationRequest} choice={choice} />
         <OAuthConsentFooter
-          redirectHost={new URL(redirectUri).host}
           canDisconnectInProfile={!organization}
           errorMessage={errorMessage}
           isAllowDisabled={isNothingChosen || submitting || isLeaving}

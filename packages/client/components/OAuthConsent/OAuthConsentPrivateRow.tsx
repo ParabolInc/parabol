@@ -19,14 +19,8 @@ const OAuthConsentPrivateRow = ({isIncluded, onIncludedChange}: Props) => (
     >
       <AccountCircle className='text-base' />
     </span>
-    <span className='min-w-0 flex-1'>
-      <span className='block font-semibold text-sm leading-5'>
-        My private pages and invitations
-      </span>
-      <span className='mt-0.5 block text-[13px] text-fg-secondary leading-[18px]'>
-        Pages you haven’t shared with a team or organization, plus your invitations and
-        notifications. No organization’s admins control this.
-      </span>
+    <span className='min-w-0 flex-1 font-semibold text-sm leading-5'>
+      My private pages, invitations and notifications
     </span>
   </label>
 )

@@ -26,40 +26,29 @@ interface ScopeResourceCopy {
   readWrite: string
 }
 
-const describeResource = (noun: string) => ({
-  read: `Read ${noun}`,
-  write: `Create and update ${noun}`,
-  readWrite: `Read, create and update ${noun}`
-})
+const CREATE_UPDATE = {
+  read: 'Read',
+  write: 'Create and update',
+  readWrite: 'Read, create and update'
+}
+const UPDATE = {read: 'Read', write: 'Update', readWrite: 'Read and update'}
 
 const scopeResources = {
-  PAGES: {title: 'Pages', Icon: Description, ...describeResource('pages')},
-  TASKS: {title: 'Tasks', Icon: TaskAlt, ...describeResource('tasks')},
-  MEETINGS: {title: 'Meetings', Icon: Forum, ...describeResource('meetings')},
-  COMMENTS: {title: 'Comments', Icon: Comment, ...describeResource('comments')},
-  TEMPLATES: {title: 'Templates', Icon: Style, ...describeResource('meeting templates')},
-  TEAMS: {title: 'Teams', Icon: Group, ...describeResource('teams')},
+  PAGES: {title: 'Pages', Icon: Description, ...CREATE_UPDATE},
+  TASKS: {title: 'Tasks', Icon: TaskAlt, ...CREATE_UPDATE},
+  MEETINGS: {title: 'Meetings', Icon: Forum, ...CREATE_UPDATE},
+  COMMENTS: {title: 'Comments', Icon: Comment, ...CREATE_UPDATE},
+  TEMPLATES: {title: 'Templates', Icon: Style, ...CREATE_UPDATE},
+  TEAMS: {title: 'Teams', Icon: Group, ...CREATE_UPDATE},
   REPORTS: {
     title: 'Reports',
     Icon: Insights,
-    read: 'Read reports',
-    write: 'Ask questions on the Reports page',
-    readWrite: 'Read reports and ask questions on the Reports page'
+    read: 'Read',
+    write: 'Ask questions',
+    readWrite: 'Read and ask questions'
   },
-  ORGS: {
-    title: 'Organizations',
-    Icon: Business,
-    read: 'Read organization details',
-    write: 'Update organization details',
-    readWrite: 'Read and update organization details'
-  },
-  USERS: {
-    title: 'Profile',
-    Icon: Person,
-    read: 'Read your profile',
-    write: 'Update your profile',
-    readWrite: 'Read and update your profile'
-  }
+  ORGS: {title: 'Organizations', Icon: Business, ...UPDATE},
+  USERS: {title: 'Profile', Icon: Person, ...UPDATE}
 } satisfies Record<ResourceOf<OAuthScopeEnum>, ScopeResourceCopy>
 
 export default scopeResources

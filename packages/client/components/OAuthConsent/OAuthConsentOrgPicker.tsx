@@ -7,7 +7,6 @@ import OAuthConsentOrgFilter from './OAuthConsentOrgFilter'
 import OAuthConsentOrgModeRadios from './OAuthConsentOrgModeRadios'
 import OAuthConsentOrgRow from './OAuthConsentOrgRow'
 import OAuthConsentPrivateRow from './OAuthConsentPrivateRow'
-import toPossessive from './toPossessive'
 import type {OAuthConsentChoice} from './useOAuthConsentChoice'
 
 const MAX_UNFILTERED_ORGS = 5
@@ -21,7 +20,6 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
   const request = useFragment(
     graphql`
       fragment OAuthConsentOrgPicker_request on OAuthAuthorizationRequest {
-        name
         organization {
           name
         }
@@ -38,10 +36,8 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
     requestRef
   )
   const [filter, setFilter] = useState('')
-  const {name: appName, organization, organizations} = request
-  const allowedOrgNames = organizations
-    .filter(({blockedReason}) => !blockedReason)
-    .map((row) => row.organization.name)
+  const {organization, organizations} = request
+  const allowedCount = organizations.filter(({blockedReason}) => !blockedReason).length
   const isMany = organizations.length > MAX_UNFILTERED_ORGS
   const normalizedFilter = filter.trim().toLowerCase()
   const visibleOrganizations = organizations.filter((row) =>
@@ -53,21 +49,14 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
         id='oauth-consent-orgs'
         className='m-0 font-semibold text-fg-muted text-xs uppercase leading-4 tracking-[0.08em]'
       >
-        {organization || allowedOrgNames.length > 0
-          ? 'Which organizations it can reach'
-          : 'Your organizations'}
+        Organizations
       </h2>
       {organization ? (
-        <p className='wrap-anywhere m-0'>
-          It was registered by {organization.name}, so it can only reach{' '}
-          {toPossessive(organization.name)} teams and pages.
-        </p>
+        <p className='wrap-anywhere m-0'>Only {organization.name}, which registered it.</p>
       ) : (
         <>
-          {allowedOrgNames.length > 0 && (
+          {allowedCount > 0 && (
             <OAuthConsentOrgModeRadios
-              appName={appName}
-              allowedOrgNames={allowedOrgNames}
               orgMode={choice.orgMode}
               onOrgModeChange={choice.setOrgMode}
             />
@@ -75,7 +64,7 @@ const OAuthConsentOrgPicker = ({requestRef, choice}: Props) => {
           {isMany && (
             <OAuthConsentOrgFilter
               orgCount={organizations.length}
-              blockedCount={organizations.length - allowedOrgNames.length}
+              blockedCount={organizations.length - allowedCount}
               filter={filter}
               onFilterChange={setFilter}
             />

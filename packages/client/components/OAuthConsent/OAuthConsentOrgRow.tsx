@@ -7,7 +7,6 @@ import {cn} from '../../ui/cn'
 import {CheckCircle, Lock, Person} from '../../ui/icons'
 import getTileColorClass from './getTileColorClass'
 import OAuthConsentChip from './OAuthConsentChip'
-import toPossessive from './toPossessive'
 
 const NOTE_CLASS = 'mt-0.5 flex items-start gap-1.5 text-[13px] text-fg-secondary leading-[18px]'
 
@@ -35,9 +34,7 @@ const OAuthConsentOrgRow = ({organizationRef, isPicking, isPicked, onTogglePicke
   const {id: orgId, name} = organization
   const isBlocked = !!blockedReason
   const reason =
-    blockedReason === 'VERIFIED_ONLY'
-      ? `${name} allows only verified apps, like Claude and ChatGPT`
-      : `${toPossessive(name)} admins don’t allow apps`
+    blockedReason === 'VERIFIED_ONLY' ? 'Only verified apps allowed' : 'No apps allowed'
   return (
     <div role='listitem' className='border-hairline border-b py-2 last:border-b-0 last:pb-0'>
       <label
@@ -78,7 +75,7 @@ const OAuthConsentOrgRow = ({organizationRef, isPicking, isPicked, onTogglePicke
           {isBlocked && adminName && (
             <span className={NOTE_CLASS}>
               <Person className='mt-px text-base' />
-              <span>To change this, ask {adminName}, an org admin</span>
+              <span>Ask {adminName}, an org admin</span>
             </span>
           )}
         </span>

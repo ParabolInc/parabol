@@ -12,7 +12,7 @@ const OAuthConsentInvalid = () => {
       <InviteDialog className='w-full max-w-md'>
         <DialogTitle>This authorization request isn’t valid</DialogTitle>
         <DialogContent>
-          <p className='m-0'>Go back to the app that sent you here and try connecting it again.</p>
+          <p className='m-0'>Go back to the app and try again.</p>
           <div className='flex justify-end pt-6'>
             <Button variant='outline' size='md' onClick={() => navigate({to: '/meetings'})}>
               Go to Parabol
