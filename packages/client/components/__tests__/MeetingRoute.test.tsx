@@ -45,7 +45,6 @@ jest.mock('@tanstack/react-router', () => {
   }
 })
 jest.mock('../../routing/useQueryRefLease', () => ({__esModule: true, default: () => {}}))
-jest.mock('../../routing/useJoinedMeetingLease', () => ({__esModule: true, default: () => {}}))
 jest.mock('../NewMeetingCheckIn', () => ({__esModule: true, default: () => 'checkin phase'}))
 jest.mock('../RetroReflectPhase/RetroReflectPhase', () => ({
   __esModule: true,

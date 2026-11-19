@@ -1,7 +1,7 @@
 import {Environment, Network, Observable, RecordSource, Store} from 'relay-runtime'
 import type Atmosphere from '../../Atmosphere'
 import {getBreadcrumbs} from '../../utils/clientBreadcrumbs'
-import {createJoinedMeetings} from '../joinedMeetings'
+import joinMeeting from '../joinMeeting'
 import {createQueryRefs} from '../queryRefs'
 
 type JoinHandlers = {onCompleted: (response: unknown) => void; onError: () => void}
@@ -10,6 +10,7 @@ type FetchSink = {next: () => void; complete: () => void; error: () => void}
 const mockEvents: string[] = []
 const mockJoin: {handlers?: JoinHandlers} = {}
 const mockFetch: Partial<FetchSink> = {}
+const mockNetwork = {isOffline: false}
 function mockGetKey(name: string, variables: unknown) {
   return JSON.stringify({name, variables})
 }
@@ -42,23 +43,32 @@ jest.mock('../../mutations/JoinMeetingMutation', () => ({
     mockJoin.handlers = handlers
   }
 }))
-jest.mock('react-relay', () => ({
-  fetchQuery: () => ({
-    subscribe: (sink: FetchSink) => {
-      mockEvents.push('fetch')
-      Object.assign(mockFetch, sink)
+jest.mock('react-relay', () => {
+  const {Observable: RelayObservable} = jest.requireActual('relay-runtime')
+  return {
+    fetchQuery: () => ({
+      subscribe: (sink: FetchSink) => {
+        mockEvents.push('fetch')
+        Object.assign(mockFetch, sink)
+      }
+    }),
+    loadQuery: (
+      _environment: unknown,
+      _query: unknown,
+      variables: unknown,
+      {fetchPolicy}: {fetchPolicy: string}
+    ) => {
+      mockEvents.push(`load ${fetchPolicy}`)
+      const source =
+        fetchPolicy === 'network-only' && mockNetwork.isOffline
+          ? RelayObservable.create((sink: {error: (error: Error) => void}) =>
+              sink.error(new Error('offline'))
+            )
+          : undefined
+      return {variables, source, isDisposed: false, releaseQuery: () => {}}
     }
-  }),
-  loadQuery: (
-    _environment: unknown,
-    _query: unknown,
-    variables: unknown,
-    {fetchPolicy}: {fetchPolicy: string}
-  ) => {
-    mockEvents.push(`load ${fetchPolicy}`)
-    return {variables, isDisposed: false, releaseQuery: () => {}}
   }
-}))
+})
 
 const environment = new Environment({
   network: Network.create(() => Observable.create(() => {})),
@@ -67,11 +77,13 @@ const environment = new Environment({
 const joinedResponse = {joinMeeting: {JoinMeetingMutation_meeting: {meeting: {id: 'meeting1'}}}}
 const subKey = mockGetKey('MeetingSubscription', {meetingId: 'meeting1'})
 
-const createRegistry = () =>
-  createJoinedMeetings(
+const startJoin = (signal = new AbortController().signal) =>
+  joinMeeting(
     mockAtmosphere as unknown as Atmosphere,
+    {navigate: async () => {}},
     createQueryRefs(environment, new Set()),
-    {navigate: async () => {}}
+    'meeting1',
+    signal
   )
 
 const settle = async () => {
@@ -87,6 +99,7 @@ beforeAll(() => {
 beforeEach(() => {
   jest.useFakeTimers()
   mockEvents.length = 0
+  mockNetwork.isOffline = false
   mockAtmosphere.subscriptions = {}
   mockAtmosphere.subscriptionAckHandlers.clear()
   mockAtmosphere.records = {}
@@ -97,8 +110,7 @@ afterEach(() => {
 })
 
 test('a viewer not yet in the meeting subscribes after joining, then fetches once the subscription listens', async () => {
-  const queryRef = createRegistry().join('meeting1', new AbortController().signal)
-  await settle()
+  const queryRef = startJoin()
   expect(mockEvents).toEqual(['join'])
   completeJoin()
   expect(mockEvents).toEqual(['join', 'subscribe'])
@@ -119,8 +131,7 @@ test('a viewer not yet in the meeting subscribes after joining, then fetches onc
 
 test('a viewer the store has in the meeting subscribes while joining, then fetches once both are done', async () => {
   mockAtmosphere.records.meeting1 = {viewerMeetingMember: {__ref: 'user1::meeting1'}}
-  const queryRef = createRegistry().join('meeting1', new AbortController().signal)
-  await settle()
+  const queryRef = startJoin()
   expect(mockEvents).toEqual(['subscribe', 'join'])
   acknowledgeSubscription()
   await settle()
@@ -134,8 +145,7 @@ test('a viewer the store has in the meeting subscribes while joining, then fetch
 })
 
 test('the meeting loads from its first payload and holds subscription messages until the last', async () => {
-  const queryRef = createRegistry().join('meeting1', new AbortController().signal)
-  await settle()
+  const queryRef = startJoin()
   completeJoin()
   acknowledgeSubscription()
   await settle()
@@ -148,22 +158,29 @@ test('the meeting loads from its first payload and holds subscription messages u
   expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'load store-only', 'release'])
 })
 
-test('a failed fetch loads the meeting from the network, so its error reaches the page', async () => {
-  const queryRef = createRegistry().join('meeting1', new AbortController().signal)
-  await settle()
+test('a failed fetch loads the meeting from the network, and leaves the meeting if that fails too', async () => {
+  mockNetwork.isOffline = true
+  const queryRef = startJoin()
   completeJoin()
   acknowledgeSubscription()
   await settle()
   mockFetch.error!()
-  await queryRef
-  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'release', 'load network-only'])
+  await expect(queryRef).rejects.toThrow('offline')
+  expect(mockEvents).toEqual([
+    'join',
+    'subscribe',
+    'hold',
+    'fetch',
+    'release',
+    'load network-only',
+    'unsubscribe'
+  ])
 })
 
-test('a navigation that ends before its page opens leaves the meeting and hands over held messages', async () => {
+test('a navigation abandoned before the join lands leaves the meeting and hands over held messages', async () => {
   mockAtmosphere.records.meeting1 = {viewerMeetingMember: {__ref: 'user1::meeting1'}}
   const navigation = new AbortController()
-  createRegistry().join('meeting1', navigation.signal)
-  await settle()
+  startJoin(navigation.signal)
   acknowledgeSubscription()
   navigation.abort()
   await settle()
@@ -171,31 +188,16 @@ test('a navigation that ends before its page opens leaves the meeting and hands 
   expect(mockAtmosphere.subscriptionAckHandlers.has(subKey)).toBe(false)
 })
 
-test('the loader and the page share one join, which outlasts a StrictMode remount and ends when the page closes', async () => {
-  const joinedMeetings = createRegistry()
-  const navigation = new AbortController()
-  const queryRef = joinedMeetings.join('meeting1', navigation.signal)
-  joinedMeetings.join('meeting1', navigation.signal)
-  await settle()
+test('the viewer stays joined until the meeting’s page closes', async () => {
+  const page = new AbortController()
+  const queryRef = startJoin(page.signal)
   completeJoin()
   acknowledgeSubscription()
   await settle()
   mockFetch.complete!()
   await queryRef
-  const closeStrictModePage = joinedMeetings.lease('meeting1')
-  closeStrictModePage()
-  const closePage = joinedMeetings.lease('meeting1')
-  jest.advanceTimersByTime(1)
-  expect(mockEvents).toEqual(['join', 'subscribe', 'hold', 'fetch', 'release', 'load store-only'])
-  closePage()
-  jest.advanceTimersByTime(1)
-  navigation.abort()
-  expect(mockEvents.filter((event) => event === 'unsubscribe')).toEqual(['unsubscribe'])
-})
-
-test('a page that outlived its join joins again', async () => {
-  const closePage = createRegistry().lease('meeting1')
-  await settle()
-  expect(mockEvents).toEqual(['join'])
-  closePage()
+  expect(mockEvents).not.toContain('unsubscribe')
+  page.abort()
+  expect(mockEvents.at(-1)).toBe('unsubscribe')
+  expect(mockAtmosphere.subscriptionAckHandlers.has(subKey)).toBe(false)
 })

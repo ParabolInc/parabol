@@ -15,12 +15,15 @@ import type {QueryRefs} from './queryRefs'
 // A viewer the store already knows is in the meeting, like the one who just started it, subscribes while joining.
 // The meeting renders from the first payload: deferred fragments suspend until their own payloads arrive,
 // and subscription messages stay held until the last one.
-const joinMeeting = (
+// The viewer stays joined until the signal aborts.
+const joinMeeting = async (
   atmosphere: Atmosphere,
   router: {navigate: NavigateFn},
   queryRefs: QueryRefs,
-  meetingId: string
+  meetingId: string,
+  signal: AbortSignal
 ) => {
+  signal.throwIfAborted()
   const variables = {meetingId}
   const subKey = Atmosphere.getKey(MeetingSubscription.key, variables)
   let hasLeft = false
@@ -85,6 +88,18 @@ const joinMeeting = (
         fetchOnceJoined()
       }, 5000)
   }
+  const leave = () => {
+    if (hasLeft) return
+    hasLeft = true
+    // hands over any messages still held for a join that will not finish here
+    resolveJoined()
+    window.clearTimeout(ackTimeout)
+    if (atmosphere.subscriptionAckHandlers.get(subKey) === fetchWhileHoldingSubscription) {
+      atmosphere.subscriptionAckHandlers.delete(subKey)
+    }
+    releaseMeetingSubscription?.()
+  }
+  signal.addEventListener('abort', leave)
   const isViewerMeetingMember = Boolean(
     atmosphere.getStore().getSource().get(meetingId)?.viewerMeetingMember
   )
@@ -107,23 +122,16 @@ const joinMeeting = (
       if (!hasLeft) fetchMeeting()
     }
   })
-  const leave = () => {
-    hasLeft = true
-    // hands over any messages still held for a join that will not finish here
-    resolveJoined()
-    window.clearTimeout(ackTimeout)
-    if (atmosphere.subscriptionAckHandlers.get(subKey) === fetchWhileHoldingSubscription) {
-      atmosphere.subscriptionAckHandlers.delete(subKey)
-    }
-    releaseMeetingSubscription?.()
-  }
-  // a failed fetch loads from the network again, so its error reaches the page
-  const queryRef = fetched.then((isFetched) =>
-    queryRefs.load<MeetingSelectorQuery>(meetingSelectorQuery, variables, {
+  try {
+    // a failed fetch loads from the network again, so its error reaches the page
+    const isFetched = await fetched
+    return await queryRefs.load<MeetingSelectorQuery>(meetingSelectorQuery, variables, {
       fetchPolicy: isFetched ? 'store-only' : 'network-only'
     })
-  )
-  return {queryRef, leave}
+  } catch (error) {
+    leave()
+    throw error
+  }
 }
 
 export default joinMeeting
