@@ -629,7 +629,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': redactUnless(or(isSuperUser, isViewerOnOrg<'Organization.id'>('source.id'))),
     activeUserCounts: or(isSuperUser, isViewerOnOrg<'Organization.activeUserCounts'>('source.id')),
     aiAppsPolicy: hasOrgRole<'Organization.aiAppsPolicy'>('source.id', 'ORG_ADMIN'),
-    aiAppGrants: hasOrgRole<'Organization.aiAppGrants'>('source.id', 'ORG_ADMIN'),
+    aiAppGrants: and(
+      hasTokenAudience(['action']),
+      hasOrgRole<'Organization.aiAppGrants'>('source.id', 'ORG_ADMIN')
+    ),
     id: allow,
     isBillingLeader: allow,
     isOrgAdmin: allow,

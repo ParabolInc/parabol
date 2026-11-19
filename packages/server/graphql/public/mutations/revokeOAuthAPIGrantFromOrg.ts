@@ -4,42 +4,60 @@ import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
 import type {MutationResolvers} from '../resolverTypes'
 
+const throwNotReached = (): never => {
+  throw new GraphQLError('That connection does not reach this organization', {
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+}
+
 const revokeOAuthAPIGrantFromOrg: MutationResolvers['revokeOAuthAPIGrantFromOrg'] = async (
   _source,
   {grantId, orgId},
   {dataLoader}
 ) => {
-  const [dbGrantId] = CipherId.fromClient(grantId)
-  const grant = await dataLoader.get('oauthAPIGrants').loadNonNull(dbGrantId)
-  const [provider, organizationUsers] = await Promise.all([
-    getKysely()
-      .selectFrom('OAuthAPIProvider')
-      .select('orgId')
-      .where('clientId', '=', grant.clientId)
-      .executeTakeFirst(),
-    dataLoader.get('organizationUsersByUserId').load(grant.userId)
-  ])
-  const currentOrgIds = organizationUsers.map((organizationUser) => organizationUser.orgId)
-  const reachesOrg = grant.grantedOrgIds
-    ? grant.grantedOrgIds.includes(orgId)
-    : currentOrgIds.includes(orgId)
-  if (grant.revokedAt || !provider || provider.orgId || !reachesOrg) {
-    throw new GraphQLError('That connection does not reach this organization', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
-  const remainingOrgIds = (grant.grantedOrgIds ?? currentOrgIds).filter(
-    (grantedOrgId) => grantedOrgId !== orgId
-  )
-  const hasNoAccessLeft = remainingOrgIds.length === 0 && !grant.personalGrantedAt
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({
-      grantedOrgIds: remainingOrgIds,
-      ...(hasNoAccessLeft ? {revokedAt: sql`CURRENT_TIMESTAMP`} : {})
-    })
-    .where('id', '=', dbGrantId)
-    .execute()
+  const dbGrantId = (() => {
+    try {
+      return CipherId.fromClient(grantId)[0]
+    } catch {
+      return throwNotReached()
+    }
+  })()
+  const remainingOrgIds = sql`array_remove(
+    COALESCE(
+      "grantedOrgIds",
+      ARRAY(
+        SELECT "orgId" FROM "OrganizationUser"
+        WHERE "userId" = "OAuthAPIGrant"."userId" AND "removedAt" IS NULL
+      )
+    ),
+    ${orgId}::varchar
+  )`
+  const {rows} = await sql<{id: number}>`
+    UPDATE "OAuthAPIGrant"
+    SET
+      "grantedOrgIds" = ${remainingOrgIds},
+      "revokedAt" = CASE
+        WHEN cardinality(${remainingOrgIds}) = 0 AND "personalGrantedAt" IS NULL
+        THEN CURRENT_TIMESTAMP
+        ELSE NULL
+      END
+    WHERE "id" = ${dbGrantId}
+      AND "revokedAt" IS NULL
+      AND EXISTS (
+        SELECT 1 FROM "OAuthAPIProvider"
+        WHERE "OAuthAPIProvider"."clientId" = "OAuthAPIGrant"."clientId"
+          AND "OAuthAPIProvider"."orgId" IS NULL
+      )
+      AND (${orgId} = ANY("grantedOrgIds") OR "grantedOrgIds" IS NULL)
+      AND EXISTS (
+        SELECT 1 FROM "OrganizationUser"
+        WHERE "OrganizationUser"."userId" = "OAuthAPIGrant"."userId"
+          AND "OrganizationUser"."orgId" = ${orgId}
+          AND "OrganizationUser"."removedAt" IS NULL
+      )
+    RETURNING "id"
+  `.execute(getKysely())
+  if (rows.length === 0) return throwNotReached()
   dataLoader.get('oauthAPIGrants').clear(dbGrantId)
   return {orgId}
 }

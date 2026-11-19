@@ -232,6 +232,56 @@ test('an admin sees every member connection that reaches the org', async () => {
   expect(pickedGrant.scopes.length).toBeGreaterThan(0)
 })
 
+test('an admin does not see connections of people who are not current members', async () => {
+  const admin = await createOrgAdmin(getTestEmail())
+  const stranger = await signUp()
+  await connect(stranger.cookie, {grantedOrgIds: null})
+  const former = await createMember(admin.orgId, {grantedOrgIds: null})
+  await getKysely()
+    .updateTable('OrganizationUser')
+    .set({removedAt: new Date()})
+    .where('orgId', '=', admin.orgId)
+    .where('userId', '=', former.userId)
+    .execute()
+  const strangerGrant = await getGrant(stranger.userId)
+
+  const res = await sendPublic({
+    query: ORG_AI_APP_GRANTS,
+    variables: {orgId: admin.orgId},
+    cookie: admin.cookie
+  })
+  expect(res.errors).toBeUndefined()
+  const ids = res.data.viewer.organization.aiAppGrants.map(({id}: {id: string}) => id)
+  expect(ids).not.toContain(toClientId(strangerGrant.id))
+  expect(ids).not.toContain(toClientId(former.grant.id))
+})
+
+test('an admin API token cannot list connections', async () => {
+  const admin = await createOrgAdmin(getTestEmail())
+  const pat = await sendPublic({
+    query: `
+      mutation CreatePersonalAccessToken($name: String!, $scopes: [OAuthScopeEnum!]!, $expiresAt: DateTime!) {
+        createPersonalAccessToken(name: $name, scopes: $scopes, expiresAt: $expiresAt) {
+          token
+        }
+      }
+    `,
+    variables: {
+      name: 'grants',
+      scopes: ['ORGS_READ'],
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    },
+    cookie: admin.cookie
+  })
+  expect(pat.errors).toBeUndefined()
+  const res = await sendPublic({
+    query: ORG_AI_APP_GRANTS,
+    variables: {orgId: admin.orgId},
+    bearerToken: pat.data.createPersonalAccessToken.token
+  })
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+})
+
 test('an admin cannot see private-page access or other orgs on a connection', async () => {
   const admin = await createOrgAdmin(getTestEmail())
   const member = await createMember(admin.orgId, {
@@ -314,6 +364,12 @@ test('revoking the last org of a connection without private pages revokes it', a
     cookie: admin.cookie
   })
   expect(again.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
+  const unknown = await sendPublic({
+    query: REVOKE_FROM_ORG,
+    variables: {grantId: toClientId(2147483000), orgId: admin.orgId},
+    cookie: admin.cookie
+  })
+  expect(unknown.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
 })
 
 test('a member who is not an admin cannot revoke', async () => {
