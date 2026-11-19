@@ -68,7 +68,7 @@ const RetroInspirationItemCard = (props: Props) => {
       {title && <div className='font-semibold text-fg-primary text-sm'>{title}</div>}
       <TipTapEditor
         editor={editor}
-        className='max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent'
+        className='issue-chips max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent'
       />
       <div className='flex items-center justify-between gap-2'>
         {prompt ? (

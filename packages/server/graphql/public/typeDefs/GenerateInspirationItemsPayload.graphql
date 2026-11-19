@@ -8,7 +8,7 @@ type GenerateInspirationItemsPayload {
   inspirationItems: [InspirationItem!]!
 
   """
-  Every issue the sources matched
+  Every issue the sources matched, or in a retrospective, every issue on this page of its timeline
   """
   issues: [InspirationIssue!]!
 
@@ -16,4 +16,10 @@ type GenerateInspirationItemsPayload {
   The meeting the items were generated for
   """
   meeting: NewMeeting!
+
+  """
+  Where the next older page of a retrospective's timeline starts, to pass as before. Null once
+  the page reaches the start of the sources' date range, and in a standup
+  """
+  nextBefore: DateTime
 }

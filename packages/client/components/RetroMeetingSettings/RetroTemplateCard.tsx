@@ -9,6 +9,7 @@ import RetroTemplatePromptList from './RetroTemplatePromptList'
 
 interface Props {
   templateRef: RetroTemplateCard_template$key
+  searchQuery: string
   isCurrent: boolean
   isPending: boolean
   isExpanded: boolean
@@ -17,7 +18,8 @@ interface Props {
 }
 
 const RetroTemplateCard = (props: Props) => {
-  const {templateRef, isCurrent, isPending, isExpanded, onPick, onToggleExpanded} = props
+  const {templateRef, searchQuery, isCurrent, isPending, isExpanded, onPick, onToggleExpanded} =
+    props
   const template = useFragment(
     graphql`
       fragment RetroTemplateCard_template on MeetingTemplate {
@@ -25,12 +27,6 @@ const RetroTemplateCard = (props: Props) => {
         name
         category
         illustrationUrl
-        ... on PromptTemplate {
-          prompts {
-            id
-            question
-          }
-        }
       }
     `,
     templateRef
@@ -38,7 +34,6 @@ const RetroTemplateCard = (props: Props) => {
   const {name, illustrationUrl} = template
   const category = template.category as CategoryID
   const backgroundSrc = backgroundImgMap[category as keyof typeof backgroundImgMap]
-  const promptLine = (template.prompts ?? []).map(({question}) => question).join(' · ')
   return (
     <div
       className={cn(
@@ -75,7 +70,7 @@ const RetroTemplateCard = (props: Props) => {
           </span>
           <span className='flex min-w-0 flex-col gap-0.5'>
             <span className='font-semibold text-[15px] text-fg-primary leading-5'>{name}</span>
-            <span className='flex items-center gap-2'>
+            <span className='flex h-5 items-center gap-2'>
               <span className='font-semibold text-fg-secondary text-xs italic'>
                 {CATEGORY_ID_TO_NAME[category]}
               </span>
@@ -89,11 +84,6 @@ const RetroTemplateCard = (props: Props) => {
                 <span className='font-semibold text-fg-secondary text-xs'>Switching…</span>
               )}
             </span>
-            {!isExpanded && (
-              <span className='truncate text-[13px] text-fg-secondary leading-[18px]'>
-                {promptLine}
-              </span>
-            )}
           </span>
         </button>
         <button
@@ -114,7 +104,7 @@ const RetroTemplateCard = (props: Props) => {
           </span>
         </button>
       </div>
-      {isExpanded && <RetroTemplatePromptList templateRef={template} />}
+      {isExpanded && <RetroTemplatePromptList templateRef={template} searchQuery={searchQuery} />}
     </div>
   )
 }

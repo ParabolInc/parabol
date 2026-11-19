@@ -7,7 +7,7 @@ import type {
 } from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import {EmptyDropdownMenuItemLabel} from '../../../../components/EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from '../../../../components/TypeAheadLabel'
+import HighlightedText from '../../../../components/HighlightedText'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useSearchFilter from '../../../../hooks/useSearchFilter'
@@ -98,7 +98,7 @@ const NewBillingLeaderMenu = (props: Props) => {
             <div className='pr-8'>
               <Avatar picture={picture} className='h-8 w-8' />
             </div>
-            <TypeAheadLabel query={query} label={preferredName} />
+            <HighlightedText query={query} text={preferredName} className='truncate' />
           </MenuItem>
         )
       })}

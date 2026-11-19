@@ -1,14 +1,16 @@
 import {generateHTML} from '@tiptap/html/server'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
-const renderLink = (href: string) =>
+const renderLink = (href: string, issueService?: string) =>
   generateHTML(
     {
       type: 'doc',
       content: [
         {
           type: 'paragraph',
-          content: [{type: 'text', text: 'click me', marks: [{type: 'link', attrs: {href}}]}]
+          content: [
+            {type: 'text', text: 'click me', marks: [{type: 'link', attrs: {href, issueService}}]}
+          ]
         }
       ]
     },
@@ -36,3 +38,10 @@ test.each(['https://example.com/a?b=c', 'http://example.com', 'mailto:someone@ex
     expect(getRenderedHref(renderLink(href))).toBe(href)
   }
 )
+
+test('a link drafted from an issue keeps its service, so it renders as an issue chip', () => {
+  expect(renderLink('https://github.com/a/b/pull/1', 'github')).toContain(
+    'data-issue-service="github"'
+  )
+  expect(renderLink('https://example.com')).not.toContain('data-issue-service')
+})

@@ -53,6 +53,7 @@ export const exportPageEntry = async (input: {
   userId: string
   pageExportId: string
   isTokenScoped: boolean
+  isGrantRestricted: boolean
 }): Promise<PageEntryExportResult> => {
   const {
     entry,
@@ -63,7 +64,8 @@ export const exportPageEntry = async (input: {
     siteUrl,
     userId,
     pageExportId,
-    isTokenScoped
+    isTokenScoped,
+    isGrantRestricted
   } = input
   const pg = getKysely()
   try {
@@ -133,8 +135,11 @@ export const exportPageEntry = async (input: {
       ...item,
       pageId: entry.pageId
     }))
+    const allowedAssetPageIds = isGrantRestricted
+      ? new Set(pagesJson.map(({pageId}) => pageId))
+      : null
     for (const asset of conversion.assets) {
-      const assetData = await fetchAssetBuffer(asset.srcUrl, userId)
+      const assetData = await fetchAssetBuffer(asset.srcUrl, userId, allowedAssetPageIds)
       if (!assetData) {
         degraded.push({
           pageId: entry.pageId,

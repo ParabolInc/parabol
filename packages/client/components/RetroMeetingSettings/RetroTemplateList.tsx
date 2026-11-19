@@ -34,15 +34,21 @@ const RetroTemplateList = (props: Props) => {
     `,
     templatesRef
   )
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [expansionChoices, setExpansionChoices] = useState<{
+    needle: string
+    isExpandedById: Record<string, boolean>
+  }>({needle: '', isExpandedById: {}})
   const needle = query.trim().toLowerCase()
+  const isExpandedById = expansionChoices.needle === needle ? expansionChoices.isExpandedById : {}
+  const isNameMatch = (template: (typeof templates)[number]) =>
+    template.name.toLowerCase().includes(needle)
   const isPromptMatch = (template: (typeof templates)[number]) =>
     !!needle &&
     (template.prompts ?? []).some(({question, description}) =>
       `${question} ${description}`.toLowerCase().includes(needle)
     )
   const matches = templates.filter(
-    (template) => !needle || template.name.toLowerCase().includes(needle) || isPromptMatch(template)
+    (template) => !needle || isNameMatch(template) || isPromptMatch(template)
   )
   const sections = [
     {
@@ -73,18 +79,21 @@ const RetroTemplateList = (props: Props) => {
           <div className='flex flex-col gap-2'>
             {section.templates.map((template) => {
               const isExpanded =
-                template.id === expandedId ||
-                (isPromptMatch(template) && !template.name.toLowerCase().includes(needle))
+                isExpandedById[template.id] ?? (isPromptMatch(template) && !isNameMatch(template))
               return (
                 <RetroTemplateCard
                   key={template.id}
                   templateRef={template}
+                  searchQuery={needle}
                   isCurrent={template.id === currentTemplateId}
                   isPending={template.id === pendingTemplateId}
                   isExpanded={isExpanded}
                   onPick={() => onPick(template)}
                   onToggleExpanded={() =>
-                    setExpandedId(template.id === expandedId ? null : template.id)
+                    setExpansionChoices({
+                      needle,
+                      isExpandedById: {...isExpandedById, [template.id]: !isExpanded}
+                    })
                   }
                 />
               )

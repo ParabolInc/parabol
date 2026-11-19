@@ -4,7 +4,11 @@ import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
-import {WorkDrawerDateFilter, type WorkDrawerDateRange} from './WorkDrawerDateFilter'
+import {
+  WorkDrawerDateFilter,
+  type WorkDrawerDateRange,
+  type WorkDrawerSincePreset
+} from './WorkDrawerDateFilter'
 
 const INSTRUCTIONS_PLACEHOLDERS = {
   standup: 'e.g. One sentence per answer. Skip dependency bumps unless they’re blocked.',
@@ -16,13 +20,14 @@ interface Props {
   meetingKind: 'standup' | 'retro'
   onClose: () => void
   dateRange: WorkDrawerDateRange | undefined
+  sincePreset?: WorkDrawerSincePreset
   instructions: string
   canDraft: boolean
   onSave: (dateRange: WorkDrawerDateRange | undefined, instructions: string) => void
 }
 
 const InspirationSettingsDialog = (props: Props) => {
-  const {isOpen, meetingKind, onClose, onSave, canDraft} = props
+  const {isOpen, meetingKind, onClose, onSave, canDraft, sincePreset} = props
   const [dateRange, setDateRange] = useState(props.dateRange)
   const [instructions, setInstructions] = useState(props.instructions)
   return (
@@ -33,7 +38,11 @@ const InspirationSettingsDialog = (props: Props) => {
           <div className='flex flex-col gap-1'>
             <span className='font-semibold text-fg-primary text-sm'>Date range</span>
             <div>
-              <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+              <WorkDrawerDateFilter
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                sincePreset={sincePreset}
+              />
             </div>
           </div>
           {canDraft && (

@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
-import {useFragment} from 'react-relay'
-import type {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {GitHubRepoSearchFilterMenuQuery} from '../__generated__/GitHubRepoSearchFilterMenuQuery.graphql'
 import useGetRepoContributions from '../hooks/useGetRepoContributions'
 import useSearchFilter from '../hooks/useSearchFilter'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 const getValue = (item: {nameWithOwner?: string}) => {
   return item.nameWithOwner || 'Unknown Repo'
@@ -19,22 +19,26 @@ const MAX_REPOS = 10
 interface Props {
   selectedRepos: string[]
   onToggleRepo: (repoName: string, isSelected: boolean) => void
-  teamMemberRef: GitHubRepoSearchFilterMenu_teamMember$key
+  queryRef: PreloadedQuery<GitHubRepoSearchFilterMenuQuery>
   menuLabel?: string
 }
 
 const GitHubRepoSearchFilterMenu = (props: Props) => {
-  const {teamMemberRef, selectedRepos, onToggleRepo, menuLabel} = props
-  const teamMember = useFragment(
+  const {queryRef, selectedRepos, onToggleRepo, menuLabel} = props
+  const data = usePreloadedQuery<GitHubRepoSearchFilterMenuQuery>(
     graphql`
-      fragment GitHubRepoSearchFilterMenu_teamMember on TeamMember {
-        ...useGetRepoContributions_teamMember @defer
+      query GitHubRepoSearchFilterMenuQuery($teamId: ID!) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            ...useGetRepoContributions_teamMember
+          }
+        }
       }
     `,
-    teamMemberRef
+    queryRef
   )
 
-  const repoContributions = useGetRepoContributions(teamMember)
+  const repoContributions = useGetRepoContributions(data.viewer.teamMember ?? null)
 
   const {
     query: searchQuery,
@@ -72,7 +76,7 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
             onClick={() => onToggleRepo(repo, isSelected)}
           >
             <Checkbox className='-ml-2 mr-2' active={isSelected} />
-            <TypeAheadLabel query={searchQuery} label={repo} />
+            <HighlightedText query={searchQuery} text={repo} className='truncate' />
           </MenuItem>
         )
       })}

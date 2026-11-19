@@ -17,6 +17,7 @@ import WorkDrawerConsumeContext from './WorkDrawerConsumeContext'
 // A retro's reflect phase outlasts the standup's five minutes, and redrafting mid-phase would
 // reword drafts the viewer already added
 const RETRO_DRAFT_LIFESPAN_MS = 60 * 60 * 1000
+const SINCE_LAST_RETRO = 'Since last retro'
 
 interface Props {
   meetingRef: RetroWorkDrawer_meeting$key
@@ -58,7 +59,7 @@ const RetroWorkDrawer = (props: Props) => {
         viewerMeetingMember {
           teamMember {
             ...useInspirationSourceAvailability_teamMember
-            ...InspirationSourcePopover_teamMember
+            ...InspirationSourceTiles_teamMember
           }
         }
       }
@@ -68,7 +69,10 @@ const RetroWorkDrawer = (props: Props) => {
   const {id: meetingId} = meeting
   const lastRetro = meeting.prevMeeting ?? meeting.prevCompletedMeeting
   const teamMember = meeting.viewerMeetingMember?.teamMember
-  const {dateRange, setDateRange, isDefaultRange} = useInspirationDrawer('draft', meeting)
+  const {dateRange, setDateRange, isDefaultRange, lastMeetingStartAt} = useInspirationDrawer(
+    'draft',
+    meeting
+  )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const {
     availability,
@@ -83,6 +87,10 @@ const RetroWorkDrawer = (props: Props) => {
     requestRedraft,
     drafting,
     error,
+    hasOlder,
+    loadOlder,
+    loadingOlder,
+    olderError,
     issueCounts,
     countingServices
   } = useInspirationSourceDraft({
@@ -143,7 +151,7 @@ const RetroWorkDrawer = (props: Props) => {
           <InspirationSettingsButton
             dateLabel={dateRangeLabel(
               draftRange,
-              isDefaultRange && lastRetro ? 'Since last retro' : null
+              isDefaultRange && lastMeetingStartAt ? SINCE_LAST_RETRO : null
             )}
             hasInstructions={canDraft && !!instructions.trim()}
             canDraft={canDraft}
@@ -157,6 +165,10 @@ const RetroWorkDrawer = (props: Props) => {
           error={error}
           aiOffMessage={aiOffMessage}
           dateRange={draftRange}
+          hasOlder={hasOlder}
+          loadingOlder={loadingOlder}
+          olderError={olderError}
+          loadOlder={loadOlder}
         />
         {settingsOpen && (
           <InspirationSettingsDialog
@@ -164,6 +176,11 @@ const RetroWorkDrawer = (props: Props) => {
             meetingKind='retro'
             onClose={() => setSettingsOpen(false)}
             dateRange={dateRange}
+            sincePreset={
+              lastMeetingStartAt
+                ? {label: SINCE_LAST_RETRO, startAt: lastMeetingStartAt}
+                : undefined
+            }
             instructions={instructions}
             canDraft={canDraft}
             onSave={(nextRange, nextInstructions) => {

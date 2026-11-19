@@ -13,7 +13,7 @@ import {MenuSeparator} from '../ui/Menu/MenuSeparator'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 type Project = {
   id: string
@@ -94,7 +94,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           >
             <Checkbox className='-ml-2 mr-2' active={isSelected} disabled={isAdvancedQuery} />
             <img className='mr-2 h-6 w-6' src={avatar || undefined} />
-            <TypeAheadLabel query={query} label={name} />
+            <HighlightedText query={query} text={name} className='truncate' />
           </MenuItem>
         )
       })}

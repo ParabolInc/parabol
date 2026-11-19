@@ -37,13 +37,16 @@ export const parseAssetKey = (
 
 // Parabol asset URLs are auth-gated; the file store is presign-only, so read bytes by
 // presigning the validated key and fetching the resulting URL. The viewer must be able to
-// view the asset's owning page (mirrors assetProxyHandler's access check).
+// view the asset's owning page (mirrors assetProxyHandler's access check), and a
+// grant-restricted token may only read assets of pages its grants let into the export.
 export const fetchAssetBuffer = async (
   srcUrl: string,
-  viewerId: string
+  viewerId: string,
+  allowedPageIds: Set<number> | null
 ): Promise<{buffer: Buffer; mimeType: string} | null> => {
   const parsed = parseAssetKey(srcUrl, appOrigin)
   if (!parsed) return null
+  if (allowedPageIds && !allowedPageIds.has(parsed.pageId)) return null
   const [role] = await pageAccessByUserIdBatchFn([{pageId: parsed.pageId, userId: viewerId}])
   if (!role) return null
   try {

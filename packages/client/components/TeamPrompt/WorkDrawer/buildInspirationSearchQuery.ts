@@ -4,6 +4,10 @@ import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
 import type {InspirationSourceService, InspirationSourceSettings} from './inspirationSources'
 import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
+// To the second, so the server can end an older page's search exactly where the newer page stopped
+const toGitHubDateTime = (date: string) =>
+  new Date(date).toISOString().replace(/\.\d{3}Z$/, '+00:00')
+
 const buildInspirationSearchQuery = (
   service: InspirationSourceService,
   settings: InspirationSourceSettings,
@@ -17,7 +21,7 @@ const buildInspirationSearchQuery = (
     case 'github': {
       const kindQualifier = kinds.length === 1 ? (kinds[0] === 'issue' ? 'is:issue' : 'is:pr') : ''
       const repos = settings.githubRepos.map((repo) => `repo:${repo}`).join(' ')
-      const updated = `updated:${dayjs(startAt).format('YYYY-MM-DD')}..${dayjs(endAt).format('YYYY-MM-DD')}`
+      const updated = `updated:${toGitHubDateTime(startAt)}..${toGitHubDateTime(endAt)}`
       return [kindQualifier, 'sort:updated involves:@me', repos, updated].filter(Boolean).join(' ')
     }
     case 'jira': {

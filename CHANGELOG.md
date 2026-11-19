@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.1.0](https://github.com/ParabolInc/parabol/compare/v16.0.2...v16.1.0) (2026-11-19)
+
+
+### Added
+
+* **inspiration:** fit sources on one row with a More tray ranked by category ([#14306](https://github.com/ParabolInc/parabol/issues/14306)) ([60001fe](https://github.com/ParabolInc/parabol/commit/60001fe4c0f71f659a768e38257b94bbfcbce8e1))
+* let API tokens reach files through their owner's scope ([#14274](https://github.com/ParabolInc/parabol/issues/14274)) ([9328268](https://github.com/ParabolInc/parabol/commit/93282680a625ecc47fdc373135caad1824aa17af))
+* **retro:** change a retro's template and settings from a Settings tab in the meeting drawer ([#14287](https://github.com/ParabolInc/parabol/issues/14287)) ([a5928a7](https://github.com/ParabolInc/parabol/commit/a5928a786f416d71e457d1b4fdb610cfb6636200))
+* **retro:** show the inspiration drawer as a since-last-retro timeline ([#14286](https://github.com/ParabolInc/parabol/issues/14286)) ([988b1d4](https://github.com/ParabolInc/parabol/commit/988b1d42da88ef29e5741571d7c15aedbe64365c))
+* **server:** throw integration search errors instead of StandardMutationError ([#14299](https://github.com/ParabolInc/parabol/issues/14299)) ([1b9246a](https://github.com/ParabolInc/parabol/commit/1b9246a14db95e2f83cf20510cb883ca33752c99))
+
+
+### Fixed
+
+* **client:** fit Team Health cards and the meeting control bar on phone screens ([#14303](https://github.com/ParabolInc/parabol/issues/14303)) ([8b46d6f](https://github.com/ParabolInc/parabol/commit/8b46d6f0365fe3763a10c9edded19d7bf7446a83))
+* **client:** load Jira projects in the send menu right after connecting ([#14305](https://github.com/ParabolInc/parabol/issues/14305)) ([4cf65f0](https://github.com/ParabolInc/parabol/commit/4cf65f0ceea8894496a479471ca0e37239f6fe3e))
+* hash personal access tokens with SHA-256 and fix flaky tests ([#14310](https://github.com/ParabolInc/parabol/issues/14310)) ([008d3d6](https://github.com/ParabolInc/parabol/commit/008d3d6aeac883d39e1ab4ebcc0207f6d8b23016))
+* rank the org's task services without sending other teams' task counts ([#14304](https://github.com/ParabolInc/parabol/issues/14304)) ([aa7e7e4](https://github.com/ParabolInc/parabol/commit/aa7e7e4b9aec09cdcbadc195ed19e1564ed2b0f8))
+
+
+### Changed
+
+* **client:** start each page's query in its route loader and drop route-sized spinners ([#14301](https://github.com/ParabolInc/parabol/issues/14301)) ([c30b6a3](https://github.com/ParabolInc/parabol/commit/c30b6a3842df62079ed3050ffc65591af9a824c7))
+
 ## [16.0.2](https://github.com/ParabolInc/parabol/compare/v16.0.1...v16.0.2) (2026-11-18)
 
 

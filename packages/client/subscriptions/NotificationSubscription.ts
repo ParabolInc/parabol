@@ -12,6 +12,7 @@ import type {
 } from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
+import {addTeamMemberIntegrationAuthNotificationUpdater} from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
 import {
   createTaskNotificationOnNext,
@@ -320,6 +321,7 @@ const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
   AddOrgPayload: addOrgMutationNotificationUpdater,
+  AddTeamMemberIntegrationAuthPayload: addTeamMemberIntegrationAuthNotificationUpdater,
   AddTeamPayload: addTeamMutationNotificationUpdater,
   AddedNotification: addedNotificationUpdater,
   ArchivePagePayload: archivePageNotificationUpdater,

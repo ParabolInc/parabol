@@ -1,12 +1,13 @@
 import type {AuthorizedScope, HocuspocusProvider} from '@hocuspocus/provider'
 import type {Editor} from '@tiptap/core'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useClientQuery} from 'react-relay'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'
 import {TipTapEditor} from '../../../components/TipTapEditor/TipTapEditor'
 import {useTipTapPageEditor} from '../../../hooks/useTipTapPageEditor'
+import {BlockSelectionGroup} from '../../../modules/pages/BlockSelectionGroup'
 import {getSyncedBlockDropRefusal} from '../../blockMove/getBlockDropRefusal'
 import {useSyncedBlockName} from './useSyncedBlockName'
 
@@ -41,6 +42,7 @@ export const SyncedBlockEditor = (props: Props) => {
   const [isHostEditable, setIsHostEditable] = useState(hostEditor.isEditable)
   const isViewOnly = authorizedScope === 'readonly' || !isHostEditable
   const name = useSyncedBlockName(editor)
+  const containerRef = useRef<HTMLDivElement>(null)
   const {viewer} = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {
     draggingPageId,
@@ -85,6 +87,8 @@ export const SyncedBlockEditor = (props: Props) => {
   if (!editor) return null
   return (
     <div
+      ref={containerRef}
+      className='relative isolate'
       data-synced-editor
       data-drop-title={dropRefusal ? name || 'Synced block' : undefined}
       data-drop-refused={dropRefusal ?? undefined}
@@ -93,6 +97,7 @@ export const SyncedBlockEditor = (props: Props) => {
         editor={editor}
         className='page-editor [&>.tiptap]:-ml-[31px] @min-[852px]/page:[&>.tiptap]:-ml-9 relative flex w-full [&>.tiptap]:box-content @min-[852px]/page:[&>.tiptap]:pl-9 [&>.tiptap]:pl-[31px] [&_.tiptap>h1:first-child]:hidden'
       />
+      <BlockSelectionGroup editor={editor} containerRef={containerRef} pageId={pageId} />
     </div>
   )
 }

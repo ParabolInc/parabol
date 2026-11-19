@@ -38,8 +38,9 @@ const useInspirationSourceDraft = (options: Options) => {
       : null
   const canDraft = !aiOffMessage
 
+  // Whole days, so a reload builds the same searches and keeps the stored draft
   const [anyTimeRange] = useState(() => ({
-    startAt: dayjs().subtract(2, 'week').toISOString(),
+    startAt: dayjs().subtract(2, 'week').startOf('day').toISOString(),
     endAt: dayjs().endOf('day').toISOString()
   }))
   const draftRange = dateRange ?? anyTimeRange
@@ -49,13 +50,14 @@ const useInspirationSourceDraft = (options: Options) => {
       service,
       searchQuery: buildInspirationSearchQuery(service, settings, draftRange)
     }))
-  const {draft, requestRedraft, drafting, error} = useInspirationDraft({
-    meetingId,
-    isMeetingMember: !!teamMemberRef,
-    sources,
-    instructions: canDraft ? instructions : '',
-    lifespanMs
-  })
+  const {draft, requestRedraft, drafting, error, hasOlder, loadOlder, loadingOlder, olderError} =
+    useInspirationDraft({
+      meetingId,
+      isMeetingMember: !!teamMemberRef,
+      sources,
+      instructions: canDraft ? instructions : '',
+      lifespanMs
+    })
   const draftedIssues = draft?.issues ?? []
   const draftedQueries = new Map(
     (draft?.sources ?? []).map(({service, searchQuery}) => [service, searchQuery])
@@ -84,6 +86,10 @@ const useInspirationSourceDraft = (options: Options) => {
     requestRedraft,
     drafting,
     error,
+    hasOlder,
+    loadOlder,
+    loadingOlder,
+    olderError,
     issueCounts,
     countingServices
   }

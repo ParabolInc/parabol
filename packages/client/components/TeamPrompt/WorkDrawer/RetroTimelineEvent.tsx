@@ -64,7 +64,7 @@ const RetroTimelineEvent = (props: Props) => {
           </div>
           <RetroStartReflectionMenu
             subject={title}
-            content={reflectionStarterContent(title, url)}
+            content={reflectionStarterContent(title, url, service)}
             revealOnHover
           />
         </div>
