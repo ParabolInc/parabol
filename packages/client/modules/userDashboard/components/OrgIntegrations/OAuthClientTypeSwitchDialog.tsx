@@ -16,7 +16,7 @@ interface Props {
 
 const OAuthClientTypeSwitchDialog = ({appName, clientType, isOpen, onClose, onConfirm}: Props) => {
   const isPublic = clientType === 'PUBLIC'
-  const typeLabel = isPublic ? 'PKCE' : 'Secret'
+  const typeLabel = isPublic ? 'Public' : 'Confidential'
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='md:w-md md:max-w-md'>

@@ -4,6 +4,7 @@ import type {OAuthClientTypeEnum} from '../../../../__generated__/OAuthProviderL
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
+import {CLIENT_TYPE_LABELS} from './OAuthClientTypeField'
 
 interface Props {
   name: string
@@ -20,7 +21,7 @@ const OAuthProviderRow = ({name, clientType, updatedAt, onEdit, onDelete}: Props
       onClick={onEdit}
     >
       <td className='px-4 py-3 font-medium text-fg-primary'>{name}</td>
-      <td className='px-4 py-3 text-fg-primary'>{clientType === 'PUBLIC' ? 'PKCE' : 'Secret'}</td>
+      <td className='px-4 py-3 text-fg-primary'>{CLIENT_TYPE_LABELS[clientType]}</td>
       <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
         {new Date(updatedAt).toLocaleDateString()}
       </td>
