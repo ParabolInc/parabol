@@ -10,12 +10,14 @@ interface Props {
   grantId: string
   appName: string
   includesPrivatePages: boolean
+  hasOrganizations: boolean
   onClose: () => void
   onCloseAutoFocus: (event: Event) => void
 }
 
 const DisconnectAppDialog = (props: Props) => {
-  const {grantId, appName, includesPrivatePages, onClose, onCloseAutoFocus} = props
+  const {grantId, appName, includesPrivatePages, hasOrganizations, onClose, onCloseAutoFocus} =
+    props
   const [disconnect, submitting] = useDisconnectOAuthAPIGrantMutation()
   const handleDisconnect = () => {
     disconnect({variables: {grantId}, onCompleted: onClose})
@@ -25,9 +27,12 @@ const DisconnectAppDialog = (props: Props) => {
       <DialogContent className='md:w-md md:max-w-md' onCloseAutoFocus={onCloseAutoFocus}>
         <DialogTitle>Disconnect {appName}?</DialogTitle>
         <DialogDescription className='text-fg-secondary'>
-          {appName} loses access to your Parabol account in all your organizations
-          {includesPrivatePages && ' and your private pages'}. Nothing it made is deleted, and you
-          can connect it again from {appName}.
+          {hasOrganizations
+            ? `${appName} loses access to your Parabol account in all your organizations${includesPrivatePages ? ' and your private pages' : ''}.`
+            : includesPrivatePages
+              ? `${appName} loses access to your private pages.`
+              : `${appName} loses access to your Parabol account.`}{' '}
+          Nothing it made is deleted, and you can connect it again from {appName}.
         </DialogDescription>
         <DialogActions>
           <Button variant='outline' size='md' onClick={onClose}>

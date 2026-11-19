@@ -5,6 +5,7 @@ import type {ConnectedAppRow_grant$key} from '../../../__generated__/ConnectedAp
 import AIAppIdentity from '../../../components/AIAppIdentity'
 import AIAppScopeList from '../../../components/AIAppScopeList'
 import {Button} from '../../../ui/Button/Button'
+import ConnectedAppOrganizations from './ConnectedAppOrganizations'
 import DisconnectAppDialog from './DisconnectAppDialog'
 
 interface Props {
@@ -44,22 +45,16 @@ const ConnectedAppRow = ({grantRef}: Props) => {
   } = grant
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const orgsLine = grantedOrganizations
-    ? grantedOrganizations.map(({name}) => name).join(', ')
-    : 'All my organizations'
   return (
     <tr className='border-hairline border-b last:border-0'>
       <td className='whitespace-nowrap px-4 py-3'>
         <AIAppIdentity name={clientName} host={clientHost} verifiedAt={clientVerifiedAt} />
       </td>
       <td className='px-4 py-3'>
-        <div className='font-medium text-fg-primary'>
-          {orgsLine}
-          {personalGrantedAt && ' + private pages'}
-        </div>
-        {!grantedOrganizations && (
-          <div className='text-fg-muted text-xs'>Including ones you join later</div>
-        )}
+        <ConnectedAppOrganizations
+          organizationNames={grantedOrganizations?.map(({name}) => name) ?? null}
+          hasPrivatePages={!!personalGrantedAt}
+        />
       </td>
       <td className='whitespace-nowrap px-4 py-3'>
         <AIAppScopeList scopes={scopes} />
@@ -86,6 +81,7 @@ const ConnectedAppRow = ({grantRef}: Props) => {
           grantId={id}
           appName={clientName}
           includesPrivatePages={!!personalGrantedAt}
+          hasOrganizations={!grantedOrganizations || grantedOrganizations.length > 0}
           onClose={() => setIsDialogOpen(false)}
           onCloseAutoFocus={(event) => {
             event.preventDefault()
