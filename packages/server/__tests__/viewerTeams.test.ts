@@ -42,8 +42,8 @@ test('A session from before the viewer joined a team lists the teams its token c
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          userErrors {
-            code
+          team {
+            id
           }
         }
       }
@@ -51,7 +51,7 @@ test('A session from before the viewer joined a team lists the teams its token c
     variables: {invitationToken: invitation.token},
     cookie: staleCookie
   })
-  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
+  expect(accepted.errors).toBeUndefined()
 
   const staleSession = await sendPublic({query: VIEWER_TEAMS_QUERY, cookie: staleCookie})
   expect(staleSession.errors).toBeUndefined()

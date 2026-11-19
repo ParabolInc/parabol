@@ -3,16 +3,14 @@ import {commitMutation} from 'react-relay'
 import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import type {SignUpWithPasswordMutation as TSignUpWithPasswordMutation} from '../__generated__/SignUpWithPasswordMutation.graphql'
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
-import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
-import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import redirectAfterSignIn from './handlers/redirectAfterSignIn'
 
 const mutation = graphql`
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID!
+    $invitationToken: ID
     $pseudoId: ID
-    $isInvitation: Boolean!
     $params: String!
   ) {
     signUpWithPassword(
@@ -22,13 +20,7 @@ const mutation = graphql`
       pseudoId: $pseudoId
       params: $params
     ) {
-      userErrors {
-        message
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
-    }
-    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
-      ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
 `
@@ -38,23 +30,14 @@ const SignUpWithPasswordMutation: StandardMutation<
 > = (atmosphere, variables, {onError, onCompleted, navigate}) => {
   return commitMutation<TSignUpWithPasswordMutation>(atmosphere, {
     mutation,
-    variables: {...variables, isInvitation: !!variables.invitationToken},
+    variables,
     onError,
     onCompleted: (res, errors) => {
-      const {acceptTeamInvitation, signUpWithPassword} = res
-      const [userError] = signUpWithPassword.userErrors
+      const {signUpWithPassword} = res
       onCompleted({signUpWithPassword}, errors)
-      handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!userError && !errors) {
-        handleSuccessfulLogin(atmosphere, signUpWithPassword)
-        const redirectPath = '/meetings'
-
-        handleAuthenticationRedirect(acceptTeamInvitation, {
-          atmosphere,
-          navigate,
-          redirectPath
-        })
-      }
+      if (errors) return
+      handleSuccessfulLogin(atmosphere, signUpWithPassword)
+      redirectAfterSignIn(atmosphere, variables.invitationToken, navigate)
     }
   })
 }

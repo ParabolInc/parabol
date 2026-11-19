@@ -36,16 +36,13 @@ const LOGIN_WITH_OPTIONAL_INVITATION_MUTATION = `
     $isInvitation: Boolean!
   ) {
     loginWithPassword(email: $email, password: $password) {
-      userErrors {
-        code
-      }
       user {
         id
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
-      userErrors {
-        code
+      team {
+        id
       }
     }
   }
@@ -119,7 +116,6 @@ test('a root mutation field behind @include(if: false) is not executed', async (
   expect(res.errors).toBeUndefined()
   expect(res.data).toEqual({
     loginWithPassword: {
-      userErrors: [],
       user: {
         id: userId
       }

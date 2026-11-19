@@ -6,10 +6,7 @@ import getMutationError from '../utils/relay/getMutationError'
 
 const mutation = graphql`
   mutation ReAuthWithMicrosoftMutation($code: ID!, $pseudoId: ID, $params: String!) {
-    loginWithMicrosoft(code: $code, pseudoId: $pseudoId, invitationToken: "", params: $params) {
-      userErrors {
-        message
-      }
+    loginWithMicrosoft(code: $code, pseudoId: $pseudoId, params: $params) {
       userId
     }
   }
@@ -24,10 +21,7 @@ const ReAuthWithMicrosoftMutation = (
     mutation,
     variables,
     onError: (err) => onCompleted(getMutationError(err).message),
-    onCompleted: (res) => {
-      const [userError] = res.loginWithMicrosoft.userErrors
-      onCompleted(userError?.message)
-    }
+    onCompleted: (res, errors) => onCompleted(getMutationError(res, errors)?.message)
   })
 }
 

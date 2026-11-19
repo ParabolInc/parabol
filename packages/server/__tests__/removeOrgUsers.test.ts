@@ -16,8 +16,8 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          userErrors {
-            code
+          team {
+            id
           }
         }
       }
@@ -25,7 +25,7 @@ const acceptInvitation = async <Invitee extends {cookie: string; email: string}>
     variables: {invitationToken: token},
     cookie: invitee.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
+  expect(accepted.errors).toBeUndefined()
   const authToken = accepted.cookie.split('__Host-Http-authToken=')[1].split(';')[0]
   return {...invitee, cookie: `__Host-Http-authToken=${authToken}`}
 }

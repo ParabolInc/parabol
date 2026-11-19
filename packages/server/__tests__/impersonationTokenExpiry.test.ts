@@ -94,8 +94,8 @@ test('acceptTeamInvitation keeps the expiry of an impersonation cookie', async (
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          userErrors {
-            code
+          team {
+            id
           }
         }
       }
@@ -103,6 +103,6 @@ test('acceptTeamInvitation keeps the expiry of an impersonation cookie', async (
     variables: {invitationToken},
     cookie: toAuthCookie(imposterToken)
   })
-  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
+  expect(accepted.errors).toBeUndefined()
   expect(getAuthTokenFromSetCookie(accepted.cookie)?.exp).toBe(imposterToken.exp)
 })
