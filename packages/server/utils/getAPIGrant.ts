@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
@@ -9,6 +10,7 @@ import getKysely from '../postgres/getKysely'
 import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/select'
 import checkBlacklistJWT from './checkBlacklistJWT'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
+import hashPersonalAccessToken from './hashPersonalAccessToken'
 import {Logger} from './Logger'
 
 export interface APIGrant {
@@ -21,34 +23,43 @@ export interface APIGrant {
 }
 
 const PREFIX_LENGTH = 8
+// older tokens were hashed with bcrypt, and are rehashed the first time they're used
+// TODO: remove the bcrypt check after 2027-11-18; any token still on bcrypt then just stops working
+const isBcryptHash = (storedHash: string) => storedHash.startsWith('$2')
+const isTokenMatch = async (rawToken: string, hashedToken: string, storedHash: string) => {
+  if (isBcryptHash(storedHash)) return bcrypt.compare(rawToken, storedHash)
+  const stored = Buffer.from(storedHash)
+  const hashed = Buffer.from(hashedToken)
+  return stored.length === hashed.length && crypto.timingSafeEqual(stored, hashed)
+}
 const getPersonalAccessTokenGrant = async (
   rawToken: string,
   dataLoader: DataLoaderWorker
 ): Promise<APIGrant> => {
   const prefix = rawToken.slice(0, PREFIX_LENGTH)
 
-  const possibleTokens = await selectPersonalAccessToken()
+  const token = await selectPersonalAccessToken()
     .select('hashedToken')
     .where('prefix', '=', prefix)
     .where('revokedAt', 'is', null)
     .where('expiresAt', '>', sql<Date>`CURRENT_TIMESTAMP`)
-    .execute()
+    .executeTakeFirst()
 
-  const matches = await Promise.all(
-    possibleTokens.map((t) => bcrypt.compare(rawToken, t.hashedToken))
-  )
-  const token = possibleTokens[matches.indexOf(true)]
-
-  if (!token) {
+  const hashedToken = hashPersonalAccessToken(rawToken)
+  if (!token || !(await isTokenMatch(rawToken, hashedToken, token.hashedToken))) {
     throw new GraphQLError('Invalid or revoked personal access token', {
       extensions: {code: 'UNAUTHENTICATED'}
     })
   }
 
-  if (!token.lastUsedAt || Date.now() - token.lastUsedAt.getTime() > ms('5m')) {
+  if (
+    isBcryptHash(token.hashedToken) ||
+    !token.lastUsedAt ||
+    Date.now() - token.lastUsedAt.getTime() > ms('5m')
+  ) {
     getKysely()
       .updateTable('PersonalAccessToken')
-      .set({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .set({lastUsedAt: sql`CURRENT_TIMESTAMP`, hashedToken})
       .where('id', '=', token.id)
       .execute()
       .catch(Logger.error)
