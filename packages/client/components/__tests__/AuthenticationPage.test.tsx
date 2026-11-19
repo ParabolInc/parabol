@@ -1,6 +1,6 @@
 import {Outlet, RouterProvider, useLocation, useNavigate} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
-import {Suspense} from 'react'
+import {type ReactNode, Suspense} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import type Atmosphere from '../../Atmosphere'
 import handleAuthenticationRedirect from '../../mutations/handlers/handleAuthenticationRedirect'
@@ -14,7 +14,10 @@ jest.mock('../../hooks/useAtmosphere', () => ({
   default: () => mockAtmosphere
 }))
 jest.mock('../GenericAuthentication', () => ({__esModule: true, default: () => null}))
-jest.mock('../TeamInvitationWrapper', () => ({__esModule: true, default: () => null}))
+jest.mock('../TeamInvitationWrapper', () => ({
+  __esModule: true,
+  default: ({children}: {children: ReactNode}) => children
+}))
 
 const happyWindow = new Window({url: 'https://parabol.test/'})
 const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
@@ -118,7 +121,7 @@ describe('AuthenticationPage', () => {
     async (signInUrl, nextPath) => {
       mockAtmosphere.authObj = null
       happyWindow.history.replaceState(null, '', signInUrl)
-      const {root} = renderInContainer()
+      const {container, root} = renderInContainer()
       const SpiedLayout = () => (
         <>
           <LocationSpy />
@@ -136,7 +139,7 @@ describe('AuthenticationPage', () => {
       })
       const renderApp = () => root.render(<RouterProvider router={router} />)
       renderApp()
-      await tick()
+      await waitUntil(() => container.textContent!.includes('Better Meetings'))
       const navigations = recordNavigations()
 
       // the cookie listener sets authObj, which re-renders the routes, before the login mutation calls back
