@@ -4,11 +4,11 @@ import {useFragment} from 'react-relay'
 import type {InspirationSourcePopover_teamMember$key} from '../../../__generated__/InspirationSourcePopover_teamMember.graphql'
 import {Spinner} from '../../../ui/Spinner/Spinner'
 import Ellipsis from '../../Ellipsis/Ellipsis'
-import AzureDevOpsProjectFilterBar from './AzureDevOpsProjectFilterBar'
-import ClickUpListFilterBar from './ClickUpListFilterBar'
-import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationKindSwitch from './InspirationKindSwitch'
 import InspirationSourceConnectButton from './InspirationSourceConnectButton'
+import InspirationSourceFilterRoot, {
+  isInspirationFilterService
+} from './InspirationSourceFilterRoot'
 import InspirationSourceLogo from './InspirationSourceLogo'
 import {issueCountLabel} from './inspirationCopy'
 import inspirationServiceLabel from './inspirationServiceLabel'
@@ -17,8 +17,6 @@ import {
   type InspirationSourceService,
   type InspirationSourceSettings
 } from './inspirationSources'
-import JiraProjectFilterBar from './JiraProjectFilterBar'
-import LinearProjectFilterBar from './LinearProjectFilterBar'
 
 interface Props {
   service: InspirationSourceService
@@ -45,12 +43,8 @@ const InspirationSourcePopover = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment InspirationSourcePopover_teamMember on TeamMember {
+        teamId
         ...InspirationSourceConnectButton_teamMember
-        ...GitHubRepoFilterBar_teamMember
-        ...JiraProjectFilterBar_teamMember @defer
-        ...LinearProjectFilterBar_teamMember
-        ...AzureDevOpsProjectFilterBar_teamMember
-        ...ClickUpListFilterBar_teamMember @defer
       }
     `,
     teamMemberRef
@@ -101,50 +95,16 @@ const InspirationSourcePopover = (props: Props) => {
               />
             ))}
           </div>
-          <Suspense fallback={<Spinner className='size-5 self-center' />}>
-            {service === 'github' && (
-              <GitHubRepoFilterBar
-                teamMemberRef={teamMember}
-                selectedRepos={settings.githubRepos}
-                setSelectedRepos={(githubRepos) => setSettings((prev) => ({...prev, githubRepos}))}
+          {isInspirationFilterService(service) && (
+            <Suspense fallback={<Spinner className='size-5 self-center' />}>
+              <InspirationSourceFilterRoot
+                service={service}
+                teamId={teamMember.teamId}
+                settings={settings}
+                setSettings={setSettings}
               />
-            )}
-            {service === 'jira' && (
-              <JiraProjectFilterBar
-                teamMemberRef={teamMember}
-                selectedProjectIds={settings.jiraProjectIds}
-                setSelectedProjectIds={(jiraProjectIds) =>
-                  setSettings((prev) => ({...prev, jiraProjectIds}))
-                }
-              />
-            )}
-            {service === 'linear' && (
-              <LinearProjectFilterBar
-                className='m-0'
-                teamMemberRef={teamMember}
-                selectedLinearIds={settings.linearIds}
-                setSelectedLinearIds={(linearIds) => setSettings((prev) => ({...prev, linearIds}))}
-              />
-            )}
-            {service === 'azureDevOps' && (
-              <AzureDevOpsProjectFilterBar
-                teamMemberRef={teamMember}
-                selectedProjectIds={settings.azureDevOpsProjectIds}
-                setSelectedProjectIds={(azureDevOpsProjectIds) =>
-                  setSettings((prev) => ({...prev, azureDevOpsProjectIds}))
-                }
-              />
-            )}
-            {service === 'clickup' && (
-              <ClickUpListFilterBar
-                teamMemberRef={teamMember}
-                selectedListIds={settings.clickupListIds}
-                setSelectedListIds={(clickupListIds) =>
-                  setSettings((prev) => ({...prev, clickupListIds}))
-                }
-              />
-            )}
-          </Suspense>
+            </Suspense>
+          )}
           <p className='m-0 text-fg-muted text-xs'>
             {kinds.length > 1
               ? `Turn everything off to leave ${label} out of your ${destination}.`

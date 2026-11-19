@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
-import type {StandardMutation} from '../types/relayMutations'
+import type {AddTeamMemberIntegrationAuthMutation_notification$data} from '../__generated__/AddTeamMemberIntegrationAuthMutation_notification.graphql'
+import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AddTeamMemberIntegrationAuthMutation_notification on AddTeamMemberIntegrationAuthPayload {
+    service
     teamMember {
       ...useIsIntegrated_teamMember
       services {
@@ -71,11 +73,24 @@ const mutation = graphql`
       oauthVerifier: $oauthVerifier
       teamId: $teamId
     ) {
-      service
       ...AddTeamMemberIntegrationAuthMutation_notification @relay(mask: false)
     }
   }
 `
+
+// Everything read while the service was disconnected (empty project lists, null APIs) stays in the
+// store, so it is marked stale and the next query that reads it fetches it again
+export const addTeamMemberIntegrationAuthNotificationUpdater: SharedUpdater<
+  AddTeamMemberIntegrationAuthMutation_notification$data
+> = (payload) => {
+  const service = payload.getValue('service')
+  const teamMember = payload.getLinkedRecord('teamMember')
+  teamMember.getLinkedRecord('integrations').invalidateRecord()
+  teamMember
+    .getLinkedRecords('services')
+    .find((integrationService) => integrationService.getValue('service') === service)
+    ?.invalidateRecord()
+}
 
 const AddTeamMemberIntegrationAuthMutation: StandardMutation<
   TAddTeamMemberIntegrationAuthMutation
@@ -86,13 +101,7 @@ const AddTeamMemberIntegrationAuthMutation: StandardMutation<
     updater: (store) => {
       const payload = store.getRootField('addTeamMemberIntegrationAuth')
       if (!payload) return
-      const service = payload.getValue('service')
-      // The repos cached while the service was disconnected are [], so they are dropped for the next query to fetch
-      payload
-        .getLinkedRecord('teamMember')
-        .getLinkedRecords('services')
-        .find((integrationService) => integrationService.getValue('service') === service)
-        ?.setValue(undefined, 'repos')
+      addTeamMemberIntegrationAuthNotificationUpdater(payload, {atmosphere, store})
     },
     onCompleted,
     onError
