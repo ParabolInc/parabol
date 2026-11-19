@@ -11,7 +11,7 @@ import {MenuSearch} from '../../../ui/Menu/MenuSearch'
 import plural from '../../../utils/plural'
 import Checkbox from '../../Checkbox'
 import {EmptyDropdownMenuItemLabel} from '../../EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from '../../TypeAheadLabel'
+import HighlightedText from '../../HighlightedText'
 
 interface Props {
   teamMemberRef: JiraProjectFilterBar_teamMember$key
@@ -89,7 +89,7 @@ const JiraProjectFilterBar = (props: Props) => {
             >
               <Checkbox className='-ml-2 mr-2' active={isSelected} />
               {avatar && <img className='mr-2 size-5 rounded-sm' src={avatar} alt='' />}
-              <TypeAheadLabel query={query} label={name} />
+              <HighlightedText query={query} text={name} className='truncate' />
             </MenuItem>
           )
         })}

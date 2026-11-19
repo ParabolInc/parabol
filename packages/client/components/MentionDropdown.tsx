@@ -3,7 +3,7 @@ import type {SuggestionProps} from '@tiptap/suggestion'
 import type React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import Avatar from './Avatar/Avatar'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 export default forwardRef(
   (
@@ -70,7 +70,7 @@ export default forwardRef(
             onMouseMove={() => setSelectedIndex(idx)}
           >
             <Avatar picture={item.picture} className='h-6 w-6' />
-            <TypeAheadLabel label={item.preferredName} query={query} className='pl-3' />
+            <HighlightedText text={item.preferredName} query={query} className='truncate pl-3' />
           </div>
         ))}
       </div>

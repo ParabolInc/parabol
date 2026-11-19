@@ -6,7 +6,7 @@ import {Spinner} from '../ui/Spinner/Spinner'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 const getItemLabel = (item: LinearProjectOrTeam): string => {
   if ('teams' in item && item.teams !== undefined) {
@@ -68,7 +68,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
         return (
           <MenuItem key={itemId} onSelect={(e) => e.preventDefault()} onClick={handleClick}>
             <Checkbox className='-ml-2 mr-2' active={isSelected} />
-            <TypeAheadLabel query={searchQuery} label={itemLabel} />
+            <HighlightedText query={searchQuery} text={itemLabel} className='truncate' />
           </MenuItem>
         )
       })}

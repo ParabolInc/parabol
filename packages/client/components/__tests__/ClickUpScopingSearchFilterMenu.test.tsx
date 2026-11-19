@@ -41,9 +41,9 @@ jest.mock('../../ui/Menu/MenuItem', () => ({
     <button onClick={onClick}>{children}</button>
   )
 }))
-jest.mock('../TypeAheadLabel', () => ({
+jest.mock('../HighlightedText', () => ({
   __esModule: true,
-  default: ({label}: {label: string}) => <span>{label}</span>
+  default: ({text}: {text: string}) => <span>{text}</span>
 }))
 jest.mock('../Checkbox', () => ({
   __esModule: true,

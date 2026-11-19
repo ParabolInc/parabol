@@ -6,7 +6,7 @@ import {useFragment} from 'react-relay'
 import hrefOptions from '~/routing/hrefOptions'
 import {Autorenew, Description as DescriptionIcon} from '~/ui/icons'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
-import TypeAheadLabel from '../../components/TypeAheadLabel'
+import HighlightedText from '../../components/HighlightedText'
 import {getSearchResultHref} from './getSearchResultHref'
 
 interface Props {
@@ -55,11 +55,7 @@ export const SearchDialogResult = ({
     DOMPurify.sanitize(snippet, {ALLOWED_TAGS: ['b'], ALLOWED_ATTR: []})
   )
   const [firstSnippet] = safeSnippets
-  const wordPattern = query
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .join('|')
+  const queryWords = query.split(/\s+/).filter(Boolean)
   const itemRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -92,10 +88,10 @@ export const SearchDialogResult = ({
         onClick={closeSearch}
       >
         <div className='flex flex-col'>
-          <TypeAheadLabel
-            query={wordPattern}
-            label={title || '<Untitled>'}
-            className='font-normal text-[14px] text-fg-primary'
+          <HighlightedText
+            text={title || '<Untitled>'}
+            query={queryWords}
+            className='truncate font-normal text-[14px] text-fg-primary'
           />
           {firstSnippet && (
             <span
