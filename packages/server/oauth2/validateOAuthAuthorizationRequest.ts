@@ -3,6 +3,12 @@ import type {DataLoaderWorker} from '../graphql/graphql'
 import {selectOAuthAPIProvider} from '../postgres/select'
 import type {OAuthAPIProvider} from '../postgres/types'
 import type {Oauthscopeenum} from '../postgres/types/pg'
+import aiAppScopes from './aiAppScopes'
+import fetchClientMetadataDocument from './fetchClientMetadataDocument'
+import isRegisteredRedirectUri from './isRegisteredRedirectUri'
+import validateClientMetadataDocument, {
+  isClientMetadataDocumentUrl
+} from './validateClientMetadataDocument'
 
 export interface OAuthAuthorizationRequestParams {
   clientId: string
@@ -14,37 +20,37 @@ export interface OAuthAuthorizationRequestParams {
   resource?: string | null
 }
 
+type AuthorizingProvider = Pick<
+  OAuthAPIProvider,
+  'clientId' | 'clientType' | 'name' | 'orgId' | 'redirectUris' | 'scopes'
+>
+
 type ValidationResult =
   | {error: string; code: 'BAD_USER_INPUT' | 'FORBIDDEN'}
-  | {provider: OAuthAPIProvider; scopes: Oauthscopeenum[]}
+  | {provider: AuthorizingProvider; scopes: Oauthscopeenum[]; isMetadataDocumentClient: boolean}
 
 export const MCP_RESOURCE = `${appOrigin}/mcp`
 
 // base64url(SHA-256(code_verifier)) is always 43 characters
 const S256_CODE_CHALLENGE = /^[A-Za-z0-9_-]{43}$/
 
-const LOOPBACK_HOSTS = ['127.0.0.1', '[::1]', 'localhost']
-
-const withoutLoopbackPort = (uri: string) => {
-  try {
-    const url = new URL(uri)
-    if (url.protocol !== 'http:' || !LOOPBACK_HOSTS.includes(url.hostname)) return null
-    url.port = ''
-    return url.href
-  } catch {
-    return null
+const getMetadataDocumentProvider = async (
+  clientId: string,
+  redirectUri: string
+): Promise<AuthorizingProvider | {error: string}> => {
+  if (!isClientMetadataDocumentUrl(clientId)) return {error: 'Invalid client_id'}
+  const fetched = await fetchClientMetadataDocument(clientId)
+  if ('error' in fetched) return fetched
+  const metadata = validateClientMetadataDocument(clientId, fetched.document, redirectUri)
+  if ('error' in metadata) return metadata
+  return {
+    clientId,
+    clientType: 'public',
+    name: metadata.clientName,
+    orgId: null,
+    redirectUris: metadata.redirectUris,
+    scopes: aiAppScopes
   }
-}
-
-// RFC 8252 §7.3: a native app picks its loopback port at runtime
-const isRegisteredRedirectUri = (provider: OAuthAPIProvider, redirectUri: string) => {
-  if (provider.redirectUris.includes(redirectUri)) return true
-  if (provider.clientType !== 'public') return false
-  const requested = withoutLoopbackPort(redirectUri)
-  return (
-    !!requested &&
-    provider.redirectUris.some((registered) => withoutLoopbackPort(registered) === requested)
-  )
 }
 
 export const validateOAuthAuthorizationRequest = async (
@@ -54,10 +60,15 @@ export const validateOAuthAuthorizationRequest = async (
 ): Promise<ValidationResult> => {
   const {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod, resource} =
     request
-  const provider = await selectOAuthAPIProvider()
+  const storedProvider = await selectOAuthAPIProvider()
     .where('clientId', '=', clientId)
     .executeTakeFirst()
+  const isMetadataDocumentClient = clientId.startsWith('https://') && !storedProvider?.verifiedAt
+  const provider = isMetadataDocumentClient
+    ? await getMetadataDocumentProvider(clientId, redirectUri)
+    : storedProvider
   if (!provider) return {error: 'Invalid client_id', code: 'BAD_USER_INPUT'}
+  if ('error' in provider) return {error: provider.error, code: 'BAD_USER_INPUT'}
   if (!isRegisteredRedirectUri(provider, redirectUri)) {
     return {
       error: 'Invalid redirect_uri: it is not registered for this client',
@@ -111,5 +122,5 @@ export const validateOAuthAuthorizationRequest = async (
       }
     }
   }
-  return {provider, scopes: scopes as Oauthscopeenum[]}
+  return {provider, scopes: scopes as Oauthscopeenum[], isMetadataDocumentClient}
 }

@@ -121,7 +121,8 @@ test('authorization server metadata lists S256 and both grant types', async () =
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
     token_endpoint_auth_methods_supported: ['client_secret_post', 'none'],
-    authorization_response_iss_parameter_supported: true
+    authorization_response_iss_parameter_supported: true,
+    client_id_metadata_document_supported: true
   })
   expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
   expect(metadata.scopes_supported).toHaveLength(18)

@@ -2,8 +2,10 @@ import crypto from 'crypto'
 import faker from 'faker'
 import generateUID from '../generateUID'
 import aiAppScopes from '../oauth2/aiAppScopes'
+import upsertMetadataDocumentProvider from '../oauth2/upsertMetadataDocumentProvider'
 import getKysely from '../postgres/getKysely'
 import {CipherId} from '../utils/CipherId'
+import getRedis from '../utils/getRedis'
 import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendPublic, signUp} from './common'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
@@ -145,8 +147,15 @@ const connect = async (client: Client, cookie: string, options?: AuthorizeOption
   return response.json()
 }
 
-const createGlobalClient = async (redirectUri: string): Promise<Client> => {
-  const clientId = `global-test-${generateUID()}`
+interface GlobalClientOptions {
+  clientId?: string
+  verifiedAt?: Date | null
+}
+
+const createGlobalClient = async (
+  redirectUri: string,
+  {clientId = `global-test-${generateUID()}`, verifiedAt = null}: GlobalClientOptions = {}
+): Promise<Client> => {
   await getKysely()
     .insertInto('OAuthAPIProvider')
     .values({
@@ -156,11 +165,55 @@ const createGlobalClient = async (redirectUri: string): Promise<Client> => {
       clientSecret: null,
       orgId: null,
       redirectUris: [redirectUri],
-      scopes: aiAppScopes
+      scopes: aiAppScopes,
+      verifiedAt
     })
     .execute()
   return {clientId, redirectUri}
 }
+
+const createMetadataDocumentUrl = () =>
+  `https://${crypto.randomBytes(8).toString('hex')}.invalid/oauth/client.json`
+
+const cacheMetadataDocument = (clientId: string, document: Record<string, unknown>) =>
+  getRedis().set(
+    `oauth:cimd:${crypto.createHash('sha256').update(clientId).digest('hex')}`,
+    JSON.stringify(document),
+    'EX',
+    300
+  )
+
+const toRequest = (client: Client) => ({
+  ...client,
+  state: 'xyz',
+  codeChallenge: crypto.randomBytes(32).toString('base64url'),
+  codeChallengeMethod: 'S256'
+})
+
+const requestConsent = (client: Client, cookie: string) =>
+  sendPublic({query: OAUTH_AUTHORIZATION_REQUEST, variables: {request: toRequest(client)}, cookie})
+
+const approve = (client: Client, cookie: string) =>
+  sendPublic({query: CREATE_OAUTH_API_CODE, variables: {request: toRequest(client)}, cookie})
+
+const selectProvider = (clientId: string) =>
+  getKysely()
+    .selectFrom('OAuthAPIProvider')
+    .select([
+      'name',
+      'clientType',
+      'clientSecret',
+      'orgId',
+      'verifiedAt',
+      'redirectUris',
+      'updatedAt'
+    ])
+    .where('clientId', '=', clientId)
+    .executeTakeFirst()
+
+afterAll(async () => {
+  await getRedis().quit()
+})
 
 const updateClaudeGrant = (
   userId: string,
@@ -321,4 +374,95 @@ test('the asset proxy answers a refused connection 403', async () => {
     redirect: 'manual'
   })
   expect(asset.status).toBe(403)
+})
+
+test('a verified client with an https client_id authorizes without fetching its document', async () => {
+  const {userId, cookie} = await signUp()
+  const client = await createGlobalClient(`https://${faker.internet.domainName()}/callback`, {
+    clientId: createMetadataDocumentUrl(),
+    verifiedAt: new Date()
+  })
+  const {access_token} = await connect(client, cookie)
+  const viewer = await sendPublic({query: VIEWER_ID, bearerToken: access_token})
+  expect(viewer.data.viewer.id).toBe(userId)
+})
+
+test('an https client_id whose document cannot be fetched is refused at consent', async () => {
+  const {cookie} = await signUp()
+  const clientId = createMetadataDocumentUrl()
+  const approved = await approve(
+    {clientId, redirectUri: 'https://app.example.com/callback'},
+    cookie
+  )
+  expect(approved.data).toBeNull()
+  expect(approved.errors?.[0]).toMatchObject({
+    message: expect.stringMatching('metadata document'),
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+  expect(await selectProvider(clientId)).toBeUndefined()
+})
+
+test('an unverified https client is fetched again even when its row exists', async () => {
+  const {cookie} = await signUp()
+  const client = await createGlobalClient('https://app.example.com/callback', {
+    clientId: createMetadataDocumentUrl()
+  })
+  const approved = await approve(client, cookie)
+  expect(approved.errors?.[0]).toMatchObject({
+    message: expect.stringMatching('metadata document'),
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+})
+
+test('a metadata document client connects as an unverified app named by its host', async () => {
+  const {userId, cookie} = await signUp()
+  const clientId = createMetadataDocumentUrl()
+  const host = new URL(clientId).host
+  await cacheMetadataDocument(clientId, {
+    client_id: clientId,
+    client_name: 'Claude',
+    redirect_uris: ['http://localhost/callback'],
+    token_endpoint_auth_method: 'none'
+  })
+  const client = {clientId, redirectUri: 'http://localhost:53682/callback'}
+
+  const consent = await requestConsent(client, cookie)
+  expect(consent.data.viewer.oauthAuthorizationRequest).toEqual({name: host, organization: null})
+  const tokens = await connect(client, cookie)
+  expect(tokens.scope.split(' ').sort()).toEqual([...aiAppScopes].sort())
+  const viewer = await sendPublic({query: VIEWER_ID, bearerToken: tokens.access_token})
+  expect(viewer.data.viewer.id).toBe(userId)
+  expect(await selectProvider(clientId)).toEqual({
+    name: host,
+    clientType: 'public',
+    clientSecret: null,
+    orgId: null,
+    verifiedAt: null,
+    redirectUris: ['http://localhost/callback'],
+    updatedAt: expect.any(Date)
+  })
+
+  const movedRedirectUri = 'https://app.example.com/callback'
+  await cacheMetadataDocument(clientId, {client_id: clientId, redirect_uris: [movedRedirectUri]})
+  const stale = await approve(client, cookie)
+  expect(stale.errors?.[0]).toMatchObject({
+    message: expect.stringMatching('Invalid redirect_uri'),
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+  await authorize({clientId, redirectUri: movedRedirectUri}, cookie)
+  expect(await selectProvider(clientId)).toMatchObject({redirectUris: [movedRedirectUri]})
+})
+
+test('recording a metadata document client never touches a verified row', async () => {
+  const {clientId} = await createGlobalClient('https://app.example.com/callback', {
+    clientId: createMetadataDocumentUrl(),
+    verifiedAt: new Date()
+  })
+  const before = await selectProvider(clientId)
+  await upsertMetadataDocumentProvider(getKysely(), {
+    clientId,
+    name: 'impostor',
+    redirectUris: ['https://evil.example.com/callback']
+  })
+  expect(await selectProvider(clientId)).toEqual(before)
 })

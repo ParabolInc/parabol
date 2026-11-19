@@ -262,6 +262,7 @@ export const fetchUntrusted = async (
     headers?: Record<string, string>
     maxRedirects?: number
     onOverflow?: 'throw' | 'truncate'
+    timeoutMs?: number
   }
 ) => {
   try {
@@ -269,18 +270,25 @@ export const fetchUntrusted = async (
     let currentHeaders = options?.headers
     let redirectsLeft = options?.maxRedirects ?? 0
     const onOverflow = options?.onOverflow ?? 'throw'
+    const timeoutMs = options?.timeoutMs ?? TIMEOUT_MS
 
     while (true) {
       // Serialize per-domain: same-host requests queue, different hosts run concurrently.
       // The timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
       const outcome = await withDomainLimit(getHostname(currentUrl), async () => {
-        let response = await fetchOnce(currentUrl, {headers: currentHeaders})
+        let response = await fetchOnce(currentUrl, {
+          headers: currentHeaders,
+          signal: AbortSignal.timeout(timeoutMs)
+        })
 
         for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
           await response.body?.cancel()
           const delay = getRetryDelayMs(response.headers.get('retry-after'), attempt)
           await new Promise((resolve) => setTimeout(resolve, delay))
-          response = await fetchOnce(currentUrl, {headers: currentHeaders})
+          response = await fetchOnce(currentUrl, {
+            headers: currentHeaders,
+            signal: AbortSignal.timeout(timeoutMs)
+          })
         }
 
         if (response.status >= 300 && response.status < 400) {
@@ -318,6 +326,7 @@ export const fetchUntrusted = async (
         return {
           buffer,
           contentType: contentType.split(';')[0]!.trim().toLowerCase(),
+          cacheControl: response.headers.get('cache-control'),
           size: buffer.byteLength
         }
       })

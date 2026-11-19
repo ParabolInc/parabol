@@ -3,6 +3,7 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import appOrigin from '../../../appOrigin'
+import upsertMetadataDocumentProvider from '../../../oauth2/upsertMetadataDocumentProvider'
 import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAuthorizationRequest'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -18,24 +19,29 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
   if ('error' in authorization) {
     throw new GraphQLError(authorization.error, {extensions: {code: authorization.code}})
   }
-  const {provider, scopes} = authorization
+  const {provider, scopes, isMetadataDocumentClient} = authorization
   const {redirectUri, state, codeChallenge, resource} = request
   const code = crypto.randomBytes(32).toString('hex')
   await getKysely()
-    .insertInto('OAuthAPICode')
-    .values({
-      id: code,
-      clientId: provider.clientId,
-      redirectUri,
-      userId: viewerId,
-      scopes,
-      codeChallenge,
-      resource: resource || null,
-      grantedOrgIds: provider.orgId ? [provider.orgId] : null,
-      personalGrantedAt: provider.orgId ? null : sql`now()`,
-      expiresAt: new Date(Date.now() + ms('10m'))
+    .transaction()
+    .execute(async (trx) => {
+      if (isMetadataDocumentClient) await upsertMetadataDocumentProvider(trx, provider)
+      await trx
+        .insertInto('OAuthAPICode')
+        .values({
+          id: code,
+          clientId: provider.clientId,
+          redirectUri,
+          userId: viewerId,
+          scopes,
+          codeChallenge,
+          resource: resource || null,
+          grantedOrgIds: provider.orgId ? [provider.orgId] : null,
+          personalGrantedAt: provider.orgId ? null : sql`now()`,
+          expiresAt: new Date(Date.now() + ms('10m'))
+        })
+        .execute()
     })
-    .execute()
   const redirectUrl = new URL(redirectUri)
   redirectUrl.searchParams.set('code', code)
   redirectUrl.searchParams.set('state', state)
