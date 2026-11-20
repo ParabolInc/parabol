@@ -30,6 +30,7 @@ const RetroSettingRow = (props: Props) => {
         label='Template'
         value={templateName}
         actionLabel='Change'
+        disabled={disabled}
         onAction={props.onChangeTemplate}
       />
     )
