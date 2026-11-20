@@ -50,7 +50,7 @@ const layoutInspirationSources = (
     ...suggestions,
     ...substitutes
   ]
-  const lastIncludedIdx = ranked.map(isIncluded).lastIndexOf(true)
+  const lastIncludedIdx = ranked.findLastIndex(isIncluded)
   const rowSize = Math.max(ROW_SLOTS - 1, lastIncludedIdx + 1)
   if (ranked.length - rowSize <= 1) return {row: ranked, more: []}
   return {row: ranked.slice(0, rowSize), more: ranked.slice(rowSize)}
