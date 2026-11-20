@@ -15,7 +15,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   info
 ) => {
   const {authToken, dataLoader} = context
-  const {meetingId, sources, userPrompt, before} = input
+  const {meetingId, sources, userPrompt} = input
   const viewerId = getUserId(authToken)
 
   // VALIDATION
@@ -29,15 +29,17 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
-  if (before && meeting.meetingType !== 'retrospective') {
-    throw new GraphQLError('Only a retrospective timeline goes back in pages', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
   const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const canDraft = !!process.env.OPEN_AI_API_KEY && (await canAccessAI(team, dataLoader, true))
+  const hasAI = !!process.env.OPEN_AI_API_KEY
+  const canDraft = hasAI && (await canAccessAI(team, dataLoader, true))
+  // A retrospective lists its work with viewerInspirationIssues, so drafting is all that's left to do here
+  if (!canDraft && meeting.meetingType === 'retrospective') {
+    throw new GraphQLError('AI drafting is turned off', {
+      extensions: {code: hasAI ? 'FORBIDDEN' : 'NOT_IMPLEMENTED'}
+    })
+  }
 
   // AI quota
   const pg = getKysely()
@@ -80,7 +82,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const draft =
     meeting.meetingType === 'teamPrompt'
       ? await draftStandupFromSources(draftOptions)
-      : await draftRetroFromSources({...draftOptions, before: before ?? null})
+      : await draftRetroFromSources(draftOptions)
   return {meetingId, ...draft}
 }
 

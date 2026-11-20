@@ -693,6 +693,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     tier: isOnTeamOrg,
     viewerTeamMember: allow
   },
+  RetrospectiveMeeting: {
+    viewerInspirationIssues:
+      isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id')
+  },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
     prevUsedRepoIntegrations: isTeamMember<'TeamMember.prevUsedRepoIntegrations'>('source.teamId'),

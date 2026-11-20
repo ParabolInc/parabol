@@ -100,6 +100,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
           draft={draft}
           drafting={drafting}
           error={error}
+          onRetry={() => requestRedraft(true)}
           aiOffMessage={aiOffMessage}
         />
       ) : (
@@ -109,6 +110,7 @@ const TeamPromptWorkDrawer = ({meetingRef}: Props) => {
           composer={composer}
           drafting={drafting}
           error={error}
+          onRetry={() => requestRedraft(true)}
         />
       )}
       {settingsOpen && (

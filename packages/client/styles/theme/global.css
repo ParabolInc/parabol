@@ -1362,8 +1362,8 @@
   text-decoration: underline;
 }
 
-/* A reflection started from an issue is a chip of the whole title, wider
- * than the card, so it wraps like text and each line keeps the chip's ends.
+/* A reflection card is narrow, so a chip that doesn't fit wraps like text
+ * and each line keeps the chip's ends.
  */
 .issue-chips-wrap .ProseMirror a[data-issue-service] {
   white-space: normal;

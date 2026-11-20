@@ -5,6 +5,7 @@ import InspirationDraftList from './InspirationDraftList'
 import InspirationUnusedIssues from './InspirationUnusedIssues'
 import {NO_WORK_LINE, usedLabel} from './inspirationCopy'
 import parseInspirationContent from './parseInspirationContent'
+import RetryableError from './RetryableError'
 import type {InspirationDraft} from './useInspirationDraft'
 import type {WorkDrawerPrompt} from './WorkDrawerConsumeContext'
 
@@ -14,10 +15,11 @@ interface Props {
   composer: TeamPromptComposerApi
   drafting: boolean
   error: string | null
+  onRetry: () => void
 }
 
 const InspirationDraftSection = (props: Props) => {
-  const {draft, prompts, composer, drafting, error} = props
+  const {draft, prompts, composer, drafting, error, onRetry} = props
   const shownDraft = drafting ? null : draft
   const items = (shownDraft?.items ?? []).map(({id, content, promptId}) => ({
     id,
@@ -50,7 +52,7 @@ const InspirationDraftSection = (props: Props) => {
         )}
       </div>
       <div className='flex flex-col gap-2.5 px-4 pb-4'>
-        {error && <div className='text-fg-error text-sm'>{error}</div>}
+        {error && <RetryableError message={error} onRetry={onRetry} />}
         {isEmpty && (
           <p
             role='status'

@@ -10,7 +10,8 @@ input GenerateInspirationItemsInput {
 
   """
   The searches to draft from. A standup drafts one combined answer from all of them; a
-  retrospective drafts a reflection about each of the few issues worth raising
+  retrospective reads every issue in their date range and drafts a reflection about each of the few
+  issues or themes worth raising
   """
   sources: [InspirationSourceInput!]!
 
@@ -18,10 +19,4 @@ input GenerateInspirationItemsInput {
   An optional custom prompt that overrides the default generation prompt
   """
   userPrompt: String
-
-  """
-  A retrospective drafts its timeline a page at a time, newest first. Omit this for the newest
-  page, then pass each page's nextBefore to draft the work just older than it
-  """
-  before: DateTime
 }

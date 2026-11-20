@@ -49,7 +49,8 @@ const task = (taskId: string, overrides: Partial<ClickUpTaskSource> = {}): Click
   ...overrides
 })
 
-const run = (query: string, before: Date | null = null) => listClickUpIssues(ctx, query, before)
+const run = (query: string, before: Date | null = null) =>
+  listClickUpIssues(ctx, query, {before, first: MAX_ISSUES})
 
 describe('listClickUpIssues', () => {
   beforeEach(() => {
@@ -133,7 +134,9 @@ describe('listClickUpIssues', () => {
         status: 'review',
         url: 'https://app.clickup.com/t/86bd03p5u',
         updatedAt,
-        description: 'Users *cannot* sign in'
+        description: 'Users *cannot* sign in',
+        isOwnWork: true,
+        isClosed: false
       },
       {
         kind: 'Task',
@@ -143,7 +146,9 @@ describe('listClickUpIssues', () => {
         status: 'in progress',
         url: 'https://app.clickup.com/t/86bd03p5w',
         updatedAt: new Date('2026-10-02T00:00:00.000Z'),
-        description: ''
+        description: '',
+        isOwnWork: true,
+        isClosed: false
       }
     ])
   })

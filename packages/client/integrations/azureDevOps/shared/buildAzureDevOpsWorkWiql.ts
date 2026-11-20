@@ -10,7 +10,7 @@ const NON_WORK_TYPES = [
   'Feedback Response'
 ]
 
-const CLOSED_STATES = ['Closed', 'Done', 'Removed']
+export const AZURE_DEVOPS_CLOSED_STATES = ['Closed', 'Done', 'Removed']
 
 export type AzureDevOpsWorkKind = 'assigned' | 'created'
 
@@ -18,7 +18,7 @@ export const quoteWiql = (value: string) => `'${value.replace(/'/g, "''")}'`
 
 export const AZURE_DEVOPS_IS_WORK = `[System.WorkItemType] NOT IN (${NON_WORK_TYPES.map(quoteWiql).join(', ')})`
 
-export const AZURE_DEVOPS_IS_OPEN = `[System.State] NOT IN (${CLOSED_STATES.map(quoteWiql).join(', ')})`
+export const AZURE_DEVOPS_IS_OPEN = `[System.State] NOT IN (${AZURE_DEVOPS_CLOSED_STATES.map(quoteWiql).join(', ')})`
 
 interface WorkFilter {
   kinds: readonly AzureDevOpsWorkKind[]

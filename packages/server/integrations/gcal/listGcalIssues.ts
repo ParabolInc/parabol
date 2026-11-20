@@ -1,6 +1,10 @@
 import type {calendar_v3} from 'googleapis/build/src/apis/calendar'
 import {Logger} from '../../utils/Logger'
-import {compareNewestFirst, type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import {
+  compareNewestFirst,
+  type InspirationIssue,
+  type IssuePage
+} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import makeGcalCalendar from './makeGcalCalendar'
 
@@ -16,7 +20,7 @@ const EVENTS_PER_REQUEST = 250
 const listGcalIssues = async (
   ctx: GqlIntegrationCtx,
   searchQuery: string,
-  before: Date | null
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   const {dataLoader, teamId, userId} = ctx
   const gcalAuth = await dataLoader.get('freshAuth').load({service: 'gcal', teamId, userId})
@@ -87,7 +91,7 @@ const listGcalIssues = async (
         description: event.description
       }
     })
-    return items.sort(compareNewestFirst).slice(0, MAX_ISSUES)
+    return items.sort(compareNewestFirst).slice(0, first)
   } catch (e) {
     Logger.error(e instanceof Error ? e.message : String(e))
     return []

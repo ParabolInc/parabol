@@ -3,15 +3,18 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
     nodes {
       __typename
       ... on Issue {
+        number
         title
         url
         updatedAt
         body
         issueState: state
+        viewerDidAuthor
         repository {
           nameWithOwner
         }
         comments(last: $commentLast) {
+          totalCount
           nodes {
             author {
               login
@@ -21,15 +24,23 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
         }
       }
       ... on PullRequest {
+        number
         title
         url
         updatedAt
         body
         prState: state
+        viewerDidAuthor
+        additions
+        deletions
+        reviews {
+          totalCount
+        }
         repository {
           nameWithOwner
         }
         comments(last: $commentLast) {
+          totalCount
           nodes {
             author {
               login

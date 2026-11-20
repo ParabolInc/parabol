@@ -3,7 +3,11 @@ import ms from 'ms'
 import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {Logger} from '../../utils/Logger'
-import {compareNewestFirst, type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import {
+  compareNewestFirst,
+  type InspirationIssue,
+  type IssuePage
+} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import AtlassianServerManager from './AtlassianServerManager'
 
@@ -34,7 +38,7 @@ const adfToPlaintext = (description: unknown) => {
 const listJiraIssues = async (
   ctx: GqlIntegrationCtx,
   searchQuery: string,
-  before: Date | null
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   const {dataLoader, teamId, userId} = ctx
   const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
@@ -47,7 +51,7 @@ const listJiraIssues = async (
   const jql = narrowToBefore(searchQuery, before)
   const cloudResults = await Promise.all(
     cloudIds.map(async (cloudId): Promise<InspirationIssue[]> => {
-      const {error, issues} = await manager.getIssues(cloudId, jql, true, [], MAX_ISSUES)
+      const {error, issues} = await manager.getIssues(cloudId, jql, true, [], first)
       if (error) {
         Logger.error(error.message)
         return []
@@ -59,12 +63,14 @@ const listJiraIssues = async (
         reference: issue.issueKey,
         url: `https://${cloudName}.atlassian.net/browse/${issue.issueKey}`,
         updatedAt: new Date(issue.lastUpdated),
-        description: adfToPlaintext(issue.description)
+        description: adfToPlaintext(issue.description),
+        // the drawer only searches issues assigned to or reported by the viewer
+        isOwnWork: true
       }))
     })
   )
 
-  return cloudResults.flat().sort(compareNewestFirst).slice(0, MAX_ISSUES)
+  return cloudResults.flat().sort(compareNewestFirst).slice(0, first)
 }
 
 export default listJiraIssues

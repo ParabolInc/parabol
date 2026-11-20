@@ -1,7 +1,11 @@
 import type {SearchIssuesQuery} from '../../types/githubTypes'
 import searchIssues from '../../utils/githubQueries/searchIssues.graphql'
 import {Logger} from '../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
+import {
+  type InspirationIssue,
+  type IssuePage,
+  MAX_ISSUE_COMMENTS
+} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import getGitHubRequest from './getGitHubRequest'
 
@@ -24,7 +28,7 @@ const narrowToBefore = (searchQuery: string, before: Date | null) => {
 const listGitHubIssues = async (
   ctx: GqlIntegrationCtx,
   searchQuery: string,
-  before: Date | null
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   const {dataLoader, context, info, teamId, userId} = ctx
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
@@ -33,7 +37,7 @@ const listGitHubIssues = async (
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest<SearchIssuesQuery>(searchIssues, {
     searchQuery: narrowToBefore(searchQuery, before),
-    first: MAX_ISSUES,
+    first,
     commentLast: MAX_ISSUE_COMMENTS
   })
   if (error) {
@@ -60,16 +64,26 @@ const listGitHubIssues = async (
       author: comment?.author?.login ?? 'unknown',
       body: comment?.body ?? ''
     }))
+    const facts =
+      node.__typename === '_xGitHubPullRequest'
+        ? {
+            isClosed: node.prState !== 'OPEN',
+            commentCount: node.comments.totalCount + (node.reviews?.totalCount ?? 0),
+            changeSize: node.additions + node.deletions
+          }
+        : {isClosed: node.issueState !== 'OPEN', commentCount: node.comments.totalCount}
     return [
       {
         kind,
         title: node.title,
-        reference: node.repository.nameWithOwner,
+        reference: `${node.repository.nameWithOwner}#${node.number}`,
         status,
         url: node.url,
         updatedAt: new Date(node.updatedAt),
         description: node.body,
-        comments
+        comments,
+        isOwnWork: node.viewerDidAuthor,
+        ...facts
       }
     ]
   })

@@ -29,7 +29,10 @@ describe('pageInspirationIssues', () => {
       {service: 'github', sourceIssues: [issue('a', '2026-11-10T00:00:00Z')]},
       {service: 'jira', sourceIssues: [issue('b', '2026-11-02T00:00:00Z')]}
     ]
-    const {nextBefore, pagedSources} = pageInspirationIssues(sources, null)
+    const {nextBefore, pagedSources} = pageInspirationIssues(sources, {
+      before: null,
+      first: MAX_ISSUES
+    })
     expect(nextBefore).toBeNull()
     expect(titlesOf(pagedSources)).toEqual([['a'], ['b']])
   })
@@ -46,7 +49,10 @@ describe('pageInspirationIssues', () => {
         ]
       }
     ]
-    const {nextBefore, pagedSources} = pageInspirationIssues(sources, null)
+    const {nextBefore, pagedSources} = pageInspirationIssues(sources, {
+      before: null,
+      first: MAX_ISSUES
+    })
     expect(nextBefore).toEqual(new Date('2026-11-05T12:00:00Z'))
     expect(pagedSources[0]!.sourceIssues).toHaveLength(MAX_ISSUES)
     expect(titlesOf(pagedSources)[1]).toEqual(['newer'])
@@ -58,7 +64,7 @@ describe('pageInspirationIssues', () => {
         {service: 'github', sourceIssues: fullPage('g', 5)},
         {service: 'jira', sourceIssues: fullPage('j', 2)}
       ],
-      null
+      {before: null, first: MAX_ISSUES}
     )
     expect(nextBefore).toEqual(new Date('2026-11-05T12:00:00Z'))
     expect(pagedSources[1]!.sourceIssues.at(-1)!.title).toBe('j5')
@@ -77,17 +83,19 @@ describe('pageInspirationIssues', () => {
       }
     ]
     const before = new Date('2026-11-07T00:00:00Z')
-    expect(titlesOf(pageInspirationIssues(sources, before).pagedSources)).toEqual([['next']])
-    expect(titlesOf(pageInspirationIssues(sources, null).pagedSources)).toEqual([
-      ['shown', 'boundary', 'next', 'undated']
-    ])
+    expect(
+      titlesOf(pageInspirationIssues(sources, {before, first: MAX_ISSUES}).pagedSources)
+    ).toEqual([['next']])
+    expect(
+      titlesOf(pageInspirationIssues(sources, {before: null, first: MAX_ISSUES}).pagedSources)
+    ).toEqual([['shown', 'boundary', 'next', 'undated']])
   })
 
   it('does not let a full source stuck on before hold the page back', () => {
     const before = new Date('2026-11-01T00:00:00Z')
     const {nextBefore} = pageInspirationIssues(
       [{service: 'jira', sourceIssues: fullPage('j', 1)}],
-      before
+      {before, first: MAX_ISSUES}
     )
     expect(nextBefore).toBeNull()
   })

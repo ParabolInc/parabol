@@ -1,6 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
-import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import type {InspirationIssue, IssuePage} from '../../../../integrations/platform/InspirationIssue'
 import {getServerIntegration} from '../../../../integrations/platform/registry'
 import type {GQLContext} from '../../../graphql'
 import fetchParabolIssues from './fetchParabolIssues'
@@ -12,9 +12,9 @@ const fetchIssues = async (
   viewerId: string,
   context: GQLContext,
   info: GraphQLResolveInfo,
-  before: Date | null
+  page: IssuePage
 ): Promise<InspirationIssue[]> => {
-  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery, before)
+  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery, page)
   const issueList = getServerIntegration(service)?.capabilities.issueList
   if (!issueList) {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`, {
@@ -25,7 +25,7 @@ const fetchIssues = async (
   return issueList.listIssues(
     {dataLoader, teamId, userId: viewerId, context, info},
     searchQuery,
-    before
+    page
   )
 }
 

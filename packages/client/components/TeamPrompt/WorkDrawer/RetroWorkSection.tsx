@@ -1,16 +1,16 @@
-import {AutoAwesome} from '~/ui/icons'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import {issueCountLabel, NO_WORK_LINE} from './inspirationCopy'
+import inspirationIssueKey from './inspirationIssueKey'
 import RetroTimeline from './RetroTimeline'
+import RetryableError from './RetryableError'
 import type {InspirationDraft} from './useInspirationDraft'
-import type {WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 interface Props {
   draft: InspirationDraft | null
   drafting: boolean
   error: string | null
+  onRetry: () => void
   aiOffMessage: string | null
-  dateRange: WorkDrawerDateRange
   hasOlder: boolean
   loadingOlder: boolean
   olderError: string | null
@@ -22,50 +22,39 @@ const RetroWorkSection = (props: Props) => {
     draft,
     drafting,
     error,
+    onRetry,
     aiOffMessage,
-    dateRange,
     hasOlder,
     loadingOlder,
     olderError,
     loadOlder
   } = props
   const issues = drafting ? [] : (draft?.issues ?? [])
-  const draftCount = issues.filter((issue) => issue.draft).length
+  const draftIdByIssueKey = new Map(
+    (draft?.items ?? []).flatMap(({id, issues: draftIssues}) =>
+      draftIssues.map((issue) => [inspirationIssueKey(issue), id] as const)
+    )
+  )
   const isEmpty = !!draft && !drafting && issues.length === 0
-  const heading = drafting
-    ? aiOffMessage
-      ? 'Finding your work'
-      : 'Drafting from your work'
-    : 'Your work'
-  const countLabel =
-    issues.length === 0
-      ? ''
-      : aiOffMessage
-        ? issueCountLabel(issues.length)
-        : `${issueCountLabel(issues.length)} · ${draftCount === 1 ? '1 draft' : `${draftCount} drafts`}`
-  const note =
-    aiOffMessage ??
-    (issues.length > 0 && draftCount === 0
-      ? 'Nothing stood out clearly enough to draft. Use + on any item to start a reflection.'
-      : null)
   return (
     <section aria-labelledby='retro-work-heading' aria-busy={drafting}>
       <div className='flex flex-col gap-1 px-4 pt-[18px]'>
         <div className='flex items-baseline justify-between gap-2'>
           <h3
             id='retro-work-heading'
-            className='m-0 flex items-center gap-1.5 font-semibold text-fg-primary text-sm'
+            className='m-0 flex items-center font-semibold text-fg-primary text-sm'
           >
-            {!aiOffMessage && <AutoAwesome className='size-[18px] text-accent' />}
-            {heading}
+            {drafting ? 'Finding your work' : 'Your work'}
             {drafting && <Ellipsis />}
           </h3>
-          {countLabel && <span className='shrink-0 text-fg-muted text-xs'>{countLabel}</span>}
+          {issues.length > 0 && (
+            <span className='shrink-0 text-fg-muted text-xs'>{issueCountLabel(issues.length)}</span>
+          )}
         </div>
-        {note && <p className='m-0 text-fg-muted text-xs'>{note}</p>}
+        {aiOffMessage && <p className='m-0 text-fg-muted text-xs'>{aiOffMessage}</p>}
       </div>
       <div className='flex flex-col px-4 pb-4'>
-        {error && <div className='pt-2.5 text-fg-error text-sm'>{error}</div>}
+        {error && <RetryableError message={error} onRetry={onRetry} className='pt-2.5' />}
         {isEmpty && (
           <p
             role='status'
@@ -77,11 +66,10 @@ const RetroWorkSection = (props: Props) => {
         {issues.length > 0 && (
           <RetroTimeline
             issues={issues}
-            dateRange={dateRange}
+            draftIdByIssueKey={draftIdByIssueKey}
             hasOlder={hasOlder}
             loadingOlder={loadingOlder}
             olderError={olderError}
-            loadingOlderLabel={aiOffMessage ? 'Finding older work' : 'Drafting from older work'}
             loadOlder={loadOlder}
           />
         )}

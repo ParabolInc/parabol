@@ -8,18 +8,19 @@ type GenerateInspirationItemsPayload {
   inspirationItems: [InspirationItem!]!
 
   """
-  Every issue the sources matched, or in a retrospective, every issue on this page of its timeline
+  In a standup, every issue the sources matched. In a retrospective, the issues the AI read: the most
+  recent of the sources' date range
   """
   issues: [InspirationIssue!]!
+
+  """
+  How many issues the sources matched. In a retrospective, more than issues holds once the AI reads only
+  the most recent
+  """
+  issueCount: Int!
 
   """
   The meeting the items were generated for
   """
   meeting: NewMeeting!
-
-  """
-  Where the next older page of a retrospective's timeline starts, to pass as before. Null once
-  the page reaches the start of the sources' date range, and in a standup
-  """
-  nextBefore: DateTime
 }

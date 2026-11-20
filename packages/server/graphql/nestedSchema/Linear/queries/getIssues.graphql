@@ -16,6 +16,12 @@ query getIssues($filter: IssueFilter, $first: Int!, $commentLast: Int!) {
       team {
         displayName
       }
+      creator {
+        isMe
+      }
+      assignee {
+        isMe
+      }
       comments(last: $commentLast) {
         nodes {
           body
