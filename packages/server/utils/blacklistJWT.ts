@@ -21,7 +21,7 @@ export const blacklistJWT = async (userId: string, iat: number, mutatorId?: stri
   await revalidateYjsConnections({userIds: [userId]})
 }
 
-// blacklist a single session by jti. A refresh records when it happened, so Yjs sockets opened before it keep working
+// blacklist a single session by jti. A refresh that took nothing away records when it happened, so sockets opened before it keep working
 export const blacklistJWTSession = async (jti: string, exp: number, refreshedAt?: number) => {
   const key = getBlacklistJWTSessionKey(jti)
   const redis = getRedis()
