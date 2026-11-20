@@ -9,8 +9,6 @@ import CreateReflectionMutation from '../../../mutations/CreateReflectionMutatio
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'
-import InspirationItemSources from './InspirationItemSources'
-import type {InspirationDraft} from './useInspirationDraft'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
 interface Props {
@@ -18,11 +16,10 @@ interface Props {
   promptId: string | null
   title: string | null
   content: JSONContent
-  issues?: InspirationDraft['items'][number]['issues']
 }
 
 const RetroInspirationItemCard = (props: Props) => {
-  const {meetingId, promptId, title, content, issues} = props
+  const {meetingId, promptId, title, content} = props
   const atmosphere = useAtmosphere()
   const consume = useWorkDrawerConsume()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -73,7 +70,6 @@ const RetroInspirationItemCard = (props: Props) => {
         editor={editor}
         className='issue-chips max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent'
       />
-      {issues && issues.length > 0 && <InspirationItemSources issues={issues} />}
       <div className='flex items-center justify-between gap-2'>
         {prompt ? (
           <div className='flex min-w-0 items-center gap-1.5'>

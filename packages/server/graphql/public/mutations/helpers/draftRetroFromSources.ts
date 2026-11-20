@@ -22,7 +22,8 @@ import gatherRangeIssues from './gatherRangeIssues'
 import {formatIssueLinesForAI} from './issuesForAI'
 import toInspirationIssue from './toInspirationIssue'
 
-// The AI reads a busy range's most notable issues, one line each, so its cost and wait stay down
+// The AI reads a range's newest issues, one line each. A range with more than this calls for more frequent
+// retros, not a longer read
 const MAX_READ_ISSUES = 300
 // and an excerpt of what the most notable few say
 const MAX_DETAILED_ISSUES = 20
@@ -83,11 +84,14 @@ const draftRetroFromSources = async (options: Options) => {
   // Listed by source, newest first, so a run of related work reads in order
   const serviceOrder = sources.map(({service}) => service)
   const numberedIssues = numberIssues(
-    takeTurns(rangeIssues, MAX_READ_ISSUES).sort(
-      (a, b) =>
-        serviceOrder.indexOf(a.service) - serviceOrder.indexOf(b.service) ||
-        compareNewestFirst(a.issue, b.issue)
-    )
+    rangeIssues
+      .sort((a, b) => compareNewestFirst(a.issue, b.issue))
+      .slice(0, MAX_READ_ISSUES)
+      .sort(
+        (a, b) =>
+          serviceOrder.indexOf(a.service) - serviceOrder.indexOf(b.service) ||
+          compareNewestFirst(a.issue, b.issue)
+      )
   )
   const detailedIds = new Set(takeTurns(numberedIssues, MAX_DETAILED_ISSUES).map(({id}) => id))
   const issuesText = formatNumberedIssues(numberedIssues, (issues, ids) =>

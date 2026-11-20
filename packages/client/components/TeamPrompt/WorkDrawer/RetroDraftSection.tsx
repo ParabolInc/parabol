@@ -24,7 +24,7 @@ const RetroDraftSection = (props: Props) => {
     : items.length === 0
       ? 'Nothing stood out clearly enough to draft.'
       : readCount < issueCount
-        ? `Drafted from your ${readCount} most notable of ${issueCount} items`
+        ? `Drafted from your ${readCount} most recent of ${issueCount} items`
         : null
   return (
     <section
@@ -38,7 +38,7 @@ const RetroDraftSection = (props: Props) => {
           className='m-0 flex items-center gap-1.5 font-semibold text-fg-primary text-sm'
         >
           <AutoAwesome className='size-[18px] text-accent' />
-          Worth raising
+          Draft Reflections
         </h3>
         {items.length > 0 && (
           <span className='shrink-0 text-fg-muted text-xs'>
@@ -56,14 +56,13 @@ const RetroDraftSection = (props: Props) => {
       {error && <RetryableError message={error} onRetry={onRetry} className='pt-1.5' />}
       {items.length > 0 && (
         <div className='flex flex-col gap-2 pt-1.5'>
-          {items.map(({id, content, promptId, issues}) => (
+          {items.map(({id, content, promptId}) => (
             <RetroInspirationItemCard
               key={id}
               meetingId={meetingId}
               promptId={promptId}
               title={null}
               content={parseInspirationContent(content)}
-              issues={issues}
             />
           ))}
         </div>
