@@ -24,14 +24,17 @@ const sourceLabel = (service: ServiceEnum) =>
   service === 'PARABOL' ? 'Parabol' : (getServerIntegration(service)?.title ?? service)
 
 // Renders issues for the AI, grouped by the tool they came from, each labeled with its id
-export const formatNumberedIssues = (numberedIssues: readonly NumberedIssue[]) => {
+export const formatNumberedIssues = (
+  numberedIssues: readonly NumberedIssue[],
+  formatIssues: (issues: InspirationIssue[], ids: string[]) => string = formatIssuesForAI
+) => {
   const services = [...new Set(numberedIssues.map(({service}) => service))]
   return services
     .map((service) => {
       const sourceIssues = numberedIssues.filter(
         (numberedIssue) => numberedIssue.service === service
       )
-      return `## ${sourceLabel(service)}\n\n${formatIssuesForAI(
+      return `## ${sourceLabel(service)}\n\n${formatIssues(
         sourceIssues.map(({issue}) => issue),
         sourceIssues.map(({id}) => id)
       )}`
@@ -39,8 +42,12 @@ export const formatNumberedIssues = (numberedIssues: readonly NumberedIssue[]) =
     .join('\n\n')
 }
 
-// Numbers every source's issues W1, W2, … so the AI can refer back to each one. With a page, only
-// that page of a retro's timeline: the work just older than its `before`.
+// Numbers issues W1, W2, … in order, so the AI can refer back to each one
+export const numberIssues = (issues: readonly {service: ServiceEnum; issue: InspirationIssue}[]) =>
+  issues.map(({service, issue}, idx): NumberedIssue => ({id: `W${idx + 1}`, service, issue}))
+
+// Every source's issues, numbered. With a page, only that page of a retro's timeline: the work just
+// older than its `before`.
 const gatherInspirationIssues = async (
   sources: readonly InspirationSourceInput[],
   teamId: string,
@@ -69,9 +76,10 @@ const gatherInspirationIssues = async (
   const {nextBefore, pagedSources} = page
     ? pageInspirationIssues(fetchedSources, issuePage)
     : {nextBefore: null, pagedSources: fetchedSources}
-  let nextId = 1
-  const numberedIssues = pagedSources.flatMap(({service, sourceIssues}) =>
-    sourceIssues.map((issue): NumberedIssue => ({id: `W${nextId++}`, service, issue}))
+  const numberedIssues = numberIssues(
+    pagedSources.flatMap(({service, sourceIssues}) =>
+      sourceIssues.map((issue) => ({service, issue}))
+    )
   )
   return {numberedIssues, nextBefore}
 }

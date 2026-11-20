@@ -124,7 +124,8 @@ type RetrospectiveMeeting implements NewMeeting {
 
   """
   One page of the viewer's own work for the inspiration timeline, newest first, listed right away;
-  generateInspirationItems drafts reflections for the same page afterwards
+  generateInspirationItems drafts reflections from the whole date range afterwards. Null when listing
+  fails
   """
   viewerInspirationIssues(
     """
@@ -136,7 +137,7 @@ type RetrospectiveMeeting implements NewMeeting {
     The nextBefore of the newer page, to list the work just older than it. Omit for the newest page
     """
     before: DateTime
-  ): InspirationIssuePage!
+  ): InspirationIssuePage
   meetingType: MeetingTypeEnum!
 
   """

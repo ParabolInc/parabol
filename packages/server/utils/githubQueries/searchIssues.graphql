@@ -3,6 +3,7 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
     nodes {
       __typename
       ... on Issue {
+        number
         title
         url
         updatedAt
@@ -23,6 +24,7 @@ query searchIssues($searchQuery: String!, $first: Int!, $commentLast: Int!) {
         }
       }
       ... on PullRequest {
+        number
         title
         url
         updatedAt

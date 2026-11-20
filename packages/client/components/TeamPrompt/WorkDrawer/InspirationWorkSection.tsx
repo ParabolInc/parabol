@@ -1,6 +1,7 @@
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import InspirationIssueRow from './InspirationIssueRow'
 import {NO_WORK_LINE} from './inspirationCopy'
+import RetryableError from './RetryableError'
 import sortInspirationIssues from './sortInspirationIssues'
 import type {InspirationDraft} from './useInspirationDraft'
 
@@ -8,11 +9,12 @@ interface Props {
   draft: InspirationDraft | null
   drafting: boolean
   error: string | null
+  onRetry: () => void
   aiOffMessage: string
 }
 
 const InspirationWorkSection = (props: Props) => {
-  const {draft, drafting, error, aiOffMessage} = props
+  const {draft, drafting, error, onRetry, aiOffMessage} = props
   const issues = drafting ? [] : (draft?.issues ?? [])
   const isEmpty = !!draft && !drafting && issues.length === 0
   return (
@@ -28,7 +30,7 @@ const InspirationWorkSection = (props: Props) => {
         <p className='m-0 text-fg-muted text-xs'>{aiOffMessage}</p>
       </div>
       <div className='flex flex-col gap-2.5 px-4 pb-4'>
-        {error && <div className='text-fg-error text-sm'>{error}</div>}
+        {error && <RetryableError message={error} onRetry={onRetry} />}
         {isEmpty && (
           <p
             role='status'

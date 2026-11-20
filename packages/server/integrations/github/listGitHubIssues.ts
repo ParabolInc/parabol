@@ -76,7 +76,7 @@ const listGitHubIssues = async (
       {
         kind,
         title: node.title,
-        reference: node.repository.nameWithOwner,
+        reference: `${node.repository.nameWithOwner}#${node.number}`,
         status,
         url: node.url,
         updatedAt: new Date(node.updatedAt),

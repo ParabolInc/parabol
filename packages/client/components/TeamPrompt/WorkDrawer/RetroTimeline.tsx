@@ -1,12 +1,14 @@
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
-import {Button} from '../../../ui/Button/Button'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import groupIssuesByDay from './groupIssuesByDay'
 import RetroTimelineDay from './RetroTimelineDay'
+import RetryableError from './RetryableError'
 import type {InspirationDraft} from './useInspirationDraft'
 
 interface Props {
   issues: InspirationDraft['issues']
+  // The issues a draft above was drawn from
+  draftedKeys: ReadonlySet<string>
   hasOlder: boolean
   loadingOlder: boolean
   olderError: string | null
@@ -14,7 +16,7 @@ interface Props {
 }
 
 const RetroTimeline = (props: Props) => {
-  const {issues, hasOlder, loadingOlder, olderError, loadOlder} = props
+  const {issues, draftedKeys, hasOlder, loadingOlder, olderError, loadOlder} = props
   const days = groupIssuesByDay(issues)
   const loadOlderTrigger = useLoadNextOnScrollBottom({
     hasNext: hasOlder && !olderError,
@@ -24,7 +26,7 @@ const RetroTimeline = (props: Props) => {
   return (
     <div className='flex flex-col'>
       {days.map(({key, label, issues: dayIssues}) => (
-        <RetroTimelineDay key={key} label={label} issues={dayIssues} />
+        <RetroTimelineDay key={key} label={label} issues={dayIssues} draftedKeys={draftedKeys} />
       ))}
       {loadOlderTrigger}
       {loadingOlder && (
@@ -33,14 +35,7 @@ const RetroTimeline = (props: Props) => {
           <Ellipsis />
         </p>
       )}
-      {olderError && (
-        <div className='flex items-center justify-between gap-2 pt-3.5'>
-          <span className='text-fg-error text-sm'>{olderError}</span>
-          <Button variant='outline' size='sm' className='shrink-0' onClick={loadOlder}>
-            Try again
-          </Button>
-        </div>
-      )}
+      {olderError && <RetryableError message={olderError} onRetry={loadOlder} className='pt-3.5' />}
     </div>
   )
 }

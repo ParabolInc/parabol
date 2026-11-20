@@ -39,7 +39,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       {before: before ?? null}
     )
     return {
-      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue, null)),
+      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue)),
       nextBefore
     }
   },

@@ -19,11 +19,19 @@ export interface InspirationDraft {
   meetingId: string
   createdAt: number
   sources: InspirationSourceInput[]
-  items: {id: string; content: string; promptId: string | null}[]
+  items: {
+    id: string
+    content: string
+    promptId: string | null
+    issues: Payload['inspirationItems'][number]['issues']
+  }[]
   issues: DraftedIssue[]
   nextBefore?: string | null
-  // The before of each listed page whose drafts haven't arrived; null names the newest page
-  undraftedPages?: (string | null)[]
+  // A retro's timeline is listed, and the drafts the AI writes from its whole date range haven't arrived
+  awaitingItems?: boolean
+  // How many issues a retro's AI read, and how many its sources matched
+  readCount?: number
+  issueCount?: number
 }
 
 interface Options {
@@ -54,11 +62,6 @@ const issuesQuery = graphql`
               updatedAt
               importance
               unusedReason
-              draft {
-                id
-                content
-                promptId
-              }
             }
             nextBefore
           }
@@ -73,18 +76,22 @@ const DRAFT_LIFESPAN_MS = 5 * 60 * 1000
 const toKey = (sources: readonly InspirationSourceInput[]) =>
   JSON.stringify(sources.map(({service, searchQuery}) => [service, searchQuery]))
 
-const toIssueKey = ({service, url, title}: DraftedIssue) => `${service}:${url || title}`
-
 const toItems = (inspirationItems: Payload['inspirationItems']) =>
-  inspirationItems.map(({id, content, promptId}) => ({id, content, promptId: promptId ?? null}))
+  inspirationItems.map(({id, content, promptId, issues}) => ({
+    id,
+    content,
+    promptId: promptId ?? null,
+    issues
+  }))
 
 const toErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : 'Something went wrong'
 
 // The draft is never saved to the server. It is kept in local storage so a reload within a few
 // minutes doesn't spend another AI request; after that, opening the drawer drafts again.
-// A retro's timeline is paged: each page of issues shows as soon as it's listed and is drafted
-// from afterwards, and older pages join the stored draft as the viewer scrolls.
+// A retro's timeline is paged: each page of issues shows as soon as it's listed, and older pages join
+// the stored draft as the viewer scrolls. Once the newest page is listed, the AI reads the whole date
+// range at once for the few things worth raising; a reload before its drafts arrive asks again.
 // The draft is stale when the viewer's sources no longer match the searches it was written from.
 // Opening the drawer on a stale draft redrafts once; after that a redraft waits for the viewer to
 // finish changing a source or the settings, so toggling switches never burns an AI request each.
@@ -102,13 +109,16 @@ const useInspirationDraft = (options: Options) => {
   } = options
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const [generate, drafting] = useGenerateInspirationItemsMutation()
+  const [generate, generating] = useGenerateInspirationItemsMutation()
   const [listing, setListing] = useState(false)
   const [loadingOlder, setLoadingOlder] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [olderError, setOlderError] = useState<string | null>(null)
+  const [itemsFailure, setItemsFailure] = useState<{createdAt: number; message: string} | null>(
+    null
+  )
   const [storedDraft, setStoredDraft] = useLocalStorageState<InspirationDraft | null>(
-    'Inspiration:draft',
+    'Inspiration:draft:v2',
     null
   )
   const [openedAt] = useState(() => Date.now())
@@ -118,8 +128,12 @@ const useInspirationDraft = (options: Options) => {
     storedDraft.createdAt > openedAt - lifespanMs
   const draft = isKept ? storedDraft : null
   const isStale = !draft || toKey(draft.sources) !== toKey(sources)
-  const isLoadingNewest = isPaged ? listing : drafting
+  const isLoadingNewest = isPaged ? listing : generating
   const userPrompt = instructions.trim() || null
+  const itemsError =
+    itemsFailure && itemsFailure.createdAt === draft?.createdAt ? itemsFailure.message : null
+  const isDraftingItems =
+    canDraft && !isStale && isMeetingMember && !!draft?.awaitingItems && !itemsError
 
   const listPage = async (pageSources: InspirationSourceInput[], before: string | null) => {
     const data = await fetchQuery<useInspirationDraftIssuesQuery>(
@@ -140,6 +154,7 @@ const useInspirationDraft = (options: Options) => {
     isRequestingRef.current = true
     setError(null)
     setOlderError(null)
+    setItemsFailure(null)
     if (isPaged) {
       setListing(true)
       listPage(sources, null).then(
@@ -154,7 +169,7 @@ const useInspirationDraft = (options: Options) => {
             items: [],
             issues: [...page.issues],
             nextBefore: page.nextBefore ?? null,
-            undraftedPages: canDraft ? [null] : []
+            awaitingItems: canDraft && page.issues.length > 0
           })
         },
         (e) => {
@@ -190,7 +205,7 @@ const useInspirationDraft = (options: Options) => {
     })
   }
 
-  // a redraft while a page was on its way replaced the timeline that page belongs to
+  // a redraft while a request was on its way replaced the timeline that request belongs to
   const updateTimeline = (
     createdAt: number,
     update: (prev: InspirationDraft) => InspirationDraft
@@ -199,42 +214,34 @@ const useInspirationDraft = (options: Options) => {
       prev?.createdAt === createdAt && prev.meetingId === meetingId ? update(prev) : prev
     )
 
-  const draftingPagesRef = useRef(new Set<string>())
-  const draftPage = (timeline: InspirationDraft, before: string | null) => {
-    const pageKey = `${timeline.createdAt}:${before}`
-    if (draftingPagesRef.current.has(pageKey)) return
-    draftingPagesRef.current.add(pageKey)
-    const withoutPage = (prev: InspirationDraft) => ({
-      ...prev,
-      undraftedPages: prev.undraftedPages?.filter((page) => page !== before)
-    })
+  const draftingItemsRef = useRef<number | null>(null)
+  const draftItems = (timeline: InspirationDraft) => {
+    const {createdAt} = timeline
+    if (draftingItemsRef.current === createdAt) return
+    draftingItemsRef.current = createdAt
+    const settle = () => {
+      if (draftingItemsRef.current === createdAt) draftingItemsRef.current = null
+    }
     const fail = (message: string) => {
-      draftingPagesRef.current.delete(pageKey)
-      setError(message)
-      updateTimeline(timeline.createdAt, withoutPage)
+      settle()
+      setItemsFailure({createdAt, message})
     }
     generate({
-      variables: {input: {meetingId, sources: timeline.sources, userPrompt, before}},
+      variables: {input: {meetingId, sources: timeline.sources, userPrompt}},
       onError: (e) => fail(getMutationError(e).message),
       onCompleted: (res, errors) => {
         if (errors) {
           fail(errors[0]?.message ?? 'Something went wrong')
           return
         }
-        draftingPagesRef.current.delete(pageKey)
-        const {inspirationItems, issues} = res.generateInspirationItems
-        const draftByIssue = new Map(
-          issues.flatMap((issue) =>
-            issue.draft ? [[toIssueKey(issue), issue.draft] as const] : []
-          )
-        )
-        updateTimeline(timeline.createdAt, (prev) => ({
-          ...withoutPage(prev),
-          items: [...prev.items, ...toItems(inspirationItems)],
-          issues: prev.issues.map((issue) => {
-            const pageDraft = issue.draft ? undefined : draftByIssue.get(toIssueKey(issue))
-            return pageDraft ? {...issue, draft: pageDraft} : issue
-          })
+        settle()
+        const {inspirationItems, issues, issueCount} = res.generateInspirationItems
+        updateTimeline(createdAt, (prev) => ({
+          ...prev,
+          items: toItems(inspirationItems),
+          awaitingItems: false,
+          readCount: issues.length,
+          issueCount
         }))
       }
     })
@@ -251,10 +258,7 @@ const useInspirationDraft = (options: Options) => {
         updateTimeline(createdAt, (prev) => ({
           ...prev,
           issues: [...prev.issues, ...page.issues],
-          nextBefore: page.nextBefore ?? null,
-          undraftedPages: canDraft
-            ? [...(prev.undraftedPages ?? []), nextBefore]
-            : prev.undraftedPages
+          nextBefore: page.nextBefore ?? null
         }))
       },
       (e) => {
@@ -264,8 +268,8 @@ const useInspirationDraft = (options: Options) => {
     )
   }
 
-  const latest = useRef({redraft, draftPage, isStale, isLoadingNewest})
-  latest.current = {redraft, draftPage, isStale, isLoadingNewest}
+  const latest = useRef({redraft, draftItems, isStale, isLoadingNewest})
+  latest.current = {redraft, draftItems, isStale, isLoadingNewest}
   const pendingRef = useRef(false)
 
   const [request, setRequest] = useState<{force: boolean} | null>(null)
@@ -292,19 +296,18 @@ const useInspirationDraft = (options: Options) => {
     if (isMeetingMember && latest.current.isStale) latest.current.redraft()
   }, [isMeetingMember])
 
-  // Drafts every listed page that has none yet, including pages a reload interrupted
-  const undraftedPages = JSON.stringify(draft?.undraftedPages ?? [])
   useEffect(() => {
-    if (!draft || isStale || !isMeetingMember || !canDraft) return
-    draft.undraftedPages?.forEach((before) => latest.current.draftPage(draft, before))
-  }, [draft?.createdAt, undraftedPages, isStale, isMeetingMember, canDraft])
+    if (draft && isDraftingItems) latest.current.draftItems(draft)
+  }, [draft?.createdAt, isDraftingItems])
 
   return {
     draft,
     requestRedraft,
     drafting: isLoadingNewest || (!isMeetingMember && isStale),
-    draftingPages: canDraft && !isStale && (draft?.undraftedPages?.length ?? 0) > 0,
+    draftingItems: isDraftingItems,
     error,
+    itemsError,
+    retryItems: () => setItemsFailure(null),
     hasOlder: isPaged && !!draft?.nextBefore && !isStale,
     loadOlder,
     loadingOlder,

@@ -37,10 +37,4 @@ type InspirationIssue {
   Why the AI left the issue out of a standup draft. Null if the draft uses it, and in a retrospective
   """
   unusedReason: String
-
-  """
-  A retrospective's draft reflection about this issue. Null when the issue isn't worth raising,
-  when the AI isn't sure which column it belongs in, and in a standup
-  """
-  draft: InspirationItem
 }

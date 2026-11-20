@@ -3,38 +3,57 @@ import {GraphQLError} from 'graphql'
 import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTipTap'
 import {replaceCalloutsWithBlockquotes} from '../../../../../client/shared/tiptap/replaceCalloutsWithBlockquotes'
 import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
-import {rankInspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import {
+  compareNewestFirst,
+  type InspirationIssue,
+  rankInspirationIssue
+} from '../../../../integrations/platform/InspirationIssue'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
-import type {InspirationSourceInput} from '../../resolverTypes'
-import type {InspirationItemSource} from '../../types/GenerateInspirationItemsPayload'
-import gatherInspirationIssues, {
+import type {InspirationSourceInput, ServiceEnum} from '../../resolverTypes'
+import type {InspirationItemSource} from '../../types/InspirationItem'
+import {
   formatNumberedIssues,
   INSPIRATION_DRAFT_SERVICE,
-  type NumberedIssue
+  numberIssues
 } from './gatherInspirationIssues'
+import gatherRangeIssues from './gatherRangeIssues'
+import {formatIssueLinesForAI} from './issuesForAI'
 import toInspirationIssue from './toInspirationIssue'
 
-// The AI reads only a page's most notable issues, so a page of many keeps its cost and wait down
-const MAX_CANDIDATES = 15
+// The AI reads a busy range's most notable issues, one line each, so its cost and wait stay down
+const MAX_READ_ISSUES = 300
+// and an excerpt of what the most notable few say
+const MAX_DETAILED_ISSUES = 20
+const MAX_DRAFTS = 6
+
+const MARKDOWN_LINK = /\[([^\]]+)\]\(([^)\s]+)\)/g
+// An issue's number or key, like #14286 or PAR-812: at the end of its reference, or leading a link's text
+const ISSUE_REF = /(#\d+|\b[A-Z][A-Z0-9]*-\d+)$/
+const LEADING_ISSUE_REF = /^(#\d+|[A-Z][A-Z0-9]*-\d+)(?=\s|$)/
+
+interface SourcedIssue {
+  service: ServiceEnum
+  issue: InspirationIssue
+}
 
 // Each kind of issue from each source takes a turn putting forward its most notable one, so a kind
 // that reports fewer signals, like a standup answer next to a busy pull request, still gets read
-const pickCandidates = (numberedIssues: readonly NumberedIssue[]) => {
-  const toQueueKey = ({service, issue}: NumberedIssue) => `${service}:${issue.kind}`
-  const queues = [...new Set(numberedIssues.map(toQueueKey))].map((queueKey) =>
-    numberedIssues
-      .filter((numberedIssue) => toQueueKey(numberedIssue) === queueKey)
+const takeTurns = <T extends SourcedIssue>(issues: readonly T[], limit: number) => {
+  const toQueueKey = ({service, issue}: T) => `${service}:${issue.kind}`
+  const queues = [...new Set(issues.map(toQueueKey))].map((queueKey) =>
+    issues
+      .filter((sourcedIssue) => toQueueKey(sourcedIssue) === queueKey)
       .sort((a, b) => rankInspirationIssue(b.issue) - rankInspirationIssue(a.issue))
   )
-  const candidates: NumberedIssue[] = []
-  for (let turn = 0; candidates.length < MAX_CANDIDATES; turn++) {
+  const taken: T[] = []
+  for (let turn = 0; taken.length < limit; turn++) {
     const turnIssues = queues.flatMap((queue) => queue[turn] ?? [])
     if (turnIssues.length === 0) break
-    candidates.push(...turnIssues.slice(0, MAX_CANDIDATES - candidates.length))
+    taken.push(...turnIssues.slice(0, limit - taken.length))
   }
-  return candidates
+  return taken
 }
 
 interface Options {
@@ -45,53 +64,42 @@ interface Options {
   prompts: {id: string; question: string; description: string}[]
   sources: readonly InspirationSourceInput[]
   userPrompt: string | null | undefined
-  canDraft: boolean
-  before: Date | null
   context: GQLContext
   info: GraphQLResolveInfo
 }
 
-// A retro draft is about one issue, so it travels with that issue. The AI only drafts the few
-// items worth raising, and a draft whose column it isn't sure of is dropped, not left for the
-// viewer to sort. Each call drafts one page of the timeline: the stretch of work just older than `before`,
-// which the viewer already sees listed, so the drafts can arrive after the list.
+// A retro draft is about one issue or a theme across many, so it carries the issues it was drawn from. The AI reads
+// the whole date range at once and drafts only the few things worth raising, and a draft whose column it isn't sure
+// of is dropped, not left for the viewer to sort. An issue backs one draft at most.
 const draftRetroFromSources = async (options: Options) => {
-  const {
-    meetingId,
-    teamId,
-    viewerId,
-    viewerName,
-    prompts,
-    sources,
-    userPrompt,
-    canDraft,
-    before,
-    context,
-    info
-  } = options
-  const {numberedIssues, nextBefore} = await gatherInspirationIssues(
-    sources,
-    teamId,
-    viewerId,
-    context,
-    info,
-    {before}
+  const {meetingId, teamId, viewerId, viewerName, prompts, sources, userPrompt, context, info} =
+    options
+  const rangeSources = await gatherRangeIssues(sources, teamId, viewerId, context, info)
+  const rangeIssues = rangeSources.flatMap(({service, sourceIssues}) =>
+    sourceIssues.map((issue) => ({service, issue}))
+  )
+  if (rangeIssues.length === 0) return {inspirationItems: [], issues: [], issueCount: 0}
+
+  // Listed by source, newest first, so a run of related work reads in order
+  const serviceOrder = sources.map(({service}) => service)
+  const numberedIssues = numberIssues(
+    takeTurns(rangeIssues, MAX_READ_ISSUES).sort(
+      (a, b) =>
+        serviceOrder.indexOf(a.service) - serviceOrder.indexOf(b.service) ||
+        compareNewestFirst(a.issue, b.issue)
+    )
+  )
+  const detailedIds = new Set(takeTurns(numberedIssues, MAX_DETAILED_ISSUES).map(({id}) => id))
+  const issuesText = formatNumberedIssues(numberedIssues, (issues, ids) =>
+    formatIssueLinesForAI(issues, ids, detailedIds)
   )
 
-  if (numberedIssues.length === 0 || !canDraft) {
-    return {
-      inspirationItems: [],
-      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue, null)),
-      nextBefore
-    }
-  }
-
-  const candidates = pickCandidates(numberedIssues)
   const manager = new OpenAIServerManager()
   const result = await manager.generateRetroDrafts(
-    formatNumberedIssues(candidates),
+    issuesText,
     prompts.map(({question, description}) => ({question, description})),
     viewerName,
+    MAX_DRAFTS,
     userPrompt
   )
   if (!result) {
@@ -104,36 +112,69 @@ const draftRetroFromSources = async (options: Options) => {
     .values({userId: viewerId, tokenCost: result.tokenCost})
     .execute()
 
-  const issueIds = new Set(candidates.map(({id}) => id))
+  const issueById = new Map(
+    numberedIssues.map((numberedIssue) => [numberedIssue.id, numberedIssue])
+  )
+  const idByUrl = new Map(
+    numberedIssues.flatMap(({id, issue}) => (issue.url ? [[issue.url, id] as const] : []))
+  )
   const serviceByUrl = new Map(
     numberedIssues.flatMap(({service, issue}) => (issue.url ? [[issue.url, service] as const] : []))
   )
+  const refByUrl = new Map(
+    numberedIssues.flatMap(({issue}) => {
+      const ref = ISSUE_REF.exec(issue.reference)?.[1]
+      return issue.url && ref ? [[issue.url, ref] as const] : []
+    })
+  )
+  // The AI sometimes names a linked issue by another one's number, so a link's text takes the number of the issue
+  // it links to
+  const relabelLinks = (markdown: string) =>
+    markdown.replace(MARKDOWN_LINK, (link, label: string, url: string) => {
+      const ref = refByUrl.get(url)
+      return ref && LEADING_ISSUE_REF.test(label)
+        ? `[${label.replace(LEADING_ISSUE_REF, ref)}](${url})`
+        : link
+    })
   const createdAt = new Date()
-  const draftByIssueId = new Map<string, InspirationItemSource>()
-  result.items.forEach(({issueId, promptIndex, isColumnClear, content}) => {
+  const claimedIds = new Set<string>()
+  const inspirationItems: InspirationItemSource[] = []
+  result.items.forEach(({issueIds, promptIndex, isColumnClear, content}) => {
     const prompt = prompts[promptIndex]
-    if (!isColumnClear || !prompt || !issueIds.has(issueId)) return
-    if (draftByIssueId.has(issueId)) return
-    draftByIssueId.set(issueId, {
-      id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${issueId}`,
+    if (inspirationItems.length >= MAX_DRAFTS || !isColumnClear || !prompt) return
+    const linkedIds = [...content.matchAll(MARKDOWN_LINK)].flatMap(
+      (match) => idByUrl.get(match[2] ?? '') ?? []
+    )
+    const sourceIssues = [...new Set([...issueIds, ...linkedIds])].flatMap((id) => {
+      const numberedIssue = issueById.get(id)
+      return numberedIssue && !claimedIds.has(id) ? [numberedIssue] : []
+    })
+    if (sourceIssues.length === 0) return
+    sourceIssues.forEach(({id}) => claimedIds.add(id))
+    inspirationItems.push({
+      id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${inspirationItems.length}`,
       meetingId,
       userId: viewerId,
       service: INSPIRATION_DRAFT_SERVICE,
       title: null,
       promptId: prompt.id,
       content: tagIssueLinks(
-        {type: 'doc', content: replaceCalloutsWithBlockquotes(markdownToTipTap(content))},
+        {
+          type: 'doc',
+          content: replaceCalloutsWithBlockquotes(markdownToTipTap(relabelLinks(content)))
+        },
         serviceByUrl
       ),
-      createdAt
+      createdAt,
+      issues: sourceIssues
+        .sort((a, b) => compareNewestFirst(a.issue, b.issue))
+        .map((numberedIssue) => toInspirationIssue(numberedIssue))
     })
   })
   return {
-    inspirationItems: [...draftByIssueId.values()],
-    issues: numberedIssues.map((numberedIssue) =>
-      toInspirationIssue(numberedIssue, draftByIssueId.get(numberedIssue.id) ?? null)
-    ),
-    nextBefore
+    inspirationItems,
+    issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue)),
+    issueCount: rangeIssues.length
   }
 }
 

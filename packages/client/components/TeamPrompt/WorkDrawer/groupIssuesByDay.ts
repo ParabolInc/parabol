@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 interface RankedIssue {
   updatedAt?: string | null
   importance?: number | null
-  draft?: unknown
 }
 
 export interface IssueDay<T> {
@@ -15,11 +14,9 @@ export interface IssueDay<T> {
 const toTime = ({updatedAt}: RankedIssue) => (updatedAt ? new Date(updatedAt).getTime() : 0)
 
 const compareMostNotable = (a: RankedIssue, b: RankedIssue) =>
-  Number(!!b.draft) - Number(!!a.draft) ||
-  (b.importance ?? 0) - (a.importance ?? 0) ||
-  toTime(b) - toTime(a)
+  (b.importance ?? 0) - (a.importance ?? 0) || toTime(b) - toTime(a)
 
-// Newest day first. Within a day, issues the AI drafted from lead, then the most notable
+// Newest day first. Within a day, the most notable lead
 const groupIssuesByDay = <T extends RankedIssue>(issues: readonly T[]): IssueDay<T>[] => {
   const issuesByDay = new Map<string, T[]>()
   const undated: T[] = []

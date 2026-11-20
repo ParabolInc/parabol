@@ -17,6 +17,14 @@ const mutation = graphql`
         service
         promptId
         createdAt
+        issues {
+          service
+          kind
+          title
+          url
+          updatedAt
+          importance
+        }
       }
       issues {
         service
@@ -26,13 +34,8 @@ const mutation = graphql`
         updatedAt
         importance
         unusedReason
-        draft {
-          id
-          content
-          promptId
-        }
       }
-      nextBefore
+      issueCount
     }
   }
 `

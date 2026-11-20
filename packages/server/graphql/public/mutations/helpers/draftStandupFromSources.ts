@@ -52,12 +52,13 @@ const draftStandupFromSources = async (options: Options) => {
     null
   )
 
-  if (numberedIssues.length === 0) return {inspirationItems: [], issues: [], nextBefore: null}
+  const issueCount = numberedIssues.length
+  if (issueCount === 0) return {inspirationItems: [], issues: [], issueCount}
   if (!canDraft) {
     return {
       inspirationItems: [],
-      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue, null)),
-      nextBefore: null
+      issues: numberedIssues.map((numberedIssue) => toInspirationIssue(numberedIssue)),
+      issueCount
     }
   }
 
@@ -93,7 +94,7 @@ const draftStandupFromSources = async (options: Options) => {
     const isLinked = !!url && draftText.includes(url)
     const reason = reasonById.get(numberedIssue.id)
     const isUsed = isLinked || (!url && !reason)
-    return toInspirationIssue(numberedIssue, null, isUsed ? null : (reason ?? 'Not mentioned'))
+    return toInspirationIssue(numberedIssue, isUsed ? null : (reason ?? 'Not mentioned'))
   })
 
   const serviceByUrl = new Map(
@@ -117,11 +118,15 @@ const draftStandupFromSources = async (options: Options) => {
           {type: 'doc', content: replaceCalloutsWithBlockquotes(markdownToTipTap(markdown))},
           serviceByUrl
         ),
-        createdAt
+        createdAt,
+        issues: numberedIssues.flatMap((numberedIssue) => {
+          const {url} = numberedIssue.issue
+          return url && markdown.includes(url) ? [toInspirationIssue(numberedIssue)] : []
+        })
       }
     ]
   })
-  return {inspirationItems, issues, nextBefore: null}
+  return {inspirationItems, issues, issueCount}
 }
 
 export default draftStandupFromSources
