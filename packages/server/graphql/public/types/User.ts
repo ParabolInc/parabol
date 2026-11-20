@@ -899,6 +899,7 @@ const User: ReqResolvers<'User'> = {
       .innerJoin('OAuthAPIProvider', 'OAuthAPIProvider.clientId', 'OAuthAPIGrant.clientId')
       .select([
         'OAuthAPIGrant.id',
+        'OAuthAPIGrant.userId',
         'OAuthAPIProvider.name as appName',
         'OAuthAPIProvider.redirectUris',
         'OAuthAPIGrant.grantedOrgIds',

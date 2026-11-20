@@ -11,6 +11,10 @@ interface Grants {
 
 type Organizations = ReadonlyArray<{id: string; teams: ReadonlyArray<{id: string}>}>
 
+// Empty org and team lists reach nothing, and null pages add no page beyond them
+export const isGrantingNothing = ({grantedOrgIds, grantedTeamIds, grantedPageIds}: Grants) =>
+  grantedOrgIds?.length === 0 && grantedTeamIds?.length === 0 && !grantedPageIds?.length
+
 const useResourceGrants = (initialGrants?: Grants) => {
   const [orgGrantMode, setOrgGrantMode] = useState<GrantModeOption>(
     initialGrants?.grantedOrgIds ? 'custom' : 'all'

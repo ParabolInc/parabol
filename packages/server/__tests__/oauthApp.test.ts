@@ -337,24 +337,89 @@ test('An app that names no scopes is offered every scope', async () => {
   expect(scopes).toEqual(expect.arrayContaining(['USERS_READ', 'PAGES_WRITE']))
 })
 
-test('An unknown scope is refused', async () => {
+test('Scopes Parabol does not have are ignored', async () => {
   const {cookie} = await signUp()
   const {redirectUri, clientId} = await createClient()
-  const scope = 'users:read everything:write'
-
-  const authorizeResponse = await requestAuthorization(
-    {clientId, redirectUri, scope, state: 'xyz'},
+  const scope = 'users:read offline_access'
+  const consent = await sendPublic({
+    query: OAUTH_AUTHORIZATION_REQUEST,
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        scope,
+        state: 'xyz',
+        codeChallenge: defaultPKCEPair.codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
     cookie
-  )
-  expect(authorizeResponse.status).toBe(400)
+  })
+  expect(consent.errors).toBeUndefined()
+  expect(consent.data.viewer.oauthAuthorizationRequest.scopes).toEqual(['USERS_READ'])
 
+  const code = await approve({clientId, redirectUri, scope}, cookie, {scopes: ['USERS_READ']})
+  const tokenResponse = await exchangeCode({code, redirect_uri: redirectUri, client_id: clientId})
+  expect(tokenResponse.status).toBe(200)
+  expect(await tokenResponse.json()).toMatchObject({scope: 'users:read'})
+})
+
+test('An app that names only scopes Parabol does not have is offered every scope', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+  const consent = await sendPublic({
+    query: OAUTH_AUTHORIZATION_REQUEST,
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        scope: 'openid offline_access',
+        state: 'xyz',
+        codeChallenge: defaultPKCEPair.codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
+    cookie
+  })
+  expect(consent.errors).toBeUndefined()
+  expect(consent.data.viewer.oauthAuthorizationRequest.scopes).toHaveLength(18)
+})
+
+test('Granting more than 100 of a resource fails', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
   const approved = await createCode(
-    {clientId, redirectUri, scope, codeChallenge: defaultPKCEPair.codeChallenge},
+    {clientId, redirectUri, scope: 'users:read', codeChallenge: defaultPKCEPair.codeChallenge},
     cookie,
-    {scopes: ['USERS_READ']}
+    {grantedOrgIds: Array.from({length: 101}, (_, index) => `org${index}`), grantedTeamIds: []}
   )
   expect(approved.data).toBeNull()
-  expect(approved.errors?.[0]?.message).toMatch('Invalid scope')
+  expect(approved.errors?.[0]).toMatchObject({
+    message: 'Cannot grant access to more than 100 organizations',
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+})
+
+test('Browsers may not frame the consent page', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+  const authorizeResponse = await requestAuthorization(
+    {clientId, redirectUri, scope: 'users:read', state: 'xyz'},
+    cookie
+  )
+  const consentUrl = new URL(authorizeResponse.headers.get('Location')!)
+  for (const pathname of ['/authorize-app', '/Authorize-App/', '/authorize%2Dapp']) {
+    consentUrl.pathname = pathname
+    const consentPage = await fetch(consentUrl, {headers: {cookie}})
+    expect(consentPage.status).toBe(200)
+    expect(consentPage.headers.get('Content-Security-Policy')).toBe("frame-ancestors 'none'")
+    expect(consentPage.headers.get('X-Frame-Options')).toBe('DENY')
+  }
+
+  const otherPage = await fetch(`${PROTOCOL}://${HOST}/me`, {headers: {cookie}})
+  expect(otherPage.status).toBe(200)
+  expect(otherPage.headers.get('Content-Security-Policy')).toBeNull()
+  expect(otherPage.headers.get('X-Frame-Options')).toBeNull()
 })
 
 test('Granting a scope the app did not ask for fails', async () => {

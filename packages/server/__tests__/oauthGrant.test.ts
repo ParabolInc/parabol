@@ -5,7 +5,7 @@ import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import hashRandomToken from '../utils/hashRandomToken'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {createPage, HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 import {createClient, createCode, createPKCEPair, type ResourceGrants} from './oauthClient'
 
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
@@ -40,9 +40,16 @@ const VIEWER_OAUTH_GRANTS = `
         appName
         redirectUris
         scopes
-        grantedOrgIds
-        grantedTeamIds
-        grantedPageIds
+        grantedOrgs {
+          id
+          name
+        }
+        grantedTeams {
+          id
+        }
+        grantedPages {
+          id
+        }
         createdAt
         lastUsedAt
       }
@@ -389,11 +396,36 @@ test('the viewer sees the apps they connected and what each can reach', async ()
       appName: 'Test OAuth App',
       redirectUris: [app.redirectUri],
       scopes: ['USERS_READ'],
-      grantedOrgIds: [user.orgId],
-      grantedTeamIds: [],
-      grantedPageIds: null,
+      grantedOrgs: [{id: user.orgId, name: expect.any(String)}],
+      grantedTeams: [],
+      grantedPages: null,
       createdAt: expect.any(String),
       lastUsedAt: null
+    }
+  ])
+})
+
+test('a connected app lists only the orgs, teams and pages the viewer can still reach', async () => {
+  const user = await signUp()
+  const stranger = await signUp()
+  const [pageId, strangersPageId] = await Promise.all([
+    createPage(user.cookie),
+    createPage(stranger.cookie)
+  ])
+  const app = await createApp(user)
+  await consent(app, 'users:read', {
+    grantedOrgIds: [user.orgId, stranger.orgId],
+    grantedTeamIds: [user.teamId, stranger.teamId],
+    grantedPageIds: [pageId, strangersPageId]
+  })
+
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  expect(listed.errors).toBeUndefined()
+  expect(listed.data.viewer.oauthGrants).toMatchObject([
+    {
+      grantedOrgs: [{id: user.orgId}],
+      grantedTeams: [{id: user.teamId}],
+      grantedPages: [{id: pageId}]
     }
   ])
 })

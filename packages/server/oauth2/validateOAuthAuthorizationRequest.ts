@@ -62,11 +62,11 @@ export const validateOAuthAuthorizationRequest = async (
       code: 'BAD_USER_INPUT'
     }
   }
-  const requestedScopes = [...new Set(scope?.split(' ').filter(Boolean))]
-  if (requestedScopes.some((requestedScope) => !ALL_SCOPES.includes(requestedScope))) {
-    return {error: 'Invalid scope: it names a scope Parabol does not have', code: 'BAD_USER_INPUT'}
-  }
-  // an app that asks for nothing in particular is offered every scope, and the viewer picks
+  // RFC 6749 §3.3 lets a server ignore scopes it does not have, like OpenID Connect's offline_access
+  const requestedScopes = [
+    ...new Set(scope?.split(' ').filter((requestedScope) => ALL_SCOPES.includes(requestedScope)))
+  ]
+  // an app that asks for nothing Parabol has is offered every scope, and the viewer picks
   const scopes = requestedScopes.length > 0 ? requestedScopes : ALL_SCOPES
   if (!state) return {error: 'Invalid state: state is required', code: 'BAD_USER_INPUT'}
   if (!codeChallenge) {

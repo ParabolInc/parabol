@@ -1,6 +1,7 @@
 import getKysely from '../postgres/getKysely'
 import {
   createOrgAdmin,
+  createPage,
   getTestEmail,
   getUserOrgs,
   getUserTeams,
@@ -120,22 +121,6 @@ test('a PAT limited to another org cannot fetch an org asset', async () => {
   expect((await fetchAsset(path, {authorization: `Bearer ${allowed}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${limited}`})).status).toBe(403)
 })
-
-const CREATE_PAGE = `
-  mutation CreatePage($teamId: ID) {
-    createPage(teamId: $teamId) {
-      page {
-        id
-      }
-    }
-  }
-`
-
-const createPage = async (cookie: string, teamId?: string) => {
-  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
-  expect(res.errors).toBeUndefined()
-  return res.data.createPage.page.id as string
-}
 
 test('a PAT reads a page file only when it holds pages:read', async () => {
   const {cookie} = await signUp()

@@ -363,6 +363,22 @@ export const createOrgAdmin = async (email: string) => {
   return {cookie, orgId, userId}
 }
 
+const CREATE_PAGE = `
+  mutation CreatePage($teamId: ID) {
+    createPage(teamId: $teamId) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+export const createPage = async (cookie: string, teamId?: string) => {
+  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
+  expect(res.errors).toBeUndefined()
+  return res.data.createPage.page.id as string
+}
+
 export const getUserTeams = async (userId: string) => {
   const user = await sendIntranet({
     query: `

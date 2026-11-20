@@ -16,17 +16,17 @@ type OAuthAPIGrant {
   """
   scopes: [OAuthScopeEnum!]!
   """
-  Null means the application can reach all orgs the user belongs to
+  The orgs the user limited the application to, leaving out any the user has since left. Null means the application can reach all orgs the user belongs to
   """
-  grantedOrgIds: [ID!]
+  grantedOrgs: [Organization!]
   """
-  Null means the application can reach all teams the user belongs to
+  The teams the user limited the application to, leaving out any the user has since left. Null means the application can reach all teams the user belongs to
   """
-  grantedTeamIds: [ID!]
+  grantedTeams: [Team!]
   """
-  Null means the application can reach all pages the user can access
+  The pages the user granted the application on top of those under its orgs and teams, leaving out any the user can no longer open. Null means the application can reach all pages the user can access, unless it is limited to some orgs or teams
   """
-  grantedPageIds: [ID!]
+  grantedPages: [Page!]
   """
   When the user first connected the application
   """

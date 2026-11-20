@@ -5,8 +5,7 @@ import {validateOAuthAuthorizationRequest} from '../../../oauth2/validateOAuthAu
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
-
-const MAX_GRANTED_IDS = 100
+import assertResourceGrantLimits from './helpers/assertResourceGrantLimits'
 
 const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
   _source,
@@ -26,14 +25,7 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  const grantedIds = {orgs: grantedOrgIds, teams: grantedTeamIds, pages: grantedPageIds}
-  for (const [resource, ids] of Object.entries(grantedIds)) {
-    if (ids && ids.length > MAX_GRANTED_IDS) {
-      throw new GraphQLError(`Cannot grant access to more than ${MAX_GRANTED_IDS} ${resource}`, {
-        extensions: {code: 'BAD_USER_INPUT'}
-      })
-    }
-  }
+  assertResourceGrantLimits({grantedOrgIds, grantedTeamIds, grantedPageIds})
   const {provider, codeChallenge} = authorization
   const {redirectUri, state, resource} = request
   const code = crypto.randomBytes(32).toString('hex')

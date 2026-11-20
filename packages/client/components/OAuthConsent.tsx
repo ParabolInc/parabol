@@ -4,10 +4,8 @@ import {useFragment} from 'react-relay'
 import type {OAuthAuthorizationRequestInput} from '../__generated__/OAuthAuthorizeQuery.graphql'
 import type {OAuthConsent_authorizationRequest$key} from '../__generated__/OAuthConsent_authorizationRequest.graphql'
 import type {OAuthConsent_viewer$key} from '../__generated__/OAuthConsent_viewer.graphql'
-import useResourceGrants from '../hooks/useResourceGrants'
+import useResourceGrants, {isGrantingNothing} from '../hooks/useResourceGrants'
 import useScopeSelection from '../hooks/useScopeSelection'
-import {OrgTeamGrant} from '../modules/userDashboard/components/OrgTeamGrant'
-import {PageGrant} from '../modules/userDashboard/components/PageGrant'
 import {TokenScopesTable} from '../modules/userDashboard/components/TokenScopesTable'
 import {useCreateOAuthAPICodeMutation} from '../mutations/useCreateOAuthAPICodeMutation'
 import {Button} from '../ui/Button/Button'
@@ -16,6 +14,7 @@ import getMutationError from '../utils/relay/getMutationError'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
+import OAuthConsentAccess from './OAuthConsentAccess'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
@@ -56,22 +55,16 @@ const OAuthConsent = (props: Props) => {
   const [isLeaving, setIsLeaving] = useState(false)
   const {selectedScopes, toggleScope} = useScopeSelection(scopes)
   const resourceGrants = useResourceGrants()
+  const grants = resourceGrants.getGrants(viewer.organizations)
+  const canAuthorize = selectedScopes.size > 0 && !isGrantingNothing(grants)
   const redirectUrl = new URL(redirectUri)
   // A framed consent page could be clickjacked, so it only accepts a decision in its own window
   const isFramed = window.self !== window.top
 
   const authorize = () => {
-    if (selectedScopes.size === 0) {
-      setErrorMessage('Grant at least one scope')
-      return
-    }
     setErrorMessage(null)
     createOAuthAPICode({
-      variables: {
-        request,
-        scopes: [...selectedScopes],
-        ...resourceGrants.getGrants(viewer.organizations)
-      },
+      variables: {request, scopes: [...selectedScopes], ...grants},
       onCompleted: ({createOAuthAPICode}) => {
         setIsLeaving(true)
         window.location.assign(createOAuthAPICode.redirectUri)
@@ -115,19 +108,7 @@ const OAuthConsent = (props: Props) => {
             toggleScope={toggleScope}
             availableScopes={new Set(scopes)}
           />
-          <div className='flex flex-col gap-4'>
-            <div>
-              <h3 className='m-0 font-semibold text-fg-muted text-xs uppercase tracking-wider'>
-                Access
-              </h3>
-              <p className='m-0 mt-1 text-fg-muted text-xs'>
-                By default, {name} can reach everything you can. Optionally restrict it to specific
-                organizations, teams, or pages.
-              </p>
-            </div>
-            <OrgTeamGrant viewerRef={viewer} {...resourceGrants} />
-            <PageGrant {...resourceGrants} />
-          </div>
+          <OAuthConsentAccess appName={name} viewerRef={viewer} resourceGrants={resourceGrants} />
           {errorMessage && (
             <p role='alert' className='m-0 text-fg-error'>
               {errorMessage}
@@ -145,7 +126,7 @@ const OAuthConsent = (props: Props) => {
               <Button
                 variant='primary'
                 size='md'
-                disabled={submitting || isLeaving}
+                disabled={!canAuthorize || submitting || isLeaving}
                 onClick={authorize}
               >
                 Authorize
