@@ -8,6 +8,7 @@ import ReportPageHeader from './ReportPageHeader'
 import ReportPanel from './ReportPanel'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import useMarkReportsViewed from './useMarkReportsViewed'
 import useResultSpec from './useResultSpec'
 
 interface Props {
@@ -34,6 +35,7 @@ const query = graphql`
     $hasAllTeams: Boolean!
   ) {
     viewer {
+      ...useMarkReportsViewed_viewer
       organization(orgId: $orgId) {
         structure {
           id
@@ -60,6 +62,7 @@ const ReportPage = ({
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
   const {resultSpec, isUpdating} = useResultSpec(queryRef.variables.spec, spec, period)
   const {organization} = viewer
+  useMarkReportsViewed(viewer, orgId)
   const levels = organization?.structure ?? []
   const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')

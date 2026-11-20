@@ -475,6 +475,18 @@ const User: ReqResolvers<'User'> = {
     return visibleOrgs.filter((_, i) => grantChecks[i])
   },
 
+  reportsOrganization: async ({id: userId}, _args, {dataLoader, resourceGrants}) => {
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    const [lastViewed] = organizationUsers
+      .flatMap(({orgId, reportsViewedAt}) =>
+        reportsViewedAt ? [{orgId, viewedAt: reportsViewedAt.getTime()}] : []
+      )
+      .sort((a, b) => b.viewedAt - a.viewedAt)
+    if (!lastViewed) return null
+    if (resourceGrants && !(await resourceGrants.hasOrg(lastViewed.orgId))) return null
+    return (await dataLoader.get('organizations').load(lastViewed.orgId)) ?? null
+  },
+
   overLimitCopy: async ({id: userId, overLimitCopy}, _args, {dataLoader}) => {
     const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
     if (highestTier !== 'starter') return null

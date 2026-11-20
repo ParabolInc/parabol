@@ -258,6 +258,11 @@ type User {
   organizations: [Organization!]! @scope(name: ORGS_READ)
 
   """
+  The organization whose reports the user opened most recently, null if they haven't opened any
+  """
+  reportsOrganization: Organization @scope(name: ORGS_READ)
+
+  """
   a string with message stating that the user is over the free tier limit, else null
   """
   overLimitCopy: String

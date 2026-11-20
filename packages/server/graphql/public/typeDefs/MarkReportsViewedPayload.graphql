@@ -1,0 +1,6 @@
+type MarkReportsViewedPayload {
+  """
+  The viewer, whose reportsOrganization is now the organization they opened
+  """
+  user: User!
+}

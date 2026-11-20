@@ -86,6 +86,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(isSuperUser, isViewerOnOrg<'Mutation.rateReportQuestion'>('args.orgId')),
       rateLimit({perMinute: 60, perHour: 600})
     ),
+    markReportsViewed: and(
+      isViewerOnOrg<'Mutation.markReportsViewed'>('args.orgId'),
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
@@ -758,6 +762,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     picture: allow,
     preferredName: allow,
     rasterPicture: allow,
+    reportsOrganization: isUserSelf,
     meetingMember: and(isUserSelf, isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId')),
     similarReflectionGroups: and(
       isUserSelf,

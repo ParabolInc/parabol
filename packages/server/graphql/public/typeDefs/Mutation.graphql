@@ -2698,6 +2698,11 @@ type Mutation {
   ): RateReportQuestionPayload! @scope(name: REPORTS_WRITE)
 
   """
+  Remember that the viewer opened this organization's reports, so Reports opens to it next time
+  """
+  markReportsViewed(orgId: ID!): MarkReportsViewedPayload! @scope(name: REPORTS_WRITE)
+
+  """
   Sign a report of this Parabol instance's active users with its private usage key, to send to Parabol. Billing
   leaders and org admins can, when its PRIVATE_LICENSE_KEY has one
   """

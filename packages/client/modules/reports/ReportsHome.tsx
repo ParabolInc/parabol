@@ -17,6 +17,7 @@ import ReportsStarterBanner from './ReportsStarterBanner'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import SignedUsageReportButton from './SignedUsageReportButton'
+import useMarkReportsViewed from './useMarkReportsViewed'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsHomeQuery>
@@ -31,6 +32,7 @@ const query = graphql`
   query ReportsHomeQuery($orgId: ID!, $timeZone: String!, $pagePeriod: ReportPeriodInput!) {
     viewer {
       ...ReportsOrgPicker_viewer
+      ...useMarkReportsViewed_viewer
       organizations {
         id
       }
@@ -51,6 +53,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
   const {viewer} = usePreloadedQuery<ReportsHomeQuery>(query, queryRef)
   const {organization, organizations} = viewer
   const isViewerOnOrg = organizations.some(({id}) => id === orgId)
+  useMarkReportsViewed(viewer, orgId)
   useDocumentTitle('Reports | Parabol', 'Reports')
   const [askingQuestion, setAskingQuestion] = useState<string | null>(null)
   return (

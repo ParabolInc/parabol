@@ -15,6 +15,9 @@ const query = graphql`
       organizations {
         id
       }
+      reportsOrganization {
+        id
+      }
     }
   }
 `
@@ -22,8 +25,8 @@ const query = graphql`
 const ReportsRedirect = ({queryRef}: Props) => {
   const {viewer} = usePreloadedQuery<ReportsRedirectQuery>(query, queryRef)
   const {searchStr: search} = useLocation()
-  const [org] = viewer.organizations
-  if (org) return <Redirect {...hrefOptions(`/reports/${org.id}${search}`)} replace />
+  const orgId = viewer.reportsOrganization?.id ?? viewer.organizations[0]?.id
+  if (orgId) return <Redirect {...hrefOptions(`/reports/${orgId}${search}`)} replace />
   return (
     <p className='m-0 px-4 pt-4 text-fg-secondary sm:px-8'>
       Join an organization to see its reports.
