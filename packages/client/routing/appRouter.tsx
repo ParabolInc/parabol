@@ -1,5 +1,6 @@
 import {createBrowserHistory, createRouter, lazyRouteComponent} from '@tanstack/react-router'
 import type {TeamInviteeResult} from '../hooks/useTeamInviteeDrafts'
+import type {NavigateFn} from '../types/relayMutations'
 import matchReportedRoute from '../utils/matchReportedRoute'
 import {startNavigation} from '../utils/navigationTimings'
 import appAtmosphere from './appAtmosphere'
@@ -9,11 +10,12 @@ import {routeTree} from './routeTree'
 import {parseSearch, stringifySearch} from './searchParams'
 
 const queryRefs = createQueryRefs(appAtmosphere, appAtmosphere.retries)
+const navigate: NavigateFn = (options) => appRouter.navigate(options)
 
 const appRouter = createRouter({
   routeTree,
   history: createBrowserHistory(),
-  context: {atmosphere: appAtmosphere, queryRefs},
+  context: {atmosphere: appAtmosphere, navigate, queryRefs},
   parseSearch,
   stringifySearch,
   // The registry caches route queries, so the router keeps no loader data of its own

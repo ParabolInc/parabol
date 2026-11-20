@@ -16,7 +16,7 @@ import type {MeetingSelectorQuery} from '../../__generated__/MeetingSelectorQuer
 import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import type {NavigateFn} from '../../types/relayMutations'
 import handlerProvider from '../../utils/relay/handlerProvider'
-import MeetingRoot from '../MeetingRoot'
+import MeetingRoute from '../MeetingRoute'
 
 jest.mock('babel-plugin-relay/macro', () => ({
   __esModule: true,
@@ -26,10 +26,10 @@ jest.mock('babel-plugin-relay/macro', () => ({
   }
 }))
 const mockLoaded = {
-  queryRef: null as PreloadedQuery<MeetingSelectorQuery> | null,
+  loaderData: null as {queryRef: PreloadedQuery<MeetingSelectorQuery>} | null,
   listeners: new Set<() => void>()
 }
-jest.mock('../../hooks/useJoinedMeetingQuery', () => {
+jest.mock('@tanstack/react-router', () => {
   const {useSyncExternalStore} = jest.requireActual<typeof import('react')>('react')
   const subscribe = (listener: () => void) => {
     mockLoaded.listeners.add(listener)
@@ -38,10 +38,13 @@ jest.mock('../../hooks/useJoinedMeetingQuery', () => {
     }
   }
   return {
-    __esModule: true,
-    default: () => useSyncExternalStore(subscribe, () => mockLoaded.queryRef)
+    ...jest.requireActual('@tanstack/react-router'),
+    getRouteApi: () => ({
+      useLoaderData: () => useSyncExternalStore(subscribe, () => mockLoaded.loaderData)
+    })
   }
 })
+jest.mock('../../routing/useQueryRefLease', () => ({__esModule: true, default: () => {}}))
 jest.mock('../NewMeetingCheckIn', () => ({__esModule: true, default: () => 'checkin phase'}))
 jest.mock('../RetroReflectPhase/RetroReflectPhase', () => ({
   __esModule: true,
@@ -131,9 +134,11 @@ const loadMeeting = (meetingId: string, facilitatorStageId: string) => {
     createOperationDescriptor(meetingQuery, variables),
     retroPayload(meetingId, facilitatorStageId)
   )
-  mockLoaded.queryRef = loadQuery<MeetingSelectorQuery>(atmosphere, meetingQuery, variables, {
-    fetchPolicy: 'store-only'
-  })
+  mockLoaded.loaderData = {
+    queryRef: loadQuery<MeetingSelectorQuery>(atmosphere, meetingQuery, variables, {
+      fetchPolicy: 'store-only'
+    })
+  }
   mockLoaded.listeners.forEach((listener) => listener())
 }
 
@@ -170,7 +175,7 @@ let container: HTMLElement
 const renderRoute = () => {
   const router = createTestRouter({
     rootComponent: MeetingLayout,
-    routes: {'/meet/$meetingId/$': <MeetingRoot />}
+    routes: {'/meet/$meetingId/$': <MeetingRoute />}
   })
   root.render(
     <RelayEnvironmentProvider environment={atmosphere}>
