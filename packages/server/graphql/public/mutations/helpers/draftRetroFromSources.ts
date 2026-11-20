@@ -40,7 +40,7 @@ interface SourcedIssue {
 }
 
 // Each kind of issue from each source takes a turn putting forward its most notable one, so a kind
-// that reports fewer signals, like a standup answer next to a busy pull request, still gets read
+// that reports fewer signals, like a standup answer next to a busy pull request, still gets an excerpt
 const takeTurns = <T extends SourcedIssue>(issues: readonly T[], limit: number) => {
   const toQueueKey = ({service, issue}: T) => `${service}:${issue.kind}`
   const queues = [...new Set(issues.map(toQueueKey))].map((queueKey) =>
