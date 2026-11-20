@@ -19,7 +19,8 @@ export const makeConnectAttemptProps = (
   mutationProps: MenuMutationProps,
   connecting: ConnectingService,
   isCurrent: () => boolean,
-  setState: (state: ConnectInMenuState) => void
+  setState: (state: ConnectInMenuState) => void,
+  onConnected: (service: RegisteredClientIntegration) => void
 ): MenuMutationProps => {
   const fail = (error: {message: string} | undefined) => {
     mutationProps.onCompleted()
@@ -34,13 +35,17 @@ export const makeConnectAttemptProps = (
         return
       }
       mutationProps.onCompleted(res, errors)
+      onConnected(connecting.service)
       if (isCurrent()) setState({phase: 'idle'})
     },
     onError: fail
   }
 }
 
-const useConnectInMenu = (mutationProps: MenuMutationProps) => {
+const useConnectInMenu = (
+  mutationProps: MenuMutationProps,
+  onConnected: (service: RegisteredClientIntegration) => void
+) => {
   const [state, setState] = useState<ConnectInMenuState>({phase: 'idle'})
   const attemptRef = useRef(0)
   const begin: BeginConnect = (service, title) => {
@@ -51,7 +56,8 @@ const useConnectInMenu = (mutationProps: MenuMutationProps) => {
       mutationProps,
       {service, title},
       () => attemptRef.current === attempt,
-      setState
+      setState,
+      onConnected
     )
   }
   const cancel = () => {

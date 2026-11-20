@@ -17,7 +17,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroMeetingUpdates = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef, rightDrawerOpen, toggleDrawer} = props
   const meeting = useFragment(
     graphql`
       fragment RetroMeetingUpdates_meeting on RetrospectiveMeeting {
@@ -92,7 +92,8 @@ const RetroMeetingUpdates = (props: Props) => {
         showSidebar={showSidebar}
         tasks={teamMemberTasks}
         toggleSidebar={toggleSidebar}
-        onOpenSettings={openSettings}
+        rightDrawerOpen={rightDrawerOpen}
+        toggleDrawer={toggleDrawer}
       />
     </LastRetroEndedAtContext.Provider>
   )

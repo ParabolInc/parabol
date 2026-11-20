@@ -3,6 +3,7 @@ import type {
   PopularReportQuestion,
   PopularReportSubject
 } from '../../shared/reports/popularReportQuestions'
+import escapeRegExp from '../../utils/escapeRegExp'
 import {REPORT_VIEW_LABELS} from './reportSpecLabels'
 import {parseReportSpecJSON} from './reportSpecParam'
 
@@ -46,8 +47,6 @@ const toWords = (query: string) =>
     .toLowerCase()
     .split(/\s+/)
     .filter((word) => word.length > 2)
-
-const escapeRegExp = (word: string) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 export const highlightWords = (text: string, words: string[]): ReportAskTextPart[] => {
   if (words.length === 0) return [{text, isMatch: false}]

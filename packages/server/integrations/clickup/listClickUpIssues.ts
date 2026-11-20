@@ -1,5 +1,5 @@
 import {Logger} from '../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUES} from '../platform/InspirationIssue'
+import type {InspirationIssue, IssuePage} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import searchClickUpTasks from './searchClickUpTasks'
 
@@ -24,26 +24,29 @@ const parseSearchQuery = (searchQuery: string) => {
 
 const listClickUpIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   const params = parseSearchQuery(searchQuery)
   if (!params) {
     Logger.error('listClickUpIssues: could not parse searchQuery')
     return []
   }
+  const {updatedBefore} = params
   const res = await searchClickUpTasks(ctx, {
     ...params,
+    updatedBefore: before && (!updatedBefore || before < updatedBefore) ? before : updatedBefore,
     queryString: '',
     assignedToViewer: true,
     includeClosed: true,
     page: 0,
-    minResults: MAX_ISSUES
+    minResults: first
   })
   if (res instanceof Error) {
     Logger.error(res.message)
     return []
   }
-  return res.tasks.slice(0, MAX_ISSUES).map(
+  return res.tasks.slice(0, first).map(
     (task): InspirationIssue => ({
       kind: 'Task',
       title: task.title,
@@ -52,7 +55,9 @@ const listClickUpIssues = async (
       status: task.status.name,
       url: task.url,
       updatedAt: task.updatedAt,
-      description: task.description
+      description: task.description,
+      isOwnWork: true,
+      isClosed: task.status.type === 'closed' || task.status.type === 'done'
     })
   )
 }

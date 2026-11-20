@@ -5,9 +5,9 @@ import {
   type RawCommands,
   type Editor as TipTapEditor
 } from '@tiptap/core'
-import BaseLink from '@tiptap/extension-link'
 import {type EditorState, Plugin} from '@tiptap/pm/state'
 import Mousetrap from 'mousetrap'
+import {LinkBase} from '../../shared/tiptap/extensions/LinkBase'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -33,20 +33,9 @@ export const getRangeForType = (state: EditorState, typeOrName: string) => {
   return getMarkRange($from, type)
 }
 
-export const TiptapLinkExtension = BaseLink.extend({
+export const TiptapLinkExtension = LinkBase.extend({
   // if the caret is at the end of the link, it is not part of the link
   inclusive: false,
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      // the external service of the issue that a link was drafted from
-      issueService: {
-        default: null,
-        parseHTML: (element) => element.getAttribute('data-issue-service'),
-        renderHTML: ({issueService}) => (issueService ? {'data-issue-service': issueService} : {})
-      }
-    }
-  },
   addKeyboardShortcuts(this) {
     return {
       'Mod-k': () => {

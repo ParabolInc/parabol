@@ -1,9 +1,15 @@
 import {parse} from 'node-html-parser'
 import buildAzureDevOpsWorkWiql, {
+  AZURE_DEVOPS_CLOSED_STATES,
   type AzureDevOpsWorkKind
 } from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import {Logger} from '../../utils/Logger'
-import {type InspirationIssue, MAX_ISSUE_COMMENTS, MAX_ISSUES} from '../platform/InspirationIssue'
+import {
+  type InspirationIssue,
+  type IssuePage,
+  MAX_ISSUE_COMMENTS,
+  MAX_ISSUES
+} from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import getAzureDevOpsManager from './getAzureDevOpsManager'
 import searchAzureDevOpsWorkItems from './searchAzureDevOpsWorkItems'
@@ -45,21 +51,26 @@ const parseSearchQuery = (searchQuery: string) => {
 // WHERE clause, so the draft and the list match. Returns [] if there's nothing.
 const listAzureDevOpsIssues = async (
   ctx: GqlIntegrationCtx,
-  searchQuery: string
+  searchQuery: string,
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   const params = parseSearchQuery(searchQuery)
   if (!params) {
     Logger.error('listAzureDevOpsIssues: could not parse searchQuery')
     return []
   }
-  const {kinds, startAt, endAt, projects} = params
+  const {kinds, startAt, projects} = params
+  const endAt =
+    before && (!params.endAt || before < new Date(params.endAt))
+      ? before.toISOString()
+      : params.endAt
   if (kinds.length === 0) return []
   const [manager, workItems] = await Promise.all([
     getAzureDevOpsManager(ctx),
     searchAzureDevOpsWorkItems(ctx, {
       where: buildAzureDevOpsWorkWiql({kinds, startAt, endAt}),
       projects,
-      limit: MAX_ISSUES
+      limit: first
     })
   ])
   if (!manager) return []
@@ -67,10 +78,14 @@ const listAzureDevOpsIssues = async (
     Logger.error(workItems.message)
     return []
   }
+  // Each work item's comments are a request of their own, so only the newest ones bring theirs
   return Promise.all(
-    workItems.map(async (workItem): Promise<InspirationIssue> => {
+    workItems.map(async (workItem, idx): Promise<InspirationIssue> => {
       const {id, instanceId, teamProject, projectName, title, type, state, url} = workItem
-      const comments = await manager.listComments(instanceId, teamProject, id, MAX_ISSUE_COMMENTS)
+      const comments =
+        idx < MAX_ISSUES
+          ? await manager.listComments(instanceId, teamProject, id, MAX_ISSUE_COMMENTS)
+          : []
       return {
         kind: type,
         title,
@@ -86,7 +101,10 @@ const listAzureDevOpsIssues = async (
             : comments.reverse().map((comment) => ({
                 author: comment.createdBy?.displayName ?? 'unknown',
                 body: toText(comment.text ?? '')
-              }))
+              })),
+        isOwnWork: true,
+        isClosed: AZURE_DEVOPS_CLOSED_STATES.includes(state),
+        commentCount: comments instanceof Error ? 0 : comments.length
       }
     })
   )

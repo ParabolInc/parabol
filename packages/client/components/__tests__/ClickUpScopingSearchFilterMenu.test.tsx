@@ -1,8 +1,6 @@
 import '../../tiptap/extensions/__tests__/installHappyDom'
 import {act, type ReactNode} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
-import type {PreloadedQuery} from 'react-relay'
-import type {ClickUpScopingSearchFilterMenuQuery} from '../../__generated__/ClickUpScopingSearchFilterMenuQuery.graphql'
 import {
   EMPTY_SCOPING_SEARCH_STATE,
   type ScopingSearchState
@@ -28,6 +26,17 @@ jest.mock('react-relay', () => ({
   ...jest.requireActual('react-relay'),
   usePreloadedQuery: () => mockData
 }))
+jest.mock('../ClickUpListSearchFilterMenuRoot', () => {
+  const {default: ClickUpListSearchFilterMenu} = jest.requireActual(
+    '../ClickUpListSearchFilterMenu'
+  )
+  return {
+    __esModule: true,
+    default: ({teamId: _teamId, ...menuProps}: {teamId: string}) => (
+      <ClickUpListSearchFilterMenu queryRef={{}} {...menuProps} />
+    )
+  }
+})
 jest.mock('../../hooks/useSetScopingSearchState', () => ({
   __esModule: true,
   default: () => {
@@ -41,23 +50,22 @@ jest.mock('../../ui/Menu/MenuItem', () => ({
     <button onClick={onClick}>{children}</button>
   )
 }))
-jest.mock('../TypeAheadLabel', () => ({
+jest.mock('../HighlightedText', () => ({
   __esModule: true,
-  default: ({label}: {label: string}) => <span>{label}</span>
+  default: ({text}: {text: string}) => <span>{text}</span>
 }))
 jest.mock('../Checkbox', () => ({
   __esModule: true,
   default: ({active}: {active: boolean}) => <span data-checked={String(active)} />
 }))
 
-const queryRef = {} as PreloadedQuery<ClickUpScopingSearchFilterMenuQuery>
 let root: Root
 let container: ReturnType<typeof happyWindow.document.createElement>
 
 const renderMenu = (state: ScopingSearchState) =>
   act(async () =>
     root.render(
-      <ClickUpScopingSearchFilterMenu meetingId='meeting1' state={state} queryRef={queryRef} />
+      <ClickUpScopingSearchFilterMenu teamId='team1' meetingId='meeting1' state={state} />
     )
   )
 

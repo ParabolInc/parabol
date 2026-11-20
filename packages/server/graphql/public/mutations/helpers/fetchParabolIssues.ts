@@ -1,7 +1,23 @@
 import {sql} from 'kysely'
-import {type InspirationIssue, MAX_ISSUES} from '../../../../integrations/platform/InspirationIssue'
+import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
+import makeAppURL from '../../../../../client/utils/makeAppURL'
+import appOrigin from '../../../../appOrigin'
+import {
+  compareNewestFirst,
+  type InspirationIssue,
+  type IssuePage
+} from '../../../../integrations/platform/InspirationIssue'
 import getKysely from '../../../../postgres/getKysely'
 import {Logger} from '../../../../utils/Logger'
+
+const LIST_MARKER = /^\s*(?:[-*•]|\d+[.)])\s+/
+
+// An answer's first line says what it is about, so it names the response; the rest stays its description
+const toResponseTitle = (plaintext: string) =>
+  plaintext
+    .split('\n')
+    .map((line) => line.replace(LIST_MARKER, '').trim())
+    .find(Boolean) ?? ''
 
 type ParabolWorkKind = 'tasks' | 'standups'
 
@@ -13,7 +29,8 @@ type ParabolWorkKind = 'tasks' | 'standups'
 const fetchParabolIssues = async (
   teamId: string,
   userId: string,
-  searchQuery: string
+  searchQuery: string,
+  {before, first}: IssuePage
 ): Promise<InspirationIssue[]> => {
   let range: {startAt?: string; endAt?: string; include?: ParabolWorkKind[]}
   try {
@@ -25,7 +42,7 @@ const fetchParabolIssues = async (
   const {startAt, endAt, include = ['tasks', 'standups']} = range
   if (!startAt || !endAt || include.length === 0) return []
   const start = new Date(startAt)
-  const end = new Date(endAt)
+  const end = before && before < new Date(endAt) ? before : new Date(endAt)
   const pg = getKysely()
 
   const [tasks, responses] = await Promise.all([
@@ -40,7 +57,7 @@ const fetchParabolIssues = async (
           .where('plaintextContent', '!=', '')
           .where(sql<boolean>`NOT ('archived' = ANY("tags"))`)
           .orderBy('updatedAt', 'desc')
-          .limit(MAX_ISSUES)
+          .limit(first)
           .execute()
       : [],
     include.includes('standups')
@@ -48,6 +65,8 @@ const fetchParabolIssues = async (
           .selectFrom('TeamPromptResponse')
           .innerJoin('NewMeeting', 'NewMeeting.id', 'TeamPromptResponse.meetingId')
           .select([
+            'TeamPromptResponse.id as id',
+            'TeamPromptResponse.meetingId as meetingId',
             'TeamPromptResponse.plaintextContent as plaintextContent',
             'TeamPromptResponse.createdAt as createdAt',
             'NewMeeting.name as meetingName'
@@ -58,7 +77,7 @@ const fetchParabolIssues = async (
           .where('TeamPromptResponse.createdAt', '<=', end)
           .where('TeamPromptResponse.plaintextContent', '!=', '')
           .orderBy('TeamPromptResponse.createdAt', 'desc')
-          .limit(MAX_ISSUES)
+          .limit(first)
           .execute()
       : []
   ])
@@ -74,21 +93,26 @@ const fetchParabolIssues = async (
       url: '',
       updatedAt: task.updatedAt,
       status: task.status,
-      description: null
+      description: null,
+      isOwnWork: true,
+      isClosed: task.status === 'done'
     })
   )
   const responseItems = responses.map(
     (response): InspirationIssue => ({
       kind: 'Standup Response',
-      title: response.meetingName ?? 'Standup',
-      reference: formatDate(response.createdAt),
-      url: '',
+      title: toResponseTitle(response.plaintextContent) || (response.meetingName ?? 'Standup'),
+      reference: [response.meetingName, formatDate(response.createdAt)].filter(Boolean).join(', '),
+      url: makeAppURL(appOrigin, `/meet/${response.meetingId}/responses`, {
+        searchParams: {responseId: TeamPromptResponseId.join(response.id)}
+      }),
       updatedAt: response.createdAt,
-      description: response.plaintextContent
+      description: response.plaintextContent,
+      isOwnWork: true
     })
   )
 
-  return [...taskItems, ...responseItems]
+  return [...taskItems, ...responseItems].sort(compareNewestFirst).slice(0, first)
 }
 
 export default fetchParabolIssues

@@ -26,7 +26,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroTeamHealthResultPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment RetroTeamHealthResultPhase_meeting on RetrospectiveMeeting {
@@ -76,7 +76,6 @@ const RetroTeamHealthResultPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
           rightDrawerOpen={rightDrawerOpen}
-          onOpenSettings={openSettings}
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH_CHECK_RESULT}</PhaseHeaderTitle>

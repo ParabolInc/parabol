@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
+import useLastNonNull from '~/hooks/useLastNonNull'
 import type {RetroSettingsSubviews_meeting$key} from '../../__generated__/RetroSettingsSubviews_meeting.graphql'
 import RetroRecurrenceSettings from './RetroRecurrenceSettings'
 import RetroSettingsSubviewPanel from './RetroSettingsSubviewPanel'
@@ -29,15 +30,16 @@ const RetroSettingsSubviews = (props: Props) => {
     `,
     meetingRef
   )
+  const shownTab = useLastNonNull(activeTab)
   const backToSettings = () => onChangeTab('settings')
-  if (activeTab === 'settingsTemplate') {
+  if (shownTab === 'settingsTemplate') {
     return (
       <RetroSettingsSubviewPanel title='Template' onBack={backToSettings} onClose={onClose}>
         <RetroTemplatePickerRoot meetingId={meeting.id} />
       </RetroSettingsSubviewPanel>
     )
   }
-  if (activeTab === 'settingsRecurrence') {
+  if (shownTab === 'settingsRecurrence') {
     const isRecurring = !!meeting.meetingSeries && !meeting.meetingSeries.cancelledAt
     return (
       <RetroSettingsSubviewPanel

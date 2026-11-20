@@ -8,9 +8,16 @@ type GenerateInspirationItemsPayload {
   inspirationItems: [InspirationItem!]!
 
   """
-  Every issue the sources matched
+  In a standup, every issue the sources matched. In a retrospective, the issues the AI read: the most
+  recent of the sources' date range
   """
   issues: [InspirationIssue!]!
+
+  """
+  How many issues the sources matched. In a retrospective, more than issues holds once the AI reads only
+  the most recent
+  """
+  issueCount: Int!
 
   """
   The meeting the items were generated for

@@ -18,11 +18,22 @@ interface Options {
   isOrgAIEnabled: boolean
   dateRange: WorkDrawerDateRange | undefined
   instructionsKey: string
+  isPaged?: boolean
   lifespanMs?: number
+  templateId?: string | null
 }
 
 const useInspirationSourceDraft = (options: Options) => {
-  const {meetingId, teamMemberRef, isOrgAIEnabled, dateRange, instructionsKey, lifespanMs} = options
+  const {
+    meetingId,
+    teamMemberRef,
+    isOrgAIEnabled,
+    dateRange,
+    instructionsKey,
+    isPaged,
+    lifespanMs,
+    templateId
+  } = options
   const availability = useInspirationSourceAvailability(teamMemberRef)
   const [storedSettings, setStoredSettings] = useLocalStorageState<
     Partial<InspirationSourceSettings>
@@ -38,8 +49,9 @@ const useInspirationSourceDraft = (options: Options) => {
       : null
   const canDraft = !aiOffMessage
 
+  // Whole days, so a reload builds the same searches and keeps the stored draft
   const [anyTimeRange] = useState(() => ({
-    startAt: dayjs().subtract(2, 'week').toISOString(),
+    startAt: dayjs().subtract(2, 'week').startOf('day').toISOString(),
     endAt: dayjs().endOf('day').toISOString()
   }))
   const draftRange = dateRange ?? anyTimeRange
@@ -49,12 +61,27 @@ const useInspirationSourceDraft = (options: Options) => {
       service,
       searchQuery: buildInspirationSearchQuery(service, settings, draftRange)
     }))
-  const {draft, requestRedraft, drafting, error} = useInspirationDraft({
+  const {
+    draft,
+    requestRedraft,
+    drafting,
+    draftingItems,
+    error,
+    itemsError,
+    retryItems,
+    hasOlder,
+    loadOlder,
+    loadingOlder,
+    olderError
+  } = useInspirationDraft({
     meetingId,
     isMeetingMember: !!teamMemberRef,
     sources,
     instructions: canDraft ? instructions : '',
-    lifespanMs
+    canDraft,
+    isPaged,
+    lifespanMs,
+    templateId
   })
   const draftedIssues = draft?.issues ?? []
   const draftedQueries = new Map(
@@ -83,7 +110,14 @@ const useInspirationSourceDraft = (options: Options) => {
     draft,
     requestRedraft,
     drafting,
+    draftingItems,
     error,
+    itemsError,
+    retryItems,
+    hasOlder,
+    loadOlder,
+    loadingOlder,
+    olderError,
     issueCounts,
     countingServices
   }

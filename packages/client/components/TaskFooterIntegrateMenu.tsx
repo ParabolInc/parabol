@@ -1,9 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useState} from 'react'
+import {fetchQuery, type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
+import type {RegisteredClientIntegration} from '../integrations/platform/registry'
 import useConnectInMenu from '../integrations/platform/useConnectInMenu'
 import {getOrgSendServices} from '../utils/getSendServices'
 import TaskFooterIntegrateMenuConnecting from './TaskFooterIntegrateMenuConnecting'
@@ -46,7 +49,22 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   } = props
   const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef)
   const {viewer} = data
-  const connectInMenu = useConnectInMenu(mutationProps)
+  const atmosphere = useAtmosphere()
+  const [refetchingService, setRefetchingService] = useState<RegisteredClientIntegration | null>(
+    null
+  )
+  // Connecting drops the service's cached repos, so the open menu fetches them again
+  const refetchRepos = (service: RegisteredClientIntegration) => {
+    setRefetchingService(service)
+    const done = () => setRefetchingService(null)
+    fetchQuery<TaskFooterIntegrateMenuQuery>(
+      atmosphere,
+      query,
+      {teamId},
+      {fetchPolicy: 'network-only'}
+    ).subscribe({complete: done, error: done})
+  }
+  const connectInMenu = useConnectInMenu(mutationProps, refetchRepos)
   const {state: connectState} = connectInMenu
 
   const {viewerTeamMember} = viewer
@@ -71,6 +89,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         onConnect={connectInMenu.begin}
         mutationProps={mutationProps}
         placeholder={placeholder}
+        refetchingService={refetchingService}
         teamMemberRef={viewerTeamMember}
         onPushToIntegration={onPushToIntegration}
         label={listLabel}

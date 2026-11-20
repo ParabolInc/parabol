@@ -1,34 +1,40 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
+import {Suspense} from 'react'
+import {useQueryLoader} from 'react-relay'
 import {ExpandMore, FilterList} from '~/ui/icons'
-import type {GitHubRepoFilterBar_teamMember$key} from '../../../__generated__/GitHubRepoFilterBar_teamMember.graphql'
+import gitHubRepoSearchFilterMenuQuery, {
+  type GitHubRepoSearchFilterMenuQuery
+} from '../../../__generated__/GitHubRepoSearchFilterMenuQuery.graphql'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import plural from '../../../utils/plural'
 import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
+import MockFieldList from '../../MockFieldList'
 
 interface Props {
-  teamMemberRef: GitHubRepoFilterBar_teamMember$key
+  teamId: string
   selectedRepos: string[]
   setSelectedRepos: (repos: string[]) => void
 }
 
 const GitHubRepoFilterBar = (props: Props) => {
-  const {teamMemberRef, selectedRepos, setSelectedRepos} = props
-  const teamMember = useFragment(
-    graphql`
-      fragment GitHubRepoFilterBar_teamMember on TeamMember {
-        ...GitHubRepoSearchFilterMenu_teamMember
-      }
-    `,
-    teamMemberRef
+  const {teamId, selectedRepos, setSelectedRepos} = props
+  const [queryRef, loadQuery] = useQueryLoader<GitHubRepoSearchFilterMenuQuery>(
+    gitHubRepoSearchFilterMenuQuery
   )
+  const preload = () => {
+    if (!queryRef) loadQuery({teamId}, {fetchPolicy: 'store-or-network'})
+  }
 
   return (
     <Menu
+      onOpenChange={(isOpen) => isOpen && preload()}
       trigger={
-        <button className='group flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'>
+        <button
+          onMouseEnter={preload}
+          onFocus={preload}
+          className='group flex cursor-pointer items-center gap-2 rounded-sm border border-hairline border-solid bg-surface-card px-3 py-0.5 text-left transition hover:border-hairline-strong data-[state=open]:border-accent'
+        >
           <FilterList className='h-5 w-5 text-fg-secondary' />
           {selectedRepos.length === 0
             ? 'All repositories'
@@ -48,18 +54,24 @@ const GitHubRepoFilterBar = (props: Props) => {
       }
     >
       <MenuContent align='start' className='max-h-full min-w-[300px] max-w-full p-2'>
-        <GitHubRepoSearchFilterMenu
-          menuLabel='Select repositories'
-          selectedRepos={selectedRepos}
-          onToggleRepo={(repoName, isSelected) => {
-            if (!isSelected) {
-              setSelectedRepos([...selectedRepos, repoName])
-            } else {
-              setSelectedRepos(selectedRepos.filter((repo) => repo !== repoName))
-            }
-          }}
-          teamMemberRef={teamMember}
-        />
+        <Suspense fallback={<MockFieldList />}>
+          {queryRef ? (
+            <GitHubRepoSearchFilterMenu
+              queryRef={queryRef}
+              menuLabel='Select repositories'
+              selectedRepos={selectedRepos}
+              onToggleRepo={(repoName, isSelected) => {
+                if (!isSelected) {
+                  setSelectedRepos([...selectedRepos, repoName])
+                } else {
+                  setSelectedRepos(selectedRepos.filter((repo) => repo !== repoName))
+                }
+              }}
+            />
+          ) : (
+            <MockFieldList />
+          )}
+        </Suspense>
       </MenuContent>
     </Menu>
   )

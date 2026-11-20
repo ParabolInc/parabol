@@ -10,7 +10,8 @@ input GenerateInspirationItemsInput {
 
   """
   The searches to draft from. A standup drafts one combined answer from all of them; a
-  retrospective drafts a reflection about each of the few issues worth raising
+  retrospective reads every issue in their date range and drafts a reflection about each of the few
+  issues or themes worth raising
   """
   sources: [InspirationSourceInput!]!
 

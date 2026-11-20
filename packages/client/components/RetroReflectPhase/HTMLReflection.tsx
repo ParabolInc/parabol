@@ -15,7 +15,7 @@ export const HTMLReflection = (props: Props) => {
     // the same height as the card it stands in for
     <div
       className={cn(
-        'relative w-full overflow-auto pt-2 text-fg-primary text-sm leading-5',
+        'issue-chips issue-chips-wrap relative w-full overflow-auto pt-2 text-fg-primary text-sm leading-5',
         disableAnonymity ? 'pb-0' : 'pb-2'
       )}
     >

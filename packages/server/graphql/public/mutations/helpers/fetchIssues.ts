@@ -1,6 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {GraphQLError} from 'graphql'
-import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import type {InspirationIssue, IssuePage} from '../../../../integrations/platform/InspirationIssue'
 import {getServerIntegration} from '../../../../integrations/platform/registry'
 import type {GQLContext} from '../../../graphql'
 import fetchParabolIssues from './fetchParabolIssues'
@@ -11,9 +11,10 @@ const fetchIssues = async (
   teamId: string,
   viewerId: string,
   context: GQLContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
+  page: IssuePage
 ): Promise<InspirationIssue[]> => {
-  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery)
+  if (service === 'PARABOL') return fetchParabolIssues(teamId, viewerId, searchQuery, page)
   const issueList = getServerIntegration(service)?.capabilities.issueList
   if (!issueList) {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`, {
@@ -21,7 +22,11 @@ const fetchIssues = async (
     })
   }
   const {dataLoader} = context
-  return issueList.listIssues({dataLoader, teamId, userId: viewerId, context, info}, searchQuery)
+  return issueList.listIssues(
+    {dataLoader, teamId, userId: viewerId, context, info},
+    searchQuery,
+    page
+  )
 }
 
 export default fetchIssues

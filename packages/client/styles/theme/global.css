@@ -833,10 +833,18 @@
 .rdp {
   @apply m-[8px];
   --rdp-cell-size: 36px;
-  --rdp-accent-color: var(--color-grape-500);
-  --rdp-background-color: --theme(--color-grape-500 / 30%);
-  --rdp-accent-color-dark: var(--color-grape-500);
-  --rdp-background-color-dark: --theme(--color-grape-500 / 30%);
+}
+
+/* react-day-picker's stylesheet loads after this one and sets these on .rdp too, so they need the
+ * extra :root to win. A selected day uses the one selected fill, and hover the theme's hover fill,
+ * so day numbers stay legible in both themes.
+ */
+:root .rdp {
+  --rdp-accent-color: var(--color-surface-selected);
+  --rdp-selected-color: var(--color-fg-selected);
+  --rdp-background-color: var(--color-surface-hover);
+  --rdp-outline: 2px solid var(--color-accent);
+  --rdp-outline-selected: 3px solid var(--color-accent);
 }
 
 .link-style a {
@@ -1335,9 +1343,11 @@
 /* ── Issue Chips ─────────────────────────────────────────────────
  * A link drafted from an issue in an external service carries that
  * service (the link mark's issueService) and reads as a chip instead
- * of a link. Opt-in per editor: stand-up drafts and responses today.
+ * of a link. Opt-in per editor: stand-up drafts and responses, retro
+ * drafts and reflections. .ProseMirror also matches a reflection's
+ * static HTML, which isn't a live editor.
  */
-.issue-chips .tiptap a[data-issue-service] {
+.issue-chips .ProseMirror a[data-issue-service] {
   background-color: var(--color-surface-well);
   border-radius: 4px;
   padding: 1px 6px;
@@ -1348,8 +1358,17 @@
   white-space: nowrap;
 }
 
-.issue-chips .tiptap a[data-issue-service]:hover {
+.issue-chips .ProseMirror a[data-issue-service]:hover {
   text-decoration: underline;
+}
+
+/* A reflection card is narrow, so a chip that doesn't fit wraps like text
+ * and each line keeps the chip's ends.
+ */
+.issue-chips-wrap .ProseMirror a[data-issue-service] {
+  white-space: normal;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* In dark, surface-input and surface-drawer share surface-well's fill, so a chip
@@ -1368,21 +1387,6 @@
     box-shadow 300ms;
 }
 
-.page-editor .block-selected {
-  background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  box-shadow:
-    -6px 0 0 0 color-mix(in srgb, var(--color-accent) 14%, var(--color-surface-document)),
-    -8px 0 0 0 var(--color-accent-strong);
-  border-radius: 0.25rem;
-}
-
-.theme-dark .page-editor .block-selected {
-  background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
-  box-shadow:
-    -6px 0 0 0 color-mix(in srgb, var(--color-accent) 22%, var(--color-surface-document)),
-    -8px 0 0 0 var(--color-accent-strong);
-}
-
 .page-editor .has-block-selection {
   caret-color: transparent;
 }
@@ -1392,7 +1396,7 @@
 }
 
 .page-editor:has(.has-block-selection) .drag-handle {
-  transform: translateX(-11px);
+  transform: translateX(-14px);
 }
 
 .page-editor:has(.has-block-selection) .drag-handle::after {
@@ -1400,7 +1404,7 @@
   position: absolute;
   inset-block: 0;
   left: 100%;
-  width: 12px;
+  width: 15px;
 }
 
 /* If a page title is empty, always show it */

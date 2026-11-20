@@ -2,7 +2,7 @@ import type {MentionNodeAttrs} from '@tiptap/extension-mention'
 import type {SuggestionProps} from '@tiptap/suggestion'
 import type React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 export const TaskTagDropdown = forwardRef(
   (props: SuggestionProps<{id: string; label: string}, MentionNodeAttrs>, ref) => {
@@ -64,11 +64,11 @@ export const TaskTagDropdown = forwardRef(
               onClick={() => selectItem(idx)}
               onMouseMove={() => setSelectedIndex(idx)}
             >
-              <TypeAheadLabel
-                label={item.id}
+              <HighlightedText
+                text={item.id}
                 query={query}
-                className='min-w-20 font-bold'
-                highlight
+                variant='mark'
+                className='min-w-20 truncate font-bold'
               />
               <span className='flex justify-start pl-3'>{item.label}</span>
             </div>

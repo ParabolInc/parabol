@@ -179,7 +179,7 @@
           "IntegrationProviderOAuth1": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "IntegrationProviderOAuth2": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "IntegrationProviderWebhook": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
-          "InspirationItem": "../../postgres/types/index#InspirationItem as InspirationItemDB",
+          "InspirationItem": "./types/InspirationItem#InspirationItemSource",
           "InvalidateSessionsPayload": "./types/InvalidateSessionsPayload#InvalidateSessionsPayloadSource",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",

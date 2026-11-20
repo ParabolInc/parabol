@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type ReactElement, Suspense} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import type {
   NewMeetingPhaseTypeEnum,
   RetroMeeting_meeting$key
@@ -8,6 +8,7 @@ import type {
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
 import useMeeting from '../hooks/useMeeting'
+import useRightDrawer from '../hooks/useRightDrawer'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
@@ -60,7 +61,8 @@ export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
   meeting: any
   avatarGroup: ReactElement
-  openSettings?: () => void
+  rightDrawerOpen?: string | null
+  toggleDrawer?: () => void
   gotoStageId: ReturnType<typeof useGotoStageId>
 }
 
@@ -94,6 +96,7 @@ const RetroMeeting = (props: Props) => {
           cancelledAt
         }
         showSidebar
+        rightDrawerOpen
         localPhase {
           phaseType
         }
@@ -110,7 +113,14 @@ const RetroMeeting = (props: Props) => {
   const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick, demoPortal} =
     useMeeting(meeting)
   const atmosphere = useAtmosphere()
-  const {id: meetingId, showSidebar, localPhase, meetingSeries} = meeting
+  const {id: meetingId, showSidebar, localPhase, meetingSeries, rightDrawerOpen} = meeting
+  const localPhaseType = localPhase?.phaseType
+  const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
+  const [toggleDrawer] = useRightDrawer(
+    meetingId,
+    showInspiration ? 'inspiration' : 'settings',
+    false
+  )
   useTemplateSwitchedSnackbar({
     meetingId,
     templateId: meeting.templateId,
@@ -119,7 +129,6 @@ const RetroMeeting = (props: Props) => {
     isSeriesTemplate: !!meetingSeries && !meetingSeries.cancelledAt
   })
   if (!safeRoute) return null
-  const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]!
   if (!Phase) reportMissingMeetingPhase('RetroMeeting', meeting)
   const isDemo = meetingId === RetroDemo.MEETING_ID
@@ -130,15 +139,6 @@ const RetroMeeting = (props: Props) => {
     localPhaseType === 'vote' ||
     localPhaseType === 'discuss' ||
     localPhaseType === 'TEAM_HEALTH_CHECK_RESULT'
-  const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
-  const openSettings = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(meetingId)
-      if (!meetingProxy) return
-      const isOnSettings = meetingProxy.getValue('rightDrawerOpen') === 'settings'
-      meetingProxy.setValue(isOnSettings ? null : 'settings', 'rightDrawerOpen')
-    })
-  }
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
@@ -160,7 +160,8 @@ const RetroMeeting = (props: Props) => {
           meeting={meeting}
           toggleSidebar={toggleSidebar}
           avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
-          openSettings={isDemo ? undefined : openSettings}
+          rightDrawerOpen={rightDrawerOpen}
+          toggleDrawer={isDemo ? undefined : toggleDrawer}
           gotoStageId={gotoStageId}
         />
       </Suspense>

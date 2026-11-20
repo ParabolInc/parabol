@@ -52,7 +52,7 @@ const scoping: ScopingCapability = {
   FilterMenu: lazyPreload(
     () =>
       import(
-        /* webpackChunkName: 'ClickUpScopingSearchFilterMenuRoot' */ '../../components/ClickUpScopingSearchFilterMenuRoot'
+        /* webpackChunkName: 'ClickUpScopingSearchFilterMenu' */ '../../components/ClickUpScopingSearchFilterMenu'
       )
   ),
   NewRecordInput: lazy(

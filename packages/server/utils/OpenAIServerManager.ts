@@ -401,9 +401,10 @@ ${previousCheck}`
     issuesText: string,
     prompts: {question: string; description: string}[],
     userName: string,
+    maxDrafts: number,
     userPrompt?: string | null
   ): Promise<{
-    items: {issueId: string; promptIndex: number; isColumnClear: boolean; content: string}[]
+    items: {issueIds: string[]; promptIndex: number; isColumnClear: boolean; content: string}[]
     tokenCost: number
   } | null> {
     if (!this.openAIApi) return null
@@ -425,27 +426,31 @@ ${previousCheck}`
 The retro board has these columns:
 ${promptList}
 
-Below are ${userName}'s items since the last retro, grouped by the tool they came from (issues, pull requests, calendar events, tasks, past standup answers). Each item has an id in brackets, like [W3]. Find the few items worth raising in the retro and draft a short reflection about each.
+Below are ${userName}'s items from the stretch the retro covers, grouped by the tool they came from (issues, pull requests, calendar events, tasks, past standup answers). Each item is one line: an id in brackets, like [W3], then its kind, title, where it lives and its number or key, its status, the date it last changed or an event starts, "mine" if ${userName} wrote it or it's assigned to them, how much discussion and change it saw, and its URL. The most notable items also quote the start of their description and their latest comments, under their line.
+
+Find the things most worth raising in the retro and draft a short reflection about each, at most ${maxDrafts}. A busy stretch usually has several.
 
 Rules:
-- Raise an item only when it shows how the work went: something that dragged on, got blocked or waited on others, a long review, a repeated problem, a surprise, or a practice that clearly paid off. Routine work that went as expected gets no reflection, so most items get none.
-- Each reflection is about ONE item. Return that item's id as "id". Write at most one reflection per item.
+- Look for themes across the items first: several items that together show how the work went. For example the same area reworked across many pull requests, a run of fixes or reverts, work that kept waiting on review or on others, one piece of work whose ticket, pull requests and meetings dragged on, or meetings that crowded out other work. Items from different tools often describe the same work.
+- A single item gets its own reflection when it alone shows how the work went: something that dragged on, got blocked or waited on others, a long review, a surprise, or a practice that clearly paid off.
+- Routine work that went as expected gets no reflection, so most items back none.
+- Return the ids of every item a reflection is drawn from as "ids": one id for a single item, every item of a theme for a theme. An item backs at most one reflection.
 - Return the index of the column the reflection belongs in as "promptIndex".
 - Rate how sure you are of that column as "columnConfidence": "high" only when exactly one column fits and the team would put it there too, otherwise "low".
-- One or two sentences, at most 40 words. Be specific: name the work and the fact that makes it worth raising, like how long it took or what it waited on.
+- One or two sentences, at most 40 words. Be specific. A theme names the pattern with numbers, like "9 pull requests over 4 days" or "3 reverts"; a single item names the fact that makes it worth raising, like how long it took or what it waited on.
 - Write in the first person ("I", "we"). NEVER refer to ${userName} in the third person.
-- Do not include links or URLs. The reflection is shown next to its item.
+- Link the items the reflection names, at most three, as markdown links woven into the sentence, using each item's URL. The link text names the item briefly: a pull request or issue by the number or key on its line and a few words ("[#13502 template editor](url)", "[PAR-812 standup templates](url)"), a calendar event by its day and title ("[Tue · Design review](url)"). The links show the team which work the reflection is about once it is on the retro board.
 - Never invent problems, wins or feelings the items don't show.
-- Each item lists a Status and a Date: when it last changed, or when an event starts. Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
+- Today is ${new Date().toISOString().slice(0, 10)}.${customInstructions}
 
-Return JSON of the form: { "items": [{ "id": "<item id, e.g. W3>", "promptIndex": <column index>, "columnConfidence": "high" | "low", "content": "<the reflection>" }] }`
+Return JSON of the form: { "items": [{ "ids": ["<item id, e.g. W3>"], "promptIndex": <column index>, "columnConfidence": "high" | "low", "content": "<the reflection>" }] }`
 
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
-        messages: [{role: 'user', content: `${instructions}\n\nRecent items:\n${issuesText}`}],
+        messages: [{role: 'user', content: `${instructions}\n\nItems:\n${issuesText}`}],
         response_format: {type: 'json_object'},
-        reasoning_effort: 'low'
+        reasoning_effort: 'medium'
       })
 
       const content = response.choices[0]?.message?.content
@@ -453,7 +458,7 @@ Return JSON of the form: { "items": [{ "id": "<item id, e.g. W3>", "promptIndex"
 
       let parsed: {
         items?: {
-          id?: string
+          ids?: unknown
           promptIndex?: number
           columnConfidence?: string
           content?: string
@@ -471,10 +476,13 @@ Return JSON of the form: { "items": [{ "id": "<item id, e.g. W3>", "promptIndex"
         const promptIndex = Number(item?.promptIndex)
         const isValidIndex =
           Number.isInteger(promptIndex) && promptIndex >= 0 && promptIndex < prompts.length
-        if (!text || !item.id || !isValidIndex) return []
+        if (!text || !isValidIndex) return []
+        const issueIds = Array.isArray(item.ids)
+          ? item.ids.filter((id): id is string => typeof id === 'string')
+          : []
         return [
           {
-            issueId: item.id,
+            issueIds,
             promptIndex,
             isColumnClear: item.columnConfidence === 'high',
             content: text

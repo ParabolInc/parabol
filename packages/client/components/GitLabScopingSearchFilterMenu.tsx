@@ -14,7 +14,7 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import {MenuSearch} from '../ui/Menu/MenuSearch'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import TypeAheadLabel from './TypeAheadLabel'
+import HighlightedText from './HighlightedText'
 
 interface Props {
   meetingId: string
@@ -100,7 +100,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         return (
           <MenuItem key={projectId} onSelect={(e) => e.preventDefault()} onClick={handleClick}>
             <Checkbox className='-ml-2 mr-2' active={isSelected} />
-            <TypeAheadLabel query={searchQuery} label={fullPath} />
+            <HighlightedText query={searchQuery} text={fullPath} className='truncate' />
           </MenuItem>
         )
       })}

@@ -1,6 +1,6 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
-import type {Node, ResolvedPos} from '@tiptap/pm/model'
+import type {Node} from '@tiptap/pm/model'
 import {NodeSelection, Plugin, PluginKey, Selection} from '@tiptap/pm/state'
 import type {EditorView} from '@tiptap/pm/view'
 import {isNodeSelection, ReactRenderer} from '@tiptap/react'
@@ -21,11 +21,13 @@ import {
   createBlockSelection,
   getBlockSelectionAround,
   getDroppedBlockRange,
+  getSelectedBlockRange,
   isBlockRun,
   selectBlocksThrough
 } from '../blockSelection/blockSelectionState'
 import {type BlockRange, countBlocks} from '../blockSelection/blockUnits'
 import DragHandleMenu from './DragHandleMenu'
+import {pageDragHandleNested} from './dragHandleRules'
 import {listItemDropPointPlugin} from './listItemDropPoint'
 import {duplicateSyncedBlockAsPlain} from './pageLinkBlock/duplicateSyncedBlockAsPlain'
 import {getCopyablePage} from './pageLinkBlock/getCopyablePage'
@@ -126,13 +128,6 @@ const getFirstLine = (view: EditorView, node: Node, pos: number, dom: HTMLElemen
   return {top, height: Math.min(height, DRAG_HANDLE_ANCHOR_HEIGHT)}
 }
 
-function isInside($pos: ResolvedPos, depth: number, typeName: string) {
-  for (let d = depth - 1; d >= 0; d--) {
-    if ($pos.node(d).type.name === typeName) return true
-  }
-  return false
-}
-
 const setDragImage = (dataTransfer: DataTransfer, view: EditorView, positions: number[]) => {
   const imageWrapper = document.createElement('div')
   positions.forEach((pos) => {
@@ -193,13 +188,26 @@ type Options = {
   duplicatePage: DuplicateExecute
   navigate: NavigateFn
 }
-export const PageDragHandle = Extension.create<Options>({
+type PageDragHandleStorage = {
+  dragHandleElement: HTMLDivElement | null
+  closeMenu: (() => void) | null
+  toggleSelectionMenu: ((editor: Editor, anchorElement: HTMLElement) => void) | null
+}
+
+declare module '@tiptap/core' {
+  interface Storage {
+    PageDragHandle: PageDragHandleStorage
+  }
+}
+
+export const PageDragHandle = Extension.create<Options, PageDragHandleStorage>({
   name: 'PageDragHandle',
 
   addStorage() {
     return {
-      dragHandleElement: null as HTMLDivElement | null,
-      closeMenu: null as (() => void) | null
+      dragHandleElement: null,
+      closeMenu: null,
+      toggleSelectionMenu: null
     }
   },
 
@@ -285,7 +293,6 @@ export const PageDragHandle = Extension.create<Options>({
 
   addExtensions() {
     const dragHandleElement = document.createElement('div')
-    this.storage.dragHandleElement = dragHandleElement
     if (!this.options.isNested) dragHandleElement.dataset.hostHandle = ''
     let dragHandleNode: Node | null = null
     let dragHandleNodePos: number = -1
@@ -304,7 +311,42 @@ export const PageDragHandle = Extension.create<Options>({
       editorRef?.commands.unlockDragHandle()
     }
 
-    this.storage.closeMenu = closeMenu
+    const openMenu = (
+      editor: Editor,
+      node: Node,
+      pos: number,
+      anchorElement: HTMLElement,
+      omitBarActions = false
+    ) => {
+      const {state} = editor
+      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
+      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
+      const selection =
+        selected && !isSelectedAlone
+          ? {range: selected, count: countBlocks(state.doc, selected)}
+          : null
+
+      editor.commands.lockDragHandle()
+
+      const canCreateSubPage =
+        !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
+      menuRenderer = new ReactRenderer(DragHandleMenu, {
+        editor,
+        props: {
+          editor,
+          node,
+          pos,
+          onClose: closeMenu,
+          anchorElement,
+          canCreateSubPage,
+          selection,
+          pageId,
+          omitBarActions
+        }
+      })
+
+      document.body.appendChild(menuRenderer.element)
+    }
 
     const handleDragHandleClick = (e: MouseEvent) => {
       e.preventDefault()
@@ -329,32 +371,19 @@ export const PageDragHandle = Extension.create<Options>({
         return
       }
 
-      const selected = getBlockSelectionAround(state, pos, pos + node.nodeSize)
-      const isSelectedAlone = selected?.from === pos && selected.to === pos + node.nodeSize
-      const selection =
-        selected && !isSelectedAlone
-          ? {range: selected, count: countBlocks(state.doc, selected)}
-          : null
+      openMenu(editorRef, node, pos, dragHandleElement)
+    }
 
-      editorRef.commands.lockDragHandle()
-
-      const canCreateSubPage =
-        !isNested && !!lookupPageViewerGrant(atmosphere, GQLID.fromKey(pageId)[0])
-      menuRenderer = new ReactRenderer(DragHandleMenu, {
-        editor: editorRef,
-        props: {
-          editor: editorRef,
-          node,
-          pos,
-          onClose: closeMenu,
-          anchorElement: dragHandleElement,
-          canCreateSubPage,
-          selection,
-          pageId
-        }
-      })
-
-      document.body.appendChild(menuRenderer.element)
+    const toggleSelectionMenu = (editor: Editor, anchorElement: HTMLElement) => {
+      if (menuRenderer) {
+        closeMenu()
+        return
+      }
+      const range = getSelectedBlockRange(editor.state)
+      const node = range && editor.state.doc.nodeAt(range.from)
+      if (!range || !node) return
+      editorRef = editor
+      openMenu(editor, node, range.from, anchorElement, true)
     }
 
     dragHandleElement.addEventListener('click', handleDragHandleClick)
@@ -510,8 +539,20 @@ export const PageDragHandle = Extension.create<Options>({
       ]
     })
 
+    const storageBridge = Extension.create({
+      name: 'pageDragHandleStorage',
+      onBeforeCreate() {
+        Object.assign(this.editor.storage.PageDragHandle, {
+          dragHandleElement,
+          closeMenu,
+          toggleSelectionMenu
+        })
+      }
+    })
+
     return [
       selectionDrag,
+      storageBridge,
       DragHandle.configure({
         computePositionConfig: {
           placement: 'left'
@@ -581,33 +622,7 @@ export const PageDragHandle = Extension.create<Options>({
             contextElement: horizontalRef
           }
         },
-        nested: {
-          edgeDetection: 'none',
-          rules: [
-            {
-              id: 'detailsStructure',
-              evaluate: ({$pos, depth, node}) => {
-                // Exclude detailsSummary and detailsContent themselves
-                const name = node.type.name
-                if (name === 'detailsSummary' || name === 'detailsContent') return 1000
-                // Exclude children nested inside detailsSummary
-                if (isInside($pos, depth, 'detailsSummary')) return 1000
-                // Allow children of detailsContent (they should be independently draggable)
-                return 0
-              }
-            },
-            {
-              id: 'calloutStructure',
-              evaluate: ({node}) => (node.type.name === 'calloutTitle' ? 1000 : 0)
-            },
-            {
-              // A quote is one block. Without this the target flips between a line and the
-              // whole quote depending on how the pointer approaches the handle.
-              id: 'quoteStructure',
-              evaluate: ({$pos, depth}) => (isInside($pos, depth, 'blockquote') ? 1000 : 0)
-            }
-          ]
-        },
+        nested: pageDragHandleNested,
         render: () => {
           dragHandleElement.classList.add('drag-handle', 'hide')
           return dragHandleElement

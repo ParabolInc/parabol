@@ -1,20 +1,12 @@
-import type {InspirationItem} from '../../../postgres/types'
-import type {GenerateInspirationItemsPayloadResolvers, ServiceEnum} from '../resolverTypes'
-
-export type InspirationItemSource = Omit<InspirationItem, 'id'> & {id: string}
+import type {InspirationIssueSource} from '../mutations/helpers/toInspirationIssue'
+import type {GenerateInspirationItemsPayloadResolvers} from '../resolverTypes'
+import type {InspirationItemSource} from './InspirationItem'
 
 export type GenerateInspirationItemsPayloadSource = {
   meetingId: string
   inspirationItems: InspirationItemSource[]
-  issues: {
-    service: ServiceEnum
-    kind: string
-    title: string
-    url: string | null
-    updatedAt: Date | null
-    unusedReason: string | null
-    draft: InspirationItemSource | null
-  }[]
+  issues: InspirationIssueSource[]
+  issueCount: number
 }
 
 const GenerateInspirationItemsPayload: GenerateInspirationItemsPayloadResolvers = {

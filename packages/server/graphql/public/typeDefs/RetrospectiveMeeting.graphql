@@ -121,6 +121,23 @@ type RetrospectiveMeeting implements NewMeeting {
   The team's most recent retrospective that ended before this one started, if any
   """
   prevCompletedMeeting: RetrospectiveMeeting
+
+  """
+  One page of the viewer's own work for the inspiration timeline, newest first, listed right away;
+  generateInspirationItems drafts reflections from the whole date range afterwards. Null when listing
+  fails
+  """
+  viewerInspirationIssues(
+    """
+    The searches to list, the same ones generateInspirationItems drafts from
+    """
+    sources: [InspirationSourceInput!]!
+
+    """
+    The nextBefore of the newer page, to list the work just older than it. Omit for the newest page
+    """
+    before: DateTime
+  ): InspirationIssuePage
   meetingType: MeetingTypeEnum!
 
   """
