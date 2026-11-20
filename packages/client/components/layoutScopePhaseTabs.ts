@@ -61,12 +61,12 @@ const swapIntoBar = <T extends ScopePhaseLayoutTab>(
   const firstIntegration = slots.findIndex((tab) => !isParabol(tab))
   const canLeave = (tab: T) => !isParabol(tab) && tab.key !== pick.key
   const nextToLeave = () => {
-    const unconnected = slots.findLastIndex((tab) => canLeave(tab) && !tab.isConnected)
+    const unconnected = slots.map((tab) => canLeave(tab) && !tab.isConnected).lastIndexOf(true)
     if (unconnected >= 0) return unconnected
-    return slots.findLastIndex((tab, idx) => canLeave(tab) && idx > firstIntegration)
+    return slots.map((tab, idx) => canLeave(tab) && idx > firstIntegration).lastIndexOf(true)
   }
   const first = nextToLeave()
-  const target = first >= 0 ? first : slots.findLastIndex(canLeave)
+  const target = first >= 0 ? first : slots.map(canLeave).lastIndexOf(true)
   if (target >= 0) slots[target] = pick
   else slots.push(pick)
   while (sumWidths(slots, widths) > available) {

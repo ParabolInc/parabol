@@ -15,9 +15,9 @@ const getMeetingPhase = <T extends Phase>(phases: readonly T[], facilitatorStage
     }
   }
 
-  const lastPhaseInProgress = phases.findLast((phase) =>
-    phase.stages.some((stage) => stage.isComplete)
-  )
+  const lastPhaseInProgress = phases
+    .filter((phase) => phase.stages.some((stage) => stage.isComplete))
+    .at(-1)
 
   if (!lastPhaseInProgress || lastPhaseInProgress.stages.every((stage) => stage.isComplete)) {
     return phases.find((phase) => !phase.stages.some((stage) => stage.isComplete))

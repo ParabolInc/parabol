@@ -55,8 +55,8 @@ export const InsightsBlockPrompt = (props: Props) => {
             }
           >
             <MenuContent align='end' sideOffset={4}>
-              {aiPrompts
-                .toSorted((a, b) => {
+              {[...aiPrompts]
+                .sort((a, b) => {
                   if (a.isUserDefined !== b.isUserDefined) return a.isUserDefined ? -1 : 1
                   return a.lastUsedAt > b.lastUsedAt ? -1 : 1
                 })

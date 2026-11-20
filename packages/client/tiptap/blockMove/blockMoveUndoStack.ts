@@ -129,6 +129,6 @@ export const popIsolated = (
 
 export const popOrdinary = (undoManager: Y.UndoManager, direction: Direction) => {
   const stack = direction === 'undo' ? undoManager.undoStack : undoManager.redoStack
-  const lastMoveIndex = stack.findLastIndex((item) => getMoveMeta(item))
+  const lastMoveIndex = stack.map((item) => !!getMoveMeta(item)).lastIndexOf(true)
   popIsolated(undoManager, direction, stack.slice(lastMoveIndex + 1))
 }

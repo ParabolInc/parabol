@@ -226,7 +226,7 @@ describe('the removal snack', () => {
       }
     )
     const lastSnack = () =>
-      emit.mock.calls.findLast(([event]) => event === 'addSnackbar')?.[1] as Snack | undefined
+      emit.mock.calls.filter(([event]) => event === 'addSnackbar').at(-1)?.[1] as Snack | undefined
     const isRemoved = (snack: Snack) => {
       const shownAt = emit.mock.calls.findIndex(([, payload]) => payload === snack)
       return emit.mock.calls

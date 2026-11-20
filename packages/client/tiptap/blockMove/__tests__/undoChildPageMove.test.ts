@@ -137,7 +137,7 @@ const moveParagraphAndChildPage = () => {
 
 const sourceBlocks = () => read(sourceFrag)
 const lastSnack = () =>
-  emit.mock.calls.findLast(([event]) => event === 'addSnackbar')?.[1] as {message: string}
+  emit.mock.calls.filter(([event]) => event === 'addSnackbar').at(-1)?.[1] as {message: string}
 
 const hiringPlan = link(7, 'Hiring plan', true)
 
