@@ -26,7 +26,8 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
   if (isCurrent) return true
 
   if (jti && exp) {
-    await blacklistJWTSession(jti, exp, Date.now())
+    const hasLostAccess = rol !== user.rol || tokenTeamIds.some((teamId) => !tms.includes(teamId))
+    await blacklistJWTSession(jti, exp, hasLostAccess ? undefined : Date.now())
   }
 
   context.authToken = new AuthToken({sub, rol: user.rol, tms})
