@@ -93,7 +93,7 @@ const TeamHealth = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
           rightDrawerOpen={rightDrawerOpen}
-          drawerType='transcription'
+          drawerType='settings'
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.TEAM_HEALTH}</PhaseHeaderTitle>

@@ -74,7 +74,7 @@ const MeetingUpdatesContent = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
           rightDrawerOpen={rightDrawerOpen}
-          drawerType='transcription'
+          drawerType='settings'
           toggleDrawer={toggleDrawer}
         >
           {header}

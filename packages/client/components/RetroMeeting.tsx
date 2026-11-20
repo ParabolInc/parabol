@@ -102,7 +102,7 @@ const RetroMeeting = (props: Props) => {
   const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
   const [toggleDrawer] = useRightDrawer(
     meetingId,
-    showInspiration ? 'inspiration' : 'transcription',
+    showInspiration ? 'inspiration' : 'settings',
     false
   )
   useTemplateSwitchedSnackbar({

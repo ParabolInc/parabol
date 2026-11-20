@@ -1,5 +1,5 @@
 import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
-import {Forum, Transcribe} from '~/ui/icons'
+import {Forum, Transcribe, Tune} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -29,6 +29,13 @@ export const IconGroupBlock = ({className, ...props}: ComponentPropsWithoutRef<'
   />
 )
 
+const drawerButtons = {
+  discussion: {icon: Forum, label: 'Discussion'},
+  inspiration: {icon: 'task_alt', label: 'Inspiration'},
+  settings: {icon: Tune, label: 'Settings'},
+  transcription: {icon: Transcribe, label: 'Transcription'}
+} as const
+
 interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
@@ -36,7 +43,7 @@ interface Props {
   isMeetingSidebarCollapsed: boolean
   rightDrawerOpen?: string | null
   // The tab the drawer button opens to, which sets its icon & label. Defaults to 'discussion'.
-  drawerType?: 'discussion' | 'inspiration' | 'transcription'
+  drawerType?: keyof typeof drawerButtons
   toggleSidebar: () => void
   toggleDrawer?: () => void
 }
@@ -54,12 +61,7 @@ const MeetingTopBar = (props: Props) => {
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDrawerButton = toggleDrawer && rightDrawerOpen == null
-  const drawerButton =
-    drawerType === 'inspiration'
-      ? {icon: 'task_alt' as const, label: 'Inspiration'}
-      : drawerType === 'transcription'
-        ? {icon: Transcribe, label: 'Transcription'}
-        : {icon: Forum, label: 'Discussion'}
+  const drawerButton = drawerButtons[drawerType]
 
   return (
     <MeetingTopBarStyles>

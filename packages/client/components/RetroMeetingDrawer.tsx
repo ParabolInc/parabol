@@ -34,7 +34,7 @@ const RetroMeetingDrawer = (props: Props) => {
   const {id: meetingId, rightDrawerOpen} = meeting
   const [toggleDrawer, setActiveTab] = useRightDrawer(
     meetingId,
-    showInspiration ? 'inspiration' : 'transcription',
+    showInspiration ? 'inspiration' : 'settings',
     false
   )
   return (
