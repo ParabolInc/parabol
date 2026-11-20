@@ -75,6 +75,16 @@ test('a registration that fails to load the script is still logged', async () =>
   expect(loggedToConsole).toHaveBeenCalledWith(failure)
 })
 
+test("a SecurityError registering on the page's own origin is still logged", async () => {
+  const failure = new DOMException(
+    "Failed to register a ServiceWorker for scope ('https://action.parabol.co/') with script ('https://action.parabol.co/sw.js'): The script has an unsupported MIME type ('text/html').",
+    'SecurityError'
+  )
+  register.mockRejectedValue(failure)
+  await loadPage()
+  expect(loggedToConsole).toHaveBeenCalledWith(failure)
+})
+
 test('a copy of the page a translation proxy serves from its own origin does not register the worker', async () => {
   Object.assign(window.location, {origin: 'https://action-parabol-co.translate.goog'})
   register.mockRejectedValue(
