@@ -25,11 +25,12 @@ const DUMMY_DISCUSSION = {
 
 const RetroDiscussStage: RetroDiscussStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'discuss',
-  // retros from before June 2021 stored their placeholder stage without a reflectionGroupId
+  // retros started before June 2021 stored their placeholder stage without these
   reflectionGroupId: ({reflectionGroupId}) => reflectionGroupId ?? '',
+  discussionId: ({discussionId}) => discussionId ?? '',
   discussion: async ({discussionId, reflectionGroupId}, _args, {dataLoader}) => {
-    const isDummy = !reflectionGroupId
-    return isDummy ? DUMMY_DISCUSSION : dataLoader.get('discussions').loadNonNull(discussionId)
+    if (!reflectionGroupId) return DUMMY_DISCUSSION
+    return dataLoader.get('discussions').loadNonNull(discussionId)
   },
 
   reflectionGroup: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {

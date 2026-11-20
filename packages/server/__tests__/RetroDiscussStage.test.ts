@@ -54,7 +54,7 @@ const pointDiscussStageAtGroup = async (
   return discussionId
 }
 
-test('an old retro whose placeholder discuss stage has no reflectionGroupId still loads its stages', async () => {
+test('an old retro whose placeholder discuss stage has no reflectionGroupId or discussionId still loads its stages', async () => {
   const {cookie, teamId} = await signUp()
   const meetingId = await startRetro(teamId, cookie)
   const pg = getKysely()
@@ -67,6 +67,7 @@ test('an old retro whose placeholder discuss stage has no reflectionGroupId stil
     (phase) => phase.phaseType === 'discuss'
   )!
   delete discussPhase.stages[0]!.reflectionGroupId
+  delete discussPhase.stages[0]!.discussionId
   await pg
     .updateTable('NewMeeting')
     .set({phases: JSON.stringify(phases)})
@@ -82,6 +83,7 @@ test('an old retro whose placeholder discuss stage has no reflectionGroupId stil
               ... on DiscussPhase {
                 stages {
                   reflectionGroupId
+                  discussionId
                   reflectionGroup {
                     title
                   }
@@ -102,7 +104,12 @@ test('an old retro whose placeholder discuss stage has no reflectionGroupId stil
   expect(res.errors).toBeUndefined()
   expect(res.data.viewer.meeting.phases).toContainEqual({
     stages: [
-      {reflectionGroupId: '', reflectionGroup: {title: 'Unknown'}, discussion: {commentCount: 0}}
+      {
+        reflectionGroupId: '',
+        discussionId: '',
+        reflectionGroup: {title: 'Unknown'},
+        discussion: {commentCount: 0}
+      }
     ]
   })
 })
