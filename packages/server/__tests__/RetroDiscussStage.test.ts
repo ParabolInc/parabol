@@ -54,6 +54,59 @@ const pointDiscussStageAtGroup = async (
   return discussionId
 }
 
+test('an old retro whose placeholder discuss stage has no reflectionGroupId still loads its stages', async () => {
+  const {cookie, teamId} = await signUp()
+  const meetingId = await startRetro(teamId, cookie)
+  const pg = getKysely()
+  const {phases} = await pg
+    .selectFrom('NewMeeting')
+    .select('phases')
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+  const discussPhase = (phases as {phaseType: string; stages: Record<string, unknown>[]}[]).find(
+    (phase) => phase.phaseType === 'discuss'
+  )!
+  delete discussPhase.stages[0]!.reflectionGroupId
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify(phases)})
+    .where('id', '=', meetingId)
+    .execute()
+
+  const res = await sendPublic({
+    query: `
+      query MeetingDiscussStages($meetingId: ID!) {
+        viewer {
+          meeting(meetingId: $meetingId) {
+            phases {
+              ... on DiscussPhase {
+                stages {
+                  reflectionGroupId
+                  reflectionGroup {
+                    title
+                  }
+                  discussion {
+                    commentCount
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {meetingId},
+    cookie
+  })
+
+  expect(res.errors).toBeUndefined()
+  expect(res.data.viewer.meeting.phases).toContainEqual({
+    stages: [
+      {reflectionGroupId: '', reflectionGroup: {title: 'Unknown'}, discussion: {commentCount: 0}}
+    ]
+  })
+})
+
 test('a task from a retro topic whose reflection group no longer exists still loads its stage', async () => {
   const {cookie, teamId, userId} = await signUp()
   const meetingId = await startRetro(teamId, cookie)
