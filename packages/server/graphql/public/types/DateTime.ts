@@ -3,18 +3,20 @@ import {Kind} from 'graphql/language'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import type {DateTimeScalarConfig} from '../resolverTypes'
 
+const zonedTimestamp = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
+
 function parseDate(value: string) {
   const result = new Date(value)
   if (!isValidDate(result)) {
     throw new GraphQLError(`Invalid date: ${value}`, {extensions: {code: 'BAD_USER_INPUT'}})
   }
-  if (value !== result.toJSON()) {
-    if (!result.toJSON().startsWith(value)) {
-      throw new GraphQLError(
-        `Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ: ${value}`,
-        {extensions: {code: 'BAD_USER_INPUT'}}
-      )
-    }
+  const wallClock = zonedTimestamp.exec(value)?.[1]
+  const canonical = wallClock ? new Date(`${wallClock}Z`).toJSON() : result.toJSON()
+  if (!canonical.startsWith(wallClock ?? value)) {
+    throw new GraphQLError(
+      `Invalid date, expected an ISO 8601 timestamp with a time zone, like 2024-03-15T14:30:00Z: ${value}`,
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   return result
 }
