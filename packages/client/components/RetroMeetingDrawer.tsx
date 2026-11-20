@@ -32,7 +32,11 @@ const RetroMeetingDrawer = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, rightDrawerOpen} = meeting
-  const [toggleDrawer, setActiveTab] = useRightDrawer(meetingId, 'inspiration', false)
+  const [toggleDrawer, setActiveTab] = useRightDrawer(
+    meetingId,
+    showInspiration ? 'inspiration' : 'transcription',
+    false
+  )
   return (
     <ResponsiveDashSidebar
       isOpen={rightDrawerOpen != null}
