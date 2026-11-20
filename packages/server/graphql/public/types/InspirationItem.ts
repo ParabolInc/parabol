@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import type {InspirationIssueSource} from '../mutations/helpers/toInspirationIssue'
 import type {InspirationItemResolvers} from '../resolverTypes'
 
 export interface InspirationItemSource {
@@ -8,6 +9,7 @@ export interface InspirationItemSource {
   promptId: string | null
   content: JSONContent
   createdAt: Date
+  issues: InspirationIssueSource[]
 }
 
 const InspirationItem: InspirationItemResolvers = {

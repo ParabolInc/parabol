@@ -1,5 +1,9 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {InspirationIssue} from '../../../../integrations/platform/InspirationIssue'
+import {
+  type InspirationIssue,
+  MAX_ISSUES,
+  TIMELINE_PAGE_SIZE
+} from '../../../../integrations/platform/InspirationIssue'
 import {getServerIntegration} from '../../../../integrations/platform/registry'
 import type {GQLContext} from '../../../graphql'
 import type {InspirationSourceInput, ServiceEnum} from '../../resolverTypes'
@@ -19,8 +23,31 @@ export interface NumberedIssue {
 const sourceLabel = (service: ServiceEnum) =>
   service === 'PARABOL' ? 'Parabol' : (getServerIntegration(service)?.title ?? service)
 
-// Numbers every source's issues W1, W2, … so the AI can refer back to each one, and renders them
-// grouped by the tool they came from. With a page, only that page of a timeline: the work just older than its `before`.
+// Renders issues for the AI, grouped by the tool they came from, each labeled with its id
+export const formatNumberedIssues = (
+  numberedIssues: readonly NumberedIssue[],
+  formatIssues: (issues: InspirationIssue[], ids: string[]) => string = formatIssuesForAI
+) => {
+  const services = [...new Set(numberedIssues.map(({service}) => service))]
+  return services
+    .map((service) => {
+      const sourceIssues = numberedIssues.filter(
+        (numberedIssue) => numberedIssue.service === service
+      )
+      return `## ${sourceLabel(service)}\n\n${formatIssues(
+        sourceIssues.map(({issue}) => issue),
+        sourceIssues.map(({id}) => id)
+      )}`
+    })
+    .join('\n\n')
+}
+
+// Numbers issues W1, W2, … in order, so the AI can refer back to each one
+export const numberIssues = (issues: readonly {service: ServiceEnum; issue: InspirationIssue}[]) =>
+  issues.map(({service, issue}, idx): NumberedIssue => ({id: `W${idx + 1}`, service, issue}))
+
+// Every source's issues, numbered. With a page, only that page of a retro's timeline: the work just
+// older than its `before`.
 const gatherInspirationIssues = async (
   sources: readonly InspirationSourceInput[],
   teamId: string,
@@ -29,30 +56,32 @@ const gatherInspirationIssues = async (
   info: GraphQLResolveInfo,
   page: {before: Date | null} | null
 ) => {
-  const before = page?.before ?? null
+  const issuePage = page
+    ? {before: page.before, first: TIMELINE_PAGE_SIZE}
+    : {before: null, first: MAX_ISSUES}
   const fetchedSources = await Promise.all(
     sources.map(async ({service, searchQuery}) => ({
       service,
-      sourceIssues: await fetchIssues(service, searchQuery, teamId, viewerId, context, info, before)
+      sourceIssues: await fetchIssues(
+        service,
+        searchQuery,
+        teamId,
+        viewerId,
+        context,
+        info,
+        issuePage
+      )
     }))
   )
   const {nextBefore, pagedSources} = page
-    ? pageInspirationIssues(fetchedSources, before)
+    ? pageInspirationIssues(fetchedSources, issuePage)
     : {nextBefore: null, pagedSources: fetchedSources}
-  let nextId = 1
-  const numberedIssues = pagedSources.flatMap(({service, sourceIssues}) =>
-    sourceIssues.map((issue): NumberedIssue => ({id: `W${nextId++}`, service, issue}))
+  const numberedIssues = numberIssues(
+    pagedSources.flatMap(({service, sourceIssues}) =>
+      sourceIssues.map((issue) => ({service, issue}))
+    )
   )
-  const issuesText = pagedSources
-    .filter(({sourceIssues}) => sourceIssues.length > 0)
-    .map(({service, sourceIssues}) => {
-      const ids = numberedIssues
-        .filter((numberedIssue) => numberedIssue.service === service)
-        .map(({id}) => id)
-      return `## ${sourceLabel(service)}\n\n${formatIssuesForAI(sourceIssues, ids)}`
-    })
-    .join('\n\n')
-  return {numberedIssues, issuesText, nextBefore}
+  return {numberedIssues, nextBefore}
 }
 
 export default gatherInspirationIssues

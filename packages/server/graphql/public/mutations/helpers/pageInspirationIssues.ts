@@ -1,4 +1,4 @@
-import {type InspirationIssue, MAX_ISSUES} from '../../../../integrations/platform/InspirationIssue'
+import type {InspirationIssue, IssuePage} from '../../../../integrations/platform/InspirationIssue'
 
 const toTime = ({updatedAt}: InspirationIssue) => {
   const time = updatedAt?.getTime()
@@ -9,9 +9,9 @@ const toTime = ({updatedAt}: InspirationIssue) => {
 // issue of such a source. Anything older waits for the next page, where it sorts among what that source sends then.
 // A source whose whole page is dated `before` or later, which a service that rounds dates can send, can't hold the
 // page back. Null when every source sent all it has, so the page reaches the start of the range.
-const findNextBefore = (sourceIssueLists: InspirationIssue[][], before: Date | null) => {
+const findNextBefore = (sourceIssueLists: InspirationIssue[][], {before, first}: IssuePage) => {
   const oldestOfFullLists = sourceIssueLists.flatMap((issues) => {
-    if (issues.length < MAX_ISSUES) return []
+    if (issues.length < first) return []
     const times = issues.flatMap((issue) => toTime(issue) ?? [])
     if (times.length === 0) return []
     const oldest = Math.min(...times)
@@ -24,11 +24,12 @@ const findNextBefore = (sourceIssueLists: InspirationIssue[][], before: Date | n
 // where the next page starts. An issue without a date goes on the first page.
 const pageInspirationIssues = <T extends {sourceIssues: InspirationIssue[]}>(
   sources: T[],
-  before: Date | null
+  page: IssuePage
 ) => {
+  const {before} = page
   const nextBefore = findNextBefore(
     sources.map(({sourceIssues}) => sourceIssues),
-    before
+    page
   )
   const isOnPage = (issue: InspirationIssue) => {
     const time = toTime(issue)

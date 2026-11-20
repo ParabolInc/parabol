@@ -1,6 +1,7 @@
 import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import type {SharedUpdater} from '../types/relayMutations'
+import logMissingSubscriptionField from './logMissingSubscriptionField'
 
 const subscriptionUpdater =
   (
@@ -13,9 +14,8 @@ const subscriptionUpdater =
     if (!payload) return
     const fieldName = payload.getValue('fieldName')
     const field = payload.getLinkedRecord(fieldName)
-    // the server nulls a payload it failed to resolve
     if (!field) {
-      console.error('Notification Subscription Payload received without field:', fieldName)
+      logMissingSubscriptionField(fieldName)
       return
     }
     const handler = updateHandlers[fieldName]

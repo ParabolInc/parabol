@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import buildAzureDevOpsWorkWiql from 'parabol-client/integrations/azureDevOps/shared/buildAzureDevOpsWorkWiql'
 import type {DataLoaderWorker, GQLContext} from '../../../graphql/graphql'
+import {MAX_ISSUES} from '../../platform/InspirationIssue'
 import getAzureDevOpsManager from '../getAzureDevOpsManager'
 import listAzureDevOpsIssues from '../listAzureDevOpsIssues'
 import type {AzureDevOpsWorkItem} from '../mapAzureDevOpsWorkItem'
@@ -62,11 +63,10 @@ const workItem = (
 })
 
 const run = (query: string, before: Date | null = null) =>
-  listAzureDevOpsIssues(
-    {dataLoader, teamId: 'team1', userId: 'user1', context, info},
-    query,
-    before
-  )
+  listAzureDevOpsIssues({dataLoader, teamId: 'team1', userId: 'user1', context, info}, query, {
+    before,
+    first: MAX_ISSUES
+  })
 
 describe('listAzureDevOpsIssues', () => {
   beforeEach(() => {
@@ -181,7 +181,10 @@ describe('listAzureDevOpsIssues', () => {
         url: 'https://dev.azure.com/acme/Web/_workitems/edit/42',
         updatedAt,
         description: 'Users cannot sign in',
-        comments: []
+        comments: [],
+        isOwnWork: true,
+        isClosed: false,
+        commentCount: 0
       }
     ])
   })

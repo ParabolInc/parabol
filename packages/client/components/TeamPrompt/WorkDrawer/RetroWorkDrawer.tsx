@@ -10,6 +10,7 @@ import InspirationSettingsDialog from './InspirationSettingsDialog'
 import InspirationSourceTiles from './InspirationSourceTiles'
 import {dateRangeLabel} from './inspirationCopy'
 import RetroActionItems from './RetroActionItems'
+import RetroDraftSection from './RetroDraftSection'
 import RetroWorkSection from './RetroWorkSection'
 import useInspirationSourceDraft from './useInspirationSourceDraft'
 import WorkDrawerConsumeContext from './WorkDrawerConsumeContext'
@@ -86,7 +87,10 @@ const RetroWorkDrawer = (props: Props) => {
     draft,
     requestRedraft,
     drafting,
+    draftingItems,
     error,
+    itemsError,
+    retryItems,
     hasOlder,
     loadOlder,
     loadingOlder,
@@ -99,6 +103,7 @@ const RetroWorkDrawer = (props: Props) => {
     isOrgAIEnabled: meeting.organization.useAI,
     dateRange,
     instructionsKey: 'Inspiration:retroInstructions',
+    isPaged: true,
     lifespanMs: RETRO_DRAFT_LIFESPAN_MS
   })
 
@@ -159,12 +164,20 @@ const RetroWorkDrawer = (props: Props) => {
           />
         </div>
         <RetroActionItems meetingRef={lastRetro} />
+        {canDraft && (drafting || !!draft?.issues.length) && (
+          <RetroDraftSection
+            draft={draft}
+            drafting={drafting || draftingItems}
+            error={itemsError}
+            onRetry={retryItems}
+          />
+        )}
         <RetroWorkSection
           draft={draft}
           drafting={drafting}
           error={error}
+          onRetry={() => requestRedraft(true)}
           aiOffMessage={aiOffMessage}
-          dateRange={draftRange}
           hasOlder={hasOlder}
           loadingOlder={loadingOlder}
           olderError={olderError}

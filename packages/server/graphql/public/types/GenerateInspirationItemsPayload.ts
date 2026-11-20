@@ -1,19 +1,12 @@
-import type {GenerateInspirationItemsPayloadResolvers, ServiceEnum} from '../resolverTypes'
+import type {InspirationIssueSource} from '../mutations/helpers/toInspirationIssue'
+import type {GenerateInspirationItemsPayloadResolvers} from '../resolverTypes'
 import type {InspirationItemSource} from './InspirationItem'
 
 export type GenerateInspirationItemsPayloadSource = {
   meetingId: string
   inspirationItems: InspirationItemSource[]
-  issues: {
-    service: ServiceEnum
-    kind: string
-    title: string
-    url: string | null
-    updatedAt: Date | null
-    unusedReason: string | null
-    draft: InspirationItemSource | null
-  }[]
-  nextBefore: Date | null
+  issues: InspirationIssueSource[]
+  issueCount: number
 }
 
 const GenerateInspirationItemsPayload: GenerateInspirationItemsPayloadResolvers = {

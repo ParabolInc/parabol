@@ -33,4 +33,10 @@ type InspirationItem {
   The time the item was generated
   """
   createdAt: DateTime!
+
+  """
+  The issues the draft was drawn from: in a retrospective, one issue or every issue of a theme the AI
+  found across them; in a standup, the issues the answer links
+  """
+  issues: [InspirationIssue!]!
 }

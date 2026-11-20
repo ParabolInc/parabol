@@ -1,6 +1,9 @@
+import {stringify} from 'flatted'
 import {Window} from 'happy-dom'
 import {
   commitMutation,
+  createOperationDescriptor,
+  createReaderSelector,
   Environment,
   fetchQuery,
   type GraphQLResponse,
@@ -8,6 +11,12 @@ import {
   RecordSource,
   Store
 } from 'relay-runtime'
+import DemoMeetingRootQueryRequest, {
+  type DemoMeetingRootQuery as DemoMeetingRootQueryType
+} from '../../../__generated__/DemoMeetingRootQuery.graphql'
+import RetroDiscussPhaseMeetingFragment, {
+  type RetroDiscussPhase_meeting$data
+} from '../../../__generated__/RetroDiscussPhase_meeting.graphql'
 import SetMeetingMusicMutationRequest, {
   type SetMeetingMusicMutation as SetMeetingMusicMutationType
 } from '../../../__generated__/SetMeetingMusicMutation.graphql'
@@ -20,6 +29,7 @@ import UngroupReflectionMutationRequest, {
 import type Atmosphere from '../../../Atmosphere'
 import {setMeetingMusicMeetingUpdater} from '../../../mutations/SetMeetingMusicMutation'
 import {RetroDemo} from '../../../types/constEnums'
+import handlerProvider from '../../../utils/relay/handlerProvider'
 import {demoViewerId} from '../initDB'
 import type LocalAtmosphere from '../LocalAtmosphere'
 
@@ -38,6 +48,12 @@ const createDemoEnvironment = async () => {
   Object.assign(globalThis, {window: happyWindow, document: happyWindow.document})
   const {default: ClientGraphQLServer} = await import('../ClientGraphQLServer')
   const server = new ClientGraphQLServer({} as LocalAtmosphere)
+  return {...createEnvironmentFor(server), server}
+}
+
+const createEnvironmentFor = (server: {
+  fetch: (opName: string, variables: Record<string, unknown>) => Promise<unknown>
+}) => {
   const source = new RecordSource()
   source.set(RetroDemo.MEETING_ID, {
     __id: RetroDemo.MEETING_ID,
@@ -45,13 +61,31 @@ const createDemoEnvironment = async () => {
     id: RetroDemo.MEETING_ID
   })
   const environment = new Environment({
+    handlerProvider,
     network: Network.create(
       async (operation, variables) =>
         (await server.fetch(operation.name, variables)) as unknown as GraphQLResponse
     ),
     store: new Store(source)
   })
-  return {environment, server}
+  return {environment}
+}
+
+const loadDiscussPhaseMeeting = async (environment: Environment) => {
+  const variables = {meetingId: RetroDemo.MEETING_ID}
+  await fetchQuery<DemoMeetingRootQueryType>(
+    environment,
+    DemoMeetingRootQueryRequest,
+    variables
+  ).toPromise()
+  const {request} = createOperationDescriptor(DemoMeetingRootQueryRequest, variables)
+  const selector = createReaderSelector(
+    RetroDiscussPhaseMeetingFragment,
+    RetroDemo.MEETING_ID,
+    variables,
+    request
+  )
+  return environment.lookup(selector).data as RetroDiscussPhase_meeting$data
 }
 
 describe('ClientGraphQLServer', () => {
@@ -149,5 +183,51 @@ describe('ClientGraphQLServer', () => {
     expect(new Set(reflectionIds.map(groupIdOf)).size).toBe(3)
     expect(errorSpy).not.toHaveBeenCalled()
     expect(server.db.reflectionGroups.map(({reflections}) => reflections.length)).toEqual([1, 1, 1])
+  })
+
+  it('loads the tasks of a fresh demo meeting for its last discussion topic', async () => {
+    const {environment} = await createDemoEnvironment()
+    const meeting = await loadDiscussPhaseMeeting(environment)
+    expect(meeting.tasks).toEqual([])
+  })
+
+  it('reloads the tasks the demo meeting created and drops the deleted ones', async () => {
+    const {server} = await createDemoEnvironment()
+    await server.ops.CreateReflectionMutation(
+      {
+        input: {
+          id: 'ref1',
+          groupId: 'ref1Group',
+          content: JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
+          promptId: 'startId',
+          sortOrder: 0
+        }
+      },
+      demoViewerId
+    )
+    const createTask = (id: string) =>
+      server.ops.CreateTaskMutation(
+        {
+          newTask: {
+            id,
+            discussionId: 'discussion:ref1Group',
+            status: 'active',
+            sortOrder: 0,
+            threadSortOrder: 0
+          }
+        },
+        demoViewerId
+      )
+    await createTask('task1')
+    await createTask('task2')
+    server.ops.DeleteTaskMutation({taskId: 'task1'}, demoViewerId)
+
+    happyWindow.localStorage.setItem('retroDemo', stringify(server.db))
+    const {default: ClientGraphQLServer} = await import('../ClientGraphQLServer')
+    const reloadedServer = new ClientGraphQLServer({} as LocalAtmosphere)
+    happyWindow.localStorage.removeItem('retroDemo')
+    const {environment} = createEnvironmentFor(reloadedServer)
+    const meeting = await loadDiscussPhaseMeeting(environment)
+    expect(meeting.tasks).toEqual([{id: 'task2'}])
   })
 })

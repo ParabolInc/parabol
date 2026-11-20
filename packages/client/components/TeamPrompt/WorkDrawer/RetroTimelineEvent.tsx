@@ -1,82 +1,73 @@
-import dayjs from 'dayjs'
-import {cn} from '../../../ui/cn'
+import {AutoAwesome} from '~/ui/icons'
+import {Button} from '../../../ui/Button/Button'
 import InspirationSourceLogo from './InspirationSourceLogo'
+import inspirationKindLabel from './inspirationKindLabel'
 import inspirationServiceLabel from './inspirationServiceLabel'
-import parseInspirationContent from './parseInspirationContent'
-import RetroInspirationItemCard from './RetroInspirationItemCard'
-import RetroStartReflectionMenu from './RetroStartReflectionMenu'
-import reflectionStarterContent from './reflectionStarterContent'
+import retroDraftCardId from './retroDraftCardId'
 import type {InspirationDraft} from './useInspirationDraft'
-import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
 interface Props {
   issue: InspirationDraft['issues'][number]
+  // The draft above that was drawn from this issue, if any
+  draftId: string | null
 }
 
-const toSentenceCase = (text: string) => text.charAt(0) + text.slice(1).toLowerCase()
-
 const RetroTimelineEvent = (props: Props) => {
-  const {issue} = props
-  const {service, kind, title, url, updatedAt, draft} = issue
-  const {meetingId} = useWorkDrawerConsume()
+  const {issue, draftId} = props
+  const {service, kind, title, url} = issue
+  const showDraft = () => {
+    const card = draftId ? document.getElementById(retroDraftCardId(draftId)) : null
+    card?.focus({preventScroll: true})
+    card?.scrollIntoView({behavior: 'smooth', block: 'center'})
+  }
   return (
-    <li className='group grid grid-cols-[44px_16px_minmax(0,1fr)] gap-x-1.5 py-1.5'>
-      <span className='text-right text-fg-muted text-xs leading-5'>
-        {updatedAt && dayjs(updatedAt).format('MMM D')}
-      </span>
+    <li className='grid grid-cols-[16px_minmax(0,1fr)] gap-x-1.5 py-1.5'>
       <span
         aria-hidden
         className='before:-inset-y-1.5 relative flex justify-center before:absolute before:w-0.5 before:bg-hairline'
       >
-        <span
-          className={cn(
-            'relative mt-[5px] size-2.5 rounded-full border-2',
-            draft ? 'border-accent bg-accent' : 'border-hairline-strong bg-surface-card'
-          )}
-        />
-      </span>
-      <div className='flex min-w-0 flex-col gap-2'>
-        <div className='flex items-start gap-1.5'>
-          <span
-            role='img'
-            aria-label={inspirationServiceLabel(service)}
-            title={inspirationServiceLabel(service)}
-            className='mt-0.5 flex size-4 shrink-0 items-center justify-center [&>*]:size-full'
-          >
-            <InspirationSourceLogo service={service} />
-          </span>
-          <div className='flex min-w-0 flex-1 flex-col'>
-            {url ? (
-              <a
-                href={url}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='line-clamp-2 font-medium text-fg-primary text-sm leading-5 underline decoration-hairline-strong hover:decoration-fg-primary'
-              >
-                {title}
-              </a>
-            ) : (
-              <span className='line-clamp-2 font-medium text-fg-primary text-sm leading-5'>
-                {title}
-              </span>
-            )}
-            <span className='text-fg-muted text-xs'>{toSentenceCase(kind)}</span>
-          </div>
-          <RetroStartReflectionMenu
-            subject={title}
-            content={reflectionStarterContent(title, url, service)}
-            revealOnHover
-          />
-        </div>
-        {draft && (
-          <RetroInspirationItemCard
-            key={draft.id}
-            meetingId={meetingId}
-            promptId={draft.promptId ?? null}
-            title={null}
-            content={parseInspirationContent(draft.content)}
-          />
+        {draftId ? (
+          <AutoAwesome className='relative mt-0.5 size-4 rounded-full bg-surface-drawer text-accent' />
+        ) : (
+          <span className='relative mt-[5px] size-2.5 rounded-full border-2 border-hairline-strong bg-surface-drawer' />
         )}
+      </span>
+      <div className='flex min-w-0 items-start gap-1.5'>
+        <span
+          role='img'
+          aria-label={inspirationServiceLabel(service)}
+          title={inspirationServiceLabel(service)}
+          className='mt-0.5 flex size-4 shrink-0 items-center justify-center [&>*]:size-full'
+        >
+          <InspirationSourceLogo service={service} />
+        </span>
+        <div className='flex min-w-0 flex-1 flex-col'>
+          {url ? (
+            <a
+              href={url}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='line-clamp-2 font-medium text-fg-primary text-sm leading-5 underline decoration-hairline-strong hover:decoration-fg-primary'
+            >
+              {title}
+            </a>
+          ) : (
+            <span className='line-clamp-2 font-medium text-fg-primary text-sm leading-5'>
+              {title}
+            </span>
+          )}
+          <span className='text-fg-muted text-xs'>
+            {inspirationKindLabel(kind)}
+            {draftId && (
+              <>
+                {' · '}
+                <Button variant='link' className='text-accent-strong text-xs' onClick={showDraft}>
+                  In a draft above
+                </Button>
+              </>
+            )}
+          </span>
+        </div>
       </div>
     </li>
   )

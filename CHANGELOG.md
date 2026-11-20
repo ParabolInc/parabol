@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.2.0](https://github.com/ParabolInc/parabol/compare/v16.1.0...v16.2.0) (2026-11-19)
+
+
+### Added
+
+* **pages:** show selected blocks as one grape group with an action bar ([#14317](https://github.com/ParabolInc/parabol/issues/14317)) ([aa454ea](https://github.com/ParabolInc/parabol/commit/aa454ea79126c29ec1cc8a89b00127d9305f8fa6))
+* **retro:** scroll the inspiration timeline back to the start of its range ([#14316](https://github.com/ParabolInc/parabol/issues/14316)) ([b95b209](https://github.com/ParabolInc/parabol/commit/b95b209f73974048f6d500e7193134ad64faad16))
+
+
+### Fixed
+
+* **client:** show a tool's repos and projects right after connecting it ([#14315](https://github.com/ParabolInc/parabol/issues/14315)) ([4f941a1](https://github.com/ParabolInc/parabol/commit/4f941a1c521ce997275ca44e2a4a0660415b63f0))
+* **retro:** let search-opened template cards collapse and bold the match ([#14314](https://github.com/ParabolInc/parabol/issues/14314)) ([ddabcae](https://github.com/ParabolInc/parabol/commit/ddabcae547e8c4e3bcdc761d599e936de2101aa2))
+* **server:** keep a page-limited token's Confluence export from copying images of pages outside it ([#14300](https://github.com/ParabolInc/parabol/issues/14300)) ([aa3788f](https://github.com/ParabolInc/parabol/commit/aa3788fce2d80d1c47bcc135c6db2603d63da54d))
+
 ## [16.1.0](https://github.com/ParabolInc/parabol/compare/v16.0.2...v16.1.0) (2026-11-19)
 
 

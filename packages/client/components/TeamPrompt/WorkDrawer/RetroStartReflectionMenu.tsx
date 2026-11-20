@@ -15,11 +15,10 @@ import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 interface Props {
   subject: string
   content: JSONContent
-  revealOnHover?: boolean
 }
 
 const RetroStartReflectionMenu = (props: Props) => {
-  const {subject, content, revealOnHover} = props
+  const {subject, content} = props
   const atmosphere = useAtmosphere()
   const {meetingId, reflectPrompts, getNextReflectionSortOrder} = useWorkDrawerConsume()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -61,10 +60,7 @@ const RetroStartReflectionMenu = (props: Props) => {
           }
           className={cn(
             'size-8 p-0 text-fg-secondary data-[state=open]:border-accent',
-            startedIn && 'text-fg-primary',
-            revealOnHover &&
-              !startedIn &&
-              'opacity-0 focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100 [@media(hover:none)]:opacity-100'
+            startedIn && 'text-fg-primary'
           )}
         >
           {startedIn ? <Check className='size-4' /> : <Add className='size-4' />}

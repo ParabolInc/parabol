@@ -13,8 +13,8 @@ import {
   getBlockRange,
   getSyncedBlockConversion
 } from './getSyncedBlockConversion'
-import {canTurnIntoPage, isInsideCallout, type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
-import {turnIntoRows} from './turnIntoRows'
+import {type TurnIntoTarget, turnBlockInto} from './turnBlockInto'
+import {findTurnIntoRow, getTurnIntoRows} from './turnIntoRows'
 
 interface Props {
   editor: Editor
@@ -26,14 +26,8 @@ interface Props {
 
 export const TurnIntoMenu = (props: Props) => {
   const {editor, node, pos, current, canCreateSubPage} = props
-  const isInCallout = isInsideCallout(editor.state.doc, pos)
-  const rows = turnIntoRows.filter(({target}) => {
-    if (target.type === 'callout') return !isInCallout
-    return target.type !== 'pageLinkBlock' || (canCreateSubPage && canTurnIntoPage(current))
-  })
-  const currentRow = rows.find(
-    ({target}) => target.type === current.type && target.level === current.level
-  )
+  const rows = getTurnIntoRows(editor.state.doc, pos, current, canCreateSubPage)
+  const currentRow = findTurnIntoRow(rows, current)
 
   const getRange = () => getBlockRange(editor, node, pos)
   const showSyncedBlock = canCreateSubPage && !!getSyncedBlockConversion(editor, getRange())
