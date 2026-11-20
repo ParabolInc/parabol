@@ -12,19 +12,22 @@ const loadPage = async () => {
   jest.resetModules()
   await import('../client')
   const addEventListener = window.addEventListener as jest.Mock
-  const [, onLoad] = addEventListener.mock.calls.find(([type]) => type === 'load')!
-  await onLoad()
+  const loadListener = addEventListener.mock.calls.find(([type]) => type === 'load')
+  await loadListener?.[1]()
   await new Promise(setImmediate)
 }
 
 beforeEach(() => {
   Object.assign(globalThis, {__PRODUCTION__: true})
   Object.defineProperty(globalThis, 'window', {
-    value: {location: {protocol: 'https:'}, addEventListener: jest.fn()},
+    value: {
+      location: {protocol: 'https:', origin: 'https://action.parabol.co'},
+      addEventListener: jest.fn()
+    },
     configurable: true
   })
   Object.defineProperty(globalThis, 'document', {
-    value: {getElementById: () => ({})},
+    value: {getElementById: () => ({}), baseURI: 'https://action.parabol.co/'},
     configurable: true
   })
   Object.defineProperty(globalThis, 'navigator', {
@@ -59,6 +62,7 @@ test('a registration the browser refuses to a site whose data the user blocks is
     )
   )
   await loadPage()
+  expect(register).toHaveBeenCalled()
   expect(loggedToConsole).not.toHaveBeenCalled()
 })
 
@@ -69,4 +73,17 @@ test('a registration that fails to load the script is still logged', async () =>
   register.mockRejectedValue(failure)
   await loadPage()
   expect(loggedToConsole).toHaveBeenCalledWith(failure)
+})
+
+test('a copy of the page a translation proxy serves from its own origin does not register the worker', async () => {
+  Object.assign(window.location, {origin: 'https://action-parabol-co.translate.goog'})
+  register.mockRejectedValue(
+    new DOMException(
+      "Failed to register a ServiceWorker: The origin of the provided scriptURL ('https://action.parabol.co') does not match the current origin ('https://action-parabol-co.translate.goog').",
+      'SecurityError'
+    )
+  )
+  await loadPage()
+  expect(register).not.toHaveBeenCalled()
+  expect(loggedToConsole).not.toHaveBeenCalled()
 })

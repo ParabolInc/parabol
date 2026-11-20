@@ -17,7 +17,11 @@ const canRegisterServiceWorker = __PRODUCTION__ || window.location.protocol === 
 // The browser refuses a worker to a document it is discarding, such as a sign-in popup its opener just closed,
 // and to a site whose data the user blocks. The page works without one
 const REFUSED_REGISTRATION_ERRORS = ['InvalidStateError', 'NotSupportedError']
-if (canRegisterServiceWorker && 'serviceWorker' in navigator) {
+// A proxy such as Google Translate serves a copy of the page from its own origin under a <base href> to the app's,
+// and the browser refuses a worker from an origin other than the page's
+const isServiceWorkerSameOrigin =
+  new URL('/sw.js', document.baseURI).origin === window.location.origin
+if (canRegisterServiceWorker && isServiceWorkerSameOrigin && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     // logging from a closure keeps a frame of the app's own beneath console.error, which tells it from an extension's log
     navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch((error) => {
