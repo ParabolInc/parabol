@@ -3,6 +3,7 @@ import Ellipsis from '../../Ellipsis/Ellipsis'
 import parseInspirationContent from './parseInspirationContent'
 import RetroInspirationItemCard from './RetroInspirationItemCard'
 import RetryableError from './RetryableError'
+import retroDraftCardId from './retroDraftCardId'
 import type {InspirationDraft} from './useInspirationDraft'
 import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
@@ -57,13 +58,19 @@ const RetroDraftSection = (props: Props) => {
       {items.length > 0 && (
         <div className='flex flex-col gap-2 pt-1.5'>
           {items.map(({id, content, promptId}) => (
-            <RetroInspirationItemCard
+            <div
               key={id}
-              meetingId={meetingId}
-              promptId={promptId}
-              title={null}
-              content={parseInspirationContent(content)}
-            />
+              id={retroDraftCardId(id)}
+              tabIndex={-1}
+              className='rounded-card focus:outline-2 focus:outline-accent focus:outline-offset-2'
+            >
+              <RetroInspirationItemCard
+                meetingId={meetingId}
+                promptId={promptId}
+                title={null}
+                content={parseInspirationContent(content)}
+              />
+            </div>
           ))}
         </div>
       )}

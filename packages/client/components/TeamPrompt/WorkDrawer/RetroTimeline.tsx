@@ -7,8 +7,8 @@ import type {InspirationDraft} from './useInspirationDraft'
 
 interface Props {
   issues: InspirationDraft['issues']
-  // The issues a draft above was drawn from
-  draftedKeys: ReadonlySet<string>
+  // The draft above each issue backs, by the issue's key
+  draftIdByIssueKey: ReadonlyMap<string, string>
   hasOlder: boolean
   loadingOlder: boolean
   olderError: string | null
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const RetroTimeline = (props: Props) => {
-  const {issues, draftedKeys, hasOlder, loadingOlder, olderError, loadOlder} = props
+  const {issues, draftIdByIssueKey, hasOlder, loadingOlder, olderError, loadOlder} = props
   const days = groupIssuesByDay(issues)
   const loadOlderTrigger = useLoadNextOnScrollBottom({
     hasNext: hasOlder && !olderError,
@@ -26,7 +26,12 @@ const RetroTimeline = (props: Props) => {
   return (
     <div className='flex flex-col'>
       {days.map(({key, label, issues: dayIssues}) => (
-        <RetroTimelineDay key={key} label={label} issues={dayIssues} draftedKeys={draftedKeys} />
+        <RetroTimelineDay
+          key={key}
+          label={label}
+          issues={dayIssues}
+          draftIdByIssueKey={draftIdByIssueKey}
+        />
       ))}
       {loadOlderTrigger}
       {loadingOlder && (

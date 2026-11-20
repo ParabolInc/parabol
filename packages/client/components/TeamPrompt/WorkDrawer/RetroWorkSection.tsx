@@ -30,8 +30,10 @@ const RetroWorkSection = (props: Props) => {
     loadOlder
   } = props
   const issues = drafting ? [] : (draft?.issues ?? [])
-  const draftedKeys = new Set(
-    (draft?.items ?? []).flatMap((item) => item.issues.map(inspirationIssueKey))
+  const draftIdByIssueKey = new Map(
+    (draft?.items ?? []).flatMap(({id, issues: draftIssues}) =>
+      draftIssues.map((issue) => [inspirationIssueKey(issue), id] as const)
+    )
   )
   const isEmpty = !!draft && !drafting && issues.length === 0
   return (
@@ -64,7 +66,7 @@ const RetroWorkSection = (props: Props) => {
         {issues.length > 0 && (
           <RetroTimeline
             issues={issues}
-            draftedKeys={draftedKeys}
+            draftIdByIssueKey={draftIdByIssueKey}
             hasOlder={hasOlder}
             loadingOlder={loadingOlder}
             olderError={olderError}

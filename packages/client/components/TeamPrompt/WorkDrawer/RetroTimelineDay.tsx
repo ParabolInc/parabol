@@ -11,11 +11,11 @@ const MIN_HIDDEN = 3
 interface Props {
   label: string
   issues: InspirationDraft['issues']
-  draftedKeys: ReadonlySet<string>
+  draftIdByIssueKey: ReadonlyMap<string, string>
 }
 
 const RetroTimelineDay = (props: Props) => {
-  const {label, issues, draftedKeys} = props
+  const {label, issues, draftIdByIssueKey} = props
   const [isExpanded, setIsExpanded] = useState(false)
   const hiddenCount = issues.length - SHOWN_PER_DAY
   const isFolded = !isExpanded && hiddenCount >= MIN_HIDDEN
@@ -30,7 +30,7 @@ const RetroTimelineDay = (props: Props) => {
             <RetroTimelineEvent
               key={`${issueKey}:${issue.updatedAt}`}
               issue={issue}
-              isDrafted={draftedKeys.has(issueKey)}
+              draftId={draftIdByIssueKey.get(issueKey) ?? null}
             />
           )
         })}
