@@ -11,12 +11,11 @@ import type {
   StandardMutation
 } from '../types/relayMutations'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
-import getMutationError from '../utils/relay/getMutationError'
+import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
-import {snackOnError} from './handlers/snackOnError'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -91,10 +90,6 @@ graphql`
 
 graphql`
   fragment AcceptTeamInvitationMutationReply on AcceptTeamInvitationPayload {
-    userErrors {
-      code
-      message
-    }
     meetingId
     team {
       id
@@ -184,24 +179,23 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<
 
 interface LocalHandler extends NavigateMaybeLocalHandler {
   meetingId?: string | null
-  ignoreApproval?: boolean
 }
 
-export const handleAcceptTeamInvitationErrors = (
+export const snackAcceptTeamInvitationError = (
   atmosphere: Atmosphere,
-  acceptTeamInvitation:
-    | null
-    | undefined
-    | {readonly userErrors: ReadonlyArray<{readonly code: string; readonly message: string}>}
+  {message, code}: MutationError
 ) => {
-  const userError = acceptTeamInvitation?.userErrors[0]
-  if (!userError) return
-  const {code, message} = userError
-  if (code === 'TOKEN_ALREADY_USED' || code === 'NOT_SIGNED_IN') return
   atmosphere.eventEmitter.emit('addSnackbar', {
     autoDismiss: 0,
     key: `acceptTeamInvitation:${message}`,
-    message
+    message,
+    action:
+      code === 'ORGANIZATION_LOCKED'
+        ? {
+            label: 'Contact Sales',
+            callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')
+          }
+        : undefined
   })
 }
 
@@ -211,7 +205,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
 > = (
   atmosphere,
   variables,
-  {navigate, onCompleted, onError, meetingId: locallyRequestedMeetingId, ignoreApproval}
+  {navigate, onCompleted, onError, meetingId: locallyRequestedMeetingId}
 ) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
@@ -221,42 +215,17 @@ const AcceptTeamInvitationMutation: StandardMutation<
       if (!payload) return
       acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
     },
-    onError: onError ?? snackOnError(atmosphere),
+    onError:
+      onError ?? ((error) => snackAcceptTeamInvitationError(atmosphere, getMutationError(error))),
     onCompleted: (data, errors) => {
-      if (onCompleted) {
-        onCompleted(data, errors)
+      onCompleted?.(data, errors)
+      const fieldError = getMutationError(data, errors)
+      if (fieldError) {
+        if (!onCompleted) snackAcceptTeamInvitationError(atmosphere, fieldError)
+        return
       }
       const {acceptTeamInvitation} = data
-      const {team, userErrors} = acceptTeamInvitation
-      const userErrorCode = userErrors[0]?.code
-      const serverError = getMutationError(data, errors)
-      if (serverError) {
-        const message = serverError.message
-        if (userErrorCode === 'NOT_SIGNED_IN') {
-          // if the user follows an invitation link with an invalid auth token, invalidate it
-          // TODO what to do here?
-        } else if (userErrorCode === 'TOKEN_ALREADY_USED') {
-          handleAuthenticationRedirect(acceptTeamInvitation, {
-            atmosphere,
-            navigate,
-            meetingId: locallyRequestedMeetingId
-          })
-        } else if (!ignoreApproval) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            autoDismiss: 0,
-            key: `acceptTeamInvitation:${message}`,
-            message,
-            action:
-              userErrorCode === 'ORGANIZATION_LOCKED'
-                ? {
-                    label: 'Contact Sales',
-                    callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')
-                  }
-                : undefined
-          })
-        }
-        if (!ignoreApproval) return
-      }
+      const {team} = acceptTeamInvitation
       if (!team) return
       const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addSnackbar', {

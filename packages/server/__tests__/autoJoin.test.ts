@@ -9,9 +9,7 @@ const signUpVerified = async (email: string) => {
     query: `
       mutation SignUpWithPassword($email: ID!, $password: String!) {
         signUpWithPassword(email: $email, password: $password, params: "") {
-          userErrors {
-            code
-          }
+          userId
         }
       }
     `,

@@ -14,8 +14,7 @@ const makeSchema = () =>
   createSchema<TestContext>({
     typeDefs: `
       type Query { ping: String }
-      type UserError { message: String! }
-      type LoginPayload { userId: ID, userErrors: [UserError!]! }
+      type LoginPayload { userId: ID }
       type Mutation {
         ping: String
         renameTeam(teamId: ID!, name: String!): String
@@ -33,9 +32,13 @@ const makeSchema = () =>
           throw new TypeError('boom')
         },
         loginWithPassword: (_source, {password}, context) => {
-          if (password !== 'hunter2') return {userErrors: [{message: 'Invalid email or password'}]}
+          if (password !== 'hunter2') {
+            throw new GraphQLError('Invalid email or password', {
+              extensions: {code: 'UNAUTHENTICATED'}
+            })
+          }
           context.authToken = {sub: 'user2'}
-          return {userId: 'user2', userErrors: []}
+          return {userId: 'user2'}
         },
         uploadOrgImage: () => 'https://example.com/logo.png'
       }
@@ -125,7 +128,7 @@ test('a denied or crashed field is audited as a failure with its reason', async 
   ])
 })
 
-test('userErrors are a failure even when the document does not select them', async () => {
+test('a failed login is a failure that belongs to no user', async () => {
   await execute(
     'mutation { loginWithPassword(email: "jane@example.com", password: "wrong") { userId } }',
     {authToken: null}

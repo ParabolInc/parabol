@@ -1,15 +1,7 @@
+import {GraphQLError} from 'graphql'
 import createEmailVerficationForExistingUser from '../../../../email/createEmailVerficationForExistingUser'
 import type {DataLoaderWorker} from '../../../graphql'
-import type {UserErrorCode} from '../../resolverTypes'
 import {getIsEmailApprovedByOrg} from './getIsEmailApprovedByOrg'
-
-export class OrgApprovalError extends Error {
-  readonly code: UserErrorCode
-  constructor(code: UserErrorCode, message: string) {
-    super(message)
-    this.code = code
-  }
-}
 
 export const getIsUserIdApprovedByOrg = async (
   userId: string,
@@ -30,20 +22,23 @@ export const getIsUserIdApprovedByOrg = async (
   if (maybeError) {
     const {name: orgName} = await dataLoader.get('organizations').loadNonNull(orgId)
     const message = `${email} is not on ${orgName}'s approved list of users. Please reach out to your account admin or support@parabol.co for more information`
-    return new OrgApprovalError('NOT_APPROVED', message)
+    return new GraphQLError(message, {extensions: {code: 'FORBIDDEN'}})
   }
   const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)
   if (isEmailUnverified) {
-    if (!invitationToken)
-      return new OrgApprovalError('EMAIL_VERIFICATION_REQUIRED', 'Email not verified')
+    if (!invitationToken) {
+      return new GraphQLError('Email not verified', {
+        extensions: {code: 'EMAIL_VERIFICATION_REQUIRED'}
+      })
+    }
     const emailError = await createEmailVerficationForExistingUser(
       userId,
       invitationToken,
       dataLoader
     )
-    return new OrgApprovalError(
-      'EMAIL_VERIFICATION_REQUIRED',
-      emailError?.message ?? 'You must verify your email to join. Check your email'
+    return new GraphQLError(
+      emailError?.message ?? 'You must verify your email to join. Check your email',
+      {extensions: {code: 'EMAIL_VERIFICATION_REQUIRED'}}
     )
   }
   return undefined

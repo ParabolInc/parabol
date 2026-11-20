@@ -1,10 +1,9 @@
 import {isTeamMember} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
-import type {AcceptTeamInvitationPayloadResolvers, UserError} from '../resolverTypes'
+import type {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
-  userErrors?: UserError[]
   meetingId?: string | null
   teamId?: string
   teamMemberId?: string
@@ -47,7 +46,7 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
     return teamLeadId ? dataLoader.get('users').loadNonNull(teamLeadId) : null
   },
 
-  userErrors: ({userErrors}) => userErrors ?? []
+  userErrors: () => []
 }
 
 export default AcceptTeamInvitationPayload

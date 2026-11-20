@@ -205,8 +205,8 @@ const joinTeam = async (
     query: `
       mutation AcceptTeamInvitation($invitationToken: ID!) {
         acceptTeamInvitation(invitationToken: $invitationToken) {
-          userErrors {
-            code
+          team {
+            id
           }
         }
       }
@@ -214,7 +214,7 @@ const joinTeam = async (
     variables: {invitationToken: invitation.token},
     cookie: guest.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
+  expect(accepted.errors).toBeUndefined()
   // the new token carries the team, & the response's set-cookie isn't a valid cookie header
   const setCookie: string = accepted.cookie ?? guest.cookie
   const token = setCookie.split('__Host-Http-authToken=')[1]?.split(';')[0]

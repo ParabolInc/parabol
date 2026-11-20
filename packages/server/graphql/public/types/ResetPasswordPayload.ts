@@ -1,13 +1,10 @@
-import type {ResetPasswordPayloadResolvers, UserError} from '../resolverTypes'
+import type {ResetPasswordPayloadResolvers} from '../resolverTypes'
 
-export type ResetPasswordPayloadSource = {userId: string} | {userErrors: UserError[]}
+export type ResetPasswordPayloadSource = {userId: string}
 
 const ResetPasswordPayload: ResetPasswordPayloadResolvers = {
-  user: (source, _args, {dataLoader}) => {
-    if ('userErrors' in source) return null
-    return dataLoader.get('users').loadNonNull(source.userId)
-  },
-  userErrors: (source) => ('userErrors' in source ? source.userErrors : [])
+  user: ({userId}, _args, {dataLoader}) => dataLoader.get('users').loadNonNull(userId),
+  userErrors: () => []
 }
 
 export default ResetPasswordPayload

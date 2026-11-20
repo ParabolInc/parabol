@@ -5,16 +5,8 @@ test('Login after signup', async () => {
 
   const login = await sendPublic({
     query: `
-      mutation LoginWithPasswordMutation(
-        $email: ID!
-        $password: String!
-        $invitationToken: ID! = ""
-      ) {
+      mutation LoginWithPasswordMutation($email: ID!, $password: String!) {
         loginWithPassword(email: $email, password: $password) {
-          userErrors {
-            code
-          }
-          authToken
           user {
             tms
             id
@@ -25,30 +17,14 @@ test('Login after signup', async () => {
             lastSeenAt
           }
         }
-        acceptTeamInvitation(invitationToken: $invitationToken) {
-          authToken
-          meetingId
-          team {
-            id
-            activeMeetings {
-              __typename
-              id
-            }
-          }
-        }
       }
     `,
-    variables: {
-      email,
-      password,
-      invitationToken: ''
-    }
+    variables: {email, password}
   })
   expect(login).toMatchObject({
     cookie: expect.anything(),
     data: {
       loginWithPassword: {
-        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -61,39 +37,22 @@ test('Login after signup', async () => {
   expect(lastSeenAt).toBeLessThan(Date.now())
 })
 
-test('A failed login sent with an invitation returns user errors for both, not a top-level error', async () => {
+test('A wrong password fails the login with UNAUTHENTICATED', async () => {
   const {email} = await signUpWithPasswordMutation(getTestEmail())
 
   const login = await sendPublic({
     query: `
-      mutation LoginWithPasswordMutation($email: ID!, $password: String!, $invitationToken: ID!) {
+      mutation LoginWithPasswordMutation($email: ID!, $password: String!) {
         loginWithPassword(email: $email, password: $password) {
-          userErrors {
-            code
-            message
-          }
           userId
-        }
-        acceptTeamInvitation(invitationToken: $invitationToken) {
-          userErrors {
-            code
-          }
-          team {
-            id
-          }
         }
       }
     `,
-    variables: {email, password: 'not-the-password', invitationToken: 'not-a-token'}
+    variables: {email, password: 'not-the-password'}
   })
 
-  expect(login).toEqual({
-    data: {
-      loginWithPassword: {
-        userErrors: [{code: 'INVALID_CREDENTIALS', message: 'Invalid email or password'}],
-        userId: null
-      },
-      acceptTeamInvitation: {userErrors: [{code: 'NOT_SIGNED_IN'}], team: null}
-    }
+  expect(login).toMatchObject({
+    data: null,
+    errors: [{message: 'Invalid email or password', extensions: {code: 'UNAUTHENTICATED'}}]
   })
 })

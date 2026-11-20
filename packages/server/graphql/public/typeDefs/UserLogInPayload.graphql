@@ -3,9 +3,13 @@ Generic payload to send when user signs up
 """
 type UserLogInPayload {
   """
-  Why sign-in failed, if the user can fix it. Empty on success
+  Always empty
   """
   userErrors: [UserError!]!
+    @deprecated(
+      reason: "Failures throw an error with a code in its extensions instead"
+      deletionDate: "2026-12-02"
+    )
 
   "ID of the signed-in user"
   userId: ID

@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__generated__/EmailPasswordResetMutation.graphql'
 import type {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import getMutationError from '../utils/relay/getMutationError'
 import {snackOnError} from './handlers/snackOnError'
 
 export enum ForgotPasswordResType {
@@ -14,13 +15,18 @@ export enum ForgotPasswordResType {
 const mutation = graphql`
   mutation EmailPasswordResetMutation($email: ID!) {
     emailPasswordReset(email: $email) {
-      userErrors {
-        code
-        message
-      }
+      success
     }
   }
 `
+
+const getSignInMethodType = (error: Error) => {
+  const {code} = getMutationError(error)
+  if (code === 'SIGN_IN_WITH_GOOGLE') return ForgotPasswordResType.GOOGLE
+  if (code === 'SIGN_IN_WITH_MICROSOFT') return ForgotPasswordResType.MICROSOFT
+  if (code === 'SIGN_IN_WITH_SSO') return ForgotPasswordResType.SAML
+  return undefined
+}
 
 const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, LocalHandlers> = (
   atmosphere,
@@ -30,25 +36,21 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
   return commitMutation<TEmailPasswordResetMutation>(atmosphere, {
     mutation,
     variables,
-    onError: onError ?? snackOnError(atmosphere),
+    onError: (error) => {
+      const signInMethodType = getSignInMethodType(error)
+      if (signInMethodType && navigate) {
+        navigate({href: `/forgot-password/submitted?type=${signInMethodType}`})
+        return
+      }
+      if (onError) onError(error)
+      else snackOnError(atmosphere)(error)
+    },
     onCompleted: (res, err) => {
       if (onCompleted) onCompleted(res, err)
-      const {email} = variables
-      const params = new URLSearchParams()
-      const [userError] = res.emailPasswordReset.userErrors ?? []
-      if (userError) {
-        const {code} = userError
-        if (code === 'SIGN_IN_WITH_GOOGLE') {
-          params.set('type', ForgotPasswordResType.GOOGLE)
-        } else if (code === 'SIGN_IN_WITH_MICROSOFT') {
-          params.set('type', ForgotPasswordResType.MICROSOFT)
-        } else if (code === 'SIGN_IN_WITH_SSO') {
-          params.set('type', ForgotPasswordResType.SAML)
-        } else return
-      } else {
-        params.set('type', ForgotPasswordResType.SUCCESS)
-        params.set('email', email)
-      }
+      const params = new URLSearchParams({
+        type: ForgotPasswordResType.SUCCESS,
+        email: variables.email
+      })
       if (navigate) navigate({href: `/forgot-password/submitted?${params}`})
     }
   })

@@ -84,16 +84,14 @@ class MicrosoftClientManager extends MicrosoftManager {
           popup && popup.close()
           onCompleted(...args)
         }
+        const handleError: typeof onError = (error) => {
+          popup && popup.close()
+          onError(error)
+        }
         LoginWithMicrosoftMutation(
           atmosphere,
-          {
-            code,
-            pseudoId,
-            invitationToken: invitationToken || '',
-            isInvitation: !!invitationToken,
-            params: pageParams
-          },
-          {onError, onCompleted: handleComplete, navigate}
+          {code, pseudoId, invitationToken, params: pageParams},
+          {onError: handleError, onCompleted: handleComplete, navigate}
         )
       },
       loginHint

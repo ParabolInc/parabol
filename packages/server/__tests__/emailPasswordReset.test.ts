@@ -4,9 +4,6 @@ const EMAIL_PASSWORD_RESET = `
   mutation EmailPasswordReset($email: ID!) {
     emailPasswordReset(email: $email) {
       success
-      userErrors {
-        code
-      }
     }
   }
 `
@@ -24,25 +21,20 @@ test('Email password reset', async () => {
   expect(passwordReset).toMatchObject({
     data: {
       emailPasswordReset: {
-        success: true,
-        userErrors: []
+        success: true
       }
     }
   })
 })
 
-test('Email password reset for an unknown email says why no email was sent', async () => {
+test('Email password reset for an unknown email fails with NOT_FOUND', async () => {
   const passwordReset = await sendIntranet({
     query: EMAIL_PASSWORD_RESET,
     variables: {email: getTestEmail()}
   })
 
-  expect(passwordReset).toEqual({
-    data: {
-      emailPasswordReset: {
-        success: false,
-        userErrors: [{code: 'USER_NOT_FOUND'}]
-      }
-    }
+  expect(passwordReset).toMatchObject({
+    data: null,
+    errors: [{extensions: {code: 'NOT_FOUND'}}]
   })
 })

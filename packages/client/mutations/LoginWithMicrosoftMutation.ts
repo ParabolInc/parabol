@@ -3,32 +3,17 @@ import {commitMutation} from 'react-relay'
 import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import type {LoginWithMicrosoftMutation as TLoginWithMicrosoftMutation} from '../__generated__/LoginWithMicrosoftMutation.graphql'
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
-import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
-import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import redirectAfterSignIn from './handlers/redirectAfterSignIn'
 
 const mutation = graphql`
-  mutation LoginWithMicrosoftMutation(
-    $code: ID!
-    $invitationToken: ID!
-    $pseudoId: ID
-    $isInvitation: Boolean!
-    $params: String!
-  ) {
+  mutation LoginWithMicrosoftMutation($code: ID!, $invitationToken: ID, $pseudoId: ID, $params: String!) {
     loginWithMicrosoft(
       code: $code
       pseudoId: $pseudoId
       invitationToken: $invitationToken
       params: $params
     ) {
-      userErrors {
-        message
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
-    }
-    # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
-    # A default value is necessary even in the case of @include(if: false)
-    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
-      ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
 `
@@ -38,20 +23,14 @@ const LoginWithMicrosoftMutation: StandardMutation<
 > = (atmosphere, variables, {onError, onCompleted, navigate}) => {
   return commitMutation<TLoginWithMicrosoftMutation>(atmosphere, {
     mutation,
-    variables: {...variables, isInvitation: !!variables.invitationToken},
+    variables,
     onError,
     onCompleted: (res, errors) => {
-      const {acceptTeamInvitation, loginWithMicrosoft} = res
+      const {loginWithMicrosoft} = res
       onCompleted({loginWithMicrosoft}, errors)
-      const [userError] = loginWithMicrosoft.userErrors
-      handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!userError && !errors) {
-        handleSuccessfulLogin(atmosphere, loginWithMicrosoft)
-        handleAuthenticationRedirect(acceptTeamInvitation, {
-          atmosphere,
-          navigate
-        })
-      }
+      if (errors) return
+      handleSuccessfulLogin(atmosphere, loginWithMicrosoft)
+      redirectAfterSignIn(atmosphere, variables.invitationToken, navigate)
     }
   })
 }

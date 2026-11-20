@@ -7,9 +7,6 @@ import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutatio
 const mutation = graphql`
   mutation ResetPasswordMutation($newPassword: String!, $token: ID!) {
     resetPassword(newPassword: $newPassword, token: $token) {
-      userErrors {
-        message
-      }
       user {
         tms
         ...UserAnalyticsFrag @relay(mask: false)
@@ -27,13 +24,10 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, NavigateLo
     variables,
     onError,
     onCompleted: (res, errors) => {
-      const {resetPassword} = res
-      const [userError] = resetPassword.userErrors
       onCompleted(res, errors)
-      if (!userError && !errors) {
-        const nextUrl = getValidRedirectParam() || '/meetings'
-        navigate({href: nextUrl})
-      }
+      if (errors) return
+      const nextUrl = getValidRedirectParam() || '/meetings'
+      navigate({href: nextUrl})
     }
   })
 }

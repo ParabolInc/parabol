@@ -7,9 +7,6 @@ import getMutationError from '../utils/relay/getMutationError'
 const mutation = graphql`
   mutation ReAuthWithPasswordMutation($email: ID!, $password: String!) {
     loginWithPassword(email: $email, password: $password) {
-      userErrors {
-        message
-      }
       userId
     }
   }
@@ -24,16 +21,7 @@ const ReAuthWithPasswordMutation = (
     mutation,
     variables,
     onError: (err) => onCompleted(getMutationError(err).message),
-    onCompleted: (res, errors) => {
-      const [userError] = res.loginWithPassword.userErrors
-      if (userError) {
-        onCompleted(userError.message)
-      } else if (errors?.length) {
-        onCompleted(errors[0]?.message ?? 'Unknown error')
-      } else {
-        onCompleted()
-      }
-    }
+    onCompleted: (res, errors) => onCompleted(getMutationError(res, errors)?.message)
   })
 }
 
