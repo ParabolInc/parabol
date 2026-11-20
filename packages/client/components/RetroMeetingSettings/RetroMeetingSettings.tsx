@@ -5,6 +5,7 @@ import type {RetroMeetingSettings_meeting$key} from '../../__generated__/RetroMe
 import useAtmosphere from '../../hooks/useAtmosphere'
 import type useGotoStageId from '../../hooks/useGotoStageId'
 import useSetMeetingSettingsMutation from '../../mutations/useSetMeetingSettingsMutation'
+import {RetroDemo} from '../../types/constEnums'
 import {toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import getRetroSettingSections, {
   PHASE_SETTINGS,
@@ -75,6 +76,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
   const {retroSettings} = team
   const {id: settingsId} = retroSettings
   const isRecurring = !!meetingSeries && !meetingSeries.cancelledAt
+  const isDemo = meetingId === RetroDemo.MEETING_ID
   const phaseTypes = phases.map(({phaseType}) => phaseType)
   const currentPhaseIdx = phases.findIndex(({stages}) =>
     stages.some(({id}) => id === facilitatorStageId)
@@ -82,7 +84,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
   const currentPhase = phases[currentPhaseIdx]
   const reflectPhase = phases.find(({phaseType}) => phaseType === 'reflect')
   const {forThisMeeting, forFutureMeetings} = getRetroSettingSections({
-    isRecurring,
+    isRecurring: isRecurring || isDemo,
     isViewerFacilitator: viewerId === meeting.facilitatorUserId,
     facilitatorPhaseType: currentPhase?.phaseType,
     phaseTypes,
@@ -111,7 +113,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
       }
       disableAnonymity={isNow ? meeting.disableAnonymity : !!retroSettings.disableAnonymity}
       phaseTypes={isNow ? phaseTypes : retroSettings.phaseTypes}
-      disabled={submitting}
+      disabled={submitting || isDemo}
       onChangeTemplate={() => onOpenSubview('settingsTemplate')}
       onAnonymityChange={(isAnonymous) =>
         setMeetingSettings({variables: {settingsId, meetingId, disableAnonymity: !isAnonymous}})
@@ -123,6 +125,11 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
   const rrule = isRecurring ? RRule.fromString(meetingSeries.recurrenceRule) : null
   return (
     <div className='flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-1 pb-6'>
+      {isDemo && (
+        <p className='m-0 px-1 pt-4 text-[13px] text-fg-secondary leading-[18px]'>
+          Settings are view-only in the demo
+        </p>
+      )}
       {forThisMeeting.length > 0 && (
         <RetroSettingsSection
           heading={isRecurring ? 'This meeting and future meetings' : 'This meeting'}
@@ -136,6 +143,7 @@ const RetroMeetingSettings = ({meetingRef, onOpenSubview, gotoStageId}: Props) =
           label='Repeats'
           value={rrule ? toHumanReadable(rrule) : 'Doesn’t repeat'}
           actionLabel={isRecurring ? 'Edit' : 'Set up'}
+          disabled={isDemo}
           onAction={() => onOpenSubview('settingsRecurrence')}
         />
       </RetroSettingsSection>

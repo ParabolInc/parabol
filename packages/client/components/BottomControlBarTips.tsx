@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BottomControlBarTips_meeting$key} from '~/__generated__/BottomControlBarTips_meeting.graphql'
-import useTimeout from '~/hooks/useTimeout'
 import type LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
 import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
@@ -132,22 +131,21 @@ const BottomControlBarTips = (props: Props) => {
   const {phaseType} = localPhase
   const [isOpen, setIsOpen] = useState(false)
   const atmosphere = useAtmosphere()
-  const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
   const HelpMenu = menus[phaseType]
   useEffect(() => {
-    if (demoPauseOpen && isDemoRoute()) {
-      const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
-      if (clientGraphQLServer.db._started) {
-        setIsOpen(true)
-      } else {
-        // wait for the startBot event to occur
-        clientGraphQLServer.once('startDemo', () => {
-          setIsOpen(true)
-        })
-      }
+    if (!isDemoRoute()) return
+    const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
+    const open = () => setIsOpen(true)
+    const pauseTimeoutId = window.setTimeout(() => {
+      if (clientGraphQLServer.db._started) open()
+      else clientGraphQLServer.once('startDemo', open)
+    }, 1000)
+    return () => {
+      window.clearTimeout(pauseTimeoutId)
+      clientGraphQLServer.off('startDemo', open)
     }
-  }, [demoPauseOpen])
+  }, [phaseType])
 
   if (!HelpMenu) {
     return null

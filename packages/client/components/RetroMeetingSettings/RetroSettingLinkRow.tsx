@@ -6,11 +6,12 @@ interface Props {
   value: string
   actionLabel?: string
   onAction?: () => void
+  disabled?: boolean
   className?: string
 }
 
 const RetroSettingLinkRow = (props: Props) => {
-  const {label, value, actionLabel, onAction, className} = props
+  const {label, value, actionLabel, onAction, disabled, className} = props
   return (
     <div className={cn('flex items-center gap-3 px-1 py-3', className)}>
       <div className='flex min-w-0 flex-1 flex-col gap-0.5'>
@@ -18,7 +19,13 @@ const RetroSettingLinkRow = (props: Props) => {
         <span className='text-[13px] text-fg-secondary leading-[18px]'>{value}</span>
       </div>
       {actionLabel && onAction && (
-        <Button variant='outline' size='sm' className='h-8 text-sm' onClick={onAction}>
+        <Button
+          variant='outline'
+          size='sm'
+          className='h-8 text-sm'
+          disabled={disabled}
+          onClick={onAction}
+        >
           {actionLabel}
         </Button>
       )}

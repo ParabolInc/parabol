@@ -65,7 +65,8 @@ const initMeetingSettings = () => {
     teamId: demoTeamId,
     settingsId: 'settingsId',
     reflectTemplates: [],
-    totalVotes: 5
+    totalVotes: 5,
+    disableAnonymity: false
   } as Partial<IRetrospectiveMeetingSettings>
 }
 
@@ -381,6 +382,7 @@ const initDemoTeam = (
   teamMembers: ReturnType<typeof initDemoTeamMember>[],
   newMeeting: ReturnType<typeof initNewMeeting>
 ) => {
+  const meetingSettings = initMeetingSettings()
   return {
     __typename: 'Team',
     id: demoTeamId,
@@ -395,7 +397,8 @@ const initDemoTeam = (
     billingTier: 'team',
     teamId: demoTeamId,
     organization,
-    meetingSettings: initMeetingSettings(),
+    meetingSettings,
+    retroSettings: meetingSettings,
     teamMembers,
     tasks: {edges: [], pageInfo: {endCursor: null, hasNextPage: false}},
     qualAIMeetingsCount: 0,
@@ -594,6 +597,12 @@ const initNewMeeting = (
     organization,
     meetingMembers,
     meetingSeries: null,
+    template: {
+      __typename: 'PromptTemplate',
+      id: 'startStopContinueTemplate',
+      name: 'Start, Stop, Continue'
+    },
+    templateId: 'startStopContinueTemplate',
     nextAutoGroupThreshold: null,
     prevMeeting: null,
     scheduledEndTime: null,
