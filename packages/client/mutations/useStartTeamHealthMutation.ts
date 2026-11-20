@@ -28,6 +28,7 @@ const mutation = graphql`
     $rrule: RRule
     $gcalInput: CreateGcalEventInput
     $joinMeetingSeriesId: ID
+    $retroMeetingId: ID
   ) {
     startTeamHealth(
       teamIds: $teamIds
@@ -36,6 +37,7 @@ const mutation = graphql`
       rrule: $rrule
       gcalInput: $gcalInput
       joinMeetingSeriesId: $joinMeetingSeriesId
+      retroMeetingId: $retroMeetingId
     ) {
       ...useStartTeamHealthMutation_success @relay(mask: false)
     }

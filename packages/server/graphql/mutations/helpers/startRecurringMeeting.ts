@@ -18,6 +18,7 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import safeCreateRetrospective from './safeCreateRetrospective'
 import safeCreateTeamHealth from './safeCreateTeamHealth'
 import safeCreateTeamPrompt from './safeCreateTeamPrompt'
+import syncRetrosWithTeamHealthCheck from './syncRetrosWithTeamHealthCheck'
 
 type Options = {
   // Whoever kicks off an occurrence early facilitates it, else the series facilitator does
@@ -168,6 +169,7 @@ const startRecurringMeeting = async (
         {meetingIds: [meeting.id], teamIds: [teamId]},
         subOptions
       )
+      syncRetrosWithTeamHealthCheck(teamId).catch(logError)
       return meeting
     }
     return standardError(new Error('Unhandled recurring meeting type'), {

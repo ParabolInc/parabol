@@ -9,7 +9,8 @@ export const isMeetingFacilitator = <T>(dotPath: ResolverDotPath<T>) =>
     const meetingId = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
     const viewerId = getUserId(authToken)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    // or() runs every rule, so an optional meeting id reaches here when it is absent
+    const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
     if (!meeting) {
       return new GraphQLError(`Meeting not found`, {extensions: {code: 'NOT_FOUND'}})
     }

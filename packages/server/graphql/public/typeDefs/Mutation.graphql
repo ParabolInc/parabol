@@ -1936,7 +1936,8 @@ type Mutation {
     checkinEnabled: Boolean
 
     """
-    true to turn team health phase on, false to turn it off
+    true to turn team health on, false to turn it off. A retrospective answers the team's Team Health
+    check and walks through new results; a check-in runs the one-question pulse
     """
     teamHealthEnabled: Boolean
 
@@ -2170,6 +2171,13 @@ type Mutation {
     standing up cards of their own. The viewer must be able to administer that series.
     """
     joinMeetingSeriesId: ID
+
+    """
+    A retrospective of the team that starts the check from its Team Health phase. Only the retro's
+    facilitator may pass it. The check is a one-off that ends when the retro ends, and the team's
+    open check is reused rather than starting a second one
+    """
+    retroMeetingId: ID
   ): StartTeamHealthPayload! @scope(name: MEETINGS_WRITE)
 
   """

@@ -1,35 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsToggleTeamHealth_settings$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_settings.graphql'
-import type {NewMeetingSettingsToggleTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
-import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
 import NewMeetingSettingsToggleRow from './NewMeetingSettingsToggleRow'
-import NewMeetingSettingsUpgradeForTeamHealth from './NewMeetingSettingsUpgradeForTeamHealth'
 
 interface Props {
-  teamRef: NewMeetingSettingsToggleTeamHealth_team$key
   settingsRef: NewMeetingSettingsToggleTeamHealth_settings$key
   className?: string
 }
 
 const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
-  const {teamRef, settingsRef, className} = props
-
-  const team = useFragment(
-    graphql`
-      fragment NewMeetingSettingsToggleTeamHealth_team on Team {
-        ...NewMeetingSettingsUpgradeForTeamHealth_team
-        id
-        tier
-      }
-    `,
-    teamRef
-  )
-
-  // not part of the team fragment as we don't want to specify the meeting type here
+  const {settingsRef, className} = props
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleTeamHealth_settings on TeamMeetingSettings {
@@ -39,11 +22,8 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     `,
     settingsRef
   )
-  const {tier} = team
-  const teamHealthAvailable = isTeamHealthAvailable(tier)
-
   const {id: settingsId, phaseTypes} = settings
-  const hasTeamHealth = phaseTypes.includes('TEAM_HEALTH')
+  const hasTeamHealthCheck = phaseTypes.includes('TEAM_HEALTH_CHECK')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const toggleTeamHealth = () => {
@@ -51,18 +31,18 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     submitMutation()
     SetMeetingSettingsMutation(
       atmosphere,
-      {teamHealthEnabled: !hasTeamHealth, settingsId},
+      {teamHealthEnabled: !hasTeamHealthCheck, settingsId},
       {onError, onCompleted}
     )
   }
-  if (!teamHealthAvailable) {
-    return <NewMeetingSettingsUpgradeForTeamHealth teamRef={team} className={className} />
-  }
   return (
     <NewMeetingSettingsToggleRow
-      active={hasTeamHealth}
+      active={hasTeamHealthCheck}
       className={className}
       label={'Include Team Health check'}
+      description={
+        "Adds your team's open Team Health check to the retro, plus any new results to talk through. Answers stay private."
+      }
       onClick={toggleTeamHealth}
     />
   )

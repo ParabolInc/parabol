@@ -35,6 +35,7 @@ type MeetingSubscriptionPayload {
   AcceptSuggestedGroupsPayload: AcceptSuggestedGroupsPayload
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
   UngroupReflectionPayload: UngroupReflectionPayload
+  RetroTeamHealthCheckPayload: RetroTeamHealthCheckPayload
   RevealTeamHealthVotesPayload: RevealTeamHealthVotesPayload
   SetMeetingMusicPayload: SetMeetingMusicPayload
   SetPhaseFocusPayload: SetPhaseFocusPayload

@@ -456,7 +456,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
-    startTeamHealth: isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
+    startTeamHealth: and(
+      isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
+      or(
+        isNull<'Mutation.startTeamHealth'>('args.retroMeetingId'),
+        isMeetingFacilitator<'Mutation.startTeamHealth'>('args.retroMeetingId')
+      )
+    ),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
     // no isAuthenticated: errors can occur pre-auth (parity with the legacy Google Form flow)
     submitErrorFeedback: rateLimit({perMinute: 5, perHour: 20}),
@@ -702,6 +708,18 @@ const permissionMap: PermissionMap<Resolvers> = {
     prevUsedRepoIntegrations: isTeamMember<'TeamMember.prevUsedRepoIntegrations'>('source.teamId'),
     repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
+  },
+  // the source is the retro's stage, and the check belongs to the retro's team
+  TeamHealthCheckStage: {
+    openTeamHealthMeeting:
+      isTeamMemberOfMeeting<'TeamHealthCheckStage.openTeamHealthMeeting'>('source.meetingId'),
+    startedTeamHealthMeeting:
+      isTeamMemberOfMeeting<'TeamHealthCheckStage.startedTeamHealthMeeting'>('source.meetingId')
+  },
+  TeamHealthCheckResultStage: {
+    teamHealthMeeting:
+      isTeamMemberOfMeeting<'TeamHealthCheckResultStage.teamHealthMeeting'>('source.meetingId'),
+    resultStage: isTeamMemberOfMeeting<'TeamHealthCheckResultStage.resultStage'>('source.meetingId')
   },
   // Reports reach a result stage without going through its meeting, so the fields that lead into the
   // meeting stay with the team: org leaders read the results, never the meeting or its discussion

@@ -29,7 +29,9 @@ const DEFAULT_TIME_LIMIT = {
   discuss: 5,
   ESTIMATE: 5,
   SCOPE: 3,
-  TEAM_HEALTH: 1
+  TEAM_HEALTH: 1,
+  TEAM_HEALTH_CHECK: 2,
+  TEAM_HEALTH_CHECK_RESULT: 3
 } as Record<NewMeetingPhaseTypeEnum, number>
 
 interface Props {

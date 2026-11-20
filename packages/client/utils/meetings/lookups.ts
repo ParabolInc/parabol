@@ -30,7 +30,9 @@ export const phaseLabelLookup = {
   TEAM_HEALTH_INTRO: 'Welcome',
   TEAM_HEALTH_RESPONSE: 'Respond',
   TEAM_HEALTH_SUBMITTED: 'Results',
-  TEAM_HEALTH_RESULT: 'Results'
+  TEAM_HEALTH_RESULT: 'Results',
+  TEAM_HEALTH_CHECK: 'Team Health',
+  TEAM_HEALTH_CHECK_RESULT: 'Health Results'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseIconLookup = {
@@ -47,7 +49,9 @@ export const phaseIconLookup = {
   SUMMARY: 'receipt',
   SCOPE: 'playlist_add',
   TEAM_HEALTH_RESPONSE: 'poll',
-  TEAM_HEALTH_RESULT: 'insights'
+  TEAM_HEALTH_RESULT: 'insights',
+  TEAM_HEALTH_CHECK: 'monitor_heart',
+  TEAM_HEALTH_CHECK_RESULT: 'insights'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseImageLookup = {
@@ -111,5 +115,7 @@ export const phaseTypeToSlug = {
   TEAM_HEALTH_INTRO: 'intro',
   TEAM_HEALTH_RESPONSE: 'respond',
   TEAM_HEALTH_SUBMITTED: 'submitted',
-  TEAM_HEALTH_RESULT: 'result'
+  TEAM_HEALTH_RESULT: 'result',
+  TEAM_HEALTH_CHECK: 'healthcheck',
+  TEAM_HEALTH_CHECK_RESULT: 'healthresults'
 } as Record<NewMeetingPhaseTypeEnum, string>

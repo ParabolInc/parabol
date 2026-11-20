@@ -43,13 +43,15 @@ type Settings = NonNullable<
 >
 
 // Inserts `'updates'` into a phaseTypes array immediately after the last index of
-// 'checkin' / 'TEAM_HEALTH' (or at index 0 if neither present). Mirrors the server's
+// 'checkin' / a team health phase (or at index 0 if none present). Mirrors the server's
 // canonicalization in setMeetingSettings.ts so the optimistic UI matches the post-write state.
 const insertUpdatesAfterAnchor = (phaseTypes: readonly string[]): string[] => {
   if (phaseTypes.includes('updates')) return [...phaseTypes]
   let anchor = -1
   phaseTypes.forEach((phase, idx) => {
-    if (phase === 'checkin' || phase === 'TEAM_HEALTH') anchor = idx
+    if (phase === 'checkin' || phase === 'TEAM_HEALTH' || phase === 'TEAM_HEALTH_CHECK') {
+      anchor = idx
+    }
   })
   const insertAt = anchor + 1
   return [...phaseTypes.slice(0, insertAt), 'updates', ...phaseTypes.slice(insertAt)]
