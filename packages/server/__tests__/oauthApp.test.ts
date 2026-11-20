@@ -1,19 +1,10 @@
-import crypto from 'crypto'
-import faker from 'faker'
 import generateUID from '../generateUID'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
-import {getUserTeams, HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {getUserTeams, HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {createClient, createCode, createPKCEPair, type ResourceGrants} from './oauthClient'
 
 const AUTHORIZE_URL = `${PROTOCOL}://${HOST}/oauth/authorize`
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
 
 const OAUTH_AUTHORIZATION_REQUEST = `
   query OAuthAuthorizationRequest($request: OAuthAuthorizationRequestInput!) {
@@ -22,9 +13,6 @@ const OAUTH_AUTHORIZATION_REQUEST = `
         name
         scopes
         redirectUri
-        organization {
-          id
-        }
       }
     }
   }
@@ -116,28 +104,6 @@ const ADD_TEAM = `
   }
 `
 
-const UPDATE_OAUTH_API_PROVIDER_NAME = `
-  mutation UpdateOAuthAPIProviderName($providerId: ID!, $name: String) {
-    updateOAuthAPIProvider(providerId: $providerId, name: $name) {
-      provider {
-        name
-      }
-    }
-  }
-`
-
-const ORG_OAUTH_APPLICATIONS = `
-  query OrgOAuthApplications($orgId: ID!) {
-    viewer {
-      organization(orgId: $orgId) {
-        oauthApplications {
-          id
-        }
-      }
-    }
-  }
-`
-
 const VIEWER_TEAM_IDS = `
   query ViewerTeamIds {
     viewer {
@@ -194,98 +160,6 @@ const REMOVE_TEAM_MEMBER = `
   }
 `
 
-const createOrgAdmin = async () => {
-  const {userId, cookie, orgId, teamId} = await signUp()
-  const promoteToOrgAdmin = await sendIntranet({
-    query: `
-      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
-        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-          __typename
-        }
-      }
-    `,
-    variables: {
-      orgId,
-      userId,
-      role: 'ORG_ADMIN'
-    }
-  })
-
-  expect(promoteToOrgAdmin).toMatchObject({
-    data: {
-      setOrgUserRole: {
-        __typename: 'SetOrgUserRolePayload'
-      }
-    }
-  })
-
-  return {cookie, orgId, userId, teamId}
-}
-
-const createAppWithScope = async ({
-  orgId,
-  cookie,
-  scopes
-}: {
-  orgId: string
-  cookie: string
-  scopes: string[]
-}) => {
-  const redirectUri = `https://${faker.internet.domainName()}.${faker.internet.domainSuffix()}/${faker.internet.domainWord()}`
-  const oauthApp = await sendPublic({
-    query: `
-      mutation OAuthAppFormContentCreateMutation(
-        $orgId: ID!
-        $name: String!
-        $redirectUris: [RedirectURI!]!
-        $scopes: [OAuthScopeEnum!]!
-      ) {
-        createOAuthAPIProvider(
-          orgId: $orgId
-          name: $name
-          redirectUris: $redirectUris
-          scopes: $scopes
-        ) {
-          provider {
-            id
-            name
-            updatedAt
-          }
-          clientId
-        }
-      }
-    `,
-    variables: {
-      orgId,
-      name: 'Test OAuth App',
-      redirectUris: [redirectUri],
-      scopes: scopes
-    },
-    cookie
-  })
-  expect(oauthApp).toMatchObject({
-    data: {
-      createOAuthAPIProvider: {
-        provider: {
-          id: expect.anything(),
-          name: 'Test OAuth App',
-          updatedAt: expect.anything()
-        },
-        clientId: expect.anything()
-      }
-    }
-  })
-
-  const {clientId, provider} = oauthApp.data.createOAuthAPIProvider
-  return {clientId, redirectUri, providerId: provider.id as string}
-}
-
-const createPKCEPair = () => {
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-  return {codeVerifier, codeChallenge}
-}
-
 const defaultPKCEPair = createPKCEPair()
 
 interface AuthorizationRequest {
@@ -320,7 +194,11 @@ const getAuthorizeUrl = (request: AuthorizationRequest) => {
 const requestAuthorization = (request: AuthorizationRequest, cookie: string) =>
   fetch(getAuthorizeUrl(request), {headers: {cookie}, redirect: 'manual'})
 
-const approve = async (request: AuthorizationRequest, cookie: string) => {
+const approve = async (
+  request: AuthorizationRequest,
+  cookie: string,
+  consented: ResourceGrants & {scopes?: string[]} = {}
+) => {
   const state = request.state ?? 'xyz'
   const authorizeResponse = await requestAuthorization({...request, state}, cookie)
   expect(authorizeResponse.status).toBe(302)
@@ -329,23 +207,15 @@ const approve = async (request: AuthorizationRequest, cookie: string) => {
   expect(consentUrl.searchParams.get('code')).toBeNull()
   expect(consentUrl.searchParams.get('client_id')).toBe(request.clientId)
 
-  const {
-    clientId,
-    redirectUri,
-    scope,
-    codeChallenge = defaultPKCEPair.codeChallenge,
-    codeChallengeMethod = 'S256'
-  } = request
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod}
-    },
-    cookie
-  })
+  const {codeChallenge = defaultPKCEPair.codeChallenge, codeChallengeMethod = 'S256'} = request
+  const approved = await createCode(
+    {...request, state, codeChallenge, codeChallengeMethod},
+    cookie,
+    consented
+  )
   expect(approved.errors).toBeUndefined()
   const redirectUrl = new URL(approved.data.createOAuthAPICode.redirectUri)
-  expect(redirectUrl.origin + redirectUrl.pathname).toBe(redirectUri)
+  expect(redirectUrl.origin + redirectUrl.pathname).toBe(request.redirectUri)
   expect(redirectUrl.searchParams.get('state')).toBe(state)
   const code = redirectUrl.searchParams.get('code')
   expect(code).toEqual(expect.any(String))
@@ -365,32 +235,34 @@ const exchangeCode = (params: Record<string, string>) =>
     })
   })
 
-const getAccessToken = async ({
-  orgId,
-  cookie,
-  scopes,
-  scope
-}: {
-  orgId: string
-  cookie: string
-  scopes: string[]
-  scope: string
-}) => {
-  const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes})
-  const code = await approve({clientId, redirectUri, scope}, cookie)
+const getAccessToken = async (cookie: string, scope: string, grants: ResourceGrants = {}) => {
+  const {redirectUri, clientId} = await createClient()
+  const code = await approve({clientId, redirectUri, scope}, cookie, grants)
   const tokenResponse = await exchangeCode({code, redirect_uri: redirectUri, client_id: clientId})
   expect(tokenResponse.status).toBe(200)
   const {access_token} = await tokenResponse.json()
   return access_token as string
 }
 
-test('Create app and token', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId} = await createAppWithScope({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ', 'USERS_WRITE']
+const onlyOrg = (orgId: string) => ({grantedOrgIds: [orgId], grantedTeamIds: []})
+
+const addOrg = async (cookie: string) => {
+  const added = await sendPublic({
+    query: ADD_ORG,
+    variables: {
+      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
+      orgName: `Org ${generateUID()}`
+    },
+    cookie
   })
+  const {id: teamId, orgId} = added.data.addOrg.team
+  expect(teamId).toEqual(expect.any(String))
+  return {teamId: teamId as string, orgId: orgId as string}
+}
+
+test('Register an app and get a token', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
   const request = {
     clientId,
     redirectUri,
@@ -411,8 +283,7 @@ test('Create app and token', async () => {
         oauthAuthorizationRequest: {
           name: 'Test OAuth App',
           scopes: ['USERS_READ', 'USERS_WRITE'],
-          redirectUri,
-          organization: {id: orgId}
+          redirectUri
         }
       }
     }
@@ -444,40 +315,84 @@ test('Create app and token', async () => {
   expect(getVerifiedAuthToken(token, false)).toBeNull()
 })
 
-test('Request more scope than allowed fails', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-
-  const {redirectUri, clientId} = await createAppWithScope({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ']
+test('An app that names no scopes is offered every scope', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+  const consent = await sendPublic({
+    query: OAUTH_AUTHORIZATION_REQUEST,
+    variables: {
+      request: {
+        clientId,
+        redirectUri,
+        state: 'xyz',
+        codeChallenge: defaultPKCEPair.codeChallenge,
+        codeChallengeMethod: 'S256'
+      }
+    },
+    cookie
   })
+  expect(consent.errors).toBeUndefined()
+  const {scopes} = consent.data.viewer.oauthAuthorizationRequest
+  expect(scopes).toHaveLength(18)
+  expect(scopes).toEqual(expect.arrayContaining(['USERS_READ', 'PAGES_WRITE']))
+})
 
-  const authCodeResponse = await requestAuthorization(
-    {clientId, redirectUri, scope: 'users:read users:write', state: 'xyz'},
+test('An unknown scope is refused', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+  const scope = 'users:read everything:write'
+
+  const authorizeResponse = await requestAuthorization(
+    {clientId, redirectUri, scope, state: 'xyz'},
     cookie
   )
-  expect(authCodeResponse.status).toBe(400)
+  expect(authorizeResponse.status).toBe(400)
 
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope: 'users:read users:write', state: 'xyz'}},
-    cookie
-  })
+  const approved = await createCode(
+    {clientId, redirectUri, scope, codeChallenge: defaultPKCEPair.codeChallenge},
+    cookie,
+    {scopes: ['USERS_READ']}
+  )
   expect(approved.data).toBeNull()
   expect(approved.errors?.[0]?.message).toMatch('Invalid scope')
 })
 
-test('Request less scope than allowed succeeds', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
+test('Granting a scope the app did not ask for fails', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
 
-  const {redirectUri, clientId} = await createAppWithScope({
-    orgId,
+  const approved = await createCode(
+    {clientId, redirectUri, scope: 'users:read', codeChallenge: defaultPKCEPair.codeChallenge},
     cookie,
-    scopes: ['USERS_READ', 'USERS_WRITE']
+    {scopes: ['USERS_READ', 'USERS_WRITE']}
+  )
+  expect(approved.data).toBeNull()
+  expect(approved.errors?.[0]).toMatchObject({
+    message: 'Invalid scope: the application did not ask for every granted scope',
+    extensions: {code: 'BAD_USER_INPUT'}
   })
+})
 
-  const authCode = await approve({clientId, redirectUri, scope: 'users:write'}, cookie)
+test('Granting no scopes fails', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+
+  const approved = await createCode(
+    {clientId, redirectUri, scope: 'users:read', codeChallenge: defaultPKCEPair.codeChallenge},
+    cookie,
+    {scopes: []}
+  )
+  expect(approved.data).toBeNull()
+  expect(approved.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
+})
+
+test('Granting fewer scopes than the app asked for succeeds', async () => {
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
+
+  const authCode = await approve({clientId, redirectUri, scope: 'users:read users:write'}, cookie, {
+    scopes: ['USERS_WRITE']
+  })
 
   const tokenResponse = await exchangeCode({
     code: authCode,
@@ -503,8 +418,8 @@ test('Request less scope than allowed succeeds', async () => {
 })
 
 test('Authorization requires state and a signed in session', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
 
   const withoutState = await requestAuthorization(
     {clientId, redirectUri, scope: 'users:read'},
@@ -522,38 +437,9 @@ test('Authorization requires state and a signed in session', async () => {
   )
 })
 
-test('Only members of the registering organization can authorize an app', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
-  const outsider = await signUp()
-
-  const authorizeResponse = await requestAuthorization(
-    {clientId, redirectUri, scope: 'users:read', state: 'xyz'},
-    outsider.cookie
-  )
-  expect(authorizeResponse.status).toBe(400)
-
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId,
-        redirectUri,
-        scope: 'users:read',
-        state: 'xyz',
-        codeChallenge: defaultPKCEPair.codeChallenge,
-        codeChallengeMethod: 'S256'
-      }
-    },
-    cookie: outsider.cookie
-  })
-  expect(approved.data).toBeNull()
-  expect(approved.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-})
-
 test('An OAuth access token cannot call a mutation outside its scope', async () => {
-  const {cookie, orgId, userId} = await createOrgAdmin()
-  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_READ'], scope: 'users:read'})
+  const {cookie, userId} = await signUp()
+  const token = await getAccessToken(cookie, 'users:read')
 
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: token})
   expect(viewer.data.viewer.id).toBe(userId)
@@ -570,32 +456,24 @@ test('An OAuth access token cannot call a mutation outside its scope', async () 
   })
 })
 
-test('An OAuth access token only reaches the organization that registered the app', async () => {
-  const {cookie, orgId, teamId} = await createOrgAdmin()
-  const otherOrg = await sendPublic({
-    query: ADD_ORG,
-    variables: {
-      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
-      orgName: `Org ${generateUID()}`
-    },
-    cookie
-  })
-  const otherTeamId = otherOrg.data.addOrg.team.id
-  expect(otherTeamId).toEqual(expect.any(String))
+test('An OAuth access token only reaches the organizations the viewer granted it', async () => {
+  const {cookie, orgId, teamId} = await signUp()
+  const otherOrg = await addOrg(cookie)
 
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ', 'TEAMS_READ'],
-    scope: 'users:read teams:read'
-  })
-  const viewer = await sendPublic({query: VIEWER_TEAMS, bearerToken: token})
-  expect(viewer.data.viewer.teams).toEqual([{id: teamId}])
+  const limited = await getAccessToken(cookie, 'users:read teams:read', onlyOrg(orgId))
+  const limitedViewer = await sendPublic({query: VIEWER_TEAMS, bearerToken: limited})
+  expect(limitedViewer.data.viewer.teams).toEqual([{id: teamId}])
+
+  const unlimited = await getAccessToken(cookie, 'users:read teams:read')
+  const unlimitedViewer = await sendPublic({query: VIEWER_TEAMS, bearerToken: unlimited})
+  expect(unlimitedViewer.data.viewer.teams).toEqual(
+    expect.arrayContaining([{id: teamId}, {id: otherOrg.teamId}])
+  )
 })
 
 test('An OAuth access token cannot create a personal access token', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_WRITE'], scope: 'users:write'})
+  const {cookie} = await signUp()
+  const token = await getAccessToken(cookie, 'users:write')
 
   const created = await sendPublic({
     query: CREATE_PERSONAL_ACCESS_TOKEN,
@@ -611,23 +489,29 @@ test('An OAuth access token cannot create a personal access token', async () => 
 })
 
 test('An OAuth access token is not a session', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_READ'], scope: 'users:read'})
+  const {cookie} = await signUp()
+  const token = await getAccessToken(cookie, 'users:read')
   const tokenCookie = `__Host-Http-authToken=${token}`
 
   const viewer = await sendPublic({query: VIEWER_ID, cookie: tokenCookie})
   expect(viewer.data).toBeNull()
   expect(viewer.errors?.[0]?.extensions?.code).toBe('UNAUTHENTICATED')
 
-  const {redirectUri, clientId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
+  const {redirectUri, clientId} = await createClient()
   const request = {clientId, redirectUri, scope: 'users:read', state: 'xyz'}
   const authorizeResponse = await requestAuthorization(request, tokenCookie)
   expect(authorizeResponse.status).toBe(302)
   expect(new URL(authorizeResponse.headers.get('Location')!).pathname).not.toBe('/authorize-app')
 
   const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {request},
+    query: `
+      mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!, $scopes: [OAuthScopeEnum!]!) {
+        createOAuthAPICode(request: $request, scopes: $scopes) {
+          redirectUri
+        }
+      }
+    `,
+    variables: {request, scopes: ['USERS_READ']},
     bearerToken: token
   })
   expect(approved.data).toBeNull()
@@ -635,12 +519,8 @@ test('An OAuth access token is not a session', async () => {
 })
 
 test('PKCE verifier must match the challenge', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const {redirectUri, clientId} = await createAppWithScope({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ']
-  })
+  const {cookie} = await signUp()
+  const {redirectUri, clientId} = await createClient()
   const {codeVerifier, codeChallenge} = createPKCEPair()
   const request = {
     clientId,
@@ -681,9 +561,9 @@ test('PKCE verifier must match the challenge', async () => {
 })
 
 test('A code can only be exchanged by the client it was issued to', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const victimApp = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
-  const otherApp = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
+  const {cookie} = await signUp()
+  const victimApp = await createClient()
+  const otherApp = await createClient()
   const code = await approve(
     {clientId: victimApp.clientId, redirectUri: victimApp.redirectUri, scope: 'users:read'},
     cookie
@@ -705,13 +585,8 @@ test('A code can only be exchanged by the client it was issued to', async () => 
 })
 
 test('An OAuth access token cannot be traded for a session', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['USERS_WRITE', 'TEAMS_WRITE'],
-    scope: 'users:write teams:write'
-  })
+  const {cookie, orgId} = await signUp()
+  const token = await getAccessToken(cookie, 'users:write teams:write')
 
   const refreshed = await sendPublic({query: REFRESH_SESSION, bearerToken: token})
   expect(refreshed.data).toBeNull()
@@ -727,23 +602,14 @@ test('An OAuth access token cannot be traded for a session', async () => {
   expect(added.cookie).toBeUndefined()
 })
 
-test('An OAuth access token cannot create a team outside its organization', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const otherOrg = await sendPublic({
-    query: ADD_ORG,
-    variables: {
-      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
-      orgName: `Org ${generateUID()}`
-    },
-    cookie
-  })
-  const otherOrgId = otherOrg.data.addOrg.team.orgId
-  expect(otherOrgId).toEqual(expect.any(String))
+test('An OAuth access token cannot create a team outside the organizations it was granted', async () => {
+  const {cookie, orgId} = await signUp()
+  const otherOrg = await addOrg(cookie)
 
-  const token = await getAccessToken({orgId, cookie, scopes: ['TEAMS_WRITE'], scope: 'teams:write'})
+  const token = await getAccessToken(cookie, 'teams:write', onlyOrg(orgId))
   const added = await sendPublic({
     query: ADD_TEAM,
-    variables: {newTeam: {name: `Team ${generateUID()}`, orgId: otherOrgId, isPublic: false}},
+    variables: {newTeam: {name: `Team ${generateUID()}`, orgId: otherOrg.orgId, isPublic: false}},
     bearerToken: token
   })
   expect(added.data).toBeNull()
@@ -751,8 +617,8 @@ test('An OAuth access token cannot create a team outside its organization', asyn
 })
 
 test('An OAuth access token cannot delete its user or end their sessions', async () => {
-  const {cookie, orgId, userId} = await createOrgAdmin()
-  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_WRITE'], scope: 'users:write'})
+  const {cookie, userId} = await signUp()
+  const token = await getAccessToken(cookie, 'users:write')
 
   const deleted = await sendPublic({query: DELETE_USER, variables: {userId}, bearerToken: token})
   expect(deleted.data).toBeNull()
@@ -766,48 +632,9 @@ test('An OAuth access token cannot delete its user or end their sessions', async
   expect(viewer.data.viewer.id).toBe(userId)
 })
 
-test('An OAuth access token cannot list or manage OAuth applications', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const {providerId} = await createAppWithScope({orgId, cookie, scopes: ['USERS_READ']})
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ', 'ORGS_READ', 'ORGS_WRITE'],
-    scope: 'users:read orgs:read orgs:write'
-  })
-
-  const renamed = await sendPublic({
-    query: UPDATE_OAUTH_API_PROVIDER_NAME,
-    variables: {providerId, name: 'Renamed by token'},
-    bearerToken: token
-  })
-  expect(renamed.data).toBeNull()
-  expect(renamed.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-
-  const listed = await sendPublic({
-    query: ORG_OAUTH_APPLICATIONS,
-    variables: {orgId},
-    bearerToken: token
-  })
-  expect(listed.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-  expect(listed.data?.viewer?.organization?.oauthApplications).toBeUndefined()
-
-  const asSession = await sendPublic({
-    query: UPDATE_OAUTH_API_PROVIDER_NAME,
-    variables: {providerId, name: 'Renamed'},
-    cookie
-  })
-  expect(asSession.data.updateOAuthAPIProvider.provider.name).toBe('Renamed')
-})
-
-test('An OAuth access token cannot create or join another organization', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['ORGS_WRITE', 'TEAMS_WRITE'],
-    scope: 'orgs:write teams:write'
-  })
+test('An OAuth access token limited to an organization cannot create or join another', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await getAccessToken(cookie, 'orgs:write teams:write', onlyOrg(orgId))
 
   const addedOrg = await sendPublic({
     query: ADD_ORG,
@@ -829,31 +656,18 @@ test('An OAuth access token cannot create or join another organization', async (
   expect(accepted.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 })
 
-test('An OAuth access token only carries the teams of its organization', async () => {
-  const {cookie, orgId, teamId} = await createOrgAdmin()
-  const otherOrg = await sendPublic({
-    query: ADD_ORG,
-    variables: {
-      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
-      orgName: `Org ${generateUID()}`
-    },
-    cookie
-  })
-  expect(otherOrg.data.addOrg.team.id).toEqual(expect.any(String))
+test('An OAuth access token only carries the teams of the organizations it was granted', async () => {
+  const {cookie, orgId, teamId} = await signUp()
+  await addOrg(cookie)
 
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['USERS_READ', 'TEAMS_READ'],
-    scope: 'users:read teams:read'
-  })
+  const token = await getAccessToken(cookie, 'users:read teams:read', onlyOrg(orgId))
   const viewer = await sendPublic({query: VIEWER_TEAM_IDS, bearerToken: token})
   expect(viewer.data.viewer.tms).toEqual([teamId])
 })
 
-test('An OAuth access token cannot read notifications or personal access tokens', async () => {
-  const {cookie, orgId} = await createOrgAdmin()
-  const token = await getAccessToken({orgId, cookie, scopes: ['USERS_READ'], scope: 'users:read'})
+test('An OAuth access token cannot read personal access tokens, nor notifications when limited', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await getAccessToken(cookie, 'users:read', onlyOrg(orgId))
 
   const notifications = await sendPublic({query: VIEWER_NOTIFICATIONS, bearerToken: token})
   expect(notifications.data).toBeNull()
@@ -866,73 +680,38 @@ test('An OAuth access token cannot read notifications or personal access tokens'
   expect(personalAccessTokens.data).toBeNull()
   expect(personalAccessTokens.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
 
+  const unlimited = await getAccessToken(cookie, 'users:read')
+  const unlimitedTokens = await sendPublic({
+    query: VIEWER_PERSONAL_ACCESS_TOKENS,
+    bearerToken: unlimited
+  })
+  expect(unlimitedTokens.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+
   const asSession = await sendPublic({query: VIEWER_NOTIFICATIONS, cookie})
   expect(asSession.errors).toBeUndefined()
   expect(Array.isArray(asSession.data.viewer.notifications.edges)).toBe(true)
 })
 
 test('An OAuth access token cannot take a team or its user out of another organization', async () => {
-  const {cookie, orgId, userId} = await createOrgAdmin()
-  const otherOrg = await sendPublic({
-    query: ADD_ORG,
-    variables: {
-      newTeam: {name: `Team ${generateUID()}`, orgId: '', isPublic: false},
-      orgName: `Org ${generateUID()}`
-    },
-    cookie
-  })
-  const otherTeamId = otherOrg.data.addOrg.team.id
-  const token = await getAccessToken({
-    orgId,
-    cookie,
-    scopes: ['ORGS_WRITE', 'TEAMS_WRITE'],
-    scope: 'orgs:write teams:write'
-  })
+  const {cookie, orgId, userId} = await signUp()
+  const otherOrg = await addOrg(cookie)
+  const token = await getAccessToken(cookie, 'orgs:write teams:write', onlyOrg(orgId))
 
   const moved = await sendPublic({
     query: MOVE_TEAM_TO_ORG,
-    variables: {teamIds: [otherTeamId], orgId},
+    variables: {teamIds: [otherOrg.teamId], orgId},
     bearerToken: token
   })
   expect(moved.data.moveTeamToOrg).toBe('')
 
   const removed = await sendPublic({
     query: REMOVE_TEAM_MEMBER,
-    variables: {teamId: otherTeamId, userId},
+    variables: {teamId: otherOrg.teamId, userId},
     bearerToken: token
   })
   expect(removed.data?.removeTeamMember ?? null).toBeNull()
   expect(removed.errors).toHaveLength(1)
 
   const teams = await getUserTeams(userId)
-  expect(teams).toContainEqual({id: otherTeamId})
-})
-
-test('Only an org admin can list the organization’s OAuth applications', async () => {
-  const admin = await createOrgAdmin()
-  await createAppWithScope({orgId: admin.orgId, cookie: admin.cookie, scopes: ['USERS_READ']})
-  const member = await signUp()
-
-  const asAdmin = await sendPublic({
-    query: ORG_OAUTH_APPLICATIONS,
-    variables: {orgId: admin.orgId},
-    cookie: admin.cookie
-  })
-  expect(asAdmin.errors).toBeUndefined()
-  expect(asAdmin.data.viewer.organization.oauthApplications).toHaveLength(1)
-
-  const asMember = await sendPublic({
-    query: ORG_OAUTH_APPLICATIONS,
-    variables: {orgId: member.orgId},
-    cookie: member.cookie
-  })
-  expect(asMember.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
-  expect(asMember.data?.viewer?.organization?.oauthApplications).toBeUndefined()
-
-  const asOutsider = await sendPublic({
-    query: ORG_OAUTH_APPLICATIONS,
-    variables: {orgId: admin.orgId},
-    cookie: member.cookie
-  })
-  expect(asOutsider.data?.viewer?.organization?.oauthApplications).toBeUndefined()
+  expect(teams).toContainEqual({id: otherOrg.teamId})
 })

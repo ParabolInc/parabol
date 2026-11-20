@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import getKysely from '../postgres/getKysely'
 import {
   createOrgAdmin,
@@ -10,6 +9,7 @@ import {
   sendPublic,
   signUp
 } from './common'
+import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const CREATE_PERSONAL_ACCESS_TOKEN = `
   mutation CreatePersonalAccessToken(
@@ -344,62 +344,10 @@ test('a PAT limited to org A reads org A team assets, not org B team assets', as
   expect((await fetchAsset(secondTeamPath, {authorization})).status).toBe(403)
 })
 
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      clientId
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
-
-const getOAuthAccessToken = async (
-  cookie: string,
-  orgId: string,
-  scopes: string[],
-  scope: string
-) => {
-  const redirectUri = 'https://example.com/callback'
-  const app = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {orgId, name: 'Asset proxy app', redirectUris: [redirectUri], scopes},
-    cookie
-  })
-  expect(app.errors).toBeUndefined()
-  const {clientId} = app.data.createOAuthAPIProvider
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId,
-        redirectUri,
-        scope,
-        state: 'xyz',
-        codeChallenge,
-        codeChallengeMethod: 'S256'
-      }
-    },
-    cookie
-  })
+const getOAuthAccessToken = async (cookie: string, scope: string) => {
+  const {clientId, redirectUri} = await createClient()
+  const {codeVerifier, codeChallenge} = createPKCEPair()
+  const approved = await createCode({clientId, redirectUri, scope, codeChallenge}, cookie)
   expect(approved.errors).toBeUndefined()
   const code = new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
   const tokenResponse = await fetch(`${PROTOCOL}://${HOST}/oauth/token`, {
@@ -421,8 +369,8 @@ const getOAuthAccessToken = async (
 test('an OAuth access token fetches an org asset only when it holds orgs:read', async () => {
   const {orgId, cookie} = await createOrgAdmin(getTestEmail())
   const path = await uploadAsset({cookie}, 'Organization', orgId)
-  const withOrgs = await getOAuthAccessToken(cookie, orgId, ['ORGS_READ'], 'orgs:read')
-  const withoutOrgs = await getOAuthAccessToken(cookie, orgId, ['USERS_READ'], 'users:read')
+  const withOrgs = await getOAuthAccessToken(cookie, 'orgs:read')
+  const withoutOrgs = await getOAuthAccessToken(cookie, 'users:read')
   expect((await fetchAsset(path, {authorization: `Bearer ${withOrgs}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${withoutOrgs}`})).status).toBe(403)
 })

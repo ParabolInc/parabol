@@ -8,6 +8,7 @@ const authorizationServerMetadataHandler = (res: HttpResponse) => {
     issuer: appOrigin,
     authorization_endpoint: `${appOrigin}/oauth/authorize`,
     token_endpoint: `${appOrigin}/oauth/token`,
+    registration_endpoint: `${appOrigin}/oauth/register`,
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],

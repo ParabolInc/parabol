@@ -28,6 +28,7 @@ import {
   selectPersonalAccessToken,
   selectTasks
 } from '../../../postgres/select'
+import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -892,11 +893,30 @@ const User: ReqResolvers<'User'> = {
     const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
     return tokens
   },
-  oauthAuthorizationRequest: async ({id: userId}, {request}, {dataLoader}) => {
-    const authorization = await validateOAuthAuthorizationRequest(request, userId, dataLoader)
+  oauthGrants: async ({id: userId}) => {
+    return getKysely()
+      .selectFrom('OAuthAPIGrant')
+      .innerJoin('OAuthAPIProvider', 'OAuthAPIProvider.clientId', 'OAuthAPIGrant.clientId')
+      .select([
+        'OAuthAPIGrant.id',
+        'OAuthAPIProvider.name as appName',
+        'OAuthAPIProvider.redirectUris',
+        'OAuthAPIGrant.grantedOrgIds',
+        'OAuthAPIGrant.grantedTeamIds',
+        'OAuthAPIGrant.grantedPageIds',
+        'OAuthAPIGrant.createdAt',
+        'OAuthAPIGrant.lastUsedAt',
+        sql<Oauthscopeenum[]>`to_json("OAuthAPIGrant"."scopes")`.as('scopes')
+      ])
+      .where('OAuthAPIGrant.userId', '=', userId)
+      .orderBy('OAuthAPIGrant.createdAt', 'desc')
+      .execute()
+  },
+  oauthAuthorizationRequest: async (_source, {request}) => {
+    const authorization = await validateOAuthAuthorizationRequest(request)
     if ('error' in authorization) return null
     const {provider, scopes} = authorization
-    return {name: provider.name, orgId: provider.orgId, scopes, redirectUri: request.redirectUri}
+    return {name: provider.name, scopes, redirectUri: request.redirectUri}
   }
 }
 

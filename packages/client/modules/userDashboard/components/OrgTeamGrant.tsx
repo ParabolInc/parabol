@@ -3,10 +3,10 @@ import type {Dispatch, SetStateAction} from 'react'
 import {useFragment} from 'react-relay'
 import {ExpandMore as ExpandMoreIcon} from '~/ui/icons'
 import type {OrgTeamGrant_viewer$key} from '../../../__generated__/OrgTeamGrant_viewer.graphql'
+import type {GrantModeOption} from '../../../hooks/useResourceGrants'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {RadioGroup, RadioGroupItem} from '../../../ui/RadioGroup/RadioGroup'
-import type {GrantModeOption} from './PersonalAccessTokenUpsertDialog'
 
 interface Props {
   viewerRef: OrgTeamGrant_viewer$key

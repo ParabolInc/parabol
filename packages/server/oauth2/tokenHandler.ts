@@ -121,8 +121,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     }
     const rotated = await rotateOAuthRefreshToken({
       refreshToken: refresh_token,
-      clientId: provider.clientId,
-      orgId: provider.orgId
+      clientId: provider.clientId
     })
     if (!rotated) {
       writeJSON(res, '400 Bad Request', {error: 'invalid_grant'})
@@ -133,7 +132,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       '200 OK',
       issueOAuthTokens({
         ...rotated,
-        scopes: rotated.scopes.filter((scope) => provider.scopes.includes(scope)),
         clientId: provider.clientId,
         resource: rotated.resource || undefined
       })
@@ -157,6 +155,9 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       'redirectUri',
       'codeChallenge',
       'resource',
+      'grantedOrgIds',
+      'grantedTeamIds',
+      'grantedPageIds',
       sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')
     ])
     .executeTakeFirst()
@@ -193,7 +194,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  const {scopes, userId, resource} = oauthCode
+  const {scopes, userId, resource, grantedOrgIds, grantedTeamIds, grantedPageIds} = oauthCode
   if (requestedResource && requestedResource !== resource) {
     writeJSON(res, '400 Bad Request', {error: 'invalid_target'})
     return
@@ -202,7 +203,10 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     clientId: provider.clientId,
     userId,
     scopes,
-    resource: resource || null
+    resource: resource || null,
+    grantedOrgIds,
+    grantedTeamIds,
+    grantedPageIds
   })
   writeJSON(
     res,
