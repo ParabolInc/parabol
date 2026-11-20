@@ -1,12 +1,11 @@
 import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
-import {Forum, Transcribe} from '~/ui/icons'
+import {Forum, Transcribe, Tune} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import IconLabel from './IconLabel'
 import SidebarToggle from './SidebarToggle'
-import {OptionsButton} from './TeamPrompt/TeamPromptOptions'
 
 // The two custom breakpoints below match the deprecated meetingAvatarMediaQueries (1280px & 1600px).
 export const MeetingTopBarStyles = ({className, ...props}: ComponentPropsWithoutRef<'div'>) => (
@@ -30,6 +29,13 @@ export const IconGroupBlock = ({className, ...props}: ComponentPropsWithoutRef<'
   />
 )
 
+const drawerButtons = {
+  discussion: {icon: Forum, label: 'Discussion'},
+  inspiration: {icon: 'task_alt', label: 'Inspiration'},
+  settings: {icon: Tune, label: 'Settings'},
+  transcription: {icon: Transcribe, label: 'Transcription'}
+} as const
+
 interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
@@ -37,11 +43,9 @@ interface Props {
   isMeetingSidebarCollapsed: boolean
   rightDrawerOpen?: string | null
   // The tab the drawer button opens to, which sets its icon & label. Defaults to 'discussion'.
-  drawerType?: 'discussion' | 'inspiration' | 'transcription'
+  drawerType?: keyof typeof drawerButtons
   toggleSidebar: () => void
   toggleDrawer?: () => void
-  // Opens the drawer's Settings tab. Only meetings that have one pass it
-  onOpenSettings?: () => void
 }
 
 const MeetingTopBar = (props: Props) => {
@@ -53,17 +57,11 @@ const MeetingTopBar = (props: Props) => {
     rightDrawerOpen,
     drawerType = 'discussion',
     toggleDrawer,
-    toggleSidebar,
-    onOpenSettings
+    toggleSidebar
   } = props
   const showButton = isDemoRoute() && !hasToken()
   const showDrawerButton = toggleDrawer && rightDrawerOpen == null
-  const drawerButton =
-    drawerType === 'inspiration'
-      ? {icon: 'task_alt' as const, label: 'Inspiration'}
-      : drawerType === 'transcription'
-        ? {icon: Transcribe, label: 'Transcription'}
-        : {icon: Forum, label: 'Discussion'}
+  const drawerButton = drawerButtons[drawerType]
 
   return (
     <MeetingTopBarStyles>
@@ -104,16 +102,6 @@ const MeetingTopBar = (props: Props) => {
               </div>
             </button>
           </div>
-        )}
-        {onOpenSettings && (
-          <OptionsButton
-            aria-label='Options'
-            aria-pressed={rightDrawerOpen === 'settings'}
-            onClick={onOpenSettings}
-          >
-            <IconLabel icon='tune' iconLarge />
-            <div className='hidden text-fg-primary min-[600px]:block'>Options</div>
-          </OptionsButton>
         )}
       </IconGroupBlock>
     </MeetingTopBarStyles>

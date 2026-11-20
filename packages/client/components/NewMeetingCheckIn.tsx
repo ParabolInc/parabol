@@ -20,11 +20,12 @@ interface Props {
   meeting: NewMeetingCheckIn_meeting$key
   toggleSidebar: () => void
   gotoStageId?: ReturnType<typeof useGotoStageId>
-  openSettings?: () => void
+  rightDrawerOpen?: string | null
+  toggleDrawer?: () => void
 }
 
 const NewMeetingCheckIn = (props: Props) => {
-  const {avatarGroup, meeting: meetingRef, toggleSidebar, openSettings} = props
+  const {avatarGroup, meeting: meetingRef, toggleSidebar, rightDrawerOpen, toggleDrawer} = props
   const meeting = useFragment(
     graphql`
       fragment NewMeetingCheckIn_meeting on NewMeeting {
@@ -63,7 +64,9 @@ const NewMeetingCheckIn = (props: Props) => {
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
-          onOpenSettings={openSettings}
+          rightDrawerOpen={rightDrawerOpen}
+          drawerType='settings'
+          toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>

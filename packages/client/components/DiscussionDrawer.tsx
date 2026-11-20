@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react'
 import {Close} from '~/ui/icons'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
+import useLastNonNull from '../hooks/useLastNonNull'
 import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
@@ -67,7 +68,9 @@ const DiscussionDrawer = ({
   // When `activeTab` is provided the tab is controlled by the parent (e.g. TeamPrompt's
   // rightDrawerOpen); otherwise it falls back to the sessionStorage-backed state.
   const isControlled = activeTab !== undefined
-  const activeTabId = isControlled ? (activeTab ?? defaultTabId) : storedTabId
+  // The parent clears activeTab to close the drawer; keep the last tab while it slides out
+  const lastOpenTab = useLastNonNull(activeTab)
+  const requestedTabId = isControlled ? (lastOpenTab ?? defaultTabId) : storedTabId
   const setActiveTabId = (tabId: string) => {
     if (isControlled) onChangeTab?.(tabId)
     else setStoredTabId(tabId)
@@ -75,8 +78,9 @@ const DiscussionDrawer = ({
 
   const activeIdx = Math.max(
     0,
-    tabs.findIndex((tab) => tab.id === activeTabId)
+    tabs.findIndex((tab) => tab.id === requestedTabId)
   )
+  const activeTabId = tabs[activeIdx]!.id
 
   const drawerStyle: React.CSSProperties = {
     paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0

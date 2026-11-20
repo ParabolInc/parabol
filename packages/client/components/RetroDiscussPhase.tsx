@@ -32,7 +32,7 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroDiscussPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting: meetingRef, openSettings} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
@@ -109,7 +109,6 @@ const RetroDiscussPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
-          onOpenSettings={openSettings}
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.discuss}</PhaseHeaderTitle>

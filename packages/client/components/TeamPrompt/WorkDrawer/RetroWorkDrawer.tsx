@@ -31,6 +31,7 @@ const RetroWorkDrawer = (props: Props) => {
       fragment RetroWorkDrawer_meeting on RetrospectiveMeeting {
         ...useInspirationDrawer_meeting
         id
+        templateId
         organization {
           useAI
         }
@@ -104,7 +105,8 @@ const RetroWorkDrawer = (props: Props) => {
     dateRange,
     instructionsKey: 'Inspiration:retroInstructions',
     isPaged: true,
-    lifespanMs: RETRO_DRAFT_LIFESPAN_MS
+    lifespanMs: RETRO_DRAFT_LIFESPAN_MS,
+    templateId: meeting.templateId
   })
 
   // Reflect phase stacks reflections descending by sortOrder, so the highest sortOrder is on top.

@@ -20,6 +20,7 @@ interface Options {
   instructionsKey: string
   isPaged?: boolean
   lifespanMs?: number
+  templateId?: string | null
 }
 
 const useInspirationSourceDraft = (options: Options) => {
@@ -30,7 +31,8 @@ const useInspirationSourceDraft = (options: Options) => {
     dateRange,
     instructionsKey,
     isPaged,
-    lifespanMs
+    lifespanMs,
+    templateId
   } = options
   const availability = useInspirationSourceAvailability(teamMemberRef)
   const [storedSettings, setStoredSettings] = useLocalStorageState<
@@ -78,7 +80,8 @@ const useInspirationSourceDraft = (options: Options) => {
     instructions: canDraft ? instructions : '',
     canDraft,
     isPaged,
-    lifespanMs
+    lifespanMs,
+    templateId
   })
   const draftedIssues = draft?.issues ?? []
   const draftedQueries = new Map(

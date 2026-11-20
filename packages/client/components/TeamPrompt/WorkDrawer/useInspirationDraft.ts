@@ -19,6 +19,8 @@ export interface InspirationDraft {
   meetingId: string
   createdAt: number
   sources: InspirationSourceInput[]
+  // Drafts are written for this template's prompts
+  templateId?: string | null
   items: {
     id: string
     content: string
@@ -42,6 +44,7 @@ interface Options {
   canDraft: boolean
   isPaged?: boolean
   lifespanMs?: number
+  templateId?: string | null
 }
 
 const issuesQuery = graphql`
@@ -105,7 +108,8 @@ const useInspirationDraft = (options: Options) => {
     instructions,
     canDraft,
     isPaged = false,
-    lifespanMs = DRAFT_LIFESPAN_MS
+    lifespanMs = DRAFT_LIFESPAN_MS,
+    templateId
   } = options
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -126,8 +130,17 @@ const useInspirationDraft = (options: Options) => {
     storedDraft?.viewerId === viewerId &&
     storedDraft.meetingId === meetingId &&
     storedDraft.createdAt > openedAt - lifespanMs
-  const draft = isKept ? storedDraft : null
-  const isStale = !draft || toKey(draft.sources) !== toKey(sources)
+  const keptDraft = isKept ? storedDraft : null
+  // Drafts written for another template's prompts would add reflections to prompts the meeting no longer has
+  const isForOtherTemplate = !!keptDraft && keptDraft.templateId !== templateId
+  const draft =
+    keptDraft && isForOtherTemplate
+      ? {...keptDraft, items: [], awaitingItems: canDraft && keptDraft.issues.length > 0}
+      : keptDraft
+  const isStale =
+    !draft || toKey(draft.sources) !== toKey(sources) || (!isPaged && isForOtherTemplate)
+  const templateIdRef = useRef(templateId)
+  templateIdRef.current = templateId
   const isLoadingNewest = isPaged ? listing : generating
   const userPrompt = instructions.trim() || null
   const itemsError =
@@ -166,6 +179,7 @@ const useInspirationDraft = (options: Options) => {
             meetingId,
             createdAt: Date.now(),
             sources,
+            templateId,
             items: [],
             issues: [...page.issues],
             nextBefore: page.nextBefore ?? null,
@@ -198,6 +212,7 @@ const useInspirationDraft = (options: Options) => {
           meetingId,
           createdAt: Date.now(),
           sources,
+          templateId,
           items: toItems(inspirationItems),
           issues: [...issues]
         })
@@ -214,16 +229,18 @@ const useInspirationDraft = (options: Options) => {
       prev?.createdAt === createdAt && prev.meetingId === meetingId ? update(prev) : prev
     )
 
-  const draftingItemsRef = useRef<number | null>(null)
+  const draftingItemsRef = useRef<string | null>(null)
   const draftItems = (timeline: InspirationDraft) => {
     const {createdAt} = timeline
-    if (draftingItemsRef.current === createdAt) return
-    draftingItemsRef.current = createdAt
+    const requestKey = `${createdAt}:${templateId}`
+    if (draftingItemsRef.current === requestKey) return
+    draftingItemsRef.current = requestKey
     const settle = () => {
-      if (draftingItemsRef.current === createdAt) draftingItemsRef.current = null
+      if (draftingItemsRef.current === requestKey) draftingItemsRef.current = null
     }
     const fail = (message: string) => {
       settle()
+      if (templateIdRef.current !== templateId) return
       setItemsFailure({createdAt, message})
     }
     generate({
@@ -235,9 +252,11 @@ const useInspirationDraft = (options: Options) => {
           return
         }
         settle()
+        if (templateIdRef.current !== templateId) return
         const {inspirationItems, issues, issueCount} = res.generateInspirationItems
         updateTimeline(createdAt, (prev) => ({
           ...prev,
+          templateId,
           items: toItems(inspirationItems),
           awaitingItems: false,
           readCount: issues.length,
@@ -298,7 +317,7 @@ const useInspirationDraft = (options: Options) => {
 
   useEffect(() => {
     if (draft && isDraftingItems) latest.current.draftItems(draft)
-  }, [draft?.createdAt, isDraftingItems])
+  }, [draft?.createdAt, isDraftingItems, templateId])
 
   return {
     draft,

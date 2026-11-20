@@ -39,7 +39,7 @@ const RetroDraftSection = (props: Props) => {
           className='m-0 flex items-center gap-1.5 font-semibold text-fg-primary text-sm'
         >
           <AutoAwesome className='size-[18px] text-accent' />
-          Draft Reflections
+          Reflection Drafts
         </h3>
         {items.length > 0 && (
           <span className='shrink-0 text-fg-muted text-xs'>
