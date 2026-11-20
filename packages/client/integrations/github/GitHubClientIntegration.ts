@@ -1,7 +1,4 @@
 import {lazy} from 'react'
-import gitHubIntegrationPanelQuery, {
-  type GitHubIntegrationPanelQuery
-} from '../../__generated__/GitHubIntegrationPanelQuery.graphql'
 import gitHubScopingResultsQuery, {
   type GitHubScopingResultsAdapterQuery
 } from '../../__generated__/GitHubScopingResultsAdapterQuery.graphql'
@@ -16,11 +13,9 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability,
-  type WorkDrawerCapability
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
 import makeScopingResults from '../platform/makeScopingResults'
-import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import GitHubClientManager from './GitHubClientManager'
 import gitHubTaskLink from './gitHubTaskLink'
 import {githubIntegrationMeta} from './shared/githubIntegrationMeta'
@@ -61,19 +56,6 @@ const scoping: ScopingCapability = {
   isDefaultQuery: (state) => state.queryString.toLowerCase().trim() === GITHUB_DEFAULT_QUERY
 }
 
-const workDrawer: WorkDrawerCapability = {
-  Panel: makeWorkDrawerPanel<GitHubIntegrationPanelQuery>({
-    query: gitHubIntegrationPanelQuery,
-    Panel: lazy(
-      () =>
-        import(
-          /* webpackChunkName: 'GitHubIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/GitHubIntegrationPanel'
-        )
-    )
-  }),
-  connectDescription: 'issues and PRs'
-}
-
 export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly service = githubIntegrationMeta.service
   readonly title = githubIntegrationMeta.title
@@ -84,8 +66,7 @@ export class GitHubClientIntegration extends ClientIntegrationDefinition {
   readonly iconClassName = 'dark:[&_path]:fill-white'
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
-    taskLink: gitHubTaskLink,
-    workDrawer
+    taskLink: gitHubTaskLink
   }
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return false

@@ -54,7 +54,7 @@ The script writes:
 
 It also adds the service to these lists: both GraphQL service enums, the codegen mappers, the stored task shape, the saved-search types, the provider types, both registries, the OAuth2 managers, the GraphQL typename maps, the meeting summary export, the report labels, the global provider setup and `.env.example`. It checks every one of those files first and writes nothing if one has changed shape.
 
-After those commands, typecheck and the server conformance suite pass. The client suite fails until the service has a scoping tab and a work drawer tab (see [Client capabilities](#client-capabilities)).
+After those commands, typecheck and the server conformance suite pass. The client suite fails until the service has a scoping tab (see [Client capabilities](#client-capabilities)).
 
 ### After the scaffold
 
@@ -101,18 +101,15 @@ A push that writes a `field` or `label` must add the service to that target in [
 | Capability | What it powers | How to build it | Example |
 | --- | --- | --- | --- |
 | `scoping` | The Sprint Poker scope tab. Required for task services | `makeScopingResults` with a Relay query for your search field, plus a search-meta codec (see [The scope tab](#the-scope-tab)) | `linear/LinearScopingResultsAdapter.tsx` and `linear/linearSearchMeta.ts`, or `jiraServer/JiraServerScopingResultsAdapter.tsx` for a REST API with page cursors |
-| `workDrawer` | The retro work drawer tab. Required for every service | `makeWorkDrawerPanel` for a panel that needs the meeting, `makeQueryRoot` for one that needs only the team. The tab's files go in `packages/client/components/TeamPrompt/WorkDrawer/` | the five `AzureDevOps*` files there: panel, results root, results, object card and project filter bar |
 | `settings` | Extra controls under the service's row on the integrations page | a `Panel` component | `azureDevOps/AzureDevOpsProjectAccessPanel.tsx` |
 
-Both tabs need GraphQL fields to read from. As Azure DevOps does, add:
+The scope tab needs GraphQL fields to read from. As Azure DevOps does, add:
 
 - a `<service>` field on [`TeamMemberIntegrations.graphql`](../../packages/server/graphql/public/typeDefs/TeamMemberIntegrations.graphql) that returns a `<Service>Integration` type holding your search and list fields. A search field returns a connection. `connectionFromTasks` pages by date and cuts the list to `first`, so for an API that pages by number, build the connection yourself as `JiraServerIntegration.issues` does
 - a `types/<Service>Integration.ts` resolver that exports `<Service>IntegrationSource`, and a codegen mapper for it
 - a `<service>: (source) => source` entry in `types/TeamMemberIntegrations.ts`
 
 Only the team member themselves can reach `TeamMember.integrations` (see `permissions.ts`). Give each search and list field its own `isUserViewer('source.userId')` rule there too, as `AzureDevOpsIntegration.workItems` has, and read the team and user ids from the source, never from arguments.
-
-A `makeWorkDrawerPanel` panel reads `inspirationItems(service: <service>)`, so the service must be in `ServiceEnum.graphql`.
 
 ### The scope tab
 
@@ -178,7 +175,6 @@ The conformance suites run against every registered integration, so a new one is
 - The client suite ([`conformance.test.ts`](../../packages/client/integrations/platform/__tests__/conformance.test.ts)) checks that the definition:
   - matches its shared meta
   - ships a scoping tab exactly when it is a task service
-  - ships a work drawer tab
   - has a logo no other service uses
 
 Put tests for your own code in `integrations/<service>/__tests__/` on each side, and mock the service instead of calling it. Before a run, `pnpm test:server` resets a couple of tables and turns off one trigger in the database named in `.env`, so point it at a development database. Unit tests that mock the service can skip that setup. Skipping it also skips loading `.env`, so load it yourself from the repo root:

@@ -36,7 +36,7 @@ type InspirationItem {
 
   """
   The issues the draft was drawn from: in a retrospective, one issue or every issue of a theme the AI
-  found across them; in a standup, the issues the answer links. Empty for a saved item
+  found across them; in a standup, the issues the answer links
   """
   issues: [InspirationIssue!]!
 }

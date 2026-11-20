@@ -1,7 +1,4 @@
 import {createElement, lazy} from 'react'
-import jiraIntegrationPanelQuery, {
-  type JiraIntegrationPanelQuery
-} from '../../__generated__/JiraIntegrationPanelQuery.graphql'
 import jiraScopingResultsQuery, {
   type JiraScopingResultsAdapterQuery
 } from '../../__generated__/JiraScopingResultsAdapterQuery.graphql'
@@ -16,12 +13,10 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability,
-  type WorkDrawerCapability
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
 import makeScopingResults from '../platform/makeScopingResults'
-import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import AtlassianClientManager from './AtlassianClientManager'
 import jiraSearchMeta from './jiraSearchMeta'
 import jiraTaskLink from './jiraTaskLink'
@@ -71,19 +66,6 @@ const scoping: ScopingCapability = {
   selectAllNoun: 'issue'
 }
 
-const workDrawer: WorkDrawerCapability = {
-  Panel: makeWorkDrawerPanel<JiraIntegrationPanelQuery>({
-    query: jiraIntegrationPanelQuery,
-    Panel: lazy(
-      () =>
-        import(
-          /* webpackChunkName: 'JiraIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/JiraIntegrationPanel'
-        )
-    )
-  }),
-  connectDescription: 'issues'
-}
-
 export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraIntegrationMeta.service
   readonly title = jiraIntegrationMeta.title
@@ -94,7 +76,6 @@ export class JiraClientIntegration extends ClientIntegrationDefinition {
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
     taskLink: jiraTaskLink,
-    workDrawer,
     settings: {
       getDisconnectSubline: describeAtlassianDisconnect
     }
