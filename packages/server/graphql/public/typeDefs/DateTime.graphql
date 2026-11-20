@@ -4,10 +4,11 @@ An ISO 8601 UTC datetime scalar. Serialized as a string in the format
 the output of JavaScript's `Date.prototype.toJSON()`.
 
 **Sending a DateTime to the server (inputs/variables):** pass an ISO 8601
-string. The value must round-trip through `new Date(value).toJSON()` — in
-practice this means a full UTC timestamp such as `"2024-03-15T14:30:00.000Z"`
-or a date-only prefix like `"2024-03-15"` whose expansion starts with the
-supplied string. Partial strings that do not satisfy this check are rejected.
+timestamp with a time zone, with or without fractional seconds, such as
+`"2024-03-15T14:30:00.000Z"`, `"2024-03-15T14:30:00Z"` or
+`"2024-03-15T16:30:00.123456+02:00"`. A string without a time zone must be
+the start of the full UTC timestamp, such as the date-only `"2024-03-15"`.
+Anything else is rejected.
 
 **Receiving a DateTime from the server (query results):** the value is always
 a full UTC timestamp string in the form `YYYY-MM-DDTHH:MM:SS.SSSZ`, safe to
