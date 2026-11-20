@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.3.0](https://github.com/ParabolInc/parabol/compare/v16.2.0...v16.3.0) (2026-11-20)
+
+
+### Added
+
+* **client:** turn a block into another type from the text bubble menu ([#14059](https://github.com/ParabolInc/parabol/issues/14059)) ([5bdf505](https://github.com/ParabolInc/parabol/commit/5bdf50551913ae6aff28472639d872ccd0ab657b))
+* **retro:** list the timeline right away and draft themes across its range ([#14318](https://github.com/ParabolInc/parabol/issues/14318)) ([9e64ecc](https://github.com/ParabolInc/parabol/commit/9e64eccabe74b3b66a387805d599aea2526dec52))
+
+
+### Fixed
+
+* **client:** give the retro demo meeting its tasks list ([#14322](https://github.com/ParabolInc/parabol/issues/14322)) ([0888cd2](https://github.com/ParabolInc/parabol/commit/0888cd243940e187882d73e953cf2d6b0a812304))
+* **client:** warn instead of erroring when an outdated client gets a subscription payload it never selected ([#14285](https://github.com/ParabolInc/parabol/issues/14285)) ([67043fc](https://github.com/ParabolInc/parabol/commit/67043fce20222b126d561baa25f4a28dac28e8b8))
+
+
+### Changed
+
+* **client:** find the bubble Turn into block and type in one helper ([#14321](https://github.com/ParabolInc/parabol/issues/14321)) ([da14fe6](https://github.com/ParabolInc/parabol/commit/da14fe6108d97c46b14714e6b2f1cd93c592a70b))
+
 ## [16.2.0](https://github.com/ParabolInc/parabol/compare/v16.1.0...v16.2.0) (2026-11-19)
 
 
