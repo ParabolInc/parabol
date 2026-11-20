@@ -288,6 +288,7 @@
           "AskReportQuestionPayload": "./types/AskReportQuestionPayload#AskReportQuestionPayloadSource",
           "LogReportQuestionUsePayload": "./types/LogReportQuestionUsePayload#LogReportQuestionUsePayloadSource",
           "RateReportQuestionPayload": "./types/RateReportQuestionPayload#RateReportQuestionPayloadSource",
+          "MarkReportsViewedPayload": "./types/MarkReportsViewedPayload#MarkReportsViewedPayloadSource",
           "PinReportPayload": "./types/PinReportPayload#PinReportPayloadSource",
           "UnpinReportPayload": "./types/UnpinReportPayload#UnpinReportPayloadSource",
           "MovePinnedReportPayload": "./types/MovePinnedReportPayload#MovePinnedReportPayloadSource",

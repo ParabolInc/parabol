@@ -89,7 +89,13 @@ export const reportsRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports',
   loader: async ({context: {queryRefs}}) => ({
-    queryRef: await queryRefs.load<ReportsRedirectQuery>(reportsRedirectQuery, {})
+    queryRef: await queryRefs.load<ReportsRedirectQuery>(
+      reportsRedirectQuery,
+      {},
+      {
+        fetchPolicy: 'network-only'
+      }
+    )
   }),
   component: lazyRouteComponent(
     () => import(/* webpackChunkName: 'ReportsRoute' */ '../../modules/reports/ReportsRoute')
