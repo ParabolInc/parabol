@@ -40,21 +40,17 @@ const useResourceGrants = (initialGrants?: Grants) => {
   }
 
   const togglePage = (page: PageResult) => {
-    setSelectedPageIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(page.id)) {
-        next.delete(page.id)
-        setSelectedPagesMap((pages) => {
-          const nextPages = new Map(pages)
-          nextPages.delete(page.id)
-          return nextPages
-        })
-      } else {
-        next.add(page.id)
-        setSelectedPagesMap((pages) => new Map(pages).set(page.id, page))
-      }
-      return next
-    })
+    const nextPageIds = new Set(selectedPageIds)
+    const nextPages = new Map(selectedPagesMap)
+    if (nextPageIds.has(page.id)) {
+      nextPageIds.delete(page.id)
+      nextPages.delete(page.id)
+    } else {
+      nextPageIds.add(page.id)
+      nextPages.set(page.id, page)
+    }
+    setSelectedPageIds(nextPageIds)
+    setSelectedPagesMap(nextPages)
   }
 
   const getGrants = (organizations: Organizations) => {

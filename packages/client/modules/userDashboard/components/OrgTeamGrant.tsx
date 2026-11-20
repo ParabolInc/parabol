@@ -32,41 +32,31 @@ export const OrgTeamGrant = ({
   toggleExpandOrg
 }: Props) => {
   const toggleOrg = (org: {id: string; teams: ReadonlyArray<{id: string}>}) => {
-    const orgTeamIds = org.teams.map((t) => t.id)
-    setSelectedOrgIds((prevOrgs) => {
-      const nextOrgs = new Set(prevOrgs)
-      setSelectedTeamIds((prevTeams) => {
-        const nextTeams = new Set(prevTeams)
-        if (nextOrgs.has(org.id)) {
-          nextOrgs.delete(org.id)
-          orgTeamIds.forEach((id) => nextTeams.delete(id))
-        } else {
-          nextOrgs.add(org.id)
-          orgTeamIds.forEach((id) => nextTeams.add(id))
-        }
-        return nextTeams
-      })
-      return nextOrgs
-    })
+    const nextOrgs = new Set(selectedOrgIds)
+    const nextTeams = new Set(selectedTeamIds)
+    if (nextOrgs.has(org.id)) {
+      nextOrgs.delete(org.id)
+      org.teams.forEach((team) => nextTeams.delete(team.id))
+    } else {
+      nextOrgs.add(org.id)
+      org.teams.forEach((team) => nextTeams.add(team.id))
+    }
+    setSelectedOrgIds(nextOrgs)
+    setSelectedTeamIds(nextTeams)
   }
 
   const toggleTeam = (teamId: string, org: {id: string; teams: ReadonlyArray<{id: string}>}) => {
-    setSelectedTeamIds((prevTeams) => {
-      const nextTeams = new Set(prevTeams)
-      if (nextTeams.has(teamId)) {
-        nextTeams.delete(teamId)
-        setSelectedOrgIds((prev) => {
-          const next = new Set(prev)
-          next.delete(org.id)
-          return next
-        })
-      } else {
-        nextTeams.add(teamId)
-        const allSelected = org.teams.every((t) => t.id === teamId || nextTeams.has(t.id))
-        if (allSelected) setSelectedOrgIds((prev) => new Set([...prev, org.id]))
-      }
-      return nextTeams
-    })
+    const nextOrgs = new Set(selectedOrgIds)
+    const nextTeams = new Set(selectedTeamIds)
+    if (nextTeams.has(teamId)) {
+      nextTeams.delete(teamId)
+      nextOrgs.delete(org.id)
+    } else {
+      nextTeams.add(teamId)
+      if (org.teams.every((team) => nextTeams.has(team.id))) nextOrgs.add(org.id)
+    }
+    setSelectedOrgIds(nextOrgs)
+    setSelectedTeamIds(nextTeams)
   }
 
   const {organizations} = useFragment(
