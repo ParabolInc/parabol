@@ -51,7 +51,8 @@ const show = (outcome: BlockMoveOutcome, sourceEditor = editor) => {
     targetPageId: 'page:42',
     targetTitle: 'Q3 Roadmap'
   })
-  return emit.mock.calls.findLast(([event]) => event === 'addSnackbar')?.[1] as Snack | undefined
+  const snackCalls = emit.mock.calls.filter(([event]) => event === 'addSnackbar')
+  return snackCalls.at(-1)?.[1] as Snack | undefined
 }
 
 beforeEach(() => {

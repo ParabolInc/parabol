@@ -49,7 +49,7 @@ let pageChangeObserver: MutationObserver | undefined
 
 // A query that starts after another one finished is counted as waiting on it
 export const countQueriesInSequence = (queries: Required<QueryTiming>[]) => {
-  const byStart = queries.toSorted((a, b) => a.start - b.start)
+  const byStart = [...queries].sort((a, b) => a.start - b.start)
   const depths = byStart.map(() => 1)
   byStart.forEach((query, index) => {
     for (let earlier = 0; earlier < index; earlier++) {

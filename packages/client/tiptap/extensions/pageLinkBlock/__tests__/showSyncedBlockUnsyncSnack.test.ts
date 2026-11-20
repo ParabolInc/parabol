@@ -50,7 +50,7 @@ const unsyncWithSnack = () => {
   mountNested(editor, linkPos, ['Sev 1'])
   expect(unsyncSyncedCopy(editor, linkPos, 7)).toBe(true)
   showSyncedBlockUnsyncSnack(atmosphere, editor)
-  const snack = emit.mock.calls.findLast(([event]) => event === 'addSnackbar')![1] as Snack
+  const snack = emit.mock.calls.filter(([event]) => event === 'addSnackbar').at(-1)![1] as Snack
   const isClosed = () =>
     emit.mock.calls.some(
       ([event, filter]) => event === 'removeSnackbar' && (filter as (s: Snack) => boolean)(snack)

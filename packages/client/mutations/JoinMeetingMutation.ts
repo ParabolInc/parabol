@@ -130,7 +130,7 @@ const insertStage = (phase: RecordProxy, stage: RecordProxy) => {
     )
   })
   const insertAt = nextStagePosition === -1 ? stages.length : nextStagePosition
-  phase.setLinkedRecords(stages.toSpliced(insertAt, 0, stage), 'stages')
+  phase.setLinkedRecords([...stages.slice(0, insertAt), stage, ...stages.slice(insertAt)], 'stages')
 }
 
 export const joinMeetingMeetingUpdater: SharedUpdater<JoinMeetingMutation_meeting$data> = (

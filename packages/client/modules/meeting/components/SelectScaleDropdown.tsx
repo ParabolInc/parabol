@@ -44,7 +44,7 @@ const SelectScaleDropdown = (props: Props) => {
   )
   const {id: dimensionId, team} = dimension
   const {id: teamId, scales} = team
-  const sortedScales = scales.toSorted((a, b) => {
+  const sortedScales = [...scales].sort((a, b) => {
     return a.isStarter !== b.isStarter ? (a.isStarter ? 1 : -1) : a.name.localeCompare(b.name)
   })
 

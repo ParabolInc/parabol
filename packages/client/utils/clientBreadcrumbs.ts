@@ -24,4 +24,4 @@ export const addBreadcrumb = (type: BreadcrumbType, message: string, traceId?: s
 export const getBreadcrumbs = () => breadcrumbs.slice()
 
 export const getLastTraceId = () =>
-  breadcrumbs.findLast((breadcrumb) => breadcrumb.traceId)?.traceId
+  breadcrumbs.filter((breadcrumb) => breadcrumb.traceId).at(-1)?.traceId
