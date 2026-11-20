@@ -1,20 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
-import {Add as AddIcon, MoreVert as MoreVertIcon, Web as WebIcon} from '~/ui/icons'
+import {Add as AddIcon} from '~/ui/icons'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
+import Panel from '../../../../components/Panel/Panel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
-import {Menu} from '../../../../ui/Menu/Menu'
-import {MenuContent} from '../../../../ui/Menu/MenuContent'
-import {MenuItem} from '../../../../ui/Menu/MenuItem'
-import plural from '../../../../utils/plural'
 import OAuthAppFormDialog from './OAuthAppFormDialog'
+import OAuthProviderRow from './OAuthProviderRow'
 
 interface Props {
   organizationRef: OAuthProviderList_organization$key
@@ -29,6 +27,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           id
           name
           updatedAt
+          clientType
         }
       }
     `,
@@ -118,65 +117,49 @@ const OAuthProviderList = ({organizationRef}: Props) => {
 
   const providers = data.oauthApplications || []
 
-  return (
-    <div className='space-y-4'>
-      <div className='flex items-center justify-between rounded-lg border border-hairline bg-surface-raised p-4'>
-        <div className='font-medium text-fg-primary'>
-          {providers.length} OAuth {plural(providers.length, 'application')}
-        </div>
-        <Button variant='outline' size='sm' onClick={handleAdd}>
-          <AddIcon className='mr-2' />
-          Add Application
-        </Button>
-      </div>
+  const controls = (
+    <Button variant='outline' size='sm' onClick={handleAdd}>
+      <AddIcon className='mr-2' />
+      Add Application
+    </Button>
+  )
 
-      {providers.length === 0 && (
-        <div className='py-8 text-center text-fg-muted italic'>
-          No OAuth 2.0 applications configured.
+  return (
+    <Panel className='max-w-[976px]' label='OAuth 2.0 API' controls={controls}>
+      <div className='border-hairline border-t px-4 py-3 text-fg-secondary text-sm'>
+        Configure your organization as an OAuth 2.0 provider to allow external applications to
+        authenticate with your Parabol organization.
+      </div>
+      {providers.length === 0 ? (
+        <div className='border-hairline border-t p-8 text-center text-fg-muted text-sm'>
+          No OAuth applications yet.
+        </div>
+      ) : (
+        <div className='overflow-x-auto border-hairline border-t'>
+          <table className='w-full border-collapse text-sm'>
+            <thead>
+              <tr className='border-hairline border-b bg-surface-raised text-left text-fg-muted text-xs uppercase tracking-wider'>
+                <th className='px-4 py-2 font-semibold'>Name</th>
+                <th className='px-4 py-2 font-semibold'>Authentication</th>
+                <th className='px-4 py-2 font-semibold'>Last Updated</th>
+                <th className='px-4 py-2' />
+              </tr>
+            </thead>
+            <tbody>
+              {providers.map((provider) => (
+                <OAuthProviderRow
+                  key={provider.id}
+                  name={provider.name}
+                  clientType={provider.clientType}
+                  updatedAt={provider.updatedAt}
+                  onEdit={() => handleEdit(provider.id)}
+                  onDelete={() => handleDeleteClick(provider)}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-
-      <div className='space-y-2'>
-        {providers.map((provider) => (
-          <div
-            key={provider.id}
-            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-hover hover:shadow-md'
-            onClick={() => {
-              setEditingProviderId(provider.id)
-              setDialogOpen(true)
-            }}
-          >
-            <div className='flex items-center gap-4'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent'>
-                <WebIcon />
-              </div>
-              <div className='flex flex-col'>
-                <span className='font-semibold text-fg-primary text-lg'>{provider.name}</span>
-                <span className='text-fg-muted text-xs'>
-                  Last updated {new Date(provider.updatedAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-            <Menu
-              trigger={
-                <button
-                  className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full hover:bg-surface-hover'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreVertIcon className='text-fg-muted' />
-                </button>
-              }
-            >
-              <MenuContent align='end'>
-                <MenuItem onClick={() => handleEdit(provider.id)}>Edit application</MenuItem>
-                <MenuItem onClick={() => handleDeleteClick(provider)} className='text-tomato-600'>
-                  Delete application
-                </MenuItem>
-              </MenuContent>
-            </Menu>
-          </div>
-        ))}
-      </div>
 
       {dialogOpen && (
         <OAuthAppFormDialog
@@ -207,7 +190,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-    </div>
+    </Panel>
   )
 }
 

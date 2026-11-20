@@ -11,6 +11,7 @@ graphql`
     clientId
     redirectUris
     scopes
+    clientType
   }
 `
 
@@ -68,7 +69,12 @@ const OAuthAppFormContentWithData = ({
   }
 
   return (
-    <OAuthAppFormContent orgId={orgId} isNew={isNew} initialData={provider} onClose={onClose} />
+    <OAuthAppFormContent
+      orgId={orgId}
+      isNew={isNew}
+      initialData={provider ?? undefined}
+      onClose={onClose}
+    />
   )
 }
 

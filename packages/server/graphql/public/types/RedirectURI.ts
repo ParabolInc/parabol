@@ -4,7 +4,7 @@ import type {RedirectUriScalarConfig} from '../resolverTypes'
 const isRedirectUriValid = (uri: string): boolean => {
   try {
     const url = new URL(uri)
-    const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
+    const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
     const hasValidProtocol = url.protocol === 'https:' || (isLocalhost && url.protocol === 'http:')
 
     if (!hasValidProtocol) {

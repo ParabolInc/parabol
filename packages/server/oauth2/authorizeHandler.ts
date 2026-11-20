@@ -46,7 +46,8 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
       scope: params.get('scope'),
       state,
       codeChallenge: params.get('code_challenge'),
-      codeChallengeMethod: params.get('code_challenge_method')
+      codeChallengeMethod: params.get('code_challenge_method'),
+      resource: params.get('resource')
     },
     authToken.sub,
     dataLoader

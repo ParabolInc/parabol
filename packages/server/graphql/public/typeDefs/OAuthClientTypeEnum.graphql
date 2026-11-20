@@ -1,0 +1,14 @@
+"""
+Whether an OAuth 2.0 application can keep a client secret
+"""
+enum OAuthClientTypeEnum {
+  """
+  A server-side app that keeps a client secret and may use PKCE
+  """
+  CONFIDENTIAL
+
+  """
+  A native or browser app that has no secret and must use PKCE
+  """
+  PUBLIC
+}

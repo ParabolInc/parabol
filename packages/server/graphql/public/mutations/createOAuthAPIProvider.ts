@@ -9,10 +9,10 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
   {dataLoader}
 ) => {
   let {scopes} = args
-  const {orgId, name, redirectUris} = args
+  const {orgId, name, redirectUris, clientType} = args
 
   const clientId = generateOAuthClientId()
-  const clientSecret = generateOAuthClientSecret()
+  const clientSecret = clientType === 'public' ? null : generateOAuthClientSecret()
 
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick a scope', {extensions: {code: 'BAD_USER_INPUT'}})
@@ -25,6 +25,7 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
     name,
     clientId,
     clientSecret,
+    clientType,
     redirectUris,
     scopes
   }
