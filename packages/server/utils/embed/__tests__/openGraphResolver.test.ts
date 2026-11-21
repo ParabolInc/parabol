@@ -137,6 +137,22 @@ describe('resolveOpenGraph', () => {
           res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
           return res.end(page)
         }
+        case '/bom-utf8': {
+          // UTF-8 BOM wins over a conflicting meta charset
+          const bom = Buffer.from([0xef, 0xbb, 0xbf])
+          const html = Buffer.from('<html><head><meta charset="shift_jis"><title>Hello BOM</title></head><body>Hello BOM</body></html>', 'utf8')
+          const body = Buffer.concat([bom, html])
+          res.writeHead(200, {'Content-Type': 'text/html'})
+          res.end(body)
+          break
+        }
+        case '/unknown-header-falls-through': {
+          // Unrecognised header charset must fall through to meta, not skip to UTF-8
+          const body = Buffer.from('<html><head><meta charset="windows-1252"><title>caf\xe9</title></head><body>caf\xe9</body></html>', 'latin1')
+          res.writeHead(200, {'Content-Type': 'text/html; charset=bogus-encoding'})
+          res.end(body)
+          break
+        }
         default:
           res.writeHead(404)
           return res.end()
@@ -202,5 +218,20 @@ describe('resolveOpenGraph', () => {
     const result = await resolveOpenGraph(`http://127.0.0.1:${port}/precedence-conflict`)
     expect(result).not.toBeNull()
     expect(result?.title).not.toBe('日本語')
+  })
+
+  it('should use UTF-8 BOM over conflicting meta charset', async () => {
+    const url = `http://127.0.0.1:${port}/bom-utf8`
+    const result = await resolveOpenGraph(url)
+    expect(result).not.toBeNull()
+    expect(result?.title).toBe('Hello BOM')
+  })
+
+  it('should fall through to meta charset when HTTP header charset is unrecognised', async () => {
+    const url = `http://127.0.0.1:${port}/unknown-header-falls-through`
+    const result = await resolveOpenGraph(url)
+    expect(result).not.toBeNull()
+    // café decoded via windows-1252 — the é byte (0xe9) maps correctly
+    expect(result?.title).toContain('caf')
   })
 })

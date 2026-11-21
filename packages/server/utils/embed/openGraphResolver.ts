@@ -46,6 +46,14 @@ const getScraper = () => {
   return scraper
 }
 
+// Detect a leading byte-order mark (BOM) and return its implied encoding.
+function detectBOM(buffer: Buffer): string | null {
+  if (buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf) return 'utf-8'
+  if (buffer[0] === 0xff && buffer[1] === 0xfe) return 'utf-16le'
+  if (buffer[0] === 0xfe && buffer[1] === 0xff) return 'utf-16be'
+  return null
+}
+
 // Scan the first 4096 bytes of the buffer for a meta charset declaration.
 // The buffer is decoded as latin1 so every byte survives intact as a character.
 function detectMetaCharset(buffer: Buffer): string | null {
@@ -57,6 +65,15 @@ function detectMetaCharset(buffer: Buffer): string | null {
   const httpEquiv = /<meta[^>]+http-equiv\s*=\s*["']content-type["'][^>]+content\s*=\s*["'][^"']*charset=([^"';\s>]+)/i.exec(snippet)
   if (httpEquiv) return httpEquiv[1]!.trim().toLowerCase()
   return null
+}
+
+function isKnownCharset(label: string): boolean {
+  try {
+    new TextDecoder(label)
+    return true
+  } catch {
+    return false
+  }
 }
 
 function decodeBuffer(buffer: Buffer, charset: string): string {
@@ -76,8 +93,14 @@ export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetada
   })
   if (!result) return null
   if (!result.contentType.startsWith('text/html')) return null
-  // HTTP Content-Type charset takes precedence; fall back to <meta charset>; then UTF-8
-  const charset = result.charset ?? detectMetaCharset(result.buffer) ?? 'utf-8'
+  // HTTP Content-Type charset takes precedence (only if recognised); then BOM; then <meta charset>;
+  // then any declared header charset; finally UTF-8
+  const charset =
+    detectBOM(result.buffer) ??
+    (result.charset && isKnownCharset(result.charset) ? result.charset : null) ??
+    detectMetaCharset(result.buffer) ??
+    result.charset ??
+    'utf-8'
   const html = decodeBuffer(result.buffer, charset)
   try {
     const scrape = await getScraper()
