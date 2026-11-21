@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.3.2](https://github.com/ParabolInc/parabol/compare/v16.3.1...v16.3.2) (2026-11-21)
+
+
+### Fixed
+
+* **retro:** open summaries of retros that ended before any topic in 2020-21 ([#14329](https://github.com/ParabolInc/parabol/issues/14329)) ([7d4914a](https://github.com/ParabolInc/parabol/commit/7d4914a0cbd2105e65277aa082dd66d62bb1ad32))
+* **retro:** show the demo's settings as view-only and open its tips on each phase ([#14337](https://github.com/ParabolInc/parabol/issues/14337)) ([f998e9d](https://github.com/ParabolInc/parabol/commit/f998e9dee738e542e5125df57cf1f1a455d8bdc2))
+
+
+### Changed
+
+* **claude:** drop the ask-before-commit rule ([#14338](https://github.com/ParabolInc/parabol/issues/14338)) ([6ae5cde](https://github.com/ParabolInc/parabol/commit/6ae5cdeca90beeb303b78550c2fe014adb1bec0e))
+
 ## [16.3.1](https://github.com/ParabolInc/parabol/compare/v16.3.0...v16.3.1) (2026-11-20)
 
 
