@@ -15,8 +15,7 @@ module.exports = {
     DateTime: 'string',
     URL: 'string',
     _xGitHubHTML: 'string',
-    _xGitHubURI: 'string',
-    RedirectURI: 'string'
+    _xGitHubURI: 'string'
   },
   noFutureProofEnums: true,
   // artifacts are gitignored, but from a git hook in a worktree relay's own `git add` stages them under a bogus path

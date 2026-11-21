@@ -1,53 +1,14 @@
 import crypto from 'crypto'
-import faker from 'faker'
 import ms from 'ms'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import hashRandomToken from '../utils/hashRandomToken'
-import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendIntranet, sendPublic} from './common'
+import {createPage, HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {createClient, createCode, createPKCEPair, type ResourceGrants} from './oauthClient'
 
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
-
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      provider {
-        id
-      }
-      clientId
-    }
-  }
-`
-
-const UPDATE_OAUTH_API_PROVIDER_SCOPES = `
-  mutation UpdateOAuthAPIProviderScopes($providerId: ID!, $scopes: [OAuthScopeEnum!]) {
-    updateOAuthAPIProvider(providerId: $providerId, scopes: $scopes) {
-      provider {
-        id
-      }
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
 
 const INVALIDATE_SESSIONS = `
   mutation InvalidateSessions {
@@ -71,28 +32,55 @@ const VIEWER_ID = `
   }
 `
 
-interface App {
+const VIEWER_OAUTH_GRANTS = `
+  query ViewerOAuthGrants {
+    viewer {
+      oauthGrants {
+        id
+        appName
+        redirectUris
+        scopes
+        grantedOrgs {
+          id
+          name
+        }
+        grantedTeams {
+          id
+        }
+        grantedPages {
+          id
+        }
+        createdAt
+        lastUsedAt
+      }
+    }
+  }
+`
+
+const REVOKE_OAUTH_API_GRANT = `
+  mutation RevokeOAuthAPIGrant($grantId: ID!) {
+    revokeOAuthAPIGrant(grantId: $grantId) {
+      user {
+        oauthGrants {
+          id
+        }
+      }
+    }
+  }
+`
+
+interface User {
   cookie: string
-  providerId: string
-  clientId: string
-  redirectUri: string
+  userId: string
+  orgId: string
 }
 
-const createApp = async (
-  admin: {cookie: string; orgId: string},
-  scopes = ['USERS_READ']
-): Promise<App> => {
-  const {cookie, orgId} = admin
-  const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
-  const created = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {orgId, name: 'Grant test app', redirectUris: [redirectUri], scopes},
-    cookie
-  })
-  expect(created.errors).toBeUndefined()
-  const {clientId, provider} = created.data.createOAuthAPIProvider
-  return {cookie, providerId: provider.id, clientId, redirectUri}
+const createApp = async (user: User) => {
+  const {clientId, redirectUri} = await createClient()
+  return {...user, clientId, redirectUri}
 }
+
+type App = Awaited<ReturnType<typeof createApp>>
 
 const postToken = (params: Record<string, string>) =>
   fetch(TOKEN_URL, {
@@ -101,32 +89,31 @@ const postToken = (params: Record<string, string>) =>
     body: new URLSearchParams(params)
   })
 
-const getCode = async (app: App, codeChallenge: string, scope = 'users:read') => {
+const getCode = async (
+  app: App,
+  codeChallenge: string,
+  scope = 'users:read',
+  consented: ResourceGrants & {scopes?: string[]} = {}
+) => {
   const {cookie, clientId, redirectUri} = app
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId,
-        redirectUri,
-        scope,
-        state: 'xyz',
-        codeChallenge,
-        codeChallengeMethod: 'S256'
-      }
-    },
-    cookie
-  })
+  const approved = await createCode(
+    {clientId, redirectUri, scope, codeChallenge},
+    cookie,
+    consented
+  )
   expect(approved.errors).toBeUndefined()
   return new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
 }
 
-const consent = async (app: App, scope?: string) => {
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
+const consent = async (
+  app: App,
+  scope?: string,
+  consented: ResourceGrants & {scopes?: string[]} = {}
+) => {
+  const {codeVerifier, codeChallenge} = createPKCEPair()
   const response = await postToken({
     grant_type: 'authorization_code',
-    code: await getCode(app, codeChallenge, scope),
+    code: await getCode(app, codeChallenge, scope, consented),
     redirect_uri: app.redirectUri,
     client_id: app.clientId,
     code_verifier: codeVerifier
@@ -153,10 +140,8 @@ const ageRotation = (refreshToken: string) =>
     .where('tokenHash', '=', hashRandomToken(refreshToken))
     .execute()
 
-const signUpOrgAdmin = () => createOrgAdmin(getTestEmail())
-
 test('the token response carries a refresh token and a one-hour access token', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const tokens = await consent(app)
   expect(tokens).toMatchObject({
     token_type: 'Bearer',
@@ -172,8 +157,8 @@ test('the token response carries a refresh token and a one-hour access token', a
 })
 
 test('a refresh token is swapped for new tokens', async () => {
-  const admin = await signUpOrgAdmin()
-  const app = await createApp(admin)
+  const user = await signUp()
+  const app = await createApp(user)
   const first = await consent(app)
 
   const refreshed = await refresh(app, first.refresh_token)
@@ -188,11 +173,11 @@ test('a refresh token is swapped for new tokens', async () => {
   })
   expect(second.refresh_token).not.toBe(first.refresh_token)
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: second.access_token})
-  expect(viewer.data.viewer.id).toBe(admin.userId)
+  expect(viewer.data.viewer.id).toBe(user.userId)
 })
 
 test('a refresh retried within 30 seconds gets new tokens and keeps the connection', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const first = await consent(app)
   const second = await (await refresh(app, first.refresh_token)).json()
 
@@ -206,7 +191,7 @@ test('a refresh retried within 30 seconds gets new tokens and keeps the connecti
 })
 
 test('two simultaneous refreshes with one token both succeed', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const {refresh_token} = await consent(app)
 
   const responses = await Promise.all([refresh(app, refresh_token), refresh(app, refresh_token)])
@@ -215,7 +200,7 @@ test('two simultaneous refreshes with one token both succeed', async () => {
 })
 
 test('reusing a refresh token after 30 seconds disconnects the app', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const first = await consent(app)
   const second = await (await refresh(app, first.refresh_token)).json()
   expect(await getViewerErrorCode(second.access_token)).toBeUndefined()
@@ -231,7 +216,7 @@ test('reusing a refresh token after 30 seconds disconnects the app', async () =>
 })
 
 test('after a retry, using one new refresh token makes the other disconnect the app', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const first = await consent(app)
   const second = await (await refresh(app, first.refresh_token)).json()
   const sibling = await (await refresh(app, first.refresh_token)).json()
@@ -247,7 +232,7 @@ test('after a retry, using one new refresh token makes the other disconnect the 
 })
 
 test('replaying a refresh token within 30 seconds after its new token was used disconnects the app', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const first = await consent(app)
   const second = await (await refresh(app, first.refresh_token)).json()
   const third = await refresh(app, second.refresh_token)
@@ -261,9 +246,9 @@ test('replaying a refresh token within 30 seconds after its new token was used d
 })
 
 test('a refresh token only works for its own client', async () => {
-  const admin = await signUpOrgAdmin()
-  const app = await createApp(admin)
-  const otherApp = await createApp(admin)
+  const user = await signUp()
+  const app = await createApp(user)
+  const otherApp = await createApp(user)
   const {refresh_token} = await consent(app)
 
   const stolen = await refresh(otherApp, refresh_token)
@@ -276,18 +261,18 @@ test('a refresh token only works for its own client', async () => {
 })
 
 test('consenting again updates the connection rather than adding one', async () => {
-  const admin = await signUpOrgAdmin()
-  const app = await createApp(admin)
+  const user = await signUp()
+  const app = await createApp(user)
   await consent(app)
   const second = await consent(app)
 
   expect(await getGrants(app.clientId)).toHaveLength(1)
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: second.access_token})
-  expect(viewer.data.viewer.id).toBe(admin.userId)
+  expect(viewer.data.viewer.id).toBe(user.userId)
 })
 
 test('an access token stops working as soon as its connection is removed', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const {access_token} = await consent(app)
   expect(await getViewerErrorCode(access_token)).toBeUndefined()
 
@@ -297,13 +282,13 @@ test('an access token stops working as soon as its connection is removed', async
 })
 
 test('an access token from before grants existed is refused', async () => {
-  const admin = await signUpOrgAdmin()
-  const app = await createApp(admin)
+  const user = await signUp()
+  const app = await createApp(user)
   const legacyToken = encodeAuthToken(
     new AuthToken({
       aud: 'action-oauth2',
       client_id: app.clientId,
-      sub: admin.userId,
+      sub: user.userId,
       tms: [],
       scope: ['users:read']
     })
@@ -312,7 +297,7 @@ test('an access token from before grants existed is refused', async () => {
 })
 
 test('two devices consenting to the same client keep independent refresh tokens', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const firstDevice = await consent(app)
   const secondDevice = await consent(app)
 
@@ -327,7 +312,7 @@ test('two devices consenting to the same client keep independent refresh tokens'
 })
 
 test('a made-up refresh token never disconnects anything', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const {refresh_token} = await consent(app)
 
   const madeUp = await refresh(app, `prt_${crypto.randomBytes(32).toString('base64url')}`)
@@ -340,7 +325,7 @@ test('a made-up refresh token never disconnects anything', async () => {
 })
 
 test('reconnecting after a disconnect does not revive old access tokens', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const before = await consent(app)
   const [removedGrant] = await getGrants(app.clientId)
   await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
@@ -355,7 +340,7 @@ test('reconnecting after a disconnect does not revive old access tokens', async 
 })
 
 test('signing out everywhere disconnects every OAuth app', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const tokens = await consent(app)
   expect(await getViewerErrorCode(tokens.access_token)).toBeUndefined()
 
@@ -369,34 +354,12 @@ test('signing out everywhere disconnects every OAuth app', async () => {
   expect(await refreshed.json()).toMatchObject({error: 'invalid_grant'})
 })
 
-test("leaving the app's organization disconnects it at the next refresh", async () => {
-  const admin = await signUpOrgAdmin()
-  const app = await createApp(admin)
-  const tokens = await consent(app)
-  await getKysely()
-    .updateTable('OrganizationUser')
-    .set({removedAt: new Date()})
-    .where('orgId', '=', admin.orgId)
-    .where('userId', '=', admin.userId)
-    .execute()
-
-  const refreshed = await refresh(app, tokens.refresh_token)
-  expect(refreshed.status).toBe(400)
-  expect(await refreshed.json()).toMatchObject({error: 'invalid_grant'})
-  expect(await getGrants(app.clientId)).toHaveLength(0)
-})
-
-test("narrowing an app's scopes takes effect on the next request", async () => {
-  const app = await createApp(await signUpOrgAdmin())
-  const {access_token} = await consent(app)
+test('consenting again with fewer scopes narrows the connection at once', async () => {
+  const app = await createApp(await signUp())
+  const {access_token} = await consent(app, 'users:read teams:read')
   expect(await getViewerErrorCode(access_token)).toBeUndefined()
 
-  const narrowed = await sendPublic({
-    query: UPDATE_OAUTH_API_PROVIDER_SCOPES,
-    variables: {providerId: app.providerId, scopes: ['TEAMS_READ']},
-    cookie: app.cookie
-  })
-  expect(narrowed.errors).toBeUndefined()
+  await consent(app, 'users:read teams:read', {scopes: ['TEAMS_READ']})
 
   const viewer = await sendPublic({query: VIEWER_ID, bearerToken: access_token})
   expect(viewer.errors?.[0]).toMatchObject({
@@ -405,17 +368,12 @@ test("narrowing an app's scopes takes effect on the next request", async () => {
   })
 })
 
-test("a refresh after narrowing an app's scopes only carries the scopes it still allows", async () => {
-  const app = await createApp(await signUpOrgAdmin(), ['USERS_READ', 'TEAMS_READ'])
+test('a refresh after narrowing a connection only carries the scopes it still allows', async () => {
+  const app = await createApp(await signUp())
   const first = await consent(app, 'users:read teams:read')
   expect(first.scope).toBe('users:read teams:read')
 
-  const narrowed = await sendPublic({
-    query: UPDATE_OAUTH_API_PROVIDER_SCOPES,
-    variables: {providerId: app.providerId, scopes: ['TEAMS_READ']},
-    cookie: app.cookie
-  })
-  expect(narrowed.errors).toBeUndefined()
+  await consent(app, 'users:read teams:read', {scopes: ['TEAMS_READ']})
 
   const refreshed = await refresh(app, first.refresh_token)
   expect(refreshed.status).toBe(200)
@@ -425,8 +383,114 @@ test("a refresh after narrowing an app's scopes only carries the scopes it still
   expect(authToken.scope).toEqual(['teams:read'])
 })
 
+test('the viewer sees the apps they connected and what each can reach', async () => {
+  const user = await signUp()
+  const app = await createApp(user)
+  await consent(app, 'users:read', {grantedOrgIds: [user.orgId], grantedTeamIds: []})
+
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  expect(listed.errors).toBeUndefined()
+  expect(listed.data.viewer.oauthGrants).toEqual([
+    {
+      id: expect.stringMatching(/^OAuthAPIGrant:/),
+      appName: 'Test OAuth App',
+      redirectUris: [app.redirectUri],
+      scopes: ['USERS_READ'],
+      grantedOrgs: [{id: user.orgId, name: expect.any(String)}],
+      grantedTeams: [],
+      grantedPages: null,
+      createdAt: expect.any(String),
+      lastUsedAt: null
+    }
+  ])
+})
+
+test('a connected app lists only the orgs, teams and pages the viewer can still reach', async () => {
+  const user = await signUp()
+  const stranger = await signUp()
+  const [pageId, strangersPageId] = await Promise.all([
+    createPage(user.cookie),
+    createPage(stranger.cookie)
+  ])
+  const app = await createApp(user)
+  await consent(app, 'users:read', {
+    grantedOrgIds: [user.orgId, stranger.orgId],
+    grantedTeamIds: [user.teamId, stranger.teamId],
+    grantedPageIds: [pageId, strangersPageId]
+  })
+
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  expect(listed.errors).toBeUndefined()
+  expect(listed.data.viewer.oauthGrants).toMatchObject([
+    {
+      grantedOrgs: [{id: user.orgId}],
+      grantedTeams: [{id: user.teamId}],
+      grantedPages: [{id: pageId}]
+    }
+  ])
+})
+
+test('disconnecting an app stops its tokens at once', async () => {
+  const user = await signUp()
+  const app = await createApp(user)
+  const tokens = await consent(app)
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  const [{id: grantId}] = listed.data.viewer.oauthGrants
+
+  const revoked = await sendPublic({
+    query: REVOKE_OAUTH_API_GRANT,
+    variables: {grantId},
+    cookie: user.cookie
+  })
+  expect(revoked.errors).toBeUndefined()
+  expect(revoked.data.revokeOAuthAPIGrant.user.oauthGrants).toEqual([])
+
+  expect(await getGrants(app.clientId)).toHaveLength(0)
+  expect(await getViewerErrorCode(tokens.access_token)).toBe('UNAUTHENTICATED')
+  expect((await refresh(app, tokens.refresh_token)).status).toBe(400)
+})
+
+test("nobody else can disconnect a user's app", async () => {
+  const user = await signUp()
+  const app = await createApp(user)
+  await consent(app)
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  const [{id: grantId}] = listed.data.viewer.oauthGrants
+  const stranger = await signUp()
+
+  const revoked = await sendPublic({
+    query: REVOKE_OAUTH_API_GRANT,
+    variables: {grantId},
+    cookie: stranger.cookie
+  })
+  expect(revoked.data).toBeNull()
+  expect(revoked.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(await getGrants(app.clientId)).toHaveLength(1)
+})
+
+test('an OAuth access token cannot list or disconnect connected apps', async () => {
+  const user = await signUp()
+  const app = await createApp(user)
+  const {access_token} = await consent(app, 'users:read users:write')
+  const listed = await sendPublic({query: VIEWER_OAUTH_GRANTS, cookie: user.cookie})
+  const [{id: grantId}] = listed.data.viewer.oauthGrants
+
+  const listedByApp = await sendPublic({query: VIEWER_OAUTH_GRANTS, bearerToken: access_token})
+  expect(listedByApp.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(listedByApp.data?.viewer?.oauthGrants).toBeUndefined()
+
+  const revokedByApp = await sendPublic({
+    query: REVOKE_OAUTH_API_GRANT,
+    variables: {grantId},
+    bearerToken: access_token
+  })
+  expect(revokedByApp.data).toBeNull()
+  expect(revokedByApp.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(await getGrants(app.clientId)).toHaveLength(1)
+})
+
 test('the prune job deletes expired refresh tokens and authorization codes', async () => {
-  const app = await createApp(await signUpOrgAdmin())
+  const app = await createApp(await signUp())
   const tokens = await consent(app)
   const abandonedCode = await getCode(
     app,

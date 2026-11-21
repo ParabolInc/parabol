@@ -4,7 +4,6 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import Panel from '../../../../components/Panel/Panel'
-import OAuthProviderPanelRoot from '../OrgIntegrations/OAuthProviderPanelRoot'
 import OrgAuthenticationIdP from './OrgAuthenticationIdP'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
@@ -60,8 +59,6 @@ const OrgAuthentication = (props: Props) => {
           </div>
         </div>
       </Panel>
-
-      {isOrgAdmin && <OAuthProviderPanelRoot orgId={organization.id} />}
     </div>
   )
 }

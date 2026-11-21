@@ -20,6 +20,7 @@ import authorizationServerMetadataHandler from './oauth2/authorizationServerMeta
 import authorizeHandler from './oauth2/authorizeHandler'
 import oauthPreflightHandler from './oauth2/oauthPreflightHandler'
 import protectedResourceMetadataHandler from './oauth2/protectedResourceMetadataHandler'
+import registrationHandler from './oauth2/registrationHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
 import {schemaProxyHandler} from './schemaProxyHandler'
@@ -110,6 +111,8 @@ const app = uws
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))
   .post('/oauth/token', traceHttpRoute('/oauth/token', tokenHandler))
   .options('/oauth/token', oauthPreflightHandler)
+  .post('/oauth/register', traceHttpRoute('/oauth/register', registrationHandler))
+  .options('/oauth/register', oauthPreflightHandler)
   .options('/.well-known/oauth-authorization-server', oauthPreflightHandler)
   .options('/.well-known/oauth-protected-resource/mcp', oauthPreflightHandler)
   .get(
