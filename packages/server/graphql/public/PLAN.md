@@ -34,7 +34,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] archiveTimelineEvent — conditional auth (only for meeting events); teamId from event lookup; not extractable
 - [x] autogroup — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] batchArchiveTasks — per-item auth (task owner or team member); no single top-level gatekeeper
-- [x] changeTaskTeam — extracted `isTeamMember('args.teamId')`; secondary check on `oldTeamId` stays inline
+- [x] changeTaskTeam — extracted `isTeamMember('args.taskId', 'tasks')` and `isTeamMember('args.teamId')`
 - [x] createImposterToken
 - [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
 - [x] createOAuthAPIProvider

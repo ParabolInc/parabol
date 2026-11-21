@@ -150,7 +150,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.archiveTeam'>('args.teamId', 'teams')
     ),
     autogroup: isTeamMemberOfMeeting<'Mutation.autogroup'>('args.meetingId'),
-    changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
+    changeTaskTeam: and(
+      isTeamMember<'Mutation.changeTaskTeam'>('args.taskId', 'tasks'),
+      isTeamMember<'Mutation.changeTaskTeam'>('args.teamId')
+    ),
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),
