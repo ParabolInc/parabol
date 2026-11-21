@@ -46,6 +46,27 @@ const getScraper = () => {
   return scraper
 }
 
+// Scan the first 4096 bytes of the buffer for a meta charset declaration.
+// The buffer is decoded as latin1 so every byte survives intact as a character.
+function detectMetaCharset(buffer: Buffer): string | null {
+  const snippet = buffer.slice(0, 4096).toString('latin1')
+  // <meta charset="shift_jis"> or <meta charset=shift_jis>
+  const metaCharset = /<meta[^>]+charset\s*=\s*["']?\s*([^"';\s>]+)/i.exec(snippet)
+  if (metaCharset) return metaCharset[1]!.trim().toLowerCase()
+  // <meta http-equiv="Content-Type" content="text/html; charset=euc-jp">
+  const httpEquiv = /<meta[^>]+http-equiv\s*=\s*["']content-type["'][^>]+content\s*=\s*["'][^"']*charset=([^"';\s>]+)/i.exec(snippet)
+  if (httpEquiv) return httpEquiv[1]!.trim().toLowerCase()
+  return null
+}
+
+function decodeBuffer(buffer: Buffer, charset: string): string {
+  try {
+    return new TextDecoder(charset, {fatal: false}).decode(buffer)
+  } catch {
+    return buffer.toString('utf8')
+  }
+}
+
 /** Never produces an embedSrc. A page we had to scrape is a page that would not frame. */
 export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetadata> | null> => {
   // The tags we read sit in <head>, so a long page is cut short rather than rejected
@@ -55,9 +76,12 @@ export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetada
   })
   if (!result) return null
   if (!result.contentType.startsWith('text/html')) return null
+  // HTTP Content-Type charset takes precedence; fall back to <meta charset>; then UTF-8
+  const charset = result.charset ?? detectMetaCharset(result.buffer) ?? 'utf-8'
+  const html = decodeBuffer(result.buffer, charset)
   try {
     const scrape = await getScraper()
-    const metadata = await scrape({url, html: result.buffer.toString('utf8')})
+    const metadata = await scrape({url, html})
     return {
       embedSrc: null,
       title: metadata.title ?? null,

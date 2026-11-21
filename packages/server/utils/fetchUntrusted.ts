@@ -315,9 +315,11 @@ export const fetchUntrusted = async (
           maxSize,
           onOverflow
         )
+        const charsetMatch = /;\s*charset\s*=\s*"?([^";\s>]+)/i.exec(contentType)
         return {
           buffer,
           contentType: contentType.split(';')[0]!.trim().toLowerCase(),
+          charset: charsetMatch ? charsetMatch[1]!.trim().toLowerCase() : null,
           size: buffer.byteLength
         }
       })

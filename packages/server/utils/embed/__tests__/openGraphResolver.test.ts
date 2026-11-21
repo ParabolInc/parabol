@@ -6,6 +6,38 @@ Object.assign(globalThis, {__APP_VERSION__: 'test'})
 // SSRF_ALLOWED_HOSTS is read when fetchUntrusted loads, and the loopback fixture needs it
 process.env.SSRF_ALLOWED_HOSTS = '127.0.0.1'
 
+// The jest run resolves an outdated jest-environment-node from outside the
+// repository, whose empty vm sandbox does not expose web globals (Blob, File,
+// ReadableStream, MessageChannel, MessagePort, DOMException). metascraper's
+// dependency chain (jsdom) references them at module load time, so shim them
+// here before loading the resolver. No-op in any environment whose sandbox
+// already provides them.
+if (typeof globalThis.ReadableStream === 'undefined') {
+  globalThis.ReadableStream = require('stream/web').ReadableStream
+}
+if (typeof globalThis.Blob === 'undefined') {
+  globalThis.Blob = require('buffer').Blob
+}
+if (typeof globalThis.File === 'undefined') {
+  globalThis.File = require('buffer').File
+}
+if (typeof globalThis.MessageChannel === 'undefined') {
+  globalThis.MessageChannel = require('worker_threads').MessageChannel
+}
+if (typeof globalThis.MessagePort === 'undefined') {
+  globalThis.MessagePort = require('worker_threads').MessagePort
+}
+if (typeof globalThis.DOMException === 'undefined') {
+  globalThis.DOMException = class DOMException extends Error {
+    constructor(message = '', options = {}) {
+      super(message)
+      this.name = 'DOMException'
+      this.code = 0
+      this.message = message
+    }
+  }
+}
+
 // Loaded here, after the two lines above, and outside any hook: metascraper is slow to load cold
 const {resolveOpenGraph} = require('../openGraphResolver') as typeof import('../openGraphResolver')
 
@@ -43,6 +75,68 @@ describe('resolveOpenGraph', () => {
         case '/logo-alt':
           res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
           return res.end(LOGO_ALT_PAGE)
+        case '/windows-1252-header': {
+          const page = Buffer.concat([
+            Buffer.from('<html><head><title>', 'latin1'),
+            Buffer.from([0xf8]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html; charset=windows-1252'})
+          return res.end(page)
+        }
+        case '/shift-jis-header': {
+          // 93 FA 96 7B 8C EA = "日本語" in Shift_JIS
+          const page = Buffer.concat([
+            Buffer.from('<html><head><title>', 'latin1'),
+            Buffer.from([0x93, 0xfa, 0x96, 0x7b, 0x8c, 0xea]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html; charset=shift_jis'})
+          return res.end(page)
+        }
+        case '/euc-jp-header': {
+          // C6 FC CB DC B8 EC = "日本語" in EUC-JP
+          const page = Buffer.concat([
+            Buffer.from('<html><head><title>', 'latin1'),
+            Buffer.from([0xc6, 0xfc, 0xcb, 0xdc, 0xb8, 0xec]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html; charset=euc-jp'})
+          return res.end(page)
+        }
+        case '/windows-1252-meta-charset': {
+          const page = Buffer.concat([
+            Buffer.from('<html><head><meta charset="windows-1252"><title>', 'latin1'),
+            Buffer.from([0xf8]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html'})
+          return res.end(page)
+        }
+        case '/windows-1252-meta-equiv': {
+          const page = Buffer.concat([
+            Buffer.from('<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>', 'latin1'),
+            Buffer.from([0xf8]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html'})
+          return res.end(page)
+        }
+        case '/unsupported-charset': {
+          const page = Buffer.from('<html><head><title>Safe</title></head><body></body></html>', 'utf8')
+          res.writeHead(200, {'Content-Type': 'text/html; charset=x-not-a-real-charset'})
+          return res.end(page)
+        }
+        case '/precedence-conflict': {
+          // HTTP says utf-8, meta says shift_jis, body is actual Shift_JIS bytes — HTTP must win
+          const page = Buffer.concat([
+            Buffer.from('<html><head><meta charset="shift_jis"><title>', 'latin1'),
+            Buffer.from([0x93, 0xfa, 0x96, 0x7b, 0x8c, 0xea]),
+            Buffer.from('</title></head><body></body></html>', 'latin1')
+          ])
+          res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
+          return res.end(page)
+        }
         default:
           res.writeHead(404)
           return res.end()
@@ -72,5 +166,41 @@ describe('resolveOpenGraph', () => {
   test('does not take the alt text of a logo image for the site name', async () => {
     const metadata = await resolveOpenGraph(`http://127.0.0.1:${port}/logo-alt`)
     expect(metadata?.providerName).toBe('Rust')
+  })
+
+  test('decodes windows-1252 charset declared in HTTP header', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/windows-1252-header`)
+    expect(result?.title).toBe('ø')
+  })
+
+  test('decodes Shift_JIS charset declared in HTTP header', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/shift-jis-header`)
+    expect(result?.title).toBe('日本語')
+  })
+
+  test('decodes EUC-JP charset declared in HTTP header', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/euc-jp-header`)
+    expect(result?.title).toBe('日本語')
+  })
+
+  test('detects windows-1252 from <meta charset> when HTTP header has no charset', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/windows-1252-meta-charset`)
+    expect(result?.title).toBe('ø')
+  })
+
+  test('detects windows-1252 from <meta http-equiv> when HTTP header has no charset', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/windows-1252-meta-equiv`)
+    expect(result?.title).toBe('ø')
+  })
+
+  test('falls back to UTF-8 when HTTP charset is unsupported', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/unsupported-charset`)
+    expect(result?.title).toBe('Safe')
+  })
+
+  test('HTTP charset takes precedence over conflicting meta charset', async () => {
+    const result = await resolveOpenGraph(`http://127.0.0.1:${port}/precedence-conflict`)
+    expect(result).not.toBeNull()
+    expect(result?.title).not.toBe('日本語')
   })
 })
