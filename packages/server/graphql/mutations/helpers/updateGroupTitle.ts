@@ -23,7 +23,7 @@ const updateGroupTitle = async (input: Input) => {
     return
   }
   // Generate title and don't await or the reflection will hang when it's dropped
-  generateAIGroupTitle(reflections, reflectionGroupId, meetingId)
+  generateAIGroupTitle(reflections, reflectionGroupId, meetingId, teamId)
 }
 
 export default updateGroupTitle

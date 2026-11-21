@@ -6,6 +6,7 @@ import {replaceCalloutsWithBlockquotes} from '../../../../../client/shared/tipta
 import tagIssueLinks from '../../../../../client/shared/tiptap/tagIssueLinks'
 import {tipTapToMarkdown} from '../../../../../client/shared/tiptap/tipTapToMarkdown'
 import getKysely from '../../../../postgres/getKysely'
+import loadTeamBriefing from '../../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
 import type {InspirationSourceInput} from '../../resolverTypes'
@@ -62,15 +63,18 @@ const draftStandupFromSources = async (options: Options) => {
     }
   }
 
-  const pastResponseRows = await pg
-    .selectFrom('TeamPromptResponse')
-    .select('content')
-    .where('userId', '=', viewerId)
-    .where('meetingId', '!=', meetingId)
-    .where('plaintextContent', '!=', '')
-    .orderBy('createdAt', 'desc')
-    .limit(5)
-    .execute()
+  const [pastResponseRows, teamBriefing] = await Promise.all([
+    pg
+      .selectFrom('TeamPromptResponse')
+      .select('content')
+      .where('userId', '=', viewerId)
+      .where('meetingId', '!=', meetingId)
+      .where('plaintextContent', '!=', '')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .execute(),
+    loadTeamBriefing(teamId, context.dataLoader)
+  ])
 
   const manager = new OpenAIServerManager()
   const result = await manager.generateInspirationDraft(
@@ -78,7 +82,8 @@ const draftStandupFromSources = async (options: Options) => {
     prompts.map(({question, description}) => ({question, description})),
     viewerName,
     pastResponseRows.map((row) => tipTapToMarkdown(row.content as JSONContent)),
-    userPrompt
+    userPrompt,
+    teamBriefing
   )
   if (!result) {
     throw new GraphQLError('Unable to draft a response right now. Please try again.', {

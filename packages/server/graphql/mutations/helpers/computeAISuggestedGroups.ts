@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import type {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {AI_MODEL} from '../../../utils/aiModel'
 import {Logger} from '../../../utils/Logger'
+import loadTeamBriefing from '../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 
@@ -51,10 +52,7 @@ const computeAISuggestedGroups = async (
   const meeting = await dataLoader.get('newMeetings').loadNonNull(groupable[0]!.meetingId)
   const [prompts, teamBriefing] = await Promise.all([
     Promise.all(promptIds.map((id) => dataLoader.get('templatePrompts').loadNonNull(id))),
-    dataLoader
-      .get('teamDetails')
-      .load(meeting.teamId)
-      .then((teamDetail) => teamDetail?.groupingBriefing ?? null)
+    loadTeamBriefing(meeting.teamId, dataLoader)
   ])
   const meetingName = meeting.name
   const promptMap = new Map(prompts.map((p) => [p.id, p.question]))

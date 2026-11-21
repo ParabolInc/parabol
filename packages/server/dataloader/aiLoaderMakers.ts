@@ -1,9 +1,11 @@
 import DataLoader from 'dataloader'
 import yaml from 'js-yaml'
 import {AI_MODEL} from '../utils/aiModel'
+import loadTeamBriefing from '../utils/loadTeamBriefing'
 import logError from '../utils/logError'
 import {makeMeetingInsightInput} from '../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../utils/OpenAIServerManager'
+import renderTeamBackground from '../utils/renderTeamBackground'
 import type RootDataLoader from './RootDataLoader'
 
 export const NOT_ENOUGH_DATA_FOR_INSIGHTS = 'Not enough data to generate insights'
@@ -64,6 +66,7 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
           const yamlData = yaml.dump(dataByTeam, {
             noCompatMode: true
           })
+          const teamBriefing = await loadTeamBriefing(teamId, parent)
           try {
             const openAI = new OpenAIServerManager()
             const response = await openAI.openAIApi!.chat.completions.create({
@@ -80,7 +83,7 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
                 },
                 {
                   role: 'user',
-                  content: yamlData
+                  content: `${renderTeamBackground(teamBriefing)}${yamlData}`
                 }
               ]
             })

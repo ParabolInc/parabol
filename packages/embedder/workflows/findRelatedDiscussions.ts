@@ -5,9 +5,12 @@ import {type ModelId, modelIdDefinitions} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {JobQueueError} from '../JobQueueError'
+import pickRelatedDiscussions from './helpers/pickRelatedDiscussions'
 import {publishSimilarRetroTopics} from './helpers/publishSimilarRetroTopics'
 
 const MAX_RELATED_DISCUSSIONS = 3
+// The AI turns down topics that only share wording, so it picks from more than it shows
+const MAX_CANDIDATES = 10
 
 export const getStepAfterEmbeddingTopic = (modelId: ModelId) =>
   modelIdDefinitions[modelId].relatedDiscussionPrompt
@@ -36,7 +39,7 @@ export const findRelatedDiscussions: JobQueueStepRun<{
   }
   const tableName = embeddingModel.tableName
   const similarity = sql<number>`max(1 - (${sql.ref(`${tableName}.embedding`)} <=> ${numberVectorToString(queryVector)}))`
-  const relatedDiscussions = await getKysely()
+  const candidates = await getKysely()
     .selectFrom(tableName)
     .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${tableName}.embeddingsMetadataId`)
     .innerJoin('Discussion', 'Discussion.id', 'EmbeddingsMetadata.refId')
@@ -47,8 +50,15 @@ export const findRelatedDiscussions: JobQueueStepRun<{
     .groupBy('EmbeddingsMetadata.id')
     .having(similarity, '>=', relatedDiscussionFloor)
     .orderBy('similarity', 'desc')
-    .limit(MAX_RELATED_DISCUSSIONS)
+    .limit(MAX_CANDIDATES)
     .execute()
+  const relatedDiscussions = await pickRelatedDiscussions(
+    teamId,
+    fullText,
+    candidates,
+    MAX_RELATED_DISCUSSIONS,
+    dataLoader
+  )
   await publishSimilarRetroTopics(embeddingsMetadataId, relatedDiscussions, dataLoader)
   return false
 }

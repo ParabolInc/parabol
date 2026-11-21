@@ -1,4 +1,5 @@
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import loadTeamBriefing from '../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -12,9 +13,10 @@ const generateStandupMeetingSummary = async (
   const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return null
 
-  const [responses, prompts] = await Promise.all([
+  const [responses, prompts, teamBriefing] = await Promise.all([
     dataLoader.get('teamPromptMemberResponsesByMeetingId').load(meeting.id),
-    dataLoader.get('templatePromptsByMeetingId').load(meeting.id)
+    dataLoader.get('templatePromptsByMeetingId').load(meeting.id),
+    loadTeamBriefing(meeting.teamId, dataLoader)
   ])
 
   const userIds = responses.map((response) => response.userId)
@@ -30,7 +32,8 @@ const generateStandupMeetingSummary = async (
   const manager = new OpenAIServerManager()
   const summary = await manager.getStandupSummary(
     contentWithUsers,
-    prompts.map(({question}) => question)
+    prompts.map(({question}) => question),
+    teamBriefing
   )
   if (!summary) return null
   return summary
