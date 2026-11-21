@@ -5,7 +5,7 @@ import type {PersonalAccessTokenUpsertDialog_viewer$key} from '~/__generated__/P
 import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthScopeEnum} from '../../../__generated__/useCreatePersonalAccessTokenMutation.graphql'
 import BasicInput from '../../../components/InputField/BasicInput'
-import useResourceGrants from '../../../hooks/useResourceGrants'
+import useResourceGrants, {isGrantingNothing} from '../../../hooks/useResourceGrants'
 import useScopeSelection from '../../../hooks/useScopeSelection'
 import {useCreatePersonalAccessToken} from '../../../mutations/useCreatePersonalAccessToken'
 import {useUpdatePersonalAccessToken} from '../../../mutations/useUpdatePersonalAccessToken'
@@ -68,6 +68,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
   )
   const [error, setError] = useState<string | null>(null)
   const resourceGrants = useResourceGrants(personalAccessToken)
+  const grants = resourceGrants.getGrants(viewer.organizations)
   const [createdToken, setCreatedToken] = useState<string | null>(null)
 
   const handleSubmit = () => {
@@ -80,8 +81,6 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
       return
     }
     setError(null)
-    const grants = resourceGrants.getGrants(viewer.organizations)
-
     if (isEdit) {
       commitUpdate({
         variables: {
@@ -171,7 +170,12 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='primary' size='md' onClick={handleSubmit} disabled={submitting}>
+          <Button
+            variant='primary'
+            size='md'
+            onClick={handleSubmit}
+            disabled={submitting || isGrantingNothing(grants)}
+          >
             {submitting
               ? isEdit
                 ? 'Saving…'
