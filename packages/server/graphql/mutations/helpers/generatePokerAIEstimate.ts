@@ -14,6 +14,7 @@ import type {EstimateStage} from '../../../postgres/types/NewMeetingPhase'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import rankByTextSimilarity from '../../../utils/rankByTextSimilarity'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {createAIComment} from './addAIGeneratedContentToThreads'
 
 const MAX_REFERENCE_ISSUES = 10
@@ -188,12 +189,15 @@ export const generatePokerAIEstimate = async (options: Options) => {
     // the popover content doc is for the comment, not the prompt, so keep it out of the AI input
     const issues = [target, ...references.map(({content, ...rest}) => rest)]
 
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
     const openAI = new OpenAIServerManager()
     const estimate = await openAI.getPokerEstimate(
       issues,
       dimensionName,
       possibleLabels,
-      candidates.map(({storyPoints}) => storyPoints)
+      candidates.map(({storyPoints}) => storyPoints),
+      getFeatureTier(organization) === 'starter' ? 'low' : 'medium'
     )
     if (!estimate) return
 

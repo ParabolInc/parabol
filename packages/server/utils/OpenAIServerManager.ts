@@ -162,7 +162,8 @@ Each response includes the team member's name. Identify up to 3 key themes found
     issues: {title: string; description: string; issueKey: string; storyPoints: string}[],
     dimensionName: string,
     possibleLabels: string[],
-    pastEstimates: string[]
+    pastEstimates: string[],
+    reasoningEffort: 'low' | 'medium'
   ): Promise<string | null> {
     if (!this.openAIApi) return null
     if (issues.length === 0) return null
@@ -210,7 +211,7 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
             content: prompt
           }
         ],
-        reasoning_effort: 'medium'
+        reasoning_effort: reasoningEffort
       })
       const estimate = response.choices[0]?.message?.content?.trim()
       return estimate || null
