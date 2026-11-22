@@ -1,21 +1,24 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
-import {sendPublic, signUp} from '../../../../__tests__/common'
-import generateUID from '../../../../generateUID'
-import getKysely from '../../../../postgres/getKysely'
-import {selectNewMeetings} from '../../../../postgres/select'
-import getPhase from '../../../../utils/getPhase'
-import type {GQLContext} from '../../../graphql'
-import {generatePokerAIEstimate} from '../generatePokerAIEstimate'
-import getPokerStory from '../getPokerStory'
+import generateUID from '../generateUID'
+import type {GQLContext} from '../graphql/graphql'
+import {generatePokerAIEstimate} from '../graphql/mutations/helpers/generatePokerAIEstimate'
+import getPokerStory from '../graphql/mutations/helpers/getPokerStory'
+import getKysely from '../postgres/getKysely'
+import {selectNewMeetings} from '../postgres/select'
+import getPhase from '../utils/getPhase'
+import {sendPublic, signUp} from './common'
 
 const mockCreate = jest.fn()
 jest.mock('openai', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({chat: {completions: {create: mockCreate}}}))
 }))
-jest.mock('../getPokerStory', () => ({__esModule: true, default: jest.fn()}))
-jest.mock('../../../../utils/publish', () => ({__esModule: true, default: jest.fn()}))
+jest.mock('../graphql/mutations/helpers/getPokerStory', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+jest.mock('../utils/publish', () => ({__esModule: true, default: jest.fn()}))
 
 const START_SPRINT_POKER = `
   mutation StartSprintPoker($teamId: ID!) {
