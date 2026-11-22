@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import type {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
-import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import type {TaskFooterTeamAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
 import type {TaskFooterTeamAssigneeMenuQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import TeamPickerMenuContent from '../../../../components/TeamPicker/TeamPickerMenuContent'
@@ -65,12 +64,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef)
   const {viewer} = data
 
-  const {userIds, teamIds} = useQueryParameterParser(viewer.id)
-
   const task = useFragment(
     graphql`
       fragment TaskFooterTeamAssigneeMenu_task on Task {
         id
+        userId
         team {
           id
         }
@@ -79,23 +77,19 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     `,
     taskRef
   )
-  const {team, id: taskId, taskService} = task
+  const {team, id: taskId, userId: assigneeId, taskService} = task
   const isGitHubTask = taskService === 'github'
   const isJiraTask = taskService === 'jira'
 
   const {id: teamId} = team
   const {teams} = viewer
-  const assignableTeams = useMemo(() => {
-    if (userIds) {
-      return teams.filter(
-        ({teamMembers}) => !!teamMembers.find(({userId}) => userIds.includes(userId))
-      )
-    }
-    if (teamIds) {
-      return teams.filter(({id}) => teamIds.includes(id))
-    }
-    return teams
-  }, [teamIds, userIds])
+  const assignableTeams = useMemo(
+    () =>
+      assigneeId
+        ? teams.filter(({teamMembers}) => teamMembers.some(({userId}) => userId === assigneeId))
+        : teams,
+    [teams, assigneeId]
+  )
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
