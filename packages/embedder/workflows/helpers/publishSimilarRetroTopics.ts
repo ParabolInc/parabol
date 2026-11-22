@@ -12,10 +12,10 @@ import getPhase from '../../../server/utils/getPhase'
 import publish from '../../../server/utils/publish'
 
 const makeSimilarDiscussionLink = async (
-  similarDiscussion: {embeddingsMetadataId: number; similarity: number},
+  similarDiscussion: {embeddingsMetadataId: number},
   dataLoader: DataLoaderInstance
 ) => {
-  const {embeddingsMetadataId, similarity} = similarDiscussion
+  const {embeddingsMetadataId} = similarDiscussion
   const metadata = await dataLoader.get('embeddingsMetadata').loadNonNull(embeddingsMetadataId)
   const {refId: discussionId} = metadata
   const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)
@@ -36,11 +36,7 @@ const makeSimilarDiscussionLink = async (
 
   const url = makeAppURL(appOrigin, `meet/${meetingId}/discuss/${stageIdx + 1}`)
 
-  return (
-    `<a href="${url}">` +
-    `${meetingName} – ${topic} (score: ${Math.trunc(100 * similarity)})` +
-    `</a>`
-  )
+  return `<a href="${url}">${meetingName} – ${topic}</a>`
 }
 
 const publishComment = async (
@@ -57,7 +53,7 @@ const publishComment = async (
 
 export const publishSimilarRetroTopics = async (
   embeddingsMetadataId: number,
-  similarEmbeddings: {embeddingsMetadataId: number; similarity: number}[],
+  similarEmbeddings: {embeddingsMetadataId: number}[],
   dataLoader: DataLoaderWorker
 ) => {
   if (similarEmbeddings.length === 0) return

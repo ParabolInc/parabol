@@ -9,6 +9,7 @@ import {
   rankInspirationIssue
 } from '../../../../integrations/platform/InspirationIssue'
 import getKysely from '../../../../postgres/getKysely'
+import loadTeamBriefing from '../../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import type {GQLContext} from '../../../graphql'
 import type {InspirationSourceInput, ServiceEnum} from '../../resolverTypes'
@@ -75,7 +76,10 @@ interface Options {
 const draftRetroFromSources = async (options: Options) => {
   const {meetingId, teamId, viewerId, viewerName, prompts, sources, userPrompt, context, info} =
     options
-  const rangeSources = await gatherRangeIssues(sources, teamId, viewerId, context, info)
+  const [rangeSources, teamBriefing] = await Promise.all([
+    gatherRangeIssues(sources, teamId, viewerId, context, info),
+    loadTeamBriefing(teamId, context.dataLoader)
+  ])
   const rangeIssues = rangeSources.flatMap(({service, sourceIssues}) =>
     sourceIssues.map((issue) => ({service, issue}))
   )
@@ -104,7 +108,8 @@ const draftRetroFromSources = async (options: Options) => {
     prompts.map(({question, description}) => ({question, description})),
     viewerName,
     MAX_DRAFTS,
-    userPrompt
+    userPrompt,
+    teamBriefing
   )
   if (!result) {
     throw new GraphQLError('Unable to draft reflections right now. Please try again.', {

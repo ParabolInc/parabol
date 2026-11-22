@@ -1,4 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
+import loadTeamBriefing from '../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
@@ -11,9 +12,10 @@ const generateDiscussionPrompt = async (
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return
-  const [reflections, reflectionGroups] = await Promise.all([
+  const [reflections, reflectionGroups, teamBriefing] = await Promise.all([
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
+    loadTeamBriefing(teamId, dataLoader)
   ])
   const pg = getKysely()
   const manager = new OpenAIServerManager()
@@ -25,7 +27,8 @@ const generateDiscussionPrompt = async (
       if (reflectionsByGroupId.length <= 1) return
       const fullQuestion = await manager.getDiscussionPromptQuestion(
         group.title ?? 'Unknown',
-        reflectionsByGroupId
+        reflectionsByGroupId,
+        teamBriefing
       )
       if (!fullQuestion) return
       const discussionPromptQuestion = fullQuestion?.slice(0, 2000)

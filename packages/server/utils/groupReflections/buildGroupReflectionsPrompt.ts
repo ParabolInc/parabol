@@ -1,3 +1,4 @@
+import renderTeamBackground from '../renderTeamBackground'
 import type {GroupReflectionsInput} from './types'
 
 /**
@@ -70,14 +71,10 @@ Return JSON: { "groups": [{ "title": "...", "reflectionIds": ["id1", "id2"] }] }
 
   // Background, not strategy, so a custom prompt keeps it too. It sits before the invariants so the
   // rules still come last.
-  const background = teamBriefing?.trim()
-    ? `Team background, written from this team's earlier retrospectives. Use it to recognize the people, projects, systems, acronyms and recurring themes the reflections refer to, so you can tell when two reflections are about the same specific thing. It is context only: group these reflections on their own merits.
-<team_background>
-${teamBriefing.trim()}
-</team_background>
-
-`
-    : ''
+  const background = renderTeamBackground(
+    teamBriefing,
+    'Use it to recognize the people, projects, systems, acronyms and recurring themes the reflections refer to, so you can tell when two reflections are about the same specific thing. It is context only: group these reflections on their own merits.'
+  )
 
   return `${userPrompt || strategy}\n\n${background}${invariants}`
 }
