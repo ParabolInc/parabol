@@ -56,8 +56,15 @@ export const resolveOpenGraph = async (url: string): Promise<Partial<EmbedMetada
   if (!result) return null
   if (!result.contentType.startsWith('text/html')) return null
   try {
-    const scrape = await getScraper()
-    const metadata = await scrape({url, html: result.buffer.toString('utf8')})
+    const [scrape, {loadBuffer}] = await Promise.all([
+      getScraper(),
+      import(/* webpackMode: "eager" */ 'cheerio')
+    ])
+    const htmlDom = loadBuffer(result.buffer, {
+      baseURI: url,
+      encoding: {transportLayerEncodingLabel: result.charset, defaultEncoding: 'utf-8'}
+    })
+    const metadata = await scrape({url, htmlDom})
     return {
       embedSrc: null,
       title: metadata.title ?? null,

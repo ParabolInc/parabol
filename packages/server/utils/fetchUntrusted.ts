@@ -318,6 +318,7 @@ export const fetchUntrusted = async (
         return {
           buffer,
           contentType: contentType.split(';')[0]!.trim().toLowerCase(),
+          charset: /;\s*charset=\s*"?([^";\s]+)/i.exec(contentType)?.[1],
           size: buffer.byteLength
         }
       })
