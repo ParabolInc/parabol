@@ -11,7 +11,6 @@ import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimateStage} from '../../../postgres/types/NewMeetingPhase'
-import loadTeamBriefing from '../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import {createAIComment} from './addAIGeneratedContentToThreads'
@@ -180,14 +179,8 @@ export const generatePokerAIEstimate = async (options: Options) => {
       ...references.map(({content, ...rest}) => rest)
     ]
 
-    const teamBriefing = await loadTeamBriefing(teamId, dataLoader)
     const openAI = new OpenAIServerManager()
-    const estimate = await openAI.getPokerEstimate(
-      issues,
-      dimensionName,
-      possibleLabels,
-      teamBriefing
-    )
+    const estimate = await openAI.getPokerEstimate(issues, dimensionName, possibleLabels)
     if (!estimate) return
 
     // map every referenced issue key to its content doc for the comment's hover popovers

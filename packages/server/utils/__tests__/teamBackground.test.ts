@@ -35,19 +35,6 @@ const asks: [string, Ask][] = [
       manager.getStandupSummary([{content: 'Fixed FMS', user: 'Dana'}], ['Done?'], teamBriefing)
   ],
   [
-    'a poker estimate',
-    (manager, teamBriefing) =>
-      manager.getPokerEstimate(
-        [
-          {issueKey: 'FMS-2', title: 'Retry deploys', description: '', storyPoints: ''},
-          {issueKey: 'FMS-1', title: 'Add logging', description: '', storyPoints: '3'}
-        ],
-        'Story Points',
-        ['1', '3', '5'],
-        teamBriefing
-      )
-  ],
-  [
     'retro drafts',
     (manager, teamBriefing) =>
       manager.generateRetroDrafts(

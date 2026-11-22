@@ -161,8 +161,7 @@ Each response includes the team member's name. Identify up to 3 key themes found
   async getPokerEstimate(
     issues: {title: string; description: string; issueKey: string; storyPoints: string}[],
     dimensionName: string,
-    possibleLabels: string[],
-    teamBriefing?: string | null
+    possibleLabels: string[]
   ): Promise<string | null> {
     if (!this.openAIApi) return null
     if (issues.length === 0) return null
@@ -176,7 +175,7 @@ Each response includes the team member's name. Identify up to 3 key themes found
           `- Key: ${issueKey}. Title: ${title}. Points: (${storyPoints}). Description: ${description}`
       )
       .join('\n')
-    const prompt = `${renderTeamBackground(teamBriefing)}You are an agile estimation assistant helping a team play planning poker. Estimate the "${dimensionName}" for the issue below.
+    const prompt = `You are an agile estimation assistant helping a team play planning poker. Estimate the "${dimensionName}" for the issue below.
 
 You MUST choose exactly one value from these allowed values: ${allowedValues}.
 
