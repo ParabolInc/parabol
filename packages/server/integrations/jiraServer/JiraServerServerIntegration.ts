@@ -12,6 +12,7 @@ import {
 } from '../platform/ServerIntegrationDefinition'
 import describeJiraServerDimensionField from './describeJiraServerDimensionField'
 import fetchJiraServerProjects, {type JiraServerProject} from './fetchJiraServerProjects'
+import getJiraServerIssueText from './getJiraServerIssueText'
 import JiraServerRestManager from './JiraServerRestManager'
 import listJiraServerDimensionFields from './listJiraServerDimensionFields'
 import parseJiraServerIntegrationHash from './parseJiraServerIntegrationHash'
@@ -44,6 +45,7 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveJiraServerTaskIntegration,
+      getIssueText: getJiraServerIssueText,
       parseIntegrationHash: parseJiraServerIntegrationHash
     },
     issueSearch: {buildQuery: buildJiraSearchQuery},

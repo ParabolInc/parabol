@@ -16,8 +16,10 @@ import type {MutationResolvers} from '../resolverTypes'
 const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   _source,
   {meetingId, stageId, ignoreSuggestedUpgrade},
-  {dataLoader, socketId: mutatorId}
+  context,
+  info
 ) => {
+  const {dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -103,7 +105,7 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
 
   // generate an AI estimate and publish it async once ready; the helper no-ops if an
   // AI comment already exists for this discussion (e.g. votes revealed again after a reset)
-  generatePokerAIEstimate({stage, meetingId, teamId}).catch(Logger.error)
+  generatePokerAIEstimate({stage, meetingId, teamId, context, info}).catch(Logger.error)
 
   const data = {meetingId, stageId}
   publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesPayload', data, subOptions)

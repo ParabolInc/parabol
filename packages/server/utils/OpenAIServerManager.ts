@@ -169,7 +169,6 @@ Each response includes the team member's name. Identify up to 3 key themes found
     if (issues.length === 0) return null
     const [target, ...references] = issues
     if (!target) return null
-    if (references.length === 0) return null
     const allowedValues = possibleLabels.join(', ')
     const referenceBlock = references
       .map(
@@ -186,8 +185,19 @@ Each response includes the team member's name. Identify up to 3 key themes found
       .filter(({count}) => count > 0)
       .map(({label, count}) => `${label}: ${Math.round((count / scaledEstimates.length) * 100)}%`)
       .join(', ')
+    if (references.length === 0 && !spread) return null
     const spreadLine = spread
-      ? `\n\nHow this team's ${scaledEstimates.length} most recent estimates are spread: ${spread}.`
+      ? `How this team's ${scaledEstimates.length} most recent estimates are spread: ${spread}.`
+      : ''
+    const evidence = references.length
+      ? `Issues from the same project that already have an estimate, most similar first, for reference:
+${referenceBlock}${spreadLine ? `\n\n${spreadLine}` : ''}`
+      : spreadLine
+    const instruction = references.length
+      ? 'Compare the scope and complexity of the issue to estimate against the reference issues, then give your estimate.'
+      : 'Judge the scope and complexity of the issue, then give your estimate.'
+    const citation = references.length
+      ? ` When you cite a reference issue, refer to it by its bare issue key only (e.g. ${references[0]!.issueKey}) — do not include its title or a link.`
       : ''
     const prompt = `You are an agile estimation assistant helping a team play planning poker. Estimate the "${dimensionName}" for the issue below.
 
@@ -196,12 +206,11 @@ You MUST choose exactly one value from these allowed values: ${allowedValues}.
 Issue to estimate:
 Key: ${target.issueKey}. Title: ${target.title}. Description: ${target.description}
 
-Issues from the same project that already have an estimate, most similar first, for reference:
-${referenceBlock}${spreadLine}
+${evidence}
 
-Compare the scope and complexity of the issue to estimate against the reference issues, then give your estimate.
+${instruction}
 
-Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate: <value>**" where <value> is the chosen allowed value. After a blank line, justify the estimate in 2-3 sentences. When you cite a reference issue, refer to it by its bare issue key only (e.g. ${references[0]?.issueKey ?? 'PROJ-123'}) — do not include its title or a link.`
+Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate: <value>**" where <value> is the chosen allowed value. After a blank line, justify the estimate in 2-3 sentences.${citation}`
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,

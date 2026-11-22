@@ -14,6 +14,7 @@ import buildClickUpSearchQuery from './buildClickUpSearchQuery'
 import ClickUpServerManager from './ClickUpServerManager'
 import describeClickUpDimensionField from './describeClickUpDimensionField'
 import fetchClickUpRepos, {type ClickUpRepo} from './fetchClickUpRepos'
+import getClickUpIssueText from './getClickUpIssueText'
 import listClickUpDimensionFields from './listClickUpDimensionFields'
 import listClickUpIssues from './listClickUpIssues'
 import parseClickUpIntegrationHash from './parseClickUpIntegrationHash'
@@ -42,6 +43,7 @@ export class ClickUpServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveClickUpTaskIntegration,
+      getIssueText: getClickUpIssueText,
       parseIntegrationHash: parseClickUpIntegrationHash
     },
     issueSearch: {buildQuery: buildClickUpSearchQuery},

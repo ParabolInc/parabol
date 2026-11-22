@@ -58,3 +58,5 @@ export interface InspirationIssue {
   // Lines a pull request adds and removes
   changeSize?: number
 }
+
+export type IssueText = Pick<InspirationIssue, 'reference' | 'title'> & {description: string}

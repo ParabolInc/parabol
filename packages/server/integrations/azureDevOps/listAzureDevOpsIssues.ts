@@ -1,4 +1,3 @@
-import {parse} from 'node-html-parser'
 import buildAzureDevOpsWorkWiql, {
   AZURE_DEVOPS_CLOSED_STATES,
   type AzureDevOpsWorkKind
@@ -11,12 +10,11 @@ import {
   MAX_ISSUES
 } from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
+import azureDevOpsHtmlToText from './azureDevOpsHtmlToText'
 import getAzureDevOpsManager from './getAzureDevOpsManager'
 import searchAzureDevOpsWorkItems from './searchAzureDevOpsWorkItems'
 
 const KINDS: readonly AzureDevOpsWorkKind[] = ['assigned', 'created']
-
-const toText = (html: string) => parse(html).structuredText.trim()
 
 const isWorkKind = (value: unknown): value is AzureDevOpsWorkKind =>
   KINDS.some((kind) => kind === value)
@@ -94,13 +92,13 @@ const listAzureDevOpsIssues = async (
         status: state,
         url,
         updatedAt: workItem.updatedAt,
-        description: toText(workItem.descriptionHTML),
+        description: azureDevOpsHtmlToText(workItem.descriptionHTML),
         comments:
           comments instanceof Error
             ? []
             : comments.reverse().map((comment) => ({
                 author: comment.createdBy?.displayName ?? 'unknown',
-                body: toText(comment.text ?? '')
+                body: azureDevOpsHtmlToText(comment.text ?? '')
               })),
         isOwnWork: true,
         isClosed: AZURE_DEVOPS_CLOSED_STATES.includes(state),

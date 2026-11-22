@@ -18,6 +18,7 @@ import {
 import buildJiraSearchQuery from './buildJiraSearchQuery'
 import describeJiraDimensionField from './describeJiraDimensionField'
 import fetchJiraProjects, {type JiraGQLProject} from './fetchJiraProjects'
+import getJiraIssueText from './getJiraIssueText'
 import {hasJiraScopes} from './hasJiraScopes'
 import JiraIntegrationManager from './JiraIntegrationManager'
 import listJiraDimensionFields from './listJiraDimensionFields'
@@ -64,6 +65,7 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveJiraTaskIntegration,
+      getIssueText: getJiraIssueText,
       parseIntegrationHash: parseJiraIntegrationHash
     },
     issueSearch: {buildQuery: buildJiraSearchQuery},

@@ -15,6 +15,7 @@ import buildGitHubSearchQuery from './buildGitHubSearchQuery'
 import describeGitHubDimensionField from './describeGitHubDimensionField'
 import fetchGitHubRepos, {type GitHubRepo} from './fetchGitHubRepos'
 import GitHubServerManager from './GitHubServerManager'
+import getGitHubIssueText from './getGitHubIssueText'
 import listGitHubDimensionFields from './listGitHubDimensionFields'
 import listGitHubIssues from './listGitHubIssues'
 import parseGitHubIntegrationHash from './parseGitHubIntegrationHash'
@@ -61,6 +62,7 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveGitHubTaskIntegration,
+      getIssueText: getGitHubIssueText,
       parseIntegrationHash: parseGitHubIntegrationHash
     },
     issueSearch: {buildQuery: buildGitHubSearchQuery},

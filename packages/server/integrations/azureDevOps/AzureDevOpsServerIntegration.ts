@@ -18,6 +18,7 @@ import fetchAvailableAzureDevOpsProjects, {
   type AzureDevOpsProject
 } from './fetchAvailableAzureDevOpsProjects'
 import fetchAzureDevOpsProjects from './fetchAzureDevOpsProjects'
+import getAzureDevOpsIssueText from './getAzureDevOpsIssueText'
 import getAzureDevOpsManager from './getAzureDevOpsManager'
 import listAzureDevOpsDimensionFields from './listAzureDevOpsDimensionFields'
 import listAzureDevOpsIssues from './listAzureDevOpsIssues'
@@ -50,6 +51,7 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     issueList: {listIssues: listAzureDevOpsIssues},
     issueRead: {
       getIssue: resolveAzureDevOpsTaskIntegration,
+      getIssueText: getAzureDevOpsIssueText,
       parseIntegrationHash: parseAzureDevOpsIntegrationHash
     },
     issueSearch: {buildQuery: buildAzureDevOpsSearchQuery},

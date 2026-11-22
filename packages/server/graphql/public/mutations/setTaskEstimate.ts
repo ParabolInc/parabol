@@ -7,10 +7,11 @@ import appOrigin from '../../../appOrigin'
 import {estimatePushColumns} from '../../../integrations/platform/estimatePushColumns'
 import {getServerIntegration} from '../../../integrations/platform/registry'
 import getKysely from '../../../postgres/getKysely'
-import type {EstimatePushResult} from '../../../postgres/types/EstimatePushResult'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
+import getPokerStory from '../../mutations/helpers/getPokerStory'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
@@ -123,21 +124,23 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     }
   }
 
-  const pushResult: EstimatePushResult | Error = !integration
-    ? null
-    : await getServerIntegration(integration.service).capabilities.estimatePush.pushEstimate({
-        dataLoader,
-        teamId,
-        userId: integration.accessUserId,
-        context,
-        info,
-        task,
-        taskEstimate,
-        stageId,
-        viewerId,
-        meetingName,
-        discussionURL
-      })
+  const integrationCtx = {dataLoader, teamId, context, info, task, viewerId}
+  const [pushResult, story] = integration
+    ? await Promise.all([
+        getServerIntegration(integration.service).capabilities.estimatePush.pushEstimate({
+          ...integrationCtx,
+          userId: integration.accessUserId,
+          taskEstimate,
+          stageId,
+          meetingName,
+          discussionURL
+        }),
+        getPokerStory({...integrationCtx, userId: integration.accessUserId}).catch((error) => {
+          logError(error, {userId: viewerId, tags: {taskId}})
+          return null
+        })
+      ])
+    : [null, null]
   const success = !(pushResult instanceof Error)
   const errorMessage = pushResult instanceof Error ? pushResult.message : undefined
 
@@ -153,7 +156,11 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
         meetingId,
         stageId,
         taskId,
-        userId: viewerId
+        userId: viewerId,
+        repoId: story?.repoId,
+        storyReference: story?.reference.slice(0, 255),
+        storyTitle: story?.title.slice(0, 255),
+        storyDescription: story?.description.slice(0, 2000)
       })
       .execute()
 

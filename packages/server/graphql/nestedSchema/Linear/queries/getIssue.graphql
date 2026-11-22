@@ -2,6 +2,8 @@ query getIssue($id: String!) {
   issue(id: $id) {
     id
     identifier
+    title
+    description
     project {
       id
     }

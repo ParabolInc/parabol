@@ -14,6 +14,7 @@ import {
 import buildLinearSearchQuery from './buildLinearSearchQuery'
 import describeLinearDimensionField from './describeLinearDimensionField'
 import {fetchLinearProjects, fetchLinearTeams, type LinearRepo} from './fetchLinearTeamsAndProjects'
+import getLinearIssueText from './getLinearIssueText'
 import isLinearTeam from './isLinearTeam'
 import LinearServerManager from './LinearServerManager'
 import listLinearDimensionFields from './listLinearDimensionFields'
@@ -44,6 +45,7 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveLinearTaskIntegration,
+      getIssueText: getLinearIssueText,
       parseIntegrationHash: parseLinearIntegrationHash
     },
     issueSearch: {buildQuery: buildLinearSearchQuery},

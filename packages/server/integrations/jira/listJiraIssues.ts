@@ -1,7 +1,4 @@
-import {generateText} from '@tiptap/core'
 import ms from 'ms'
-import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
-import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {Logger} from '../../utils/Logger'
 import {
   compareNewestFirst,
@@ -10,6 +7,7 @@ import {
 } from '../platform/InspirationIssue'
 import type {GqlIntegrationCtx} from '../platform/ServerIntegrationDefinition'
 import AtlassianServerManager from './AtlassianServerManager'
+import adfToPlaintext from './adfToPlaintext'
 
 const ORDER_BY = /\s*\border\s+by\b\s*/i
 
@@ -22,14 +20,6 @@ const narrowToBefore = (jql: string, before: Date | null) => {
   const bound = `updated <= "-${minutesAgo}m"`
   const narrowed = where.trim() ? `(${where}) AND ${bound}` : bound
   return orderBy ? `${narrowed} order by ${orderBy}` : narrowed
-}
-
-// Flatten a Jira ADF description into plaintext for the AI prompt. getIssues types description as
-// a string, but the search API returns it as an ADF document, so guard on the runtime shape.
-const adfToPlaintext = (description: unknown) => {
-  if (!description || typeof description !== 'object') return ''
-  const tiptap = convertADFToTipTap(description as AdfNode)
-  return generateText(tiptap, serverTipTapExtensions).trim()
 }
 
 // Re-runs the Jira search the user saw in the Your Work drawer, server-side, fetching the full

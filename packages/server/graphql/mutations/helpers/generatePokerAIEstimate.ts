@@ -1,36 +1,37 @@
-import {generateText, type JSONContent} from '@tiptap/core'
-import JiraProjectId from 'parabol-client/integrations/jira/shared/JiraProjectId'
-import JiraProjectKeyId from 'parabol-client/integrations/jira/shared/JiraProjectKeyId'
-import convertADFToTipTap, {type AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import {markdownToTipTap} from 'parabol-client/shared/tiptap/markdownToTipTap'
 import {replaceCalloutsWithBlockquotes} from 'parabol-client/shared/tiptap/replaceCalloutsWithBlockquotes'
-import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
-import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
-import AtlassianServerManager from '../../../integrations/jira/AtlassianServerManager'
 import getKysely from '../../../postgres/getKysely'
 import type {EstimateStage} from '../../../postgres/types/NewMeetingPhase'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import rankByTextSimilarity from '../../../utils/rankByTextSimilarity'
+import type {GQLContext} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {createAIComment} from './addAIGeneratedContentToThreads'
+import getJiraEstimateCandidates from './getJiraEstimateCandidates'
+import getPokerStory from './getPokerStory'
+import getTeamEstimateHistory from './getTeamEstimateHistory'
 
 const MAX_REFERENCE_ISSUES = 10
 
-// Flatten a Jira ADF description into plaintext for the AI prompt
-const adfToPlaintext = (description: AdfNode | null | undefined) => {
-  if (!description) return ''
-  const tiptap = convertADFToTipTap(description)
-  return generateText(tiptap, serverTipTapExtensions).trim()
-}
-
 // Build a stringified TipTap doc (issue title as the first node + description) for the hover popover
-const buildPopoverContent = (description: AdfNode | null | undefined, title: string) => {
-  const adf = description ?? {type: 'doc', content: []}
-  return JSON.stringify(convertADFToTipTap(adf, title))
-}
+const buildStoryPopoverContent = (title: string, description: string) =>
+  JSON.stringify({
+    type: 'doc',
+    content: [
+      {
+        type: 'heading',
+        attrs: {level: 1},
+        content: title ? [{type: 'text', text: title}] : []
+      },
+      ...(description ? replaceCalloutsWithBlockquotes(markdownToTipTap(description)) : [])
+    ]
+  })
 
 const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -87,17 +88,27 @@ const buildEstimateCommentDoc = (
   return {type: 'doc', content: injectIssueKeyMentions(content, regex, contentByKey)}
 }
 
+interface Candidate {
+  issueKey: string
+  title: string
+  description: string
+  storyPoints: string
+  content?: string
+}
+
 interface Options {
   stage: EstimateStage
   meetingId: string
   teamId: string
+  context: GQLContext
+  info: GraphQLResolveInfo
 }
 
-// Generates an AI story-point estimate for a Jira Cloud issue and posts it as a
-// comment in the stage discussion. Called once votes are revealed, so the result
-// is published async via the meeting pubsub channel as soon as it is ready.
+// Generates an AI estimate for an integrated issue and posts it as a comment in the stage
+// discussion. Called once votes are revealed, so the result is published async via the
+// meeting pubsub channel as soon as it is ready.
 export const generatePokerAIEstimate = async (options: Options) => {
-  const {stage, meetingId, teamId} = options
+  const {stage, meetingId, teamId, context, info} = options
   const dataLoader = getNewDataLoader('generatePokerAIEstimate')
   const operationId = dataLoader.share()
   const subOptions = {operationId}
@@ -111,12 +122,8 @@ export const generatePokerAIEstimate = async (options: Options) => {
 
     const task = await dataLoader.get('tasks').load(taskId)
     const integration = task?.integration
-    // only Jira Cloud issues are supported
-    if (!integration || integration.service !== 'jira') return
-    const {cloudId, issueKey, accessUserId} = integration
-    const projectKey = JiraProjectKeyId.join(issueKey)
+    if (!task || !integration) return
 
-    // resolve the dimension + scale (possible story point values)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting || meeting.meetingType !== 'poker') return
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(meeting.templateRefId)
@@ -126,57 +133,59 @@ export const generatePokerAIEstimate = async (options: Options) => {
     const scaleRef = await dataLoader.get('templateScaleRefs').loadNonNull(scaleRefId)
     const possibleLabels = scaleRef.values.map(({label}) => label)
 
-    const jiraIssue = await dataLoader.get('jiraIssue').load({
+    const {accessUserId} = integration
+    const story = await getPokerStory({
+      dataLoader,
       teamId,
       userId: accessUserId,
-      cloudId,
-      issueKey,
-      taskId,
+      context,
+      info,
+      task,
       viewerId: accessUserId
     })
-    if (!jiraIssue) return
-    const {summary, description} = jiraIssue
+    if (!story) return
 
-    // figure out which Jira field holds the story points for this dimension
-    const dimensionFields = await dataLoader.get('integrationDimensionFieldMaps').load({
+    const {pastVotes, stories} = await getTeamEstimateHistory({
       teamId,
-      service: 'jira',
-      repoId: JiraProjectId.join(cloudId, projectKey),
-      dimensionName
+      dimensionName,
+      labels: possibleLabels,
+      repoId: story.repoId,
+      excludeTaskId: taskId
     })
-    const fieldId = dimensionFields.find(
-      ({fieldId}) =>
-        fieldId !== SprintPokerDefaults.SERVICE_FIELD_COMMENT &&
-        fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL
-    )?.fieldId
-    // no real story-point field mapped (e.g. team writes estimate as a comment) -> nothing to reference
-    if (!fieldId) return
-
-    // fetch recent issues from the same project that already have an estimate
-    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId})
-    if (!auth) return
-    const manager = new AtlassianServerManager(auth.accessToken)
-    // over-fetch since issues without an estimate are filtered out below
-    const {issues: recentIssues} = await manager.getProjectIssuesWithField(
-      cloudId,
-      projectKey,
-      fieldId,
-      50
+    const seenReferences = new Set([story.reference])
+    const storedCandidates = stories.flatMap(
+      ({label, storyReference, storyTitle, storyDescription}) => {
+        if (seenReferences.has(storyReference)) return []
+        seenReferences.add(storyReference)
+        return [
+          {
+            issueKey: storyReference,
+            title: storyTitle,
+            description: storyDescription,
+            storyPoints: label
+          }
+        ]
+      }
     )
+    // a Jira team's first estimates in Parabol still learn from the project's own estimated issues
+    const jiraCandidates =
+      storedCandidates.length === 0 && integration.service === 'jira'
+        ? await getJiraEstimateCandidates({
+            dataLoader,
+            teamId,
+            integration,
+            repoId: story.repoId,
+            dimensionName
+          })
+        : []
+    const candidates: Candidate[] = jiraCandidates.length > 0 ? jiraCandidates : storedCandidates
+    const pastEstimates =
+      jiraCandidates.length > 0 ? jiraCandidates.map(({storyPoints}) => storyPoints) : pastVotes
 
-    const candidates = (recentIssues ?? [])
-      .filter((issue) => issue.issueKey !== issueKey)
-      .map((issue) => ({
-        issueKey: issue.issueKey,
-        title: issue.summary,
-        description: adfToPlaintext(issue.description),
-        storyPoints: issue.storyPoints,
-        content: buildPopoverContent(issue.description, issue.summary)
-      }))
     const target = {
-      issueKey,
-      title: summary,
-      description: adfToPlaintext(description),
+      issueKey: story.reference,
+      title: story.title,
+      description: story.description,
       storyPoints: ''
     }
     const issueText = ({title, description}: {title: string; description: string}) =>
@@ -196,17 +205,18 @@ export const generatePokerAIEstimate = async (options: Options) => {
       issues,
       dimensionName,
       possibleLabels,
-      candidates.map(({storyPoints}) => storyPoints),
+      pastEstimates,
       getFeatureTier(organization) === 'starter' ? 'low' : 'medium'
     )
     if (!estimate) return
 
     // map every referenced issue key to its content doc for the comment's hover popovers
     const contentByKey: Record<string, string> = {
-      [issueKey]: buildPopoverContent(description, summary)
+      [story.reference]: buildStoryPopoverContent(story.title, story.description)
     }
     for (const reference of references) {
-      contentByKey[reference.issueKey] = reference.content
+      contentByKey[reference.issueKey] =
+        reference.content ?? buildStoryPopoverContent(reference.title, reference.description)
     }
 
     const content = buildEstimateCommentDoc(estimate, contentByKey)

@@ -6,7 +6,7 @@ import type {Task, TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {EstimatePushResult} from '../../postgres/types/EstimatePushResult'
 import type {TIntegrationProvider} from '../../postgres/types/IntegrationProvider'
 import type {JsonObject} from '../../postgres/types/pg'
-import type {InspirationIssue, IssuePage} from './InspirationIssue'
+import type {InspirationIssue, IssuePage, IssueText} from './InspirationIssue'
 import type {TaskIntegrationManager} from './TaskIntegrationManager'
 
 export interface ServiceRepo {
@@ -37,9 +37,13 @@ export interface IssueReadCtx extends IntegrationCtx {
   fieldsToFetch: string
 }
 
+export type IssueTextCtx = Omit<IssueReadCtx, 'fieldsToFetch'>
+
 export interface IssueReadCapability {
   /** The raw issue payload in the shape the service's TaskIntegration GraphQL type resolves — never re-wrapped, so __typename/discriminant keys survive */
   getIssue(ctx: IssueReadCtx): Promise<unknown>
+  /** The issue's title, plaintext description and reference, the way issueList normalizes them. Null when the issue cannot be read */
+  getIssueText(ctx: IssueTextCtx): Promise<IssueText | null>
   /** The Task.integrationHash a client echoed, parsed into the issue parts the Task row stores. null when malformed */
   parseIntegrationHash(integrationHash: string): IssueParts | null
 }

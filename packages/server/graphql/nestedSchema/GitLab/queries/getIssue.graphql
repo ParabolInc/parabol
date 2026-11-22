@@ -3,5 +3,8 @@ query getIssue($gid: IssueID!) {
     id
     iid
     projectId
+    title
+    description
+    reference(full: true)
   }
 }

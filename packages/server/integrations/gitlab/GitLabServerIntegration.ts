@@ -12,6 +12,7 @@ import buildGitLabSearchQuery from './buildGitLabSearchQuery'
 import describeGitLabDimensionField from './describeGitLabDimensionField'
 import fetchGitLabProjects, {type GitLabProject} from './fetchGitLabProjects'
 import GitLabServerManager from './GitLabServerManager'
+import getGitLabIssueText from './getGitLabIssueText'
 import listGitLabDimensionFields from './listGitLabDimensionFields'
 import parseGitLabIntegrationHash from './parseGitLabIntegrationHash'
 import pushEstimateToGitLab from './pushEstimateToGitLab'
@@ -41,6 +42,7 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     },
     issueRead: {
       getIssue: resolveGitLabTaskIntegration,
+      getIssueText: getGitLabIssueText,
       parseIntegrationHash: parseGitLabIntegrationHash
     },
     issueSearch: {buildQuery: buildGitLabSearchQuery},
