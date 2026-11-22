@@ -1,7 +1,12 @@
 const tokenize = (text: string) =>
   (text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).filter((token) => token.length > 1)
 
-// Okapi BM25 scored against the candidates; ties keep the candidates' given order
+// Okapi BM25 keyword ranking; ties keep the candidates' given order.
+// Written here on purpose. On a replay of 250 of our own poker rounds (#14343):
+// - Harrier embeddings picked no better reference stories than this.
+// - MiniSearch keeps only about 8 of these top 10, even tuned, because it scores BM25+
+//   and counts a story's length in distinct words. Free orgs' estimates got worse with it
+//   (1.17 steps off vs 1.11).
 const rankByTextSimilarity = <T>(
   query: string,
   candidates: T[],
