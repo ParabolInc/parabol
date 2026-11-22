@@ -8,11 +8,6 @@ interface SimilarDiscussion {
   similarity: number
 }
 
-/**
- * Narrows the past topics closest in wording to the ones about the same issue. Wording alone links
- * topics that only share a theme, so an AI that knows the team's projects and jargon, and when each
- * topic was discussed, makes the call. Without AI, or when it fails, the closest ones stand.
- */
 const pickRelatedDiscussions = async (
   teamId: string,
   topic: string,
@@ -20,10 +15,9 @@ const pickRelatedDiscussions = async (
   maxPicks: number,
   dataLoader: DataLoaderWorker
 ) => {
-  const closest = candidates.slice(0, maxPicks)
-  if (candidates.length === 0) return closest
+  if (candidates.length === 0) return []
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  if (!(await canAccessAI(team, dataLoader))) return closest
+  if (!(await canAccessAI(team, dataLoader))) return null
   const [teamBriefing, pastTopics] = await Promise.all([
     loadTeamBriefing(teamId, dataLoader),
     Promise.all(
@@ -42,7 +36,7 @@ const pickRelatedDiscussions = async (
     maxPicks,
     teamBriefing
   )
-  return picks ? picks.map((index) => candidates[index]!) : closest
+  return picks?.map((index) => candidates[index]!) ?? null
 }
 
 export default pickRelatedDiscussions

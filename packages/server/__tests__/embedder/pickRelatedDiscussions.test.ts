@@ -32,8 +32,8 @@ const dataLoader = {
 const pick = (pool = candidates) =>
   pickRelatedDiscussions('team1', 'The migration is late', pool, 3, dataLoader)
 
-const ids = (picked: {embeddingsMetadataId: number}[]) =>
-  picked.map(({embeddingsMetadataId}) => embeddingsMetadataId)
+const ids = (picked: {embeddingsMetadataId: number}[] | null) =>
+  picked?.map(({embeddingsMetadataId}) => embeddingsMetadataId)
 
 beforeEach(() => {
   jest.mocked(canAccessAI).mockResolvedValue(true)
@@ -60,14 +60,14 @@ it('shows nothing when the AI finds nothing about the same issue', async () => {
   expect(await pick()).toEqual([])
 })
 
-it('falls back to the closest 3 when the AI fails', async () => {
+it('picks nothing when the AI fails, so the caller can fall back', async () => {
   mockPick.mockResolvedValue(null)
-  expect(ids(await pick())).toEqual([11, 12, 13])
+  expect(await pick()).toBeNull()
 })
 
-it('keeps the closest 3 without asking when the team has no AI', async () => {
+it('asks nothing when the team has no AI', async () => {
   jest.mocked(canAccessAI).mockResolvedValue(false)
-  expect(ids(await pick())).toEqual([11, 12, 13])
+  expect(await pick()).toBeNull()
   expect(mockPick).not.toHaveBeenCalled()
 })
 

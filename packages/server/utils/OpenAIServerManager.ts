@@ -713,7 +713,6 @@ Return JSON of the form: {"related": [<the numbers of the past topics you picked
           response_format: {type: 'json_object'},
           reasoning_effort: 'low'
         },
-        // an embedder worker waits on this, and the closest topics stand in when it gives up
         {timeout: ms('30s'), maxRetries: 1}
       )
       const [choice] = response.choices

@@ -9,7 +9,6 @@ import pickRelatedDiscussions from './helpers/pickRelatedDiscussions'
 import {publishSimilarRetroTopics} from './helpers/publishSimilarRetroTopics'
 
 const MAX_RELATED_DISCUSSIONS = 3
-// The AI turns down topics that only share wording, so it picks from more than it shows
 const MAX_CANDIDATES = 10
 
 export const getStepAfterEmbeddingTopic = (modelId: ModelId) =>
@@ -22,7 +21,8 @@ export const findRelatedDiscussions: JobQueueStepRun<{
   modelId: ModelId
 }> = async ({data, dataLoader}) => {
   const {embeddingsMetadataId, modelId} = data
-  const {relatedDiscussionPrompt, relatedDiscussionFloor} = modelIdDefinitions[modelId]
+  const {relatedDiscussionPrompt, relatedDiscussionFloor, relatedDiscussionCandidateFloor} =
+    modelIdDefinitions[modelId]
   const embeddingModel = getModelManager().getEmbedder(modelId)
   if (!embeddingModel) return new JobQueueError(`embedding model ${modelId} not available`)
   const metadata = await dataLoader.get('embeddingsMetadata').loadNonNull(embeddingsMetadataId)
@@ -48,17 +48,22 @@ export const findRelatedDiscussions: JobQueueStepRun<{
     .where('EmbeddingsMetadata.objectType', '=', 'retrospectiveDiscussionTopic')
     .where('Discussion.meetingId', '!=', meetingId)
     .groupBy('EmbeddingsMetadata.id')
-    .having(similarity, '>=', relatedDiscussionFloor)
+    .having(similarity, '>=', relatedDiscussionCandidateFloor)
     .orderBy('similarity', 'desc')
     .limit(MAX_CANDIDATES)
     .execute()
-  const relatedDiscussions = await pickRelatedDiscussions(
+  const picks = await pickRelatedDiscussions(
     teamId,
     fullText,
     candidates,
     MAX_RELATED_DISCUSSIONS,
     dataLoader
   )
+  const relatedDiscussions =
+    picks ??
+    candidates
+      .filter((candidate) => candidate.similarity >= relatedDiscussionFloor)
+      .slice(0, MAX_RELATED_DISCUSSIONS)
   await publishSimilarRetroTopics(embeddingsMetadataId, relatedDiscussions, dataLoader)
   return false
 }
