@@ -13,6 +13,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {EstimateStage} from '../../../postgres/types/NewMeetingPhase'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
+import rankByTextSimilarity from '../../../utils/rankByTextSimilarity'
 import {createAIComment} from './addAIGeneratedContentToThreads'
 
 const MAX_REFERENCE_ISSUES = 10
@@ -162,9 +163,8 @@ export const generatePokerAIEstimate = async (options: Options) => {
       50
     )
 
-    const references = (recentIssues ?? [])
+    const candidates = (recentIssues ?? [])
       .filter((issue) => issue.issueKey !== issueKey)
-      .slice(0, MAX_REFERENCE_ISSUES)
       .map((issue) => ({
         issueKey: issue.issueKey,
         title: issue.summary,
@@ -172,15 +172,29 @@ export const generatePokerAIEstimate = async (options: Options) => {
         storyPoints: issue.storyPoints,
         content: buildPopoverContent(issue.description, issue.summary)
       }))
+    const target = {
+      issueKey,
+      title: summary,
+      description: adfToPlaintext(description),
+      storyPoints: ''
+    }
+    const issueText = ({title, description}: {title: string; description: string}) =>
+      `${title}\n${description}`
+    const references = rankByTextSimilarity(issueText(target), candidates, issueText).slice(
+      0,
+      MAX_REFERENCE_ISSUES
+    )
 
     // the popover content doc is for the comment, not the prompt, so keep it out of the AI input
-    const issues = [
-      {issueKey, title: summary, description: adfToPlaintext(description), storyPoints: ''},
-      ...references.map(({content, ...rest}) => rest)
-    ]
+    const issues = [target, ...references.map(({content, ...rest}) => rest)]
 
     const openAI = new OpenAIServerManager()
-    const estimate = await openAI.getPokerEstimate(issues, dimensionName, possibleLabels)
+    const estimate = await openAI.getPokerEstimate(
+      issues,
+      dimensionName,
+      possibleLabels,
+      candidates.map(({storyPoints}) => storyPoints)
+    )
     if (!estimate) return
 
     // map every referenced issue key to its content doc for the comment's hover popovers
