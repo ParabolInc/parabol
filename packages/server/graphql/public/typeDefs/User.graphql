@@ -579,6 +579,10 @@ type User {
   "The user's personal access tokens for API access"
   personalAccessTokens: [PersonalAccessToken!]!
   """
+  The OAuth 2.0 applications the user connected to their account
+  """
+  oauthGrants: [OAuthAPIGrant!]!
+  """
   The OAuth 2.0 application behind an authorization request, or null if the request is invalid
   """
   oauthAuthorizationRequest(request: OAuthAuthorizationRequestInput!): OAuthAuthorizationRequest

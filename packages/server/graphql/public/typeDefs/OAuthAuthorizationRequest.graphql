@@ -3,15 +3,11 @@ An OAuth 2.0 application asking the viewer for access to their Parabol account
 """
 type OAuthAuthorizationRequest {
   """
-  The application name, set by the organization that registered it
+  The name the application registered itself with. Anyone can register an application under any name
   """
   name: String!
   """
-  The organization that registered the application. Its access tokens only reach this organization's data
-  """
-  organization: Organization!
-  """
-  The scopes the application asks for
+  The scopes the application asks for, every scope when it names none. The viewer grants some or all of them
   """
   scopes: [OAuthScopeEnum!]!
   """

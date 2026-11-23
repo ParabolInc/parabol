@@ -1,87 +1,33 @@
 import crypto from 'crypto'
-import faker from 'faker'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
 const TOKEN_URL = `${ORIGIN}/oauth/token`
 const MCP_RESOURCE = `${ORIGIN}/mcp`
 
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      clientId
-      clientSecret
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
-
 const createApp = async () => {
-  const {userId, cookie, orgId} = await signUp()
-  const promoted = await sendIntranet({
-    query: `
-      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
-        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-          __typename
-        }
-      }
-    `,
-    variables: {orgId, userId, role: 'ORG_ADMIN'}
-  })
-  expect(promoted.errors).toBeUndefined()
-  const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
-  const created = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {
-      orgId,
-      name: 'Discovery test app',
-      redirectUris: [redirectUri],
-      scopes: ['USERS_READ']
-    },
-    cookie
-  })
-  expect(created.errors).toBeUndefined()
-  const {clientId, clientSecret} = created.data.createOAuthAPIProvider
-  return {userId, cookie, clientId, clientSecret, redirectUri}
+  const [{userId, cookie}, {clientId, redirectUri}] = await Promise.all([signUp(), createClient()])
+  return {userId, cookie, clientId, redirectUri, ...createPKCEPair()}
 }
 
 type App = Awaited<ReturnType<typeof createApp>>
 
 const authorize = (app: App, resource?: string) =>
-  sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId: app.clientId,
-        redirectUri: app.redirectUri,
-        scope: 'users:read',
-        state: 'xyz',
-        resource
-      }
+  createCode(
+    {
+      clientId: app.clientId,
+      redirectUri: app.redirectUri,
+      scope: 'users:read',
+      codeChallenge: app.codeChallenge,
+      resource
     },
-    cookie: app.cookie
-  })
+    app.cookie
+  )
 
 const getCode = async (app: App, resource?: string) => {
   const response = await authorize(app, resource)
@@ -102,11 +48,11 @@ const exchange = (app: App, code: string, resource?: string) =>
     code,
     redirect_uri: app.redirectUri,
     client_id: app.clientId,
-    client_secret: app.clientSecret,
+    code_verifier: app.codeVerifier,
     ...(resource && {resource})
   })
 
-test('authorization server metadata lists S256 and both grant types', async () => {
+test('authorization server metadata lists S256, both grant types and self-registration', async () => {
   const response = await fetch(`${ORIGIN}/.well-known/oauth-authorization-server`)
   expect(response.status).toBe(200)
   expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
@@ -119,7 +65,8 @@ test('authorization server metadata lists S256 and both grant types', async () =
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
-    token_endpoint_auth_methods_supported: ['client_secret_post', 'none']
+    token_endpoint_auth_methods_supported: ['none'],
+    registration_endpoint: `${ORIGIN}/oauth/register`
   })
   expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
   expect(metadata.scopes_supported).toHaveLength(18)
@@ -145,9 +92,10 @@ test('the origin itself is not described as a protected resource', async () => {
   expect(response.headers.get('Content-Type') ?? '').not.toContain('application/json')
 })
 
-test('a browser client can preflight the token and metadata endpoints', async () => {
+test('a browser client can preflight the token, registration and metadata endpoints', async () => {
   for (const path of [
     '/oauth/token',
+    '/oauth/register',
     '/.well-known/oauth-authorization-server',
     '/.well-known/oauth-protected-resource/mcp'
   ]) {
@@ -193,8 +141,7 @@ test('the access token carries the resource it was issued for', async () => {
   const refreshed = await postToken({
     grant_type: 'refresh_token',
     refresh_token: tokens.refresh_token,
-    client_id: app.clientId,
-    client_secret: app.clientSecret
+    client_id: app.clientId
   })
   expect(refreshed.status).toBe(200)
   const refreshedToken = getVerifiedAuthToken(
@@ -272,28 +219,20 @@ test('a session cookie does not lend its authority to an OAuth bearer on a non-p
   expect(body.data?.viewer?.id).toBe(app.userId)
 })
 
-test('an OAuth token with a revoked grant cannot run a non-persisted query', async () => {
+test('an OAuth token whose grant was removed cannot run a non-persisted query', async () => {
   const app = await createApp()
   const accessToken = await getAccessToken(app)
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
   const body = await queryRaw({authorization: `Bearer ${accessToken}`})
   expect(body.data?.viewer?.id).toBeUndefined()
   expect(body.errors).toBeDefined()
 })
 
-test('a revoked OAuth token alongside a cookie cannot run a non-persisted query', async () => {
+test('an OAuth token whose grant was removed cannot borrow a cookie on a non-persisted query', async () => {
   const app = await createApp()
   const other = await createApp()
   const accessToken = await getAccessToken(app)
-  await getKysely()
-    .updateTable('OAuthAPIGrant')
-    .set({revokedAt: new Date()})
-    .where('clientId', '=', app.clientId)
-    .execute()
+  await getKysely().deleteFrom('OAuthAPIGrant').where('clientId', '=', app.clientId).execute()
   const body = await queryRaw({authorization: `Bearer ${accessToken}`, cookie: other.cookie})
   expect(body.data?.viewer?.id).toBeUndefined()
 })

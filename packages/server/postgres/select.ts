@@ -499,24 +499,22 @@ export const selectPollOption = () => {
 export const selectOAuthAPIProvider = () => {
   return getKysely()
     .selectFrom('OAuthAPIProvider')
-    .select([
-      'id',
-      'clientId',
-      'clientSecret',
-      'clientType',
-      'createdAt',
-      'name',
-      'orgId',
-      'redirectUris',
-      'updatedAt'
-    ])
-    .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
+    .select(['id', 'clientId', 'createdAt', 'name', 'redirectUris', 'updatedAt'])
 }
 
 export const selectOAuthAPIGrant = () => {
   return getKysely()
     .selectFrom('OAuthAPIGrant')
-    .select(['id', 'clientId', 'createdAt', 'grantedOrgIds', 'lastUsedAt', 'revokedAt', 'userId'])
+    .select([
+      'id',
+      'clientId',
+      'createdAt',
+      'grantedOrgIds',
+      'grantedPageIds',
+      'grantedTeamIds',
+      'lastUsedAt',
+      'userId'
+    ])
     .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
 }
 

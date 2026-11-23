@@ -213,45 +213,25 @@ type Mutation {
   """
   Approve an OAuth 2.0 authorization request, issuing the application a single-use authorization code
   """
-  createOAuthAPICode(request: OAuthAuthorizationRequestInput!): CreateOAuthAPICodePayload!
-    @scope(name: USERS_WRITE)
-
-  """
-  Create a new OAuth 2.0 Application
-  """
-  createOAuthAPIProvider(
-    orgId: ID!
-    name: String!
-    redirectUris: [RedirectURI!]!
+  createOAuthAPICode(
+    request: OAuthAuthorizationRequestInput!
+    """
+    The scopes the viewer grants, some or all of the scopes the application asks for
+    """
     scopes: [OAuthScopeEnum!]!
-    clientType: OAuthClientTypeEnum! = CONFIDENTIAL
-  ): CreateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Update an OAuth 2.0 Application
-  """
-  updateOAuthAPIProvider(
-    providerId: ID!
-    name: String
-    redirectUris: [RedirectURI!]
-    scopes: [OAuthScopeEnum!]
-
     """
-    Switching to PUBLIC deletes the client secret; switching to CONFIDENTIAL issues a new one
+    Restrict the application to specific orgs; null means all orgs the viewer belongs to
     """
-    clientType: OAuthClientTypeEnum
-  ): UpdateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Delete an OAuth 2.0 Application
-  """
-  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Regenerate the OAuth 2.0 client secret for an application
-  """
-  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
-    @scope(name: ORGS_WRITE)
+    grantedOrgIds: [ID!]
+    """
+    Restrict the application to specific teams; null means all teams the viewer belongs to
+    """
+    grantedTeamIds: [ID!]
+    """
+    Restrict the application to specific pages; null means all pages the viewer can access
+    """
+    grantedPageIds: [ID!]
+  ): CreateOAuthAPICodePayload! @scope(name: USERS_WRITE)
 
   """
   Update SCIM settings for a SAML identity provider
@@ -889,6 +869,16 @@ type Mutation {
   """
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
     @scope(name: MEETINGS_WRITE)
+
+  """
+  Disconnect an OAuth 2.0 application from the viewer's account. Its tokens stop working at once
+  """
+  revokeOAuthAPIGrant(
+    """
+    The ID of the connection to remove
+    """
+    grantId: ID!
+  ): RevokeOAuthAPIGrantPayload! @scope(name: USERS_WRITE)
 
   """
   Update a personal access token's fields or revoke it

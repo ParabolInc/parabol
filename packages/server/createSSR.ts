@@ -2,6 +2,7 @@ import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
 import {applyEnvVarsToClientAssets} from './utils/applyEnvVarsToClientAssets'
+import getDocumentHeaders from './utils/getDocumentHeaders'
 
 let html: {body: string; brBody: Buffer} | undefined
 // made on the first request, so a server starts without compressing the page
@@ -25,6 +26,9 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
 
   if (demoMatch) {
     res.writeHeader('Link', `<https://${process.env.HOST}/${demoMatch[1]}>; rel="canonical"`)
+  }
+  for (const [name, value] of Object.entries(getDocumentHeaders(url))) {
+    res.writeHeader(name, value)
   }
   res.writeHeader('content-type', 'text/html; charset=utf-8')
   // a shared cache must not send brotli to a client that didn't ask for it

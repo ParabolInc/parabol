@@ -7,11 +7,11 @@ import type {DataLoaderWorker} from '../graphql/graphql'
 import {PAT_PREFIX} from '../graphql/public/applyScopeDirective'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
 import getKysely from '../postgres/getKysely'
-import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/select'
+import {selectPersonalAccessToken} from '../postgres/select'
 import {CipherId} from './CipherId'
 import checkBlacklistJWT from './checkBlacklistJWT'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
-import hashPersonalAccessToken from './hashPersonalAccessToken'
+import hashRandomToken from './hashRandomToken'
 import {Logger} from './Logger'
 
 export interface APIGrant {
@@ -47,7 +47,7 @@ const getPersonalAccessTokenGrant = async (
     .where('expiresAt', '>', sql<Date>`CURRENT_TIMESTAMP`)
     .executeTakeFirst()
 
-  const hashedToken = hashPersonalAccessToken(rawToken)
+  const hashedToken = hashRandomToken(rawToken)
   if (!token || !(await isTokenMatch(rawToken, hashedToken, token.hashedToken))) {
     throw new GraphQLError('Invalid or revoked personal access token', {
       extensions: {code: 'UNAUTHENTICATED'}
@@ -105,19 +105,11 @@ const getOAuthAccessTokenGrant = async (
   const {client_id: clientId, grant_id: grantCode, sub: userId} = accessToken
   if (!clientId || grantCode === undefined) return throwInvalidOAuthToken()
   const grantId = CipherId.decrypt(grantCode)
-  const [isBlacklisted, provider, grant] = await Promise.all([
+  const [isBlacklisted, grant] = await Promise.all([
     checkBlacklistJWT(accessToken),
-    selectOAuthAPIProvider().where('clientId', '=', clientId).executeTakeFirst(),
     dataLoader.get('oauthAPIGrants').load(grantId)
   ])
-  if (
-    isBlacklisted ||
-    !provider ||
-    !grant ||
-    grant.revokedAt ||
-    grant.clientId !== clientId ||
-    grant.userId !== userId
-  ) {
+  if (isBlacklisted || !grant || grant.clientId !== clientId || grant.userId !== userId) {
     return throwInvalidOAuthToken()
   }
   if (!grant.lastUsedAt || Date.now() - grant.lastUsedAt.getTime() > ms('5m')) {
@@ -130,17 +122,15 @@ const getOAuthAccessTokenGrant = async (
   }
   return {
     userId,
-    scopes: (accessToken.scope ?? []).filter(
-      (scope) => grant.scopes.includes(scope) && provider.scopes.includes(scope)
-    ),
+    scopes: (accessToken.scope ?? []).filter((scope) => grant.scopes.includes(scope)),
     aud: 'action-oauth2',
     clientId,
     grantId: grant.id,
     resourceGrants: new ResourceGrants(
       userId,
-      grant.grantedOrgIds ?? [provider.orgId],
-      [],
-      null,
+      grant.grantedOrgIds,
+      grant.grantedTeamIds,
+      grant.grantedPageIds,
       dataLoader
     )
   }

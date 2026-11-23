@@ -6,33 +6,31 @@ interface Input {
   clientId: string
   userId: string
   scopes: Oauthscopeenum[]
-  grantedOrgIds: string[] | null
   resource: string | null
+  grantedOrgIds: string[] | null
+  grantedTeamIds: string[] | null
+  grantedPageIds: string[] | null
 }
 
-const upsertOAuthAPIGrant = async ({clientId, userId, scopes, grantedOrgIds, resource}: Input) =>
+const upsertOAuthAPIGrant = async (grant: Input) =>
   getKysely()
     .transaction()
     .execute(async (trx) => {
-      await trx
-        .deleteFrom('OAuthAPIGrant')
-        .where('clientId', '=', clientId)
-        .where('userId', '=', userId)
-        .where('revokedAt', 'is not', null)
-        .execute()
       const {id: grantId} = await trx
         .insertInto('OAuthAPIGrant')
-        .values({clientId, userId, scopes, grantedOrgIds, resource})
+        .values(grant)
         .onConflict((oc) =>
           oc.columns(['clientId', 'userId']).doUpdateSet((eb) => ({
             scopes: eb.ref('excluded.scopes'),
+            resource: eb.ref('excluded.resource'),
             grantedOrgIds: eb.ref('excluded.grantedOrgIds'),
-            resource: eb.ref('excluded.resource')
+            grantedTeamIds: eb.ref('excluded.grantedTeamIds'),
+            grantedPageIds: eb.ref('excluded.grantedPageIds')
           }))
         )
         .returning('id')
         .executeTakeFirstOrThrow()
-      const refreshToken = await insertOAuthRefreshToken(trx, grantId)
+      const refreshToken = await insertOAuthRefreshToken(trx, grantId, null)
       return {grantId, refreshToken}
     })
 

@@ -3,7 +3,6 @@ import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
-import {hasProviderAccess} from './rules/hasProviderAccess'
 import {hasTokenAudience} from './rules/hasTokenAudience'
 import {hasUnrestrictedGrant} from './rules/hasUnrestrictedGrant'
 import isAuthenticated from './rules/isAuthenticated'
@@ -159,10 +158,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),
-    createOAuthAPIProvider: and(
-      hasTokenAudience(['action']),
-      hasOrgRole<'Mutation.createOAuthAPIProvider'>('args.orgId', 'ORG_ADMIN')
-    ),
     createPersonalAccessToken: and(
       isAuthenticated,
       hasTokenAudience(['action']),
@@ -195,10 +190,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
-    deleteOAuthAPIProvider: and(
-      hasTokenAudience(['action']),
-      hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId')
-    ),
     deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
     deleteTeamHealthQuestion: isUserViewer<'Mutation.deleteTeamHealthQuestion'>(
       'args.questionId',
@@ -325,10 +316,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     pushInvitation: and(hasUnrestrictedGrant, rateLimit({perMinute: 10, perHour: 20})),
     refreshSession: and(isAuthenticated, hasTokenAudience(['action'])),
-    regenerateOAuthAPIProviderSecret: and(
-      hasTokenAudience(['action']),
-      hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId')
-    ),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
@@ -412,6 +399,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     resetRetroMeetingToGroupStage:
       isMeetingFacilitator<'Mutation.resetRetroMeetingToGroupStage'>('args.meetingId'),
     revealTeamHealthVotes: isMeetingFacilitator<'Mutation.revealTeamHealthVotes'>('args.meetingId'),
+    revokeOAuthAPIGrant: and(
+      isAuthenticated,
+      hasTokenAudience(['action']),
+      isUserViewer<'Mutation.revokeOAuthAPIGrant'>('args.grantId', 'oauthAPIGrants')
+    ),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
     setDefaultSlackChannel: isTeamMember<'Mutation.setDefaultSlackChannel'>('args.teamId'),
     setJiraDisplayFieldIds: isTeamMember<'Mutation.setJiraDisplayFieldIds'>('args.teamId'),
@@ -506,10 +498,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateNewCheckInQuestion: isTeamMember<'Mutation.updateNewCheckInQuestion'>(
       'args.meetingId',
       'newMeetings'
-    ),
-    updateOAuthAPIProvider: and(
-      hasTokenAudience(['action']),
-      hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId')
     ),
     updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
     exportPagesToConfluence: and(
@@ -620,8 +608,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     isBillingLeader: allow,
     isOrgAdmin: allow,
     name: allow,
-    oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
-    oauthApplications: hasOrgRole<'Organization.oauthApplications'>('source.id', 'ORG_ADMIN'),
     picture: allow,
     report: and(
       or(isSuperUser, isViewerOnOrg<'Organization.report'>('source.id')),
@@ -764,6 +750,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     notifications: and(isUserSelf, hasUnrestrictedGrant),
     oauthAuthorizationRequest: and(isUserSelf, hasTokenAudience(['action'])),
+    oauthGrants: and(isUserSelf, hasTokenAudience(['action'])),
     personalAccessTokens: and(isUserSelf, hasTokenAudience(['action'])),
     picture: allow,
     preferredName: allow,
