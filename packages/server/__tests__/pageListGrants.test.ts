@@ -72,6 +72,8 @@ const LIST_PAGES = `
   }
 `
 
+const SEARCH_WORD = 'grantcheck'
+
 const SEARCH_PAGES = `
   query SearchPages($query: String!) {
     viewer {
@@ -169,17 +171,16 @@ const setUpPages = async () => {
     cookie
   })
   expect(shared.errors).toBeUndefined()
-  const searchWord = `grantcheck${Date.now().toString(36)}`
   await getKysely()
     .updateTable('Page')
-    .set({title: searchWord, plaintextContent: searchWord})
+    .set({title: SEARCH_WORD})
     .where(
       'id',
       'in',
       Object.values(pages).map((pageId) => CipherId.fromClient(pageId)[0])
     )
     .execute()
-  return {cookie, orgA, teamA, pages, searchWord}
+  return {cookie, orgA, teamA, pages}
 }
 
 const listPageIds = async (bearerToken: string, isPrivate?: boolean) => {
@@ -247,7 +248,7 @@ test.each<{grant: string; grants: (setup: Setup) => Grants; reaches: PageName[]}
 
     const listedIds = await listPageIds(bearerToken)
     const recentIds = await searchPageIds(bearerToken, '')
-    const foundIds = await searchPageIds(bearerToken, setup.searchWord)
+    const foundIds = await searchPageIds(bearerToken, SEARCH_WORD)
     const openedIds: string[] = []
     for (const pageId of new Set([...Object.values(setup.pages), ...listedIds, ...recentIds])) {
       if (await canOpenPage(bearerToken, pageId)) openedIds.push(pageId)

@@ -89,7 +89,7 @@ export const withPageKeywordRanking = (
       )
       .with('ViewerPages', (qb) =>
         qb
-          // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null, within an access token's grants
+          // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null
           .selectFrom('PageAccess as pa')
           .innerJoin('Page as p', 'p.id', 'pa.pageId')
           .where('pa.userId', '=', viewerId)

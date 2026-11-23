@@ -98,12 +98,6 @@ export const search: NonNullable<UserResolvers['search']> = async (
   }
   const pageCursor = type === 'page' ? getPageSearchCursor(after) : null
   const pageOffset = pageCursor?.position ?? 0
-  let teamIds = inTeamIds
-  if (resourceGrants) {
-    const baseTeamIds = teamIds ?? authToken.tms
-    const grantChecks = await Promise.all(baseTeamIds.map((id) => resourceGrants.hasTeam(id)))
-    teamIds = baseTeamIds.filter((_, i) => grantChecks[i])
-  }
   const pg = getKysely()
   const dateRange =
     startAt || endAt
@@ -118,7 +112,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     inTeamIds && inTeamIds.length > 0 ? (inTeamIds as [string, ...string[]]) : undefined
   // metadata requires a teamId, whereas pages don't because it uses RBAC
   const metadataTeamIds: [string, ...string[]] = resourceGrants
-    ? ['aGhostTeam', ...(teamIds ?? [])]
+    ? ['aGhostTeam', ...(inTeamIds ?? authToken.tms)]
     : (pageTeamIds ?? ['aGhostTeam', ...authToken.tms])
 
   if (query.length === 0) {
