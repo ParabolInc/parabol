@@ -12,6 +12,7 @@ import {z} from 'zod'
 import rootSchema from '../../graphql/public/rootSchema'
 import defineTool from '../defineTool'
 import getSchemaDescriptionLine from '../getSchemaDescriptionLine'
+import {readAnnotations} from '../toolAnnotations'
 import toolError from '../toolError'
 import {textResult} from '../toolResult'
 
@@ -43,7 +44,7 @@ export default defineTool({
   inputSchema: {
     name: z.string().min(1).describe('A type name such as Mutation, Task or CreateTaskInput')
   },
-  annotations: {readOnlyHint: true},
+  annotations: readAnnotations,
   run: (_context, {name}) => {
     const type = rootSchema.getType(name)
     if (!type || name.startsWith('__')) {

@@ -3,6 +3,7 @@ import {z} from 'zod'
 import rootSchema from '../../graphql/public/rootSchema'
 import defineTool from '../defineTool'
 import getSchemaDescriptionLine from '../getSchemaDescriptionLine'
+import {readAnnotations} from '../toolAnnotations'
 import {textResult} from '../toolResult'
 
 const DEFAULT_LIMIT = 20
@@ -22,7 +23,7 @@ export default defineTool({
       .default(DEFAULT_LIMIT)
       .describe('Most matches to return')
   },
-  annotations: {readOnlyHint: true},
+  annotations: readAnnotations,
   run: (_context, {query, limit}) => {
     const needles = query.toLowerCase().split(/\s+/).filter(Boolean)
     const matches: {rank: number; text: string}[] = []

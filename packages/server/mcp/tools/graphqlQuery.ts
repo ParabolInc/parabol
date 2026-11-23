@@ -2,6 +2,7 @@ import {z} from 'zod'
 import defineTool from '../defineTool'
 import getOperationKind from '../getOperationKind'
 import runGraphQL from '../runGraphQL'
+import {readAnnotations} from '../toolAnnotations'
 import toolError from '../toolError'
 import toolResult from '../toolResult'
 
@@ -18,7 +19,7 @@ export default defineTool({
       .optional()
       .describe('Which operation to run when the document has several')
   },
-  annotations: {readOnlyHint: true},
+  annotations: readAnnotations,
   run: async (context, {query, variables, operationName}) => {
     const kind = getOperationKind(query, operationName)
     if (kind === 'mutation') {

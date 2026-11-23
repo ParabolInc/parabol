@@ -765,14 +765,14 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     teamInvitation: and(or(isSuperUser, isUserSelf), hasUnrestrictedGrant),
     team: or(
-      isSuperUser,
       and(
         isUserSelf,
         or(
           isTeamMember<'User.team'>('args.teamId'),
           isViewerBillingLeader<'User.team'>('args.teamId', 'teams')
         )
-      )
+      ),
+      isSuperUser
     ),
     teamMember: and(isUserSelf, isTeamMember<'User.teamMember'>('args.teamId'))
   },
