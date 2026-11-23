@@ -262,7 +262,7 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
       })
     }
     if (!getPhase(retro.phases, 'TEAM_HEALTH_CHECK')) {
-      throw new GraphQLError('The retrospective has no Team Health phase', {
+      throw new GraphQLError('The retrospective does not include a Team Health check', {
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }

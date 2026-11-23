@@ -68,19 +68,17 @@ const RetroMeetingSidebar = (props: Props) => {
             isNavigable
             isNavigableByFacilitator
             readyUserIds
-            ... on TeamHealthCheckStage {
-              openTeamHealthMeeting {
-                localStage {
-                  phaseType
-                }
-                phases {
-                  phaseType
-                  stages {
-                    id
-                    phaseType
-                  }
-                }
-              }
+          }
+        }
+        openTeamHealthMeeting {
+          localStage {
+            phaseType
+          }
+          phases {
+            phaseType
+            stages {
+              id
+              phaseType
             }
           }
         }
@@ -98,6 +96,7 @@ const RetroMeetingSidebar = (props: Props) => {
     localStage,
     phases,
     meetingMembers,
+    openTeamHealthMeeting,
     summaryPageId
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
@@ -107,10 +106,9 @@ const RetroMeetingSidebar = (props: Props) => {
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   const [confirmingPhase, setConfirmingPhase] = useState<NewMeetingPhaseTypeEnum | null>(null)
-  const teamHealthCheck = phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH_CHECK')?.stages[0]
-    ?.openTeamHealthMeeting
-  const isAnsweringTeamHealth = teamHealthCheck?.localStage?.phaseType === 'TEAM_HEALTH_RESPONSE'
-  const teamHealthQuestionCount = teamHealthCheck?.phases.find(
+  const isAnsweringTeamHealth =
+    openTeamHealthMeeting?.localStage?.phaseType === 'TEAM_HEALTH_RESPONSE'
+  const teamHealthQuestionCount = openTeamHealthMeeting?.phases.find(
     ({phaseType}) => phaseType === 'TEAM_HEALTH_RESPONSE'
   )?.stages.length
   return (

@@ -37,7 +37,7 @@ const RetroSidebarTeamHealthResultSection = (props: Props) => {
             id
             isNavigable
             isNavigableByFacilitator
-            ... on TeamHealthCheckResultStage {
+            ... on RetroTeamHealthResultStage {
               resultStage {
                 score
                 respondentCount

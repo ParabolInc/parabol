@@ -27,20 +27,18 @@ const RetroSidebarTeamHealthCheckSection = (props: Props) => {
           phaseType
           stages {
             id
-            ... on TeamHealthCheckStage {
-              openTeamHealthMeeting {
-                id
-                endedAt
-                phases {
-                  phaseType
-                  stages {
-                    id
-                  }
-                }
-                ...TeamHealthSidebarQuestionSection_meeting
-              }
+          }
+        }
+        openTeamHealthMeeting {
+          id
+          endedAt
+          phases {
+            phaseType
+            stages {
+              id
             }
           }
+          ...TeamHealthSidebarQuestionSection_meeting
         }
       }
     `,
@@ -49,7 +47,7 @@ const RetroSidebarTeamHealthCheckSection = (props: Props) => {
   const atmosphere = useAtmosphere()
   const checkStage = meeting.phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH_CHECK')
     ?.stages[0]
-  const openCheck = checkStage?.openTeamHealthMeeting
+  const openCheck = meeting.openTeamHealthMeeting
   const teamHealthMeeting = openCheck && !openCheck.endedAt ? openCheck : null
   const questionCount =
     teamHealthMeeting?.phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH_RESPONSE')?.stages

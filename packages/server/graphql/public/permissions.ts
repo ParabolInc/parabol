@@ -706,7 +706,11 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   RetrospectiveMeeting: {
     viewerInspirationIssues:
-      isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id')
+      isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id'),
+    openTeamHealthMeeting:
+      isTeamMemberOfMeeting<'RetrospectiveMeeting.openTeamHealthMeeting'>('source.id'),
+    startedTeamHealthMeeting:
+      isTeamMemberOfMeeting<'RetrospectiveMeeting.startedTeamHealthMeeting'>('source.id')
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
@@ -715,16 +719,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     services: isUserViewer<'TeamMember.services'>('source.userId')
   },
   // the source is the retro's stage, and the check belongs to the retro's team
-  TeamHealthCheckStage: {
-    openTeamHealthMeeting:
-      isTeamMemberOfMeeting<'TeamHealthCheckStage.openTeamHealthMeeting'>('source.meetingId'),
-    startedTeamHealthMeeting:
-      isTeamMemberOfMeeting<'TeamHealthCheckStage.startedTeamHealthMeeting'>('source.meetingId')
-  },
-  TeamHealthCheckResultStage: {
+  RetroTeamHealthResultStage: {
     teamHealthMeeting:
-      isTeamMemberOfMeeting<'TeamHealthCheckResultStage.teamHealthMeeting'>('source.meetingId'),
-    resultStage: isTeamMemberOfMeeting<'TeamHealthCheckResultStage.resultStage'>('source.meetingId')
+      isTeamMemberOfMeeting<'RetroTeamHealthResultStage.teamHealthMeeting'>('source.meetingId'),
+    resultStage: isTeamMemberOfMeeting<'RetroTeamHealthResultStage.resultStage'>('source.meetingId')
   },
   // Reports reach a result stage without going through its meeting, so the fields that lead into the
   // meeting stay with the team: org leaders read the results, never the meeting or its discussion

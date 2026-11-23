@@ -27,23 +27,21 @@ const RetroTeamHealthCheckContent = (props: Props) => {
             preferredName
           }
         }
+        openTeamHealthMeeting {
+          id
+          ...RetroTeamHealthCheck_teamHealthMeeting
+          ...RetroTeamHealthClosedCheck_teamHealthMeeting
+        }
+        startedTeamHealthMeeting {
+          id
+        }
         phases {
           phaseType
           stages {
             id
-            ... on TeamHealthCheckStage {
-              openTeamHealthMeeting {
-                id
-                ...RetroTeamHealthCheck_teamHealthMeeting
-                ...RetroTeamHealthClosedCheck_teamHealthMeeting
-              }
-              startedTeamHealthMeeting {
-                id
-              }
-            }
             isNavigable
             isNavigableByFacilitator
-            ... on TeamHealthCheckResultStage {
+            ... on RetroTeamHealthResultStage {
               teamHealthMeeting {
                 id
               }
@@ -54,7 +52,15 @@ const RetroTeamHealthCheckContent = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, teamId, facilitatorUserId, facilitator, phases} = meeting
+  const {
+    id: meetingId,
+    teamId,
+    facilitatorUserId,
+    facilitator,
+    phases,
+    openTeamHealthMeeting: teamHealthMeeting,
+    startedTeamHealthMeeting
+  } = meeting
   const atmosphere = useAtmosphere()
   const isFacilitator = atmosphere.viewerId === facilitatorUserId
   const checkStage = phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH_CHECK')?.stages[0]
@@ -62,9 +68,7 @@ const RetroTeamHealthCheckContent = (props: Props) => {
     ?.stages[0]
   const firstResultStageId = firstResultStage?.id
   const resultsCheckId = firstResultStage?.teamHealthMeeting?.id
-  const teamHealthMeeting = checkStage?.openTeamHealthMeeting
-  const isStartedHere =
-    !!teamHealthMeeting && teamHealthMeeting.id === checkStage?.startedTeamHealthMeeting?.id
+  const isStartedHere = !!teamHealthMeeting && teamHealthMeeting.id === startedTeamHealthMeeting?.id
   // the check the viewer is partway through. If the retro stops showing it, it closed under them
   const [answeringCheckId, setAnsweringCheckId] = useState<string | null>(null)
   const [revealedCheckId, setRevealedCheckId] = useState<string | null>(null)

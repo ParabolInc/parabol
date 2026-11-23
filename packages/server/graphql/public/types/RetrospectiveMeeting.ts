@@ -6,6 +6,7 @@ import type {
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
+import getOpenTeamHealthMeeting from '../../mutations/helpers/getOpenTeamHealthMeeting'
 import {resolveForSU} from '../../resolvers'
 import gatherInspirationIssues from '../mutations/helpers/gatherInspirationIssues'
 import toInspirationIssue from '../mutations/helpers/toInspirationIssue'
@@ -112,6 +113,19 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
   topicCount: ({topicCount}) => topicCount || 0,
+  openTeamHealthMeeting: ({teamId, phases}, _args, {dataLoader}) => {
+    const checkPhase = getPhase(phases, 'TEAM_HEALTH_CHECK')
+    if (!checkPhase) return null
+    const [checkStage] = checkPhase.stages
+    return getOpenTeamHealthMeeting(teamId, checkStage.startedTeamHealthMeetingId, dataLoader)
+  },
+  startedTeamHealthMeeting: async ({phases}, _args, {dataLoader}) => {
+    const startedTeamHealthMeetingId = getPhase(phases, 'TEAM_HEALTH_CHECK')?.stages[0]
+      .startedTeamHealthMeetingId
+    if (!startedTeamHealthMeetingId) return null
+    const meeting = await dataLoader.get('newMeetings').load(startedTeamHealthMeetingId)
+    return meeting?.meetingType === 'teamHealth' ? meeting : null
+  },
   votesRemaining: async ({id: meetingId}, _args, {dataLoader}) => {
     const meetingMembers = (await dataLoader
       .get('meetingMembersByMeetingId')

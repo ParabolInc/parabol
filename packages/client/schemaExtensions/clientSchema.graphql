@@ -220,11 +220,7 @@ extend type TeamHealthResultStage {
   localScheduledEndTime: String
 }
 
-extend type TeamHealthCheckStage {
-  localScheduledEndTime: String
-}
-
-extend type TeamHealthCheckResultStage {
+extend type RetroTeamHealthResultStage {
   localScheduledEndTime: String
 }
 

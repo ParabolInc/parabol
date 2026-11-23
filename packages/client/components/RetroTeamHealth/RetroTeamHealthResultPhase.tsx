@@ -131,7 +131,7 @@ const RetroTeamHealthResultPhase = (props: Props) => {
 // a stage's data comes from the meeting's phases, since the local stage is only a pointer into them
 graphql`
   fragment RetroTeamHealthResultPhase_stage on NewMeetingStage {
-    ... on TeamHealthCheckResultStage {
+    ... on RetroTeamHealthResultStage {
       resultStage {
         id
         discussionId

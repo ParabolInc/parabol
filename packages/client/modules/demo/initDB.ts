@@ -605,6 +605,8 @@ const initNewMeeting = (
     templateId: 'startStopContinueTemplate',
     nextAutoGroupThreshold: null,
     prevMeeting: null,
+    openTeamHealthMeeting: null,
+    startedTeamHealthMeeting: null,
     scheduledEndTime: null,
     parabolInspirationItems: [],
     githubInspirationItems: [],

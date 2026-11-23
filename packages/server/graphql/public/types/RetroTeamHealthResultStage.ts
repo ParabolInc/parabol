@@ -2,9 +2,9 @@ import {GraphQLError} from 'graphql'
 import type {TeamHealthCheckResultStage as TeamHealthCheckResultStageDB} from '../../../postgres/types/NewMeetingPhase'
 import getPhase from '../../../utils/getPhase'
 import type {DataLoaderWorker} from '../../graphql'
-import type {TeamHealthCheckResultStageResolvers} from '../resolverTypes'
+import type {RetroTeamHealthResultStageResolvers} from '../resolverTypes'
 
-export type TeamHealthCheckResultStageSource = TeamHealthCheckResultStageDB & {
+export type RetroTeamHealthResultStageSource = TeamHealthCheckResultStageDB & {
   meetingId: string
   teamId: string
 }
@@ -19,7 +19,7 @@ const loadTeamHealthMeeting = async (teamHealthMeetingId: string, dataLoader: Da
   return meeting
 }
 
-const TeamHealthCheckResultStage: TeamHealthCheckResultStageResolvers = {
+const RetroTeamHealthResultStage: RetroTeamHealthResultStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'TEAM_HEALTH_CHECK_RESULT',
   teamHealthMeeting: ({teamHealthMeetingId}, _args, {dataLoader}) => {
     return loadTeamHealthMeeting(teamHealthMeetingId, dataLoader)
@@ -37,4 +37,4 @@ const TeamHealthCheckResultStage: TeamHealthCheckResultStageResolvers = {
   }
 }
 
-export default TeamHealthCheckResultStage
+export default RetroTeamHealthResultStage

@@ -212,6 +212,12 @@ type RetrospectiveMeeting implements NewMeeting {
   nextAutoGroupThreshold: Float
 
   """
+  The team's open Team Health check, soonest to close first, preferring one this retro started. Null
+  when the retro doesn't include a Team Health check or the team has none open
+  """
+  openTeamHealthMeeting: TeamHealthMeeting
+
+  """
   The number of reflections generated in the meeting
   """
   reflectionCount: Int!
@@ -225,6 +231,11 @@ type RetrospectiveMeeting implements NewMeeting {
   The grouped reflections
   """
   reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
+
+  """
+  The check this retro started itself, which ends when the retro ends. Null if the retro started none
+  """
+  startedTeamHealthMeeting: TeamHealthMeeting
 
   """
   The number of tasks generated in the meeting

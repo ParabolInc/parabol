@@ -1,7 +1,7 @@
 """
 A retrospective stage that walks the team through one category of a revealed Team Health check
 """
-type TeamHealthCheckResultStage implements NewMeetingStage {
+type RetroTeamHealthResultStage implements NewMeetingStage {
   "Unique identifier"
   id: ID!
 
