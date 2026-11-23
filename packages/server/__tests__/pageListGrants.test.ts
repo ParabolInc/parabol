@@ -1,4 +1,5 @@
 import getKysely from '../postgres/getKysely'
+import {CipherId} from '../utils/CipherId'
 import {createOrgAdmin, getTestEmail, getUserTeams, sendPublic} from './common'
 
 afterAll(async () => {
@@ -64,6 +65,24 @@ const LIST_PAGES = `
         edges {
           node {
             id
+          }
+        }
+      }
+    }
+  }
+`
+
+const SEARCH_WORD = 'grantcheck'
+
+const SEARCH_PAGES = `
+  query SearchPages($query: String!) {
+    viewer {
+      search(query: $query, first: 100, type: page, alpha: 0) {
+        edges {
+          node {
+            ... on Page {
+              id
+            }
           }
         }
       }
@@ -152,6 +171,15 @@ const setUpPages = async () => {
     cookie
   })
   expect(shared.errors).toBeUndefined()
+  await getKysely()
+    .updateTable('Page')
+    .set({title: SEARCH_WORD})
+    .where(
+      'id',
+      'in',
+      Object.values(pages).map((pageId) => CipherId.fromClient(pageId)[0])
+    )
+    .execute()
   return {cookie, orgA, teamA, pages}
 }
 
@@ -159,6 +187,12 @@ const listPageIds = async (bearerToken: string, isPrivate?: boolean) => {
   const res = await sendPublic({query: LIST_PAGES, variables: {isPrivate}, bearerToken})
   expect(res.errors).toBeUndefined()
   return res.data.viewer.pages.edges.map(({node}: {node: {id: string}}) => node.id) as string[]
+}
+
+const searchPageIds = async (bearerToken: string, query: string) => {
+  const res = await sendPublic({query: SEARCH_PAGES, variables: {query}, bearerToken})
+  expect(res.errors).toBeUndefined()
+  return res.data.viewer.search.edges.map(({node}: {node: {id: string}}) => node.id) as string[]
 }
 
 const canOpenPage = async (bearerToken: string, pageId: string) => {
@@ -206,19 +240,27 @@ test.each<{grant: string; grants: (setup: Setup) => Grants; reaches: PageName[]}
     grants: () => ({grantedOrgIds: [], grantedTeamIds: [], grantedPageIds: null}),
     reaches: []
   }
-])('a token granted $grant lists exactly the pages it can open', async ({grants, reaches}) => {
-  const setup = await setUpPages()
-  const bearerToken = await createToken(setup.cookie, ['USERS_READ', 'PAGES_READ'], grants(setup))
+])(
+  'a token granted $grant lists and finds exactly the pages it can open',
+  async ({grants, reaches}) => {
+    const setup = await setUpPages()
+    const bearerToken = await createToken(setup.cookie, ['USERS_READ', 'PAGES_READ'], grants(setup))
 
-  const listedIds = await listPageIds(bearerToken)
-  const openedIds: string[] = []
-  for (const pageId of new Set([...Object.values(setup.pages), ...listedIds])) {
-    if (await canOpenPage(bearerToken, pageId)) openedIds.push(pageId)
+    const listedIds = await listPageIds(bearerToken)
+    const recentIds = await searchPageIds(bearerToken, '')
+    const foundIds = await searchPageIds(bearerToken, SEARCH_WORD)
+    const openedIds: string[] = []
+    for (const pageId of new Set([...Object.values(setup.pages), ...listedIds, ...recentIds])) {
+      if (await canOpenPage(bearerToken, pageId)) openedIds.push(pageId)
+    }
+
+    expect(namesOf(setup.pages, openedIds)).toEqual(reaches)
+    expect(listedIds.toSorted()).toEqual(openedIds.toSorted())
+    expect(recentIds.toSorted()).toEqual(openedIds.toSorted())
+    expect(namesOf(setup.pages, foundIds)).toEqual(reaches)
+    expect(foundIds).toHaveLength(reaches.length)
   }
-
-  expect(namesOf(setup.pages, openedIds)).toEqual(reaches)
-  expect(listedIds.toSorted()).toEqual(openedIds.toSorted())
-})
+)
 
 test('a token granted one subpage of a shared page lists it among shared pages', async () => {
   const {cookie, pages} = await setUpPages()
