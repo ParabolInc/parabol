@@ -1,29 +1,4 @@
-export const UPDATE_BROWSER_URL = 'https://browser-update.org/update-browser.html'
-
-// The client ships these without polyfills, so a browser that predates one throws wherever the app calls it
-const NEWER_BUILT_INS: [owner: object, names: string[]][] = [
-  [
-    Array.prototype,
-    ['at', 'findLast', 'findLastIndex', 'flatMap', 'toReversed', 'toSorted', 'toSpliced', 'with']
-  ],
-  [Object, ['hasOwn']],
-  [Intl, ['Segmenter']]
-]
-
-// Chrome & Firefox: "a.toSorted is not a function". Safari: "undefined is not a constructor (evaluating 'new Intl.Segmenter(...)')"
-const MISSING_CALLEE_PATTERNS = [
-  /([\w$.]+) is not a (?:function|constructor)/,
-  /\(evaluating '(?:new )?([\w$.]+)\(/
-]
-
-const isMissingBuiltIn = (name: string) =>
-  NEWER_BUILT_INS.some(([owner, names]) => names.includes(name) && !(name in owner))
-
-export const isOldBrowserError = ({message}: Pick<Error, 'message'>) =>
-  MISSING_CALLEE_PATTERNS.some((pattern) => {
-    const callee = message.match(pattern)?.[1]
-    return !!callee && isMissingBuiltIn(callee.slice(callee.lastIndexOf('.') + 1))
-  })
+import {isBrowserTooOld} from './browserSupport'
 
 export const isNetworkError = ({name}: Error) => {
   return name === 'ChunkLoadError' || name === 'AbortError'
@@ -70,9 +45,6 @@ export const isNotSignedInError = ({message}: Error) => {
 
 export const isIgnoredError = (error: Error) => {
   return (
-    isNetworkError(error) ||
-    isOldBrowserError(error) ||
-    isExtensionError(error) ||
-    isNotSignedInError(error)
+    isBrowserTooOld || isNetworkError(error) || isExtensionError(error) || isNotSignedInError(error)
   )
 }

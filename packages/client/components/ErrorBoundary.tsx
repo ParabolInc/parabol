@@ -1,9 +1,8 @@
 import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {isIgnoredError, isNotSignedInError, isOldBrowserError} from '../utils/errorFilters'
+import {isIgnoredError, isNotSignedInError} from '../utils/errorFilters'
 import reportClientError from '../utils/reportClientError'
-import showOldBrowserSnack from '../utils/showOldBrowserSnack'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
@@ -40,13 +39,9 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const {atmosphere, fallback} = this.props
+    const {atmosphere} = this.props
     if (isNotSignedInError(error)) {
       atmosphere.invalidateSession('Not signed in')
-    }
-    // a boundary with its own fallback keeps the app running, so it gets the snack instead of the fatal screen
-    if (fallback && isOldBrowserError(error)) {
-      showOldBrowserSnack(atmosphere)
     }
     const ignoredError = isIgnoredError(error)
     const eventId = crypto.randomUUID()

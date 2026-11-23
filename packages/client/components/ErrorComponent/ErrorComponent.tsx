@@ -2,14 +2,9 @@ import {useState} from 'react'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import {Button} from '~/ui/Button/Button'
 import {twStyled} from '../../ui/twStyled'
+import {isBrowserTooOld, UPDATE_BROWSER_URL} from '../../utils/browserSupport'
 import {isClientOutdated} from '../../utils/connectedServerVersion'
-import {
-  isExtensionError,
-  isIgnoredError,
-  isNetworkError,
-  isOldBrowserError,
-  UPDATE_BROWSER_URL
-} from '../../utils/errorFilters'
+import {isExtensionError, isIgnoredError, isNetworkError} from '../../utils/errorFilters'
 import {STALE_CLIENT_NOTE} from '../../utils/staleClientNote'
 
 const ErrorBlock = twStyled('div')(
@@ -49,7 +44,7 @@ const ErrorComponent = (props: Props) => {
     )
   }
 
-  if (isOldBrowserError(error)) {
+  if (isBrowserTooOld) {
     return (
       <ErrorBlock>
         Your browser is too old to run Parabol. Update it, then reload this page.

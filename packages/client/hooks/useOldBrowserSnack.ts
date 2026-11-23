@@ -1,25 +1,21 @@
 import {useEffect} from 'react'
-import {isOldBrowserError} from '../utils/errorFilters'
-import {isError} from '../utils/reportClientError'
-import showOldBrowserSnack from '../utils/showOldBrowserSnack'
+import {isBrowserTooOld, UPDATE_BROWSER_URL} from '../utils/browserSupport'
 import useAtmosphere from './useAtmosphere'
 
-// An error boundary shows the fatal screen for what it catches. These are the errors the app keeps running through
 const useOldBrowserSnack = () => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    const onError = (event: ErrorEvent) => {
-      if (isOldBrowserError(event)) showOldBrowserSnack(atmosphere)
-    }
-    const onUnhandledRejection = ({reason}: PromiseRejectionEvent) => {
-      if (isError(reason) && isOldBrowserError(reason)) showOldBrowserSnack(atmosphere)
-    }
-    window.addEventListener('error', onError)
-    window.addEventListener('unhandledrejection', onUnhandledRejection)
-    return () => {
-      window.removeEventListener('error', onError)
-      window.removeEventListener('unhandledrejection', onUnhandledRejection)
-    }
+    if (!isBrowserTooOld) return
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: 'oldBrowser',
+      message: 'Your browser is too old, so parts of Parabol won’t work. Update it to fix this.',
+      autoDismiss: 10,
+      showDismissButton: true,
+      action: {
+        label: 'Update',
+        callback: () => window.open(UPDATE_BROWSER_URL, '_blank', 'noreferrer')
+      }
+    })
   }, [atmosphere])
 }
 

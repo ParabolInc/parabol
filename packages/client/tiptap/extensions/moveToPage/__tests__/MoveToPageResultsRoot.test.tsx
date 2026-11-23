@@ -11,8 +11,7 @@ jest.mock('../../../../hooks/useQueryLoaderNow', () => ({
 jest.mock('../../../../hooks/useAtmosphere', () => ({__esModule: true, default: () => ({})}))
 jest.mock('../../../../utils/errorFilters', () => ({
   isIgnoredError: () => false,
-  isNotSignedInError: () => false,
-  isOldBrowserError: () => false
+  isNotSignedInError: () => false
 }))
 jest.mock('../../../../utils/reportClientError', () => ({__esModule: true, default: jest.fn()}))
 jest.mock('../../../../components/ErrorComponent/ErrorComponent', () => ({
