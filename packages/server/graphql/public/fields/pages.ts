@@ -102,6 +102,8 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
       )
       .select(({ref}) => [ref('PageUserSortOrder.sortOrder').as('userSortOrder'), 'p.sortOrder'])
       .orderBy('userSortOrder', (od) => od.asc().nullsFirst())
+      .orderBy('p.sortOrder')
+      .orderBy('p.id')
       .$if(!!after, (qb) => qb.where('PageUserSortOrder.sortOrder', '>', after!))
       .limit(first + 1)
       .execute()
@@ -124,7 +126,16 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
                 userId: viewerId,
                 sortOrder: p.userSortOrder
               })
-              .execute()
+              .onConflict((oc) =>
+                oc
+                  .columns(['userId', 'pageId'])
+                  .doUpdateSet(({ref}) => ({sortOrder: ref('PageUserSortOrder.sortOrder')}))
+              )
+              .returning('sortOrder')
+              .executeTakeFirstOrThrow()
+              .then((saved) => {
+                p.userSortOrder = saved.sortOrder
+              })
           }
         })
       )
