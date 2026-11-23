@@ -6,7 +6,7 @@ afterAll(async () => {
   await getKysely().destroy()
 })
 
-const TEXTS = ['50% done', '500 days', 'a_b', 'axb']
+const TEXTS = ['50% done', '500 days', 'a_b', 'axb', 'c\\d', 'cd']
 
 const CREATE_PAGE = `
   mutation CreatePage {
@@ -59,7 +59,7 @@ const LIST_TASKS = `
 const idsOf = (connection: {edges: {node: {id: string}}[]}) =>
   connection.edges.map(({node}) => node.id)
 
-test('a page title filter matches % and _ as typed', async () => {
+test('a page title filter matches %, _ and \\ as typed', async () => {
   const {cookie} = await signUp()
   const titleById = new Map<string, string>()
   for (const title of TEXTS) {
@@ -81,6 +81,7 @@ test('a page title filter matches % and _ as typed', async () => {
 
   expect(await titlesMatching('50%')).toEqual(['50% done'])
   expect(await titlesMatching('a_b')).toEqual(['a_b'])
+  expect(await titlesMatching('c\\d')).toEqual(['c\\d'])
 })
 
 test('a task filter matches % and _ as typed', async () => {
