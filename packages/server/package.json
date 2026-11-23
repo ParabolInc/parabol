@@ -50,6 +50,7 @@
     "@hocuspocus/extension-database": "^4.3.0",
     "@hocuspocus/server": "^4.3.0",
     "@mattkrick/sanitize-svg": "0.4.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@octokit/graphql-schema": "^10.36.0",
     "@opentelemetry/api": "^1.10.0",
     "@opentelemetry/context-async-hooks": "^3.0.0",

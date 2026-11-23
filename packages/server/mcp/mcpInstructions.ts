@@ -1,0 +1,15 @@
+const mcpInstructions = `Parabol is where teams run meetings (retrospectives, standups, sprint poker, check-ins), track tasks and write pages.
+
+IDs are opaque. Pass back exactly the id you received; never build, parse or change one.
+
+Each area needs its own scope: meetings, teams, tasks, users, orgs, templates, pages, comments and reports each have a :read scope to look and a :write scope to change, e.g. pages:read and pages:write. A call that needs a scope this connection lacks fails with FORBIDDEN.
+
+A connection may be limited to some organizations, teams or pages. Anything outside them is out of reach, and the error says so when you ask for something outside the connection.
+
+Pages: read a page with read_page. Change it with edit_page, which finds an exact run of text and replaces it, so read the page first and copy the text you want to find.
+
+Every error carries a code, such as UNAUTHENTICATED, FORBIDDEN, NOT_FOUND or BAD_USER_INPUT. Use the code to decide what to do next.
+
+Before writing a graphql_query or graphql_mutate call, use search_schema to find the fields you need and describe_type to see their arguments and types.`
+
+export default mcpInstructions
