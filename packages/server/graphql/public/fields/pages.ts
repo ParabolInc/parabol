@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import type {NotNull} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
+import {containsPattern} from '../../../postgres/containsPattern'
 import getKysely from '../../../postgres/getKysely'
 import {selectPages} from '../../../postgres/select'
 import {getUserId} from '../../../utils/authorization'
@@ -34,7 +35,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
       .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
       .$if(!!resourceGrants, (qb) =>
         qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id')))
       )
@@ -94,7 +95,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
         or([eb('teamId', 'is', null), eb('teamId', 'not in', selectFrom('teams').select('teamId'))])
       )
       .where('isPrivate', '=', false) // this must go down here so a shared child of a private page doesn't show up
-      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
       .leftJoin('PageUserSortOrder', (join) =>
         join
           .on('PageUserSortOrder.userId', '=', viewerId)
@@ -153,7 +154,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
     .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
     .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-    .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+    .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
     .$if(!!resourceGrants, (qb) => qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id'))))
     .where('deletedBy', 'is', null)
     .where('Page.isSyncedBlock', '=', false)
