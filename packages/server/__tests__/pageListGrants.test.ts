@@ -280,3 +280,21 @@ test('a token granted one subpage of a shared page lists it among shared pages',
   expect(await canOpenPage(bearerToken, subpage)).toBe(true)
   expect(await listPageIds(bearerToken, false)).toEqual([subpage])
 })
+
+test('a token granted one team lists another team page shared with it among shared pages', async () => {
+  const {cookie, teamA, pages} = await setUpPages()
+  const shared = await sendPublic({
+    query: SHARE_PAGE,
+    variables: {pageId: pages.teamBPage, subjectType: 'team', subjectId: teamA, role: 'viewer'},
+    cookie
+  })
+  expect(shared.errors).toBeUndefined()
+  const bearerToken = await createToken(cookie, ['USERS_READ', 'PAGES_READ'], {
+    grantedOrgIds: [],
+    grantedTeamIds: [teamA],
+    grantedPageIds: null
+  })
+
+  expect(await canOpenPage(bearerToken, pages.teamBPage)).toBe(true)
+  expect(await listPageIds(bearerToken, false)).toEqual([pages.teamBPage])
+})
