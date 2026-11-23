@@ -9,7 +9,6 @@ import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import type {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import {useOpenSidebarForPagesTrash} from '../hooks/useOpenSidebarForPagesTrash'
-import useReportsLaunchGlow from '../hooks/useReportsLaunchGlow'
 import useSidebar from '../hooks/useSidebar'
 import {SearchProvider} from '../modules/search/SearchContext'
 import {GlobalSearchDialog} from '../modules/search/SearchDialog'
@@ -44,7 +43,6 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           ...Page_viewer
-          lastMetAt
           overLimitCopy
           theme
           teams {
@@ -62,7 +60,6 @@ const Dashboard = (props: Props) => {
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   useOpenSidebarForPagesTrash(isOpen, toggle)
-  const reportsGlow = useReportsLaunchGlow(viewer.lastMetAt ?? null)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
@@ -80,25 +77,16 @@ const Dashboard = (props: Props) => {
           Skip to content
         </a>
         {isDesktop ? (
-          <DashTopBar
-            queryRef={data}
-            toggle={toggle}
-            isSidebarOpen={isOpen}
-            reportsGlow={reportsGlow}
-          />
+          <DashTopBar queryRef={data} toggle={toggle} isSidebarOpen={isOpen} />
         ) : (
-          <MobileDashTopBar queryRef={data} toggle={toggle} reportsGlow={reportsGlow} />
+          <MobileDashTopBar queryRef={data} toggle={toggle} />
         )}
         <div className='flex h-full flex-1 overflow-hidden'>
           {isDesktop ? (
-            <DashSidebar viewerRef={viewer} isOpen={isOpen} reportsGlow={reportsGlow} />
+            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
           ) : (
             <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-              <MobileDashSidebar
-                viewerRef={viewer}
-                handleMenuClick={handleMenuClick}
-                reportsGlow={reportsGlow}
-              />
+              <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
             </SwipeableDashSidebar>
           )}
           <main
