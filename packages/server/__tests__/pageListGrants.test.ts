@@ -59,9 +59,9 @@ const SHARE_PAGE = `
 `
 
 const LIST_PAGES = `
-  query ListPages($isPrivate: Boolean) {
+  query ListPages($isPrivate: Boolean, $parentPageId: ID) {
     viewer {
-      pages(first: 100, isPrivate: $isPrivate) {
+      pages(first: 100, isPrivate: $isPrivate, parentPageId: $parentPageId) {
         edges {
           node {
             id
@@ -183,8 +183,11 @@ const setUpPages = async () => {
   return {cookie, orgA, teamA, pages}
 }
 
-const listPageIds = async (bearerToken: string, isPrivate?: boolean) => {
-  const res = await sendPublic({query: LIST_PAGES, variables: {isPrivate}, bearerToken})
+const listPageIds = async (
+  bearerToken: string,
+  filters: {isPrivate?: boolean; parentPageId?: string | null} = {}
+) => {
+  const res = await sendPublic({query: LIST_PAGES, variables: filters, bearerToken})
   expect(res.errors).toBeUndefined()
   return res.data.viewer.pages.edges.map(({node}: {node: {id: string}}) => node.id) as string[]
 }
@@ -278,7 +281,7 @@ test('a token granted one subpage of a shared page lists it among shared pages',
   })
 
   expect(await canOpenPage(bearerToken, subpage)).toBe(true)
-  expect(await listPageIds(bearerToken, false)).toEqual([subpage])
+  expect(await listPageIds(bearerToken, {isPrivate: false})).toEqual([subpage])
 })
 
 test('a token granted one team lists another team page shared with it among shared pages', async () => {
@@ -296,5 +299,24 @@ test('a token granted one team lists another team page shared with it among shar
   })
 
   expect(await canOpenPage(bearerToken, pages.teamBPage)).toBe(true)
-  expect(await listPageIds(bearerToken, false)).toEqual([pages.teamBPage])
+  expect(await listPageIds(bearerToken, {isPrivate: false})).toEqual([pages.teamBPage])
+})
+
+test('a token granted one private subpage lists it among top-level private pages', async () => {
+  const {cookie, pages} = await setUpPages()
+  const copied = await sendPublic({
+    query: DUPLICATE_PAGE,
+    variables: {pageId: pages.otherPrivatePage, parentPageId: pages.privatePage},
+    cookie
+  })
+  expect(copied.errors).toBeUndefined()
+  const subpage = copied.data.duplicatePage.page.id as string
+  const bearerToken = await createToken(cookie, ['USERS_READ', 'PAGES_READ'], {
+    grantedOrgIds: [],
+    grantedTeamIds: [],
+    grantedPageIds: [subpage]
+  })
+
+  expect(await canOpenPage(bearerToken, subpage)).toBe(true)
+  expect(await listPageIds(bearerToken, {isPrivate: true, parentPageId: null})).toEqual([subpage])
 })

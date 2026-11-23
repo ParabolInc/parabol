@@ -1,12 +1,35 @@
 import {GraphQLError} from 'graphql'
-import type {NotNull} from 'kysely'
+import {expressionBuilder, type NotNull} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import {containsPattern} from '../../../postgres/containsPattern'
 import getKysely from '../../../postgres/getKysely'
 import {selectPages} from '../../../postgres/select'
+import type {DB} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {UserResolvers} from '../resolverTypes'
+
+const eb = expressionBuilder<DB, 'Page'>()
+
+const isTopLevelPage = (viewerId: string, resourceGrants: ResourceGrants | undefined) =>
+  eb.or([
+    eb('Page.parentPageId', 'is', null),
+    ...(resourceGrants
+      ? [
+          eb.not(
+            eb.exists(
+              eb
+                .selectFrom('PageAccess as parentAccess')
+                .select('parentAccess.pageId')
+                .whereRef('parentAccess.pageId', '=', 'Page.parentPageId')
+                .where('parentAccess.userId', '=', viewerId)
+                .where(({ref}) => resourceGrants.grantsPage(ref('parentAccess.pageId')))
+            )
+          )
+        ]
+      : [])
+  ])
 
 export const pages: NonNullable<UserResolvers['pages']> = async (
   _source,
@@ -32,7 +55,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     const pagesPlusOne = await selectPages()
       .where('deletedBy', '=', viewerId)
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(dbParentPageId === null, (qb) => qb.where(isTopLevelPage(viewerId, resourceGrants)))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
       .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
@@ -165,7 +188,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     .where('PageAccess.userId', '=', viewerId)
     .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
     .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-    .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+    .$if(dbParentPageId === null, (qb) => qb.where(isTopLevelPage(viewerId, resourceGrants)))
     .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
     .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
     .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
