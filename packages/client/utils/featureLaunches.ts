@@ -1,7 +1,8 @@
 // A feature launch highlights something new until the viewer clicks it or the launch ends.
 // Clicks are remembered per browser in localStorage, under the key `${id}LaunchSeen`
 export const FEATURE_LAUNCHES = {
-  reports: {endsAt: new Date(2027, 0, 1)}
+  reports: {endsAt: new Date(2027, 0, 1)},
+  teamHealthInRetro: {endsAt: new Date(2027, 0, 1)}
 } satisfies Record<string, {endsAt: Date}>
 
 export type FeatureLaunchId = keyof typeof FEATURE_LAUNCHES

@@ -1,3 +1,4 @@
+import type {FeatureLaunchStatus} from '../hooks/useFeatureLaunch'
 import {cn} from '../ui/cn'
 import {Info} from '../ui/icons'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
@@ -12,14 +13,14 @@ interface Props {
   className?: string
   label: string
   tooltip: string
-  isNew?: boolean
+  launch?: FeatureLaunchStatus
   onClick: () => void
 }
 
 // The toggle is stretched across the row beneath its content, so the info button sits beside the
 // label without being nested inside another button
 const NewMeetingSettingsToggleRow = (props: Props) => {
-  const {active, className, label, tooltip, isNew, onClick} = props
+  const {active, className, label, tooltip, launch = 'off', onClick} = props
   return (
     <div
       className={cn(
@@ -34,10 +35,15 @@ const NewMeetingSettingsToggleRow = (props: Props) => {
         onClick={onClick}
         className='absolute inset-0 rounded-lg bg-transparent focus-visible:ring-2 focus-visible:ring-accent'
       />
-      {isNew && <LaunchRing />}
+      <LaunchRing status={launch} />
       <span className='pointer-events-none relative min-w-0 flex-1 font-semibold text-fg-primary text-xl leading-6'>
-        {isNew && (
-          <span className='mb-0.5 block font-bold text-[11px] text-rose-700 uppercase leading-4 tracking-wide dark:text-rose-400'>
+        {launch !== 'off' && (
+          <span
+            className={cn(
+              'mb-0.5 block font-bold text-[11px] text-rose-700 uppercase leading-4 tracking-wide transition-opacity duration-700 dark:text-rose-400',
+              launch === 'retiring' && 'opacity-0'
+            )}
+          >
             New
           </span>
         )}
