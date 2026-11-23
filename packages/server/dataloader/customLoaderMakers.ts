@@ -14,6 +14,7 @@ import groupTeamPromptResponsesByUser, {
 } from '../graphql/mutations/helpers/groupTeamPromptResponsesByUser'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
+import {containsPattern} from '../postgres/containsPattern'
 import getKysely from '../postgres/getKysely'
 import selectOrgUserActivitySpans, {
   isOrgUserActiveAt
@@ -232,7 +233,9 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             .where('teamId', 'in', teamIds)
             .$if(hasUserIds, (qb) => qb.where('userId', 'in', userIds))
             .$if(hasStatusFilters, (qb) => qb.where('status', 'in', statusFilters!))
-            .$if(!!filterQuery, (qb) => qb.where('plaintextContent', 'ilike', `%${filterQuery}%`))
+            .$if(!!filterQuery, (qb) =>
+              qb.where('plaintextContent', 'ilike', containsPattern(filterQuery!))
+            )
             .$if(!!after, (qb) => qb.where('updatedAt', '<', after!))
             .$if(!!archived, (qb) => qb.where(sql<boolean>`'archived' = ANY(tags)`))
             .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ALL(tags)`))
