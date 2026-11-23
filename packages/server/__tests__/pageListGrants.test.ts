@@ -129,18 +129,17 @@ const setUpPages = async () => {
   expect(added.errors).toBeUndefined()
   const teamB = added.data.addOrg.team.id as string
 
-  // a session cookie keeps the teams it was issued with, so write as a token made after Team B
-  const author = await createToken(cookie, ['PAGES_WRITE'], {
+  const authorOnBothTeams = await createToken(cookie, ['PAGES_WRITE'], {
     grantedOrgIds: null,
     grantedTeamIds: null,
     grantedPageIds: null
   })
   const pages = {
-    teamAPage: await createPage(author, teamA),
-    orgAPage: await createPage(author),
-    teamBPage: await createPage(author, teamB),
-    privatePage: await createPage(author),
-    otherPrivatePage: await createPage(author)
+    teamAPage: await createPage(authorOnBothTeams, teamA),
+    orgAPage: await createPage(authorOnBothTeams),
+    teamBPage: await createPage(authorOnBothTeams, teamB),
+    privatePage: await createPage(authorOnBothTeams),
+    otherPrivatePage: await createPage(authorOnBothTeams)
   }
   const shared = await sendPublic({
     query: SHARE_PAGE,
@@ -211,13 +210,14 @@ test.each<{grant: string; grants: (setup: Setup) => Grants; reaches: PageName[]}
   const setup = await setUpPages()
   const bearerToken = await createToken(setup.cookie, ['USERS_READ', 'PAGES_READ'], grants(setup))
 
+  const listedIds = await listPageIds(bearerToken)
   const openedIds: string[] = []
-  for (const pageId of Object.values(setup.pages)) {
+  for (const pageId of new Set([...Object.values(setup.pages), ...listedIds])) {
     if (await canOpenPage(bearerToken, pageId)) openedIds.push(pageId)
   }
 
   expect(namesOf(setup.pages, openedIds)).toEqual(reaches)
-  expect(namesOf(setup.pages, await listPageIds(bearerToken))).toEqual(reaches)
+  expect(listedIds.toSorted()).toEqual(openedIds.toSorted())
 })
 
 test('a token granted one subpage of a shared page lists it among shared pages', async () => {
