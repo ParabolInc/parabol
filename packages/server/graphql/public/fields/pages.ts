@@ -124,6 +124,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
                 userId: viewerId,
                 sortOrder: p.userSortOrder
               })
+              .onConflict((oc) => oc.columns(['userId', 'pageId']).doNothing())
               .execute()
           }
         })
