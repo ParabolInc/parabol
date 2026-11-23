@@ -7,7 +7,8 @@ import {
   isExtensionError,
   isIgnoredError,
   isNetworkError,
-  isOldBrowserError
+  isOldBrowserError,
+  UPDATE_BROWSER_URL
 } from '../../utils/errorFilters'
 import {STALE_CLIENT_NOTE} from '../../utils/staleClientNote'
 
@@ -49,13 +50,12 @@ const ErrorComponent = (props: Props) => {
   }
 
   if (isOldBrowserError(error)) {
-    const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
-        {"Oh no! You've found a bug because the browser you're using needs to be updated."}
-        <Button variant='primary' size='sm' className='mt-2'>
-          <a className='text-inherit' href={url} target='_blank' rel='noreferrer'>
-            Update now
+        Your browser is too old to run Parabol. Update it, then reload this page.
+        <Button asChild variant='primary' size='sm' className='mt-2'>
+          <a href={UPDATE_BROWSER_URL} target='_blank' rel='noreferrer'>
+            Update your browser
           </a>
         </Button>
       </ErrorBlock>
