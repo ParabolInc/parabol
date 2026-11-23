@@ -6,7 +6,9 @@ import {AI_MODEL} from './aiModel'
 import groupReflections from './groupReflections/groupReflectionsStructured'
 import type {GroupReflectionsInput, GroupReflectionsOptions} from './groupReflections/types'
 import logError from './logError'
+import parseRelatedDiscussionPicks from './parseRelatedDiscussionPicks'
 import parseTeamHealthCategorySummary from './parseTeamHealthCategorySummary'
+import renderTeamBackground from './renderTeamBackground'
 
 export interface TeamHealthCategorySummaryInput {
   category: string
@@ -24,6 +26,8 @@ export interface TeamHealthCategorySummaryInput {
 // a sentiment of ±0.8 or more takes comments that agree with the answers, since +0.8 marks a bright
 // spot. The model can't be trusted to hold back when there are no comments, so the cap is enforced
 const UNCORROBORATED_SENTIMENT_LIMIT = 0.75
+
+const MAX_TOPIC_CHARS = 2000
 
 class OpenAIServerManager {
   openAIApi
@@ -54,10 +58,14 @@ class OpenAIServerManager {
     )
   }
 
-  async getStandupSummary(responses: Array<{content: string; user: string}>, questions: string[]) {
+  async getStandupSummary(
+    responses: Array<{content: string; user: string}>,
+    questions: string[],
+    teamBriefing?: string | null
+  ) {
     if (!this.openAIApi) return null
 
-    const prompt = `Below is a list of responses submitted by team members to the questions:
+    const prompt = `${renderTeamBackground(teamBriefing)}Below is a list of responses submitted by team members to the questions:
 ${questions.map((question, i) => `${i + 1}. ${question}`).join('\n')}
 
 Each response includes the team member's name. Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence that includes who is working on what. Use "they/them" pronouns when referring to people.
@@ -91,9 +99,13 @@ Each response includes the team member's name. Identify up to 3 key themes found
     }
   }
 
-  async getDiscussionPromptQuestion(topic: string, reflections: RetroReflection[]) {
+  async getDiscussionPromptQuestion(
+    topic: string,
+    reflections: Pick<RetroReflection, 'plaintextContent'>[],
+    teamBriefing?: string | null
+  ) {
     if (!this.openAIApi) return null
-    const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
+    const prompt = `${renderTeamBackground(teamBriefing)}As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
 
     Step 1: Categorize the discussion into one of the following four groups:
 
@@ -149,7 +161,9 @@ Each response includes the team member's name. Identify up to 3 key themes found
   async getPokerEstimate(
     issues: {title: string; description: string; issueKey: string; storyPoints: string}[],
     dimensionName: string,
-    possibleLabels: string[]
+    possibleLabels: string[],
+    pastEstimates: string[],
+    reasoningEffort: 'low' | 'medium'
   ): Promise<string | null> {
     if (!this.openAIApi) return null
     if (issues.length === 0) return null
@@ -163,6 +177,18 @@ Each response includes the team member's name. Identify up to 3 key themes found
           `- Key: ${issueKey}. Title: ${title}. Points: (${storyPoints}). Description: ${description}`
       )
       .join('\n')
+    const scaledEstimates = pastEstimates.filter((label) => possibleLabels.includes(label))
+    const spread = possibleLabels
+      .map((label) => ({
+        label,
+        count: scaledEstimates.filter((estimate) => estimate === label).length
+      }))
+      .filter(({count}) => count > 0)
+      .map(({label, count}) => `${label}: ${Math.round((count / scaledEstimates.length) * 100)}%`)
+      .join(', ')
+    const spreadLine = spread
+      ? `\n\nHow this team's ${scaledEstimates.length} most recent estimates are spread: ${spread}.`
+      : ''
     const prompt = `You are an agile estimation assistant helping a team play planning poker. Estimate the "${dimensionName}" for the issue below.
 
 You MUST choose exactly one value from these allowed values: ${allowedValues}.
@@ -170,8 +196,8 @@ You MUST choose exactly one value from these allowed values: ${allowedValues}.
 Issue to estimate:
 Key: ${target.issueKey}. Title: ${target.title}. Description: ${target.description}
 
-Recent issues from the same project that already have an estimate, for reference:
-${referenceBlock}
+Issues from the same project that already have an estimate, most similar first, for reference:
+${referenceBlock}${spreadLine}
 
 Compare the scope and complexity of the issue to estimate against the reference issues, then give your estimate.
 
@@ -185,7 +211,7 @@ Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate:
             content: prompt
           }
         ],
-        reasoning_effort: 'low'
+        reasoning_effort: reasoningEffort
       })
       const estimate = response.choices[0]?.message?.content?.trim()
       return estimate || null
@@ -402,7 +428,8 @@ ${previousCheck}`
     prompts: {question: string; description: string}[],
     userName: string,
     maxDrafts: number,
-    userPrompt?: string | null
+    userPrompt?: string | null,
+    teamBriefing?: string | null
   ): Promise<{
     items: {issueIds: string[]; promptIndex: number; isColumnClear: boolean; content: string}[]
     tokenCost: number
@@ -448,7 +475,12 @@ Return JSON of the form: { "items": [{ "ids": ["<item id, e.g. W3>"], "promptInd
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
-        messages: [{role: 'user', content: `${instructions}\n\nItems:\n${issuesText}`}],
+        messages: [
+          {
+            role: 'user',
+            content: `${renderTeamBackground(teamBriefing)}${instructions}\n\nItems:\n${issuesText}`
+          }
+        ],
         response_format: {type: 'json_object'},
         reasoning_effort: 'medium'
       })
@@ -503,7 +535,8 @@ Return JSON of the form: { "items": [{ "ids": ["<item id, e.g. W3>"], "promptInd
     prompts: {question: string; description: string}[],
     userName: string,
     pastResponses: string[],
-    userPrompt?: string | null
+    userPrompt?: string | null,
+    teamBriefing?: string | null
   ): Promise<{
     items: {content: string; promptIndex: number}[]
     unused: {id: string; reason: string}[]
@@ -553,7 +586,12 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: AI_MODEL,
-        messages: [{role: 'user', content: `${instructions}\n\nRecent work items:\n${issuesText}`}],
+        messages: [
+          {
+            role: 'user',
+            content: `${renderTeamBackground(teamBriefing)}${instructions}\n\nRecent work items:\n${issuesText}`
+          }
+        ],
         response_format: {type: 'json_object'},
         reasoning_effort: 'low'
       })
@@ -592,7 +630,11 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
     }
   }
 
-  async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
+  async generateSummary(
+    yamlData: string,
+    userPrompt?: string | null,
+    teamBriefing?: string | null
+  ): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = `https://${process.env.HOST}/meet`
     const defaultPrompt = `
@@ -618,7 +660,7 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
         messages: [
           {
             role: 'user',
-            content: `${prompt}\n\n${yamlData}`
+            content: `${renderTeamBackground(teamBriefing)}${prompt}\n\n${yamlData}`
           }
         ],
         reasoning_effort: 'low'
@@ -650,9 +692,62 @@ Return JSON of the form: { "items": [{ "content": "<the drafted answer, as markd
     }
   }
 
-  async generateGroupTitle(reflections: {plaintextContent: string}[]) {
+  async pickRelatedDiscussions(
+    topic: string,
+    pastTopics: {discussedAt: Date; text: string}[],
+    maxPicks: number,
+    teamBriefing?: string | null
+  ) {
+    if (!this.openAIApi || pastTopics.length === 0) return null
+    const toDay = (date: Date) => date.toISOString().slice(0, 10)
+    const quote = (text: string) => `"""\n${text.trim().slice(0, MAX_TOPIC_CHARS)}\n"""`
+    const background = renderTeamBackground(
+      teamBriefing,
+      'Use it to recognize the people, projects, systems, acronyms and recurring themes the topics refer to, so you can tell when two topics are about the same specific thing. It is context only: judge the topics on their own merits.'
+    )
+    const prompt = `${background}A team is about to discuss the current topic below in its retrospective. A search of the team's earlier retrospectives found the past topics below it, each with a number in brackets and the day it was discussed. The search matches wording, so some share only a few words or a broad theme.
+
+Pick the past topics about the same specific issue as the current topic: the same problem, project, system, process or decision, so that rereading that discussion would help the team now. A broad theme like communication, testing or meetings is not the same issue.
+
+Pick at most ${maxPicks}, most useful first, or none if no past topic is about the same issue. Prefer recent discussions: one from last week about the same issue is more useful than a closer match from last year. Today is ${toDay(new Date())}.
+
+Current topic:
+${quote(topic)}
+
+Past topics:
+${pastTopics.map(({discussedAt, text}, idx) => `[${idx + 1}] Discussed ${toDay(discussedAt)}\n${quote(text)}`).join('\n\n')}
+
+Return JSON of the form: {"related": [<the numbers of the past topics you picked>]}`
+    try {
+      const response = await this.openAIApi.chat.completions.create(
+        {
+          model: AI_MODEL,
+          messages: [{role: 'user', content: prompt}],
+          response_format: {type: 'json_object'},
+          reasoning_effort: 'low'
+        },
+        {timeout: ms('30s'), maxRetries: 1}
+      )
+      const [choice] = response.choices
+      const content = choice?.message?.content
+      if (!content) {
+        logError(new Error(`pickRelatedDiscussions got no answer: ${choice?.finish_reason}`))
+        return null
+      }
+      return parseRelatedDiscussionPicks(content, pastTopics.length, maxPicks)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to pickRelatedDiscussions')
+      logError(error)
+      return null
+    }
+  }
+
+  async generateGroupTitle(
+    reflections: {plaintextContent: string}[],
+    teamBriefing?: string | null
+  ) {
     if (!this.openAIApi) return null
-    const prompt = `Generate a short (2-4 words) theme or title that captures the essence of these related retrospective comments. The title should be clear and actionable.
+    const prompt = `${renderTeamBackground(teamBriefing)}Generate a short (2-4 words) theme or title that captures the essence of these related retrospective comments. The title should be clear and actionable.
 
 ${reflections.map((r) => r.plaintextContent).join('\n')}
 

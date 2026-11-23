@@ -10,6 +10,7 @@ import {
   findRelatedDiscussions,
   getStepAfterEmbeddingTopic
 } from '../../../embedder/workflows/findRelatedDiscussions'
+import pickRelatedDiscussions from '../../../embedder/workflows/helpers/pickRelatedDiscussions'
 import {publishSimilarRetroTopics} from '../../../embedder/workflows/helpers/publishSimilarRetroTopics'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import generateUID from '../../generateUID'
@@ -22,6 +23,10 @@ jest.mock('../../../embedder/ai_models/ModelManager', () => ({
 jest.mock('../../../embedder/workflows/helpers/publishSimilarRetroTopics', () => ({
   publishSimilarRetroTopics: jest.fn(async () => undefined)
 }))
+jest.mock('../../../embedder/workflows/helpers/pickRelatedDiscussions', () => ({
+  __esModule: true,
+  default: jest.fn(async () => null)
+}))
 
 const HARRIER: ModelId = 'Parabol/harrier-oss-v1-270m-ONNX-INT8'
 const QWEN3: ModelId = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
@@ -33,11 +38,17 @@ const orgId = `relatedOrg${generateUID()}`
 const teamId = `relatedTeam${generateUID()}`
 const otherTeamId = `relatedTeam${generateUID()}`
 const quietTeamId = `relatedTeam${generateUID()}`
+const crowdedTeamId = `relatedTeam${generateUID()}`
+const floorTeamId = `relatedTeam${generateUID()}`
 const meetingId = `relatedMeeting${generateUID()}`
 const pastMeetingId = `relatedMeeting${generateUID()}`
 const otherTeamMeetingId = `relatedMeeting${generateUID()}`
 const quietMeetingId = `relatedMeeting${generateUID()}`
-const allTeamIds = [teamId, otherTeamId, quietTeamId]
+const crowdedMeetingId = `relatedMeeting${generateUID()}`
+const crowdedPastMeetingId = `relatedMeeting${generateUID()}`
+const floorMeetingId = `relatedMeeting${generateUID()}`
+const floorPastMeetingId = `relatedMeeting${generateUID()}`
+const allTeamIds = [teamId, otherTeamId, quietTeamId, crowdedTeamId, floorTeamId]
 
 const insertMeeting = (id: string, meetingTeamId: string) =>
   pg
@@ -121,12 +132,17 @@ beforeAll(async () => {
     insertMeeting(meetingId, teamId),
     insertMeeting(pastMeetingId, teamId),
     insertMeeting(otherTeamMeetingId, otherTeamId),
-    insertMeeting(quietMeetingId, quietTeamId)
+    insertMeeting(quietMeetingId, quietTeamId),
+    insertMeeting(crowdedMeetingId, crowdedTeamId),
+    insertMeeting(crowdedPastMeetingId, crowdedTeamId),
+    insertMeeting(floorMeetingId, floorTeamId),
+    insertMeeting(floorPastMeetingId, floorTeamId)
   ])
 })
 
 beforeEach(() => {
   jest.mocked(publishSimilarRetroTopics).mockClear()
+  jest.mocked(pickRelatedDiscussions).mockClear()
   mockEmbedder.getEmbedding.mockClear()
 })
 
@@ -145,7 +161,7 @@ it('embeds the topic with the same-issue prompt', async () => {
   expect(mockEmbedder.getEmbedding).toHaveBeenCalledWith(`${PROMPT}Flaky deploys\nCI keeps failing`)
 })
 
-it('links past topics from the team over the cut-off, best first, at most 3', async () => {
+it('without AI, links past topics from the team over the cut-off, best first, at most 3', async () => {
   const topic = await insertTopic(teamId, meetingId, 'Reviews sit for days')
   const best = await insertTopic(teamId, pastMeetingId, 'PRs wait on approval')
   const second = await insertTopic(teamId, pastMeetingId, 'Slow code review')
@@ -162,7 +178,56 @@ it('links past topics from the team over the cut-off, best first, at most 3', as
   expect(await run(topic)).toBe(false)
   const [, links] = jest.mocked(publishSimilarRetroTopics).mock.calls[0]!
   expect(links.map(({embeddingsMetadataId}) => embeddingsMetadataId)).toEqual([best, second, third])
-  expect(links[0]!.similarity).toBeCloseTo(0.95, 2)
+})
+
+it('lets the AI choose from the 10 closest past topics', async () => {
+  const topic = await insertTopic(crowdedTeamId, crowdedMeetingId, 'Deploys break on Fridays')
+  const pastTopics = await Promise.all(
+    Array.from({length: 11}, (_, idx) =>
+      insertTopic(crowdedTeamId, crowdedPastMeetingId, `Deploy trouble ${idx}`)
+    )
+  )
+  await Promise.all(pastTopics.map((id, idx) => insertVector(id, 0.99 - idx / 50, null)))
+  await run(topic)
+  const [pickTeamId, pickTopic, candidates, maxPicks] =
+    jest.mocked(pickRelatedDiscussions).mock.calls[0]!
+  expect(pickTeamId).toBe(crowdedTeamId)
+  expect(pickTopic).toBe('Deploys break on Fridays')
+  expect(candidates.map(({embeddingsMetadataId}) => embeddingsMetadataId)).toEqual(
+    pastTopics.slice(0, 10)
+  )
+  expect(maxPicks).toBe(3)
+})
+
+it('lets the AI judge topics under the cut-off, and shows only those over it without AI', async () => {
+  const topic = await insertTopic(floorTeamId, floorMeetingId, 'Releases slip')
+  const [overCutOff, underCutOff, nearFloor, belowFloor] = await Promise.all(
+    ['Release train', 'Launch delays', 'Shipping dates', 'Office snacks'].map((text) =>
+      insertTopic(floorTeamId, floorPastMeetingId, text)
+    )
+  )
+  await Promise.all([
+    insertVector(overCutOff!, 0.7, null),
+    insertVector(underCutOff!, 0.6, null),
+    insertVector(nearFloor!, 0.53, null),
+    insertVector(belowFloor!, 0.5, null)
+  ])
+  await run(topic)
+  const [, , candidates] = jest.mocked(pickRelatedDiscussions).mock.calls[0]!
+  expect(candidates.map(({embeddingsMetadataId}) => embeddingsMetadataId)).toEqual([
+    overCutOff,
+    underCutOff,
+    nearFloor
+  ])
+  const [, links] = jest.mocked(publishSimilarRetroTopics).mock.calls[0]!
+  expect(links.map(({embeddingsMetadataId}) => embeddingsMetadataId)).toEqual([overCutOff])
+
+  jest
+    .mocked(pickRelatedDiscussions)
+    .mockImplementationOnce(async (_teamId, _topic, aiCandidates) => [aiCandidates[2]!])
+  await run(topic)
+  const [, aiLinks] = jest.mocked(publishSimilarRetroTopics).mock.calls[1]!
+  expect(aiLinks.map(({embeddingsMetadataId}) => embeddingsMetadataId)).toEqual([nearFloor])
 })
 
 it('scores a long past topic by its best chunk, once', async () => {

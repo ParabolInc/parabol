@@ -1,6 +1,7 @@
 import yaml from 'js-yaml'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
+import loadTeamBriefing from '../../../utils/loadTeamBriefing'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from './canAccessAI'
 import {transformRetroToAIFormat} from './transformRetroToAIFormat'
@@ -26,7 +27,10 @@ export const generateRetroSummary = async (
       return setSummaryToNull(meetingId)
     }
 
-    const transformedMeeting = await transformRetroToAIFormat(meetingId, dataLoader)
+    const [transformedMeeting, teamBriefing] = await Promise.all([
+      transformRetroToAIFormat(meetingId, dataLoader),
+      loadTeamBriefing(teamId, dataLoader)
+    ])
     if (!transformedMeeting || transformedMeeting.length === 0) {
       return setSummaryToNull(meetingId)
     }
@@ -36,7 +40,7 @@ export const generateRetroSummary = async (
     })
 
     const manager = new OpenAIServerManager()
-    const newSummary = await manager.generateSummary(yamlData, prompt)
+    const newSummary = await manager.generateSummary(yamlData, prompt, teamBriefing)
     if (!newSummary) {
       return setSummaryToNull(meetingId)
     }

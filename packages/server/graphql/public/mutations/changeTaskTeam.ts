@@ -3,9 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import deleteConflictingIntegratedTask from '../../../postgres/queries/deleteConflictingIntegratedTask'
 import type {TeamMemberIntegrationAuth} from '../../../postgres/types/pg'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 type CopiedAuthColumn = Exclude<
@@ -47,12 +46,13 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     throw new GraphQLError('Task not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {tags, teamId: oldTeamId} = task
-  if (!isTeamMember(authToken, oldTeamId)) {
-    throw new GraphQLError('Team not found', {extensions: {code: 'NOT_FOUND'}})
-  }
-  if (task.userId !== viewerId) {
-    throw new GraphQLError('Cannot change team for a task assigned to someone else', {
-      extensions: {code: 'FORBIDDEN'}
+  const [oldTeamMembers, newTeamMembers] = await Promise.all([
+    dataLoader.get('teamMembersByTeamId').load(oldTeamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId)
+  ])
+  if (task.userId && !newTeamMembers.some(({userId}) => userId === task.userId)) {
+    throw new GraphQLError('The task’s assignee is not on that team', {
+      extensions: {code: 'BAD_USER_INPUT'}
     })
   }
 
@@ -94,12 +94,6 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     }
   }
 
-  // filter mentions of old team members from task content
-  const teamMemberRes = (
-    await dataLoader.get('teamMembersByTeamId').loadMany([oldTeamId, teamId])
-  ).filter(isValid)
-  const oldTeamMembers = teamMemberRes[0]!
-  const newTeamMembers = teamMemberRes[1]!
   // If there is a task with the same integration hash in the new team, then delete it first.
   // This is done so there are no duplicates and also solves the issue of the conflicting task being
   // private or archived.

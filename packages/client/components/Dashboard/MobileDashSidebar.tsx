@@ -18,7 +18,7 @@ import {
   Work as WorkIcon
 } from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
-import type {ReportsLaunchGlowState} from '../../hooks/useReportsLaunchGlow'
+import useFeatureLaunch from '../../hooks/useFeatureLaunch'
 import {cn} from '../../ui/cn'
 import {
   AUTHENTICATION_PAGE,
@@ -30,16 +30,15 @@ import {
 } from '../../utils/constants'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
+import LaunchNavGlow from './LaunchNavGlow'
 import LeftDashNavItem from './LeftDashNavItem'
 import LeftDashParabol from './LeftDashNavParabol'
-import ReportsLaunchGlow from './ReportsLaunchGlow'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   handleMenuClick: () => void
   viewerRef: DashSidebar_viewer$key | null
-  reportsGlow: ReportsLaunchGlowState
 }
 
 // NavSidebar.WIDTH = 256px (max-w-64/min-w-64); GlobalBanner.HEIGHT = 24px (pt-6)
@@ -62,7 +61,7 @@ const navItemsWrapClassName = 'px-3 pt-2.5 pb-0'
 const footerClassName = 'mt-auto flex flex-col justify-end p-2'
 
 const MobileDashSidebar = (props: Props) => {
-  const {handleMenuClick, viewerRef, reportsGlow} = props
+  const {handleMenuClick, viewerRef} = props
   const matchRoute = useMatchRoute()
   const match = matchRoute({to: '/me/organizations/$orgId', fuzzy: true})
 
@@ -71,6 +70,7 @@ const MobileDashSidebar = (props: Props) => {
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
         ...DashNavList_viewer
+        lastMetAt
         organizations {
           id
           name
@@ -79,6 +79,7 @@ const MobileDashSidebar = (props: Props) => {
     `,
     viewerRef
   )
+  const [reportsLaunch, dismissReportsLaunch] = useFeatureLaunch('reports', !!viewer?.lastMetAt)
   if (!viewer) return null
   const {organizations} = viewer
 
@@ -211,13 +212,14 @@ const MobileDashSidebar = (props: Props) => {
               label={'Tasks'}
             />
             <LeftDashNavItem
-              onClick={handleMenuClick}
+              onClick={() => {
+                dismissReportsLaunch()
+                handleMenuClick()
+              }}
               Icon={PollOutlinedIcon}
               href={'/reports'}
               label={'Reports'}
-              decoration={
-                reportsGlow !== 'off' && <ReportsLaunchGlow retiring={reportsGlow === 'retiring'} />
-              }
+              decoration={<LaunchNavGlow status={reportsLaunch} />}
             />
             <LeftDashNavItem
               onClick={handleMenuClick}

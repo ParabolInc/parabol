@@ -16,6 +16,7 @@ import {isReactableInMeeting} from './rules/isReactableInMeeting'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
 import isSuperUser from './rules/isSuperUser'
+import {isTaskVisibleToViewer} from './rules/isTaskVisibleToViewer'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
 import {isTeamMemberOrOrgLeader} from './rules/isTeamMemberOrOrgLeader'
@@ -150,7 +151,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.archiveTeam'>('args.teamId', 'teams')
     ),
     autogroup: isTeamMemberOfMeeting<'Mutation.autogroup'>('args.meetingId'),
-    changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
+    changeTaskTeam: and(
+      isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
+      isTeamMember<'Mutation.changeTaskTeam'>('args.taskId', 'tasks'),
+      isTaskVisibleToViewer<'Mutation.changeTaskTeam'>('args.taskId')
+    ),
     createImposterToken: isSuperUser,
     createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPICode: and(isAuthenticated, hasTokenAudience(['action'])),

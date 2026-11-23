@@ -1,11 +1,14 @@
+import type {FeatureLaunchStatus} from '../../hooks/useFeatureLaunch'
 import {cn} from '../../ui/cn'
 
 interface Props {
-  retiring: boolean
+  status: FeatureLaunchStatus
 }
 
-const ReportsLaunchGlow = (props: Props) => {
-  const {retiring} = props
+const LaunchNavGlow = (props: Props) => {
+  const {status} = props
+  if (status === 'off') return null
+  const retiring = status === 'retiring'
   return (
     <>
       <span
@@ -53,4 +56,4 @@ const ReportsLaunchGlow = (props: Props) => {
   )
 }
 
-export default ReportsLaunchGlow
+export default LaunchNavGlow

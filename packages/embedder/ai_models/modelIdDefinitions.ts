@@ -96,6 +96,7 @@ const legacySettings = {
   discussionText: 'narrated',
   relatedDiscussionPrompt: null,
   relatedDiscussionFloor: 0.67,
+  relatedDiscussionCandidateFloor: 0.67,
   reflectionPrompt: '',
   similarWordingThreshold: 0.81,
   templateSearchFloor: 0.5,
@@ -141,6 +142,8 @@ export const modelIdDefinitions = {
     relatedDiscussionPrompt:
       'Instruct: Given a topic from a team retrospective, retrieve past topics about the same issue\nQuery: ',
     relatedDiscussionFloor: 0.62,
+    // The AI turns down topics that only share wording, so it judges ones the cut-off alone would hide
+    relatedDiscussionCandidateFloor: 0.52,
     reflectionPrompt:
       'Instruct: Given a note from a team retrospective, retrieve notes that make the same point\nQuery: ',
     similarWordingThreshold: 0.78,

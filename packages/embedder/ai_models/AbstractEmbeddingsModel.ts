@@ -32,6 +32,7 @@ export interface EmbeddingModelParams {
   discussionText: DiscussionTextFormat
   relatedDiscussionPrompt: string | null
   relatedDiscussionFloor: number
+  relatedDiscussionCandidateFloor: number
   reflectionPrompt: string
   similarWordingThreshold: number
   templateSearchFloor: number

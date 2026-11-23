@@ -2,12 +2,12 @@ import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
-import type {ReportsLaunchGlowState} from '~/hooks/useReportsLaunchGlow'
+import useFeatureLaunch from '~/hooks/useFeatureLaunch'
 import {Menu} from '~/ui/icons'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+import LaunchMenuGlow from './LaunchMenuGlow'
 import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
 import PlainButton from './PlainButton/PlainButton'
-import ReportsLaunchMenuGlow from './ReportsLaunchMenuGlow'
 import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
 import TopBarNotifications from './TopBarNotifications'
@@ -16,13 +16,11 @@ import TopBarSearch from './TopBarSearch'
 interface Props {
   toggle: () => void
   isSidebarOpen: boolean
-  reportsGlow: ReportsLaunchGlowState
   queryRef: DashTopBar_query$key
 }
 
 const DashTopBar = (props: Props) => {
-  const {toggle, isSidebarOpen, reportsGlow, queryRef} = props
-  const showMenuGlow = !isSidebarOpen && reportsGlow !== 'off'
+  const {toggle, isSidebarOpen, queryRef} = props
   const data = useFragment(
     graphql`
       fragment DashTopBar_query on Query {
@@ -32,11 +30,14 @@ const DashTopBar = (props: Props) => {
           ...TopBarAvatar_viewer
           ...TopBarSearch_viewer
           picture
+          lastMetAt
         }
       }
     `,
     queryRef
   )
+  const [reportsLaunch] = useFeatureLaunch('reports', !!data.viewer?.lastMetAt)
+  const menuLaunch = isSidebarOpen ? 'off' : reportsLaunch
   const navigate = useNavigate()
   const gotoHome = () => {
     navigate({to: '/meetings'})
@@ -47,13 +48,11 @@ const DashTopBar = (props: Props) => {
         <PlainButton
           onClick={toggle}
           aria-label={
-            showMenuGlow && reportsGlow === 'glowing'
-              ? 'Toggle dashboard menu. New: Reports'
-              : 'Toggle dashboard menu'
+            menuLaunch === 'new' ? 'Toggle dashboard menu. New: Reports' : 'Toggle dashboard menu'
           }
           className='relative isolate m-3 rounded-md p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
         >
-          {showMenuGlow && <ReportsLaunchMenuGlow retiring={reportsGlow === 'retiring'} />}
+          <LaunchMenuGlow status={menuLaunch} />
           <Menu />
         </PlainButton>
         <button

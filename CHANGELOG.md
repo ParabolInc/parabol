@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.3.1](https://github.com/ParabolInc/parabol/compare/v16.3.0...v16.3.1) (2026-11-20)
+
+
+### Fixed
+
+* **retro:** keep the drawer's tab while it closes and clear drafts when the template changes ([#14327](https://github.com/ParabolInc/parabol/issues/14327)) ([1f34b76](https://github.com/ParabolInc/parabol/commit/1f34b767fc2516d7e9a78859a2dddcee881ed1ed))
+
 ## [16.3.0](https://github.com/ParabolInc/parabol/compare/v16.2.0...v16.3.0) (2026-11-20)
 
 

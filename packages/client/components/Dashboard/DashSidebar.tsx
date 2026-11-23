@@ -16,7 +16,7 @@ import {
   Work as WorkIcon
 } from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
-import type {ReportsLaunchGlowState} from '../../hooks/useReportsLaunchGlow'
+import useFeatureLaunch from '../../hooks/useFeatureLaunch'
 import {SearchDialog} from '../../modules/search/SearchDialog'
 import {cn} from '../../ui/cn'
 import {
@@ -29,8 +29,8 @@ import {
 } from '../../utils/constants'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
+import LaunchNavGlow from './LaunchNavGlow'
 import LeftDashNavItem from './LeftDashNavItem'
-import ReportsLaunchGlow from './ReportsLaunchGlow'
 
 const navClassName = (isOpen: boolean) =>
   cn(
@@ -42,11 +42,10 @@ const navClassName = (isOpen: boolean) =>
 interface Props {
   isOpen: boolean
   viewerRef: DashSidebar_viewer$key | null
-  reportsGlow: ReportsLaunchGlowState
 }
 
 const DashSidebar = (props: Props) => {
-  const {isOpen, viewerRef, reportsGlow} = props
+  const {isOpen, viewerRef} = props
   const matchRoute = useMatchRoute()
   const match = matchRoute({to: '/me/organizations/$orgId', fuzzy: true})
 
@@ -55,6 +54,7 @@ const DashSidebar = (props: Props) => {
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
         ...DashNavList_viewer
+        lastMetAt
         organizations {
           id
           name
@@ -63,6 +63,7 @@ const DashSidebar = (props: Props) => {
     `,
     viewerRef
   )
+  const [reportsLaunch, dismissReportsLaunch] = useFeatureLaunch('reports', !!viewer?.lastMetAt)
 
   if (!viewer) return null
   const {organizations} = viewer
@@ -138,12 +139,11 @@ const DashSidebar = (props: Props) => {
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
             <LeftDashNavItem
+              onClick={dismissReportsLaunch}
               Icon={PollOutlinedIcon}
               href={'/reports'}
               label={'Reports'}
-              decoration={
-                reportsGlow !== 'off' && <ReportsLaunchGlow retiring={reportsGlow === 'retiring'} />
-              }
+              decoration={<LaunchNavGlow status={reportsLaunch} />}
             />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam'} label={'Add a Team'} />
           </div>

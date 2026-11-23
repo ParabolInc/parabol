@@ -23,6 +23,17 @@ const LOGO_ALT_PAGE = `<!doctype html><html><head>
 <a class="logo-container" href="/"><img src="/rust-logo.svg" alt="logo"></a>
 </body></html>`
 
+const JAPANESE_IN_SHIFT_JIS = Buffer.concat([
+  Buffer.from('<html><head><title>'),
+  Buffer.from([0x93, 0xfa, 0x96, 0x7b, 0x8c, 0xea]),
+  Buffer.from('</title></head><body></body></html>')
+])
+const CAFE_IN_WINDOWS_1252_WITH_META = Buffer.from(
+  '<html><head><meta charset="windows-1252"><title>Caf\xe9</title></head><body></body></html>',
+  'latin1'
+)
+const CAFE_IN_UTF8 = '<html><head><title>Café</title></head><body></body></html>'
+
 const PARAGRAPH = '<p>filler</p>'
 // The resolver stops reading at 512KB, so this body runs well past it
 const PARAGRAPHS_PER_CHUNK = 5000
@@ -43,6 +54,15 @@ describe('resolveOpenGraph', () => {
         case '/logo-alt':
           res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'})
           return res.end(LOGO_ALT_PAGE)
+        case '/shift-jis':
+          res.writeHead(200, {'Content-Type': 'text/html; charset=Shift_JIS'})
+          return res.end(JAPANESE_IN_SHIFT_JIS)
+        case '/windows-1252-meta':
+          res.writeHead(200, {'Content-Type': 'text/html'})
+          return res.end(CAFE_IN_WINDOWS_1252_WITH_META)
+        case '/undeclared-utf8':
+          res.writeHead(200, {'Content-Type': 'text/html'})
+          return res.end(CAFE_IN_UTF8)
         default:
           res.writeHead(404)
           return res.end()
@@ -72,5 +92,20 @@ describe('resolveOpenGraph', () => {
   test('does not take the alt text of a logo image for the site name', async () => {
     const metadata = await resolveOpenGraph(`http://127.0.0.1:${port}/logo-alt`)
     expect(metadata?.providerName).toBe('Rust')
+  })
+
+  test('decodes a page in the charset its Content-Type header names', async () => {
+    const metadata = await resolveOpenGraph(`http://127.0.0.1:${port}/shift-jis`)
+    expect(metadata?.title).toBe('日本語')
+  })
+
+  test('decodes a page in the charset its meta tag names', async () => {
+    const metadata = await resolveOpenGraph(`http://127.0.0.1:${port}/windows-1252-meta`)
+    expect(metadata?.title).toBe('Café')
+  })
+
+  test('reads a page that declares no charset as UTF-8', async () => {
+    const metadata = await resolveOpenGraph(`http://127.0.0.1:${port}/undeclared-utf8`)
+    expect(metadata?.title).toBe('Café')
   })
 })

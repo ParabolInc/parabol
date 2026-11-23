@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
 import type {useMeeting_meeting$key} from '~/__generated__/useMeeting_meeting.graphql'
-import isDemoRoute from '~/utils/isDemoRoute'
 import {Breakpoint} from '../types/constEnums'
 import useBreakpoint from './useBreakpoint'
 import useDemoMeeting from './useDemoMeeting'
@@ -44,9 +43,7 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   useEndMeetingHotkey(meetingId, meetingType)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(meeting, gotoStageId)
-  // save a few cycles
-  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
-  const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null
+  const demoPortal = useDemoMeeting()
   useDocumentTitle(`${meetingName} | ${teamName}`, meetingName)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(meetingId)

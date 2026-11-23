@@ -16,7 +16,13 @@ const RetroSettingCheckRow = (props: Props) => {
   const id = useId()
   return (
     <div className={cn('flex items-start gap-3 px-1 py-3', className)}>
-      <label htmlFor={id} className='flex flex-1 cursor-pointer flex-col gap-0.5'>
+      <label
+        htmlFor={id}
+        className={cn(
+          'flex flex-1 flex-col gap-0.5',
+          disabled ? 'cursor-default' : 'cursor-pointer'
+        )}
+      >
         <span className='font-semibold text-fg-primary text-sm'>{label}</span>
         <span className='text-[13px] text-fg-secondary leading-[18px]'>{description}</span>
       </label>
