@@ -1,90 +1,33 @@
 import crypto from 'crypto'
-import faker from 'faker'
 import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
-import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
 const TOKEN_URL = `${ORIGIN}/oauth/token`
 const MCP_RESOURCE = `${ORIGIN}/mcp`
 
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      clientId
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
-
 const createApp = async () => {
-  const {userId, cookie, orgId} = await signUp()
-  const promoted = await sendIntranet({
-    query: `
-      mutation SetOrgUserRoleMutation($orgId: ID!, $userId: ID!, $role: OrgUserRole) {
-        setOrgUserRole(orgId: $orgId, userId: $userId, role: $role) {
-          __typename
-        }
-      }
-    `,
-    variables: {orgId, userId, role: 'ORG_ADMIN'}
-  })
-  expect(promoted.errors).toBeUndefined()
-  const redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
-  const created = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {
-      orgId,
-      name: 'Discovery test app',
-      redirectUris: [redirectUri],
-      scopes: ['USERS_READ']
-    },
-    cookie
-  })
-  expect(created.errors).toBeUndefined()
-  const {clientId} = created.data.createOAuthAPIProvider
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-  return {userId, cookie, clientId, redirectUri, codeVerifier, codeChallenge}
+  const [{userId, cookie}, {clientId, redirectUri}] = await Promise.all([signUp(), createClient()])
+  return {userId, cookie, clientId, redirectUri, ...createPKCEPair()}
 }
 
 type App = Awaited<ReturnType<typeof createApp>>
 
 const authorize = (app: App, resource?: string) =>
-  sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId: app.clientId,
-        redirectUri: app.redirectUri,
-        scope: 'users:read',
-        state: 'xyz',
-        codeChallenge: app.codeChallenge,
-        codeChallengeMethod: 'S256',
-        resource
-      }
+  createCode(
+    {
+      clientId: app.clientId,
+      redirectUri: app.redirectUri,
+      scope: 'users:read',
+      codeChallenge: app.codeChallenge,
+      resource
     },
-    cookie: app.cookie
-  })
+    app.cookie
+  )
 
 const getCode = async (app: App, resource?: string) => {
   const response = await authorize(app, resource)
@@ -109,7 +52,7 @@ const exchange = (app: App, code: string, resource?: string) =>
     ...(resource && {resource})
   })
 
-test('authorization server metadata lists S256 and both grant types', async () => {
+test('authorization server metadata lists S256, both grant types and self-registration', async () => {
   const response = await fetch(`${ORIGIN}/.well-known/oauth-authorization-server`)
   expect(response.status).toBe(200)
   expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
@@ -122,7 +65,8 @@ test('authorization server metadata lists S256 and both grant types', async () =
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
-    token_endpoint_auth_methods_supported: ['none']
+    token_endpoint_auth_methods_supported: ['none'],
+    registration_endpoint: `${ORIGIN}/oauth/register`
   })
   expect(metadata.scopes_supported).toEqual(expect.arrayContaining(['users:read', 'pages:write']))
   expect(metadata.scopes_supported).toHaveLength(18)
@@ -148,9 +92,10 @@ test('the origin itself is not described as a protected resource', async () => {
   expect(response.headers.get('Content-Type') ?? '').not.toContain('application/json')
 })
 
-test('a browser client can preflight the token and metadata endpoints', async () => {
+test('a browser client can preflight the token, registration and metadata endpoints', async () => {
   for (const path of [
     '/oauth/token',
+    '/oauth/register',
     '/.well-known/oauth-authorization-server',
     '/.well-known/oauth-protected-resource/mcp'
   ]) {

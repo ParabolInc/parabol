@@ -1,9 +1,9 @@
+import isLoopbackHostname from '../../client/utils/isLoopbackHostname'
 import appOrigin from '../appOrigin'
-import type {DataLoaderWorker} from '../graphql/graphql'
+import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
 import {selectOAuthAPIProvider} from '../postgres/select'
 import type {OAuthAPIProvider} from '../postgres/types'
 import type {Oauthscopeenum} from '../postgres/types/pg'
-import isLoopbackHostname from './isLoopbackHostname'
 
 export interface OAuthAuthorizationRequestParams {
   clientId: string
@@ -16,8 +16,10 @@ export interface OAuthAuthorizationRequestParams {
 }
 
 type ValidationResult =
-  | {error: string; code: 'BAD_USER_INPUT' | 'FORBIDDEN'}
+  | {error: string; code: 'BAD_USER_INPUT'}
   | {provider: OAuthAPIProvider; scopes: Oauthscopeenum[]; codeChallenge: string}
+
+const ALL_SCOPES: string[] = Object.values(OAuthScopeEnum)
 
 export const MCP_RESOURCE = `${appOrigin}/mcp`
 
@@ -46,9 +48,7 @@ const isRegisteredRedirectUri = (provider: OAuthAPIProvider, redirectUri: string
 }
 
 export const validateOAuthAuthorizationRequest = async (
-  request: OAuthAuthorizationRequestParams,
-  userId: string,
-  dataLoader: DataLoaderWorker
+  request: OAuthAuthorizationRequestParams
 ): Promise<ValidationResult> => {
   const {clientId, redirectUri, scope, state, codeChallenge, codeChallengeMethod, resource} =
     request
@@ -62,13 +62,12 @@ export const validateOAuthAuthorizationRequest = async (
       code: 'BAD_USER_INPUT'
     }
   }
-  const scopes = [...new Set(scope?.split(' ').filter(Boolean))]
-  if (scopes.some((requestedScope) => !provider.scopes.includes(requestedScope))) {
-    return {
-      error: 'Invalid scope: this client is not allowed to ask for every requested scope',
-      code: 'BAD_USER_INPUT'
-    }
-  }
+  // RFC 6749 §3.3 lets a server ignore scopes it does not have, like OpenID Connect's offline_access
+  const requestedScopes = [
+    ...new Set(scope?.split(' ').filter((requestedScope) => ALL_SCOPES.includes(requestedScope)))
+  ]
+  // an app that asks for nothing Parabol has is offered every scope, and the viewer picks
+  const scopes = requestedScopes.length > 0 ? requestedScopes : ALL_SCOPES
   if (!state) return {error: 'Invalid state: state is required', code: 'BAD_USER_INPUT'}
   if (!codeChallenge) {
     return {error: 'Invalid code_challenge: PKCE is required', code: 'BAD_USER_INPUT'}
@@ -84,15 +83,6 @@ export const validateOAuthAuthorizationRequest = async (
   }
   if (resource && resource !== MCP_RESOURCE) {
     return {error: 'Invalid resource: only <origin>/mcp is served', code: 'BAD_USER_INPUT'}
-  }
-  const organizationUser = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .load({orgId: provider.orgId, userId})
-  if (!organizationUser) {
-    return {
-      error: 'Only members of the organization that registered this client can authorize it',
-      code: 'FORBIDDEN'
-    }
   }
   return {provider, scopes: scopes as Oauthscopeenum[], codeChallenge}
 }

@@ -1,73 +1,25 @@
-import crypto from 'crypto'
-import faker from 'faker'
-import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendPublic} from './common'
+import {HOST, PROTOCOL, signUp} from './common'
+import {
+  type AuthorizationRequest,
+  createClient,
+  createCode as createCodeAs,
+  createPKCEPair,
+  getTestRedirectUri
+} from './oauthClient'
 
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
 
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      clientId
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
-
-const createApp = async (
-  redirectUri = `https://${faker.internet.domainName()}/${faker.internet.domainWord()}`
-) => {
-  const {cookie, orgId} = await createOrgAdmin(getTestEmail())
-  const created = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {orgId, name: 'Test OAuth App', redirectUris: [redirectUri], scopes: ['USERS_READ']},
-    cookie
-  })
-  expect(created.errors).toBeUndefined()
-  const {clientId} = created.data.createOAuthAPIProvider
+const createApp = async (redirectUri = getTestRedirectUri()) => {
+  const [{cookie}, {clientId}] = await Promise.all([signUp(), createClient(redirectUri)])
   return {cookie, clientId, redirectUri}
 }
 
 type App = Awaited<ReturnType<typeof createApp>>
 
-const createPKCEPair = () => {
-  const codeVerifier = crypto.randomBytes(32).toString('base64url')
-  const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-  return {codeVerifier, codeChallenge}
-}
-
 const createCode = (app: App, codeChallenge?: string) => {
   const {cookie, clientId, redirectUri} = app
-  return sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {
-      request: {
-        clientId,
-        redirectUri,
-        scope: 'users:read',
-        state: 'xyz',
-        codeChallenge,
-        codeChallengeMethod: codeChallenge ? 'S256' : undefined
-      }
-    },
-    cookie
-  })
+  const request: AuthorizationRequest = {clientId, redirectUri, scope: 'users:read', codeChallenge}
+  return createCodeAs(request, cookie)
 }
 
 const getCode = async (app: App, codeChallenge: string) => {

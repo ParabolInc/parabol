@@ -8,10 +8,9 @@ import insertOAuthRefreshToken from './insertOAuthRefreshToken'
 interface Input {
   refreshToken: string
   clientId: string
-  orgId: string
 }
 
-const rotateOAuthRefreshToken = async ({refreshToken, clientId, orgId}: Input) => {
+const rotateOAuthRefreshToken = async ({refreshToken, clientId}: Input) => {
   if (!isOAuthRefreshToken(refreshToken)) return null
   const tokenHash = hashRandomToken(refreshToken)
   return getKysely()
@@ -76,17 +75,6 @@ const rotateOAuthRefreshToken = async ({refreshToken, clientId, orgId}: Input) =
         .where('id', '=', grantId)
         .returning(['userId', 'resource', sql<Oauthscopeenum[]>`to_json(scopes)`.as('scopes')])
         .executeTakeFirstOrThrow()
-      const organizationUser = await trx
-        .selectFrom('OrganizationUser')
-        .select('id')
-        .where('orgId', '=', orgId)
-        .where('userId', '=', grant.userId)
-        .where('removedAt', 'is', null)
-        .executeTakeFirst()
-      if (!organizationUser) {
-        await trx.deleteFrom('OAuthAPIGrant').where('id', '=', grantId).execute()
-        return null
-      }
       const nextRefreshToken = await insertOAuthRefreshToken(trx, grantId, token.id)
       return {grantId, ...grant, refreshToken: nextRefreshToken}
     })
