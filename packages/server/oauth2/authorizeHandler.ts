@@ -2,7 +2,6 @@ import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {SIGNIN_SLUG} from '../../client/utils/constants'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import getReqAuth from '../utils/getReqAuth'
 import {validateOAuthAuthorizationRequest} from './validateOAuthAuthorizationRequest'
@@ -38,20 +37,15 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     return
   }
 
-  const dataLoader = getNewDataLoader('authorizeHandler')
-  const authorization = await validateOAuthAuthorizationRequest(
-    {
-      clientId,
-      redirectUri,
-      scope: params.get('scope'),
-      state,
-      codeChallenge: params.get('code_challenge'),
-      codeChallengeMethod: params.get('code_challenge_method')
-    },
-    authToken.sub,
-    dataLoader
-  )
-  dataLoader.dispose()
+  const authorization = await validateOAuthAuthorizationRequest({
+    clientId,
+    redirectUri,
+    scope: params.get('scope'),
+    state,
+    codeChallenge: params.get('code_challenge'),
+    codeChallengeMethod: params.get('code_challenge_method'),
+    resource: params.get('resource')
+  })
   if ('error' in authorization) {
     rejectRequest(authorization.error)
     return

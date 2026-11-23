@@ -15,7 +15,7 @@ import {
   selectNewFeatures,
   selectNewMeetings,
   selectNotifications,
-  selectOAuthAPIProvider,
+  selectOAuthAPIGrant,
   selectOrganizations,
   selectPageExports,
   selectPages,
@@ -232,8 +232,8 @@ export const integrationSearchQueries = primaryKeyLoaderMaker((ids: readonly num
   return selectIntegrationSearchQuery().where('id', 'in', ids).execute()
 })
 
-export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => {
-  return selectOAuthAPIProvider().where('id', 'in', ids).execute()
+export const oauthAPIGrants = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectOAuthAPIGrant().where('id', 'in', ids).execute()
 })
 
 export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
