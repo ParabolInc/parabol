@@ -90,14 +90,15 @@ const throwInvalidOAuthToken = (): never => {
 
 const getOAuthAccessTokenGrant = async (
   jwt: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  expectedResource: string | undefined
 ): Promise<APIGrant | null> => {
   const accessToken = getVerifiedAuthToken(jwt, false, 'action-oauth2', true)
   if (!accessToken) return null
   if (accessToken.exp * 1000 + ms('10s') < Date.now()) {
     throw new GraphQLError('OAuth access token expired', {extensions: {code: 'UNAUTHENTICATED'}})
   }
-  if (accessToken.resource) {
+  if (accessToken.resource && accessToken.resource !== expectedResource) {
     throw new GraphQLError(`This access token is for ${accessToken.resource}`, {
       extensions: {code: 'UNAUTHENTICATED'}
     })
@@ -138,10 +139,11 @@ const getOAuthAccessTokenGrant = async (
 
 const getAPIGrant = async (
   bearerToken: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  expectedResource?: string
 ): Promise<APIGrant | null> =>
   bearerToken.startsWith(PAT_PREFIX)
     ? getPersonalAccessTokenGrant(bearerToken.slice(PAT_PREFIX.length), dataLoader)
-    : getOAuthAccessTokenGrant(bearerToken, dataLoader)
+    : getOAuthAccessTokenGrant(bearerToken, dataLoader, expectedResource)
 
 export default getAPIGrant

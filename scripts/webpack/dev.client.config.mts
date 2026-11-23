@@ -92,6 +92,7 @@ export const devServer: DevServerConfiguration = {
       'scim',
       'oauth',
       '.well-known',
+      'mcp',
       'zoom',
       'client-errors',
       'client-metrics'
