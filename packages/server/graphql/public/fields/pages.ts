@@ -68,7 +68,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
           .where('userId', '=', viewerId)
           .where('isNotRemoved', '=', true)
           .$if(!!resourceGrants, (qb) =>
-            qb.where((eb) => eb('teamId', '=', eb.fn.any(eb.val(authToken.tms))))
+            qb.where(({ref}) => resourceGrants!.grantsTeam(ref('TeamMember.teamId')))
           )
       )
       .with('pages', (qc) =>

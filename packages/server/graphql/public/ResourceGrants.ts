@@ -75,7 +75,7 @@ export class ResourceGrants {
 
   grantsPage(pageId: Expression<number>): Expression<SqlBool> {
     if (this.isUnrestricted()) return eb.lit(true)
-    const {grantedOrgIds, grantedTeamIds, grantedPageIds} = this
+    const {grantedOrgIds, grantedPageIds} = this
     const orgShares = eb
       .selectFrom('PageOrganizationAccess')
       .select('orgId')
@@ -88,19 +88,27 @@ export class ResourceGrants {
     } else if (grantedOrgIds.length > 0) {
       grants.push(eb.exists(orgShares.where('orgId', 'in', grantedOrgIds)))
     }
-    if (grantedOrgIds === null || grantedTeamIds === null) {
-      grants.push(eb.exists(teamShares))
-    } else {
-      if (grantedTeamIds.length > 0) {
-        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedTeamIds)))
-      }
-      if (grantedOrgIds.length > 0) {
-        const grantedOrgTeams = eb
-          .selectFrom('Team')
-          .select('id')
-          .where('orgId', 'in', grantedOrgIds)
-        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedOrgTeams)))
-      }
+    grants.push(
+      eb.exists(teamShares.where(({ref}) => this.grantsTeam(ref('PageTeamAccess.teamId'))))
+    )
+    return eb.or(grants)
+  }
+
+  grantsTeam(teamId: Expression<string>): Expression<SqlBool> {
+    const {grantedOrgIds, grantedTeamIds} = this
+    if (grantedTeamIds === null || grantedOrgIds === null) return eb.lit(true)
+    const grants: Expression<SqlBool>[] = []
+    if (grantedTeamIds.length > 0) grants.push(eb(teamId, 'in', grantedTeamIds))
+    if (grantedOrgIds.length > 0) {
+      grants.push(
+        eb.exists(
+          eb
+            .selectFrom('Team')
+            .select('Team.id')
+            .where('Team.id', '=', teamId)
+            .where('Team.orgId', 'in', grantedOrgIds)
+        )
+      )
     }
     return eb.or(grants)
   }
