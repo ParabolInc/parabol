@@ -1,8 +1,12 @@
+import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
+
+const scopes = Object.values(OAuthScopeEnum).join(', ')
+
 const mcpInstructions = `Parabol is where teams run meetings (retrospectives, standups, sprint poker, check-ins), track tasks and write pages.
 
 IDs are opaque. Pass back exactly the id you received; never build, parse or change one.
 
-Each area needs its own scope: meetings, teams, tasks, users, orgs, templates, pages, comments and reports each have a :read scope to look and a :write scope to change, e.g. pages:read and pages:write. A call that needs a scope this connection lacks fails with FORBIDDEN.
+Each area needs its own scope. The scopes are ${scopes}. A :read scope lets you look and a :write scope lets you change. A call that needs a scope this connection lacks fails with FORBIDDEN.
 
 A connection may be limited to some organizations, teams or pages. Anything outside them is out of reach, and the error says so when you ask for something outside the connection.
 
