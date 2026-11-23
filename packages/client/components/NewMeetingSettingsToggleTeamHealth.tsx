@@ -39,10 +39,9 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     <NewMeetingSettingsToggleRow
       active={hasTeamHealthCheck}
       className={className}
-      label={'Include Team Health check'}
-      description={
-        "Adds your team's open Team Health check to the retro, plus any new results to talk through. Answers stay private."
-      }
+      label='Embed Team Health Check'
+      tooltip='Answer your team’s open Team Health check in the retro and talk through new results. Answers stay private.'
+      isNew
       onClick={toggleTeamHealth}
     />
   )

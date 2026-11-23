@@ -42,7 +42,8 @@ const NewMeetingSettingsToggleAnonymity = (props: Props) => {
     <NewMeetingSettingsToggleRow
       active={!disableAnonymity}
       className={className}
-      label={'Anonymous reflections'}
+      label='Anonymous reflections'
+      tooltip='Hide who wrote each reflection'
       onClick={toggleAnonymity}
     />
   )

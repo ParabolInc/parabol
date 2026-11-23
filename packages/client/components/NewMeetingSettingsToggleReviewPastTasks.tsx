@@ -39,7 +39,8 @@ const NewMeetingSettingsToggleReviewPastTasks = (props: Props) => {
     <NewMeetingSettingsToggleRow
       active={hasReviewPastTasks}
       className={className}
-      label={'Review Tasks'}
+      label='Review Tasks'
+      tooltip='Go over your team’s open tasks before reflecting'
       onClick={toggleReviewPastTasks}
     />
   )

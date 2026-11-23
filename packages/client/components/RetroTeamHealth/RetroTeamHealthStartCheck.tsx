@@ -63,7 +63,7 @@ const RetroTeamHealthStartCheck = (props: Props) => {
         </div>
         <fieldset className='m-0 mt-5 flex min-w-0 flex-col gap-2 border-0 p-0'>
           <legend className='mb-2 p-0 font-semibold text-fg-secondary text-xs uppercase tracking-wide'>
-            Questions
+            Quick Questions
           </legend>
           {templates.map((template) => (
             <RetroTeamHealthTemplateOption
@@ -91,15 +91,6 @@ const RetroTeamHealthStartCheck = (props: Props) => {
             className='flex items-center gap-1 font-semibold text-accent text-sm'
           >
             Customize the questions
-            <OpenInNew className='size-4' />
-          </a>
-          <a
-            href={detailsUrl}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex items-center gap-1 font-semibold text-accent text-sm'
-          >
-            Schedule recurring checks
             <OpenInNew className='size-4' />
           </a>
         </div>
