@@ -45,13 +45,13 @@ const postMCP = (body: unknown, headers: Record<string, string> = {}) =>
 
 const bearer = (token: string) => ({authorization: `Bearer ${token}`})
 
-const createPersonalAccessToken = async () => {
+const createPersonalAccessToken = async (scopes = ['USERS_READ']) => {
   const {cookie} = await signUp()
   const res = await sendPublic({
     query: CREATE_PERSONAL_ACCESS_TOKEN,
     variables: {
       name: 'mcp',
-      scopes: ['USERS_READ'],
+      scopes,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     },
     cookie
@@ -83,6 +83,23 @@ const createOAuthAccessToken = async (resource?: string) => {
   })
   expect(response.status).toBe(200)
   return (await response.json()).access_token as string
+}
+
+const callTool = async (token: string, name: string, args: Record<string, unknown>) => {
+  const response = await postMCP(
+    {jsonrpc: '2.0', id: 2, method: 'tools/call', params: {name, arguments: args}},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  expect(response.status).toBe(200)
+  return (await response.json()).result as {
+    isError?: boolean
+    content: {type: string; text: string}[]
+  }
+}
+
+const expectToolError = (result: Awaited<ReturnType<typeof callTool>>, text: string) => {
+  expect(result.isError).toBe(true)
+  expect(result.content[0]!.text).toContain(text)
 }
 
 const expectUnauthorized = (response: Response) => {
@@ -233,4 +250,112 @@ test('an OAuth token bound to another resource is refused', async () => {
   expect(await response.json()).toMatchObject({
     error_description: 'This access token is for https://evil/mcp'
   })
+})
+
+test('tools/list gives every tool a title and annotations', async () => {
+  const token = await createPersonalAccessToken()
+  const response = await postMCP(
+    {jsonrpc: '2.0', id: 3, method: 'tools/list'},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  const {tools} = (await response.json()).result
+  expect(tools.map(({name}: {name: string}) => name).sort()).toEqual([
+    'describe_type',
+    'graphql_mutate',
+    'graphql_query',
+    'search_schema'
+  ])
+  for (const tool of tools) {
+    expect(tool.title).toBeTruthy()
+    expect(tool.description).toBeTruthy()
+    expect(tool.annotations).toBeDefined()
+  }
+  const byName = Object.fromEntries(tools.map((tool: {name: string}) => [tool.name, tool]))
+  expect(byName.graphql_mutate.annotations).toMatchObject({
+    readOnlyHint: false,
+    destructiveHint: true
+  })
+  for (const name of ['graphql_query', 'search_schema', 'describe_type']) {
+    expect(byName[name].annotations.readOnlyHint).toBe(true)
+  }
+})
+
+test('graphql_query runs a query with a PAT', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'graphql_query', {query: '{viewer{id}}'})
+  expect(result.isError).toBeUndefined()
+  expect(JSON.parse(result.content[0]!.text).viewer.id).toEqual(expect.any(String))
+})
+
+test('graphql_query runs a query with an OAuth token bound to /mcp', async () => {
+  const token = await createOAuthAccessToken(MCP_URL)
+  const result = await callTool(token, 'graphql_query', {
+    query: 'query Me {viewer{id}}',
+    operationName: 'Me'
+  })
+  expect(result.isError).toBeUndefined()
+  expect(JSON.parse(result.content[0]!.text).viewer.id).toEqual(expect.any(String))
+})
+
+test('graphql_query refuses a mutation', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'graphql_query', {query: 'mutation {logout}'})
+  expectToolError(result, 'graphql_mutate')
+})
+
+test('graphql_mutate refuses a query', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'graphql_mutate', {query: '{viewer{id}}'})
+  expectToolError(result, 'graphql_query')
+})
+
+test('a GraphQL error comes back as a tool error with its code', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'graphql_query', {query: '{viewer{noSuchField}}'})
+  expect(result.isError).toBe(true)
+  expect(JSON.parse(result.content[0]!.text)[0].message).toContain('noSuchField')
+})
+
+test('a missing scope comes back as a tool error naming the scope', async () => {
+  const token = await createPersonalAccessToken(['PAGES_READ'])
+  const result = await callTool(token, 'graphql_mutate', {
+    query: `mutation {
+      createTask(newTask: {status: active, teamId: "nope"}) {
+        task {
+          id
+        }
+      }
+    }`
+  })
+  expectToolError(result, 'tasks:write')
+  expect(JSON.parse(result.content[0]!.text)[0].code).toBe('FORBIDDEN')
+})
+
+test('search_schema finds a type and a field', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'search_schema', {query: 'createTask', limit: 5})
+  expect(result.isError).toBeUndefined()
+  expect(result.content[0]!.text).toContain('Mutation.createTask')
+})
+
+test('search_schema says when nothing matches', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'search_schema', {query: 'zzzqqqxxx'})
+  expect(result.content[0]!.text).toContain('No types or fields match')
+})
+
+test('describe_type shows the scopes a mutation needs', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'describe_type', {name: 'Mutation'})
+  expect(result.isError).toBeUndefined()
+  const createTask = result.content[0]!.text.split('\n').find((line) =>
+    line.startsWith('  createTask(')
+  )
+  expect(createTask).toContain('tasks:write')
+})
+
+test('describe_type refuses an unknown type', async () => {
+  const token = await createPersonalAccessToken()
+  const result = await callTool(token, 'describe_type', {name: 'NoSuchType'})
+  expectToolError(result, 'NOT_FOUND')
 })
