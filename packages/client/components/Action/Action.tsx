@@ -2,6 +2,7 @@ import {Outlet} from '@tanstack/react-router'
 import {lazy, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import useNavigationBreadcrumbs from '../../hooks/useNavigationBreadcrumbs'
+import useOldBrowserSnack from '../../hooks/useOldBrowserSnack'
 import useQuietUpdate from '../../hooks/useQuietUpdate'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {cn} from '../../ui/cn'
@@ -16,6 +17,7 @@ const Action = () => {
   useServiceWorkerUpdater()
   useQuietUpdate()
   useNavigationBreadcrumbs()
+  useOldBrowserSnack()
   // Global Banner
   const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
   const bannerText = window.__ACTION__.GLOBAL_BANNER_TEXT
