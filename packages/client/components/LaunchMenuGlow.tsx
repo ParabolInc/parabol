@@ -1,12 +1,15 @@
+import type {FeatureLaunchStatus} from '../hooks/useFeatureLaunch'
 import {cn} from '../ui/cn'
 
 interface Props {
-  retiring: boolean
+  status: FeatureLaunchStatus
   className?: string
 }
 
-const ReportsLaunchMenuGlow = (props: Props) => {
-  const {retiring, className} = props
+const LaunchMenuGlow = (props: Props) => {
+  const {status, className} = props
+  if (status === 'off') return null
+  const retiring = status === 'retiring'
   const fade = cn('transition-opacity duration-700', retiring && 'opacity-0')
   return (
     <span aria-hidden className={cn('pointer-events-none absolute inset-0', className)}>
@@ -27,4 +30,4 @@ const ReportsLaunchMenuGlow = (props: Props) => {
   )
 }
 
-export default ReportsLaunchMenuGlow
+export default LaunchMenuGlow
