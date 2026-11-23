@@ -1,5 +1,4 @@
 import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
-import mcpInstructions from '../mcp/mcpInstructions'
 import packageJSON from '../package.json'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
@@ -97,15 +96,30 @@ const expectUnauthorized = (response: Response) => {
 
 const expectInitialized = async (response: Response) => {
   expect(response.status).toBe(200)
-  expect(await response.json()).toMatchObject({
+  const body = await response.json()
+  expect(body).toMatchObject({
     jsonrpc: '2.0',
     id: 1,
     result: {
       protocolVersion: PROTOCOL_VERSION,
-      serverInfo: {name: 'parabol', version: packageJSON.version},
-      instructions: mcpInstructions
+      serverInfo: {name: 'parabol', version: packageJSON.version}
     }
   })
+  const {instructions} = body.result
+  expect(instructions.length).toBeLessThan(2000)
+  for (const scope of Object.values(OAuthScopeEnum)) {
+    expect(instructions).toContain(scope)
+  }
+  for (const tool of [
+    'read_page',
+    'edit_page',
+    'search_schema',
+    'describe_type',
+    'graphql_query',
+    'graphql_mutate'
+  ]) {
+    expect(instructions).toContain(tool)
+  }
 }
 
 test('no token answers 401 with the resource metadata address and scopes', async () => {
