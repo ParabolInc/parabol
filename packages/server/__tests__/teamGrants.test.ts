@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
 import getKysely from '../postgres/getKysely'
@@ -21,14 +20,13 @@ const ADD_ORG = `
   }
 `
 
-const grantsTeamInSql = async (resourceGrants: ResourceGrants, teamId: string) => {
-  const {rows} = await sql<{
-    granted: boolean
-  }>`select ${resourceGrants.grantsTeam(sql.val(teamId))} as granted`.execute(getKysely())
-  return rows[0]!.granted
-}
+type Setup = {userId: string; orgA: string; teams: {teamA: string; teamB: string}}
+type TeamName = keyof Setup['teams']
+type Grants = {grantedOrgIds: string[] | null; grantedTeamIds: string[] | null}
 
-test('grantsTeam agrees with hasTeam on every team the user is on, for every grant', async () => {
+let setup: Setup
+
+beforeAll(async () => {
   const {userId, orgId: orgA, cookie} = await createOrgAdmin(getTestEmail())
   const [{id: teamA}] = await getUserTeams(userId)
   const added = await sendPublic({
@@ -37,30 +35,84 @@ test('grantsTeam agrees with hasTeam on every team the user is on, for every gra
     cookie
   })
   expect(added.errors).toBeUndefined()
-  const teamB = added.data.addOrg.team.id as string
-
-  const disagreements: unknown[] = []
-  const answers = new Set<boolean>()
-  for (const grantedOrgIds of [null, [], [orgA]]) {
-    for (const grantedTeamIds of [null, [], [teamB]]) {
-      const resourceGrants = new ResourceGrants(
-        userId,
-        grantedOrgIds,
-        grantedTeamIds,
-        null,
-        dataLoader
-      )
-      for (const teamId of [teamA, teamB]) {
-        const hasTeam = await resourceGrants.hasTeam(teamId)
-        const grantsTeam = await grantsTeamInSql(resourceGrants, teamId)
-        answers.add(hasTeam)
-        if (hasTeam !== grantsTeam) {
-          disagreements.push({grantedOrgIds, grantedTeamIds, teamId, hasTeam, grantsTeam})
-        }
-      }
-    }
-  }
-
-  expect(disagreements).toEqual([])
-  expect(answers).toEqual(new Set([true, false]))
+  setup = {userId, orgA, teams: {teamA, teamB: added.data.addOrg.team.id as string}}
 })
+
+test.each<{grant: string; grants: (setup: Setup) => Grants; reaches: TeamName[]}>([
+  {
+    grant: 'every org and team',
+    grants: () => ({grantedOrgIds: null, grantedTeamIds: null}),
+    reaches: ['teamA', 'teamB']
+  },
+  {
+    grant: 'every org and no listed team',
+    grants: () => ({grantedOrgIds: null, grantedTeamIds: []}),
+    reaches: ['teamA', 'teamB']
+  },
+  {
+    grant: 'every org and team B',
+    grants: ({teams}) => ({grantedOrgIds: null, grantedTeamIds: [teams.teamB]}),
+    reaches: ['teamA', 'teamB']
+  },
+  {
+    grant: 'every team and no listed org',
+    grants: () => ({grantedOrgIds: [], grantedTeamIds: null}),
+    reaches: ['teamA', 'teamB']
+  },
+  {
+    grant: 'nothing',
+    grants: () => ({grantedOrgIds: [], grantedTeamIds: []}),
+    reaches: []
+  },
+  {
+    grant: 'only team B',
+    grants: ({teams}) => ({grantedOrgIds: [], grantedTeamIds: [teams.teamB]}),
+    reaches: ['teamB']
+  },
+  {
+    grant: 'org A and every team',
+    grants: ({orgA}) => ({grantedOrgIds: [orgA], grantedTeamIds: null}),
+    reaches: ['teamA', 'teamB']
+  },
+  {
+    grant: 'only org A',
+    grants: ({orgA}) => ({grantedOrgIds: [orgA], grantedTeamIds: []}),
+    reaches: ['teamA']
+  },
+  {
+    grant: 'org A and team B',
+    grants: ({orgA, teams}) => ({grantedOrgIds: [orgA], grantedTeamIds: [teams.teamB]}),
+    reaches: ['teamA', 'teamB']
+  }
+])(
+  'a token granted $grant reaches the same teams in SQL as in hasTeam',
+  async ({grants, reaches}) => {
+    const {grantedOrgIds, grantedTeamIds} = grants(setup)
+    const resourceGrants = new ResourceGrants(
+      setup.userId,
+      grantedOrgIds,
+      grantedTeamIds,
+      null,
+      dataLoader
+    )
+    const teamNames = Object.keys(setup.teams) as TeamName[]
+
+    const reachedByHasTeam: TeamName[] = []
+    for (const name of teamNames) {
+      if (await resourceGrants.hasTeam(setup.teams[name])) reachedByHasTeam.push(name)
+    }
+    const grantedRows = await getKysely()
+      .selectFrom('TeamMember')
+      .select('teamId')
+      .where('userId', '=', setup.userId)
+      .where('isNotRemoved', '=', true)
+      .where(({ref}) => resourceGrants.grantsTeam(ref('TeamMember.teamId')))
+      .execute()
+    const grantedTeamIdsInSql = grantedRows.map(({teamId}) => teamId)
+
+    expect(reachedByHasTeam).toEqual(reaches)
+    expect(grantedTeamIdsInSql.toSorted()).toEqual(
+      reaches.map((name) => setup.teams[name]).toSorted()
+    )
+  }
+)

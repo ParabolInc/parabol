@@ -100,15 +100,8 @@ export class ResourceGrants {
     const grants: Expression<SqlBool>[] = []
     if (grantedTeamIds.length > 0) grants.push(eb(teamId, 'in', grantedTeamIds))
     if (grantedOrgIds.length > 0) {
-      grants.push(
-        eb.exists(
-          eb
-            .selectFrom('Team')
-            .select('Team.id')
-            .where('Team.id', '=', teamId)
-            .where('Team.orgId', 'in', grantedOrgIds)
-        )
-      )
+      const grantedOrgTeams = eb.selectFrom('Team').select('id').where('orgId', 'in', grantedOrgIds)
+      grants.push(eb(teamId, 'in', grantedOrgTeams))
     }
     return eb.or(grants)
   }
