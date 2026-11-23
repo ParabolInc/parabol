@@ -1,4 +1,5 @@
 import {sql} from 'kysely'
+import type {ResourceGrants} from '../../graphql/public/ResourceGrants'
 import type {SearchResultEdgeSource} from '../../graphql/public/types/SearchResultEdge'
 import {
   pagePrefixTerms,
@@ -18,6 +19,7 @@ export interface PageKeywordSearchParams {
   offset: number
   viewerId: string
   teamIds: [string, ...string[]] | undefined
+  resourceGrants: ResourceGrants | undefined
   dateRange: {startAt: Date; endAt: Date; dateField: 'createdAt' | 'updatedAt'} | null
 }
 
@@ -52,6 +54,7 @@ export const withPageKeywordRanking = (
     query,
     viewerId,
     teamIds,
+    resourceGrants,
     dateRange,
     dropStopWords,
     anyWordFallbackBelow,
@@ -86,11 +89,14 @@ export const withPageKeywordRanking = (
       )
       .with('ViewerPages', (qb) =>
         qb
-          // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null
+          // who can see what: a `PageAccess` join on `viewerId`, plus `deletedAt` is null, within an access token's grants
           .selectFrom('PageAccess as pa')
           .innerJoin('Page as p', 'p.id', 'pa.pageId')
           .where('pa.userId', '=', viewerId)
           .where('p.deletedAt', 'is', null)
+          .$if(!!resourceGrants, (qb) =>
+            qb.where(({ref}) => resourceGrants!.grantsPage(ref('p.id')))
+          )
           // team filter: EXISTS so a page shared with several requested teams appears once
           .$if(!!teamIds, (qb) =>
             qb.where((eb) =>
@@ -211,6 +217,7 @@ export const getPagesByKeyword = async ({
   offset,
   viewerId,
   teamIds,
+  resourceGrants,
   dateRange,
   dropStopWords = QUICK_KEYWORD_MATCHING.dropStopWords,
   anyWordFallbackBelow = QUICK_KEYWORD_MATCHING.anyWordFallbackBelow,
@@ -222,6 +229,7 @@ export const getPagesByKeyword = async ({
       query,
       viewerId,
       teamIds,
+      resourceGrants,
       dateRange,
       dropStopWords,
       anyWordFallbackBelow,

@@ -114,7 +114,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
         }
       : null
   // if teamIds is defined for pages, it will limit the search to team pages
-  const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
+  const pageTeamIds =
+    inTeamIds && inTeamIds.length > 0 ? (inTeamIds as [string, ...string[]]) : undefined
   // metadata requires a teamId, whereas pages don't because it uses RBAC
   const metadataTeamIds: [string, ...string[]] = resourceGrants
     ? ['aGhostTeam', ...(teamIds ?? [])]
@@ -141,6 +142,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
         .innerJoin('Page', 'PageAccess.pageId', `Page.id`)
         .where('PageAccess.userId', '=', viewerId)
         .where('Page.deletedAt', 'is', null)
+        .$if(!!resourceGrants, (qb) =>
+          qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id')))
+        )
         .$if(!!dateRange, (qb) =>
           qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
@@ -211,6 +215,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
         offset: pageOffset,
         viewerId,
         teamIds: pageTeamIds,
+        resourceGrants,
         dateRange
       })
     if (alpha === 0 || pageCursor?.ranking === 'keyword') return getKeywordResults()
@@ -248,6 +253,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
         first,
         offset: pageOffset,
         teamIds: pageTeamIds,
+        resourceGrants,
         viewerId
       })
     } catch (error) {

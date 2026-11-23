@@ -223,6 +223,7 @@ const keywordSearch = (
     offset: 0,
     viewerId,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     ...overrides
   })
@@ -735,6 +736,7 @@ describe('matches a plain reference query', () => {
     first,
     offset: 0,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     anyWordFallbackBelow: 0,
     anyWordMinShare: 0,

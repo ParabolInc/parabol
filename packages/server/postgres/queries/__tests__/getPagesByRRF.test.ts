@@ -249,6 +249,7 @@ const fused = (alpha: number, overrides: Partial<Parameters<typeof getPagesByRRF
     offset: 0,
     viewerId,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     ...overrides
   })
