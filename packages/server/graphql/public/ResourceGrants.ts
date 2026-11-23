@@ -1,6 +1,10 @@
+import {type Expression, expressionBuilder, type SqlBool} from 'kysely'
 import getKysely from '../../postgres/getKysely'
+import type {DB} from '../../postgres/types/pg'
 import {CipherId} from '../../utils/CipherId'
 import type {DataLoaderWorker} from '../graphql'
+
+const eb = expressionBuilder<DB>()
 
 export interface SerializedResourceGrants {
   grantedOrgIds: string[] | null
@@ -69,56 +73,50 @@ export class ResourceGrants {
     )
   }
 
-  getPageGrantCriteria(): null | {
-    pageIds: Set<number> | null
-    teamIds: string[] | null
-    orgIds: string[] | null
-  } {
-    if (this.isUnrestricted()) return null
-    return {
-      pageIds: this.grantedPageIds,
-      teamIds: this.grantedTeamIds,
-      orgIds: this.grantedOrgIds
+  grantsPage(pageId: Expression<number>): Expression<SqlBool> {
+    if (this.isUnrestricted()) return eb.lit(true)
+    const {grantedOrgIds, grantedTeamIds, grantedPageIds} = this
+    const orgShares = eb
+      .selectFrom('PageOrganizationAccess')
+      .select('orgId')
+      .where('pageId', '=', pageId)
+    const teamShares = eb.selectFrom('PageTeamAccess').select('teamId').where('pageId', '=', pageId)
+    const grants: Expression<SqlBool>[] = []
+    if (grantedPageIds?.size) grants.push(eb(pageId, 'in', [...grantedPageIds]))
+    if (grantedOrgIds === null) {
+      grants.push(eb.exists(orgShares))
+    } else if (grantedOrgIds.length > 0) {
+      grants.push(eb.exists(orgShares.where('orgId', 'in', grantedOrgIds)))
     }
+    if (grantedOrgIds === null || grantedTeamIds === null) {
+      grants.push(eb.exists(teamShares))
+    } else {
+      if (grantedTeamIds.length > 0) {
+        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedTeamIds)))
+      }
+      if (grantedOrgIds.length > 0) {
+        const grantedOrgTeams = eb
+          .selectFrom('Team')
+          .select('id')
+          .where('orgId', 'in', grantedOrgIds)
+        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedOrgTeams)))
+      }
+    }
+    return eb.or(grants)
   }
 
   async hasPage(pageId: number): Promise<boolean> {
-    // Verify user has access to this page
     const userRole = await this.dataLoader
       .get('pageAccessByPageIdUserId')
       .load({pageId, userId: this.userId})
     if (!userRole) return false
-
-    if (this.isUnrestricted()) return true
-
-    // Page explicitly granted
-    if (this.grantedPageIds !== null && this.grantedPageIds.has(pageId)) return true
-
-    // Fetch team and org sharing for this page
-    const pg = getKysely()
-    const [teamAccess, orgAccess] = await Promise.all([
-      pg.selectFrom('PageTeamAccess').select('teamId').where('pageId', '=', pageId).execute(),
-      pg.selectFrom('PageOrganizationAccess').select('orgId').where('pageId', '=', pageId).execute()
-    ])
-
-    // Page shared with an org — check against grantedOrgIds
-    if (orgAccess.length > 0) {
-      if (this.grantedOrgIds === null) return true
-      if (orgAccess.some(({orgId}) => this.grantedOrgIds!.includes(orgId))) return true
-    }
-
-    // Page shared with a team — check direct team grants and team-org grants
-    if (teamAccess.length > 0) {
-      // If all teams or all orgs are allowed, any team share grants access
-      if (this.grantedTeamIds === null || this.grantedOrgIds === null) return true
-      const teamIds = teamAccess.map(({teamId}) => teamId)
-      // Direct team grant
-      if (teamIds.some((id) => this.grantedTeamIds!.includes(id))) return true
-      // Team's org is granted
-      const teams = await Promise.all(teamIds.map((id) => this.dataLoader.get('teams').load(id)))
-      if (teams.some((team) => team && this.grantedOrgIds!.includes(team.orgId))) return true
-    }
-
-    return false
+    if (this.isUnrestricted() || this.grantedPageIds?.has(pageId)) return true
+    const grantedPage = await getKysely()
+      .selectFrom('Page')
+      .select('id')
+      .where('id', '=', pageId)
+      .where(({ref}) => this.grantsPage(ref('Page.id')))
+      .executeTakeFirst()
+    return !!grantedPage
   }
 }

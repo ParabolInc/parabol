@@ -1,65 +1,11 @@
 import {GraphQLError} from 'graphql'
-import {type Expression, type ExpressionBuilder, type NotNull, type SqlBool, sql} from 'kysely'
+import type {NotNull} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
 import {selectPages} from '../../../postgres/select'
-import type {DB} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import type {ResourceGrants} from '../ResourceGrants'
 import type {UserResolvers} from '../resolverTypes'
-
-type PageGrantCriteria = NonNullable<ReturnType<ResourceGrants['getPageGrantCriteria']>>
-
-const buildGrantFilter = (
-  eb: ExpressionBuilder<DB, any>,
-  pageIdRef: string,
-  criteria: PageGrantCriteria
-): Expression<SqlBool> => {
-  const {pageIds, teamIds, orgIds} = criteria
-  const conditions: Expression<SqlBool>[] = []
-  const ref = sql.ref(pageIdRef)
-
-  if (pageIds !== null && pageIds.size > 0) {
-    conditions.push(eb(ref, 'in', [...pageIds]))
-  }
-
-  if (orgIds !== null && orgIds.length > 0) {
-    conditions.push(
-      eb.exists(
-        eb
-          .selectFrom('PageOrganizationAccess')
-          .select(sql.lit(1).as('one'))
-          .whereRef('pageId', '=', ref)
-          .where('orgId', 'in', orgIds)
-      )
-    )
-  }
-
-  if (teamIds !== null && orgIds !== null && teamIds.length > 0) {
-    conditions.push(
-      eb.exists(
-        eb
-          .selectFrom('PageTeamAccess')
-          .select(sql.lit(1).as('one'))
-          .whereRef('pageId', '=', ref)
-          .where('teamId', 'in', teamIds)
-      )
-    )
-    conditions.push(
-      eb.exists(
-        eb
-          .selectFrom('PageOrganizationAccess')
-          .select(sql.lit(1).as('one'))
-          .whereRef('pageId', '=', ref)
-          .where('orgId', 'in', eb.selectFrom('Team').select('orgId').where('id', 'in', teamIds))
-      )
-    )
-  }
-
-  if (conditions.length === 0) return eb.lit(true)
-  return eb.or(conditions)
-}
 
 export const pages: NonNullable<UserResolvers['pages']> = async (
   _source,
@@ -73,7 +19,6 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
   }
 
   const viewerId = getUserId(authToken)
-  const grantCriteria = resourceGrants?.getPageGrantCriteria() ?? null
   const dbParentPageId = parentPageId
     ? CipherId.fromClient(parentPageId)[0]
     : parentPageId === null
@@ -90,8 +35,8 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
       .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
-      .$if(!!grantCriteria, (qb) =>
-        qb.where((eb) => buildGrantFilter(eb, 'Page.id', grantCriteria!))
+      .$if(!!resourceGrants, (qb) =>
+        qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id')))
       )
       .orderBy('deletedAt', 'desc')
       .$narrowType<{deletedAt: NotNull}>()
@@ -128,6 +73,9 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
           .where('PageAccess.userId', '=', viewerId)
           .where('deletedBy', 'is', null)
           .where('Page.isSyncedBlock', '=', false)
+          .$if(!!resourceGrants, (qb) =>
+            qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id')))
+          )
       )
 
       .selectFrom('pages as p')
@@ -147,7 +95,6 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
       )
       .where('isPrivate', '=', false) // this must go down here so a shared child of a private page doesn't show up
       .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
-      .$if(!!grantCriteria, (qb) => qb.where((eb) => buildGrantFilter(eb, 'p.id', grantCriteria!)))
       .leftJoin('PageUserSortOrder', (join) =>
         join
           .on('PageUserSortOrder.userId', '=', viewerId)
@@ -207,7 +154,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
     .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
     .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
-    .$if(!!grantCriteria, (qb) => qb.where((eb) => buildGrantFilter(eb, 'Page.id', grantCriteria!)))
+    .$if(!!resourceGrants, (qb) => qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id'))))
     .where('deletedBy', 'is', null)
     .where('Page.isSyncedBlock', '=', false)
     .orderBy('sortOrder')
