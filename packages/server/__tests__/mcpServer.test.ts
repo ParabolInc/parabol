@@ -373,6 +373,24 @@ test('a missing required argument is refused', async () => {
   expect(JSON.parse(result.content[0]!.text)[0].message).toContain('variable "$pageId"')
 })
 
+test('a compiled tool fills in a default the caller leaves out', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TASKS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
+    {cookie}
+  )
+  const tasks = await callToolForData(token, 'list_tasks', {})
+  expect(tasks.viewer.tasks.edges).toEqual(expect.any(Array))
+  const started = await callToolForData(token, 'start_check_in', {teamId})
+  const meetings = await callToolForData(token, 'list_meetings', {
+    teamIds: [teamId],
+    before: new Date().toISOString()
+  })
+  expect(meetings.viewer.meetings.edges.map(({node}: {node: {id: string}}) => node.id)).toContain(
+    started.startCheckIn.meeting.id
+  )
+})
+
 test('create_page and set_page_content write a team page read_page returns', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
