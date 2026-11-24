@@ -37,16 +37,6 @@ const NewMeetingSettingsToggleRow = (props: Props) => {
       />
       <LaunchRing status={launch} />
       <span className='pointer-events-none relative min-w-0 flex-1 font-semibold text-fg-primary text-xl leading-6'>
-        {launch !== 'off' && (
-          <span
-            className={cn(
-              'mb-0.5 block font-bold text-[11px] text-rose-700 uppercase leading-4 tracking-wide transition-opacity duration-700 dark:text-rose-400',
-              launch === 'retiring' && 'opacity-0'
-            )}
-          >
-            New
-          </span>
-        )}
         {label}
         <Tooltip>
           <TooltipTrigger asChild>
