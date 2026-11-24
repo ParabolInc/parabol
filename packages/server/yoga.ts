@@ -1,11 +1,9 @@
 import type uws from 'uWebSockets.js'
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
-import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-validation'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import {useCookies} from '@whatwg-node/server-plugin-cookies'
-import {print} from 'graphql'
 import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
 import getProjectRoot from '../../scripts/webpack/utils/getProjectRoot'
@@ -236,20 +234,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCheckBlacklist(),
     useLicenseReadOnly(),
-    useExtendedValidation({
-      rules: [OneOfInputObjectsRule],
-      onValidationFailed: (params) => {
-        const {operationName, variableValues, document} = params.args
-        const query = print(document)
-        Logger.warn(`Failed validation: ${operationName}`, {
-          extras: {
-            operationName,
-            query,
-            variableValues
-          }
-        })
-      }
-    }),
     useReadinessCheck({
       check: async () => {
         const isUnavailable = getIsShuttingDown() || getIsBusy()
