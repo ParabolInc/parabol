@@ -31,9 +31,12 @@ const registerTool = (
       return await run(context, input)
     } finally {
       Logger.log('mcp tool', {
-        tool: name,
-        clientId: context.grant.clientId ?? 'pat',
-        durationMs: Math.round(performance.now() - startedAt)
+        tags: {
+          tool: name,
+          clientId: context.grant.clientId ?? 'pat',
+          durationMs: Math.round(performance.now() - startedAt)
+        },
+        userId: context.grant.userId
       })
     }
   })

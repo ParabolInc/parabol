@@ -30,7 +30,7 @@ export default defineTool({
   name: 'create_page',
   title: 'Create a page',
   description:
-    'Create a page from markdown, shared with a team or, without teamId, private to you. A connection limited to some organizations, teams or pages can only create team pages. Needs pages:write.',
+    'Create a page from markdown, shared with a team or, without teamId, private to you. A connection limited to some organizations, teams or pages can only create team pages. If the page is made but its content fails, the error carries its pageId: fill that page instead of creating another. Needs pages:write.',
   inputSchema: {
     title: z.string().min(1).describe('The page title, on one line'),
     markdown: z.string().describe('The page body, in markdown, without the title'),
@@ -50,7 +50,8 @@ export default defineTool({
     if (created.errors?.length || !created.data) return toolResult(created)
     const {id: pageId} = created.data.createPage.page
     return toolResult(
-      await runGraphQL(context, EDIT_PAGE_CONTENT, {pageId, content: `# ${title}\n\n${markdown}`})
+      await runGraphQL(context, EDIT_PAGE_CONTENT, {pageId, content: `# ${title}\n\n${markdown}`}),
+      {pageId}
     )
   }
 })

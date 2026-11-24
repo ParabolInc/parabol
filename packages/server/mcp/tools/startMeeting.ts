@@ -92,8 +92,12 @@ export default defineTool({
         return toolError('No template with that templateId is open to you.', 'NOT_FOUND')
       }
       if (activity.type !== MEETING_TYPE_BY_KIND[kind]) {
+        const templateKind =
+          MEETING_KINDS.find(
+            (meetingKind) => MEETING_TYPE_BY_KIND[meetingKind] === activity.type
+          ) ?? activity.type
         return toolError(
-          `That template is for ${activity.type} meetings, so it cannot start a ${kind}.`,
+          `That template is for ${templateKind} meetings, so it cannot start a ${kind}.`,
           'BAD_USER_INPUT'
         )
       }

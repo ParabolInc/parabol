@@ -29,7 +29,7 @@ export default defineTool({
   name: 'search_pages',
   title: 'Search pages',
   description:
-    'Find pages by words in their title or content, best matches first, with snippets showing why each matched. Open one with read_page. Needs users:read.',
+    'Find pages by words in their title or content, best matches first, with snippets showing why each matched. Open one with read_page. Needs users:read and pages:read.',
   inputSchema: {
     query: z.string().min(1).describe('The words to look for'),
     first: z.number().int().min(1).max(100).default(20).describe('Most pages to return')

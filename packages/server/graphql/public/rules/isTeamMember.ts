@@ -11,19 +11,24 @@ type LoadersWithTeamId = {
 
 type IDGetter = (obj: any) => string
 
+type TeamCheckContext = Pick<RuleContext, 'authToken' | 'dataLoader' | 'resourceGrants'>
+
 const notGrantedError = () =>
   new GraphQLError(`PAT does not grant access to this team`, {extensions: {code: 'FORBIDDEN'}})
 
-const getNotOnTeamError = async (
+export const isTeamExcludedByGrant = async (
   teamId: string,
-  {authToken, dataLoader, resourceGrants}: RuleContext
+  {authToken, dataLoader, resourceGrants}: TeamCheckContext
 ) => {
-  if (resourceGrants && authToken) {
-    const teamMembers = await dataLoader.get('teamMembersByUserId').load(authToken.sub)
-    if (teamMembers.some((teamMember) => teamMember.teamId === teamId)) return notGrantedError()
-  }
-  return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+  if (!resourceGrants || !authToken || authToken.tms.includes(teamId)) return false
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(authToken.sub)
+  return teamMembers.some((teamMember) => teamMember.teamId === teamId)
 }
+
+export const getNotOnTeamError = async (teamId: string, context: TeamCheckContext) =>
+  (await isTeamExcludedByGrant(teamId, context))
+    ? notGrantedError()
+    : new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
 
 export const isTeamMember = <T>(
   dotPath: ResolverDotPath<T>,

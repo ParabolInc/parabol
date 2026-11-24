@@ -20,6 +20,7 @@ import getUserDetail from '../../../utils/getUserDetail'
 import type {DataLoaderWorker} from '../../graphql'
 import type {ResourceGrants} from '../ResourceGrants'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
+import {isTeamExcludedByGrant} from '../rules/isTeamMember'
 
 export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: number) => {
   const pg = getKysely()
@@ -54,6 +55,11 @@ export const validateScope = async (
     throw new GraphQLError('scopeKey must match your viewerId', {extensions: {code: 'FORBIDDEN'}})
   } else if (scope === 'Team') {
     if (!isTeamMember(authToken, scopeKey)) {
+      if (await isTeamExcludedByGrant(scopeKey, {authToken, dataLoader, resourceGrants})) {
+        throw new GraphQLError('PAT does not grant access to this team', {
+          extensions: {code: 'FORBIDDEN'}
+        })
+      }
       throw new GraphQLError('scopeKey must match one of your teams', {
         extensions: {code: 'FORBIDDEN'}
       })

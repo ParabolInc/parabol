@@ -3,6 +3,7 @@ import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
+import {getNotOnTeamError} from './isTeamMember'
 
 export const isTeamMemberOfMeeting = <T>(
   dotPath: ResolverDotPath<T>,
@@ -27,7 +28,7 @@ export const isTeamMemberOfMeeting = <T>(
     }
     // All team members can join a meeting, so let them interact with it even if no team member exists yet. This allows for creation of reflections beforehand
     if (!authToken?.tms?.includes(meeting.teamId)) {
-      return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+      return getNotOnTeamError(meeting.teamId, context)
     }
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(meeting.teamId))) {
       return new GraphQLError(`PAT does not grant access to this team`, {

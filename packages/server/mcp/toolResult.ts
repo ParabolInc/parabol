@@ -1,8 +1,13 @@
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js'
-import type {ExecutionResult} from 'graphql'
+import type {FormattedExecutionResult} from 'graphql'
+import {z} from 'zod'
 
 const MAX_RESULT_LENGTH = 100_000
 const TRUNCATION_NOTICE = '\n…truncated: ask for fewer fields or use pagination arguments'
+
+const retryAfterSchema = z.object({
+  http: z.object({headers: z.object({'Retry-After': z.coerce.number().int().nonnegative()})})
+})
 
 export const textResult = (text: string, isError?: boolean): CallToolResult => ({
   ...(isError && {isError}),
@@ -17,10 +22,23 @@ export const textResult = (text: string, isError?: boolean): CallToolResult => (
   ]
 })
 
-const toolResult = ({data, errors}: ExecutionResult): CallToolResult => {
+const toolResult = (
+  {data, errors}: FormattedExecutionResult,
+  errorDetails?: Record<string, unknown>
+): CallToolResult => {
   if (errors?.length) {
     return textResult(
-      JSON.stringify(errors.map(({message, extensions}) => ({message, code: extensions?.code}))),
+      JSON.stringify(
+        errors.map(({message, extensions}) => {
+          const retryAfter = retryAfterSchema.safeParse(extensions)
+          return {
+            message,
+            code: extensions?.code,
+            ...(retryAfter.success && {retryAfter: retryAfter.data.http.headers['Retry-After']}),
+            ...errorDetails
+          }
+        })
+      ),
       true
     )
   }

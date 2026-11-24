@@ -17,6 +17,29 @@ test('errors come back with their code and no other detail', () => {
   ])
 })
 
+test('a rate-limit error carries the seconds to wait from Retry-After', () => {
+  const result = toolResult({
+    errors: [
+      new GraphQLError('429 Too Many Requests', {
+        extensions: {code: 'TOO_MANY_REQUESTS', http: {status: 429, headers: {'Retry-After': '42'}}}
+      })
+    ]
+  })
+  expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual([
+    {message: '429 Too Many Requests', code: 'TOO_MANY_REQUESTS', retryAfter: 42}
+  ])
+})
+
+test('error details are added to every error', () => {
+  const result = toolResult(
+    {errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]},
+    {pageId: 'page:1'}
+  )
+  expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual([
+    {message: 'nope', code: 'FORBIDDEN', pageId: 'page:1'}
+  ])
+})
+
 test('a result over 100,000 characters is cut with a notice', () => {
   const result = toolResult({data: {big: 'x'.repeat(150_000)}})
   const {text} = result.content[0] as {text: string}

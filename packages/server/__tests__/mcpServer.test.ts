@@ -56,6 +56,46 @@ const COUNT_PAGES = `
   }
 `
 
+const START_CHECK_IN = `
+  mutation StartCheckIn($teamId: ID!) {
+    startCheckIn(teamId: $teamId) {
+      meeting {
+        id
+      }
+    }
+  }
+`
+
+const CREATE_TASK = `
+  mutation CreateTask($newTask: CreateTaskInput!) {
+    createTask(newTask: $newTask) {
+      task {
+        id
+      }
+    }
+  }
+`
+
+const CREATE_TEAM_PAGE = `
+  mutation CreateTeamPage($teamId: ID!) {
+    createPage(teamId: $teamId) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const EDIT_PAGE_CONTENT = `
+  mutation EditPageContent($pageId: ID!, $content: String!) {
+    editPageContent(pageId: $pageId, content: $content, format: markdown) {
+      page {
+        id
+      }
+    }
+  }
+`
+
 const INITIALIZE = {
   jsonrpc: '2.0',
   id: 1,
@@ -105,11 +145,17 @@ const createPersonalAccessToken = async (
   return res.data.createPersonalAccessToken.token as string
 }
 
-const createOAuthAccessToken = async (resource?: string) => {
-  const [{cookie}, {clientId, redirectUri}] = await Promise.all([signUp(), createClient()])
+const createOAuthAccessToken = async (
+  resource?: string,
+  {cookie: userCookie, scope = 'users:read'}: {cookie?: string; scope?: string} = {}
+) => {
+  const [cookie, {clientId, redirectUri}] = await Promise.all([
+    userCookie ?? signUp().then((user) => user.cookie),
+    createClient()
+  ])
   const {codeVerifier, codeChallenge} = createPKCEPair()
   const authorized = await createCode(
-    {clientId, redirectUri, scope: 'users:read', codeChallenge, resource},
+    {clientId, redirectUri, scope, codeChallenge, resource},
     cookie
   )
   expect(authorized.errors).toBeUndefined()
@@ -165,6 +211,41 @@ const signUpWithTwoOrgs = async () => {
   const {id: secondTeamId, orgId: secondOrgId} = added.data.addOrg.team
   return {userId, cookie, orgId, teamId, secondOrgId, secondTeamId}
 }
+
+const startCheckIn = async (bearerToken: string, teamId: string) => {
+  const res = await sendPublic({query: START_CHECK_IN, variables: {teamId}, bearerToken})
+  expect(res.errors).toBeUndefined()
+  return res.data.startCheckIn.meeting.id as string
+}
+
+const createTask = async (bearerToken: string, teamId: string, userId: string) => {
+  const res = await sendPublic({
+    query: CREATE_TASK,
+    variables: {newTask: {teamId, userId, status: 'active'}},
+    bearerToken
+  })
+  expect(res.errors).toBeUndefined()
+  return res.data.createTask.task.id as string
+}
+
+const createTitledPage = async (bearerToken: string, teamId: string, title: string) => {
+  const created = await sendPublic({query: CREATE_TEAM_PAGE, variables: {teamId}, bearerToken})
+  expect(created.errors).toBeUndefined()
+  const pageId = created.data.createPage.page.id as string
+  const res = await sendPublic({
+    query: EDIT_PAGE_CONTENT,
+    variables: {pageId, content: `# ${title}\n\nNotes.`},
+    bearerToken
+  })
+  expect(res.errors).toBeUndefined()
+  return pageId
+}
+
+const createFixtureToken = (cookie: string) =>
+  createPersonalAccessToken(['TASKS_WRITE', 'MEETINGS_WRITE', 'PAGES_WRITE'], {cookie})
+
+const ids = (connection: {edges: {node: {id: string}}[]}) =>
+  connection.edges.map(({node}) => node.id)
 
 const ONE_PIXEL_PNG =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
@@ -424,6 +505,21 @@ test('a missing scope comes back as a tool error naming the scope', async () => 
   expect(JSON.parse(result.content[0]!.text)[0].code).toBe('FORBIDDEN')
 })
 
+test('a rate-limited call says how many seconds to wait', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ'])
+  let limited: {code: string; retryAfter?: number} | undefined
+  for (let call = 0; call < 8 && !limited; call++) {
+    const result = await callTool(token, 'get_meeting', {meetingId: 'noSuchMeeting'})
+    const [error] = JSON.parse(result.content[0]!.text)
+    if (error.code === 'TOO_MANY_REQUESTS') limited = error
+  }
+  expect(limited).toEqual({
+    message: '429 Too Many Requests',
+    code: 'TOO_MANY_REQUESTS',
+    retryAfter: expect.any(Number)
+  })
+})
+
 test('search_schema finds a type and a field', async () => {
   const token = await createPersonalAccessToken()
   const result = await callTool(token, 'search_schema', {query: 'createTask', limit: 5})
@@ -556,6 +652,44 @@ test('update_task changes a task and list_tasks filters by status', async () => 
   expect(ids(active)).not.toContain(taskId)
 })
 
+test('list_meetings since finds recent meetings only', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TEAMS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
+    {cookie}
+  )
+  const before = new Date(Date.now() - 1000).toISOString()
+  const started = await callToolForData(token, 'start_meeting', {teamId, kind: 'checkin'})
+  const meetingId = started.startCheckIn.meeting.id
+  const after = new Date(Date.now() + 1000).toISOString()
+  for (const args of [{since: before}, {since: before, teamId}]) {
+    const listed = await callToolForData(token, 'list_meetings', args)
+    expect(ids(listed.viewer.meetings)).toEqual([meetingId])
+  }
+  const later = await callToolForData(token, 'list_meetings', {since: after})
+  expect(later.viewer.meetings.edges).toEqual([])
+})
+
+test('list_tasks pages with after and the endCursor it returns', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TEAMS_READ', 'TASKS_READ', 'TASKS_WRITE'],
+    {cookie}
+  )
+  const older = await callToolForData(token, 'create_task', {teamId, content: 'Older task'})
+  const newer = await callToolForData(token, 'create_task', {teamId, content: 'Newer task'})
+  const firstPage = await callToolForData(token, 'list_tasks', {teamId, first: 1})
+  expect(ids(firstPage.viewer.tasks)).toEqual([newer.createTask.task.id])
+  const {hasNextPage, endCursor} = firstPage.viewer.tasks.pageInfo
+  expect(hasNextPage).toBe(true)
+  const secondPage = await callToolForData(token, 'list_tasks', {
+    teamId,
+    first: 1,
+    after: endCursor
+  })
+  expect(ids(secondPage.viewer.tasks)).toEqual([older.createTask.task.id])
+})
+
 test('upload_image stores a PNG and returns its URL', async () => {
   const {cookie} = await signUp()
   const pageId = await createPage(cookie)
@@ -572,6 +706,26 @@ test('upload_image stores a PNG and returns its URL', async () => {
   expect(url).toMatch(/^https?:\/\//)
   const response = await fetch(url, {headers: bearer(reader)})
   expect(response.status).toBe(200)
+})
+
+test('an OAuth token bound to /mcp is refused at /assets', async () => {
+  const {cookie} = await signUp()
+  const pageId = await createPage(cookie)
+  const writer = await createPersonalAccessToken(['PAGES_WRITE'], {cookie})
+  const uploaded = await callToolForData(writer, 'upload_image', {
+    filename: 'pixel.png',
+    mimeType: 'image/png',
+    base64: ONE_PIXEL_PNG,
+    scope: 'Page',
+    scopeKey: pageId
+  })
+  const {url} = uploaded.uploadUserAsset
+  const [mcpToken, unboundToken] = await Promise.all([
+    createOAuthAccessToken(MCP_URL, {cookie, scope: 'pages:read'}),
+    createOAuthAccessToken(undefined, {cookie, scope: 'pages:read'})
+  ])
+  expect((await fetch(url, {headers: bearer(unboundToken)})).status).toBe(200)
+  expect((await fetch(url, {headers: bearer(mcpToken)})).status).toBe(401)
 })
 
 test('upload_image refuses a non-image type', async () => {
@@ -600,17 +754,98 @@ test('upload_image refuses base64 that is not an image of its type', async () =>
   expectToolError(result, 'BAD_USER_INPUT')
 })
 
-test('a token limited to one org cannot list another org team tasks or meetings', async () => {
+test('a token limited to one org is told the grant leaves out the other org team', async () => {
   const {cookie, orgId, secondTeamId} = await signUpWithTwoOrgs()
+  const secondMeetingId = await startCheckIn(await createFixtureToken(cookie), secondTeamId)
   const token = await createPersonalAccessToken(
-    ['USERS_READ', 'TEAMS_READ', 'TASKS_READ', 'MEETINGS_READ'],
+    [
+      'USERS_READ',
+      'TEAMS_READ',
+      'TEAMS_WRITE',
+      'TASKS_READ',
+      'MEETINGS_READ',
+      'MEETINGS_WRITE',
+      'TEMPLATES_READ'
+    ],
     {cookie, grantedOrgIds: [orgId], grantedTeamIds: []}
   )
-  for (const tool of ['list_tasks', 'list_meetings']) {
-    const result = await callTool(token, tool, {teamId: secondTeamId})
+  const calls: [string, Record<string, unknown>][] = [
+    ['list_tasks', {teamId: secondTeamId}],
+    ['list_meetings', {teamId: secondTeamId}],
+    ['get_meeting', {meetingId: secondMeetingId}],
+    ['start_meeting', {teamId: secondTeamId, kind: 'teamHealth', templateId: 'gallupQ12Template'}],
+    [
+      'upload_image',
+      {
+        filename: 'pixel.png',
+        mimeType: 'image/png',
+        base64: ONE_PIXEL_PNG,
+        scope: 'Team',
+        scopeKey: secondTeamId
+      }
+    ]
+  ]
+  for (const [tool, args] of calls) {
+    const result = await callTool(token, tool, args)
     expectToolError(result, 'does not grant access')
     expect(JSON.parse(result.content[0]!.text)[0].code).toBe('FORBIDDEN')
   }
+})
+
+test('a token limited to one org sees nothing from the other org', async () => {
+  const {userId, cookie, orgId, teamId, secondTeamId} = await signUpWithTwoOrgs()
+  const stamp = Date.now()
+  const fixtures = await createFixtureToken(cookie)
+  const [firstTaskId, secondTaskId, firstMeetingId, secondMeetingId, firstPageId, secondPageId] =
+    await Promise.all([
+      createTask(fixtures, teamId, userId),
+      createTask(fixtures, secondTeamId, userId),
+      startCheckIn(fixtures, teamId),
+      startCheckIn(fixtures, secondTeamId),
+      createTitledPage(fixtures, teamId, `Walrus ${stamp} first`),
+      createTitledPage(fixtures, secondTeamId, `Walrus ${stamp} second`)
+    ])
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'ORGS_READ', 'TEAMS_READ', 'TASKS_READ', 'MEETINGS_READ', 'PAGES_READ'],
+    {cookie, grantedOrgIds: [orgId], grantedTeamIds: []}
+  )
+  const tasks = ids((await callToolForData(token, 'list_tasks', {})).viewer.tasks)
+  expect(tasks).toContain(firstTaskId)
+  expect(tasks).not.toContain(secondTaskId)
+  const meetings = ids((await callToolForData(token, 'list_meetings', {})).viewer.meetings)
+  expect(meetings).toContain(firstMeetingId)
+  expect(meetings).not.toContain(secondMeetingId)
+  const {viewer} = await callToolForData(token, 'get_me', {})
+  expect(viewer.organizations.map(({id}: {id: string}) => id)).toEqual([orgId])
+  expect(viewer.teams.map(({id}: {id: string}) => id)).toEqual([teamId])
+  const found = ids(
+    (await callToolForData(token, 'search_pages', {query: `Walrus ${stamp}`})).viewer.search
+  )
+  expect(found).toContain(firstPageId)
+  expect(found).not.toContain(secondPageId)
+  const {viewer: everything} = await callToolForData(token, 'graphql_query', {
+    query: `{
+      viewer {
+        organizations {
+          id
+        }
+        teams {
+          id
+        }
+        tasks(first: 2, includeUnassigned: true) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    }`
+  })
+  expect(everything.organizations.map(({id}: {id: string}) => id)).toEqual([orgId])
+  expect(everything.teams.map(({id}: {id: string}) => id)).toEqual([teamId])
+  expect(ids(everything.tasks)).toContain(firstTaskId)
+  expect(ids(everything.tasks)).not.toContain(secondTaskId)
 })
 
 test('create_page without teamId is refused for an org-limited token', async () => {
@@ -753,6 +988,13 @@ test('start_meeting refuses a template of another kind before selecting it', asy
   })
   expectToolError(result, 'BAD_USER_INPUT')
   expect(result.content[0]!.text).toContain('poker')
+  const standupTemplate = await callTool(token, 'start_meeting', {
+    teamId,
+    kind: 'retrospective',
+    templateId: 'weeklyWinsAndPrioritiesTemplate'
+  })
+  expectToolError(standupTemplate, 'That template is for standup meetings')
+  expect(standupTemplate.content[0]!.text).not.toContain('teamPrompt')
   const listed = await callToolForData(token, 'list_meetings', {teamId})
   expect(listed.viewer.meetings.edges).toEqual([])
   const settings = await callToolForData(token, 'graphql_query', {

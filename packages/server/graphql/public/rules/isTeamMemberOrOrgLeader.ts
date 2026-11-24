@@ -3,6 +3,7 @@ import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
+import {getNotOnTeamError} from './isTeamMember'
 
 /**
  * Allows a mutation over one or many teams when, for EACH team, the viewer is either on the team
@@ -36,7 +37,7 @@ export const isTeamMemberOrOrgLeader = <T>(dotPath: ResolverDotPath<T>) =>
           .load({orgId, userId: viewerId})
         const role = organizationUser?.role
         if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN') {
-          return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+          return getNotOnTeamError(teamId, context)
         }
         if (resourceGrants && !(await resourceGrants.hasOrg(orgId))) {
           return new GraphQLError(`PAT does not grant access to this organization`, {

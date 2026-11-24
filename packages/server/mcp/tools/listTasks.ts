@@ -19,13 +19,19 @@ const TASK_CONNECTION = `
   }
   pageInfo {
     hasNextPage
+    endCursor
   }
 `
 
 const LIST_TASKS = `
-  query ListTasks($first: Int!, $statusFilters: [TaskStatusEnum!]) {
+  query ListTasks($first: Int!, $after: DateTime, $statusFilters: [TaskStatusEnum!]) {
     viewer {
-      tasks(first: $first, statusFilters: $statusFilters, includeUnassigned: true) {
+      tasks(
+        first: $first
+        after: $after
+        statusFilters: $statusFilters
+        includeUnassigned: true
+      ) {
         ${TASK_CONNECTION}
       }
     }
@@ -33,13 +39,19 @@ const LIST_TASKS = `
 `
 
 const LIST_TEAM_TASKS = `
-  query ListTeamTasks($first: Int!, $teamId: ID!, $statusFilters: [TaskStatusEnum!]) {
+  query ListTeamTasks(
+    $first: Int!
+    $after: DateTime
+    $teamId: ID!
+    $statusFilters: [TaskStatusEnum!]
+  ) {
     viewer {
       team(teamId: $teamId) {
         id
       }
       tasks(
         first: $first
+        after: $after
         teamIds: [$teamId]
         statusFilters: $statusFilters
         includeUnassigned: true
@@ -54,15 +66,19 @@ export default defineTool({
   name: 'list_tasks',
   title: 'List tasks',
   description:
-    'List the tasks on your teams, assigned or not, most recently updated first. Filter by team or status. Needs users:read and tasks:read; the teamId filter also needs teams:read.',
+    'List the tasks on your teams, assigned or not, most recently updated first. Filter by team or status. When hasNextPage is true, pass pageInfo.endCursor as after for the next tasks. Needs users:read and tasks:read; the teamId filter also needs teams:read.',
   inputSchema: {
     teamId: z.string().optional().describe('Only list tasks of this team'),
     status: taskStatusSchema.optional().describe('Only list tasks with this status'),
-    first: z.number().int().min(1).max(100).default(50).describe('Most tasks to return')
+    first: z.number().int().min(1).max(100).default(50).describe('Most tasks to return'),
+    after: z.iso
+      .datetime({offset: true})
+      .optional()
+      .describe('The pageInfo.endCursor of the previous list_tasks call')
   },
   annotations: readAnnotations,
-  run: async (context, {teamId, status, first}) => {
-    const variables = {first, statusFilters: status ? [status] : null}
+  run: async (context, {teamId, status, first, after}) => {
+    const variables = {first, after, statusFilters: status ? [status] : null}
     return toolResult(
       teamId
         ? await runGraphQL(context, LIST_TEAM_TASKS, {...variables, teamId})
