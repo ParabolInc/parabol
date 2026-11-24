@@ -9,6 +9,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
 import useMeeting from '../hooks/useMeeting'
 import useRightDrawer from '../hooks/useRightDrawer'
+import useTeamHealthCheckInRetro from '../hooks/useTeamHealthCheckInRetro'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
@@ -112,6 +113,7 @@ const RetroMeeting = (props: Props) => {
             id
           }
           ...getTeamHealthDiscussionId_meeting
+          ...useTeamHealthCheckInRetro_meeting
         }
       }
     `,
@@ -133,6 +135,7 @@ const RetroMeeting = (props: Props) => {
     showInspiration ? 'inspiration' : teamHealthDiscussionId ? 'discussion' : 'settings',
     false
   )
+  useTeamHealthCheckInRetro(teamHealthMeeting ?? null, localPhaseType === 'TEAM_HEALTH')
   useTemplateSwitchedSnackbar({
     meetingId,
     templateId: meeting.templateId,

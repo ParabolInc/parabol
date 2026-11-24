@@ -134,6 +134,7 @@ const subscription = graphql`
               id
             }
             ...getTeamHealthDiscussionId_meeting
+            ...useTeamHealthCheckInRetro_meeting
           }
         }
       }
