@@ -163,15 +163,7 @@ const rewriteGroup = (
       {extensions: {code: 'BAD_USER_INPUT'}}
     )
   }
-  let parsedNodes: JSONContent[]
-  try {
-    parsedNodes = parsePageMarkdown(rangeMarkdown, allowedImageSrcs)
-  } catch (e) {
-    if (e instanceof GraphQLError) throw e
-    throw new GraphQLError('newText could not be parsed as Markdown', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
+  const parsedNodes = parsePageMarkdown(rangeMarkdown, allowedImageSrcs)
   const oldBlocks = blocks.slice(firstIdx, lastIdx + 1)
   const newBlocks = toBlocks(parsedNodes)
   let keptPrefix = 0

@@ -1,11 +1,11 @@
 import type {JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
-import {parseMarkdownBlocks} from '../../../../client/shared/tiptap/parseMarkdownBlocks'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
+import {parseMarkdownContent} from '../../../utils/tiptap/parsePageMarkdown'
 import type {MutationResolvers} from '../resolverTypes'
 
 const editPageContent: MutationResolvers['editPageContent'] = async (
@@ -29,7 +29,7 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
   if (format === 'markdown') {
     jsonContent = {
       type: 'doc',
-      content: content.trim() ? parseMarkdownBlocks(content) : [{type: 'paragraph'}]
+      content: content.trim() ? parseMarkdownContent(content) : [{type: 'paragraph'}]
     }
   } else {
     try {
