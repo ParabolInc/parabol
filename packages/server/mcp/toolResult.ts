@@ -22,25 +22,28 @@ export const textResult = (text: string, isError?: boolean): CallToolResult => (
   ]
 })
 
+const formatErrors = (
+  errors: NonNullable<FormattedExecutionResult['errors']>,
+  errorDetails?: Record<string, unknown>
+) =>
+  errors.map(({message, extensions}) => {
+    const retryAfter = retryAfterSchema.safeParse(extensions)
+    return {
+      message,
+      code: extensions?.code,
+      ...(retryAfter.success && {retryAfter: retryAfter.data.http.headers['Retry-After']}),
+      ...errorDetails
+    }
+  })
+
 const toolResult = (
   {data, errors}: FormattedExecutionResult,
   errorDetails?: Record<string, unknown>
 ): CallToolResult => {
   if (errors?.length) {
-    return textResult(
-      JSON.stringify(
-        errors.map(({message, extensions}) => {
-          const retryAfter = retryAfterSchema.safeParse(extensions)
-          return {
-            message,
-            code: extensions?.code,
-            ...(retryAfter.success && {retryAfter: retryAfter.data.http.headers['Retry-After']}),
-            ...errorDetails
-          }
-        })
-      ),
-      true
-    )
+    const formatted = formatErrors(errors, errorDetails)
+    if (data) return textResult(JSON.stringify({data, errors: formatted}))
+    return textResult(JSON.stringify(formatted), true)
   }
   return textResult(JSON.stringify(data ?? null))
 }

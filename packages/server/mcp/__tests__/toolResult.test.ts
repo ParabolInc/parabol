@@ -46,3 +46,23 @@ test('a result over 100,000 characters is cut with a notice', () => {
   expect(text.endsWith('\n…truncated: ask for fewer fields or use pagination arguments')).toBe(true)
   expect(text.length).toBeLessThan(100_100)
 })
+
+test('data that arrives with errors comes back with both and is not an error result', () => {
+  const result = toolResult({
+    data: {viewer: {id: 'a'}},
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  expect(result.isError).toBeUndefined()
+  expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual({
+    data: {viewer: {id: 'a'}},
+    errors: [{message: 'nope', code: 'FORBIDDEN'}]
+  })
+})
+
+test('errors with null data stay an error result', () => {
+  const result = toolResult({
+    data: null,
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  expect(result.isError).toBe(true)
+})
