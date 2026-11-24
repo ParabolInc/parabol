@@ -8,6 +8,7 @@ import {
 import {Logger} from '../utils/Logger'
 import type {MCPContext} from './MCPContext'
 import type MCPToolEntry from './MCPToolEntry'
+import toolError from './toolError'
 
 const registerTools = (server: Server, context: MCPContext, entries: MCPToolEntry[]) => {
   const entriesByName = new Map(entries.map((entry) => [entry.definition.name, entry]))
@@ -21,6 +22,12 @@ const registerTools = (server: Server, context: MCPContext, entries: MCPToolEntr
     const startedAt = performance.now()
     try {
       return await entry.call(context, request.params.arguments ?? {})
+    } catch (error) {
+      Logger.error(error, {tags: {tool: name}, userId: context.grant.userId})
+      return toolError(
+        error instanceof Error ? error.message : String(error),
+        'INTERNAL_SERVER_ERROR'
+      )
     } finally {
       Logger.log('mcp tool', {
         tags: {

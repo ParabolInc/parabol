@@ -2,7 +2,7 @@ import type {CallToolResult, ToolAnnotations} from '@modelcontextprotocol/sdk/ty
 import {z} from 'zod'
 import type {MCPContext} from './MCPContext'
 import type MCPToolEntry from './MCPToolEntry'
-import {textResult} from './toolResult'
+import toolError from './toolError'
 
 interface ToolConfig<Input extends z.ZodObject> {
   name: string
@@ -26,11 +26,13 @@ const defineTool = <Input extends z.ZodObject>({
     title,
     description,
     annotations,
-    inputSchema: z.toJSONSchema(inputSchema) as MCPToolEntry['definition']['inputSchema']
+    inputSchema: z.toJSONSchema(inputSchema, {
+      io: 'input'
+    }) as MCPToolEntry['definition']['inputSchema']
   },
   call: async (context, args) => {
     const parsed = inputSchema.safeParse(args)
-    if (!parsed.success) return textResult(z.prettifyError(parsed.error), true)
+    if (!parsed.success) return toolError(z.prettifyError(parsed.error), 'BAD_USER_INPUT')
     return run(context, parsed.data)
   }
 })

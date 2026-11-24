@@ -38,7 +38,8 @@ const getVariableSchema = (
     return {
       type: 'object',
       properties,
-      ...(required.length > 0 ? {required} : {})
+      ...(required.length > 0 ? {required} : {}),
+      additionalProperties: false
     }
   }
   if (isScalarType(type)) {

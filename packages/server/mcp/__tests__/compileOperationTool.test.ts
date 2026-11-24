@@ -1,24 +1,112 @@
-import {readFileSync} from 'fs'
-import {
-  buildSchema,
-  type GraphQLInputObjectType,
-  type GraphQLObjectType,
-  type NonNullTypeNode,
-  parse,
-  parseType,
-  print,
-  typeFromAST
-} from 'graphql'
-import path from 'path'
+import {assertInputType, buildSchema, parse, parseType, print, typeFromAST} from 'graphql'
 import compileOperationTool from '../compileOperationTool'
 import getVariableSchema from '../getVariableSchema'
 import {readAnnotations, writeAnnotations} from '../toolAnnotations'
 
-const schema = buildSchema(
-  readFileSync(path.join(__dirname, '../../graphql/public/schema.graphql'), 'utf8')
-)
+const schema = buildSchema(`
+  scalar DateTime
+  scalar File
+  scalar URL
+
+  enum TaskStatusEnum {
+    active
+    stuck
+    done
+    future
+  }
+
+  enum AssetScopeEnum {
+    User
+    Page
+  }
+
+  type Task {
+    id: ID!
+  }
+
+  type TaskEdge {
+    node: Task!
+  }
+
+  type TaskConnection {
+    edges: [TaskEdge!]!
+  }
+
+  input TaskFilterInput {
+    """true to return archived tasks"""
+    archived: Boolean! = false
+    statusFilters: [TaskStatusEnum!]
+  }
+
+  input TaskFilterGroupInput {
+    anyOf: [TaskFilterGroupInput!]
+  }
+
+  type User {
+    id: ID!
+    tasks(
+      """the number of tasks to return"""
+      first: Int!
+      """the datetime cursor"""
+      after: DateTime
+      """a list of team Ids that you want tasks for"""
+      teamIds: [ID!]
+      filter: TaskFilterInput
+      filterGroup: TaskFilterGroupInput
+    ): TaskConnection!
+  }
+
+  type Query {
+    viewer: User!
+  }
+
+  input CreateTaskInput {
+    sortOrder: Float
+    status: TaskStatusEnum!
+    """teamId, the team the task is on"""
+    teamId: ID!
+  }
+
+  type CreateTaskPayload {
+    task: Task
+  }
+
+  input PageContentEditInput {
+    """Text to find in the page's Markdown"""
+    oldText: String!
+    """Markdown to put in place of oldText"""
+    newText: String!
+    """Replace every occurrence of oldText instead of requiring exactly one"""
+    replaceAll: Boolean
+  }
+
+  type Page {
+    id: ID!
+  }
+
+  type PatchPageContentPayload {
+    page: Page!
+  }
+
+  input AttachmentInput {
+    file: File!
+  }
+
+  type UploadUserAssetPayload {
+    url: URL
+  }
+
+  type Mutation {
+    createTask(newTask: CreateTaskInput!): CreateTaskPayload!
+    patchPageContent(pageId: ID!, edits: [PageContentEditInput!]!): PatchPageContentPayload!
+    uploadUserAsset(file: File!, scope: AssetScopeEnum!, scopeKey: ID!): UploadUserAssetPayload!
+    attachFile(attachment: AttachmentInput!): UploadUserAssetPayload!
+  }
+`)
 const fileName = 'Test.graphql'
 const compile = (source: string) => compileOperationTool(schema, source, fileName)
+const map = (type: string) =>
+  getVariableSchema(schema, assertInputType(typeFromAST(schema, parseType(type))), fileName)
 
 test('names the tool after the operation in snake case', () => {
   const tool = compile('# Who am I\nquery GetMe { viewer { id } }')
@@ -39,20 +127,19 @@ query ListTasks(
   $first: Int = 50
   $teamIds: [ID!]
 ) { viewer { tasks(first: $first, teamIds: $teamIds) { edges { node { id } } } } }`)
-  const teamIdsArg = (schema.getType('User') as GraphQLObjectType)
-    .getFields()
-    .tasks!.args.find(({name}) => name === 'teamIds')!
   expect(tool.inputSchema.properties).toEqual({
     first: {type: 'integer', default: 50, description: 'Most tasks to return'},
-    teamIds: {type: 'array', items: {type: 'string'}, description: teamIdsArg.description}
+    teamIds: {
+      type: 'array',
+      items: {type: 'string'},
+      description: 'a list of team Ids that you want tasks for'
+    }
   })
   const fromInput = compile(`# Make one
 mutation CreateTask($teamId: ID!) { createTask(newTask: {teamId: $teamId, status: active}) { task { id } } }`)
-  const teamIdField = (schema.getType('CreateTaskInput') as GraphQLInputObjectType).getFields()
-    .teamId!
   expect(fromInput.inputSchema.properties!.teamId).toEqual({
     type: 'string',
-    description: teamIdField.description
+    description: 'teamId, the team the task is on'
   })
 })
 
@@ -62,41 +149,51 @@ query ListTasks(
   $first: Int = 50 # page size
   $teamIds: [ID!]
 ) { viewer { tasks(first: $first, teamIds: $teamIds) { edges { node { id } } } } }`)
-  const teamIdsArg = (schema.getType('User') as GraphQLObjectType)
-    .getFields()
-    .tasks!.args.find(({name}) => name === 'teamIds')!
   expect(tool.inputSchema.properties!.teamIds).toMatchObject({
-    description: teamIdsArg.description
+    description: 'a list of team Ids that you want tasks for'
   })
 })
 
 test('maps GraphQL types to JSON Schema', () => {
-  const map = (type: string) =>
-    getVariableSchema(
-      schema,
-      typeFromAST(schema, parseType(type) as NonNullTypeNode)!,
-      'Test.graphql'
-    )
   expect(map('ID!')).toEqual({type: 'string'})
   expect(map('Int')).toEqual({type: 'integer'})
   expect(map('Float')).toEqual({type: 'number'})
   expect(map('Boolean')).toEqual({type: 'boolean'})
-  expect(map('DateTime')).toMatchObject({type: 'string', format: 'date-time'})
-  expect(map('[TaskStatusEnum!]')).toMatchObject({
+  expect(map('DateTime')).toEqual({type: 'string', format: 'date-time'})
+  expect(map('URL')).toEqual({type: 'string'})
+  expect(map('[TaskStatusEnum!]')).toEqual({
     type: 'array',
     items: {type: 'string', enum: ['active', 'stuck', 'done', 'future']}
   })
-  expect(map('[PageContentEditInput!]!')).toMatchObject({
+  expect(map('[PageContentEditInput!]!')).toEqual({
     type: 'array',
     items: {
       type: 'object',
-      required: ['oldText', 'newText'],
       properties: {
-        oldText: {type: 'string'},
-        newText: {type: 'string'},
-        replaceAll: {type: 'boolean'}
-      }
+        oldText: {type: 'string', description: "Text to find in the page's Markdown"},
+        newText: {type: 'string', description: 'Markdown to put in place of oldText'},
+        replaceAll: {
+          type: 'boolean',
+          description: 'Replace every occurrence of oldText instead of requiring exactly one'
+        }
+      },
+      required: ['oldText', 'newText'],
+      additionalProperties: false
     }
+  })
+})
+
+test('an input field default appears as default and leaves the field optional', () => {
+  expect(map('TaskFilterInput')).toEqual({
+    type: 'object',
+    properties: {
+      archived: {type: 'boolean', default: false, description: 'true to return archived tasks'},
+      statusFilters: {
+        type: 'array',
+        items: {type: 'string', enum: ['active', 'stuck', 'done', 'future']}
+      }
+    },
+    additionalProperties: false
   })
 })
 
@@ -134,17 +231,36 @@ fragment ViewerId on User { id }`)
 })
 
 test.each([
-  ['# x\nquery Q { viewer { nope } }', 'Test.graphql: Cannot query field "nope"'],
-  ['# x\nquery A { viewer { id } }\nquery B { viewer { id } }', 'exactly one operation'],
-  ['# x\n{ viewer { id } }', 'named'],
-  ['# x\nsubscription S { __typename }', 'query or a mutation'],
-  ['query Q { viewer { id } }', 'description comment'],
-  ['# x\n\nquery Q { viewer { id } }', 'description comment'],
   [
+    'an invalid operation',
+    '# x\nquery Q { viewer { nope } }',
+    'Test.graphql: Cannot query field "nope"'
+  ],
+  [
+    'two operations',
+    '# x\nquery A { viewer { id } }\nquery B { viewer { id } }',
+    'exactly one operation'
+  ],
+  ['an anonymous operation', '# x\n{ viewer { id } }', 'named'],
+  ['a subscription', '# x\nsubscription S { __typename }', 'query or a mutation'],
+  ['no description', 'query Q { viewer { id } }', 'description comment'],
+  ['a detached description', '# x\n\nquery Q { viewer { id } }', 'description comment'],
+  [
+    'a File variable',
     '# x\nmutation U($file: File!) { uploadUserAsset(file: $file, scope: User, scopeKey: "u") { url } }',
     'a File variable has no JSON Schema form'
+  ],
+  [
+    'a File inside an input object',
+    '# x\nmutation A($attachment: AttachmentInput!) { attachFile(attachment: $attachment) { url } }',
+    'a File variable has no JSON Schema form'
+  ],
+  [
+    'a recursive input',
+    '# x\nquery Q($filterGroup: TaskFilterGroupInput) { viewer { tasks(first: 1, filterGroup: $filterGroup) { edges { node { id } } } } }',
+    'input type TaskFilterGroupInput refers to itself'
   ]
-])('throws, naming the file: %s', (source, message) => {
+])('throws for %s, naming the file', (_label, source, message) => {
   expect(() => compile(source)).toThrow(message)
   expect(() => compile(source)).toThrow(/^Test\.graphql: /)
 })

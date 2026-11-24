@@ -393,21 +393,71 @@ test('a compiled tool fills in a default the caller leaves out', async () => {
   )
 })
 
-test('create_page and set_page_content write a team page read_page returns', async () => {
+test('create_page, set_page_content and edit_page write a team page read_page returns', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
   const created = await callToolForData(token, 'create_page', {teamId})
   const pageId = created.createPage.page.id
   await callToolForData(token, 'set_page_content', {pageId, content: '# Plan\n\nShip it'})
+  const edited = await callToolForData(token, 'edit_page', {
+    pageId,
+    edits: [{oldText: 'Ship it', newText: 'Ship it today'}]
+  })
+  expect(edited.patchPageContent.page.id).toBe(pageId)
   const read = await callToolForData(token, 'read_page', {pageId})
-  expect(read.public.page.content).toContain('Ship it')
+  expect(read.public.page.content).toContain('Ship it today')
 })
 
-test('start_check_in starts a meeting on the team', async () => {
+test('search_pages answers with a list of pages', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ'])
+  const found = await callToolForData(token, 'search_pages', {query: 'plan'})
+  expect(found.viewer.search.edges).toEqual(expect.any(Array))
+})
+
+test('start_check_in starts a meeting on the team that get_meeting shows', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(['MEETINGS_WRITE'], {cookie})
+  const token = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'], {
+    cookie
+  })
   const started = await callToolForData(token, 'start_check_in', {teamId})
   expect(started.startCheckIn.meeting.teamId).toBe(teamId)
+  const meetingId = started.startCheckIn.meeting.id
+  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'action', teamId})
+})
+
+test('start_retrospective, start_sprint_poker and start_standup start meetings on the team', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['MEETINGS_WRITE'], {cookie})
+  const retrospective = await callToolForData(token, 'start_retrospective', {teamId})
+  expect(retrospective.startRetrospective.meeting).toMatchObject({
+    meetingType: 'retrospective',
+    teamId
+  })
+  const poker = await callToolForData(token, 'start_sprint_poker', {teamId})
+  expect(poker.startSprintPoker.meeting).toMatchObject({meetingType: 'poker', teamId})
+  const standup = await callToolForData(token, 'start_standup', {teamId})
+  expect(standup.startTeamPrompt.meeting).toMatchObject({meetingType: 'teamPrompt', teamId})
+})
+
+test("select_template selects the team's retrospective template", async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_READ', 'TEAMS_READ', 'TEAMS_WRITE'], {
+    cookie
+  })
+  const {viewer} = await callToolForData(token, 'graphql_query', {
+    query: `query SelectedTemplate($teamId: ID!) {
+      viewer { team(teamId: $teamId) { meetingSettings(meetingType: retrospective) {
+        ... on RetrospectiveMeetingSettings { selectedTemplate { id } }
+      } } }
+    }`,
+    variables: {teamId}
+  })
+  const selected = await callToolForData(token, 'select_template', {
+    templateId: viewer.team.meetingSettings.selectedTemplate.id,
+    teamId
+  })
+  expect(selected.selectTemplate.meetingSettings.meetingType).toBe('retrospective')
 })
 
 test('a token limited to one organization sees only its teams', async () => {
@@ -461,12 +511,18 @@ test('update_task with nothing to change is refused', async () => {
   expectToolError(result, 'Pass content, status or userId')
 })
 
-test('a TypeScript tool refuses arguments that fail its schema', async () => {
+test('create_task advertises only the fields without a default as required', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  const createTask = tools.find(({name}: {name: string}) => name === 'create_task')
+  expect(createTask.inputSchema.required).toEqual(['teamId', 'content'])
+})
+
+test('a TypeScript tool refuses arguments that fail its schema with BAD_USER_INPUT', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
   const result = await callTool(token, 'create_task', {teamId})
-  expect(result.isError).toBe(true)
-  expect(result.content[0]!.text).toContain('content')
+  expectToolError(result, 'content')
+  expect(JSON.parse(result.content[0]!.text)[0].code).toBe('BAD_USER_INPUT')
 })
 
 test('upload_image refuses bytes that are not the named type', async () => {
@@ -509,7 +565,6 @@ test('graphql_mutate runs a mutation', async () => {
 test('every tool name is unique', async () => {
   const tools = await listTools(await createPersonalAccessToken())
   const names = tools.map(({name}: {name: string}) => name)
-  expect(names).toHaveLength(20)
-  expect(new Set(names).size).toBe(20)
+  expect(new Set(names).size).toBe(names.length)
   expect(names).toEqual(expect.arrayContaining([...COMPILED_TOOLS, ...TYPESCRIPT_TOOLS]))
 })
