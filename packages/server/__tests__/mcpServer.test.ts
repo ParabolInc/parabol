@@ -352,7 +352,7 @@ test('tools/list lists every compiled tool with annotations and its JSON Schema'
     default: 50,
     description: 'Most tasks to return'
   })
-  expect(byName.create_page.inputSchema.required).toEqual(['teamId'])
+  expect(byName.create_page.inputSchema.required).toBeUndefined()
   expect(byName.get_me.annotations.readOnlyHint).toBe(true)
   expect(byName.start_check_in.annotations.destructiveHint).toBe(true)
   expect(

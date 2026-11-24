@@ -172,9 +172,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     createPage: and(
       isAuthenticated,
       or(
-        isNull<'Mutation.createPage'>('args.teamId'),
+        and(isNull<'Mutation.createPage'>('args.teamId'), hasUnrestrictedGrant),
         isTeamMember<'Mutation.createPage'>('args.teamId')
-      )
+      ),
+      hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor')
     ),
     duplicatePage: and(
       isAuthenticated,
