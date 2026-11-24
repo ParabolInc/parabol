@@ -142,6 +142,7 @@
     "@tiptap/extension-list": "3.34.0",
     "@tiptap/extension-mention": "3.34.0",
     "@tiptap/extension-node-range": "3.34.0",
+    "@tiptap/extension-paragraph": "3.34.0",
     "@tiptap/extension-subscript": "3.34.0",
     "@tiptap/extension-superscript": "3.34.0",
     "@tiptap/extension-table": "3.34.0",

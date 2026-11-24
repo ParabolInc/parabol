@@ -1,11 +1,11 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import {applyUpdate, Doc} from 'yjs'
-import {tipTapToMarkdown} from '../../../client/shared/tiptap/tipTapToMarkdown'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import type {PageContentFormatEnum} from '../../graphql/public/resolverTypes'
 import {redisHocusPocus} from '../../hocusPocus'
 import {CipherId} from '../CipherId'
+import {getPageMarkdownBlocks, PAGE_BLOCK_SEPARATOR} from './getPageMarkdownBlocks'
 
 const readPageJSON = async (pageId: number, dataLoader: DataLoaderWorker) => {
   const liveContent = await redisHocusPocus.handleEvent(
@@ -27,5 +27,7 @@ export const getPageContent = async (
   dataLoader: DataLoaderWorker
 ) => {
   const content = await readPageJSON(pageId, dataLoader)
-  return format === 'markdown' ? tipTapToMarkdown(content) : JSON.stringify(content)
+  return format === 'markdown'
+    ? getPageMarkdownBlocks(content.content ?? []).join(PAGE_BLOCK_SEPARATOR)
+    : JSON.stringify(content)
 }

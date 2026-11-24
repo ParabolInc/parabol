@@ -1,4 +1,4 @@
-import type {Doc, XmlElement, XmlText} from 'yjs'
+import {type Doc, XmlElement, type XmlText} from 'yjs'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, sendTipTap, signUp} from './common'
 
@@ -141,6 +141,32 @@ test('a patch merges with a live editor instead of overwriting it', async () => 
     )
     await waitFor(() => doc.getXmlFragment('default').toString().includes('Opening step'))
   })
+})
+
+test('setting content refuses an image Parabol does not host, but keeps one the page already has', async () => {
+  const {cookie} = await signUp()
+  const pageId = await createPage(cookie, '# Plan\n\nFirst step')
+  const src = 'https://outside.test/a.png'
+  const setContent = (content: string) =>
+    sendPublic({query: EDIT_PAGE_CONTENT, variables: {pageId, content}, cookie})
+
+  const refused = await setContent(`# Plan\n\n![x](${src})`)
+  expect(refused.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT')
+  expect(refused.errors?.[0]?.message).toContain('uploadUserAsset')
+  expect(await readContent({cookie}, pageId)).toBe('# Plan\n\nFirst step')
+
+  await sendTipTap({cookie, pageId}, async (doc: Doc) => {
+    const image = new XmlElement('imageBlock')
+    image.setAttribute('src', src)
+    image.setAttribute('alt', 'x')
+    doc.getXmlFragment('default').push([image])
+    await waitFor(async () => (await readContent({cookie}, pageId))?.includes(src) ?? false)
+  })
+  const read = await readContent({cookie}, pageId)
+  expect(read).toBe(`# Plan\n\nFirst step\n\n![x](${src})`)
+  const rewritten = read!.replace('First step', 'Opening step')
+  expect((await setContent(rewritten)).errors).toBeUndefined()
+  expect(await readContent({cookie}, pageId)).toBe(rewritten)
 })
 
 test('the payload has the title an edit gave the page', async () => {

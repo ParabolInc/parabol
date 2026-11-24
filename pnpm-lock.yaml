@@ -266,6 +266,9 @@ importers:
       '@tiptap/extension-node-range':
         specifier: 3.34.0
         version: 3.34.0(@tiptap/core@3.34.0(patch_hash=3bc74e9d9bf22e40ad0d4507ed99f9cee275230be04800045ebfdcd2e7a5e3f6)(@tiptap/pm@3.34.0))(@tiptap/pm@3.34.0)
+      '@tiptap/extension-paragraph':
+        specifier: 3.34.0
+        version: 3.34.0(@tiptap/core@3.34.0(patch_hash=3bc74e9d9bf22e40ad0d4507ed99f9cee275230be04800045ebfdcd2e7a5e3f6)(@tiptap/pm@3.34.0))
       '@tiptap/extension-subscript':
         specifier: 3.34.0
         version: 3.34.0(@tiptap/core@3.34.0(patch_hash=3bc74e9d9bf22e40ad0d4507ed99f9cee275230be04800045ebfdcd2e7a5e3f6)(@tiptap/pm@3.34.0))(@tiptap/pm@3.34.0)

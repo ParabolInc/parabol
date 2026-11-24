@@ -1,4 +1,10 @@
+import type {JSONContent} from '@tiptap/core'
 import Link from '@tiptap/extension-link'
+
+const withoutLinkMarks = (node: JSONContent): JSONContent => ({
+  ...node,
+  marks: node.marks?.filter((mark) => mark.type !== 'link')
+})
 
 export const LinkBase = Link.extend({
   addAttributes() {
@@ -11,5 +17,10 @@ export const LinkBase = Link.extend({
         renderHTML: ({issueService}) => (issueService ? {'data-issue-service': issueService} : {})
       }
     }
-  }
+  },
+  parseMarkdown: (token, helpers) =>
+    helpers.applyMark('link', helpers.parseInline(token.tokens ?? []).map(withoutLinkMarks), {
+      href: token.href,
+      title: token.title || null
+    })
 })
