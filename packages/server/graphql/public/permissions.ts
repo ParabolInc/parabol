@@ -3,6 +3,7 @@ import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasSearchTypeScope} from './rules/hasSearchTypeScope'
 import {hasTokenAudience} from './rules/hasTokenAudience'
 import {hasUnrestrictedGrant} from './rules/hasUnrestrictedGrant'
 import isAuthenticated from './rules/isAuthenticated'
@@ -755,6 +756,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     picture: allow,
     preferredName: allow,
     rasterPicture: allow,
+    search: and(or(isSuperUser, isUserSelf), hasSearchTypeScope),
     meetingMember: and(isUserSelf, isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId')),
     similarReflectionGroups: and(
       isUserSelf,

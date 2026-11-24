@@ -6,10 +6,21 @@ import {
   getNamedType,
   isObjectType
 } from 'graphql'
+import type AuthToken from '../../database/types/AuthToken'
 import getAssetOwnerScope from '../../utils/getAssetOwnerScope'
 import type {AssetScopeEnum, OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 export const PAT_PREFIX = 'pat_'
+
+export const getMissingScopeError = (
+  authToken: AuthToken | null | undefined,
+  requiredScope: TOAuthScopeEnum
+) =>
+  authToken && authToken.aud !== 'action' && !authToken.scope?.includes(requiredScope)
+    ? new GraphQLError(`Access token is missing required scope: ${requiredScope}`, {
+        extensions: {code: 'FORBIDDEN'}
+      })
+    : null
 
 /**
  * Wraps field resolvers that have @scope applied, with either a static name or an ownerFromArg.
@@ -61,17 +72,8 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
       const originalResolver = field.resolve ?? defaultFieldResolver
 
       field.resolve = async (source, args, context, info) => {
-        const {authToken} = context
-        if (authToken && authToken.aud !== 'action') {
-          const requiredScope = getRequiredScope(args)
-          if (authToken.scope?.includes(requiredScope)) {
-            return originalResolver(source, args, context, info)
-          }
-          throw new GraphQLError(`Access token is missing required scope: ${requiredScope}`, {
-            extensions: {code: 'FORBIDDEN'}
-          })
-        }
-
+        const missingScopeError = getMissingScopeError(context.authToken, getRequiredScope(args))
+        if (missingScopeError) throw missingScopeError
         return originalResolver(source, args, context, info)
       }
     }
