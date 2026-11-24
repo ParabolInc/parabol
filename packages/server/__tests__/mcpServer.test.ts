@@ -381,7 +381,9 @@ test('a missing required argument is refused', async () => {
   const token = await createPersonalAccessToken(['PAGES_READ'])
   const result = await callTool(token, 'read_page', {})
   expectToolError(result, '$pageId')
-  expect(JSON.parse(result.content[0]!.text)[0].message).toContain('variable "$pageId"')
+  expect(JSON.parse(result.content[0]!.text)[0].message).toContain(
+    'Variable "$pageId" of required type "ID!" was not provided'
+  )
 })
 
 test('a compiled tool fills in a default the caller leaves out', async () => {
