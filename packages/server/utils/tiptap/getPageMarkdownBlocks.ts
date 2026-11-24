@@ -1,11 +1,12 @@
-import type {Editor, JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
+import {serverMarkdownManager} from '../../../client/shared/tiptap/serverMarkdownManager'
 import {Logger} from '../Logger'
 
 export const PAGE_BLOCK_SEPARATOR = '\n\n'
 
-const serializeBlock = (editor: Editor, node: JSONContent): string => {
+const serializeBlock = (node: JSONContent): string => {
   try {
-    return editor.storage.markdown.manager.serialize({type: 'doc', content: [node]})
+    return serverMarkdownManager.serialize({type: 'doc', content: [node]})
   } catch (e) {
     const reason = e instanceof Error ? e.message : String(e)
     Logger.warn(`A ${node.type} block could not be written as markdown: ${reason}`)
@@ -13,5 +14,5 @@ const serializeBlock = (editor: Editor, node: JSONContent): string => {
   }
 }
 
-export const getPageMarkdownBlocks = (editor: Editor, nodes: JSONContent[]) =>
-  nodes.map((node) => serializeBlock(editor, node).replace(/^\n+|\n+$/g, ''))
+export const getPageMarkdownBlocks = (nodes: JSONContent[]) =>
+  nodes.map((node) => serializeBlock(node).replace(/^\n+|\n+$/g, ''))

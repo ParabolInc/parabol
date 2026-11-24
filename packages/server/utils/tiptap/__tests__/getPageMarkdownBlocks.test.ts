@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {Editor, type JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import type {DataLoaderWorker} from '../../../graphql/graphql'
@@ -26,19 +26,6 @@ const table: JSONContent = {
 }
 const tableMarkdown = '| Name  | Owner |\n| ----- | ----- |\n| Alpha | Ann   |'
 
-const withEditor = <T>(fn: (editor: Editor) => T) => {
-  const editor = new Editor({
-    element: undefined,
-    content: {type: 'doc', content: [{type: 'paragraph'}]},
-    extensions: serverTipTapExtensions
-  })
-  try {
-    return fn(editor)
-  } finally {
-    editor.destroy()
-  }
-}
-
 const readMarkdown = (doc: Y.Doc) => {
   const yDoc = Y.encodeStateAsUpdate(doc)
   const dataLoader = {get: () => ({load: async () => ({yDoc})})} as unknown as DataLoaderWorker
@@ -47,24 +34,20 @@ const readMarkdown = (doc: Y.Doc) => {
 
 describe('getPageMarkdownBlocks', () => {
   test('serializes each block alone, without its outer newlines', () => {
-    const blocks = withEditor((editor) =>
-      getPageMarkdownBlocks(editor, [
-        {type: 'heading', attrs: {level: 1}, content: [text('Plan')]},
-        {type: 'paragraph'},
-        table
-      ])
-    )
+    const blocks = getPageMarkdownBlocks([
+      {type: 'heading', attrs: {level: 1}, content: [text('Plan')]},
+      {type: 'paragraph'},
+      table
+    ])
     expect(blocks).toEqual(['# Plan', '', tableMarkdown])
   })
 
   test('writes a block that cannot be serialized as nothing, and logs it', () => {
     const warn = jest.spyOn(Logger, 'warn').mockImplementation(() => {})
-    const blocks = withEditor((editor) =>
-      getPageMarkdownBlocks(editor, [
-        paragraph(text('Kept')),
-        {type: 'bulletList', content: [{type: 'listItem', content: []}]}
-      ])
-    )
+    const blocks = getPageMarkdownBlocks([
+      paragraph(text('Kept')),
+      {type: 'bulletList', content: [{type: 'listItem', content: []}]}
+    ])
     expect(blocks).toEqual(['Kept', ''])
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('bulletList'))
     warn.mockRestore()

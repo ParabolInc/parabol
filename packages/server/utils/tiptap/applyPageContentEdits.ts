@@ -1,13 +1,16 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {Editor, type JSONContent} from '@tiptap/core'
+import {getSchema, type JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import type * as Y from 'yjs'
+import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllNodesAttributesByType'
+import {parseMarkdownBlocks} from '../../../client/shared/tiptap/parseMarkdownBlocks'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {getPageMarkdownBlocks, PAGE_BLOCK_SEPARATOR} from './getPageMarkdownBlocks'
 import {parsePageMarkdown} from './parsePageMarkdown'
 import {toYXmlNodes} from './toYXmlNodes'
-import {collectImageSrcs} from './validatePageDoc'
+
+const schema = getSchema(serverTipTapExtensions)
 
 const MAX_EDITS = 20
 const MAX_EDIT_TEXT_LENGTH = 50_000
@@ -101,34 +104,27 @@ const groupMatches = (blocks: Block[], matchStarts: number[], matchLength: numbe
   return {groups, blockStarts}
 }
 
-const toBlocks = (editor: Editor, nodes: JSONContent[]): Block[] =>
-  getPageMarkdownBlocks(editor, nodes).map((markdown, idx) => ({node: nodes[idx]!, markdown}))
+const toBlocks = (nodes: JSONContent[]): Block[] =>
+  getPageMarkdownBlocks(nodes).map((markdown, idx) => ({node: nodes[idx]!, markdown}))
 
-const isSameNode = (editor: Editor, left: JSONContent, right: JSONContent) =>
-  editor.schema.nodeFromJSON(left).eq(editor.schema.nodeFromJSON(right))
+const isSameNode = (left: JSONContent, right: JSONContent) =>
+  schema.nodeFromJSON(left).eq(schema.nodeFromJSON(right))
 
 // Blocks that serialize to nothing (a table of contents, a database) are invisible in the Markdown,
 // so removing one is never what the caller meant. Others may be deleted, but are only rewritten if
 // their Markdown parses back to exactly the same blocks
-const findUnsafeRemoval = (
-  editor: Editor,
-  removed: Block[],
-  isRewrite: boolean,
-  allowedImageSrcs: Set<string>
-) => {
+const findUnsafeRemoval = (removed: Block[], isRewrite: boolean) => {
   const original = removed.filter((block) => block.fragmentIndex !== undefined)
   const invisible = original.find(
     ({node, markdown}) => !markdown.trim() && !(node.type === 'paragraph' && !node.content?.length)
   )
   if (invisible || !isRewrite) return invisible
-  const reparsed = parsePageMarkdown(
-    editor,
-    original.map(({markdown}) => markdown).join(PAGE_BLOCK_SEPARATOR),
-    allowedImageSrcs
+  const reparsed = parseMarkdownBlocks(
+    original.map(({markdown}) => markdown).join(PAGE_BLOCK_SEPARATOR)
   )
   const visible = original.filter(({markdown}) => markdown.trim())
   if (reparsed.length !== visible.length) return visible[0]
-  return visible.find(({node}, idx) => !isSameNode(editor, node, reparsed[idx]!))
+  return visible.find(({node}, idx) => !isSameNode(node, reparsed[idx]!))
 }
 
 const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
@@ -140,7 +136,6 @@ const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
 const isSameCodes = (left: number[], right: number[]) => left.sort().join() === right.sort().join()
 
 const rewriteGroup = (
-  editor: Editor,
   blocks: Block[],
   text: string,
   blockStarts: number[],
@@ -170,7 +165,7 @@ const rewriteGroup = (
   }
   let parsedNodes: JSONContent[]
   try {
-    parsedNodes = parsePageMarkdown(editor, rangeMarkdown, allowedImageSrcs)
+    parsedNodes = parsePageMarkdown(rangeMarkdown, allowedImageSrcs)
   } catch (e) {
     if (e instanceof GraphQLError) throw e
     throw new GraphQLError('newText could not be parsed as Markdown', {
@@ -178,7 +173,7 @@ const rewriteGroup = (
     })
   }
   const oldBlocks = blocks.slice(firstIdx, lastIdx + 1)
-  const newBlocks = toBlocks(editor, parsedNodes)
+  const newBlocks = toBlocks(parsedNodes)
   let keptPrefix = 0
   while (
     keptPrefix < oldBlocks.length &&
@@ -197,7 +192,7 @@ const rewriteGroup = (
   }
   const removed = oldBlocks.slice(keptPrefix, oldBlocks.length - keptSuffix)
   const created = newBlocks.slice(keptPrefix, newBlocks.length - keptSuffix)
-  const unsafeBlock = findUnsafeRemoval(editor, removed, created.length > 0, allowedImageSrcs)
+  const unsafeBlock = findUnsafeRemoval(removed, created.length > 0)
   if (unsafeBlock) {
     throw new GraphQLError(
       `The edit would change a ${unsafeBlock.node.type} block that Markdown cannot fully represent. Leave it out of oldText, or use editPageContent with the json format`,
@@ -226,7 +221,6 @@ const rewriteGroup = (
 }
 
 const applyEdit = (
-  editor: Editor,
   blocks: Block[],
   edit: PageContentEditInput,
   canChangePageLinks: boolean,
@@ -240,7 +234,7 @@ const applyEdit = (
   const matchStarts = findMatchStarts(text, oldText)
   if (matchStarts.length === 0) {
     const message = matchesIgnoringSpacing(text, oldText)
-      ? "oldText matches the page only if spacing is ignored, so copy it exactly from the page's markdown content (read_page)"
+      ? "oldText matches the page only if spacing is ignored, so copy it exactly from the page's markdown content"
       : 'oldText was not found in the page. Read the page content again and retry'
     throw new GraphQLError(message, {extensions: {code: 'CONFLICT'}})
   }
@@ -268,7 +262,6 @@ const applyEdit = (
   // Right to left, so rewriting a group never moves the blocks or offsets of the groups before it
   for (const group of groups.reverse()) {
     nextBlocks = rewriteGroup(
-      editor,
       nextBlocks,
       text,
       blockStarts,
@@ -312,53 +305,40 @@ export const applyPageContentEdits = (
   edits: PageContentEditInput[],
   {canChangePageLinks}: {canChangePageLinks: boolean}
 ) => {
-  const editor = new Editor({
-    element: undefined,
-    content: {type: 'doc', content: [{type: 'paragraph'}]},
-    extensions: serverTipTapExtensions
-  })
-  try {
-    const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
-    if (nodes.length !== doc.getXmlFragment('default').length) {
-      throw new GraphQLError('Page blocks do not match its Yjs fragment', {
-        extensions: {code: 'INTERNAL_SERVER_ERROR'}
-      })
-    }
-    let blocks: Block[] = toBlocks(editor, nodes).map((block, fragmentIndex) => ({
-      ...block,
-      fragmentIndex
-    }))
-    const allowedImageSrcs = new Set(collectImageSrcs(nodes))
-    let rewriteBudget = MAX_REWRITES
-    for (const [idx, edit] of edits.entries()) {
-      try {
-        const result = applyEdit(
-          editor,
-          blocks,
-          edit,
-          canChangePageLinks,
-          rewriteBudget,
-          allowedImageSrcs
-        )
-        blocks = result.blocks
-        rewriteBudget -= result.rewriteCount
-      } catch (e) {
-        if (!(e instanceof GraphQLError)) throw e
-        throw new GraphQLError(`Edit ${idx + 1}: ${e.message}`, {
-          extensions: {code: e.extensions.code}
-        })
-      }
-    }
-    if (isTitle(nodes[0]) && !isTitle(blocks[0]?.node)) {
-      throw new GraphQLError('The page must still start with its title as a level-1 heading', {
-        extensions: {code: 'BAD_USER_INPUT'}
-      })
-    }
-    const isUnchanged =
-      blocks.length === nodes.length &&
-      blocks.every(({fragmentIndex}, idx) => fragmentIndex === idx)
-    if (!isUnchanged) writeBlocks(doc, blocks)
-  } finally {
-    editor.destroy()
+  const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
+  if (nodes.length !== doc.getXmlFragment('default').length) {
+    throw new GraphQLError('Page blocks do not match its Yjs fragment', {
+      extensions: {code: 'INTERNAL_SERVER_ERROR'}
+    })
   }
+  let blocks: Block[] = toBlocks(nodes).map((block, fragmentIndex) => ({
+    ...block,
+    fragmentIndex
+  }))
+  const allowedImageSrcs = new Set(
+    getAllNodesAttributesByType<{src?: unknown}>({content: nodes}, 'imageBlock')
+      .map((attrs) => attrs?.src)
+      .filter((src): src is string => typeof src === 'string')
+  )
+  let rewriteBudget = MAX_REWRITES
+  for (const [idx, edit] of edits.entries()) {
+    try {
+      const result = applyEdit(blocks, edit, canChangePageLinks, rewriteBudget, allowedImageSrcs)
+      blocks = result.blocks
+      rewriteBudget -= result.rewriteCount
+    } catch (e) {
+      if (!(e instanceof GraphQLError)) throw e
+      throw new GraphQLError(`Edit ${idx + 1}: ${e.message}`, {
+        extensions: {code: e.extensions.code}
+      })
+    }
+  }
+  if (isTitle(nodes[0]) && !isTitle(blocks[0]?.node)) {
+    throw new GraphQLError('The page must still start with its title as a level-1 heading', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
+  const isUnchanged =
+    blocks.length === nodes.length && blocks.every(({fragmentIndex}, idx) => fragmentIndex === idx)
+  if (!isUnchanged) writeBlocks(doc, blocks)
 }

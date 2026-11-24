@@ -4,6 +4,7 @@ import type {JSONContent} from '@tiptap/core'
 import {applyUpdate, encodeStateAsUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
+import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {SerializedResourceGrants} from '../../graphql/public/ResourceGrants'
@@ -14,6 +15,7 @@ import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
 import {toYXmlNodes} from './toYXmlNodes'
+import {validatePageDoc} from './validatePageDoc'
 
 const withDoc = async <T>(
   documentName: string,
@@ -263,6 +265,13 @@ export const replacePageContent = async (
   await withDoc(
     documentName,
     (doc) => {
+      const pageImageSrcs = getAllNodesAttributesByType<{src?: unknown}>(
+        TiptapTransformer.fromYdoc(doc, 'default'),
+        'imageBlock'
+      )
+        .map((attrs) => attrs?.src)
+        .filter((src): src is string => typeof src === 'string')
+      validatePageDoc(content, new Set(pageImageSrcs))
       // build first: invalid content throws here, before the page is emptied
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
       doc.transact(() => {

@@ -1,7 +1,8 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {Editor, type JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import * as Y from 'yjs'
+import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {tipTapToMarkdown} from '../../../../client/shared/tiptap/tipTapToMarkdown'
 import appOrigin from '../../../appOrigin'
@@ -13,7 +14,6 @@ import {
 } from '../applyPageContentEdits'
 import {getPageContent} from '../getPageContent'
 import {parsePageMarkdown} from '../parsePageMarkdown'
-import {collectImageSrcs} from '../validatePageDoc'
 
 jest.mock('../../../hocusPocus', () => ({
   redisHocusPocus: {handleEvent: async () => undefined}
@@ -61,6 +61,9 @@ const readPage = (doc: Y.Doc) => {
 
 const assetUrl = `${appOrigin}/assets/cat.png`
 const outsideUrl = 'https://outside.test/a.png'
+
+const imageSrcsOf = (content: JSONContent[]) =>
+  getAllNodesAttributesByType<{src?: unknown}>({content}, 'imageBlock').map((attrs) => attrs?.src)
 
 const cell = (type: 'tableHeader' | 'tableCell', value: string): JSONContent => ({
   type,
@@ -459,7 +462,8 @@ describe('applyPageContentEdits', () => {
     ])
     expect(error?.code).toBe('CONFLICT')
     expect(error?.message).toContain('only if spacing is ignored')
-    expect(error?.message).toContain('(read_page)')
+    expect(error?.message).toContain("copy it exactly from the page's markdown content")
+    expect(error?.message).not.toContain('read_page')
     expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
   })
 
@@ -492,6 +496,17 @@ describe('applyPageContentEdits', () => {
     expect(await readPage(doc)).toBe(`# Plan\n\nSummary\n\n![y](${outsideUrl})`)
   })
 
+  test('removes an outside image the page holds along with the text around it', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Intro')), {
+      type: 'imageBlock',
+      attrs: {src: outsideUrl, alt: 'x'}
+    })
+    expect(
+      applyPageContentEdits(doc, [{oldText: `Intro\n\n![x](${outsideUrl})`, newText: 'Overview'}])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe('# Plan\n\nOverview')
+  })
+
   test('an outside image survives being read and written back', async () => {
     const srcs = ['https://outside.test/a b.png', 'https://outside.test/c(1).png']
     const doc = makeDoc(
@@ -499,18 +514,9 @@ describe('applyPageContentEdits', () => {
       ...srcs.map((src) => ({type: 'imageBlock', attrs: {src, alt: 'pic'}}))
     )
     const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
-    const read = await readPage(doc)
-    const editor = new Editor({
-      element: undefined,
-      content: {type: 'doc', content: [{type: 'paragraph'}]},
-      extensions: serverTipTapExtensions
-    })
-    try {
-      const written = parsePageMarkdown(editor, read, new Set(collectImageSrcs(nodes)))
-      expect(collectImageSrcs(written)).toEqual(srcs)
-    } finally {
-      editor.destroy()
-    }
+    const pageImageSrcs = imageSrcsOf(nodes).filter((src): src is string => typeof src === 'string')
+    const written = parsePageMarkdown(await readPage(doc), new Set(pageImageSrcs))
+    expect(imageSrcsOf(written)).toEqual(srcs)
   })
 })
 

@@ -1,7 +1,6 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {Editor, type JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {applyUpdate, Doc} from 'yjs'
-import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import type {PageContentFormatEnum} from '../../graphql/public/resolverTypes'
 import {redisHocusPocus} from '../../hocusPocus'
@@ -22,24 +21,13 @@ const readPageJSON = async (pageId: number, dataLoader: DataLoaderWorker) => {
   return TiptapTransformer.fromYdoc(doc, 'default') as JSONContent
 }
 
-const toPageMarkdown = (content: JSONContent) => {
-  const editor = new Editor({
-    element: undefined,
-    content: {type: 'doc', content: [{type: 'paragraph'}]},
-    extensions: serverTipTapExtensions
-  })
-  try {
-    return getPageMarkdownBlocks(editor, content.content ?? []).join(PAGE_BLOCK_SEPARATOR)
-  } finally {
-    editor.destroy()
-  }
-}
-
 export const getPageContent = async (
   pageId: number,
   format: PageContentFormatEnum,
   dataLoader: DataLoaderWorker
 ) => {
   const content = await readPageJSON(pageId, dataLoader)
-  return format === 'markdown' ? toPageMarkdown(content) : JSON.stringify(content)
+  return format === 'markdown'
+    ? getPageMarkdownBlocks(content.content ?? []).join(PAGE_BLOCK_SEPARATOR)
+    : JSON.stringify(content)
 }

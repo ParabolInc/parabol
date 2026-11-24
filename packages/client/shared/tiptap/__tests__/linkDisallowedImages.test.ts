@@ -13,6 +13,9 @@ const collect = (content: JSONContent[]): JSONContent[] =>
 const imageBlocks = (content: JSONContent[]) =>
   collect(content).filter((node) => node.type === 'imageBlock')
 
+const firstListItemTypes = (content: JSONContent[]) =>
+  content[0]?.content?.[0]?.content?.map((node) => node.type)
+
 const linkHrefs = (content: JSONContent[]) =>
   collect(content).flatMap((node) =>
     (node.marks ?? []).filter((mark) => mark.type === 'link').map((mark) => mark.attrs?.href)
@@ -44,6 +47,21 @@ describe('linkDisallowedImages', () => {
     const content = markdownToTipTap('![x](https://x.test/a.png)', {isAllowedImageSrc: () => true})
     expect(imageBlocks(content).map((node) => node.attrs?.src)).toEqual(['https://x.test/a.png'])
     expect(() => checkValid(content)).not.toThrow()
+  })
+
+  test('keeps an allowed image that starts a list item, after an empty paragraph', () => {
+    const content = markdownToTipTap('1. ![x](https://x.test/a.png)', {
+      isAllowedImageSrc: () => true
+    })
+    expect(() => checkValid(content)).not.toThrow()
+    expect(firstListItemTypes(content)).toEqual(['paragraph', 'imageBlock'])
+  })
+
+  test('links a disallowed image that starts a list item without adding an empty paragraph', () => {
+    const content = markdownToTipTap('1. ![x](https://attacker.test/a.png)')
+    expect(() => checkValid(content)).not.toThrow()
+    expect(firstListItemTypes(content)).toEqual(['paragraph'])
+    expect(linkHrefs(content)).toEqual(['https://attacker.test/a.png'])
   })
 
   test('converts an image nested in a table cell', () => {
