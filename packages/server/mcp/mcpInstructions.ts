@@ -14,7 +14,7 @@ Each area has its own scopes: ${scopes}. A :read scope lets you look and a :writ
 
 A connection may be limited to some organizations, teams or pages. A call for anything outside them fails.
 
-Start with get_me to learn who you are and which teams you can reach. To make a page, call create_page, then set_page_content. To change one, call read_page, then edit_page, which replaces an exact run of text, so copy it from read_page. To use another template, call select_template before the start_* tool.
+Start with get_me to learn who you are and which teams you can reach. create_page makes a private, team (teamId) or nested (parentPageId) page; fill it with set_page_content. list_pages browses. To change a page, read_page, then edit_page. upload_from_url copies an online image. For another template, select_template before start_*.
 
 For anything else, use graphql_query to read and graphql_mutate to change data. Learn the schema by introspecting, such as { __type(name: "Task") { fields { name description } } }.
 

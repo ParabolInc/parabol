@@ -1,12 +1,16 @@
-# Read a page as markdown, with its title. Copy text from here into edit_page to change it. Needs pages:read.
+# Read a page as markdown, with its title and where it sits. Copy text from here into edit_page to change it. Needs pages:read.
 query ReadPage(
-  # The page id, from search_pages, create_page or a meeting
+  # The page id, from search_pages, list_pages, create_page or a meeting
   $pageId: ID!
 ) {
   public {
     page(pageId: $pageId) {
       id
       title
+      parentPageId
+      teamId
+      isPrivate
+      updatedAt
       content(format: markdown)
     }
   }
