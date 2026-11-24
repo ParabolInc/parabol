@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.5.0](https://github.com/ParabolInc/parabol/compare/v16.4.0...v16.5.0) (2026-11-24)
+
+
+### Added
+
+* **oauth:** let AI agents sign in to Parabol ([#14279](https://github.com/ParabolInc/parabol/issues/14279)) ([569f88c](https://github.com/ParabolInc/parabol/commit/569f88c29afc86c143ebdb7fbc3e3e005af4edd8))
+* **server:** thin MCP server with tools compiled from .graphql files ([#14362](https://github.com/ParabolInc/parabol/issues/14362)) ([03b88c4](https://github.com/ParabolInc/parabol/commit/03b88c4c2785ef67429083d92d77bc936d0eceda))
+
+
+### Fixed
+
+* **client:** point the disabled insights block at org settings or an org admin ([#14359](https://github.com/ParabolInc/parabol/issues/14359)) ([53af9f8](https://github.com/ParabolInc/parabol/commit/53af9f8bbb7e98a1b34fbef93d6f5b688ef6897b))
+* **server:** let a GraphQL variable fall back to its default ([#14364](https://github.com/ParabolInc/parabol/issues/14364)) ([2420551](https://github.com/ParabolInc/parabol/commit/2420551c66d57c59e20fe0447afe3335df9cfb7c))
+* **server:** require the matching read scope to search ([#14361](https://github.com/ParabolInc/parabol/issues/14361)) ([c99851a](https://github.com/ParabolInc/parabol/commit/c99851a1c6fff6f812baaeefde663b770c0cba92))
+
 ## [16.4.0](https://github.com/ParabolInc/parabol/compare/v16.3.1...v16.4.0) (2026-11-23)
 
 
