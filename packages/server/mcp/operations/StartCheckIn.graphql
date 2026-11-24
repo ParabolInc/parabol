@@ -1,0 +1,14 @@
+# Start a check-in on a team. Check-ins have no template. Needs meetings:write.
+mutation StartCheckIn(
+  # The team to meet, from get_me
+  $teamId: ID!
+) {
+  startCheckIn(teamId: $teamId) {
+    meeting {
+      id
+      name
+      meetingType
+      teamId
+    }
+  }
+}

@@ -1,0 +1,56 @@
+# Show one meeting: its summary, its reflections (retrospectives) or responses (standups), and the tasks it made. summaryPageId, when set, is a page to open with read_page. Needs users:read and meetings:read.
+query GetMeeting(
+  # The meeting id, from list_meetings or the tool that started it
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      meetingType
+      teamId
+      createdAt
+      endedAt
+      summary
+      summaryPageId
+      ... on RetrospectiveMeeting {
+        reflectionGroups {
+          title
+          voteCount
+          prompt {
+            question
+          }
+          reflections {
+            plaintextContent
+          }
+        }
+        tasks {
+          id
+          plaintextContent
+          status
+          userId
+        }
+      }
+      ... on ActionMeeting {
+        tasks {
+          id
+          plaintextContent
+          status
+          userId
+        }
+      }
+      ... on TeamPromptMeeting {
+        responses {
+          userId
+          plaintextContent
+        }
+        tasks {
+          id
+          plaintextContent
+          status
+          userId
+        }
+      }
+    }
+  }
+}

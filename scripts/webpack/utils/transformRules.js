@@ -2,6 +2,7 @@ const path = require('path')
 const swcLoader = require('./swcLoader')
 
 const relayTagLoader = path.join(__dirname, 'relayTagLoader.js')
+const mcpOperationLoader = path.join(__dirname, 'mcpOperationLoader.js')
 
 const transformRules = (projectRoot, {isProd = false, builtin = false} = {}) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
@@ -34,7 +35,14 @@ const transformRules = (projectRoot, {isProd = false, builtin = false} = {}) => 
     {
       test: /\.graphql$/,
       include: SERVER_ROOT,
+      resourceQuery: {not: [/^\?mcp$/]},
       type: 'asset/source'
+    },
+    {
+      test: /\.graphql$/,
+      include: SERVER_ROOT,
+      resourceQuery: /^\?mcp$/,
+      use: [mcpOperationLoader]
     },
     relayRule('ts'),
     relayRule('tsx'),
