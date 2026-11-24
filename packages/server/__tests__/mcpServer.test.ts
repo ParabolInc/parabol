@@ -772,6 +772,76 @@ test('start_meeting refuses a template of another kind before selecting it', asy
   expect(settings.viewer.team.meetingSettings.selectedTemplateId).not.toBe('wsjfTemplate')
 })
 
+test('start_meeting refuses a team health check with a template of another kind', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TEAMS_READ', 'TEMPLATES_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
+    {cookie}
+  )
+  const result = await callTool(token, 'start_meeting', {
+    teamId,
+    kind: 'teamHealth',
+    templateId: 'fourLsTemplate'
+  })
+  expectToolError(result, 'BAD_USER_INPUT')
+  expect(result.content[0]!.text).toContain('retrospective')
+  const listed = await callToolForData(token, 'list_meetings', {teamId})
+  expect(listed.viewer.meetings.edges).toEqual([])
+})
+
+test('start_meeting selects a standup template and starts the standup with it', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    [
+      'USERS_READ',
+      'TEAMS_READ',
+      'TEAMS_WRITE',
+      'TEMPLATES_READ',
+      'MEETINGS_READ',
+      'MEETINGS_WRITE'
+    ],
+    {cookie}
+  )
+  const started = await callToolForData(token, 'start_meeting', {
+    teamId,
+    kind: 'standup',
+    templateId: 'weeklyWinsAndPrioritiesTemplate'
+  })
+  expect(started.selectTemplate.meetingSettings.meetingType).toBe('teamPrompt')
+  const {id: meetingId, meetingType} = started.startTeamPrompt.meeting
+  expect(meetingType).toBe('teamPrompt')
+  const read = await callToolForData(token, 'graphql_query', {
+    query: `query StandupTemplate($meetingId: ID!) {
+      viewer {
+        meeting(meetingId: $meetingId) {
+          ... on TeamPromptMeeting {
+            template {
+              id
+            }
+          }
+        }
+      }
+    }`,
+    variables: {meetingId}
+  })
+  expect(read.viewer.meeting.template.id).toBe('weeklyWinsAndPrioritiesTemplate')
+})
+
+test('an unrestricted token is told it is not on a team it is not on', async () => {
+  const [{cookie}, {teamId: otherTeamId}] = await Promise.all([signUp(), signUp()])
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TEAMS_READ', 'TASKS_READ', 'MEETINGS_READ'],
+    {cookie}
+  )
+  for (const tool of ['list_tasks', 'list_meetings']) {
+    for (const teamId of [otherTeamId, 'noSuchTeam']) {
+      const result = await callTool(token, tool, {teamId})
+      expectToolError(result, 'Viewer is not on team')
+      expect(JSON.parse(result.content[0]!.text)[0].code).toBe('FORBIDDEN')
+    }
+  }
+})
+
 test('search_pages finds a page by its title', async () => {
   const {cookie} = await signUp()
   const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ', 'PAGES_WRITE'], {

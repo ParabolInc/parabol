@@ -66,7 +66,7 @@ export default defineTool({
   name: 'start_meeting',
   title: 'Start a meeting',
   description:
-    'Start a meeting on a team: a retrospective, check-in, sprint poker, standup or team health check. A team health check needs a templateId. A retrospective, sprint poker or standup uses the team’s selected template, or templateId, which must be a template of that kind, becomes the selected one, and also needs users:read, templates:read and teams:write. Check-ins have no template. Needs meetings:write.',
+    'Start a meeting on a team: a retrospective, check-in, sprint poker, standup or team health check. A templateId must be a template of that kind and needs users:read and templates:read. A team health check needs a templateId. A retrospective, sprint poker or standup uses the team’s selected template, or templateId, which becomes the selected one and also needs teams:write. Check-ins have no template. Needs meetings:write.',
   inputSchema: {
     teamId: z.string().describe('The team to meet, from get_me'),
     kind: z.enum(MEETING_KINDS).describe('The kind of meeting'),
@@ -80,7 +80,7 @@ export default defineTool({
     if (kind === 'checkin' && templateId) {
       return toolError('Check-ins have no template. Leave templateId out.', 'BAD_USER_INPUT')
     }
-    if (templateId && kind !== 'teamHealth') {
+    if (templateId) {
       const template = await runGraphQL<{viewer: {activity: {type: MeetingTypeEnum} | null}}>(
         context,
         GET_TEMPLATE_TYPE,

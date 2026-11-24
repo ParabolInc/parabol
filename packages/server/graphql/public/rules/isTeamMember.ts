@@ -10,6 +10,21 @@ type LoadersWithTeamId = {
 }[AllPrimaryLoaders]
 
 type IDGetter = (obj: any) => string
+
+const notGrantedError = () =>
+  new GraphQLError(`PAT does not grant access to this team`, {extensions: {code: 'FORBIDDEN'}})
+
+const getNotOnTeamError = async (
+  teamId: string,
+  {authToken, dataLoader, resourceGrants}: RuleContext
+) => {
+  if (resourceGrants && authToken) {
+    const teamMembers = await dataLoader.get('teamMembersByUserId').load(authToken.sub)
+    if (teamMembers.some((teamMember) => teamMember.teamId === teamId)) return notGrantedError()
+  }
+  return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+}
+
 export const isTeamMember = <T>(
   dotPath: ResolverDotPath<T>,
   dataLoaderName?: LoadersWithTeamId,
@@ -24,13 +39,9 @@ export const isTeamMember = <T>(
     // when the path resolves to an array of teamIds, require the viewer be on every team
     if (Array.isArray(argVar)) {
       for (const teamId of argVar as string[]) {
+        if (!authToken?.tms?.includes(teamId)) return getNotOnTeamError(teamId, context)
         if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-          return new GraphQLError(`PAT does not grant access to this team`, {
-            extensions: {code: 'FORBIDDEN'}
-          })
-        }
-        if (!authToken?.tms?.includes(teamId)) {
-          return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+          return notGrantedError()
         }
       }
       return true
@@ -53,13 +64,9 @@ export const isTeamMember = <T>(
     // Special case for ghost org so users can view meeting template meta
     if (info.operation.operation !== 'mutation' && teamId === 'aGhostTeam') return true
 
+    if (!authToken?.tms?.includes(teamId)) return getNotOnTeamError(teamId, context)
     if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
-      return new GraphQLError(`PAT does not grant access to this team`, {
-        extensions: {code: 'FORBIDDEN'}
-      })
-    }
-    if (!authToken?.tms?.includes(teamId)) {
-      return new GraphQLError(`Viewer is not on team`, {extensions: {code: 'FORBIDDEN'}})
+      return notGrantedError()
     }
     return true
   })
