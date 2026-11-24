@@ -42,8 +42,7 @@ const toolResult = (
 ): CallToolResult => {
   if (errors?.length) {
     const formatted = formatErrors(errors, errorDetails)
-    if (data) return textResult(JSON.stringify({data, errors: formatted}))
-    return textResult(JSON.stringify(formatted), true)
+    return textResult(JSON.stringify(data ? {data, errors: formatted} : formatted), true)
   }
   return textResult(JSON.stringify(data ?? null))
 }

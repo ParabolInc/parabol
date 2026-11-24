@@ -527,8 +527,8 @@ test('a token limited to a team cannot report on its organization', async () => 
     callTool(token, 'get_report', {orgId, spec: {measures: ['MEETINGS'], showAs: 'NUMBER'}}),
     callTool(token, 'list_pinned_reports', {orgId})
   ])
-  expect(report.content[0]!.text).toContain('does not grant access to this organization')
-  expect(pinned.content[0]!.text).toContain('does not grant access to this organization')
+  expectToolError(report, 'does not grant access to this organization')
+  expectToolError(pinned, 'does not grant access to this organization')
 })
 
 test('an unknown tool is a JSON-RPC error', async () => {

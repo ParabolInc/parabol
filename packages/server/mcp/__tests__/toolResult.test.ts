@@ -47,15 +47,25 @@ test('a result over 100,000 characters is cut with a notice', () => {
   expect(text.length).toBeLessThan(100_100)
 })
 
-test('data that arrives with errors comes back with both and is not an error result', () => {
-  const result = toolResult({
-    data: {viewer: {id: 'a'}},
-    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
-  })
-  expect(result.isError).toBeUndefined()
+test('data that arrives with errors keeps both and stays an error result', () => {
+  const result = toolResult(
+    {
+      data: {viewer: {id: 'a'}},
+      errors: [
+        new GraphQLError('slow down', {
+          extensions: {
+            code: 'TOO_MANY_REQUESTS',
+            http: {status: 429, headers: {'Retry-After': '7'}}
+          }
+        })
+      ]
+    },
+    {orgId: 'org:1'}
+  )
+  expect(result.isError).toBe(true)
   expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual({
     data: {viewer: {id: 'a'}},
-    errors: [{message: 'nope', code: 'FORBIDDEN'}]
+    errors: [{message: 'slow down', code: 'TOO_MANY_REQUESTS', retryAfter: 7, orgId: 'org:1'}]
   })
 })
 
