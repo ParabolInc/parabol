@@ -17,6 +17,7 @@ import ReportsStarterBanner from './ReportsStarterBanner'
 import type {ReportAddress} from './reportPaths'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import SignedUsageReportButton from './SignedUsageReportButton'
+import useRememberReportsOrg from './useRememberReportsOrg'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsHomeQuery>
@@ -51,6 +52,7 @@ const ReportsHome = ({queryRef, orgId, period, answer, onPeriodChange}: Props) =
   const {viewer} = usePreloadedQuery<ReportsHomeQuery>(query, queryRef)
   const {organization, organizations} = viewer
   const isViewerOnOrg = organizations.some(({id}) => id === orgId)
+  useRememberReportsOrg(orgId, isViewerOnOrg)
   useDocumentTitle('Reports | Parabol', 'Reports')
   const [askingQuestion, setAskingQuestion] = useState<string | null>(null)
   return (
