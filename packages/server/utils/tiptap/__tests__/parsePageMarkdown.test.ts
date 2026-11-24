@@ -70,7 +70,7 @@ describe('parsePageMarkdown', () => {
     )
     expect(error).toBeInstanceOf(GraphQLError)
     expect((error as GraphQLError).extensions.code).toBe('BAD_USER_INPUT')
-    expect((error as GraphQLError).message).toContain('upload_image')
+    expect((error as GraphQLError).message).toContain('uploadUserAsset')
     const blocks = withEditor((editor) =>
       parsePageMarkdown(editor, `![a](${outsideUrl})`, new Set([outsideUrl]))
     )
@@ -86,5 +86,33 @@ describe('parsePageMarkdown', () => {
       'paragraph',
       'imageBlock'
     ])
+  })
+
+  it('rejects a root that is not a doc', () => {
+    const error = withEditor((editor) =>
+      catchError(() =>
+        validatePageDoc(
+          editor,
+          {type: 'paragraph', content: [{type: 'text', text: 'hello'}]},
+          new Set()
+        )
+      )
+    )
+    expect(error).toBeInstanceOf(GraphQLError)
+    expect((error as GraphQLError).extensions.code).toBe('BAD_USER_INPUT')
+    expect((error as GraphQLError).message).toContain('whole page')
+  })
+
+  it('tells the caller how to fix an image with no src', () => {
+    const error = withEditor((editor) =>
+      catchError(() =>
+        validatePageDoc(
+          editor,
+          {type: 'doc', content: [{type: 'imageBlock', attrs: {src: null}}]},
+          new Set()
+        )
+      )
+    )
+    expect((error as GraphQLError).message).toContain('Remove the empty ![]() image')
   })
 })

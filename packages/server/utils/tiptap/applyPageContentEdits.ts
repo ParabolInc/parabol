@@ -240,7 +240,7 @@ const applyEdit = (
   const matchStarts = findMatchStarts(text, oldText)
   if (matchStarts.length === 0) {
     const message = matchesIgnoringSpacing(text, oldText)
-      ? 'oldText matches the page only if spacing is ignored, so copy it exactly from read_page'
+      ? "oldText matches the page only if spacing is ignored, so copy it exactly from the page's markdown content (read_page)"
       : 'oldText was not found in the page. Read the page content again and retry'
     throw new GraphQLError(message, {extensions: {code: 'CONFLICT'}})
   }

@@ -433,6 +433,7 @@ type Mutation {
 
   """
   Replace the content of a page. Warning: this deletes the content history.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page.
   """
   editPageContent(
     "The ID of the page to edit"
@@ -445,7 +446,8 @@ type Mutation {
 
   """
   Apply find-and-replace edits to a page's Markdown content, in order and all or nothing.
-  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive
+  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page
   """
   patchPageContent(
     "The ID of the page to edit"

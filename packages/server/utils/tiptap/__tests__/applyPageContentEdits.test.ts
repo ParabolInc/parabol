@@ -459,7 +459,7 @@ describe('applyPageContentEdits', () => {
     ])
     expect(error?.code).toBe('CONFLICT')
     expect(error?.message).toContain('only if spacing is ignored')
-    expect(error?.message).toContain('read_page')
+    expect(error?.message).toContain('(read_page)')
     expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
   })
 
@@ -470,7 +470,7 @@ describe('applyPageContentEdits', () => {
       {oldText: 'First paragraph', newText: `First paragraph\n\n![x](${outsideUrl})`}
     ])
     expect(error?.code).toBe('BAD_USER_INPUT')
-    expect(error?.message).toContain('upload_image')
+    expect(error?.message).toContain('uploadUserAsset')
     expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
   })
 
