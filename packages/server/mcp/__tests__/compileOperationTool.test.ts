@@ -20,6 +20,19 @@ const schema = buildSchema(`
     Page
   }
 
+  enum ReportViewEnum {
+    "One value"
+    NUMBER
+    "A line over time"
+    LINE
+    TABLE
+  }
+
+  input ReportSpecInput {
+    """How to show the report"""
+    showAs: ReportViewEnum!
+  }
+
   type Task {
     id: ID!
   }
@@ -180,6 +193,27 @@ test('maps GraphQL types to JSON Schema', () => {
       required: ['oldText', 'newText'],
       additionalProperties: false
     }
+  })
+})
+
+test('describes the enum values that have descriptions, after what the field is for', () => {
+  const valueDescriptions = 'NUMBER: One value\nLINE: A line over time'
+  expect(map('ReportViewEnum!')).toEqual({
+    type: 'string',
+    enum: ['NUMBER', 'LINE', 'TABLE'],
+    description: valueDescriptions
+  })
+  expect(map('ReportSpecInput')).toEqual({
+    type: 'object',
+    properties: {
+      showAs: {
+        type: 'string',
+        enum: ['NUMBER', 'LINE', 'TABLE'],
+        description: `How to show the report\n${valueDescriptions}`
+      }
+    },
+    required: ['showAs'],
+    additionalProperties: false
   })
 })
 

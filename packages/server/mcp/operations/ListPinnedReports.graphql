@@ -1,0 +1,15 @@
+# List the reports pinned to an organization's Reports page: the built-in ones every organization starts with, and the ones its people pinned. Each spec is JSON in the shape get_report takes: pass it to get_report for the numbers, or change it to ask something close. Needs orgs:read and reports:read, on a connection that reaches the whole organization.
+query ListPinnedReports(
+  # The organization, from get_me
+  $orgId: ID!
+) {
+  viewer {
+    organization(orgId: $orgId) {
+      pinnedReports {
+        title
+        description
+        spec
+      }
+    }
+  }
+}

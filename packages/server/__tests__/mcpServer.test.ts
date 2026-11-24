@@ -182,7 +182,9 @@ const COMPILED_TOOLS = [
   'start_check_in',
   'start_sprint_poker',
   'start_standup',
-  'start_team_health'
+  'start_team_health',
+  'get_report',
+  'list_pinned_reports'
 ]
 
 const expectUnauthorized = (response: Response) => {
@@ -217,6 +219,10 @@ const expectInitialized = async (response: Response) => {
     'create_page',
     'set_page_content',
     'select_template',
+    'get_meeting',
+    'search_pages',
+    'get_report',
+    'list_pinned_reports',
     'graphql_query',
     'graphql_mutate'
   ]) {
@@ -349,6 +355,9 @@ test('tools/list lists every compiled tool with annotations and its JSON Schema'
   expect(byName.create_page.inputSchema.required).toEqual(['teamId'])
   expect(byName.get_me.annotations.readOnlyHint).toBe(true)
   expect(byName.start_check_in.annotations.destructiveHint).toBe(true)
+  expect(
+    byName.get_report.inputSchema.properties.spec.properties.measures.items.description
+  ).toContain('MEETINGS: Meetings that at least 2 people joined')
 })
 
 test('get_me answers with the viewer', async () => {
@@ -470,6 +479,54 @@ test('a token limited to one organization sees only its teams', async () => {
   expect(viewer.teams.map(({id}: {id: string}) => id)).toEqual([teamId])
   const started = await callTool(token, 'start_check_in', {teamId: secondTeamId})
   expect(started.isError).toBe(true)
+})
+
+const REPORT_SCOPES = ['USERS_READ', 'ORGS_READ', 'REPORTS_READ']
+
+test('get_report runs the spec of a report list_pinned_reports lists', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {cookie})
+  const {viewer: pinned} = await callToolForData(token, 'list_pinned_reports', {orgId})
+  const [firstPin] = pinned.organization.pinnedReports
+  expect(firstPin.title).toEqual(expect.any(String))
+  const {viewer} = await callToolForData(token, 'get_report', {
+    orgId,
+    spec: JSON.parse(firstPin.spec)
+  })
+  expect(viewer.organization.report).toMatchObject({
+    teamCount: expect.any(Number),
+    rows: expect.any(Array),
+    notes: expect.any(Array)
+  })
+})
+
+test('get_report counts what a spec asks for', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {cookie})
+  const {viewer} = await callToolForData(token, 'get_report', {
+    orgId,
+    spec: {measures: ['USERS'], showAs: 'NUMBER'},
+    timeZone: 'America/New_York'
+  })
+  expect(viewer.organization.report).toMatchObject({
+    breakdown: [],
+    rows: expect.any(Array)
+  })
+})
+
+test('a token limited to a team cannot report on its organization', async () => {
+  const {cookie, orgId, teamId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const [report, pinned] = await Promise.all([
+    callTool(token, 'get_report', {orgId, spec: {measures: ['MEETINGS'], showAs: 'NUMBER'}}),
+    callTool(token, 'list_pinned_reports', {orgId})
+  ])
+  expectToolError(report, 'does not grant access to this organization')
+  expectToolError(pinned, 'does not grant access to this organization')
 })
 
 test('an unknown tool is a JSON-RPC error', async () => {

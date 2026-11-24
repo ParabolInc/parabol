@@ -8,6 +8,16 @@ import {
   isScalarType
 } from 'graphql'
 
+export const addDescription = (
+  variableSchema: Record<string, unknown>,
+  description: string | null | undefined
+) => {
+  if (!description) return
+  const {description: ownDescription} = variableSchema
+  variableSchema.description =
+    typeof ownDescription === 'string' ? `${description}\n${ownDescription}` : description
+}
+
 const getVariableSchema = (
   schema: GraphQLSchema,
   type: GraphQLInputType,
@@ -19,7 +29,15 @@ const getVariableSchema = (
     return {type: 'array', items: getVariableSchema(schema, type.ofType, fileName, expanding)}
   }
   if (isEnumType(type)) {
-    return {type: 'string', enum: type.getValues().map(({name}) => name)}
+    const values = type.getValues()
+    const valueDescriptions = values
+      .flatMap(({name, description}) => (description ? [`${name}: ${description}`] : []))
+      .join('\n')
+    return {
+      type: 'string',
+      enum: values.map(({name}) => name),
+      ...(valueDescriptions ? {description: valueDescriptions} : {})
+    }
   }
   if (isInputObjectType(type)) {
     if (expanding.has(type.name)) {
@@ -30,7 +48,7 @@ const getVariableSchema = (
     const required: string[] = []
     for (const field of Object.values(type.getFields())) {
       const fieldSchema = getVariableSchema(schema, field.type, fileName, nextExpanding)
-      if (field.description) fieldSchema.description = field.description
+      addDescription(fieldSchema, field.description)
       if (field.defaultValue !== undefined) fieldSchema.default = field.defaultValue
       properties[field.name] = fieldSchema
       if (isNonNullType(field.type) && field.defaultValue === undefined) required.push(field.name)

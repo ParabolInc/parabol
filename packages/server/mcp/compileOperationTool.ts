@@ -16,7 +16,7 @@ import {
   visitWithTypeInfo
 } from 'graphql'
 import getLeadingComment from './getLeadingComment'
-import getVariableSchema from './getVariableSchema'
+import getVariableSchema, {addDescription} from './getVariableSchema'
 import type OperationTool from './OperationTool'
 import {readAnnotations, writeAnnotations} from './toolAnnotations'
 
@@ -87,7 +87,7 @@ const compileOperationTool = (
     const variableSchema = getVariableSchema(schema, type, fileName)
     const comment = getLeadingComment(variableDefinition)
     const variableDescription = comment ?? feedingDescriptions.get(variableName)
-    if (variableDescription) variableSchema.description = variableDescription
+    addDescription(variableSchema, variableDescription)
     const hasDefault = variableDefinition.defaultValue !== undefined
     if (hasDefault) {
       variableSchema.default = valueFromAST(variableDefinition.defaultValue, type)
