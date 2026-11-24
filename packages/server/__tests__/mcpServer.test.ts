@@ -1,0 +1,627 @@
+import OAuthScopeEnum from '../graphql/public/types/OAuthScopeEnum'
+import packageJSON from '../package.json'
+import encodeAuthToken from '../utils/encodeAuthToken'
+import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
+import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {createClient, createCode, createPKCEPair} from './oauthClient'
+
+const ORIGIN = `${PROTOCOL}://${HOST}`
+const MCP_URL = `${ORIGIN}/mcp`
+const PROTOCOL_VERSION = '2025-06-18'
+
+const CREATE_PERSONAL_ACCESS_TOKEN = `
+  mutation CreatePersonalAccessToken(
+    $name: String!
+    $scopes: [OAuthScopeEnum!]!
+    $expiresAt: DateTime!
+    $grantedOrgIds: [ID!]
+    $grantedTeamIds: [ID!]
+    $grantedPageIds: [ID!]
+  ) {
+    createPersonalAccessToken(
+      name: $name
+      scopes: $scopes
+      expiresAt: $expiresAt
+      grantedOrgIds: $grantedOrgIds
+      grantedTeamIds: $grantedTeamIds
+      grantedPageIds: $grantedPageIds
+    ) {
+      token
+    }
+  }
+`
+
+const ADD_ORG = `
+  mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
+    addOrg(newTeam: $newTeam, orgName: $orgName) {
+      team {
+        id
+        orgId
+      }
+    }
+  }
+`
+
+const INITIALIZE = {
+  jsonrpc: '2.0',
+  id: 1,
+  method: 'initialize',
+  params: {
+    protocolVersion: PROTOCOL_VERSION,
+    capabilities: {},
+    clientInfo: {name: 'mcpServer.test', version: '1.0.0'}
+  }
+}
+
+const postMCP = (body: unknown, headers: Record<string, string> = {}) =>
+  fetch(MCP_URL, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json, text/event-stream',
+      'content-type': 'application/json',
+      ...headers
+    },
+    body: JSON.stringify(body)
+  })
+
+const bearer = (token: string) => ({authorization: `Bearer ${token}`})
+
+interface TokenOptions {
+  cookie?: string
+  grantedOrgIds?: string[]
+  grantedTeamIds?: string[]
+  grantedPageIds?: string[]
+}
+
+const createPersonalAccessToken = async (
+  scopes = ['USERS_READ'],
+  {cookie, ...grants}: TokenOptions = {}
+) => {
+  const res = await sendPublic({
+    query: CREATE_PERSONAL_ACCESS_TOKEN,
+    variables: {
+      name: 'mcp',
+      scopes,
+      ...grants,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    },
+    cookie: cookie ?? (await signUp()).cookie
+  })
+  expect(res.errors).toBeUndefined()
+  return res.data.createPersonalAccessToken.token as string
+}
+
+const createOAuthAccessToken = async (
+  resource?: string,
+  {cookie: userCookie, scope = 'users:read'}: {cookie?: string; scope?: string} = {}
+) => {
+  const [cookie, {clientId, redirectUri}] = await Promise.all([
+    userCookie ?? signUp().then((user) => user.cookie),
+    createClient()
+  ])
+  const {codeVerifier, codeChallenge} = createPKCEPair()
+  const authorized = await createCode(
+    {clientId, redirectUri, scope, codeChallenge, resource},
+    cookie
+  )
+  expect(authorized.errors).toBeUndefined()
+  const code = new URL(authorized.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
+  const response = await fetch(`${ORIGIN}/oauth/token`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      client_id: clientId,
+      code_verifier: codeVerifier,
+      ...(resource && {resource})
+    })
+  })
+  expect(response.status).toBe(200)
+  return (await response.json()).access_token as string
+}
+
+const callTool = async (token: string, name: string, args: Record<string, unknown>) => {
+  const response = await postMCP(
+    {jsonrpc: '2.0', id: 2, method: 'tools/call', params: {name, arguments: args}},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  expect(response.status).toBe(200)
+  return (await response.json()).result as {
+    isError?: boolean
+    content: {type: string; text: string}[]
+  }
+}
+
+const expectToolError = (result: Awaited<ReturnType<typeof callTool>>, text: string) => {
+  expect(result.isError).toBe(true)
+  expect(result.content[0]!.text).toContain(text)
+}
+
+const callToolForData = async (token: string, name: string, args: Record<string, unknown>) => {
+  const result = await callTool(token, name, args)
+  expect(result.content[0]!.text).not.toContain('"code"')
+  expect(result.isError).toBeUndefined()
+  return JSON.parse(result.content[0]!.text)
+}
+
+const listTools = async (token: string) => {
+  const response = await postMCP(
+    {jsonrpc: '2.0', id: 3, method: 'tools/list'},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  expect(response.status).toBe(200)
+  return (await response.json()).result.tools
+}
+
+const signUpWithTwoOrgs = async () => {
+  const {userId, cookie, orgId, teamId} = await signUp()
+  const added = await sendPublic({
+    query: ADD_ORG,
+    variables: {newTeam: {name: 'Second team', orgId: '', isPublic: false}, orgName: 'Second org'},
+    cookie
+  })
+  expect(added.errors).toBeUndefined()
+  const {id: secondTeamId, orgId: secondOrgId} = added.data.addOrg.team
+  return {userId, cookie, orgId, teamId, secondOrgId, secondTeamId}
+}
+
+const COMPILED_TOOLS = [
+  'get_me',
+  'list_meetings',
+  'get_meeting',
+  'list_tasks',
+  'search_pages',
+  'read_page',
+  'create_page',
+  'set_page_content',
+  'edit_page',
+  'select_template',
+  'start_retrospective',
+  'start_check_in',
+  'start_sprint_poker',
+  'start_standup',
+  'start_team_health',
+  'get_report',
+  'list_pinned_reports'
+]
+
+const expectUnauthorized = (response: Response) => {
+  expect(response.status).toBe(401)
+  expect(response.headers.get('www-authenticate')).toBe(
+    `Bearer resource_metadata="${ORIGIN}/.well-known/oauth-protected-resource/mcp", scope="${Object.values(OAuthScopeEnum).join(' ')}"`
+  )
+  expect(response.headers.get('access-control-allow-origin')).toBe('*')
+  expect(response.headers.get('access-control-expose-headers')).toBe('www-authenticate')
+}
+
+const expectInitialized = async (response: Response) => {
+  expect(response.status).toBe(200)
+  const body = await response.json()
+  expect(body).toMatchObject({
+    jsonrpc: '2.0',
+    id: 1,
+    result: {
+      protocolVersion: PROTOCOL_VERSION,
+      serverInfo: {name: 'parabol', version: packageJSON.version}
+    }
+  })
+  const {instructions} = body.result
+  expect(instructions.length).toBeLessThan(2000)
+  for (const scope of Object.values(OAuthScopeEnum)) {
+    expect(instructions).toContain(scope)
+  }
+  for (const tool of [
+    'read_page',
+    'edit_page',
+    'get_me',
+    'create_page',
+    'set_page_content',
+    'select_template',
+    'get_meeting',
+    'search_pages',
+    'get_report',
+    'list_pinned_reports',
+    'graphql_query',
+    'graphql_mutate'
+  ]) {
+    expect(instructions).toContain(tool)
+  }
+}
+
+test('no token answers 401 with the resource metadata address and scopes', async () => {
+  const response = await postMCP(INITIALIZE)
+  expectUnauthorized(response)
+})
+
+test('a session cookie alone is refused', async () => {
+  const {cookie} = await signUp()
+  const response = await postMCP(INITIALIZE, {cookie})
+  expectUnauthorized(response)
+})
+
+test('a session token sent as a bearer is refused', async () => {
+  const {cookie} = await signUp()
+  const sessionToken = cookie.split(';')[0]!.split('=').slice(1).join('=')
+  const response = await postMCP(INITIALIZE, bearer(sessionToken))
+  expectUnauthorized(response)
+})
+
+test('an invalid bearer token answers 401', async () => {
+  for (const token of ['not-a-token', 'pat_notarealtoken']) {
+    const response = await postMCP(INITIALIZE, bearer(token))
+    expectUnauthorized(response)
+  }
+})
+
+test('initialize succeeds with a PAT and returns the instructions', async () => {
+  const token = await createPersonalAccessToken()
+  const response = await postMCP(INITIALIZE, bearer(token))
+  expect(response.headers.get('access-control-allow-origin')).toBe('*')
+  await expectInitialized(response)
+})
+
+test('a notification is accepted with 202', async () => {
+  const token = await createPersonalAccessToken()
+  const response = await postMCP(
+    {jsonrpc: '2.0', method: 'notifications/initialized'},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  expect(response.status).toBe(202)
+})
+
+test('initialize succeeds with an OAuth token bound to /mcp', async () => {
+  const token = await createOAuthAccessToken(MCP_URL)
+  const response = await postMCP(INITIALIZE, bearer(token))
+  await expectInitialized(response)
+})
+
+test('initialize succeeds with an OAuth token bound to no resource', async () => {
+  const token = await createOAuthAccessToken()
+  const response = await postMCP(INITIALIZE, bearer(token))
+  await expectInitialized(response)
+})
+
+test('a body over 4 MiB answers 413', async () => {
+  const token = await createPersonalAccessToken()
+  const response = await postMCP(
+    {...INITIALIZE, padding: 'x'.repeat(4 * 1024 * 1024)},
+    bearer(token)
+  )
+  expect(response.status).toBe(413)
+})
+
+test('the same /mcp-bound token is still refused at /graphql', async () => {
+  const token = await createOAuthAccessToken(MCP_URL)
+  const response = await fetch(`${ORIGIN}/graphql`, {
+    method: 'POST',
+    headers: {'content-type': 'application/json', ...bearer(token)},
+    body: JSON.stringify({query: '{viewer{id}}'})
+  })
+  const body = await response.json()
+  expect(body.data?.viewer?.id).toBeUndefined()
+  expect(body.errors?.[0]).toMatchObject({
+    message: `This access token is for ${MCP_URL}`,
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+})
+
+test('GET and DELETE /mcp answer 405 and allow POST', async () => {
+  for (const method of ['GET', 'DELETE']) {
+    const response = await fetch(MCP_URL, {method})
+    expect(response.status).toBe(405)
+    expect(response.headers.get('allow')).toBe('POST')
+  }
+})
+
+test('a browser client can preflight /mcp', async () => {
+  const response = await fetch(MCP_URL, {
+    method: 'OPTIONS',
+    headers: {
+      origin: 'http://localhost:6274',
+      'access-control-request-method': 'POST',
+      'access-control-request-headers': 'authorization, content-type, mcp-protocol-version'
+    }
+  })
+  expect(response.status).toBe(204)
+  expect(response.headers.get('access-control-allow-origin')).toBe('*')
+  expect(response.headers.get('access-control-allow-headers')).toBe(
+    'authorization, content-type, mcp-protocol-version'
+  )
+  expect(response.headers.get('access-control-expose-headers')).toBe('www-authenticate')
+})
+
+test('an OAuth token bound to another resource is refused', async () => {
+  const token = await createOAuthAccessToken(MCP_URL)
+  const authToken = getVerifiedAuthToken(token, true, 'action-oauth2')!
+  const forged = encodeAuthToken({...authToken, resource: 'https://evil/mcp'})
+  const response = await postMCP(INITIALIZE, bearer(forged))
+  expectUnauthorized(response)
+  expect(await response.json()).toMatchObject({
+    error_description: 'This access token is for https://evil/mcp'
+  })
+})
+
+test('tools/list lists every compiled tool with annotations and its JSON Schema', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  const byName = Object.fromEntries(tools.map((tool: {name: string}) => [tool.name, tool]))
+  expect(Object.keys(byName)).toEqual(expect.arrayContaining(COMPILED_TOOLS))
+  expect(byName.list_tasks.inputSchema.properties.first).toEqual({
+    type: 'integer',
+    default: 50,
+    description: 'Most tasks to return'
+  })
+  expect(byName.create_page.inputSchema.required).toEqual(['teamId'])
+  expect(byName.get_me.annotations.readOnlyHint).toBe(true)
+  expect(byName.start_check_in.annotations.destructiveHint).toBe(true)
+  expect(
+    byName.get_report.inputSchema.properties.spec.properties.measures.items.description
+  ).toContain('MEETINGS: Meetings that at least 2 people joined')
+})
+
+test('get_me answers with the viewer', async () => {
+  const {userId, cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_READ', 'ORGS_READ', 'TEAMS_READ'], {
+    cookie
+  })
+  const {viewer} = await callToolForData(token, 'get_me', {})
+  expect(viewer.id).toBe(userId)
+  expect(viewer.teams.map(({id}: {id: string}) => id)).toContain(teamId)
+})
+
+test("GraphQL refuses a compiled tool's bad argument", async () => {
+  const token = await createPersonalAccessToken(['USERS_READ', 'TASKS_READ'])
+  const result = await callTool(token, 'list_tasks', {first: 'ten'})
+  expectToolError(result, '$first')
+  expect(JSON.parse(result.content[0]!.text)[0].message).toContain('Variable "$first"')
+})
+
+test('a missing required argument is refused', async () => {
+  const token = await createPersonalAccessToken(['PAGES_READ'])
+  const result = await callTool(token, 'read_page', {})
+  expectToolError(result, '$pageId')
+  expect(JSON.parse(result.content[0]!.text)[0].message).toContain('variable "$pageId"')
+})
+
+test('a compiled tool fills in a default the caller leaves out', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'TASKS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
+    {cookie}
+  )
+  const tasks = await callToolForData(token, 'list_tasks', {})
+  expect(tasks.viewer.tasks.edges).toEqual(expect.any(Array))
+  const started = await callToolForData(token, 'start_check_in', {teamId})
+  const meetings = await callToolForData(token, 'list_meetings', {
+    teamIds: [teamId],
+    before: new Date().toISOString()
+  })
+  expect(meetings.viewer.meetings.edges.map(({node}: {node: {id: string}}) => node.id)).toContain(
+    started.startCheckIn.meeting.id
+  )
+})
+
+test('create_page, set_page_content and edit_page write a team page read_page returns', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const created = await callToolForData(token, 'create_page', {teamId})
+  const pageId = created.createPage.page.id
+  await callToolForData(token, 'set_page_content', {pageId, content: '# Plan\n\nShip it'})
+  const edited = await callToolForData(token, 'edit_page', {
+    pageId,
+    edits: [{oldText: 'Ship it', newText: 'Ship it today'}]
+  })
+  expect(edited.patchPageContent.page.id).toBe(pageId)
+  const read = await callToolForData(token, 'read_page', {pageId})
+  expect(read.public.page.content).toContain('Ship it today')
+})
+
+test('search_pages answers with a list of pages', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ'])
+  const found = await callToolForData(token, 'search_pages', {query: 'plan'})
+  expect(found.viewer.search.edges).toEqual(expect.any(Array))
+})
+
+test('start_check_in starts a meeting on the team that get_meeting shows', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'], {
+    cookie
+  })
+  const started = await callToolForData(token, 'start_check_in', {teamId})
+  expect(started.startCheckIn.meeting.teamId).toBe(teamId)
+  const meetingId = started.startCheckIn.meeting.id
+  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'action', teamId})
+})
+
+test('start_retrospective, start_sprint_poker and start_standup start meetings on the team', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['MEETINGS_WRITE'], {cookie})
+  const retrospective = await callToolForData(token, 'start_retrospective', {teamId})
+  expect(retrospective.startRetrospective.meeting).toMatchObject({
+    meetingType: 'retrospective',
+    teamId
+  })
+  const poker = await callToolForData(token, 'start_sprint_poker', {teamId})
+  expect(poker.startSprintPoker.meeting).toMatchObject({meetingType: 'poker', teamId})
+  const standup = await callToolForData(token, 'start_standup', {teamId})
+  expect(standup.startTeamPrompt.meeting).toMatchObject({meetingType: 'teamPrompt', teamId})
+})
+
+test("select_template selects the team's retrospective template", async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_READ', 'TEAMS_READ', 'TEAMS_WRITE'], {
+    cookie
+  })
+  const {viewer} = await callToolForData(token, 'graphql_query', {
+    query: `query SelectedTemplate($teamId: ID!) {
+      viewer { team(teamId: $teamId) { meetingSettings(meetingType: retrospective) {
+        ... on RetrospectiveMeetingSettings { selectedTemplate { id } }
+      } } }
+    }`,
+    variables: {teamId}
+  })
+  const selected = await callToolForData(token, 'select_template', {
+    templateId: viewer.team.meetingSettings.selectedTemplate.id,
+    teamId
+  })
+  expect(selected.selectTemplate.meetingSettings.meetingType).toBe('retrospective')
+})
+
+test('a token limited to one organization sees only its teams', async () => {
+  const {cookie, orgId, teamId, secondTeamId} = await signUpWithTwoOrgs()
+  const token = await createPersonalAccessToken(
+    ['USERS_READ', 'ORGS_READ', 'TEAMS_READ', 'MEETINGS_WRITE'],
+    {cookie, grantedOrgIds: [orgId], grantedTeamIds: []}
+  )
+  const {viewer} = await callToolForData(token, 'get_me', {})
+  expect(viewer.teams.map(({id}: {id: string}) => id)).toEqual([teamId])
+  const started = await callTool(token, 'start_check_in', {teamId: secondTeamId})
+  expect(started.isError).toBe(true)
+})
+
+const REPORT_SCOPES = ['USERS_READ', 'ORGS_READ', 'REPORTS_READ']
+
+test('get_report runs the spec of a report list_pinned_reports lists', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {cookie})
+  const {viewer: pinned} = await callToolForData(token, 'list_pinned_reports', {orgId})
+  const [firstPin] = pinned.organization.pinnedReports
+  expect(firstPin.title).toEqual(expect.any(String))
+  const {viewer} = await callToolForData(token, 'get_report', {
+    orgId,
+    spec: JSON.parse(firstPin.spec)
+  })
+  expect(viewer.organization.report).toMatchObject({
+    teamCount: expect.any(Number),
+    rows: expect.any(Array),
+    notes: expect.any(Array)
+  })
+})
+
+test('get_report counts what a spec asks for', async () => {
+  const {cookie, orgId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {cookie})
+  const {viewer} = await callToolForData(token, 'get_report', {
+    orgId,
+    spec: {measures: ['USERS'], showAs: 'NUMBER'},
+    timeZone: 'America/New_York'
+  })
+  expect(viewer.organization.report).toMatchObject({
+    breakdown: [],
+    rows: expect.any(Array)
+  })
+})
+
+test('a token limited to a team cannot report on its organization', async () => {
+  const {cookie, orgId, teamId} = await signUp()
+  const token = await createPersonalAccessToken(REPORT_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const [report, pinned] = await Promise.all([
+    callTool(token, 'get_report', {orgId, spec: {measures: ['MEETINGS'], showAs: 'NUMBER'}}),
+    callTool(token, 'list_pinned_reports', {orgId})
+  ])
+  expectToolError(report, 'does not grant access to this organization')
+  expectToolError(pinned, 'does not grant access to this organization')
+})
+
+test('an unknown tool is a JSON-RPC error', async () => {
+  const token = await createPersonalAccessToken()
+  const response = await postMCP(
+    {jsonrpc: '2.0', id: 4, method: 'tools/call', params: {name: 'no_such_tool', arguments: {}}},
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  const body = await response.json()
+  expect(body.error.code).toBe(-32602)
+})
+
+const TYPESCRIPT_TOOLS = [
+  'create_task',
+  'update_task',
+  'upload_image',
+  'graphql_query',
+  'graphql_mutate'
+]
+
+const JPEG_BASE64 = Buffer.from([
+  0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0
+]).toString('base64')
+
+test('create_task turns markdown into the task text', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const created = await callToolForData(token, 'create_task', {
+    teamId,
+    content: 'Fix the **login** bug'
+  })
+  expect(created.createTask.task.plaintextContent).toBe('Fix the login bug')
+  expect(created.createTask.task.status).toBe('active')
+})
+
+test('update_task with nothing to change is refused', async () => {
+  const token = await createPersonalAccessToken(['TASKS_WRITE'])
+  const result = await callTool(token, 'update_task', {taskId: 'task-1'})
+  expectToolError(result, 'Pass content, status or userId')
+})
+
+test('create_task advertises only the fields without a default as required', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  const createTask = tools.find(({name}: {name: string}) => name === 'create_task')
+  expect(createTask.inputSchema.required).toEqual(['teamId', 'content'])
+})
+
+test('a TypeScript tool refuses arguments that fail its schema with BAD_USER_INPUT', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const result = await callTool(token, 'create_task', {teamId})
+  expectToolError(result, 'content')
+  expect(JSON.parse(result.content[0]!.text)[0].code).toBe('BAD_USER_INPUT')
+})
+
+test('upload_image refuses bytes that are not the named type', async () => {
+  const {cookie, userId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_WRITE'], {cookie})
+  const result = await callTool(token, 'upload_image', {
+    filename: 'a.png',
+    mimeType: 'image/png',
+    base64: JPEG_BASE64,
+    scope: 'User',
+    scopeKey: userId
+  })
+  expectToolError(result, 'not a image/png')
+})
+
+test('graphql_query refuses a mutation', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const result = await callTool(token, 'graphql_query', {query: 'mutation { logout }'})
+  expectToolError(result, 'graphql_query runs queries only')
+})
+
+test('graphql_query can introspect the schema', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const data = await callToolForData(token, 'graphql_query', {
+    query: '{ __type(name: "Task") { fields { name } } }'
+  })
+  expect(data.__type.fields.map(({name}: {name: string}) => name)).toContain('plaintextContent')
+})
+
+test('graphql_mutate runs a mutation', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['PAGES_WRITE'], {cookie})
+  const data = await callToolForData(token, 'graphql_mutate', {
+    query: 'mutation CreatePage($teamId: ID!) { createPage(teamId: $teamId) { page { id } } }',
+    variables: {teamId}
+  })
+  expect(data.createPage.page.id).toEqual(expect.any(String))
+})
+
+test('every tool name is unique', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  const names = tools.map(({name}: {name: string}) => name)
+  expect(new Set(names).size).toBe(names.length)
+  expect(names).toEqual(expect.arrayContaining([...COMPILED_TOOLS, ...TYPESCRIPT_TOOLS]))
+})

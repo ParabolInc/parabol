@@ -55,6 +55,8 @@ export interface ServerContext {
   // present if the request is from a Personal Access Token or an OAuth access token
   resourceGrants?: ResourceGrants
   personalAccessTokenId?: string
+  // an OAuth access token bound to a resource is accepted only where this names that resource
+  expectedResource?: string
   traceparent?: string
   sessionId?: string
   socketId?: string

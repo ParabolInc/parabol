@@ -1,0 +1,11 @@
+# Create an empty page shared with a team, then fill it with set_page_content. Needs pages:write.
+mutation CreatePage(
+  # The team to share the page with, from get_me
+  $teamId: ID!
+) {
+  createPage(teamId: $teamId) {
+    page {
+      id
+    }
+  }
+}

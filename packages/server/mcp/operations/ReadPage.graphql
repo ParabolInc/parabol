@@ -1,0 +1,13 @@
+# Read a page as markdown, with its title. Copy text from here into edit_page to change it. Needs pages:read.
+query ReadPage(
+  # The page id, from search_pages, create_page or a meeting
+  $pageId: ID!
+) {
+  public {
+    page(pageId: $pageId) {
+      id
+      title
+      content(format: markdown)
+    }
+  }
+}

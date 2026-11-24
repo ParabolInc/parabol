@@ -16,7 +16,11 @@ export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWo
         applicationAuthorization: headers?.get('x-application-authorization')
       })
       if (credential.kind !== 'pat' && credential.kind !== 'oauth') return
-      const grant = await getAPIGrant(credential.token, context.dataLoader)
+      const grant = await getAPIGrant(
+        credential.token,
+        context.dataLoader,
+        context.expectedResource
+      )
       if (!grant) return
       const authToken = await getAPIAuthToken(grant, context.dataLoader)
       extendContext({

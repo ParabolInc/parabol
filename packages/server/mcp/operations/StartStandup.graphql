@@ -1,0 +1,14 @@
+# Start a standup on a team with the team's selected template. To use another template, call select_template first. Needs meetings:write.
+mutation StartStandup(
+  # The team to meet, from get_me
+  $teamId: ID!
+) {
+  startTeamPrompt(teamId: $teamId) {
+    meeting {
+      id
+      name
+      meetingType
+      teamId
+    }
+  }
+}

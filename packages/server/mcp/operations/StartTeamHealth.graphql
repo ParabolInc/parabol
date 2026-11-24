@@ -1,0 +1,16 @@
+# Start a team health check on a team with a team health template. Needs meetings:write.
+mutation StartTeamHealth(
+  # The team to meet, from get_me
+  $teamId: ID!
+  # The team health template to run the check with
+  $templateId: ID!
+) {
+  startTeamHealth(teamIds: [$teamId], templateId: $templateId) {
+    meetings {
+      id
+      name
+      meetingType
+      teamId
+    }
+  }
+}

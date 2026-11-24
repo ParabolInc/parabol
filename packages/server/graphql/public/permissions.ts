@@ -742,8 +742,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     lastSeenAt: isOnUserOrg,
     meeting: and(isUserSelf, isTeamMemberOfMeeting<'User.meeting'>('args.meetingId')),
     organization: or(
-      isSuperUser,
-      and(isUserSelf, isViewerOnOrg<'User.organization'>('args.orgId'))
+      and(isUserSelf, isViewerOnOrg<'User.organization'>('args.orgId')),
+      isSuperUser
     ),
     organizationUser: or(
       isSuperUser,
