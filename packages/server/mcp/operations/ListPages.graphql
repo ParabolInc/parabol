@@ -1,16 +1,14 @@
-# List pages you can reach. Pass parentPageId for a page's sub-pages or teamId for a team's pages. When hasNextPage is true, pass pageInfo.endCursor as after for the next pages. Open one with read_page. Needs users:read and pages:read.
+# List pages you can reach. With parentPageId it returns that page's sub-pages, with teamId the team's top-level pages, and with neither the pages you can reach at the top level. To see more, call again with a larger first. Open one with read_page. Needs users:read and pages:read.
 query ListPages(
   # Only list the sub-pages of this page
-  $parentPageId: ID
-  # Only list the pages of this team, from get_me
+  $parentPageId: ID = null
+  # Only list the top-level pages of this team, from get_me
   $teamId: ID
   # Most pages to return
   $first: Int = 50
-  # The pageInfo.endCursor of the previous list_pages call
-  $after: String
 ) {
   viewer {
-    pages(parentPageId: $parentPageId, teamId: $teamId, first: $first, after: $after) {
+    pages(parentPageId: $parentPageId, teamId: $teamId, first: $first) {
       edges {
         node {
           id
@@ -23,7 +21,6 @@ query ListPages(
       }
       pageInfo {
         hasNextPage
-        endCursor
       }
     }
   }
