@@ -17,6 +17,7 @@ const RetroTeamHealthStart = (props: Props) => {
       fragment RetroTeamHealthStart_meeting on RetrospectiveMeeting {
         id
         teamId
+        endedAt
         facilitatorUserId
         facilitator {
           user {
@@ -27,12 +28,13 @@ const RetroTeamHealthStart = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, teamId, facilitatorUserId, facilitator} = meeting
+  const {id: meetingId, teamId, endedAt, facilitatorUserId, facilitator} = meeting
   const {viewerId} = useAtmosphere()
-  return viewerId === facilitatorUserId ? (
-    <RetroTeamHealthStartCheckRoot retroMeetingId={meetingId} teamId={teamId} />
-  ) : (
-    <RetroTeamHealthNoCheck facilitatorName={facilitator.user.preferredName} />
+  if (viewerId === facilitatorUserId && !endedAt) {
+    return <RetroTeamHealthStartCheckRoot retroMeetingId={meetingId} teamId={teamId} />
+  }
+  return (
+    <RetroTeamHealthNoCheck facilitatorName={facilitator.user.preferredName} isEnded={!!endedAt} />
   )
 }
 
