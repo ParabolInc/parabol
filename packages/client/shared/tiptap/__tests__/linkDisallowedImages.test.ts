@@ -75,4 +75,13 @@ describe('linkDisallowedImages', () => {
     expect(linkHrefs(content)).toEqual([])
     expect(content).toEqual([{type: 'paragraph', content: [{type: 'text', text: 'x'}]}])
   })
+
+  test.each(['> ![]()', '- ![]()', '![]()'])(
+    'keeps the doc valid when %s has no src',
+    (markdown) => {
+      const content = markdownToTipTap(markdown)
+      expect(imageBlocks(content)).toEqual([])
+      expect(() => checkValid(content)).not.toThrow()
+    }
+  )
 })

@@ -23,6 +23,6 @@ export const linkDisallowedImages = (
         : [node]
     }
     const src: unknown = node.attrs?.src
-    if (typeof src !== 'string' || !src) return []
+    if (typeof src !== 'string' || !src) return [{type: 'paragraph'}]
     return isAllowedImageSrc(src) ? [node] : [toLinkedText(src, node.attrs?.alt)]
   })
