@@ -122,6 +122,25 @@ describe('imageBlock markdown', () => {
     expect(image?.attrs).toMatchObject({src: 'https://x.test/g.png', alt: 'g'})
   })
 
+  test.each([
+    ['a backslash before a closing angle bracket', 'https://x.test/a\\>b.png'],
+    ['a backslash and a space', 'https://x.test/a b\\c.png'],
+    ['a backslash and no other special', 'https://x.test/a\\*b.png']
+  ])('round-trips a src with %s', (_name, src) => {
+    const markdown = toMarkdown([imageBlock({src, alt: 'x'})])
+    const content = fromMarkdown(markdown)
+    expect(content.map((node) => node.type)).toEqual(['imageBlock'])
+    expect(content[0]?.attrs?.src).toBe(src)
+  })
+
+  test('keeps a src with a newline on one line as a single image', () => {
+    const markdown = toMarkdown([imageBlock({src: 'https://x.test/a\nb.png', alt: 'x'})])
+    expect(markdown.trim().split('\n')).toHaveLength(1)
+    const content = fromMarkdown(markdown)
+    expect(content.map((node) => node.type)).toEqual(['imageBlock'])
+    expect(content[0]?.attrs?.src).toBe('https://x.test/a%0Ab.png')
+  })
+
   test('reads plain text from an image without a src', () => {
     const doc = {type: 'doc', content: [imageBlock({src: null})]}
     expect(() => generateText(doc, serverTipTapExtensions)).not.toThrow()

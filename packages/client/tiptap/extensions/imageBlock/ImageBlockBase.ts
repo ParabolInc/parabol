@@ -33,8 +33,11 @@ const parseLegacyImageAttributes = (attrString: string) => {
 const renderImageMarkdown = (node: JSONContent) => {
   const {src, alt, title} = node.attrs ?? {}
   const label = (alt ?? '').replace(/[\\[\]]/g, '\\$&')
-  const href: string = src ?? ''
-  const destination = /[\s()<>]/.test(href) ? `<${href.replace(/[<>]/g, '\\$&')}>` : href
+  const source: string = src ?? ''
+  const href = source.replace(/\r/g, '%0D').replace(/\n/g, '%0A')
+  const destination = /[\s()<>]/.test(href)
+    ? `<${href.replace(/[\\<>]/g, '\\$&')}>`
+    : href.replace(/\\/g, '\\$&')
   const titleSuffix = title ? ` "${title.replace(/["\\]/g, '\\$&')}"` : ''
   return `![${label}](${destination}${titleSuffix})`
 }
