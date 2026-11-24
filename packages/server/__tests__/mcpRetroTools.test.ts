@@ -1,4 +1,9 @@
+import getKysely from '../postgres/getKysely'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+
+afterAll(async () => {
+  await getKysely().destroy()
+})
 
 const MCP_URL = `${PROTOCOL}://${HOST}/mcp`
 const PROTOCOL_VERSION = '2025-06-18'
@@ -61,4 +66,93 @@ test('get_me answers on a connection without orgs:read', async () => {
   expect(viewer.id).toBe(userId)
   expect(viewer.organizations).toBeUndefined()
   expect(viewer.teams.map(({id}: {id: string}) => id)).toContain(teamId)
+})
+
+const callToolForData = async (token: string, name: string, args: Record<string, unknown>) => {
+  const result = await callTool(token, name, args)
+  expect(result.isError ? `${name}: ${result.content[0]!.text}` : undefined).toBeUndefined()
+  return JSON.parse(result.content[0]!.text)
+}
+
+const getColumns = (meetingResult: {
+  viewer: {meeting: {phases: {reflectPrompts?: {id: string; question: string}[]}[]}}
+}) => meetingResult.viewer.meeting.phases.flatMap(({reflectPrompts}) => reflectPrompts ?? [])
+
+const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_READ']
+
+test('an agent adds, edits and renames cards on a retro', async () => {
+  const {cookie, teamId, orgId} = await signUp()
+  await getKysely()
+    .updateTable('Organization')
+    .set({tier: 'team'})
+    .where('id', '=', orgId)
+    .execute()
+  const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
+  const started = await callToolForData(token, 'start_retrospective', {teamId})
+  const meetingId = started.startRetrospective.meeting.id as string
+
+  const before = await callToolForData(token, 'get_meeting', {meetingId})
+  const columns = getColumns(before)
+  expect(columns.length).toBeGreaterThan(1)
+
+  const added = await callToolForData(token, 'add_reflection', {
+    meetingId,
+    promptId: columns[0]!.id,
+    content: 'Deploys are **slow**'
+  })
+  const reflectionId = added.createReflection.reflection.id as string
+  expect(added.createReflection.reflection.plaintextContent).toBe('Deploys are slow')
+
+  const second = await callToolForData(token, 'add_reflection', {
+    meetingId,
+    promptId: columns[0]!.id,
+    content: 'Reviews are quick'
+  })
+  const secondId = second.createReflection.reflection.id as string
+  expect(secondId).not.toBe(reflectionId)
+
+  const updated = await callToolForData(token, 'update_reflection', {
+    reflectionId,
+    content: 'Deploys are *fast* now'
+  })
+  expect(updated.updateReflectionContent.reflection.plaintextContent).toBe('Deploys are fast now')
+
+  await callToolForData(token, 'rename_meeting', {meetingId, name: 'Agent Retro'})
+
+  const after = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(after.viewer.meeting.name).toBe('Agent Retro')
+  const groups = after.viewer.meeting.reflectionGroups as {
+    sortOrder: number
+    reflections: {id: string; plaintextContent: string}[]
+  }[]
+  const cards = groups.flatMap(({reflections}) => reflections)
+  expect(cards.map(({plaintextContent}) => plaintextContent)).toEqual(
+    expect.arrayContaining(['Deploys are fast now', 'Reviews are quick'])
+  )
+  const sortOrderOf = (id: string) =>
+    groups.find(({reflections}) => reflections.some((card) => card.id === id))!.sortOrder
+  expect(sortOrderOf(secondId)).toBeGreaterThan(sortOrderOf(reflectionId))
+})
+
+test('a card too long for Parabol is refused with the limit named', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
+  const started = await callToolForData(token, 'start_retrospective', {teamId})
+  const meetingId = started.startRetrospective.meeting.id as string
+  const meeting = await callToolForData(token, 'get_meeting', {meetingId})
+  const promptId = getColumns(meeting)[0]!.id
+  const tooLong = 'word '.repeat(500)
+
+  const added = await callTool(token, 'add_reflection', {meetingId, promptId, content: tooLong})
+  expect(added.isError).toBe(true)
+  const [error] = JSON.parse(added.content[0]!.text)
+  expect(error.code).toBe('BAD_USER_INPUT')
+  expect(error.message).toContain('2,000')
+
+  const updated = await callTool(token, 'update_reflection', {
+    reflectionId: 'whatever',
+    content: tooLong
+  })
+  expect(updated.isError).toBe(true)
+  expect(JSON.parse(updated.content[0]!.text)[0].code).toBe('BAD_USER_INPUT')
 })

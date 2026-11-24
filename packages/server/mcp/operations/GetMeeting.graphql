@@ -14,13 +14,24 @@ query GetMeeting(
       summary
       summaryPageId
       ... on RetrospectiveMeeting {
+        phases {
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
+              question
+              description
+            }
+          }
+        }
         reflectionGroups {
           title
           voteCount
+          sortOrder
           prompt {
             question
           }
           reflections {
+            id
             plaintextContent
           }
         }

@@ -184,7 +184,8 @@ const COMPILED_TOOLS = [
   'start_standup',
   'start_team_health',
   'get_report',
-  'list_pinned_reports'
+  'list_pinned_reports',
+  'rename_meeting'
 ]
 
 const expectUnauthorized = (response: Response) => {
@@ -544,6 +545,8 @@ test('an unknown tool is a JSON-RPC error', async () => {
 const TYPESCRIPT_TOOLS = [
   'create_task',
   'update_task',
+  'add_reflection',
+  'update_reflection',
   'upload_image',
   'graphql_query',
   'graphql_mutate'

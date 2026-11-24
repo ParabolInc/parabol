@@ -1,0 +1,14 @@
+# Rename a meeting. The name must be 2 to 50 characters. Needs meetings:write.
+mutation RenameMeeting(
+  # The meeting id, from list_meetings or the tool that started it
+  $meetingId: ID!
+  # The new name
+  $name: String!
+) {
+  renameMeeting(meetingId: $meetingId, name: $name) {
+    meeting {
+      id
+      name
+    }
+  }
+}
