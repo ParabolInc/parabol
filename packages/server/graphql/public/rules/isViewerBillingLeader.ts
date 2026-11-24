@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'

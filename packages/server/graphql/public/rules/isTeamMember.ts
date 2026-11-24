@@ -1,5 +1,5 @@
 import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import type {LoaderType} from '../../../dataloader/foreignKeyLoaderMaker'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import type {RuleContext} from '../../graphql'

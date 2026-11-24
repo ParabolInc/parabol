@@ -25,7 +25,6 @@ declare module 'node-env-flag'
 declare module '*getProjectRoot'
 declare module 'tayden-clusterfck'
 declare module 'jest-extended'
-declare module 'object-hash'
 declare module 'string-score'
 
 declare module '*workerManifest.js' {

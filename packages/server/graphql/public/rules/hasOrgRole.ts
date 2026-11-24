@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import type {Orguserroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'

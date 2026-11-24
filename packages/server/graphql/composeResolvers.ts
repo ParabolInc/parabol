@@ -1,11 +1,7 @@
 /*
-  GraphQL Shield has a great API but it uses graphql-middleware, which is horrendously slow.
-  This is because the middleware wraps every single field. yikes!
-  It also does typechecks in runtime that we can do at build time
-
-  resolver-composition uses a barebones middleware, but the API is lacking (e.g. no caching, uses dot-separated strings for fields)
-  So, I kept the Shield API for rules, but I don't run it through graphql-middleware
-  Unfortunately, it still requires graphql-middleware, which is why it's a dependency
+  GraphQL Guard has a great API, but guard() wraps the whole schema, and we also need rules on interfaces
+  and redacted fields, which it doesn't support.
+  So, I kept the Guard API for rules, but I call them from our own resolver wrappers
 
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
@@ -19,34 +15,31 @@ import {
   isNonNullType,
   isObjectType
 } from 'graphql'
-import type {IRules} from 'graphql-shield'
-import {allow, and} from 'graphql-shield'
-import hash from 'object-hash'
+import type {GuardRule, PopulatedOptions} from 'graphql-guard'
+import {allow, and} from 'graphql-guard'
 import {Logger, markErrorAsLogged} from '../utils/Logger'
 import type {ResolverFn} from './private/resolverTypes'
 
-// hack to get ShieldRule since it's not exported from graphql-shield
-export type ShieldRule = Extract<IRules, {resolve: any}>
+export type {GuardRule}
 
 type Resolver = ResolverFn<any, any, any, any>
 
-const options = {
-  allowExternalErrors: false,
-  // debug: true makes graphql-shield re-throw exceptions from rule callbacks
+const options: PopulatedOptions = {
+  suppressResolverError: false,
+  // debug: true makes graphql-guard re-throw exceptions from rule callbacks
   // instead of silently coercing them to `false` (which surfaces to clients
   // as the opaque "Not authorized"). We catch those throws below and log
   // them with operation context so permission bugs are visible, not hidden.
   debug: true,
   fallbackRule: allow,
-  fallbackError: () => new Error(''),
-  hashFunction: hash
+  fallbackError: () => new Error('')
 }
 
-const redactingRules = new WeakSet<ShieldRule>()
+const redactingRules = new WeakSet<GuardRule>()
 
 // When the rule denies, the field resolves to null (or [] for a non-null list) instead of an error.
 // A non-null scalar or object can't be redacted, so it still errors.
-export const redactUnless = (rule: ShieldRule) => {
+export const redactUnless = (rule: GuardRule) => {
   const redactingRule = and(rule)
   redactingRules.add(redactingRule)
   return redactingRule
@@ -58,23 +51,32 @@ const getRedactedValue = (returnType: GraphQLOutputType) => {
   return undefined
 }
 
-// Rule results are cached per (rule, key) so a rule on every field of a type runs once per object.
-// The cache lives as long as the viewer & the data it was computed from: a subscription event swaps
+// graphql-guard caches rule results per (rule, key) for each context object & operation run, so a rule on
+// every field of a type runs once per object. Subscription events each get their own cache.
+// The cache must also not outlive the viewer & the data it was computed from: a subscription event swaps
 // in the dataloader of the mutation that published it, and a login swaps the authToken.
-const ensurePermissionCache = (context: any) => {
+// So rules get a view of the context that is replaced, along with its cache, when either one changes.
+type RuleContextView = {authToken: unknown; dataLoader: unknown; ruleContext: object}
+const ruleContextViews = new WeakMap<object, RuleContextView>()
+const getRuleContext = (context: any) => {
+  if (typeof context !== 'object' || context === null) return context
   const {authToken, dataLoader} = context
-  const current = context._shield
-  if (current?.authToken === authToken && current?.dataLoader === dataLoader) return
-  context._shield = {cache: {}, authToken, dataLoader}
+  const current = ruleContextViews.get(context)
+  if (current && current.authToken === authToken && current.dataLoader === dataLoader) {
+    return current.ruleContext
+  }
+  // rules only read the context, so reads fall through to the live context
+  const ruleContext = Object.create(context)
+  ruleContextViews.set(context, {authToken, dataLoader, ruleContext})
+  return ruleContext
 }
 
-const wrapResolve = (resolve: Resolver, rule: ShieldRule): Resolver => {
+const wrapResolve = (resolve: Resolver, rule: GuardRule): Resolver => {
   const isRedacting = redactingRules.has(rule)
   return async (source, args, context, info) => {
-    ensurePermissionCache(context)
     let res: unknown
     try {
-      res = await rule.resolve(source, args, context, info, options)
+      res = await rule.resolve(source, args, getRuleContext(context), info, options)
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       Logger.error(`Permission rule threw on ${info.parentType.name}.${info.fieldName}`, error)
@@ -105,7 +107,7 @@ type ResolverMap = {
 
 interface PermissionMap {
   readonly [TypeName: string]: {
-    readonly [FieldName: string]: ShieldRule
+    readonly [FieldName: string]: GuardRule
   }
 }
 

@@ -18,10 +18,9 @@ const pagesById = new Map<number, object>([
 const canRestore = (viewerId: string, pageId: string, action: string) => {
   const ctx = {
     authToken: {sub: viewerId},
-    dataLoader: {get: () => ({load: async (id: number) => pagesById.get(id)})},
-    _shield: {cache: {}}
+    dataLoader: {get: () => ({load: async (id: number) => pagesById.get(id)})}
   } as unknown as ResolveArgs[2]
-  const options = {hashFunction: JSON.stringify} as unknown as ResolveArgs[4]
+  const options = {} as ResolveArgs[4]
   return isRestoringOwnTrashedPage.resolve(
     {},
     {pageId, action},

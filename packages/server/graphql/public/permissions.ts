@@ -1,5 +1,5 @@
-import {allow, and, not, or} from 'graphql-shield'
-import {redactUnless, type ShieldRule} from '../composeResolvers'
+import {allow, and, not, or} from 'graphql-guard'
+import {type GuardRule, redactUnless} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
@@ -30,13 +30,13 @@ import rateLimit from './rules/rateLimit'
 import {sharesOrgWithViewer} from './rules/sharesOrgWithViewer'
 
 type Wildcard = {
-  '*': ShieldRule
+  '*': GuardRule
 }
 
 type FieldMap<T> =
   | Wildcard
   | {
-      [P in keyof T]: ShieldRule
+      [P in keyof T]: GuardRule
     }
 
 export type PermissionMap<T> = {

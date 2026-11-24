@@ -1,6 +1,6 @@
 ---
 name: migrate-permissions
-description: Guide for moving inline auth checks out of GraphQL resolvers and into permissions.ts using graphql-shield rules. Use when adding, reviewing, or migrating authorization logic for mutations or queries.
+description: Guide for moving inline auth checks out of GraphQL resolvers and into permissions.ts using graphql-guard rules. Use when adding, reviewing, or migrating authorization logic for mutations or queries.
 ---
 
 ## Permissions
@@ -9,11 +9,11 @@ Authorization lives in two places: `graphql/public/permissions.ts` (preferred) a
 
 ### How it works
 
-`permissions.ts` exports a `permissionMap` that maps GraphQL types/fields to shield rules. `composeResolvers.ts` wraps each resolver with its rule as a higher-order function — avoiding the overhead of `graphql-middleware`.
+`permissions.ts` exports a `permissionMap` that maps GraphQL types/fields to graphql-guard rules. `composeResolvers.ts` wraps each resolver with its rule as a higher-order function.
 
 - `'*'` wildcard sets a default rule for all fields on a type (e.g., all Mutations default to `isAuthenticated`)
 - Specific field entries override the wildcard
-- Rules can be composed with `and()`, `or()`, `not()` from `graphql-shield`
+- Rules can be composed with `and()`, `or()`, `not()` from `graphql-guard`
 
 ### Rules directory: `graphql/public/rules/`
 

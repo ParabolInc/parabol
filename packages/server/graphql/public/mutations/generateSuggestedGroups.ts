@@ -57,7 +57,7 @@ const generateSuggestedGroups: MutationResolvers['generateSuggestedGroups'] = as
 
   const {teamId} = meeting
   // Gated here rather than in permissions.ts because it depends on an argument value and needs a
-  // specific, actionable message where a graphql-shield failure would be generic
+  // specific, actionable message where a graphql-guard failure would be generic
   if (mode === 'ai') {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     if (!(await canAccessAI(team, dataLoader))) {

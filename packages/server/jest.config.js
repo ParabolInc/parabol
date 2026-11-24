@@ -2,7 +2,7 @@ module.exports = {
   testEnvironment: 'node',
   transform: {
     '\\.(gql|graphql)$': './__tests__/jest-transform-graphql-shim.js',
-    '^.+\\.(t|j)sx?$': [
+    '^.+\\.m?(t|j)sx?$': [
       '@swc/jest',
       {
         jsc: {
