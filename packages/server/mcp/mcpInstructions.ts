@@ -10,10 +10,10 @@ Each area needs its own scope. The scopes are ${scopes}. A :read scope lets you 
 
 A connection may be limited to some organizations, teams or pages. Anything outside them is out of reach, and the error says so when you ask for something outside the connection.
 
-Pages: read a page with read_page. Change it with edit_page, which finds an exact run of text and replaces it, so read the page first and copy the text you want to find.
+Start with get_me to learn who you are and which teams you can reach. To make a new page, call create_page and then set_page_content. To change a page, call read_page and then edit_page, which finds an exact run of text and replaces it, so copy the text you want to find from what read_page returned. To change a team's template, call select_template before the start_* tool that starts the meeting.
 
-Every error carries a code, such as UNAUTHENTICATED, FORBIDDEN, NOT_FOUND or BAD_USER_INPUT. Use the code to decide what to do next.
+For anything else, use graphql_query to read and graphql_mutate to change data. Learn the schema with an introspection query such as { __type(name: "Task") { fields { name description } } } run through graphql_query.
 
-Before writing a graphql_query or graphql_mutate call, use search_schema to find the fields you need and describe_type to see their arguments and types.`
+Every error carries a code, such as UNAUTHENTICATED, FORBIDDEN, NOT_FOUND or BAD_USER_INPUT. Use the code to decide what to do next.`
 
 export default mcpInstructions

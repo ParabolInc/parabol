@@ -13,7 +13,7 @@ const COMPILER_PATHS = [
   'OperationTool.ts'
 ].map((fileName) => path.join(MCP_ROOT, fileName))
 
-require('sucrase/register')
+require('sucrase/dist/register').registerTS()
 const {buildSchema} = require(require.resolve('graphql', {paths: [SERVER_ROOT]}))
 const {default: compileOperationTool} = require(path.join(MCP_ROOT, 'compileOperationTool.ts'))
 

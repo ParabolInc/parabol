@@ -213,8 +213,10 @@ const expectInitialized = async (response: Response) => {
   for (const tool of [
     'read_page',
     'edit_page',
-    'search_schema',
-    'describe_type',
+    'get_me',
+    'create_page',
+    'set_page_content',
+    'select_template',
     'graphql_query',
     'graphql_mutate'
   ]) {
@@ -428,4 +430,86 @@ test('an unknown tool is a JSON-RPC error', async () => {
   )
   const body = await response.json()
   expect(body.error.code).toBe(-32602)
+})
+
+const TYPESCRIPT_TOOLS = [
+  'create_task',
+  'update_task',
+  'upload_image',
+  'graphql_query',
+  'graphql_mutate'
+]
+
+const JPEG_BASE64 = Buffer.from([
+  0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0
+]).toString('base64')
+
+test('create_task turns markdown into the task text', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const created = await callToolForData(token, 'create_task', {
+    teamId,
+    content: 'Fix the **login** bug'
+  })
+  expect(created.createTask.task.plaintextContent).toBe('Fix the login bug')
+  expect(created.createTask.task.status).toBe('active')
+})
+
+test('update_task with nothing to change is refused', async () => {
+  const token = await createPersonalAccessToken(['TASKS_WRITE'])
+  const result = await callTool(token, 'update_task', {taskId: 'task-1'})
+  expectToolError(result, 'Pass content, status or userId')
+})
+
+test('a TypeScript tool refuses arguments that fail its schema', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const result = await callTool(token, 'create_task', {teamId})
+  expect(result.isError).toBe(true)
+  expect(result.content[0]!.text).toContain('content')
+})
+
+test('upload_image refuses bytes that are not the named type', async () => {
+  const {cookie, userId} = await signUp()
+  const token = await createPersonalAccessToken(['USERS_WRITE'], {cookie})
+  const result = await callTool(token, 'upload_image', {
+    filename: 'a.png',
+    mimeType: 'image/png',
+    base64: JPEG_BASE64,
+    scope: 'User',
+    scopeKey: userId
+  })
+  expectToolError(result, 'not a image/png')
+})
+
+test('graphql_query refuses a mutation', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const result = await callTool(token, 'graphql_query', {query: 'mutation { logout }'})
+  expectToolError(result, 'graphql_query runs queries only')
+})
+
+test('graphql_query can introspect the schema', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const data = await callToolForData(token, 'graphql_query', {
+    query: '{ __type(name: "Task") { fields { name } } }'
+  })
+  expect(data.__type.fields.map(({name}: {name: string}) => name)).toContain('plaintextContent')
+})
+
+test('graphql_mutate runs a mutation', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['PAGES_WRITE'], {cookie})
+  const data = await callToolForData(token, 'graphql_mutate', {
+    query: 'mutation CreatePage($teamId: ID!) { createPage(teamId: $teamId) { page { id } } }',
+    variables: {teamId}
+  })
+  expect(data.createPage.page.id).toEqual(expect.any(String))
+})
+
+test('every tool name is unique', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  const names = tools.map(({name}: {name: string}) => name)
+  expect(names).toHaveLength(20)
+  expect(new Set(names).size).toBe(20)
+  expect(names).toEqual(expect.arrayContaining([...COMPILED_TOOLS, ...TYPESCRIPT_TOOLS]))
 })
