@@ -185,7 +185,8 @@ const COMPILED_TOOLS = [
   'start_team_health',
   'get_report',
   'list_pinned_reports',
-  'rename_meeting'
+  'rename_meeting',
+  'list_retro_columns'
 ]
 
 const expectUnauthorized = (response: Response) => {

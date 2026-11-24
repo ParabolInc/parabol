@@ -1,9 +1,4 @@
-import getKysely from '../postgres/getKysely'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
-
-afterAll(async () => {
-  await getKysely().destroy()
-})
 
 const MCP_URL = `${PROTOCOL}://${HOST}/mcp`
 const PROTOCOL_VERSION = '2025-06-18'
@@ -81,17 +76,12 @@ const getColumns = (meetingResult: {
 const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_READ']
 
 test('an agent adds, edits and renames cards on a retro', async () => {
-  const {cookie, teamId, orgId} = await signUp()
-  await getKysely()
-    .updateTable('Organization')
-    .set({tier: 'team'})
-    .where('id', '=', orgId)
-    .execute()
+  const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
 
-  const before = await callToolForData(token, 'get_meeting', {meetingId})
+  const before = await callToolForData(token, 'list_retro_columns', {meetingId})
   const columns = getColumns(before)
   expect(columns.length).toBeGreaterThan(1)
 
@@ -122,16 +112,14 @@ test('an agent adds, edits and renames cards on a retro', async () => {
   const after = await callToolForData(token, 'get_meeting', {meetingId})
   expect(after.viewer.meeting.name).toBe('Agent Retro')
   const groups = after.viewer.meeting.reflectionGroups as {
-    sortOrder: number
     reflections: {id: string; plaintextContent: string}[]
   }[]
   const cards = groups.flatMap(({reflections}) => reflections)
-  expect(cards.map(({plaintextContent}) => plaintextContent)).toEqual(
-    expect.arrayContaining(['Deploys are fast now', 'Reviews are quick'])
-  )
-  const sortOrderOf = (id: string) =>
-    groups.find(({reflections}) => reflections.some((card) => card.id === id))!.sortOrder
-  expect(sortOrderOf(secondId)).toBeGreaterThan(sortOrderOf(reflectionId))
+  expect(cards.map(({id}) => id)).toEqual([reflectionId, secondId])
+  expect(cards.map(({plaintextContent}) => plaintextContent)).toEqual([
+    'Deploys are fast now',
+    'Reviews are quick'
+  ])
 })
 
 test('a card too long for Parabol is refused with the limit named', async () => {
@@ -139,7 +127,7 @@ test('a card too long for Parabol is refused with the limit named', async () => 
   const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
-  const meeting = await callToolForData(token, 'get_meeting', {meetingId})
+  const meeting = await callToolForData(token, 'list_retro_columns', {meetingId})
   const promptId = getColumns(meeting)[0]!.id
   const tooLong = 'word '.repeat(500)
 
