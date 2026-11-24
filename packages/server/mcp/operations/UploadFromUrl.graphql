@@ -1,4 +1,4 @@
-# Copy an image or file that is already online into Parabol and get back its URL to put in a page or task. Use this instead of upload_image when you have a URL rather than the bytes. scope says who can see it: User (only you; scopeKey is your user id), Team (the team; scopeKey is its teamId) or Page (anyone who can read the page; scopeKey is its pageId). Needs users:write, teams:write or pages:write to match the scope.
+# Copy an image or file that is already online into Parabol and get back its URL to put in a page or task. Use this instead of upload_image when you have a URL rather than the bytes. Parabol downloads the URL itself and counts the copy against your upload limit. scope says who can see it: User (only you; scopeKey is your user id), Team (the team; scopeKey is its teamId) or Page (anyone who can read the page; scopeKey is its pageId). Needs users:write, teams:write or pages:write to match the scope.
 mutation UploadFromUrl(
   # The address of the image or file to copy
   $url: URL!
