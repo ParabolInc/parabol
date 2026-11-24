@@ -1,14 +1,23 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import type {JSONContent} from '@tiptap/core'
+import {Editor, type JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {tipTapToMarkdown} from '../../../../client/shared/tiptap/tipTapToMarkdown'
+import appOrigin from '../../../appOrigin'
+import type {DataLoaderWorker} from '../../../graphql/graphql'
 import type {PageContentEditInput} from '../../../graphql/public/resolverTypes'
 import {
   applyPageContentEdits as applyEdits,
   validatePageContentEdits
 } from '../applyPageContentEdits'
+import {getPageContent} from '../getPageContent'
+import {parsePageMarkdown} from '../parsePageMarkdown'
+import {collectImageSrcs} from '../validatePageDoc'
+
+jest.mock('../../../hocusPocus', () => ({
+  redisHocusPocus: {handleEvent: async () => undefined}
+}))
 
 const text = (value: string, marks?: JSONContent['marks']): JSONContent => ({
   type: 'text',
@@ -43,6 +52,61 @@ const applyPageContentEdits = (
 }
 
 const blocksOf = (doc: Y.Doc) => doc.getXmlFragment('default').toArray()
+
+const readPage = (doc: Y.Doc) => {
+  const yDoc = Y.encodeStateAsUpdate(doc)
+  const dataLoader = {get: () => ({load: async () => ({yDoc})})} as unknown as DataLoaderWorker
+  return getPageContent(1, 'markdown', dataLoader)
+}
+
+const assetUrl = `${appOrigin}/assets/cat.png`
+const outsideUrl = 'https://outside.test/a.png'
+
+const cell = (type: 'tableHeader' | 'tableCell', value: string): JSONContent => ({
+  type,
+  content: [paragraph(text(value))]
+})
+
+const makeMixedPage = () =>
+  makeDoc(
+    heading('Plan'),
+    paragraph(text('Intro')),
+    {type: 'paragraph'},
+    {type: 'paragraph'},
+    paragraph(text('Before table')),
+    {
+      type: 'table',
+      content: [
+        {type: 'tableRow', content: [cell('tableHeader', 'Name'), cell('tableHeader', 'Owner')]},
+        {type: 'tableRow', content: [cell('tableCell', 'Alpha'), cell('tableCell', 'Ann')]}
+      ]
+    },
+    {
+      type: 'bulletList',
+      content: [
+        {type: 'listItem', content: [paragraph(text('one'))]},
+        {type: 'listItem', content: [paragraph(text('two'))]}
+      ]
+    },
+    {type: 'imageBlock', attrs: {src: assetUrl, alt: 'cat'}}
+  )
+
+const mixedPageBlocks = [
+  '# Plan',
+  'Intro',
+  '',
+  '',
+  'Before table',
+  '| Name  | Owner |\n| ----- | ----- |\n| Alpha | Ann   |',
+  '- one\n- two',
+  `![cat](${assetUrl})`
+]
+
+const editOfBlock = (block: string) => {
+  if (block.startsWith('|')) return block.replace('Alpha', 'Gamma')
+  if (block.startsWith('![')) return block.replace('![cat]', '![cat edited]')
+  return `${block} edited`
+}
 
 const makePage = () =>
   makeDoc(
@@ -347,6 +411,106 @@ describe('applyPageContentEdits', () => {
     const [, , pageLink] = blocksOf(doc)
     expect(applyPageContentEdits(doc, [{oldText: 'Intro', newText: 'Overview'}])).toBeNull()
     expect(blocksOf(doc)[2]).toBe(pageLink)
+  })
+
+  test('reads a page in the markdown that edits match', async () => {
+    const read = await readPage(makeMixedPage())
+    expect(read).not.toContain('&nbsp;')
+    expect(read).toBe(mixedPageBlocks.join('\n\n'))
+  })
+
+  test.each(mixedPageBlocks.flatMap((block, idx) => (block ? [[idx, block] as const] : [])))(
+    'an edit copied from the read page changes only block %i',
+    async (idx, block) => {
+      const doc = makeMixedPage()
+      const before = blocksOf(doc)
+      const read = await readPage(doc)
+      const newText = editOfBlock(block)
+      expect(applyPageContentEdits(doc, [{oldText: block, newText}])).toBeNull()
+      expect(await readPage(doc)).toBe(read.replace(block, newText))
+      const after = blocksOf(doc)
+      expect(after).toHaveLength(before.length)
+      after.forEach((element, position) => {
+        if (position === idx) expect(element).not.toBe(before[position])
+        else expect(element).toBe(before[position])
+      })
+    }
+  )
+
+  test('finds text copied from the read page across empty paragraphs, a table and an image', async () => {
+    const doc = makeMixedPage()
+    const read = await readPage(doc)
+    const spanOf = (from: string, to: string) =>
+      read.slice(read.indexOf(from), read.indexOf(to) + to.length)
+    for (const span of [
+      spanOf('Intro', 'Before'),
+      spanOf('table', '| Name'),
+      spanOf('Ann', '- one'),
+      spanOf('two', '![cat]')
+    ]) {
+      expect(applyPageContentEdits(doc, [{oldText: span, newText: span}])).toBeNull()
+    }
+  })
+
+  test('refuses an oldText that matches only when spacing is ignored', async () => {
+    const doc = makeMixedPage()
+    const error = applyPageContentEdits(doc, [
+      {oldText: '| Alpha | Ann |', newText: '| Gamma | Ann |'}
+    ])
+    expect(error?.code).toBe('CONFLICT')
+    expect(error?.message).toContain('only if spacing is ignored')
+    expect(error?.message).toContain('read_page')
+    expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
+  })
+
+  test('refuses an edit that adds an image Parabol does not host', () => {
+    const doc = makePage()
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [
+      {oldText: 'First paragraph', newText: `First paragraph\n\n![x](${outsideUrl})`}
+    ])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('upload_image')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+  })
+
+  test('keeps an outside image the page already holds through edits around it', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Intro')), {
+      type: 'imageBlock',
+      attrs: {src: outsideUrl, alt: 'x'}
+    })
+    const image = `![x](${outsideUrl})`
+    expect(applyPageContentEdits(doc, [{oldText: 'Intro', newText: 'Overview'}])).toBeNull()
+    expect(
+      applyPageContentEdits(doc, [
+        {oldText: `Overview\n\n${image}`, newText: `Summary\n\n${image}`}
+      ])
+    ).toBeNull()
+    expect(
+      applyPageContentEdits(doc, [{oldText: image, newText: `![y](${outsideUrl})`}])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe(`# Plan\n\nSummary\n\n![y](${outsideUrl})`)
+  })
+
+  test('an outside image survives being read and written back', async () => {
+    const srcs = ['https://outside.test/a b.png', 'https://outside.test/c(1).png']
+    const doc = makeDoc(
+      heading('Plan'),
+      ...srcs.map((src) => ({type: 'imageBlock', attrs: {src, alt: 'pic'}}))
+    )
+    const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
+    const read = await readPage(doc)
+    const editor = new Editor({
+      element: undefined,
+      content: {type: 'doc', content: [{type: 'paragraph'}]},
+      extensions: serverTipTapExtensions
+    })
+    try {
+      const written = parsePageMarkdown(editor, read, new Set(collectImageSrcs(nodes)))
+      expect(collectImageSrcs(written)).toEqual(srcs)
+    } finally {
+      editor.destroy()
+    }
   })
 })
 

@@ -4,11 +4,11 @@ import {GraphQLError} from 'graphql'
 import type * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
+import {getPageMarkdownBlocks, PAGE_BLOCK_SEPARATOR} from './getPageMarkdownBlocks'
 import {parsePageMarkdown} from './parsePageMarkdown'
 import {toYXmlNodes} from './toYXmlNodes'
 import {collectImageSrcs} from './validatePageDoc'
 
-const BLOCK_SEPARATOR = '\n\n'
 const MAX_EDITS = 20
 const MAX_EDIT_TEXT_LENGTH = 50_000
 const MAX_PAGE_MARKDOWN_LENGTH = 1_000_000
@@ -57,11 +57,18 @@ const findMatchStarts = (text: string, search: string) => {
   return starts
 }
 
+const withoutSpacing = (value: string) => value.replace(/\s+/g, '')
+
+const matchesIgnoringSpacing = (text: string, search: string) => {
+  const compactSearch = withoutSpacing(search)
+  return compactSearch.length > 0 && withoutSpacing(text).includes(compactSearch)
+}
+
 const getBlockStarts = (blocks: Block[]) => {
   let offset = 0
   return blocks.map(({markdown}) => {
     const start = offset
-    offset += markdown.length + BLOCK_SEPARATOR.length
+    offset += markdown.length + PAGE_BLOCK_SEPARATOR.length
     return start
   })
 }
@@ -94,10 +101,8 @@ const groupMatches = (blocks: Block[], matchStarts: number[], matchLength: numbe
   return {groups, blockStarts}
 }
 
-const toBlock = (editor: Editor, node: JSONContent): Block => ({
-  node,
-  markdown: editor.storage.markdown.manager.serialize({type: 'doc', content: [node]})
-})
+const toBlocks = (editor: Editor, nodes: JSONContent[]): Block[] =>
+  getPageMarkdownBlocks(editor, nodes).map((markdown, idx) => ({node: nodes[idx]!, markdown}))
 
 const isSameNode = (editor: Editor, left: JSONContent, right: JSONContent) =>
   editor.schema.nodeFromJSON(left).eq(editor.schema.nodeFromJSON(right))
@@ -118,7 +123,7 @@ const findUnsafeRemoval = (
   if (invisible || !isRewrite) return invisible
   const reparsed = parsePageMarkdown(
     editor,
-    original.map(({markdown}) => markdown).join(BLOCK_SEPARATOR),
+    original.map(({markdown}) => markdown).join(PAGE_BLOCK_SEPARATOR),
     allowedImageSrcs
   )
   const visible = original.filter(({markdown}) => markdown.trim())
@@ -173,7 +178,7 @@ const rewriteGroup = (
     })
   }
   const oldBlocks = blocks.slice(firstIdx, lastIdx + 1)
-  const newBlocks = parsedNodes.map((node) => toBlock(editor, node))
+  const newBlocks = toBlocks(editor, parsedNodes)
   let keptPrefix = 0
   while (
     keptPrefix < oldBlocks.length &&
@@ -231,13 +236,13 @@ const applyEdit = (
   const {oldText, newText, replaceAll} = edit
   if (!oldText)
     throw new GraphQLError('oldText must not be empty', {extensions: {code: 'BAD_USER_INPUT'}})
-  const text = blocks.map(({markdown}) => markdown).join(BLOCK_SEPARATOR)
+  const text = blocks.map(({markdown}) => markdown).join(PAGE_BLOCK_SEPARATOR)
   const matchStarts = findMatchStarts(text, oldText)
   if (matchStarts.length === 0) {
-    throw new GraphQLError(
-      'oldText was not found in the page. Read the page content again and retry',
-      {extensions: {code: 'CONFLICT'}}
-    )
+    const message = matchesIgnoringSpacing(text, oldText)
+      ? 'oldText matches the page only if spacing is ignored, so copy it exactly from read_page'
+      : 'oldText was not found in the page. Read the page content again and retry'
+    throw new GraphQLError(message, {extensions: {code: 'CONFLICT'}})
   }
   if (matchStarts.length > 1 && !replaceAll) {
     throw new GraphQLError(
@@ -319,8 +324,8 @@ export const applyPageContentEdits = (
         extensions: {code: 'INTERNAL_SERVER_ERROR'}
       })
     }
-    let blocks: Block[] = nodes.map((node, fragmentIndex) => ({
-      ...toBlock(editor, node),
+    let blocks: Block[] = toBlocks(editor, nodes).map((block, fragmentIndex) => ({
+      ...block,
       fragmentIndex
     }))
     const allowedImageSrcs = new Set(collectImageSrcs(nodes))
