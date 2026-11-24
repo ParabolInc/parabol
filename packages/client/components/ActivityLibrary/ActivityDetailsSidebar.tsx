@@ -105,6 +105,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         actionSettings: meetingSettings(meetingType: action) {
           ...NewMeetingSettingsToggleCheckIn_settings
         }
+        ...NewMeetingSettingsToggleTeamHealth_team
         ...TeamPicker_teams
         ...NewMeetingActionsCurrentMeetings_team
         ...ScheduleMeetingButton_team
@@ -312,7 +313,10 @@ const ActivityDetailsSidebar = (props: Props) => {
               {type === 'retrospective' && (
                 <>
                   <NewMeetingSettingsToggleCheckIn settingsRef={selectedTeam.retroSettings} />
-                  <NewMeetingSettingsToggleTeamHealth settingsRef={selectedTeam.retroSettings} />
+                  <NewMeetingSettingsToggleTeamHealth
+                    settingsRef={selectedTeam.retroSettings}
+                    teamRef={selectedTeam}
+                  />
                   <NewMeetingSettingsToggleReviewPastTasks
                     settingsRef={selectedTeam.retroSettings}
                   />

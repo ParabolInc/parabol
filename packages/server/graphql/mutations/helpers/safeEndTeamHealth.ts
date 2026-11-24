@@ -117,7 +117,7 @@ const safeEndTeamHealth = async ({
     {operationId}
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamHealthPayload', data, subOptions)
-  syncRetrosWithTeamHealthCheck(teamId, meetingId).catch(logError)
+  syncRetrosWithTeamHealthCheck(teamId).catch(logError)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   return data

@@ -707,22 +707,15 @@ const permissionMap: PermissionMap<Resolvers> = {
   RetrospectiveMeeting: {
     viewerInspirationIssues:
       isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id'),
-    openTeamHealthMeeting:
-      isTeamMemberOfMeeting<'RetrospectiveMeeting.openTeamHealthMeeting'>('source.id'),
     startedTeamHealthMeeting:
-      isTeamMemberOfMeeting<'RetrospectiveMeeting.startedTeamHealthMeeting'>('source.id')
+      isTeamMemberOfMeeting<'RetrospectiveMeeting.startedTeamHealthMeeting'>('source.id'),
+    teamHealthMeeting: isTeamMemberOfMeeting<'RetrospectiveMeeting.teamHealthMeeting'>('source.id')
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
     prevUsedRepoIntegrations: isTeamMember<'TeamMember.prevUsedRepoIntegrations'>('source.teamId'),
     repoIntegrations: isUserViewer<'TeamMember.repoIntegrations'>('source.userId'),
     services: isUserViewer<'TeamMember.services'>('source.userId')
-  },
-  // the source is the retro's stage, and the check belongs to the retro's team
-  RetroTeamHealthResultStage: {
-    teamHealthMeeting:
-      isTeamMemberOfMeeting<'RetroTeamHealthResultStage.teamHealthMeeting'>('source.meetingId'),
-    resultStage: isTeamMemberOfMeeting<'RetroTeamHealthResultStage.resultStage'>('source.meetingId')
   },
   // Reports reach a result stage without going through its meeting, so the fields that lead into the
   // meeting stay with the team: org leaders read the results, never the meeting or its discussion

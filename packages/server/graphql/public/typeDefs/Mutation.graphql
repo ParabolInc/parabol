@@ -1936,8 +1936,8 @@ type Mutation {
     checkinEnabled: Boolean
 
     """
-    true to turn team health on, false to turn it off. A retrospective answers the team's Team Health
-    check and walks through new results; a check-in runs the one-question pulse
+    true to turn the Team Health phase on, false to turn it off. In a retrospective, the team answers
+    its Team Health check there. Turning it on needs a paid plan
     """
     teamHealthEnabled: Boolean
 

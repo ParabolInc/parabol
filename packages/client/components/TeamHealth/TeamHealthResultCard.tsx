@@ -26,8 +26,8 @@ interface Props {
   stageCount: number
   // globally-ordered category ids that drive each category's color (see getTeamHealthCategoryColor)
   orderedCategoryIds: ReadonlyArray<string>
-  onPrev?: () => void
-  onNext?: () => void
+  onPrev: () => void
+  onNext: () => void
 }
 
 const TeamHealthResultCard = (props: Props) => {
@@ -184,23 +184,21 @@ const TeamHealthResultCard = (props: Props) => {
           </div>
         </div>
       )}
-      {onPrev && onNext && (
-        <div className='mt-8 flex items-center justify-between'>
-          {stageIndex === 0 ? (
-            <div />
-          ) : (
-            <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
-              Back
-            </Button>
-          )}
-          {!isLast && (
-            <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
-              Next topic
-              <ArrowForward className='size-5' />
-            </Button>
-          )}
-        </div>
-      )}
+      <div className='mt-8 flex items-center justify-between'>
+        {stageIndex === 0 ? (
+          <div />
+        ) : (
+          <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
+            Back
+          </Button>
+        )}
+        {!isLast && (
+          <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
+            Next topic
+            <ArrowForward className='size-5' />
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

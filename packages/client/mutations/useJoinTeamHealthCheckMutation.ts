@@ -10,6 +10,7 @@ const mutation = graphql`
       meeting {
         id
         ...RetroTeamHealthCheck_teamHealthMeeting
+        ...TeamHealthSidebarQuestionSection_meeting
       }
     }
   }

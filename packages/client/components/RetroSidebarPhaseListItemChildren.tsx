@@ -8,8 +8,7 @@ import type useGotoStageId from '~/hooks/useGotoStageId'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'
-import RetroSidebarTeamHealthCheckSection from './RetroTeamHealth/RetroSidebarTeamHealthCheckSection'
-import RetroSidebarTeamHealthResultSection from './RetroTeamHealth/RetroSidebarTeamHealthResultSection'
+import RetroSidebarTeamHealthSection from './RetroTeamHealth/RetroSidebarTeamHealthSection'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -25,8 +24,7 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
       fragment RetroSidebarPhaseListItemChildren_meeting on RetrospectiveMeeting {
         ...MeetingSidebarTeamMemberStageItems_meeting
         ...RetroSidebarDiscussSection_meeting
-        ...RetroSidebarTeamHealthCheckSection_meeting
-        ...RetroSidebarTeamHealthResultSection_meeting
+        ...RetroSidebarTeamHealthSection_meeting
         phases {
           phaseType
           stages {
@@ -48,17 +46,9 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
         phaseType={phaseType}
       />
     )
-  } else if (phaseType === 'TEAM_HEALTH_CHECK') {
+  } else if (phaseType === 'TEAM_HEALTH') {
     return (
-      <RetroSidebarTeamHealthCheckSection
-        gotoStageId={gotoStageId}
-        handleMenuClick={handleMenuClick}
-        meeting={meeting}
-      />
-    )
-  } else if (phaseType === 'TEAM_HEALTH_CHECK_RESULT') {
-    return (
-      <RetroSidebarTeamHealthResultSection
+      <RetroSidebarTeamHealthSection
         gotoStageId={gotoStageId}
         handleMenuClick={handleMenuClick}
         meeting={meeting}

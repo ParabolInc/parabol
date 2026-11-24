@@ -3,7 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSettings} from '../../../postgres/types'
+import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import publish from '../../../utils/publish'
+import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
 import applyRetroMeetingSettings from './helpers/applyRetroMeetingSettings'
 import getNextMeetingSettings from './helpers/getNextMeetingSettings'
@@ -34,6 +36,15 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     throw new GraphQLError('Settings not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {teamId} = settings
+  if (teamHealthEnabled) {
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
+    if (!isPhaseAvailable(getFeatureTier(org))('TEAM_HEALTH')) {
+      throw new GraphQLError('The Team Health phase needs a paid plan', {
+        extensions: {code: 'UPGRADE_REQUIRED'}
+      })
+    }
+  }
 
   // RESOLUTION
   if (!meetingId) {

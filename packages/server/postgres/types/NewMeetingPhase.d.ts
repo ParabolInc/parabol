@@ -53,6 +53,8 @@ export interface ReflectStage extends GenericMeetingStage {
   phaseType: 'reflect'
 }
 
+// a retro's Team Health stage. Older retros ran a one-question pulse here, with labels to vote on.
+// Without labels, the stage shows the team's Team Health check instead
 export interface TeamHealthStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH'
   votes: {
@@ -63,6 +65,8 @@ export interface TeamHealthStage extends GenericMeetingStage {
   question: string
   labels: string[]
   durations?: number[]
+  // the check this retro started itself, which ends with the retro
+  startedTeamHealthMeetingId?: string | null
 }
 
 export interface TeamPromptResponseStage extends GenericMeetingStage {
@@ -205,35 +209,9 @@ export interface UpdatesPhase extends GenericMeetingPhase {
   stages: [UpdatesStage, ...UpdatesStage[]]
 }
 
-export interface TeamHealthCheckStage extends GenericMeetingStage {
-  phaseType: 'TEAM_HEALTH_CHECK'
-  // the check this retro started itself, which ends with the retro. Unset while the retro answers a
-  // check the team opened some other way
-  startedTeamHealthMeetingId?: string | null
-}
-
-export interface TeamHealthCheckPhase extends GenericMeetingPhase {
-  phaseType: 'TEAM_HEALTH_CHECK'
-  stages: [TeamHealthCheckStage]
-}
-
-export interface TeamHealthCheckResultStage extends GenericMeetingStage {
-  phaseType: 'TEAM_HEALTH_CHECK_RESULT'
-  teamHealthMeetingId: string
-  teamHealthResultStageId: string
-}
-
-// empty until a check's results are revealed, which greys out the row and lets Next skip it
-export interface TeamHealthCheckResultPhase extends GenericMeetingPhase {
-  phaseType: 'TEAM_HEALTH_CHECK_RESULT'
-  stages: TeamHealthCheckResultStage[]
-}
-
 export type RetroMeetingPhase =
   | CheckInPhase
   | TeamHealthPhase
-  | TeamHealthCheckPhase
-  | TeamHealthCheckResultPhase
   | UpdatesPhase
   | ReflectPhase
   | GroupPhase

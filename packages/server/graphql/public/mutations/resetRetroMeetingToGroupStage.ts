@@ -52,8 +52,6 @@ const resetRetroMeetingToGroupStage: MutationResolvers['resetRetroMeetingToGroup
     switch (phase.phaseType) {
       case CHECKIN:
       case 'TEAM_HEALTH':
-      case 'TEAM_HEALTH_CHECK':
-      case 'TEAM_HEALTH_CHECK_RESULT':
       case UPDATES:
       case REFLECT:
         return phase

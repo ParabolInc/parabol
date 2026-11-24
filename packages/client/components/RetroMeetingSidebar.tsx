@@ -25,12 +25,7 @@ interface Props {
   meeting: RetroMeetingSidebar_meeting$key
 }
 
-const collapsiblePhases: NewMeetingPhaseTypeEnum[] = [
-  'checkin',
-  'updates',
-  'discuss',
-  'TEAM_HEALTH_CHECK_RESULT'
-]
+const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'discuss']
 
 const retroPhaseLabelOverrides: Partial<Record<NewMeetingPhaseTypeEnum, string>> = {
   updates: 'Review Tasks'
@@ -70,15 +65,15 @@ const RetroMeetingSidebar = (props: Props) => {
             readyUserIds
           }
         }
-        openTeamHealthMeeting {
-          localStage {
+        teamHealthMeeting {
+          endedAt
+          localPhase {
             phaseType
           }
           phases {
             phaseType
             stages {
               id
-              phaseType
             }
           }
         }
@@ -96,8 +91,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localStage,
     phases,
     meetingMembers,
-    openTeamHealthMeeting,
-    summaryPageId
+    summaryPageId,
+    teamHealthMeeting
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -106,11 +101,13 @@ const RetroMeetingSidebar = (props: Props) => {
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   const [confirmingPhase, setConfirmingPhase] = useState<NewMeetingPhaseTypeEnum | null>(null)
-  const isAnsweringTeamHealth =
-    openTeamHealthMeeting?.localStage?.phaseType === 'TEAM_HEALTH_RESPONSE'
-  const teamHealthQuestionCount = openTeamHealthMeeting?.phases.find(
-    ({phaseType}) => phaseType === 'TEAM_HEALTH_RESPONSE'
+  // beneath Team Health are the check's questions, or its results once revealed. Either one, while the
+  // viewer is on it, carries the active state
+  const checkPhaseType = teamHealthMeeting?.endedAt ? 'TEAM_HEALTH_RESULT' : 'TEAM_HEALTH_RESPONSE'
+  const checkStageCount = teamHealthMeeting?.phases.find(
+    ({phaseType}) => phaseType === checkPhaseType
   )?.stages.length
+  const isOnCheckStage = teamHealthMeeting?.localPhase?.phaseType === checkPhaseType
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -160,28 +157,25 @@ const RetroMeetingSidebar = (props: Props) => {
           })!
           const showDiscussSection = isPhaseComplete('vote', phases)
           const phaseCount =
-            phaseType === 'discuss'
-              ? showDiscussSection
-                ? discussPhase?.stages.length
+            phaseType === 'discuss' && showDiscussSection
+              ? discussPhase?.stages.length
+              : phaseType === 'TEAM_HEALTH'
+                ? checkStageCount
                 : undefined
-              : phaseType === 'TEAM_HEALTH_CHECK'
-                ? teamHealthQuestionCount
-                : phaseType === 'TEAM_HEALTH_CHECK_RESULT'
-                  ? phases.find((phase) => phase.phaseType === phaseType)?.stages.length ||
-                    undefined
-                  : undefined
           return (
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}
                 isActive={
-                  collapsiblePhases.includes(phaseType)
+                  phaseType === 'discuss' || phaseType === 'checkin' || phaseType === 'updates'
                     ? false
-                    : phaseType === 'TEAM_HEALTH_CHECK'
-                      ? localPhaseType === phaseType && !isAnsweringTeamHealth
-                      : localPhaseType === phaseType
+                    : localPhaseType === phaseType &&
+                      !(phaseType === 'TEAM_HEALTH' && isOnCheckStage)
                 }
-                isCollapsible={collapsiblePhases.includes(phaseType)}
+                isCollapsible={
+                  collapsiblePhases.includes(phaseType) ||
+                  (phaseType === 'TEAM_HEALTH' && !!teamHealthMeeting)
+                }
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={
                   isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType

@@ -126,27 +126,15 @@ const subscription = graphql`
       RetroTeamHealthCheckPayload {
         meeting {
           id
-          # a reveal replaces the Health Results stage list, and the retro may navigate there at
-          # once, so every stage field the retro reads comes with it
-          phases {
-            id
-            phaseType
-            stages {
-              id
-              isComplete
-              isNavigable
-              isNavigableByFacilitator
-              meetingId
-              phaseType
-              ...BottomControlBarReadyStage
-              ...StageTimerControlStage
-              ...StageTimerDisplayStage
-            }
-          }
-          ...RetroTeamHealthCheckPhase_meeting
-          ...RetroTeamHealthResultPhase_meeting
+          # the retro may now show another check, so everything it reads of one comes with it
+          ...RetroTeamHealthPhase_meeting
           ...RetroMeetingSidebar_meeting
-          ...MeetingControlBar_meeting
+          teamHealthMeeting {
+            viewerMeetingMember {
+              id
+            }
+            ...getTeamHealthDiscussionId_meeting
+          }
         }
       }
       SetPhaseFocusPayload {

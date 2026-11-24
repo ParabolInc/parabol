@@ -1,8 +1,8 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
-import getPhase from '../../../utils/getPhase'
 import type {InternalContext} from '../../graphql'
+import getRetroTeamHealthStage from './getRetroTeamHealthStage'
 import safeEndTeamHealth from './safeEndTeamHealth'
 
 // a check the retro started belongs to that retro, so it reveals when the retro ends. Ending publishes
@@ -12,8 +12,9 @@ const endTeamHealthStartedInRetro = async (
   context: InternalContext,
   info: GraphQLResolveInfo
 ) => {
-  const checkPhase = getPhase(retro.phases, 'TEAM_HEALTH_CHECK')
-  const startedTeamHealthMeetingId = checkPhase?.stages[0].startedTeamHealthMeetingId
+  const startedTeamHealthMeetingId = getRetroTeamHealthStage(
+    retro.phases
+  )?.startedTeamHealthMeetingId
   if (!startedTeamHealthMeetingId) return
   const dataLoader = getNewDataLoader('endTeamHealthStartedInRetro')
   try {

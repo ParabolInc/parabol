@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
-import getPhase from '../../../utils/getPhase'
+import getRetroTeamHealthStage from './getRetroTeamHealthStage'
 
 // the retro remembers the check it started, so ending the retro ends that check too. Locked, since a
 // teammate joining the retro rewrites the same phases
@@ -17,7 +17,7 @@ const recordTeamHealthCheckStartedInRetro = async (
         .where('id', '=', retroMeetingId)
         .forUpdate()
         .executeTakeFirst()
-      const checkStage = retro && getPhase(retro.phases, 'TEAM_HEALTH_CHECK')?.stages[0]
+      const checkStage = retro && getRetroTeamHealthStage(retro.phases)
       if (!retro || !checkStage) return
       checkStage.startedTeamHealthMeetingId = teamHealthMeetingId
       await trx

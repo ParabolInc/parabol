@@ -23,9 +23,8 @@ const getNextMeetingSettings = (settings: MeetingSettings, change: SettingsChang
   if (getFlagState('checkin', change.checkinEnabled, phaseTypes)) {
     firstPhases.push('checkin')
   }
-  const teamHealthPhaseType = isRetro ? 'TEAM_HEALTH_CHECK' : 'TEAM_HEALTH'
-  if (getFlagState(teamHealthPhaseType, change.teamHealthEnabled, phaseTypes)) {
-    firstPhases.push(teamHealthPhaseType)
+  if (getFlagState('TEAM_HEALTH', change.teamHealthEnabled, phaseTypes)) {
+    firstPhases.push('TEAM_HEALTH')
   }
   // 'updates' is canonical for retros only. For action meetings, 'updates' lives in the
   // tail of phaseTypes and is not toggleable here, so the filter below preserves it.
@@ -37,10 +36,7 @@ const getNextMeetingSettings = (settings: MeetingSettings, change: SettingsChang
       ...firstPhases,
       ...phaseTypes.filter(
         (phase) =>
-          phase !== 'checkin' &&
-          phase !== 'TEAM_HEALTH' &&
-          phase !== 'TEAM_HEALTH_CHECK' &&
-          !(isRetro && phase === 'updates')
+          phase !== 'checkin' && phase !== 'TEAM_HEALTH' && !(isRetro && phase === 'updates')
       )
     ],
     disableAnonymity: isNotNull(change.disableAnonymity)

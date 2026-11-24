@@ -8,7 +8,6 @@ import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import getPhase from '../../../utils/getPhase'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
@@ -19,6 +18,7 @@ import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
 import getOpenTeamHealthMeeting from '../../mutations/helpers/getOpenTeamHealthMeeting'
+import getRetroTeamHealthStage from '../../mutations/helpers/getRetroTeamHealthStage'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import recordTeamHealthCheckStartedInRetro from '../../mutations/helpers/recordTeamHealthCheckStartedInRetro'
@@ -261,13 +261,13 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }
-    if (!getPhase(retro.phases, 'TEAM_HEALTH_CHECK')) {
+    if (!getRetroTeamHealthStage(retro.phases)) {
       throw new GraphQLError('The retrospective does not include a Team Health check', {
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }
     // a second check beside the open one would split the team's answers
-    const openCheck = await getOpenTeamHealthMeeting(retro.teamId, null, dataLoader)
+    const openCheck = await getOpenTeamHealthMeeting(retro.teamId, dataLoader)
     if (openCheck) {
       syncRetrosWithTeamHealthCheck(retro.teamId).catch(logError)
       return {meetingIds: [openCheck.id], teamIds: [retro.teamId]}

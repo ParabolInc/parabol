@@ -20,6 +20,7 @@ import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroMeetingDrawer from './RetroMeetingDrawer'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
+import getTeamHealthDiscussionId from './TeamHealth/getTeamHealthDiscussionId'
 import useTemplateSwitchedSnackbar from './TeamPrompt/TemplateDrawer/useTemplateSwitchedSnackbar'
 
 interface Props {
@@ -30,17 +31,10 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  TEAM_HEALTH: lazyPreload(() => import(/* webpackChunkName: 'TeamHealth' */ './TeamHealth')),
-  TEAM_HEALTH_CHECK: lazyPreload(
+  TEAM_HEALTH: lazyPreload(
     () =>
       import(
-        /* webpackChunkName: 'RetroTeamHealthCheckPhase' */ './RetroTeamHealth/RetroTeamHealthCheckPhase'
-      )
-  ),
-  TEAM_HEALTH_CHECK_RESULT: lazyPreload(
-    () =>
-      import(
-        /* webpackChunkName: 'RetroTeamHealthResultPhase' */ './RetroTeamHealth/RetroTeamHealthResultPhase'
+        /* webpackChunkName: 'RetroTeamHealthPhase' */ './RetroTeamHealth/RetroTeamHealthPhase'
       )
   ),
   updates: lazyPreload(
@@ -56,6 +50,11 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
     () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
 }
+
+// an older retro's Team Health phase was a one-question pulse, which keeps its own view
+const TeamHealthPulse = lazyPreload(
+  () => import(/* webpackChunkName: 'TeamHealth' */ './TeamHealth')
+)
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -77,8 +76,7 @@ const RetroMeeting = (props: Props) => {
         ...RetroMeetingSidebar_meeting
         ...NewMeetingCheckIn_meeting
         ...TeamHealth_meeting
-        ...RetroTeamHealthCheckPhase_meeting
-        ...RetroTeamHealthResultPhase_meeting
+        ...RetroTeamHealthPhase_meeting
         ...RetroMeetingUpdates_meeting
         ...RetroReflectPhase_meeting
         ...RetroGroupPhase_meeting
@@ -104,7 +102,16 @@ const RetroMeeting = (props: Props) => {
           phaseType
           stages {
             id
+            ... on TeamHealthStage {
+              labels
+            }
           }
+        }
+        teamHealthMeeting {
+          viewerMeetingMember {
+            id
+          }
+          ...getTeamHealthDiscussionId_meeting
         }
       }
     `,
@@ -114,11 +121,16 @@ const RetroMeeting = (props: Props) => {
     useMeeting(meeting)
   const atmosphere = useAtmosphere()
   const {id: meetingId, showSidebar, localPhase, meetingSeries, rightDrawerOpen} = meeting
+  const {phases, teamHealthMeeting} = meeting
   const localPhaseType = localPhase?.phaseType
   const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
+  const teamHealthDiscussionId =
+    localPhaseType === 'TEAM_HEALTH' && teamHealthMeeting
+      ? getTeamHealthDiscussionId(teamHealthMeeting)
+      : undefined
   const [toggleDrawer] = useRightDrawer(
     meetingId,
-    showInspiration ? 'inspiration' : 'settings',
+    showInspiration ? 'inspiration' : teamHealthDiscussionId ? 'discussion' : 'settings',
     false
   )
   useTemplateSwitchedSnackbar({
@@ -129,16 +141,18 @@ const RetroMeeting = (props: Props) => {
     isSeriesTemplate: !!meetingSeries && !meetingSeries.cancelledAt
   })
   if (!safeRoute) return null
-  const Phase = phaseLookup[localPhaseType]!
+  const teamHealthLabels = phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH')?.stages[0]
+    ?.labels
+  const Phase: LazyPreloadedComponent =
+    localPhaseType === 'TEAM_HEALTH' && teamHealthLabels?.length
+      ? TeamHealthPulse
+      : phaseLookup[localPhaseType]!
   if (!Phase) reportMissingMeetingPhase('RetroMeeting', meeting)
   const isDemo = meetingId === RetroDemo.MEETING_ID
-  // Vote, discuss and Health Results render their own drawer. The other phases share one, rendered
-  // here above the swapped Phase so it stays mounted across phase changes instead of flickering.
-  // Hidden in the demo: the mock DB doesn't serve the drawer's fields.
-  const hasOwnDrawer =
-    localPhaseType === 'vote' ||
-    localPhaseType === 'discuss' ||
-    localPhaseType === 'TEAM_HEALTH_CHECK_RESULT'
+  // Vote and discuss render their own drawer. The other phases share one, rendered here above the
+  // swapped Phase so it stays mounted across phase changes instead of flickering. Hidden in the
+  // demo: the mock DB doesn't serve the drawer's fields.
+  const hasOwnDrawer = localPhaseType === 'vote' || localPhaseType === 'discuss'
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
@@ -170,6 +184,8 @@ const RetroMeeting = (props: Props) => {
           meeting={meeting}
           showInspiration={showInspiration}
           gotoStageId={gotoStageId}
+          discussionId={teamHealthDiscussionId}
+          canComment={!!teamHealthMeeting?.viewerMeetingMember}
         />
       )}
       <MeetingControlBar

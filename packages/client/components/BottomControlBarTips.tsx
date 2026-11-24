@@ -118,6 +118,9 @@ const BottomControlBarTips = (props: Props) => {
         }
         localStage {
           ...TeamHealthHelpMenu_stage @alias
+          ... on TeamHealthStage {
+            labels
+          }
         }
         phases {
           phaseType
@@ -132,7 +135,9 @@ const BottomControlBarTips = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const atmosphere = useAtmosphere()
   const menus = isDemoRoute() ? demoHelps : helps
-  const HelpMenu = menus[phaseType]
+  // the pulse's tips are about its vote, which a retro's Team Health check doesn't have
+  const isTeamHealthCheck = phaseType === 'TEAM_HEALTH' && !localStage.labels?.length
+  const HelpMenu = isTeamHealthCheck ? undefined : menus[phaseType]
   useEffect(() => {
     if (!isDemoRoute()) return
     const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere

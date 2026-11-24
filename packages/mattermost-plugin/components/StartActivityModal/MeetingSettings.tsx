@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {MeetingSettingsMutation} from 'parabol-client/__generated__/MeetingSettingsMutation.graphql'
 import type {MeetingSettingsQuery} from 'parabol-client/__generated__/MeetingSettingsQuery.graphql'
+import isTeamHealthAvailable from 'parabol-client/utils/features/isTeamHealthAvailable'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
 interface Props {
@@ -14,6 +15,7 @@ const MeetingSettings = ({teamId, meetingType}: Props) => {
       query MeetingSettingsQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
         viewer {
           team(teamId: $teamId) {
+            tier
             meetingSettings(meetingType: $meetingType) {
               id
               phaseTypes
@@ -51,8 +53,9 @@ const MeetingSettings = ({teamId, meetingType}: Props) => {
     }
   `)
 
-  const settings = data.viewer.team?.meetingSettings
-  if (!settings) {
+  const {team} = data.viewer
+  const settings = team?.meetingSettings
+  if (!team || !settings) {
     return null
   }
 
@@ -68,6 +71,8 @@ const MeetingSettings = ({teamId, meetingType}: Props) => {
   const {phaseTypes, disableAnonymity} = settings
   const checkinEnabled = phaseTypes.includes('checkin')
   const teamHealthEnabled = phaseTypes.includes('TEAM_HEALTH')
+  // a team on the free plan can turn Team Health off, but not on
+  const canEnableTeamHealth = isTeamHealthAvailable(team.tier)
 
   return (
     <div className='form-group'>
@@ -87,8 +92,11 @@ const MeetingSettings = ({teamId, meetingType}: Props) => {
             type='checkbox'
             onChange={(e) => onChange('teamHealthEnabled', e.target.checked)}
             checked={teamHealthEnabled}
+            disabled={!teamHealthEnabled && !canEnableTeamHealth}
           />
-          <span>Include Team Health</span>
+          <span>
+            {canEnableTeamHealth ? 'Include Team Health' : 'Include Team Health (paid plans)'}
+          </span>
         </label>
       </div>
       {disableAnonymity !== null && (

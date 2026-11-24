@@ -220,10 +220,6 @@ extend type TeamHealthResultStage {
   localScheduledEndTime: String
 }
 
-extend type RetroTeamHealthResultStage {
-  localScheduledEndTime: String
-}
-
 extend type Discussion {
   isAnonymousComment: Boolean!
   replyingTo: Threadable
