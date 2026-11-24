@@ -28,15 +28,14 @@ const getFeedingDescriptions = (schema: GraphQLSchema, document: ReturnType<type
     visitWithTypeInfo(typeInfo, {
       Variable(node, _key, parent) {
         const variableName = node.name.value
-        if (descriptions.has(variableName) || !parent || Array.isArray(parent)) return
-        const parentNode = parent as {kind: string; name?: {value: string}}
+        if (descriptions.has(variableName) || !parent || !('kind' in parent)) return
         let description: string | null | undefined
-        if (parentNode.kind === Kind.ARGUMENT) {
+        if (parent.kind === Kind.ARGUMENT) {
           description = typeInfo.getArgument()?.description
-        } else if (parentNode.kind === Kind.OBJECT_FIELD) {
+        } else if (parent.kind === Kind.OBJECT_FIELD) {
           const objectType = getNamedType(typeInfo.getParentInputType())
-          if (isInputObjectType(objectType) && parentNode.name) {
-            description = objectType.getFields()[parentNode.name.value]?.description
+          if (isInputObjectType(objectType)) {
+            description = objectType.getFields()[parent.name.value]?.description
           }
         }
         if (description) descriptions.set(variableName, description)

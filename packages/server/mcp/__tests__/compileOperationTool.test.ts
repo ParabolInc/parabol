@@ -56,6 +56,20 @@ mutation CreateTask($teamId: ID!) { createTask(newTask: {teamId: $teamId, status
   })
 })
 
+test('ignores a trailing comment on the previous line', () => {
+  const tool = compile(`# Tasks
+query ListTasks(
+  $first: Int = 50 # page size
+  $teamIds: [ID!]
+) { viewer { tasks(first: $first, teamIds: $teamIds) { edges { node { id } } } } }`)
+  const teamIdsArg = (schema.getType('User') as GraphQLObjectType)
+    .getFields()
+    .tasks!.args.find(({name}) => name === 'teamIds')!
+  expect(tool.inputSchema.properties!.teamIds).toMatchObject({
+    description: teamIdsArg.description
+  })
+})
+
 test('maps GraphQL types to JSON Schema', () => {
   const map = (type: string) =>
     getVariableSchema(
@@ -128,7 +142,7 @@ test.each([
   ['# x\n\nquery Q { viewer { id } }', 'description comment'],
   [
     '# x\nmutation U($file: File!) { uploadUserAsset(file: $file, scope: User, scopeKey: "u") { url } }',
-    'File'
+    'a File variable has no JSON Schema form'
   ]
 ])('throws, naming the file: %s', (source, message) => {
   expect(() => compile(source)).toThrow(message)
