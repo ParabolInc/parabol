@@ -1,10 +1,14 @@
+import {Editor, type JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
-import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
+import {getPageContent} from '../../../utils/tiptap/getPageContent'
+import {parsePageMarkdown} from '../../../utils/tiptap/parsePageMarkdown'
+import {collectImageSrcs, validatePageDoc} from '../../../utils/tiptap/validatePageDoc'
 import type {MutationResolvers} from '../resolverTypes'
 
 const editPageContent: MutationResolvers['editPageContent'] = async (
@@ -24,16 +28,31 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
       extensions: {code: 'BAD_USER_INPUT'}
     })
 
-  const jsonContent =
-    format === 'markdown'
-      ? {type: 'doc' as const, content: markdownToTipTap(content) as any[]}
-      : (() => {
-          try {
-            return JSON.parse(content)
-          } catch {
-            throw new GraphQLError('Invalid JSON content', {extensions: {code: 'BAD_USER_INPUT'}})
-          }
-        })()
+  const currentContent: JSONContent = JSON.parse(await getPageContent(dbPageId, 'json', dataLoader))
+  const allowedImageSrcs = new Set(collectImageSrcs(currentContent.content ?? []))
+  const editor = new Editor({
+    element: undefined,
+    content: {type: 'doc', content: [{type: 'paragraph'}]},
+    extensions: serverTipTapExtensions
+  })
+  let jsonContent: JSONContent
+  try {
+    if (format === 'markdown') {
+      jsonContent = {
+        type: 'doc',
+        content: parsePageMarkdown(editor, content, allowedImageSrcs)
+      }
+    } else {
+      try {
+        jsonContent = JSON.parse(content)
+      } catch {
+        throw new GraphQLError('Invalid JSON content', {extensions: {code: 'BAD_USER_INPUT'}})
+      }
+      validatePageDoc(editor, jsonContent, allowedImageSrcs)
+    }
+  } finally {
+    editor.destroy()
+  }
 
   const documentName = CipherId.toClient(dbPageId, 'page')
   await redisHocusPocus.handleEvent('replacePageContent', documentName, {

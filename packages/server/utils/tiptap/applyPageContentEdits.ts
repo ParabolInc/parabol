@@ -4,7 +4,9 @@ import {GraphQLError} from 'graphql'
 import type * as Y from 'yjs'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
+import {parsePageMarkdown} from './parsePageMarkdown'
 import {toYXmlNodes} from './toYXmlNodes'
+import {collectImageSrcs} from './validatePageDoc'
 
 const BLOCK_SEPARATOR = '\n\n'
 const MAX_EDITS = 20
@@ -92,13 +94,6 @@ const groupMatches = (blocks: Block[], matchStarts: number[], matchLength: numbe
   return {groups, blockStarts}
 }
 
-const parseMarkdown = (editor: Editor, markdown: string) => {
-  if (!markdown.trim()) return []
-  const doc = editor.schema.nodeFromJSON(editor.storage.markdown.manager.parse(markdown))
-  doc.check()
-  return (doc.toJSON() as JSONContent).content ?? []
-}
-
 const toBlock = (editor: Editor, node: JSONContent): Block => ({
   node,
   markdown: editor.storage.markdown.manager.serialize({type: 'doc', content: [node]})
@@ -110,15 +105,21 @@ const isSameNode = (editor: Editor, left: JSONContent, right: JSONContent) =>
 // Blocks that serialize to nothing (a table of contents, a database) are invisible in the Markdown,
 // so removing one is never what the caller meant. Others may be deleted, but are only rewritten if
 // their Markdown parses back to exactly the same blocks
-const findUnsafeRemoval = (editor: Editor, removed: Block[], isRewrite: boolean) => {
+const findUnsafeRemoval = (
+  editor: Editor,
+  removed: Block[],
+  isRewrite: boolean,
+  allowedImageSrcs: Set<string>
+) => {
   const original = removed.filter((block) => block.fragmentIndex !== undefined)
   const invisible = original.find(
     ({node, markdown}) => !markdown.trim() && !(node.type === 'paragraph' && !node.content?.length)
   )
   if (invisible || !isRewrite) return invisible
-  const reparsed = parseMarkdown(
+  const reparsed = parsePageMarkdown(
     editor,
-    original.map(({markdown}) => markdown).join(BLOCK_SEPARATOR)
+    original.map(({markdown}) => markdown).join(BLOCK_SEPARATOR),
+    allowedImageSrcs
   )
   const visible = original.filter(({markdown}) => markdown.trim())
   if (reparsed.length !== visible.length) return visible[0]
@@ -140,7 +141,8 @@ const rewriteGroup = (
   blockStarts: number[],
   {firstIdx, lastIdx, spanStart, spanEnd}: MatchGroup,
   {oldText, newText}: PageContentEditInput,
-  canChangePageLinks: boolean
+  canChangePageLinks: boolean,
+  allowedImageSrcs: Set<string>
 ): Block[] => {
   const rangeStart = Math.min(spanStart, blockStarts[firstIdx] ?? spanStart)
   const lastBlock = blocks[lastIdx]
@@ -163,8 +165,9 @@ const rewriteGroup = (
   }
   let parsedNodes: JSONContent[]
   try {
-    parsedNodes = parseMarkdown(editor, rangeMarkdown)
-  } catch {
+    parsedNodes = parsePageMarkdown(editor, rangeMarkdown, allowedImageSrcs)
+  } catch (e) {
+    if (e instanceof GraphQLError) throw e
     throw new GraphQLError('newText could not be parsed as Markdown', {
       extensions: {code: 'BAD_USER_INPUT'}
     })
@@ -189,7 +192,7 @@ const rewriteGroup = (
   }
   const removed = oldBlocks.slice(keptPrefix, oldBlocks.length - keptSuffix)
   const created = newBlocks.slice(keptPrefix, newBlocks.length - keptSuffix)
-  const unsafeBlock = findUnsafeRemoval(editor, removed, created.length > 0)
+  const unsafeBlock = findUnsafeRemoval(editor, removed, created.length > 0, allowedImageSrcs)
   if (unsafeBlock) {
     throw new GraphQLError(
       `The edit would change a ${unsafeBlock.node.type} block that Markdown cannot fully represent. Leave it out of oldText, or use editPageContent with the json format`,
@@ -222,7 +225,8 @@ const applyEdit = (
   blocks: Block[],
   edit: PageContentEditInput,
   canChangePageLinks: boolean,
-  rewriteBudget: number
+  rewriteBudget: number,
+  allowedImageSrcs: Set<string>
 ) => {
   const {oldText, newText, replaceAll} = edit
   if (!oldText)
@@ -265,7 +269,8 @@ const applyEdit = (
       blockStarts,
       group,
       edit,
-      canChangePageLinks
+      canChangePageLinks,
+      allowedImageSrcs
     )
   }
   return {blocks: nextBlocks, rewriteCount: groups.length}
@@ -318,10 +323,18 @@ export const applyPageContentEdits = (
       ...toBlock(editor, node),
       fragmentIndex
     }))
+    const allowedImageSrcs = new Set(collectImageSrcs(nodes))
     let rewriteBudget = MAX_REWRITES
     for (const [idx, edit] of edits.entries()) {
       try {
-        const result = applyEdit(editor, blocks, edit, canChangePageLinks, rewriteBudget)
+        const result = applyEdit(
+          editor,
+          blocks,
+          edit,
+          canChangePageLinks,
+          rewriteBudget,
+          allowedImageSrcs
+        )
         blocks = result.blocks
         rewriteBudget -= result.rewriteCount
       } catch (e) {
