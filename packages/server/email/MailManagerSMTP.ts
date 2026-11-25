@@ -15,7 +15,8 @@ const composeConfig = () => {
     MAIL_SMTP_USER,
     MAIL_SMTP_PASSWORD,
     MAIL_SMTP_USE_TLS,
-    MAIL_SMTP_CIPHERS
+    MAIL_SMTP_CIPHERS,
+    MAIL_SMTP_REJECT_UNAUTHORIZED
   } = process.env
   if (MAIL_SMTP_URL) {
     const oldVars = [
@@ -24,7 +25,8 @@ const composeConfig = () => {
       MAIL_SMTP_USER,
       MAIL_SMTP_PASSWORD,
       MAIL_SMTP_USE_TLS,
-      MAIL_SMTP_CIPHERS
+      MAIL_SMTP_CIPHERS,
+      MAIL_SMTP_REJECT_UNAUTHORIZED
     ]
     const usedOldVars = oldVars.filter(isNotNull)
     if (usedOldVars.length > 0) {
@@ -34,6 +36,7 @@ const composeConfig = () => {
     }
     return MAIL_SMTP_URL
   }
+  const useTLS = process.env.MAIL_SMTP_USE_TLS === '1'
   return {
     host: process.env.MAIL_SMTP_HOST,
     port: Number(process.env.MAIL_SMTP_PORT) || 0,
@@ -43,17 +46,16 @@ const composeConfig = () => {
           pass: process.env.MAIL_SMTP_PASSWORD
         }
       : undefined,
-    secure: false,
+    requireTLS: useTLS,
     pool: true,
     maxConnections: 10,
     rateLimit: 50,
-    tls:
-      process.env.MAIL_SMTP_USE_TLS === '1'
-        ? {
-            rejectUnauthorized: false,
-            ciphers: process.env.MAIL_SMTP_CIPHERS
-          }
-        : undefined
+    tls: useTLS
+      ? {
+          rejectUnauthorized: process.env.MAIL_SMTP_REJECT_UNAUTHORIZED !== 'false',
+          ciphers: process.env.MAIL_SMTP_CIPHERS
+        }
+      : undefined
   }
 }
 
