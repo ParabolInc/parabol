@@ -21,6 +21,7 @@ import createIntegrationIssue from '../../mutations/helpers/createIntegrationIss
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
 import type {ResourceGrants} from '../ResourceGrants'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextThreadSortOrder from './helpers/getNextThreadSortOrder'
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
@@ -210,7 +211,9 @@ const createTask: MutationResolvers['createTask'] = async (
     discussionId,
     integrationHash,
     integration: JSON.stringify(integration),
-    threadSortOrder: threadSortOrder ?? undefined,
+    threadSortOrder:
+      threadSortOrder ??
+      (discussionId ? await getNextThreadSortOrder(discussionId, threadParentId) : undefined),
     threadParentId: threadParentId ?? undefined,
     userId: userId || null,
     tags: getTagsFromTipTapTask(content)

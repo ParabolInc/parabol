@@ -2005,7 +2005,8 @@ type Mutation {
     comment: String
     """
     true if the comment should be paraphrased before the team reads it, so the author's writing
-    style can't identify them. Ignored when there is no comment
+    style can't identify them. Without AI for the organization and this Parabol instance, an
+    anonymous comment is not saved. Ignored when there is no comment
     """
     isAnonymous: Boolean!
   ): SetTeamHealthResponsePayload! @scope(name: MEETINGS_WRITE)

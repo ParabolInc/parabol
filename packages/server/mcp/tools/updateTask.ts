@@ -1,5 +1,6 @@
 import {z} from 'zod'
 import defineTool from '../defineTool'
+import isScopeGranted from '../isScopeGranted'
 import markdownToTaskContent from '../markdownToTaskContent'
 import runGraphQL from '../runGraphQL'
 import taskStatusSchema from '../taskStatusSchema'
@@ -45,9 +46,9 @@ export default defineTool({
           id: taskId,
           status,
           userId,
-          content: content === undefined ? undefined : markdownToTaskContent(content)
+          content: content === undefined ? undefined : markdownToTaskContent(content, 'task')
         },
-        canReadTasks: context.grant.scopes.includes('tasks:read')
+        canReadTasks: isScopeGranted(context, 'tasks:read')
       })
     )
   }

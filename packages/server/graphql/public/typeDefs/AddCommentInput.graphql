@@ -14,9 +14,10 @@ input AddCommentInput {
   """
   discussionId: ID!
   """
-  The sort order of this comment within its thread (used to order replies)
+  The sort order of this comment within its thread (used to order replies). Omit to add it after
+  the last item of its thread, or after the last reply to threadParentId
   """
-  threadSortOrder: Int!
+  threadSortOrder: Int
   """
   The ID of the parent comment if this is a reply; omit for top-level comments
   """

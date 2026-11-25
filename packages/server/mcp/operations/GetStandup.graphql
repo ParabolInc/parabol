@@ -1,0 +1,46 @@
+# Show one standup: its prompts, the tasks it made, and one stage per member holding their responses and the discussionId of the comments on them, for get_discussion. A response not yet shared shows only to its author. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no prompts, stages or tasks; use get_meeting. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
+query GetStandup(
+  # The standup's meeting id, from list_meetings or start_standup
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      meetingType
+      teamId
+      meetingSeriesId
+      createdAt
+      endedAt
+      summary
+      summaryPageId
+      phases {
+        ... on TeamPromptResponsesPhase {
+          stages {
+            discussionId
+            responses {
+              promptId
+              userId
+              user {
+                preferredName
+              }
+              plaintextContent
+            }
+          }
+        }
+      }
+      ... on TeamPromptMeeting {
+        prompts {
+          id
+          question
+        }
+        tasks {
+          id
+          plaintextContent
+          status
+          userId
+        }
+      }
+    }
+  }
+}

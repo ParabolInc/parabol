@@ -5,8 +5,10 @@ import {redisHocusPocus} from '../../../hocusPocus'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
+import {collectLinkedPageCodes} from '../../../utils/tiptap/assertReachablePageLinks'
 import {parseMarkdownContent} from '../../../utils/tiptap/parsePageMarkdown'
 import type {MutationResolvers} from '../resolverTypes'
+import {getReachablePageCodes} from './helpers/getReachablePageCodes'
 
 const editPageContent: MutationResolvers['editPageContent'] = async (
   _source,
@@ -39,12 +41,18 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
     }
   }
 
+  const canChangePageLinks = !resourceGrants || resourceGrants.isUnrestricted()
+  const reachablePageCodes = canChangePageLinks
+    ? []
+    : await getReachablePageCodes(collectLinkedPageCodes(jsonContent.content ?? []), resourceGrants)
   const documentName = CipherId.toClient(dbPageId, 'page')
   await redisHocusPocus.handleEvent('replacePageContent', documentName, {
     content: jsonContent,
     userId: viewerId,
     resourceGrants: resourceGrants?.serialize(),
-    scopes: authToken.scope
+    scopes: authToken.scope,
+    canChangePageLinks,
+    reachablePageCodes
   })
 
   dataLoader.get('pages').clearAll()
