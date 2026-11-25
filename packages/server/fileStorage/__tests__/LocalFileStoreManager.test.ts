@@ -44,3 +44,12 @@ test('reports the size of a stored file', async () => {
   await manager.putUserFile(Buffer.from('image'), 'Page/1/assets/og.png' as PartialPath)
   expect(await manager.getFileSize('Page/1/assets/og.png' as PartialPath)).toBe(5)
 })
+
+test('deletes a stored file, and deleting a missing file succeeds', async () => {
+  const manager = new LocalFileStoreManager()
+  const partialPath = 'Page/1/assets/og.png' as PartialPath
+  await manager.putUserFile(Buffer.from('image'), partialPath)
+  await manager.deleteUserFile(partialPath)
+  expect(await manager.checkExists(partialPath)).toBe(false)
+  await expect(manager.deleteUserFile(partialPath)).resolves.toBeUndefined()
+})

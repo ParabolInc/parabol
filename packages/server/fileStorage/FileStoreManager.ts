@@ -27,6 +27,7 @@ export default abstract class FileStoreManager {
     fullPath: string,
     options?: PutFileOptions
   ): Promise<void>
+  protected abstract deleteFile(fullPath: string): Promise<void>
   protected getBuildFileCacheControl(partialPath: string) {
     return isContentHashed(partialPath) ? 'public, max-age=31536000, immutable' : undefined
   }
@@ -66,6 +67,10 @@ export default abstract class FileStoreManager {
     const fullPath = this.prependPath(partialPath)
     await this.putFile(file, fullPath, {contentDisposition: 'attachment'})
     return makeAppURL(appOrigin, `/assets/${partialPath}`)
+  }
+  async deleteUserFile(partialPath: PartialPath) {
+    this.userFileWritesByPath.delete(partialPath)
+    await this.deleteFile(this.prependPath(partialPath))
   }
   async putUserAvatar(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,

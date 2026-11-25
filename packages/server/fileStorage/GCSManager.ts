@@ -171,6 +171,22 @@ export default class GCSManager extends FileStoreManager {
     }
   }
 
+  protected async deleteFile(fullPath: string) {
+    const url = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${encodeURIComponent(fullPath)}`
+    const accessToken = await this.getAccessToken()
+    const res = await fetchRetryingTransientErrors(url, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'User-Agent': 'parabol'
+      },
+      logLabel: `GCS delete of ${fullPath}`
+    })
+    if (!res.ok && res.status !== 404) {
+      throw new Error(`GCS Delete Error: ${res.status} ${await res.text()}. ${fullPath}`)
+    }
+  }
+
   async putBuildFile(file: Buffer<ArrayBufferLike>, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
     await this.putFile(file, fullPath, {cacheControl: this.getBuildFileCacheControl(partialPath)})

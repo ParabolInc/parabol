@@ -186,6 +186,7 @@ const buildSchemaWith = (mutationField: string) =>
         ${scopeDirectiveSDL}
         enum OAuthScopeEnum { PAGES_WRITE }
         enum AssetScopeEnum { Page Team Organization User }
+        scalar URL
         type Query { ok: Boolean }
         type Mutation { ${mutationField} }
       `
@@ -210,13 +211,19 @@ test('a mutation with an AssetScopeEnum ownerFromArg argument builds', () => {
   ).not.toThrow()
 })
 
+test('a mutation with a URL ownerFromArg argument builds', () => {
+  expect(() =>
+    buildSchemaWith('doIt(url: URL!): Boolean @scope(ownerFromArg: "url")')
+  ).not.toThrow()
+})
+
 test('ownerFromArg naming an argument the field lacks fails the schema build', () => {
   expect(() =>
     buildSchemaWith('doIt(scope: AssetScopeEnum!): Boolean @scope(ownerFromArg: "owner")')
   ).toThrow('Mutation.doIt')
 })
 
-test('ownerFromArg naming an argument that is not an AssetScopeEnum fails the schema build', () => {
+test('ownerFromArg naming an argument that is not an AssetScopeEnum or a URL fails the schema build', () => {
   expect(() =>
     buildSchemaWith('doIt(scope: String!): Boolean @scope(ownerFromArg: "scope")')
   ).toThrow('Mutation.doIt')

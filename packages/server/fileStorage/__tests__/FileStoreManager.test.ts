@@ -5,6 +5,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 class RateLimitedFileStore extends FileStoreManager {
   baseUrl = 'https://files.test/'
   writes: string[] = []
+  deletes: string[] = []
   failNextWrite = false
   private lastWriteAtByPath = new Map<string, number>()
 
@@ -40,6 +41,9 @@ class RateLimitedFileStore extends FileStoreManager {
     return 0
   }
   async moveFile() {}
+  protected async deleteFile(fullPath: string) {
+    this.deletes.push(fullPath)
+  }
   async presignUrl() {
     return ''
   }
@@ -90,5 +94,14 @@ test('writes to different paths are independent', async () => {
     store.putUserFile(file, partialPath),
     store.putUserFile(file, 'Team/team456/assets/abc.png' as PartialPath)
   ])
+  expect(store.writes).toHaveLength(2)
+})
+
+test('an upload right after a delete goes to the store instead of reusing the deleted write', async () => {
+  const store = new RateLimitedFileStore()
+  await store.putUserFile(file, partialPath)
+  await store.deleteUserFile(partialPath)
+  expect(store.deletes).toEqual([`store/${partialPath}`])
+  await expect(store.putUserFile(file, partialPath)).rejects.toThrow('429')
   expect(store.writes).toHaveLength(2)
 })

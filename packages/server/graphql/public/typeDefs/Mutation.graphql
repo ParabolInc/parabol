@@ -336,6 +336,18 @@ type Mutation {
   ): DeleteUserPayload! @scope(name: USERS_WRITE)
 
   """
+  Delete a file uploaded to Parabol, given its URL. Whoever may upload to the file's scope may delete
+  it, except that a connection limited to some organizations, teams or pages can't delete User files.
+  Deleting a file that is already gone succeeds
+  """
+  deleteUserAsset(
+    """
+    The URL uploadUserAsset or embedUserAsset returned
+    """
+    url: URL!
+  ): DeleteUserAssetPayload! @scope(ownerFromArg: "url")
+
+  """
   Deny a user from joining via push invitation
   """
   denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload! @scope(name: TEAMS_WRITE)

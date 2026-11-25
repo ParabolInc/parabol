@@ -1,12 +1,15 @@
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
-import {sendPublic} from './common'
+import {HOST, PROTOCOL, sendPublic} from './common'
 import {
+  addTeammate,
+  bearer,
   callTool,
   callToolForData,
   createPersonalAccessToken,
   expectToolErrorCode,
   getChargedCost,
+  PNG_BASE64,
   signUpWithoutAI
 } from './mcpClient'
 
@@ -393,4 +396,144 @@ test('a caller off the team is refused by every tool and nothing changes', async
     .where('id', '=', taskId)
     .executeTakeFirst()
   expect(row).toEqual({id: taskId})
+})
+
+const UPLOAD_SCOPES = [
+  'USERS_READ',
+  'USERS_WRITE',
+  'TEAMS_READ',
+  'TEAMS_WRITE',
+  'PAGES_READ',
+  'PAGES_WRITE'
+]
+
+const SHARE_PAGE = `
+  mutation SharePage($pageId: ID!, $subjectId: ID!, $role: PageRoleEnum) {
+    updatePageAccess(pageId: $pageId, subjectType: user, subjectId: $subjectId, role: $role) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const signUpUploader = async () => {
+  const member = await signUpWithoutAI()
+  return {
+    ...member,
+    token: await createPersonalAccessToken(UPLOAD_SCOPES, {cookie: member.cookie})
+  }
+}
+
+const uploadImage = async (token: string, scope: 'User' | 'Team' | 'Page', scopeKey: string) => {
+  const uploaded = await callToolForData(token, 'upload_image', {
+    filename: 'a.png',
+    mimeType: 'image/png',
+    base64: PNG_BASE64,
+    scope,
+    scopeKey
+  })
+  return uploaded.uploadUserAsset.url as string
+}
+
+const getUploadStatus = async (url: string, token: string) =>
+  (await fetch(url, {headers: bearer(token)})).status
+
+test('delete_upload deletes your own file, and deleting it again still succeeds', async () => {
+  const {userId, token} = await signUpUploader()
+  const url = await uploadImage(token, 'User', userId)
+  expect(await getUploadStatus(url, token)).toBe(200)
+
+  const deleted = await callToolForData(token, 'delete_upload', {url})
+  expect(deleted.deleteUserAsset).toEqual({url})
+  expect(await getUploadStatus(url, token)).toBe(404)
+  const deletedAgain = await callToolForData(token, 'delete_upload', {url})
+  expect(deletedAgain.deleteUserAsset).toEqual({url})
+})
+
+test('a teammate deletes a team file; someone off the team, or without teams:write, is refused and the file kept', async () => {
+  const owner = await signUpUploader()
+  const url = await uploadImage(owner.token, 'Team', owner.teamId)
+  const teammate = await addTeammate(owner.teamId, UPLOAD_SCOPES)
+  const outsider = await signUpUploader()
+  const teammateWithoutTeams = await createPersonalAccessToken(['PAGES_WRITE', 'USERS_WRITE'], {
+    cookie: teammate.cookie
+  })
+
+  expectToolErrorCode(await callTool(outsider.token, 'delete_upload', {url}), 'FORBIDDEN')
+  const missingScope = expectToolErrorCode(
+    await callTool(teammateWithoutTeams, 'delete_upload', {url}),
+    'FORBIDDEN'
+  )
+  expect(missingScope).toContain('teams:write')
+  expect(await getUploadStatus(url, owner.token)).toBe(200)
+
+  const deleted = await callToolForData(teammate.token, 'delete_upload', {url})
+  expect(deleted.deleteUserAsset).toEqual({url})
+  expect(await getUploadStatus(url, owner.token)).toBe(404)
+})
+
+test('a page editor deletes a page file and a viewer is refused', async () => {
+  const owner = await signUpUploader()
+  const created = await callToolForData(owner.token, 'create_page', {})
+  const pageId = created.createPage.page.id as string
+  const url = await uploadImage(owner.token, 'Page', pageId)
+  const [viewer, editor] = await Promise.all([signUpUploader(), signUpUploader()])
+  for (const [subjectId, role] of [
+    [viewer.userId, 'viewer'],
+    [editor.userId, 'editor']
+  ]) {
+    const shared = await sendPublic({
+      query: SHARE_PAGE,
+      variables: {pageId, subjectId, role},
+      cookie: owner.cookie
+    })
+    expect(shared.errors).toBeUndefined()
+  }
+
+  expectToolErrorCode(await callTool(viewer.token, 'delete_upload', {url}), 'FORBIDDEN')
+  expect(await getUploadStatus(url, owner.token)).toBe(200)
+
+  const deleted = await callToolForData(editor.token, 'delete_upload', {url})
+  expect(deleted.deleteUserAsset).toEqual({url})
+  expect(await getUploadStatus(url, owner.token)).toBe(404)
+})
+
+test('a connection limited to a team cannot delete your own files', async () => {
+  const {userId, teamId, cookie, token} = await signUpUploader()
+  const url = await uploadImage(token, 'User', userId)
+  const teamLimited = await createPersonalAccessToken(UPLOAD_SCOPES, {
+    cookie,
+    grantedTeamIds: [teamId]
+  })
+
+  expectToolErrorCode(await callTool(teamLimited, 'delete_upload', {url}), 'FORBIDDEN')
+  expect(await getUploadStatus(url, token)).toBe(200)
+})
+
+test('delete_upload refuses a URL that is not a Parabol upload and keeps the file', async () => {
+  const {userId, teamId, token} = await signUpUploader()
+  const url = await uploadImage(token, 'User', userId)
+  const {pathname} = new URL(url)
+  const filename = pathname.split('/').at(-1)!
+  const origin = `${PROTOCOL}://${HOST}`
+  const refusedUrls = [
+    `https://example.com${pathname}`,
+    `${origin}/assets/Team/${teamId}/../../User/${userId}/assets/${filename}`,
+    `${origin}/assets/User/${userId}/assets/%2e%2e/${filename}`,
+    `${origin}/assets/User/${encodeURIComponent(`${userId}/assets/${filename}`)}`,
+    `${origin}/assets/User/${userId}/picture/${filename}`,
+    `${origin}/assets/Meeting/${userId}/assets/${filename}`,
+    `${url}/extra`,
+    `${url}?download=1`,
+    `${origin}/self-hosted/User/${userId}/assets/${filename}`
+  ]
+  for (const refusedUrl of refusedUrls) {
+    const result = await callTool(token, 'delete_upload', {url: refusedUrl})
+    expect([refusedUrl, result.isError && JSON.parse(result.content[0]!.text)[0].code]).toEqual([
+      refusedUrl,
+      'BAD_USER_INPUT'
+    ])
+  }
+  expect(await getUploadStatus(url, token)).toBe(200)
 })

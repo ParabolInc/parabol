@@ -1,6 +1,7 @@
 import {allow, and, not, or} from 'graphql-shield'
 import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import {canDeleteUserAsset} from './rules/canDeleteUserAsset'
 import {hasNoPageGrantForParent} from './rules/hasNoPageGrantForParent'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
@@ -206,6 +207,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'createdBy'
     ),
     deleteUser: and(isAuthenticated, hasTokenAudience(['action'])),
+    deleteUserAsset: and(isAuthenticated, canDeleteUserAsset),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
