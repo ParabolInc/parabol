@@ -18,6 +18,24 @@ test('a paragraph and an ordered list read back with one blank line between them
   expect(tipTapContentToMarkdown(content, 'fallback')).toBe('Intro\n\n1. one\n2. two')
 })
 
+test('a mention reads back as the name the editor shows, without its user id', () => {
+  const content = doc(
+    paragraph(
+      text('Ask '),
+      {type: 'mention', attrs: {id: 'local|abc', label: 'Ann'}},
+      text(' to review')
+    )
+  )
+  const markdown = tipTapContentToMarkdown(content, 'fallback')
+  expect(markdown).toBe('Ask Ann to review')
+  expect(markdown).not.toContain('local|abc')
+})
+
+test('a task tag reads back as the hashtag the editor shows', () => {
+  const content = doc(paragraph(text('Old idea '), {type: 'taskTag', attrs: {id: 'archived'}}))
+  expect(tipTapContentToMarkdown(content, 'fallback')).toBe('Old idea #archived')
+})
+
 test('content that is not editor JSON reads back as the fallback', () => {
   expect(tipTapContentToMarkdown('{not json', 'fallback')).toBe('fallback')
 })
