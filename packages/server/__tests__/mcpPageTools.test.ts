@@ -1,3 +1,4 @@
+import getKysely from '../postgres/getKysely'
 import {CipherId} from '../utils/CipherId'
 import {getUserTeams, HOST, PROTOCOL, signUp} from './common'
 import {
@@ -167,7 +168,21 @@ const PAGE_JSON = `
   }
 `
 
-const setPageWithSubPage = (token: string, pageId: string, subPageId: string) =>
+type PageNode = {type: string; attrs?: Record<string, unknown>}
+
+const pageCodeOf = (pageId: string) => CipherId.fromClient(pageId)[1]
+
+const subPageLink = (pageId: string) => ({
+  type: 'pageLinkBlock',
+  attrs: {pageCode: pageCodeOf(pageId), title: 'Notes', canonical: true}
+})
+
+const syncedPlacement = (blockCode: number) => ({
+  type: 'pageLinkBlock',
+  attrs: {pageCode: blockCode, title: 'Escalation', synced: true}
+})
+
+const setPageJson = (token: string, pageId: string, links: PageNode[]) =>
   callTool(token, 'graphql_mutate', {
     query: SET_PAGE_JSON,
     variables: {
@@ -176,14 +191,14 @@ const setPageWithSubPage = (token: string, pageId: string, subPageId: string) =>
         type: 'doc',
         content: [
           {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Plans'}]},
-          {
-            type: 'pageLinkBlock',
-            attrs: {pageCode: CipherId.fromClient(subPageId)[1], title: 'Notes', canonical: true}
-          }
+          ...links
         ]
       })
     }
   })
+
+const setPageWithSubPage = (token: string, pageId: string, subPageId: string) =>
+  setPageJson(token, pageId, [subPageLink(subPageId)])
 
 const readPlacement = async (token: string, pageId: string) => {
   const read = await callToolForData(token, 'read_page', {pageId})
@@ -265,4 +280,160 @@ test('an unrestricted connection makes an existing page a sub-page by replacing 
   const replaced = await setPageWithSubPage(token, parentPageId, outsidePageId)
   expect(replaced.isError).toBeUndefined()
   await waitForParent(token, outsidePageId, parentPageId)
+})
+
+test('a limited connection cannot make an existing page a sub-page through markdown', async () => {
+  const {cookie, teamId} = await signUp()
+  const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const parent = await callToolForData(owner, 'create_page', {teamId})
+  const parentPageId = parent.createPage.page.id as string
+  const outside = await callToolForData(owner, 'create_page', {})
+  const outsidePageId = outside.createPage.page.id as string
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId],
+    grantedPageIds: []
+  })
+  const content = `# Plans\n\n:::pageLinkBlock {pageCode="${pageCodeOf(outsidePageId)}" title="Notes" canonical}\n:::`
+  const result = await callTool(token, 'set_page_content', {pageId: parentPageId, content})
+  expect(expectToolErrorCode(result, 'FORBIDDEN')).toContain(
+    "can't make an existing page a sub-page"
+  )
+  expect(await readPlacement(owner, outsidePageId)).toEqual({parentPageId: null, isPrivate: true})
+})
+
+afterAll(async () => {
+  await getKysely().destroy()
+})
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const readPageNodes = async (token: string, pageId: string) => {
+  const read = await callToolForData(token, 'graphql_query', {
+    query: PAGE_JSON,
+    variables: {pageId}
+  })
+  return JSON.parse(read.public.page.content).content as PageNode[]
+}
+
+const createSyncedBlock = async (token: string) => {
+  const host = await callToolForData(token, 'create_page', {})
+  const hostPageId = host.createPage.page.id as string
+  const block = await callToolForData(token, 'create_page', {parentPageId: hostPageId})
+  const [blockPageId, blockCode] = CipherId.fromClient(block.createPage.page.id)
+  await getKysely()
+    .updateTable('Page')
+    .set({isSyncedBlock: true})
+    .where('id', '=', blockPageId)
+    .execute()
+  const hostLink = {
+    type: 'pageLinkBlock',
+    attrs: {pageCode: blockCode, title: '', synced: true, canonical: true}
+  }
+  expect((await setPageJson(token, hostPageId, [hostLink])).isError).toBeUndefined()
+  return blockCode
+}
+
+const countBacklinks = async (fromPageId: string, toPageCode: number) => {
+  const backlinks = await getKysely()
+    .selectFrom('PageBacklink')
+    .select('toPageId')
+    .where('fromPageId', '=', CipherId.fromClient(fromPageId)[0])
+    .where('toPageId', '=', CipherId.decrypt(toPageCode))
+    .execute()
+  return backlinks.length
+}
+
+const setUpTeamPageWithLimitedToken = async () => {
+  const {cookie, teamId} = await signUp()
+  const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const page = await callToolForData(owner, 'create_page', {teamId})
+  const pageId = page.createPage.page.id as string
+  await callToolForData(owner, 'set_page_content', {pageId, content: '# Plans\n\nNotes'})
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId],
+    grantedPageIds: []
+  })
+  return {owner, token, pageId}
+}
+
+const SYNCED_PLACEMENT_ROUTES = {
+  'editPageContent json': (token: string, pageId: string, blockCode: number) =>
+    setPageJson(token, pageId, [syncedPlacement(blockCode)]),
+  'set_page_content markdown': (token: string, pageId: string, blockCode: number) =>
+    callTool(token, 'set_page_content', {
+      pageId,
+      content: `# Plans\n\n:::pageLinkBlock {pageCode="${blockCode}" title="Escalation" synced}\n:::`
+    }),
+  'edit_page markdown': (token: string, pageId: string, blockCode: number) =>
+    callTool(token, 'edit_page', {
+      pageId,
+      edits: [
+        {
+          oldText: 'Notes',
+          newText: `Notes\n\n:::pageLinkBlock {pageCode="${blockCode}" title="Escalation" synced}\n:::`
+        }
+      ]
+    })
+}
+
+test.each(Object.entries(SYNCED_PLACEMENT_ROUTES))(
+  'a limited connection cannot add a synced block the page does not already contain through %s',
+  async (_route, addPlacement) => {
+    const {owner, token, pageId} = await setUpTeamPageWithLimitedToken()
+    const blockCode = await createSyncedBlock(owner)
+    expect(
+      expectToolErrorCode(await addPlacement(token, pageId, blockCode), 'FORBIDDEN')
+    ).toContain("can't add a synced block")
+    expect(await countBacklinks(pageId, blockCode)).toBe(0)
+    expect(await callToolForData(owner, 'read_page', {pageId})).toMatchObject({
+      public: {page: {content: '# Plans\n\nNotes'}}
+    })
+  }
+)
+
+test('a limited connection keeps the synced blocks and sub-pages it read when it writes the page back', async () => {
+  const {owner, token, pageId} = await setUpTeamPageWithLimitedToken()
+  const blockCode = await createSyncedBlock(owner)
+  const child = await callToolForData(owner, 'create_page', {parentPageId: pageId})
+  const childPageId = child.createPage.page.id as string
+  const placed = await setPageJson(owner, pageId, [
+    subPageLink(childPageId),
+    syncedPlacement(blockCode)
+  ])
+  expect(placed.isError).toBeUndefined()
+  const read = await callToolForData(token, 'read_page', {pageId})
+  const content = `${read.public.page.content}\n\nMore notes`
+  await callToolForData(token, 'set_page_content', {pageId, content})
+  await sleep(500)
+  const nodes = await readPageNodes(owner, pageId)
+  expect(nodes).toContainEqual(subPageLink(childPageId))
+  expect(nodes).toContainEqual(
+    expect.objectContaining({
+      type: 'pageLinkBlock',
+      attrs: expect.objectContaining({pageCode: blockCode, synced: true})
+    })
+  )
+  expect((await readPlacement(owner, childPageId)).parentPageId).toBe(pageId)
+  expect(await countBacklinks(pageId, blockCode)).toBe(1)
+})
+
+test('an unrestricted connection adds a synced block to a page', async () => {
+  const {cookie} = await signUp()
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const blockCode = await createSyncedBlock(token)
+  const page = await callToolForData(token, 'create_page', {})
+  const pageId = page.createPage.page.id as string
+  expect((await setPageJson(token, pageId, [syncedPlacement(blockCode)])).isError).toBeUndefined()
+  for (
+    let attempt = 0;
+    attempt < 50 && (await countBacklinks(pageId, blockCode)) === 0;
+    attempt++
+  ) {
+    await sleep(100)
+  }
+  expect(await countBacklinks(pageId, blockCode)).toBe(1)
 })
