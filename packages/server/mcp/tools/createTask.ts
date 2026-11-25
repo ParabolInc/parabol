@@ -40,7 +40,7 @@ export default defineTool({
   run: async (context, {teamId, content, status, userId}) =>
     toolResult(
       await runGraphQL(context, CREATE_TASK, {
-        newTask: {teamId, status, userId, content: markdownToTaskContent(content)},
+        newTask: {teamId, status, userId, content: markdownToTaskContent(content, 'task')},
         canReadTasks: context.grant.scopes.includes('tasks:read')
       })
     )

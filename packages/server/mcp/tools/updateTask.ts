@@ -45,7 +45,7 @@ export default defineTool({
           id: taskId,
           status,
           userId,
-          content: content === undefined ? undefined : markdownToTaskContent(content)
+          content: content === undefined ? undefined : markdownToTaskContent(content, 'task')
         },
         canReadTasks: context.grant.scopes.includes('tasks:read')
       })

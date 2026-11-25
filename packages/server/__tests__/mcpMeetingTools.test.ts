@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
+import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
 import {sendPublic, signUp} from './common'
 import {
@@ -17,11 +18,10 @@ const READ_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'TASKS_READ']
 const MEETING_SCOPES = [...READ_SCOPES, 'MEETINGS_WRITE']
 
 const WEEKDAY_CODES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
-const immediateRrule = () => {
-  const start = dayjs().utc().add(5, 'second')
-  return `DTSTART;TZID=UTC:${toDateTime(start, 'UTC')}
+const weeklyRrule = (start: dayjs.Dayjs) =>
+  `DTSTART;TZID=UTC:${toDateTime(start, 'UTC')}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=${WEEKDAY_CODES[start.day()]}`
-}
+const immediateRrule = () => weeklyRrule(dayjs().utc().add(5, 'second'))
 
 const paragraph = (text: string) =>
   JSON.stringify({type: 'doc', content: [{type: 'paragraph', content: [{type: 'text', text}]}]})
@@ -532,4 +532,198 @@ test('joining a meeting twice, as ensureMeetingMember does before each answer, c
   expect(second).toEqual(first)
   const {viewer} = await callToolForData(token, 'get_standup', {meetingId})
   expect(getStages(viewer.meeting)).toHaveLength(1)
+})
+
+const STANDUP_SCOPES = [...MEETING_SCOPES, 'TEAMS_READ', 'TEAMS_WRITE', 'TEMPLATES_WRITE']
+
+const STANDUP_PROMPTS = [
+  {question: 'What did you ship?'},
+  {question: 'What is in your way?', description: 'Anything slowing you down'}
+]
+
+const turnOffAI = (orgId: string) =>
+  getKysely().updateTable('Organization').set({useAI: false}).where('id', '=', orgId).execute()
+
+const getStoredBlocks = async (meetingId: string, promptId: string) => {
+  const {content} = await getKysely()
+    .selectFrom('TeamPromptResponse')
+    .select('content')
+    .where('meetingId', '=', meetingId)
+    .where('promptId', '=', promptId)
+    .executeTakeFirstOrThrow()
+  return (content as {content: {type: string}[]}).content
+}
+
+const startStandupWithTemplate = async (prompts: {question: string; description?: string}[]) => {
+  const {cookie, teamId, userId, orgId} = await signUp()
+  await turnOffAI(orgId)
+  const token = await createPersonalAccessToken(STANDUP_SCOPES, {cookie})
+  const {template} = await callToolForData(token, 'create_standup_template', {
+    teamId,
+    name: 'Agent Standup',
+    prompts
+  })
+  await callToolForData(token, 'select_template', {templateId: template.id, teamId})
+  const started = await callToolForData(token, 'start_standup', {teamId})
+  return {cookie, userId, token, template, meeting: started.startTeamPrompt.meeting}
+}
+
+test('an agent builds a standup template, answers a standup made with it in markdown, and ends it', async () => {
+  const {cookie, userId, token, template, meeting} = await startStandupWithTemplate(STANDUP_PROMPTS)
+  expect(template).toEqual({
+    id: expect.any(String),
+    name: 'Agent Standup',
+    prompts: [
+      {id: expect.any(String), question: 'What did you ship?', description: ''},
+      {
+        id: expect.any(String),
+        question: 'What is in your way?',
+        description: 'Anything slowing you down'
+      }
+    ]
+  })
+  const prompts = template.prompts.map(({id, question}: {id: string; question: string}) => ({
+    id,
+    question
+  }))
+  expect(meeting).toMatchObject({meetingType: 'teamPrompt', prompts})
+  const [shipped, blocked] = prompts
+
+  const answered = await callToolForData(token, 'answer_standup', {
+    meetingId: meeting.id,
+    answers: [
+      {promptId: shipped.id, content: 'Two things:\n\n- the **billing** fix\n- the login page'},
+      {promptId: blocked.id, content: 'Nothing'}
+    ]
+  })
+  expect(answered.shareTeamPromptResponses.responses).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({promptId: shipped.id, sharedAt: expect.any(String)}),
+      {
+        id: expect.any(String),
+        promptId: blocked.id,
+        plaintextContent: 'Nothing',
+        sharedAt: expect.any(String)
+      }
+    ])
+  )
+  const stored = await getStoredBlocks(meeting.id, shipped.id)
+  expect(stored.map(({type}) => type)).toEqual(['paragraph', 'bulletList'])
+
+  const {viewer} = await callToolForData(token, 'get_standup', {meetingId: meeting.id})
+  const preferredName = await getPreferredName(cookie)
+  expect(getStages(viewer.meeting)).toEqual([
+    {
+      discussionId: expect.any(String),
+      responses: expect.arrayContaining([
+        {
+          promptId: shipped.id,
+          userId,
+          user: {preferredName},
+          plaintextContent: expect.stringContaining('the billing fix')
+        },
+        {promptId: blocked.id, userId, user: {preferredName}, plaintextContent: 'Nothing'}
+      ])
+    }
+  ])
+
+  const ended = await callToolForData(token, 'end_meeting', {meetingId: meeting.id})
+  expect(ended.endMeeting.meeting).toMatchObject({id: meeting.id, endedAt: expect.any(String)})
+})
+
+test('answer_standup keeps a table, which the standup editor shows, and turns a callout it cannot show into paragraphs', async () => {
+  const {token, meeting} = await startStandupWithTemplate(STANDUP_PROMPTS)
+  const promptId = meeting.prompts[0].id as string
+  await callToolForData(token, 'answer_standup', {
+    meetingId: meeting.id,
+    answers: [
+      {
+        promptId,
+        content:
+          '> [!NOTE] Heads up\n> Deploys are slow\n\n| Who | Did |\n| - | - |\n| Ana | Shipped |'
+      }
+    ]
+  })
+  expect(await getStoredBlocks(meeting.id, promptId)).toEqual([
+    {type: 'paragraph', content: [{type: 'text', text: 'Heads up'}]},
+    {type: 'paragraph', content: [{type: 'text', text: 'Deploys are slow'}]},
+    expect.objectContaining({type: 'table'})
+  ])
+})
+
+test('answer_standup refuses a prompt answered twice, and a meeting on a team the caller is not on', async () => {
+  const {token, meeting} = await startStandupWithTemplate(STANDUP_PROMPTS)
+  const promptId = meeting.prompts[0].id as string
+  const twice = await callTool(token, 'answer_standup', {
+    meetingId: meeting.id,
+    answers: [
+      {promptId, content: 'Shipped it'},
+      {promptId, content: 'Shipped it again'}
+    ]
+  })
+  expect(expectToolErrorCode(twice, 'BAD_USER_INPUT')).toContain('Answer each prompt once')
+
+  const outsider = await createPersonalAccessToken(STANDUP_SCOPES)
+  const refused = await callTool(outsider, 'answer_standup', {
+    meetingId: meeting.id,
+    answers: [{promptId, content: 'Not my team'}]
+  })
+  expectToolErrorCode(refused, 'FORBIDDEN')
+  const {viewer} = await callToolForData(token, 'get_standup', {meetingId: meeting.id})
+  expect(getStages<{responses: unknown[]}>(viewer.meeting)[0]!.responses).toEqual([])
+})
+
+test('create_standup_template refuses a name another standup template on the team has, and a sixth prompt', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(STANDUP_SCOPES, {cookie})
+  await callToolForData(token, 'create_standup_template', {
+    teamId,
+    name: 'Agent Standup',
+    prompts: STANDUP_PROMPTS
+  })
+  const duplicate = await callTool(token, 'create_standup_template', {
+    teamId,
+    name: 'Agent Standup',
+    prompts: STANDUP_PROMPTS
+  })
+  expect(expectToolErrorCode(duplicate, 'CONFLICT')).toContain(
+    'standup template named "Agent Standup"'
+  )
+  const tooMany = await callTool(token, 'create_standup_template', {
+    teamId,
+    name: 'Six Prompts',
+    prompts: Array.from({length: 6}, (_, idx) => ({question: `Prompt ${idx + 1}`}))
+  })
+  expectToolErrorCode(tooMany, 'BAD_USER_INPUT')
+})
+
+test('start_standup with a first meeting days away only schedules the series', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const started = await callToolForData(token, 'start_standup', {
+    teamId,
+    name: 'Agent Sync',
+    rrule: weeklyRrule(dayjs().utc().add(2, 'day').startOf('hour'))
+  })
+  expect(started.startTeamPrompt).toEqual({
+    meeting: null,
+    meetingSeries: {id: expect.any(String), title: 'Agent Sync'}
+  })
+})
+
+test("a standup template with five described prompts, and a standup run with it, fit a starter user's query budget", async () => {
+  const prompts = Array.from({length: 5}, (_, idx) => ({
+    question: `Prompt ${idx + 1}`,
+    description: `What prompt ${idx + 1} is for`
+  }))
+  const {token, meeting} = await startStandupWithTemplate(prompts)
+  await callToolForData(token, 'answer_standup', {
+    meetingId: meeting.id,
+    answers: meeting.prompts.map(({id}: {id: string}) => ({
+      promptId: id,
+      content: 'Shipped:\n\n- the **billing** fix\n- the login page'
+    }))
+  })
+  await callToolForData(token, 'get_standup', {meetingId: meeting.id})
+  await callToolForData(token, 'end_meeting', {meetingId: meeting.id})
 })

@@ -6,7 +6,9 @@ import mcpInstructions from './mcpInstructions'
 import operationToolEntries from './operationToolEntries'
 import registerTools from './registerTools'
 import addReflection from './tools/addReflection'
+import answerStandup from './tools/answerStandup'
 import createRetroTemplate from './tools/createRetroTemplate'
+import createStandupTemplate from './tools/createStandupTemplate'
 import createTask from './tools/createTask'
 import endMeeting from './tools/endMeeting'
 import graphqlMutate from './tools/graphqlMutate'
@@ -21,6 +23,8 @@ const typescriptTools: MCPToolEntry[] = [
   addReflection,
   updateReflection,
   createRetroTemplate,
+  createStandupTemplate,
+  answerStandup,
   endMeeting,
   uploadImage,
   graphqlQuery,
