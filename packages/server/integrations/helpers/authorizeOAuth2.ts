@@ -1,5 +1,5 @@
-import {fetch} from '@whatwg-node/fetch'
 import type {OAuth2Error, OAuth2Success} from '../../types/custom'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {OAuth2TokenError} from '../../utils/OAuth2TokenError'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 
@@ -63,7 +63,7 @@ export const authorizeOAuth2 = async <
     })
   }
 
-  const oauth2Response = await fetch(url, {
+  const oauth2Response = await requestUntrusted(url, {
     method: 'POST',
     headers,
     body: body ? transformBody(headers['Content-Type'], body) : undefined

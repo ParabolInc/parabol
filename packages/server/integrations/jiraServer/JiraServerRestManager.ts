@@ -1,5 +1,4 @@
 import {generateText} from '@tiptap/core'
-import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import JiraServerIssueId from 'parabol-client/integrations/jiraServer/shared/JiraServerIssueId'
@@ -9,6 +8,7 @@ import {ExternalLinks} from 'parabol-client/types/constEnums'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {readThirdPartyResponse, ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import type {JiraRawStatus} from '../jira/AtlassianServerManager'
 import type {
@@ -172,7 +172,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     const auth = this.oauth.authorize(request, this.token)
     const headers = this.oauth.toHeader(auth)
 
-    return fetch(request.url, {
+    return requestUntrusted(request.url, {
       method: request.method,
       body: body ? JSON.stringify(body) : undefined,
       headers: {

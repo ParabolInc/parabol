@@ -1,18 +1,16 @@
-import {fetch, Response} from '@whatwg-node/fetch'
+import {Response} from '@whatwg-node/fetch'
 import {authorizeOAuth2} from '../../integrations/helpers/authorizeOAuth2'
 import getKysely from '../../postgres/getKysely'
 import deactivateTeamMemberIntegrationAuthFamily from '../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily'
 import {selectTeamMemberIntegrationAuth} from '../../postgres/select'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {Logger} from '../../utils/Logger'
 import logError from '../../utils/logError'
 import {OAuth2TokenError} from '../../utils/OAuth2TokenError'
 import {ThirdPartyResponseError} from '../../utils/ThirdPartyResponseError'
 import handleAuthRefreshFailure from '../handleAuthRefreshFailure'
 
-jest.mock('@whatwg-node/fetch', () => ({
-  ...jest.requireActual<typeof import('@whatwg-node/fetch')>('@whatwg-node/fetch'),
-  fetch: jest.fn()
-}))
+jest.mock('../../utils/fetchUntrusted', () => ({requestUntrusted: jest.fn()}))
 jest.mock('../../postgres/getKysely')
 jest.mock('../../postgres/queries/deactivateTeamMemberIntegrationAuthFamily', () => {
   const actual = jest.requireActual<
@@ -91,7 +89,7 @@ describe('handleAuthRefreshFailure', () => {
     mockUpdateChain()
     mockSelect({...auth})
     const logWarn = jest.spyOn(Logger, 'warn').mockImplementation(() => {})
-    jest.mocked(fetch).mockResolvedValue(
+    jest.mocked(requestUntrusted).mockResolvedValue(
       new Response(
         '{"error":"unauthorized_client","error_description":"Token was globally revoked"}',
         {
@@ -141,7 +139,7 @@ describe('handleAuthRefreshFailure', () => {
   it('keeps the grant when the token endpoint answers a JSON 503 without a token', async () => {
     const chain = mockUpdateChain()
     mockSelect({...auth})
-    jest.mocked(fetch).mockResolvedValue(
+    jest.mocked(requestUntrusted).mockResolvedValue(
       new Response('{"message":"Service Unavailable"}', {
         status: 503,
         headers: {'content-type': 'application/json'}

@@ -1,4 +1,3 @@
-import {fetch} from '@whatwg-node/fetch'
 import {print} from 'graphql'
 import nestGraphQLEndpoint, {
   type EndpointExecutionResult,
@@ -6,6 +5,7 @@ import nestGraphQLEndpoint, {
   type NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint'
 import {PROVIDER_UNAVAILABLE} from '../../integrations/platform/toNestedRequestError'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -19,7 +19,7 @@ const defaultExecutor: Executor<{
     controller.abort()
   }, endpointTimeout)
   try {
-    const result = await fetch(`${baseUri}/api/graphql`, {
+    const result = await requestUntrusted(`${baseUri}/api/graphql`, {
       signal: signal as any,
       method: 'POST',
       headers: {

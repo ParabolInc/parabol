@@ -1,6 +1,6 @@
-import {fetch} from '@whatwg-node/fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -22,7 +22,7 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
       redirect_uri: GitLabOAuth2Manager.REDIRECT_URI
     })
     if (auth instanceof Error) return auth
-    const res = await fetch(`${this.serverBaseUrl}/api/v4/user`, {
+    const res = await requestUntrusted(`${this.serverBaseUrl}/api/v4/user`, {
       headers: {Authorization: `Bearer ${auth.accessToken}`}
     })
     if (!res.ok) return new Error(`GitLab: could not read the authorized user (${res.status})`)

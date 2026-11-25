@@ -1,7 +1,7 @@
-import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import appOrigin from '../../appOrigin'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 
 export interface OAuth1Auth {
   accessToken: string
@@ -43,7 +43,7 @@ export default class JiraServerOAuth1Manager {
     }
     auth.oauth_signature = this.oauth.getSignature(request, undefined, auth)
 
-    const response = await fetch(request.url, {
+    const response = await requestUntrusted(request.url, {
       method: request.method,
       headers: {
         'User-Agent': 'parabol',
@@ -87,7 +87,7 @@ export default class JiraServerOAuth1Manager {
     }
     auth.oauth_signature = this.oauth.getSignature(request, undefined, auth)
 
-    const response = await fetch(request.url, {
+    const response = await requestUntrusted(request.url, {
       method: request.method,
       headers: {
         'User-Agent': 'parabol',
