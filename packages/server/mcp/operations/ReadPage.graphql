@@ -1,4 +1,4 @@
-# Read a page as markdown, with its title and where it sits; teamId is set only on a team's top-level pages, and a sub-page follows its parent's sharing. Copy text from here into edit_page to change it. deletedAt is set while the page is in Trash. Timestamps, and the dates on a meeting summary page, are UTC. Needs pages:read.
+# Read a page as markdown, with its title and where it sits; teamId is set only on a team's top-level pages, and a sub-page follows its parent's sharing. Copy text from here into edit_page to change it. Timestamps, and the dates on a meeting summary page, are UTC. Needs pages:read.
 query ReadPage(
   # The page id, from search_pages, list_pages, create_page or a meeting
   $pageId: ID!
@@ -11,7 +11,6 @@ query ReadPage(
       teamId
       isPrivate
       updatedAt
-      deletedAt
       content(format: markdown)
     }
   }

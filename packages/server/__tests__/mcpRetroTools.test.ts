@@ -34,7 +34,7 @@ const getColumns = (meetingResult: {
 
 const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_READ']
 
-test('an agent adds, edits and renames cards on a retro', async () => {
+test('an agent adds and edits cards on a retro', async () => {
   const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(RETRO_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
@@ -66,10 +66,7 @@ test('an agent adds, edits and renames cards on a retro', async () => {
   })
   expect(updated.updateReflectionContent.reflection.plaintextContent).toBe('Deploys are fast now')
 
-  await callToolForData(token, 'rename_meeting', {meetingId, name: 'Agent Retro'})
-
   const after = await callToolForData(token, 'get_meeting', {meetingId})
-  expect(after.viewer.meeting.name).toBe('Agent Retro')
   const groups = after.viewer.meeting.reflectionGroups as {
     reflections: {id: string; plaintextContent: string}[]
   }[]

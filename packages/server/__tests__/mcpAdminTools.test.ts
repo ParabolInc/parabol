@@ -20,11 +20,7 @@ const ADMIN_SCOPES = [
   'TEAMS_WRITE',
   'TEMPLATES_READ',
   'TEMPLATES_WRITE',
-  'MEETINGS_WRITE',
-  'PAGES_READ',
-  'PAGES_WRITE',
-  'TASKS_READ',
-  'TASKS_WRITE'
+  'MEETINGS_WRITE'
 ]
 
 const COLUMNS = [{question: 'Glad'}, {question: 'Sad'}]
@@ -48,6 +44,32 @@ const ADD_POKER_TEMPLATE = `
           name
         }
       }
+    }
+  }
+`
+
+const ADD_POKER_SCALE = `
+  mutation AddPokerScale($teamId: ID!) {
+    addPokerTemplateScale(teamId: $teamId) {
+      scale {
+        id
+      }
+    }
+  }
+`
+
+const RENAME_POKER_SCALE = `
+  mutation RenamePokerScale($scaleId: ID!, $name: String!) {
+    renamePokerTemplateScale(scaleId: $scaleId, name: $name) {
+      __typename
+    }
+  }
+`
+
+const ADD_POKER_SCALE_VALUE = `
+  mutation AddPokerScaleValue($scaleId: ID!, $scaleValue: AddTemplateScaleInput!) {
+    addPokerTemplateScaleValue(scaleId: $scaleId, scaleValue: $scaleValue) {
+      __typename
     }
   }
 `
@@ -84,26 +106,26 @@ const addPokerTemplate = async (cookie: string, teamId: string) => {
   return added.data.addPokerTemplate.pokerTemplate as {id: string; dimensions: {name: string}[]}
 }
 
+const addPokerScale = async (cookie: string, teamId: string, name: string, labels: string[]) => {
+  const added = await sendPublic({query: ADD_POKER_SCALE, variables: {teamId}, cookie})
+  expect(added.errors).toBeUndefined()
+  const scaleId = added.data.addPokerTemplateScale.scale.id as string
+  const renamed = await sendPublic({query: RENAME_POKER_SCALE, variables: {scaleId, name}, cookie})
+  expect(renamed.errors).toBeUndefined()
+  for (const label of labels) {
+    const scaleValue = {label, color: '#FD6157'}
+    const valueAdded = await sendPublic({
+      query: ADD_POKER_SCALE_VALUE,
+      variables: {scaleId, scaleValue},
+      cookie
+    })
+    expect(valueAdded.errors).toBeUndefined()
+  }
+  return {id: scaleId}
+}
+
 const setTemplateScope = (templateId: string, scope: 'TEAM' | 'ORGANIZATION') =>
   getKysely().updateTable('MeetingTemplate').set({scope}).where('id', '=', templateId).execute()
-
-const isTemplateActive = async (templateId: string) => {
-  const {isActive} = await getKysely()
-    .selectFrom('MeetingTemplate')
-    .select('isActive')
-    .where('id', '=', templateId)
-    .executeTakeFirstOrThrow()
-  return isActive
-}
-
-const isScaleRemoved = async (scaleId: string) => {
-  const {removedAt} = await getKysely()
-    .selectFrom('TemplateScale')
-    .select('removedAt')
-    .where('id', '=', scaleId)
-    .executeTakeFirstOrThrow()
-  return removedAt !== null
-}
 
 test('list_templates lists the retro templates a team can pick: its own, org-wide and built-in ones', async () => {
   const {cookie, orgId, teamId} = await signUpWithoutAI()
@@ -156,11 +178,7 @@ test('list_templates lists the retro templates a team can pick: its own, org-wid
 
 test('list_templates lists sprint poker templates with their dimensions and the scales the team can vote with', async () => {
   const {cookie, teamId, token} = await signUpAdmin()
-  const {scale} = await callToolForData(token, 'create_poker_scale', {
-    teamId,
-    name: 'Agent Scale',
-    values: [{label: '1'}, {label: '2'}]
-  })
+  const scale = await addPokerScale(cookie, teamId, 'Agent Scale', ['1', '2'])
   const pokerTemplate = await addPokerTemplate(cookie, teamId)
 
   const {templates, scales} = await listTemplates(token, teamId, 'poker')
@@ -244,162 +262,13 @@ test('a Starter agent can list templates, pick one and start a retro within the 
   expect(await getChargedCost(userId)).toBeLessThanOrEqual(500)
 })
 
-test('delete_template deletes retro, standup and sprint poker templates and poker scales', async () => {
-  const {cookie, teamId, token} = await signUpAdmin()
-  const {template: retro} = await callToolForData(token, 'create_retro_template', {
-    teamId,
-    name: 'Retro To Delete',
-    columns: COLUMNS
-  })
-  const {template: standup} = await callToolForData(token, 'create_standup_template', {
-    teamId,
-    name: 'Standup To Delete',
-    prompts: [{question: 'Anything blocking you?'}]
-  })
-  const pokerTemplate = await addPokerTemplate(cookie, teamId)
-  const {scale} = await callToolForData(token, 'create_poker_scale', {
-    teamId,
-    name: 'Scale To Delete',
-    values: [{label: 'S'}, {label: 'L'}]
-  })
-
-  expect(await callToolForData(token, 'delete_template', {templateId: retro.id})).toEqual({
-    template: {id: retro.id, name: 'Retro To Delete'}
-  })
-  expect(await callToolForData(token, 'delete_template', {templateId: standup.id})).toEqual({
-    template: {id: standup.id, name: 'Standup To Delete'}
-  })
-  expect(await callToolForData(token, 'delete_template', {templateId: pokerTemplate.id})).toEqual({
-    template: {id: pokerTemplate.id, name: expect.any(String)}
-  })
-  expect(await callToolForData(token, 'delete_template', {scaleId: scale.id})).toEqual({
-    scale: {id: scale.id}
-  })
-
-  expect(await isTemplateActive(retro.id)).toBe(false)
-  expect(await isTemplateActive(standup.id)).toBe(false)
-  expect(await isScaleRemoved(scale.id)).toBe(true)
-  const poker = await listTemplates(token, teamId, 'poker')
-  expect(getIds(poker.templates)).not.toContain(pokerTemplate.id)
-  expect(getIds(poker.scales!)).not.toContain(scale.id)
-})
-
-test('delete_template refuses a team health template and a built-in template, and needs exactly one id', async () => {
-  const {teamId, token} = await signUpAdmin()
-  const {template: teamHealth} = await callToolForData(token, 'create_team_health_template', {
-    teamId,
-    name: 'Health To Keep',
-    questions: [{question: 'We trust each other.'}]
-  })
-
-  const healthMessage = expectToolErrorCode(
-    await callTool(token, 'delete_template', {templateId: teamHealth.id}),
-    'BAD_USER_INPUT'
-  )
-  expect(healthMessage).toBe(
-    'Only retrospective, standup and sprint poker templates can be deleted.'
-  )
-  expectToolErrorCode(
-    await callTool(token, 'delete_template', {templateId: 'sailboatTemplate'}),
-    'FORBIDDEN'
-  )
-  expectToolErrorCode(await callTool(token, 'delete_template', {}), 'BAD_USER_INPUT')
-  expectToolErrorCode(
-    await callTool(token, 'delete_template', {
-      templateId: teamHealth.id,
-      scaleId: 'fibonacciScale'
-    }),
-    'BAD_USER_INPUT'
-  )
-
-  expect(await isTemplateActive(teamHealth.id)).toBe(true)
-  expect(await isTemplateActive('sailboatTemplate')).toBe(true)
-  expect(await isScaleRemoved('fibonacciScale')).toBe(false)
-})
-
-test('archive_page moves a page to Trash, and read_page says when', async () => {
-  const {teamId, token} = await signUpAdmin()
-  const created = await callToolForData(token, 'create_page', {teamId})
-  const pageId = created.createPage.page.id
-
-  const archived = await callToolForData(token, 'archive_page', {pageId})
-  expect(archived.archivePage.page).toEqual({
-    id: pageId,
-    title: '',
-    deletedAt: expect.any(String)
-  })
-  const read = await callToolForData(token, 'read_page', {pageId})
-  expect(read.public.page.deletedAt).toBe(archived.archivePage.page.deletedAt)
-  const listed = await callToolForData(token, 'list_pages', {teamId})
-  expect(
-    getIds(listed.viewer.pages.edges.map(({node}: {node: {id: string}}) => node))
-  ).not.toContain(pageId)
-})
-
-test('delete_task deletes a task for good', async () => {
-  const {teamId, token} = await signUpAdmin()
-  const created = await callToolForData(token, 'create_task', {teamId, content: 'Delete me'})
-  const taskId = created.createTask.task.id
-
-  const deleted = await callToolForData(token, 'delete_task', {taskId})
-  expect(deleted.deleteTask.task).toEqual({id: taskId})
-  const listed = await callToolForData(token, 'list_tasks', {teamIds: [teamId]})
-  expect(
-    getIds(listed.viewer.tasks.edges.map(({node}: {node: {id: string}}) => node))
-  ).not.toContain(taskId)
-  const row = await getKysely()
-    .selectFrom('Task')
-    .select('id')
-    .where('id', '=', taskId)
-    .executeTakeFirst()
-  expect(row).toBeUndefined()
-})
-
-test('a caller off the team is refused by every tool and nothing changes', async () => {
-  const owner = await signUpAdmin()
-  const {teamId} = owner
-  const {template} = await callToolForData(owner.token, 'create_retro_template', {
-    teamId,
-    name: 'Owner Columns',
-    columns: COLUMNS
-  })
-  await setTemplateScope(template.id, 'TEAM')
-  const {scale} = await callToolForData(owner.token, 'create_poker_scale', {
-    teamId,
-    name: 'Owner Scale',
-    values: [{label: '1'}]
-  })
-  const page = await callToolForData(owner.token, 'create_page', {teamId})
-  const pageId = page.createPage.page.id
-  const task = await callToolForData(owner.token, 'create_task', {teamId, content: 'Keep me'})
-  const taskId = task.createTask.task.id
-
+test('list_templates refuses a caller off the team', async () => {
+  const {teamId} = await signUpAdmin()
   const outsider = await signUpAdmin()
   expectToolErrorCode(
     await callTool(outsider.token, 'list_templates', {teamId, meetingType: 'retrospective'}),
     'FORBIDDEN'
   )
-  expectToolErrorCode(
-    await callTool(outsider.token, 'delete_template', {templateId: template.id}),
-    'NOT_FOUND'
-  )
-  expectToolErrorCode(
-    await callTool(outsider.token, 'delete_template', {scaleId: scale.id}),
-    'FORBIDDEN'
-  )
-  expectToolErrorCode(await callTool(outsider.token, 'archive_page', {pageId}), 'FORBIDDEN')
-  expectToolErrorCode(await callTool(outsider.token, 'delete_task', {taskId}), 'FORBIDDEN')
-
-  expect(await isTemplateActive(template.id)).toBe(true)
-  expect(await isScaleRemoved(scale.id)).toBe(false)
-  const read = await callToolForData(owner.token, 'read_page', {pageId})
-  expect(read.public.page.deletedAt).toBeNull()
-  const row = await getKysely()
-    .selectFrom('Task')
-    .select('id')
-    .where('id', '=', taskId)
-    .executeTakeFirst()
-  expect(row).toEqual({id: taskId})
 })
 
 const describeGraphql = async (token: string, name: string) => {

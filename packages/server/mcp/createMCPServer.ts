@@ -14,7 +14,6 @@ import createRetroTemplate from './tools/createRetroTemplate'
 import createStandupTemplate from './tools/createStandupTemplate'
 import createTask from './tools/createTask'
 import createTeamHealthTemplate from './tools/createTeamHealthTemplate'
-import deleteTemplate from './tools/deleteTemplate'
 import describeGraphql from './tools/describeGraphql'
 import endMeeting from './tools/endMeeting'
 import graphqlMutate from './tools/graphqlMutate'
@@ -38,7 +37,6 @@ const typescriptTools: MCPToolEntry[] = [
   addPokerStories,
   votePokerStory,
   listTemplates,
-  deleteTemplate,
   endMeeting,
   addComment,
   uploadImage,
