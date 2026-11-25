@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.6.0](https://github.com/ParabolInc/parabol/compare/v16.5.0...v16.6.0) (2026-11-25)
+
+
+### Added
+
+* **reports:** open Reports to the org you looked at last ([#14325](https://github.com/ParabolInc/parabol/issues/14325)) ([80449a4](https://github.com/ParabolInc/parabol/commit/80449a4675f3122b562efbc4778ea84fdf6682b2))
+* **server:** private and nested pages, page listing and uploads by URL for /mcp ([#14370](https://github.com/ParabolInc/parabol/issues/14370)) ([8213e54](https://github.com/ParabolInc/parabol/commit/8213e54e38f78487d17e0345f1b2f2bf12296dde))
+* **server:** retro tools for /mcp and get_me without organization access ([#14372](https://github.com/ParabolInc/parabol/issues/14372)) ([ad5404e](https://github.com/ParabolInc/parabol/commit/ad5404eae5e9b5ecc0faa110a8e4d1e388ee5ad5))
+
+
+### Fixed
+
+* **pages:** round-trip page markdown and validate page writes ([#14368](https://github.com/ParabolInc/parabol/issues/14368)) ([58638ed](https://github.com/ParabolInc/parabol/commit/58638ed5b24015864ea5fff5153c3d7ba8d38eec))
+
 ## [16.5.0](https://github.com/ParabolInc/parabol/compare/v16.4.0...v16.5.0) (2026-11-24)
 
 
