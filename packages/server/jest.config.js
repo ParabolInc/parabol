@@ -26,6 +26,7 @@ module.exports = {
   },
   testRegex: '/__tests__/.*.test\\.ts?$',
   globals: {
+    __APP_VERSION__: 'test',
     __PRODUCTION__: false,
     __NESTED_USAGE__: null,
     __NESTED_TYPE_DEFS__: null
