@@ -26,15 +26,20 @@ const createReflection: MutationResolvers['createReflection'] = async (
   const {content, sortOrder, meetingId, promptId} = input
   // AUTH
   const viewerId = getUserId(authToken)
-  const [reflectPrompt, meeting] = await Promise.all([
+  const [reflectPrompt, meeting, meetingPrompts] = await Promise.all([
     dataLoader.get('templatePrompts').load(promptId),
-    dataLoader.get('newMeetings').load(meetingId)
+    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('templatePromptsByMeetingId').load(meetingId)
   ])
   if (!reflectPrompt) {
     throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (!meeting) {
     throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  // a prompt that belongs to another template must look the same as one that does not exist
+  if (!meetingPrompts.some(({id}) => id === promptId)) {
+    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {
