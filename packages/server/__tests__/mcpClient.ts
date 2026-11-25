@@ -1,3 +1,4 @@
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
@@ -153,6 +154,15 @@ export const addTeammate = async (teamId: string, scopes: string[]) => {
     ...teammate,
     token: await createPersonalAccessToken(scopes, {cookie: teammate.cookie})
   }
+}
+
+export const isSpectating = async (meetingId: string, userId: string) => {
+  const member = await getKysely()
+    .selectFrom('MeetingMember')
+    .select('isSpectating')
+    .where('id', '=', MeetingMemberId.join(meetingId, userId))
+    .executeTakeFirstOrThrow()
+  return member.isSpectating
 }
 
 export const waitForSummaryText = async (meetingId: string, expectedText: string) => {

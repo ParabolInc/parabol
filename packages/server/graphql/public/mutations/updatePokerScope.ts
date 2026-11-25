@@ -84,6 +84,11 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       meetingId
     )
     if (additiveUpdates.length > 0 && additiveUpdatesWithTaskIds.length === 0) {
+      if (additiveUpdates.every(({service}) => service === 'PARABOL')) {
+        throw new GraphQLError("None of those tasks is on the meeting's team", {
+          extensions: {code: 'BAD_USER_INPUT'}
+        })
+      }
       throw new GraphQLError('Could not add that issue', {
         extensions: {code: 'SERVICE_UNAVAILABLE'}
       })

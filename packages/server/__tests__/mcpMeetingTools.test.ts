@@ -12,6 +12,7 @@ import {
   createPersonalAccessToken,
   expectToolErrorCode,
   getChargedCost,
+  isSpectating,
   leaveHourlyQueryBudget,
   signUpWithoutAI,
   waitForSummaryText
@@ -327,7 +328,7 @@ test('get_poker_meeting says who has voted but leaves the votes out by default',
   await send(VOTE, {meetingId, stageId, score: label}, cookie)
 
   const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId})
-  expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'poker'})
+  expect(viewer.meeting).toMatchObject({id: meetingId})
   expect(getStages(viewer.meeting)).toEqual([
     {
       id: stageId,
@@ -758,15 +759,6 @@ type TeamHealthResultStage = {
   respondentCount: number | null
   spreadScores: number[] | null
   responses: {commentParaphrased: string | null; commentAuthor: {preferredName: string} | null}[]
-}
-
-const isSpectating = async (meetingId: string, userId: string) => {
-  const member = await getKysely()
-    .selectFrom('MeetingMember')
-    .select('isSpectating')
-    .where('id', '=', MeetingMemberId.join(meetingId, userId))
-    .executeTakeFirstOrThrow()
-  return member.isSpectating
 }
 
 const startAristotleCheck = async () => {

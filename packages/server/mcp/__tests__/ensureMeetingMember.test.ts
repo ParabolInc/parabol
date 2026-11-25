@@ -113,12 +113,12 @@ test("answers with the server's coded error when the opt-in is refused", async (
   })
 })
 
-test("answers with the server's coded error when the caller cannot join", async () => {
+test("answers with the server's coded error when the caller cannot join to vote, and opts nothing in", async () => {
   jest.mocked(runGraphQL).mockResolvedValue({
     data: null,
     errors: [{message: 'Meeting has already ended', extensions: {code: 'CONFLICT'}}]
   })
-  expect(await ensureMeetingMember(context, 'meeting-1')).toEqual({
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'poker'})).toEqual({
     isError: true,
     content: [
       {
@@ -127,4 +127,5 @@ test("answers with the server's coded error when the caller cannot join", async 
       }
     ]
   })
+  expect(runGraphQL).toHaveBeenCalledTimes(1)
 })

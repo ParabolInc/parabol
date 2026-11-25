@@ -9,7 +9,6 @@ query GetPokerMeeting(
     meeting(meetingId: $meetingId) {
       id
       name
-      meetingType
       endedAt
       summaryPageId
       phases {

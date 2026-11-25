@@ -24,32 +24,38 @@ const ADD_POKER_TEMPLATE_SCALE = `
 const RENAME_POKER_TEMPLATE_SCALE = `
   mutation RenamePokerTemplateScale($scaleId: ID!, $name: String!) {
     renamePokerTemplateScale(scaleId: $scaleId, name: $name) {
-      scale {
-        id
-      }
+      __typename
     }
   }
 `
 
-const addScaleValueDocument = (scaleFields: string) => `
+const ADD_SCALE_VALUE = `
   mutation AddPokerTemplateScaleValue($scaleId: ID!, $scaleValue: AddTemplateScaleInput!) {
     addPokerTemplateScaleValue(scaleId: $scaleId, scaleValue: $scaleValue) {
-      scale {
-        ${scaleFields}
-      }
+      __typename
     }
   }
 `
 
-const ADD_SCALE_VALUE = addScaleValueDocument('id')
-const ADD_LAST_SCALE_VALUE = addScaleValueDocument('id name values { label color }')
+const ADD_LAST_SCALE_VALUE = `
+  mutation AddLastPokerTemplateScaleValue($scaleId: ID!, $scaleValue: AddTemplateScaleInput!) {
+    addPokerTemplateScaleValue(scaleId: $scaleId, scaleValue: $scaleValue) {
+      scale {
+        id
+        name
+        values {
+          label
+          color
+        }
+      }
+    }
+  }
+`
 
 const REMOVE_POKER_TEMPLATE_SCALE = `
   mutation RemovePokerTemplateScale($scaleId: ID!) {
     removePokerTemplateScale(scaleId: $scaleId) {
-      scale {
-        id
-      }
+      __typename
     }
   }
 `

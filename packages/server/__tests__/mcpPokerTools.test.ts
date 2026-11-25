@@ -1,4 +1,3 @@
-import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
@@ -9,6 +8,8 @@ import {
   createPersonalAccessToken,
   expectToolErrorCode,
   getChargedCost,
+  isSpectating,
+  leaveHourlyQueryBudget,
   signUpWithoutAI,
   waitForSummaryText
 } from './mcpClient'
@@ -111,15 +112,6 @@ const getPreferredName = async (userId: string) => {
     .where('id', '=', userId)
     .executeTakeFirstOrThrow()
   return preferredName
-}
-
-const isSpectating = async (meetingId: string, userId: string) => {
-  const member = await getKysely()
-    .selectFrom('MeetingMember')
-    .select('isSpectating')
-    .where('id', '=', MeetingMemberId.join(meetingId, userId))
-    .executeTakeFirstOrThrow()
-  return member.isSpectating
 }
 
 const createTasks = async (token: string, teamId: string, contents: string[]) => {
@@ -290,6 +282,12 @@ test('vote_poker_story opts in a teammate who sits votes out, refuses a label th
 
   await callToolForData(teammate.token, 'vote_poker_story', {meetingId, stageId, label: '3'})
   expect(await isSpectating(meetingId, teammate.userId)).toBe(false)
+  const teamMember = await getKysely()
+    .selectFrom('TeamMember')
+    .select('isSpectatingPoker')
+    .where('id', '=', TeamMemberId.join(teamId, teammate.userId))
+    .executeTakeFirstOrThrow()
+  expect(teamMember.isSpectatingPoker).toBe(false)
   const voted = await callToolForData(teammate.token, 'get_poker_meeting', {meetingId})
   expect(getStages<{scores: {userId: string}[]}>(voted.viewer.meeting)[0]!.scores).toEqual([
     {userId: teammate.userId}
@@ -320,7 +318,9 @@ test('add_poker_stories skips a task already in the meeting or on another team, 
     meetingId,
     taskIds: [otherTeamTaskId]
   })
-  expectToolErrorCode(refused, 'SERVICE_UNAVAILABLE')
+  expect(expectToolErrorCode(refused, 'BAD_USER_INPUT')).toBe(
+    "None of those tasks is on the meeting's team"
+  )
 })
 
 test('set_poker_final_score refuses a dimension the meeting does not estimate and a score over 4 characters', async () => {
@@ -409,6 +409,34 @@ test('create_poker_scale refuses a name another scale on the team has and remove
   expectToolErrorCode(specialCard, 'BAD_USER_INPUT')
 })
 
+test('create_poker_scale names a scale it could not remove when a step fails part way', async () => {
+  const {userId, cookie, teamId} = await signUpWithoutAI()
+  const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
+  const before = await getChargedCost(userId)
+  await callToolForData(token, 'create_poker_scale', {
+    teamId,
+    name: 'Risk',
+    values: [{label: 'Lo'}]
+  })
+  const oneLabelCost = (await getChargedCost(userId)) - before
+  await leaveHourlyQueryBudget(userId, oneLabelCost - 1)
+
+  const result = await callTool(token, 'create_poker_scale', {
+    teamId,
+    name: 'Size',
+    values: [{label: 'S'}, {label: 'L'}]
+  })
+  expectToolErrorCode(result, 'TOO_MANY_REQUESTS')
+  const [error] = JSON.parse(result.content[0]!.text)
+  expect(error.unfinishedScaleId).toEqual(expect.any(String))
+  const unfinished = await getKysely()
+    .selectFrom('TemplateScale')
+    .select(['name', 'removedAt'])
+    .where('id', '=', error.unfinishedScaleId)
+    .executeTakeFirstOrThrow()
+  expect(unfinished).toEqual({name: 'Size', removedAt: null})
+})
+
 test("a sprint poker meeting an agent runs, and a teammate voting in it, fit a starter user's query budget", async () => {
   const owner = await signUpWithoutAI()
   const scopes = [...POKER_SCOPES, 'TEAMS_READ']
@@ -440,6 +468,7 @@ test("a sprint poker meeting an agent runs, and a teammate voting in it, fit a s
   await callToolForData(teammate.token, 'vote_poker_story', {meetingId, stageId, label: '8'})
 
   await callToolForData(token, 'reveal_poker_votes', {meetingId, stageId})
+  await callToolForData(teammate.token, 'get_poker_meeting', {meetingId, showVotes: true})
   await callToolForData(token, 'set_poker_final_score', {
     meetingId,
     taskId: stage!.taskId,
