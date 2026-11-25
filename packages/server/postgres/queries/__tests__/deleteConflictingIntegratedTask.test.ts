@@ -54,7 +54,11 @@ afterAll(async () => {
 
 describe('deleteConflictingIntegratedTask', () => {
   it('deletes only the target team task sharing the integration hash and returns its id', async () => {
-    const deleted = await deleteConflictingIntegratedTask({teamId: targetTeamId, integrationHash})
+    const deleted = await deleteConflictingIntegratedTask({
+      teamId: targetTeamId,
+      integrationHash,
+      taskId: sourceTaskId
+    })
 
     const remaining = await pg
       .selectFrom('Task')
@@ -66,8 +70,27 @@ describe('deleteConflictingIntegratedTask', () => {
   })
 
   it('returns undefined when the target team has no conflicting task', async () => {
-    const deleted = await deleteConflictingIntegratedTask({teamId: targetTeamId, integrationHash})
+    const deleted = await deleteConflictingIntegratedTask({
+      teamId: targetTeamId,
+      integrationHash,
+      taskId: sourceTaskId
+    })
     expect(deleted).toBeUndefined()
+  })
+
+  it('never deletes the task being moved, even onto the team it is already on', async () => {
+    const deleted = await deleteConflictingIntegratedTask({
+      teamId: sourceTeamId,
+      integrationHash,
+      taskId: sourceTaskId
+    })
+    expect(deleted).toBeUndefined()
+    const kept = await pg
+      .selectFrom('Task')
+      .select('id')
+      .where('id', '=', sourceTaskId)
+      .executeTakeFirst()
+    expect(kept?.id).toBe(sourceTaskId)
   })
 
   it('participates in the caller transaction so a rollback restores the task', async () => {
@@ -76,7 +99,7 @@ describe('deleteConflictingIntegratedTask', () => {
     await expect(
       pg.transaction().execute(async (trx) => {
         const deleted = await deleteConflictingIntegratedTask(
-          {teamId: targetTeamId, integrationHash},
+          {teamId: targetTeamId, integrationHash, taskId: sourceTaskId},
           trx
         )
         expect(deleted?.id).toBe(targetTaskId)
