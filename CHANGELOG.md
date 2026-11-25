@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.7.0](https://github.com/ParabolInc/parabol/compare/v16.6.0...v16.7.0) (2026-11-25)
+
+
+### Added
+
+* **client:** invite teammates by name, starting with people you work with ([#14376](https://github.com/ParabolInc/parabol/issues/14376)) ([9d309bc](https://github.com/ParabolInc/parabol/commit/9d309bc92a352d68d03fb92aa512a265da0fb0d9))
+* **client:** open images in a full-screen lightbox ([#14377](https://github.com/ParabolInc/parabol/issues/14377)) ([b7085d2](https://github.com/ParabolInc/parabol/commit/b7085d21abdf248b79f765749abe0d38fa60129c))
+* **mcp:** list templates, describe_graphql, and page grants that cover nested pages ([#14383](https://github.com/ParabolInc/parabol/issues/14383)) ([3df1d0b](https://github.com/ParabolInc/parabol/commit/3df1d0bb0acc3887b537c065a5c1637d64fa5277))
+* **mcp:** play sprint poker from /mcp ([#14382](https://github.com/ParabolInc/parabol/issues/14382)) ([8f5694d](https://github.com/ParabolInc/parabol/commit/8f5694df0eb871ac835b884704e8164ad75d7089))
+* **mcp:** run standups, Team Health checks and meeting discussions from /mcp ([#14381](https://github.com/ParabolInc/parabol/issues/14381)) ([1ae27ad](https://github.com/ParabolInc/parabol/commit/1ae27ad8c776e7becda52b2b14e28dbe16c87c4c))
+* **server:** expose the allowed poker scale colors ([#14387](https://github.com/ParabolInc/parabol/issues/14387)) ([0fe42eb](https://github.com/ParabolInc/parabol/commit/0fe42eb154228c535e9066383b0ec02720d71e53))
+
+
+### Fixed
+
+* **client:** close the meeting sidebar on phones after tapping a row ([#14380](https://github.com/ParabolInc/parabol/issues/14380)) ([ea5e476](https://github.com/ParabolInc/parabol/commit/ea5e476ed6532142383bafbf1339cf867186f4b1))
+* **mcp:** refuse unreadable content, enforce task and comment scopes, and fix summary and search gaps ([#14379](https://github.com/ParabolInc/parabol/issues/14379)) ([0ce62fc](https://github.com/ParabolInc/parabol/commit/0ce62fc1ed3b7edec2f0f2b66deb68db9ffb5ec2))
+* **pages:** limited connections only link to pages they can reach ([#14384](https://github.com/ParabolInc/parabol/issues/14384)) ([e732797](https://github.com/ParabolInc/parabol/commit/e7327974379d700576dddd0a2d25468a254067d2))
+
 ## [16.6.0](https://github.com/ParabolInc/parabol/compare/v16.5.0...v16.6.0) (2026-11-25)
 
 

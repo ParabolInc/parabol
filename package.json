@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "BUSL-1.1",
-  "version": "16.6.0",
+  "version": "16.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
