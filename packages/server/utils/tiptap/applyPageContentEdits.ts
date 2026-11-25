@@ -6,7 +6,7 @@ import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllN
 import {parseMarkdownBlocks} from '../../../client/shared/tiptap/parseMarkdownBlocks'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
-import {assertNoAddedPageLinks} from './assertNoAddedPageLinks'
+import {assertReachablePageLinks} from './assertReachablePageLinks'
 import {getPageMarkdownBlocks, PAGE_BLOCK_SEPARATOR} from './getPageMarkdownBlocks'
 import {parsePageMarkdown} from './parsePageMarkdown'
 import {toYXmlNodes} from './toYXmlNodes'
@@ -296,7 +296,10 @@ const isTitle = (node: JSONContent | undefined) =>
 export const applyPageContentEdits = (
   doc: Y.Doc,
   edits: PageContentEditInput[],
-  {canChangePageLinks}: {canChangePageLinks: boolean}
+  {
+    canChangePageLinks,
+    reachablePageCodes = []
+  }: {canChangePageLinks: boolean; reachablePageCodes?: number[]}
 ) => {
   const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
   if (nodes.length !== doc.getXmlFragment('default').length) {
@@ -332,9 +335,10 @@ export const applyPageContentEdits = (
     })
   }
   if (!canChangePageLinks) {
-    assertNoAddedPageLinks(
+    assertReachablePageLinks(
       nodes,
-      blocks.map(({node}) => node)
+      blocks.map(({node}) => node),
+      reachablePageCodes
     )
   }
   const isUnchanged =

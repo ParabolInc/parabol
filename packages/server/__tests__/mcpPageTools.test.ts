@@ -143,7 +143,7 @@ const PAGE_JSON = `
   }
 `
 
-type PageNode = {type: string; attrs?: Record<string, unknown>}
+type PageNode = {type: string; attrs?: Record<string, unknown>; content?: unknown[]}
 
 const pageCodeOf = (pageId: string) => CipherId.fromClient(pageId)[1]
 
@@ -292,8 +292,8 @@ const readPageNodes = async (token: string, pageId: string) => {
   return JSON.parse(read.public.page.content).content as PageNode[]
 }
 
-const createSyncedBlock = async (token: string) => {
-  const host = await callToolForData(token, 'create_page', {})
+const createSyncedBlock = async (token: string, hostArgs: {teamId?: string} = {}) => {
+  const host = await callToolForData(token, 'create_page', hostArgs)
   const hostPageId = host.createPage.page.id as string
   const block = await callToolForData(token, 'create_page', {parentPageId: hostPageId})
   const [blockPageId, blockCode] = CipherId.fromClient(block.createPage.page.id)
@@ -332,41 +332,77 @@ const setUpTeamPageWithLimitedToken = async () => {
     grantedTeamIds: [teamId],
     grantedPageIds: []
   })
-  return {owner, token, pageId}
+  return {owner, token, pageId, teamId}
 }
 
-const SYNCED_PLACEMENT_ROUTES = {
-  'editPageContent json': (token: string, pageId: string, blockCode: number) =>
-    setPageJson(token, pageId, [syncedPlacement(blockCode)]),
-  'set_page_content markdown': (token: string, pageId: string, blockCode: number) =>
+type PageLink = {pageCode: number; title: string; synced?: boolean}
+
+const linkMarkdown = ({pageCode, title, synced}: PageLink) =>
+  `:::pageLinkBlock {pageCode="${pageCode}" title="${title}"${synced ? ' synced' : ''}}\n:::`
+
+const LINK_ROUTES = {
+  'editPageContent json': (token: string, pageId: string, links: PageLink[]) =>
+    setPageJson(token, pageId, [
+      {type: 'paragraph', content: [{type: 'text', text: 'Notes'}]},
+      ...links.map((attrs) => ({type: 'pageLinkBlock', attrs}))
+    ]),
+  'set_page_content markdown': (token: string, pageId: string, links: PageLink[]) =>
     callTool(token, 'set_page_content', {
       pageId,
-      content: `# Plans\n\n:::pageLinkBlock {pageCode="${blockCode}" title="Escalation" synced}\n:::`
+      content: ['# Plans', 'Notes', ...links.map(linkMarkdown)].join('\n\n')
     }),
-  'edit_page markdown': (token: string, pageId: string, blockCode: number) =>
+  'edit_page markdown': (token: string, pageId: string, links: PageLink[]) =>
     callTool(token, 'edit_page', {
       pageId,
-      edits: [
-        {
-          oldText: 'Notes',
-          newText: `Notes\n\n:::pageLinkBlock {pageCode="${blockCode}" title="Escalation" synced}\n:::`
-        }
-      ]
+      edits: [{oldText: 'Notes', newText: ['Notes', ...links.map(linkMarkdown)].join('\n\n')}]
     })
 }
 
-test.each(Object.entries(SYNCED_PLACEMENT_ROUTES))(
-  'a limited connection cannot add a synced block the page does not already contain through %s',
-  async (_route, addPlacement) => {
+const UNREACHABLE_LINK_CASES = Object.entries(LINK_ROUTES).flatMap(([route, addLinks]) => [
+  {route, kind: 'plain page link', addLinks, isSynced: false},
+  {route, kind: 'synced block', addLinks, isSynced: true}
+])
+
+test.each(UNREACHABLE_LINK_CASES)(
+  'a limited connection cannot add a $kind to a page it cannot reach through $route',
+  async ({addLinks, isSynced}) => {
     const {owner, token, pageId} = await setUpTeamPageWithLimitedToken()
-    const blockCode = await createSyncedBlock(owner)
-    expect(
-      expectToolErrorCode(await addPlacement(token, pageId, blockCode), 'FORBIDDEN')
-    ).toContain("can't add a synced block")
-    expect(await countBacklinks(pageId, blockCode)).toBe(0)
+    const pageCode = isSynced
+      ? await createSyncedBlock(owner)
+      : pageCodeOf((await callToolForData(owner, 'create_page', {})).createPage.page.id)
+    const link: PageLink = {pageCode, title: 'Elsewhere', ...(isSynced && {synced: true})}
+    expect(expectToolErrorCode(await addLinks(token, pageId, [link]), 'FORBIDDEN')).toContain(
+      'can only link to pages it can reach'
+    )
+    expect(await countBacklinks(pageId, pageCode)).toBe(0)
     expect(await callToolForData(owner, 'read_page', {pageId})).toMatchObject({
       public: {page: {content: '# Plans\n\nNotes'}}
     })
+  }
+)
+
+const waitForBacklinks = async (fromPageId: string, toPageCodes: number[]) => {
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const counts = await Promise.all(toPageCodes.map((code) => countBacklinks(fromPageId, code)))
+    if (counts.every((count) => count === 1)) return
+    await sleep(100)
+  }
+  throw new Error('Timed out waiting for the backlinks')
+}
+
+test.each(Object.entries(LINK_ROUTES))(
+  'a limited connection adds a plain page link and a synced block it can reach through %s',
+  async (_route, addLinks) => {
+    const {owner, token, pageId, teamId} = await setUpTeamPageWithLimitedToken()
+    const teamPage = await callToolForData(owner, 'create_page', {teamId})
+    const teamPageCode = pageCodeOf(teamPage.createPage.page.id)
+    const blockCode = await createSyncedBlock(owner, {teamId})
+    const added = await addLinks(token, pageId, [
+      {pageCode: teamPageCode, title: 'Team notes'},
+      {pageCode: blockCode, title: 'Escalation', synced: true}
+    ])
+    expect(added.isError ? added.content[0]!.text : undefined).toBeUndefined()
+    await waitForBacklinks(pageId, [teamPageCode, blockCode])
   }
 )
 
@@ -396,19 +432,18 @@ test('a limited connection keeps the synced blocks and sub-pages it read when it
   expect(await countBacklinks(pageId, blockCode)).toBe(1)
 })
 
-test('an unrestricted connection adds a synced block to a page', async () => {
+test('an unrestricted connection adds a plain page link and a synced block to a page', async () => {
   const {cookie} = await signUp()
   const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
   const blockCode = await createSyncedBlock(token)
+  const other = await callToolForData(token, 'create_page', {})
+  const otherPageCode = pageCodeOf(other.createPage.page.id)
   const page = await callToolForData(token, 'create_page', {})
   const pageId = page.createPage.page.id as string
-  expect((await setPageJson(token, pageId, [syncedPlacement(blockCode)])).isError).toBeUndefined()
-  for (
-    let attempt = 0;
-    attempt < 50 && (await countBacklinks(pageId, blockCode)) === 0;
-    attempt++
-  ) {
-    await sleep(100)
-  }
-  expect(await countBacklinks(pageId, blockCode)).toBe(1)
+  const added = await setPageJson(token, pageId, [
+    {type: 'pageLinkBlock', attrs: {pageCode: otherPageCode, title: 'Notes'}},
+    syncedPlacement(blockCode)
+  ])
+  expect(added.isError).toBeUndefined()
+  await waitForBacklinks(pageId, [otherPageCode, blockCode])
 })
