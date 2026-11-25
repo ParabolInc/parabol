@@ -10,12 +10,13 @@ export default defineTool({
   name: 'describe_graphql',
   title: 'Describe a GraphQL type or field',
   description:
-    'Read one piece of the GraphQL schema as SDL with its descriptions, which is far smaller than introspecting. Pass a type name such as Task to get that type, or Type.field such as Mutation.createPage to get that field and the types of its arguments. Types inside those argument types are not expanded: describe them by name. List names first with graphql_query and { __type(name: "Mutation") { fields { name } } }. A name that is not in the schema is refused with BAD_USER_INPUT and the closest matches, and an answer over 100,000 characters is cut off. Needs no scope.',
+    'Read one piece of the GraphQL schema as SDL with its descriptions. Pass a type name such as Task to get that type, or Type.field such as Mutation.createPage to get that field and the types of its arguments. Types inside those argument types are not expanded: describe them by name. A type over 20,000 characters, such as Mutation, comes back as one line per field with its argument names and return type, so describe it to list names, then describe one field. A name that is not in the schema is refused with BAD_USER_INPUT and the closest matches. Needs no scope.',
   inputSchema: z.object({
     name: z
       .string()
       .trim()
       .min(1)
+      .max(200)
       .describe('A type name such as Task, or Type.field such as Mutation.createPage')
   }),
   annotations: readAnnotations,
