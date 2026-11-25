@@ -172,6 +172,9 @@ const useInitialSafeRoute = (
 
     // legit URL!
     updateLocalStage(atmosphere, meeting, stage.id)
+    if (isTeamHealthCheckRoute && !teamHealthMeeting) {
+      navigate({href: fromStageIdToUrl(stage.id, meeting, null), replace: true})
+    }
     const checkPhase = isTeamHealthCheckRoute
       ? teamHealthMeeting?.phases.find((curPhase) => curPhase.phaseType === localPhaseType)
       : undefined

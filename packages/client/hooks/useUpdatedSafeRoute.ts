@@ -1,10 +1,11 @@
-import {useNavigate} from '@tanstack/react-router'
+import {useNavigate, useRouter} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import type {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import getMeetingPathRoot from '../utils/meetings/getMeetingPathRoot'
 import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
@@ -14,6 +15,7 @@ const useUpdatedSafeRoute = (
   meetingRef: useUpdatedSafeRoute_meeting$key
 ) => {
   const navigate = useNavigate()
+  const router = useRouter()
   const meeting = readInlineData(
     graphql`
       fragment useUpdatedSafeRoute_meeting on NewMeeting @inline {
@@ -71,11 +73,9 @@ const useUpdatedSafeRoute = (
     const oldLocalStages = oldMeeting?.localPhase?.stages ?? null
     const oldLocalStageId = oldMeeting?.localStage?.id
     oldMeetingRef.current = meeting
-    // the check as is, not as shown: the retro ending mustn't move the url while everyone heads to
-    // its summary
     const getCheckStageId = (shownMeeting: typeof meeting) =>
       shownMeeting.localPhase?.phaseType === 'TEAM_HEALTH'
-        ? shownMeeting.teamHealthMeeting?.localStage?.id
+        ? getTeamHealthCheckShownInRetro(shownMeeting)?.localStage?.id
         : undefined
     // if the stage changes or the order of the stages changes, update the url. A retro's Team Health
     // phase shows its check, whose own stage changes the url too
@@ -91,7 +91,13 @@ const useUpdatedSafeRoute = (
         meeting,
         getTeamHealthCheckShownInRetro(meeting)
       )
-      if (nextPathname !== location.pathname) {
+      // an ended meeting sends everyone on to its summary, so a late change, like the reveal of the
+      // check a retro started, mustn't pull them back. The router's location has them leaving before
+      // the address bar does, and a replace queued behind their push would take its place
+      const hasLeftEndedMeeting =
+        !!meeting.endedAt &&
+        !`${router.history.location.pathname}/`.startsWith(`${getMeetingPathRoot(meeting.id)}/`)
+      if (nextPathname !== location.pathname && !hasLeftEndedMeeting) {
         navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)
         return
