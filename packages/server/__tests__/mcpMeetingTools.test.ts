@@ -4,14 +4,15 @@ import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
-import {sendPublic, signUp} from './common'
+import {sendPublic} from './common'
 import {
   callTool,
   callToolForData,
   createPersonalAccessToken,
   expectToolErrorCode,
   getChargedCost,
-  leaveHourlyQueryBudget
+  leaveHourlyQueryBudget,
+  signUpWithoutAI
 } from './mcpClient'
 
 afterAll(async () => {
@@ -218,7 +219,7 @@ const expectMissingScope = (result: Awaited<ReturnType<typeof callTool>>, scope:
 }
 
 const startPokerWithStory = async () => {
-  const {cookie, teamId, userId} = await signUp()
+  const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_sprint_poker', {teamId})
   const meetingId = started.startSprintPoker.meeting.id as string
@@ -249,7 +250,7 @@ const startPokerWithStory = async () => {
 }
 
 test('get_standup shows the prompts, each member’s responses with their discussion, and the tasks', async () => {
-  const {cookie, teamId, userId} = await signUp()
+  const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken([...READ_SCOPES, 'COMMENTS_READ'], {cookie})
   const started = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
   const {id: meetingId, meetingSeriesId, prompts} = started.startTeamPrompt.meeting
@@ -304,7 +305,7 @@ test('get_standup shows the prompts, each member’s responses with their discus
 })
 
 test('get_meeting says which series a meeting belongs to, if any', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const recurring = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
   const {id: meetingId, meetingSeriesId} = recurring.startTeamPrompt.meeting
@@ -366,7 +367,7 @@ test('get_poker_meeting with showVotes shows the revealed votes and the final sc
 })
 
 test('get_team_health_meeting shows how many answered when too few did to show a score', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_team_health', {
     teamId,
@@ -468,7 +469,7 @@ test('the meeting reads name the scope a connection lacks', async () => {
 })
 
 test('end_meeting ends a meeting of each type and refuses to end it twice', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const retrospective = await callToolForData(token, 'start_retrospective', {teamId})
   const checkIn = await callToolForData(token, 'start_check_in', {teamId})
@@ -512,7 +513,7 @@ test('end_meeting ends a meeting of each type and refuses to end it twice', asyn
 })
 
 test('end_meeting refuses a meeting on a team the caller is not on, and leaves it running', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
@@ -525,7 +526,7 @@ test('end_meeting refuses a meeting on a team the caller is not on, and leaves i
 })
 
 test('joining a meeting twice, as ensureMeetingMember does before each answer, changes nothing', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_standup', {teamId})
   const meetingId = started.startTeamPrompt.meeting.id as string
@@ -545,9 +546,6 @@ const STANDUP_PROMPTS = [
   {question: 'What is in your way?', description: 'Anything slowing you down'}
 ]
 
-const turnOffAI = (orgId: string) =>
-  getKysely().updateTable('Organization').set({useAI: false}).where('id', '=', orgId).execute()
-
 const getStoredBlocks = async (meetingId: string, promptId: string) => {
   const {content} = await getKysely()
     .selectFrom('TeamPromptResponse')
@@ -559,8 +557,7 @@ const getStoredBlocks = async (meetingId: string, promptId: string) => {
 }
 
 const startStandupWithTemplate = async (prompts: {question: string; description?: string}[]) => {
-  const {cookie, teamId, userId, orgId} = await signUp()
-  await turnOffAI(orgId)
+  const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(STANDUP_SCOPES, {cookie})
   const {template} = await callToolForData(token, 'create_standup_template', {
     teamId,
@@ -678,7 +675,7 @@ test('answer_standup refuses a prompt answered twice, and a meeting on a team th
 })
 
 test('create_standup_template refuses a name another standup template on the team has, and a sixth prompt', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(STANDUP_SCOPES, {cookie})
   await callToolForData(token, 'create_standup_template', {
     teamId,
@@ -702,7 +699,7 @@ test('create_standup_template refuses a name another standup template on the tea
 })
 
 test('start_standup with a first meeting days away only schedules the series', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_standup', {
     teamId,
@@ -720,7 +717,19 @@ test("a standup template with five described prompts, and a standup run with it,
     question: `Prompt ${idx + 1}`,
     description: `What prompt ${idx + 1} is for`
   }))
-  const {token, meeting} = await startStandupWithTemplate(prompts)
+  const {cookie, teamId, userId} = await signUpWithoutAI()
+  const token = await createPersonalAccessToken(STANDUP_SCOPES, {cookie})
+  const before = await getChargedCost(userId)
+
+  await callToolForData(token, 'get_me', {})
+  const {template} = await callToolForData(token, 'create_standup_template', {
+    teamId,
+    name: 'Agent Standup',
+    prompts
+  })
+  await callToolForData(token, 'select_template', {templateId: template.id, teamId})
+  const started = await callToolForData(token, 'start_standup', {teamId})
+  const {meeting} = started.startTeamPrompt
   await callToolForData(token, 'answer_standup', {
     meetingId: meeting.id,
     answers: meeting.prompts.map(({id}: {id: string}) => ({
@@ -730,6 +739,7 @@ test("a standup template with five described prompts, and a standup run with it,
   })
   await callToolForData(token, 'get_standup', {meetingId: meeting.id})
   await callToolForData(token, 'end_meeting', {meetingId: meeting.id})
+  expect((await getChargedCost(userId)) - before).toBeLessThanOrEqual(500)
 })
 
 const TEAM_HEALTH_SCOPES = [...MEETING_SCOPES, 'TEMPLATES_WRITE']
@@ -749,7 +759,7 @@ type TeamHealthResultStage = {
 }
 
 const addTeammate = async (teamId: string, scopes = MEETING_SCOPES) => {
-  const teammate = await signUp()
+  const teammate = await signUpWithoutAI()
   await getKysely()
     .insertInto('TeamMember')
     .values({
@@ -775,8 +785,7 @@ const isSpectating = async (meetingId: string, userId: string) => {
 }
 
 const startAristotleCheck = async () => {
-  const owner = await signUp()
-  await turnOffAI(owner.orgId)
+  const owner = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie: owner.cookie})
   const started = await callToolForData(token, 'start_team_health', {
     teamId: owner.teamId,
@@ -790,8 +799,7 @@ const startAristotleCheck = async () => {
 }
 
 test('an agent builds a team health template, and four teammates answer a check made with it', async () => {
-  const owner = await signUp()
-  await turnOffAI(owner.orgId)
+  const owner = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEAM_HEALTH_SCOPES, {cookie: owner.cookie})
   const {template} = await callToolForData(token, 'create_team_health_template', {
     teamId: owner.teamId,
@@ -928,6 +936,16 @@ test('answer_team_health opts in a team lead who sits checks out, but not on a c
   expect(await isSpectating(meetingId, userId)).toBe(false)
 })
 
+test('answer_standup on a team health check refuses and leaves a lead who sits checks out spectating', async () => {
+  const {userId, token, meetingId, questions} = await startAristotleCheck()
+  const refused = await callTool(token, 'answer_standup', {
+    meetingId,
+    answers: [{promptId: questions[0]!.id, content: 'Fine'}]
+  })
+  expect(refused.isError).toBe(true)
+  expect(await isSpectating(meetingId, userId)).toBe(true)
+})
+
 test('answer_team_health refuses a meeting that is not a team health check, and one on a team the caller is not on', async () => {
   const {teamId, token, meetingId, questions} = await startAristotleCheck()
   const standup = await callToolForData(token, 'start_standup', {teamId})
@@ -977,8 +995,7 @@ test('answer_team_health refuses a check that has ended, from a member and from 
 })
 
 test('create_team_health_template names the questions it could not delete when a step fails part way', async () => {
-  const {userId, cookie, teamId, orgId} = await signUp()
-  await turnOffAI(orgId)
+  const {userId, cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
   const before = await getChargedCost(userId)
   await callToolForData(token, 'create_team_health_template', {
@@ -1017,8 +1034,7 @@ test('create_team_health_template names the questions it could not delete when a
 })
 
 test('create_team_health_template needs only templates:write and refuses a name another team health template on the team has', async () => {
-  const {cookie, teamId, orgId, userId} = await signUp()
-  await turnOffAI(orgId)
+  const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
   const {template} = await callToolForData(token, 'create_team_health_template', {
     teamId,
@@ -1124,8 +1140,7 @@ const openFirstRetroTopic = async (
 }
 
 const startCheckInWithAgendaItem = async () => {
-  const owner = await signUp()
-  await turnOffAI(owner.orgId)
+  const owner = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie: owner.cookie})
   const started = await callToolForData(token, 'start_check_in', {teamId: owner.teamId})
   const meetingId = started.startCheckIn.meeting.id as string
@@ -1180,8 +1195,7 @@ const waitForSummaryText = async (meetingId: string, expectedText: string) => {
 }
 
 test('list_discussions shows a placeholder topic until voting ends, then each retro topic’s discussion and title', async () => {
-  const {cookie, teamId, orgId} = await signUp()
-  await turnOffAI(orgId)
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ'], {cookie})
   const started = await send(START_RETROSPECTIVE, {teamId}, cookie)
   const {id: meetingId, phases} = started.startRetrospective.meeting
@@ -1261,6 +1275,27 @@ test('add_comment joins a check-in and comments, at the end of the thread or as 
   })
 })
 
+test('add_comment puts a comment after a poll in the thread, as the web client does', async () => {
+  const owner = await startCheckInWithAgendaItem()
+  const {discussionId, meetingId, teamId, userId, cookie} = owner
+  const token = await createPersonalAccessToken(['MEETINGS_WRITE', 'COMMENTS_WRITE'], {cookie})
+  await getKysely()
+    .insertInto('Poll')
+    .values({createdById: userId, teamId, meetingId, discussionId, threadSortOrder: 9, title: 'Q?'})
+    .execute()
+  const added = await callToolForData(token, 'add_comment', {
+    meetingId,
+    discussionId,
+    content: 'After the poll'
+  })
+  const stored = await getKysely()
+    .selectFrom('Comment')
+    .select('threadSortOrder')
+    .where('id', '=', added.addComment.comment.id)
+    .executeTakeFirstOrThrow()
+  expect(stored.threadSortOrder).toBe(10)
+})
+
 test("finding a check-in discussion and commenting, or reading two meetings and commenting, fit a starter user's query budget", async () => {
   const owner = await startCheckInWithAgendaItem()
   const [finder, reader] = await Promise.all([
@@ -1269,6 +1304,10 @@ test("finding a check-in discussion and commenting, or reading two meetings and 
   ])
   const {meetingId} = owner
   const listMeetings = {teamIds: [owner.teamId], before: new Date().toISOString()}
+  const [finderBefore, readerBefore] = await Promise.all([
+    getChargedCost(finder.userId),
+    getChargedCost(reader.userId)
+  ])
 
   await callToolForData(finder.token, 'get_me', {})
   await callToolForData(finder.token, 'list_meetings', listMeetings)
@@ -1282,6 +1321,9 @@ test("finding a check-in discussion and commenting, or reading two meetings and 
   await callToolForData(reader.token, 'get_meeting', {meetingId})
   await callToolForData(reader.token, 'get_meeting', {meetingId})
   await callToolForData(reader.token, 'add_comment', {meetingId, discussionId, content: 'Me too'})
+
+  expect((await getChargedCost(finder.userId)) - finderBefore).toBeLessThanOrEqual(500)
+  expect((await getChargedCost(reader.userId)) - readerBefore).toBeLessThanOrEqual(500)
 })
 
 test('add_comment without comments:read saves the comment and returns only its id', async () => {
@@ -1401,7 +1443,7 @@ test('create_task joins a meeting and puts the task at the end of a discussion a
 }, 60000)
 
 test('cancel_meeting_series lets anyone on the team stop a series, keeps the meeting it started, and refuses someone off the team', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_standup', {
     teamId,

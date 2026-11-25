@@ -142,7 +142,7 @@ export default defineTool({
         'BAD_USER_INPUT'
       )
     }
-    const notJoined = await ensureMeetingMember(context, meetingId)
+    const notJoined = await ensureMeetingMember(context, meetingId, {optInToTeamHealth: true})
     if (notJoined) return notJoined
     let progress: SavedResponse['setTeamHealthResponse']['meeting'] | null = null
     const unsavedCommentQuestionIds: string[] = []

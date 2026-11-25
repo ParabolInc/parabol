@@ -7,6 +7,7 @@ import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
+import canAccessAI from '../../mutations/helpers/canAccessAI'
 import paraphraseTeamHealthResponse, {
   PENDING_PARAPHRASE
 } from '../../mutations/helpers/paraphraseTeamHealthResponse'
@@ -54,14 +55,10 @@ const setTeamHealthResponse: MutationResolvers['setTeamHealthResponse'] = async 
     })
   }
   const {questionId} = stage
-  // an anonymous comment is only ever shown as an AI rewrite, so without AI it isn't kept: the
-  // author's own copy then shows it was never shared
-  const canRewordComment = async () => {
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
-    return !!process.env.OPEN_AI_API_KEY && org.useAI
-  }
-  const nextComment = comment && (!isAnonymous || (await canRewordComment())) ? comment : null
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const canRewordComment =
+    !!process.env.OPEN_AI_API_KEY && (await canAccessAI(team, dataLoader, true))
+  const nextComment = comment && (!isAnonymous || canRewordComment) ? comment : null
   // picking a score saves the whole answer, so the same comment arrives many times. Only a comment
   // that actually changed is worth an LLM call, and a paraphrase already in flight or in hand is
   // never thrown away. A null paraphrase means the last attempt failed, so that one is retried

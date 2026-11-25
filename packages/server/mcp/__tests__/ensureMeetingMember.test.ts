@@ -35,19 +35,19 @@ test('opts a team health member who is sitting the check out in, and leaves one 
     .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: true}}}})
     .mockResolvedValueOnce({data: {setTeamHealthSpectate: {meetingMember: {isSpectating: false}}}})
     .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: false}}}})
-  expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toBeNull()
   expect(runGraphQL).toHaveBeenLastCalledWith(
     context,
     expect.stringContaining('setTeamHealthSpectate(meetingId: $meetingId, isSpectating: false)'),
     {meetingId: 'meeting-1'}
   )
-  expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toBeNull()
   expect(runGraphQL).toHaveBeenCalledTimes(3)
 })
 
-test('only joins, never opting a team health member in, when told not to opt in', async () => {
+test('only joins, never opting a team health member in, unless asked to', async () => {
   jest.mocked(runGraphQL).mockResolvedValue({data: {joinMeeting: {meetingId: 'meeting-1'}}})
-  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: false})).toBeNull()
+  expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
   expect(runGraphQL).toHaveBeenCalledTimes(1)
   expect(runGraphQL).toHaveBeenCalledWith(
     context,
@@ -62,7 +62,7 @@ test("answers with the server's coded error when it only joins and the caller ca
     data: null,
     errors: [{message: 'Meeting has already ended', extensions: {code: 'CONFLICT'}}]
   })
-  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: false})).toEqual({
+  expect(await ensureMeetingMember(context, 'meeting-1')).toEqual({
     isError: true,
     content: [
       {
@@ -81,7 +81,7 @@ test("answers with the server's coded error when the opt-in is refused", async (
       data: null,
       errors: [{message: 'Meeting has ended', extensions: {code: 'CONFLICT'}}]
     })
-  expect(await ensureMeetingMember(context, 'meeting-1')).toEqual({
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toEqual({
     isError: true,
     content: [
       {type: 'text', text: JSON.stringify([{message: 'Meeting has ended', code: 'CONFLICT'}])}

@@ -36,7 +36,7 @@ const OPT_IN_TO_TEAM_HEALTH = `
 const ensureMeetingMember = async (
   context: MCPContext,
   meetingId: string,
-  {optInToTeamHealth = true}: {optInToTeamHealth?: boolean} = {}
+  {optInToTeamHealth = false}: {optInToTeamHealth?: boolean} = {}
 ): Promise<CallToolResult | null> => {
   if (!optInToTeamHealth) {
     const joined = await runGraphQL(context, JOIN_MEETING, {meetingId})

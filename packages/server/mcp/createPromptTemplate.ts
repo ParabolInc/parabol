@@ -1,9 +1,9 @@
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js'
-import type {FormattedExecutionResult} from 'graphql'
 import {z} from 'zod'
 import type {PromptTemplateTypeEnum} from '../graphql/public/resolverTypes'
 import type {MCPContext} from './MCPContext'
 import runGraphQL from './runGraphQL'
+import runTemplateStep, {renameMeetingTemplate, TemplateStepFailedError} from './runTemplateStep'
 import toolError from './toolError'
 import toolResult from './toolResult'
 
@@ -53,14 +53,6 @@ const ADD_PROMPT_TEMPLATE = `
   }
 `
 
-const RENAME_MEETING_TEMPLATE = `
-  mutation RenameMeetingTemplate($templateId: ID!, $name: String!) {
-    renameMeetingTemplate(templateId: $templateId, name: $name) {
-      __typename
-    }
-  }
-`
-
 const ADD_TEMPLATE_PROMPT = `
   mutation AddTemplatePrompt($templateId: ID!) {
     addTemplatePrompt(templateId: $templateId) {
@@ -96,28 +88,6 @@ const REMOVE_PROMPT_TEMPLATE = `
     }
   }
 `
-
-export class TemplateStepFailedError extends Error {
-  result: FormattedExecutionResult
-
-  constructor(result: FormattedExecutionResult) {
-    super('A step of making a template failed')
-    this.result = result
-  }
-}
-
-export const runTemplateStep = async <TData extends Record<string, unknown>>(
-  context: MCPContext,
-  document: string,
-  variables: Record<string, unknown>
-) => {
-  const result = await runGraphQL<TData>(context, document, variables)
-  if (result.errors?.length || !result.data) throw new TemplateStepFailedError(result)
-  return result.data
-}
-
-export const renameMeetingTemplate = (context: MCPContext, templateId: string, name: string) =>
-  runTemplateStep(context, RENAME_MEETING_TEMPLATE, {templateId, name})
 
 const addPrompt = async (context: MCPContext, templateId: string) => {
   const {addTemplatePrompt} = await runTemplateStep<{addTemplatePrompt: {prompt: TemplatePrompt}}>(

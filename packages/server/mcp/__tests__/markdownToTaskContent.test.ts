@@ -96,4 +96,9 @@ describe('markdownToTaskContent', () => {
       [paragraph(text('a'), text(' | '), text('c'))]
     )
   })
+
+  test('an empty table inside a quote leaves a valid doc', () => {
+    const doc = JSON.parse(markdownToTaskContent('> | | |\n> | - | - |\n> | | |', 'comment'))
+    expect(() => schema.nodeFromJSON(doc).check()).not.toThrow()
+  })
 })

@@ -1,3 +1,4 @@
+import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
 
@@ -15,6 +16,16 @@ export const leaveHourlyQueryBudget = async (userId: string, room: number) => {
     tenMinutesAgo,
     STARTER_HOURLY_QUERY_BUDGET - (await getChargedCost(userId)) - room
   )
+}
+
+export const signUpWithoutAI = async () => {
+  const member = await signUp()
+  await getKysely()
+    .updateTable('Organization')
+    .set({useAI: false})
+    .where('id', '=', member.orgId)
+    .execute()
+  return member
 }
 
 export const MCP_URL = `${PROTOCOL}://${HOST}/mcp`

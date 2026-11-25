@@ -38,7 +38,7 @@ export default defineTool({
   }),
   annotations: writeAnnotations,
   run: async (context, {meetingId, discussionId, content, threadParentId}) => {
-    const notJoined = await ensureMeetingMember(context, meetingId, {optInToTeamHealth: false})
+    const notJoined = await ensureMeetingMember(context, meetingId)
     if (notJoined) return notJoined
     return toolResult(
       await runGraphQL(context, ADD_COMMENT, {

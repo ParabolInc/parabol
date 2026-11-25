@@ -74,7 +74,9 @@ const keepRenderable = (nodes: JSONContent[], renderable: Set<string>): JSONCont
   nodes.flatMap((node) => {
     if (!node.type) return []
     if (renderable.has(node.type)) {
-      return [node.content ? {...node, content: keepRenderable(node.content, renderable)} : node]
+      if (!node.content) return [node]
+      const content = keepRenderable(node.content, renderable)
+      return content.length === 0 && node.content.length > 0 ? [] : [{...node, content}]
     }
     const paragraphContent = getParagraphContent(node)
     if (!paragraphContent) return keepRenderable(node.content ?? [], renderable)

@@ -1,7 +1,7 @@
 import mcpInstructions from '../mcp/mcpInstructions'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
-import {sendPublic, signUp} from './common'
+import {sendPublic} from './common'
 import {
   callTool,
   callToolForData,
@@ -9,7 +9,8 @@ import {
   expectToolErrorCode,
   getChargedCost,
   leaveHourlyQueryBudget,
-  PNG_BASE64
+  PNG_BASE64,
+  signUpWithoutAI
 } from './mcpClient'
 
 afterAll(async () => {
@@ -17,7 +18,7 @@ afterAll(async () => {
 })
 
 test('get_me answers on a connection without orgs:read', async () => {
-  const {userId, cookie, teamId} = await signUp()
+  const {userId, cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(['USERS_READ', 'TEAMS_READ'], {cookie})
   const result = await callTool(token, 'get_me', {})
   expect(result.isError).toBeUndefined()
@@ -32,16 +33,6 @@ const getColumns = (meetingResult: {
 }) => meetingResult.viewer.meeting.phases.flatMap(({reflectPrompts}) => reflectPrompts ?? [])
 
 const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_READ']
-
-const signUpWithoutAI = async () => {
-  const member = await signUp()
-  await getKysely()
-    .updateTable('Organization')
-    .set({useAI: false})
-    .where('id', '=', member.orgId)
-    .execute()
-  return member
-}
 
 test('an agent adds, edits and renames cards on a retro', async () => {
   const {cookie, teamId} = await signUpWithoutAI()
@@ -198,7 +189,7 @@ const getActiveTemplateNames = async (teamId: string) => {
 }
 
 test('create_retro_template makes a template with exactly those columns, in order', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const {template} = await callToolForData(token, 'create_retro_template', {
     teamId,
@@ -222,7 +213,7 @@ test('create_retro_template makes a template with exactly those columns, in orde
 })
 
 test('a retro started with the new template has its columns', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const {template} = await callToolForData(token, 'create_retro_template', {
     teamId,
@@ -238,7 +229,7 @@ test('a retro started with the new template has its columns', async () => {
 })
 
 test("a card can't go under a column from another template, and nothing is stored", async () => {
-  const [member, otherTeam] = await Promise.all([signUpWithoutAI(), signUp()])
+  const [member, otherTeam] = await Promise.all([signUpWithoutAI(), signUpWithoutAI()])
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: member.cookie})
   const otherToken = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: otherTeam.cookie})
   const {template: foreignTemplate} = await callToolForData(otherToken, 'create_retro_template', {
@@ -270,7 +261,7 @@ test("a card can't go under a column from another template, and nothing is store
 })
 
 test("twelve described columns and the retro that uses them fit a starter user's query budget", async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const columns = Array.from({length: 12}, (_, idx) => ({
     question: `Column ${idx + 1}`,
@@ -291,7 +282,7 @@ test("twelve described columns and the retro that uses them fit a starter user's
 })
 
 test('a starter user out of free custom templates gets that error and no template', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   for (const name of ['First Columns', 'Second Columns']) {
     await callToolForData(token, 'create_retro_template', {teamId, name, columns: COLUMNS})
@@ -308,7 +299,7 @@ test('a starter user out of free custom templates gets that error and no templat
 })
 
 test('a name the team already uses is refused before a free template is spent', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   await callToolForData(token, 'create_retro_template', {
     teamId,
@@ -333,7 +324,7 @@ test('a name the team already uses is refused before a free template is spent', 
 })
 
 test('a half-made template it could not remove is named in the error', async () => {
-  const {userId, cookie, teamId} = await signUp()
+  const {userId, cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const defaultColumn = [{question: 'New prompt'}]
   const before = await getChargedCost(userId)
@@ -361,7 +352,7 @@ test('a half-made template it could not remove is named in the error', async () 
 })
 
 test('columns that repeat a question are refused before anything is made', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const result = await callTool(token, 'create_retro_template', {
     teamId,

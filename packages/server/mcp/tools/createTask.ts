@@ -50,7 +50,7 @@ export default defineTool({
       return toolError('Pass the meetingId of the discussion too.', 'BAD_USER_INPUT')
     }
     if (meetingId) {
-      const notJoined = await ensureMeetingMember(context, meetingId, {optInToTeamHealth: false})
+      const notJoined = await ensureMeetingMember(context, meetingId)
       if (notJoined) return notJoined
     }
     return toolResult(

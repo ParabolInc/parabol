@@ -1,12 +1,8 @@
 import {z} from 'zod'
-import {
-  renameMeetingTemplate,
-  runTemplateStep,
-  TemplateStepFailedError
-} from '../createPromptTemplate'
 import defineTool from '../defineTool'
 import type {MCPContext} from '../MCPContext'
 import runGraphQL from '../runGraphQL'
+import runTemplateStep, {renameMeetingTemplate, TemplateStepFailedError} from '../runTemplateStep'
 import {writeAnnotations} from '../toolAnnotations'
 import toolResult from '../toolResult'
 
