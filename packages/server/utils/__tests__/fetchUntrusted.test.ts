@@ -1,8 +1,8 @@
 import http from 'http'
 import type {AddressInfo} from 'net'
 
-// fetchUntrusted reads __APP_VERSION__ (a build-time define) for its User-Agent
-Object.assign(globalThis, {__APP_VERSION__: 'test'})
+// A dev server allows every address, so these check the guard a production build runs
+Object.assign(globalThis, {__PRODUCTION__: true})
 
 // SSRF_ALLOWED_HOSTS is read when the module loads, so each scenario needs a fresh copy
 const loadFetchUntrusted = (allowedHosts?: string) => {
@@ -244,6 +244,31 @@ describe('fetchUntrusted', () => {
       expect(await post(loadFetchUntrusted('mattermost.internal,10.0.0.0/8'), '127.0.0.1')).toBe(
         null
       )
+    })
+  })
+
+  describe('requestUntrusted', () => {
+    const request = (mod: typeof import('../fetchUntrusted'), path: string) =>
+      mod.requestUntrusted(`http://127.0.0.1:${port}${path}`, {
+        headers: {Authorization: 'Bearer token'}
+      })
+
+    test("refuses a private IP as the configuring user's mistake when the allowlist is empty", async () => {
+      await expect(request(loadFetchUntrusted(), '/echo-auth')).rejects.toMatchObject({
+        extensions: {code: 'BAD_USER_INPUT'}
+      })
+      expect(authSeenByServer).toBe(null)
+    })
+
+    test("sends the caller's request when the host is allowlisted", async () => {
+      const res = await request(loadFetchUntrusted(LOOPBACK_HOSTS), '/echo-auth')
+      expect(await res.json()).toEqual({auth: 'Bearer token'})
+    })
+
+    test('returns a redirect instead of following it', async () => {
+      const res = await request(loadFetchUntrusted(LOOPBACK_HOSTS), '/redirect-same-origin')
+      expect(res.status).toBe(302)
+      expect(authSeenByServer).toBe(null)
     })
   })
 })

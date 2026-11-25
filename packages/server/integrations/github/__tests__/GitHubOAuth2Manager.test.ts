@@ -1,12 +1,12 @@
 jest.mock('../../helpers/authorizeOAuth2', () => ({authorizeOAuth2: jest.fn()}))
-jest.mock('@whatwg-node/fetch', () => ({fetch: jest.fn()}))
+jest.mock('../../../utils/fetchUntrusted', () => ({requestUntrusted: jest.fn()}))
 
-import {fetch} from '@whatwg-node/fetch'
+import {requestUntrusted} from '../../../utils/fetchUntrusted'
 import {authorizeOAuth2} from '../../helpers/authorizeOAuth2'
 import GitHubOAuth2Manager from '../GitHubOAuth2Manager'
 
 const mockedAuthorize = authorizeOAuth2 as jest.MockedFunction<typeof authorizeOAuth2>
-const mockedFetch = fetch as jest.MockedFunction<typeof fetch>
+const mockedRequest = requestUntrusted as jest.MockedFunction<typeof requestUntrusted>
 
 describe('GitHubOAuth2Manager', () => {
   const manager = new GitHubOAuth2Manager('cid', 'secret', 'https://api.github.com')
@@ -17,7 +17,7 @@ describe('GitHubOAuth2Manager', () => {
       refreshToken: undefined,
       scopes: 'repo'
     })
-    mockedFetch.mockResolvedValue({
+    mockedRequest.mockResolvedValue({
       ok: true,
       json: async () => ({login: 'octocat'})
     } as unknown as Response)
@@ -38,7 +38,7 @@ describe('GitHubOAuth2Manager', () => {
       scopes: 'repo',
       providerUserId: 'octocat'
     })
-    expect(mockedFetch).toHaveBeenCalledWith('https://api.github.com/user', {
+    expect(mockedRequest).toHaveBeenCalledWith('https://api.github.com/user', {
       headers: {
         Authorization: 'Bearer gho_x',
         'User-Agent': 'Parabol',

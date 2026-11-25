@@ -1,6 +1,7 @@
 import {fetch, Response} from '@whatwg-node/fetch'
 import type {LookupAddress} from 'dns'
 import dns from 'dns/promises'
+import {GraphQLError} from 'graphql'
 import http from 'http'
 import https from 'https'
 import net, {type LookupFunction} from 'net'
@@ -379,5 +380,29 @@ export const postUntrusted = async (
     const log = isExpectedBlock(e) ? Logger.debug : Logger.warn
     log(`postUntrusted failed for ${host}`, e)
     return null
+  }
+}
+
+// A request to a server an org or team configured, like a self-hosted GitLab, past the same guard. A redirect comes
+// back as the response: the ponyfill drops the guarded agent when one changes protocol
+export const requestUntrusted = async (
+  input: string | URL,
+  init: Parameters<typeof fetch>[1] = {}
+) => {
+  const url = parseHttpUrl(String(input))
+  try {
+    await resolveSafeAddresses(getHostname(url))
+    return await fetch(url, {
+      ...init,
+      redirect: 'manual',
+      agent: url.protocol === 'https:' ? httpsAgent : httpAgent
+    })
+  } catch (e) {
+    if (!isBlockedAddressError(e)) throw e
+    const log = isExpectedBlock(e) ? Logger.debug : Logger.warn
+    log(`requestUntrusted refused ${url.host}`, e)
+    throw new GraphQLError(`Parabol can't connect to ${url.host}, which is on a private network`, {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
 }

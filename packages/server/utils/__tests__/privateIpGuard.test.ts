@@ -1,6 +1,9 @@
 // The allowlist is parsed from process.env when the module loads, so each scenario needs a
 // fresh copy of the module. Everything here guards outbound requests against SSRF, so a
 // regression that lets a private address through is a security bug, not a papercut.
+// A dev server allows every address, so these check the guard a production build runs
+Object.assign(globalThis, {__PRODUCTION__: true})
+
 const loadGuard = (allowedHosts?: string) => {
   jest.resetModules()
   if (allowedHosts === undefined) {
@@ -141,4 +144,13 @@ describe('hasAllowlist', () => {
     expect(loadGuard('10.0.0.5').hasAllowlist()).toBe(true)
     expect(loadGuard('192.168.1.0/24').hasAllowlist()).toBe(true)
   })
+})
+
+test('a dev server reaches private addresses and local hostnames without an allowlist', () => {
+  Object.assign(globalThis, {__PRODUCTION__: false})
+  const guard = loadGuard()
+  Object.assign(globalThis, {__PRODUCTION__: true})
+  expect(guard.isBlockedAddress('127.0.0.1')).toBe(false)
+  expect(guard.isBlockedAddress('10.0.0.5')).toBe(false)
+  expect(guard.isAllowlistedHostname('localhost')).toBe(true)
 })

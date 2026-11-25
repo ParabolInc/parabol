@@ -62,6 +62,8 @@ jobs:
       - name: Start testing server in background
         env:
           PRIVATE_LICENSE_KEY: ${{ secrets.CI_PRIVATE_LICENSE_KEY }}
+          # the tests' mock Jira Server and GitLab listen on loopback, like a self-hosted install's private ones
+          SSRF_ALLOWED_HOSTS: 127.0.0.1
         run: |
           pnpm start > "$RUNNER_TEMP/server.log" 2>&1 &
           timeout 60 bash -c 'until curl --silent --output /dev/null http://localhost:3000/graphql; do sleep 0.1; done'

@@ -46,6 +46,7 @@ module.exports = {
   ],
   plugins: [
     new webpack.DefinePlugin({
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __PRODUCTION__: true
     })
     // new CircularDependencyPlugin({

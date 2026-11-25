@@ -1,12 +1,12 @@
-import {fetch} from '@whatwg-node/fetch'
 import {parse} from 'graphql'
 import type {Executor} from 'nest-graphql-endpoint'
 import toNestedRequestError from '../../../integrations/platform/toNestedRequestError'
+import {requestUntrusted} from '../../../utils/fetchUntrusted'
 import isExpectedError from '../../../utils/isExpectedError'
 import nestGitLabEndpoint from '../nestGitLabEndpoint'
 import nestLinearEndpoint from '../nestLinearEndpoint'
 
-jest.mock('@whatwg-node/fetch', () => ({fetch: jest.fn()}))
+jest.mock('../../../utils/fetchUntrusted', () => ({requestUntrusted: jest.fn()}))
 jest.mock('nest-graphql-endpoint', () => ({
   __esModule: true,
   default: (params: {executor: unknown}) => params
@@ -23,7 +23,9 @@ test.each([
   ['GitLab', nestGitLabEndpoint],
   ['Linear', nestLinearEndpoint]
 ])('%s not answering in time is an expected error', async (_service, nestEndpoint) => {
-  jest.mocked(fetch).mockRejectedValue(new DOMException('The operation was aborted', 'AbortError'))
+  jest
+    .mocked(requestUntrusted)
+    .mockRejectedValue(new DOMException('The operation was aborted', 'AbortError'))
   const {executor} = nestEndpoint(endpointParams) as unknown as {
     executor: Executor<{accessToken: string; baseUri: string}>
   }

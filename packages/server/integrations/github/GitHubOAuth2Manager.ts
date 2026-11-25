@@ -1,4 +1,4 @@
-import {fetch} from '@whatwg-node/fetch'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -10,7 +10,7 @@ export default class GitHubOAuth2Manager extends OAuth2Manager {
   async authorize(code: string) {
     const auth = await this.fetchToken({grant_type: 'authorization_code', code, redirect_uri: ''})
     if (auth instanceof Error) return auth
-    const res = await fetch(`${this.serverBaseUrl}/user`, {
+    const res = await requestUntrusted(`${this.serverBaseUrl}/user`, {
       headers: {
         Authorization: `Bearer ${auth.accessToken}`,
         'User-Agent': 'Parabol',

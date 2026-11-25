@@ -1,16 +1,14 @@
-import {fetch, Response} from '@whatwg-node/fetch'
+import {Response} from '@whatwg-node/fetch'
+import {requestUntrusted} from '../../../utils/fetchUntrusted'
 import {isDeadGrant, OAuth2TokenError} from '../../../utils/OAuth2TokenError'
 import {ThirdPartyResponseError} from '../../../utils/ThirdPartyResponseError'
 import {authorizeOAuth2} from '../authorizeOAuth2'
 
-jest.mock('@whatwg-node/fetch', () => ({
-  ...jest.requireActual<typeof import('@whatwg-node/fetch')>('@whatwg-node/fetch'),
-  fetch: jest.fn()
-}))
-const mockFetch = jest.mocked(fetch)
+jest.mock('../../../utils/fetchUntrusted', () => ({requestUntrusted: jest.fn()}))
+const mockRequest = jest.mocked(requestUntrusted)
 
 test("a token endpoint that answers with a page is reported with what it sent, and the request's secrets stay out", async () => {
-  mockFetch.mockResolvedValue(
+  mockRequest.mockResolvedValue(
     new Response('<html><title>502 Bad Gateway</title></html>', {
       status: 502,
       headers: {'content-type': 'text/html'}
@@ -34,7 +32,7 @@ test("a token endpoint that answers with a page is reported with what it sent, a
 })
 
 test('authorizeOAuth2 returns an Error when the token response has no access_token', async () => {
-  mockFetch.mockResolvedValue(
+  mockRequest.mockResolvedValue(
     new Response('{}', {status: 200, headers: {'content-type': 'application/json'}})
   )
   const result = await authorizeOAuth2({
@@ -49,7 +47,7 @@ test('authorizeOAuth2 returns an Error when the token response has no access_tok
 })
 
 test('a token endpoint that answers JSON without a token or an OAuth2 error is reported with what it sent', async () => {
-  mockFetch.mockResolvedValue(
+  mockRequest.mockResolvedValue(
     new Response('{"err":"Rate limit reached","ECODE":"APP_002"}', {
       status: 429,
       headers: {'content-type': 'application/json; charset=utf-8'}
@@ -75,7 +73,7 @@ test('a token endpoint that answers JSON without a token or an OAuth2 error is r
 })
 
 const answerOAuth2Error = (status: number, body: object) =>
-  mockFetch.mockResolvedValue(
+  mockRequest.mockResolvedValue(
     new Response(JSON.stringify(body), {status, headers: {'content-type': 'application/json'}})
   )
 
@@ -125,7 +123,7 @@ test.each([
 )
 
 test('a token response is read into tokens', async () => {
-  mockFetch.mockResolvedValue(
+  mockRequest.mockResolvedValue(
     new Response('{"access_token":"tok","refresh_token":"ref","scope":"api","expires_in":7200}', {
       status: 200,
       headers: {'content-type': 'application/json'}

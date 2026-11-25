@@ -1,7 +1,7 @@
-import {fetch} from '@whatwg-node/fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {URL} from 'url'
 import appOrigin from '../../appOrigin'
+import {requestUntrusted} from '../../utils/fetchUntrusted'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
   type OAuth2AuthorizationParams,
@@ -30,7 +30,7 @@ export default class LinearManager extends OAuth2Manager {
       redirect_uri: LinearManager.REDIRECT_URI
     })
     if (auth instanceof Error) return auth
-    const res = await fetch(`${this.apiServerBaseUrl}/graphql`, {
+    const res = await requestUntrusted(`${this.apiServerBaseUrl}/graphql`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${auth.accessToken}`,

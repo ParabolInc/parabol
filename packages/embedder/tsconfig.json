@@ -8,5 +8,5 @@
     },
     "lib": ["esnext"]
   },
-  "include": ["**/*", "../types/**/*"]
+  "include": ["**/*", "../types/**/*", "../server/types/fetchAgent.d.ts"]
 }
