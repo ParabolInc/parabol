@@ -8,14 +8,16 @@ import toolError from '../toolError'
 import toolResult from '../toolResult'
 
 const UPDATE_TASK = `
-  mutation UpdateTask($updatedTask: UpdateTaskInput!) {
+  mutation UpdateTask($updatedTask: UpdateTaskInput!, $canReadTasks: Boolean!) {
     updateTask(updatedTask: $updatedTask) {
       task {
         id
-        plaintextContent
-        status
-        teamId
-        userId
+        ... @include(if: $canReadTasks) {
+          plaintextContent
+          status
+          teamId
+          userId
+        }
       }
     }
   }
@@ -25,7 +27,7 @@ export default defineTool({
   name: 'update_task',
   title: 'Update a task',
   description:
-    'Change what a task says, its status, or who it is assigned to. Content replaces the whole task. Needs tasks:write.',
+    'Change what a task says, its status, or who it is assigned to. Content replaces the whole task. It returns the task id, and its text and status too when the connection has tasks:read. Needs tasks:write.',
   inputSchema: z.object({
     taskId: z.string().describe('The task id, from list_tasks or create_task'),
     content: z.string().min(1).optional().describe('The new task text, in markdown'),
@@ -44,7 +46,8 @@ export default defineTool({
           status,
           userId,
           content: content === undefined ? undefined : markdownToTaskContent(content)
-        }
+        },
+        canReadTasks: context.grant.scopes.includes('tasks:read')
       })
     )
   }

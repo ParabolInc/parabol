@@ -1,3 +1,5 @@
+import {costLimitRule} from '@escape.tech/graphql-armor-cost-limit'
+import {maxDepthRule} from '@escape.tech/graphql-armor-max-depth'
 import {
   type GraphQLSchema,
   getNamedType,
@@ -8,6 +10,7 @@ import {
   OperationTypeNode,
   parse,
   print,
+  specifiedRules,
   TypeInfo,
   typeFromAST,
   validate,
@@ -19,6 +22,9 @@ import getLeadingComment from './getLeadingComment'
 import getVariableSchema, {addDescription} from './getVariableSchema'
 import type OperationTool from './OperationTool'
 import {readAnnotations, writeAnnotations} from './toolAnnotations'
+
+const MAX_OPERATION_COST = 300
+const MAX_OPERATION_DEPTH = 12
 
 const getFeedingDescriptions = (schema: GraphQLSchema, document: ReturnType<typeof parse>) => {
   const descriptions = new Map<string, string>()
@@ -74,8 +80,34 @@ const compileOperationTool = (
   if (!description) {
     throw fail('the operation needs a description comment on the lines directly above it')
   }
-  const [firstError] = validate(schema, document)
+  let cost = 0
+  let depth = 0
+  const [firstError] = validate(schema, document, [
+    ...specifiedRules,
+    costLimitRule({
+      maxCost: Infinity,
+      onAccept: [
+        (_context, {n}) => {
+          cost = Math.round(n)
+        }
+      ]
+    }),
+    maxDepthRule({
+      n: Infinity,
+      onAccept: [
+        (_context, {n}) => {
+          depth = n
+        }
+      ]
+    })
+  ])
   if (firstError) throw fail(firstError.message)
+  if (depth > MAX_OPERATION_DEPTH) {
+    throw fail(`the operation nests ${depth} deep, over the limit of ${MAX_OPERATION_DEPTH}`)
+  }
+  if (cost > MAX_OPERATION_COST) {
+    throw fail(`the operation costs ${cost}, over the cap of ${MAX_OPERATION_COST}`)
+  }
 
   const feedingDescriptions = getFeedingDescriptions(schema, document)
   const properties: Record<string, object> = {}

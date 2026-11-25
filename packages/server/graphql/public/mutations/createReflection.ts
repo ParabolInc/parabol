@@ -26,15 +26,17 @@ const createReflection: MutationResolvers['createReflection'] = async (
   const {content, sortOrder, meetingId, promptId} = input
   // AUTH
   const viewerId = getUserId(authToken)
-  const [reflectPrompt, meeting] = await Promise.all([
-    dataLoader.get('templatePrompts').load(promptId),
+  const [meetingPrompts, meeting] = await Promise.all([
+    dataLoader.get('templatePromptsByMeetingId').load(meetingId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  if (!reflectPrompt) {
-    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
-  }
   if (!meeting) {
     throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  }
+  if (!meetingPrompts.some(({id}) => id === promptId)) {
+    throw new GraphQLError('Prompt is not part of this meeting', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {

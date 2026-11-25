@@ -225,6 +225,38 @@ test('a retro started with the new template has its columns', async () => {
   expect(getColumns(meeting)).toEqual(template.columns)
 })
 
+test("a card can't go under a column from another template, and nothing is stored", async () => {
+  const [member, otherTeam] = await Promise.all([signUp(), signUp()])
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: member.cookie})
+  const otherToken = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: otherTeam.cookie})
+  const {template: foreignTemplate} = await callToolForData(otherToken, 'create_retro_template', {
+    teamId: otherTeam.teamId,
+    name: 'Other Team Columns',
+    columns: COLUMNS
+  })
+  const started = await callToolForData(token, 'start_retrospective', {teamId: member.teamId})
+  const meetingId = started.startRetrospective.meeting.id as string
+  const ownColumns = getColumns(await callToolForData(token, 'list_retro_columns', {meetingId}))
+
+  const refused = await callTool(token, 'add_reflection', {
+    meetingId,
+    promptId: foreignTemplate.columns[0].id,
+    content: 'Deploys are slow'
+  })
+  const message = expectToolErrorCode(refused, 'BAD_USER_INPUT')
+  expect(message).toContain('not part of this meeting')
+
+  const empty = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(empty.viewer.meeting.reflectionGroups).toEqual([])
+
+  const added = await callToolForData(token, 'add_reflection', {
+    meetingId,
+    promptId: ownColumns[0]!.id,
+    content: 'Deploys are slow'
+  })
+  expect(added.createReflection.reflection.plaintextContent).toBe('Deploys are slow')
+})
+
 test("twelve described columns and the retro that uses them fit a starter user's query budget", async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})

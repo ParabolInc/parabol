@@ -3,7 +3,7 @@ The type of meeting
 """
 enum MeetingTypeEnum {
   """
-  Check-in meeting where each team member gives a brief status update
+  A check-in, called action in the API: each team member gives a brief status update
   """
   action
 
@@ -18,7 +18,7 @@ enum MeetingTypeEnum {
   poker
 
   """
-  Standup meeting where each team member shares async written responses to a prompt
+  A standup, called teamPrompt in the API: each team member shares async written responses to a prompt
   """
   teamPrompt
 

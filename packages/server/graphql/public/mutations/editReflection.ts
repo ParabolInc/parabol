@@ -13,12 +13,16 @@ const editReflection: MutationResolvers['editReflection'] = async (
   const subOptions = {operationId, mutatorId}
 
   // AUTH
-  const reflectPrompt = await dataLoader.get('templatePrompts').load(promptId)
-  if (!reflectPrompt) {
-    throw new GraphQLError('Category not found', {extensions: {code: 'NOT_FOUND'}})
-  }
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const [meetingPrompts, meeting] = await Promise.all([
+    dataLoader.get('templatePromptsByMeetingId').load(meetingId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
   if (!meeting) throw new GraphQLError('Meeting not found', {extensions: {code: 'NOT_FOUND'}})
+  if (!meetingPrompts.some(({id}) => id === promptId)) {
+    throw new GraphQLError('Prompt is not part of this meeting', {
+      extensions: {code: 'BAD_USER_INPUT'}
+    })
+  }
   const {endedAt, phases} = meeting
   if (endedAt) throw new GraphQLError('Meeting already ended', {extensions: {code: 'CONFLICT'}})
   if (isPhaseComplete('group', phases)) {

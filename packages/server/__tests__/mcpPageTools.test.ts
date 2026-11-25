@@ -66,6 +66,31 @@ test('list_pages with a teamId returns top-level pages of that team', async () =
   ).toBe(true)
 })
 
+test('search_pages says where each page sits', async () => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ', 'PAGES_WRITE'], {
+    cookie
+  })
+  const teamPage = await callToolForData(token, 'create_page', {teamId})
+  const teamPageId = teamPage.createPage.page.id
+  const subPage = await callToolForData(token, 'create_page', {parentPageId: teamPageId})
+  const subPageId = subPage.createPage.page.id
+  const found = await callToolForData(token, 'search_pages', {query: ''})
+  const nodes = found.viewer.search.edges.map(({node}: {node: unknown}) => node)
+  expect(nodes).toContainEqual(
+    expect.objectContaining({id: teamPageId, teamId, parentPageId: null, isPrivate: false})
+  )
+  expect(nodes).toContainEqual(
+    expect.objectContaining({
+      id: subPageId,
+      teamId: null,
+      parentPageId: teamPageId,
+      updatedAt: expect.any(String)
+    })
+  )
+})
+
 test('list_pages reports hasNextPage and a larger first returns every sub-page', async () => {
   const {cookie} = await signUp()
   const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ', 'PAGES_WRITE'], {

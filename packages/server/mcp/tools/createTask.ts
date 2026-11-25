@@ -7,14 +7,16 @@ import {writeAnnotations} from '../toolAnnotations'
 import toolResult from '../toolResult'
 
 const CREATE_TASK = `
-  mutation CreateTask($newTask: CreateTaskInput!) {
+  mutation CreateTask($newTask: CreateTaskInput!, $canReadTasks: Boolean!) {
     createTask(newTask: $newTask) {
       task {
         id
-        plaintextContent
-        status
-        teamId
-        userId
+        ... @include(if: $canReadTasks) {
+          plaintextContent
+          status
+          teamId
+          userId
+        }
       }
     }
   }
@@ -23,7 +25,8 @@ const CREATE_TASK = `
 export default defineTool({
   name: 'create_task',
   title: 'Create a task',
-  description: 'Create a task on a team, optionally assigned to a team member. Needs tasks:write.',
+  description:
+    'Create a task on a team, optionally assigned to a team member. It returns the new task id, and its text and status too when the connection has tasks:read. Needs tasks:write.',
   inputSchema: z.object({
     teamId: z.string().describe('The team the task belongs to, from get_me'),
     content: z.string().min(1).describe('What the task says, in markdown'),
@@ -37,7 +40,8 @@ export default defineTool({
   run: async (context, {teamId, content, status, userId}) =>
     toolResult(
       await runGraphQL(context, CREATE_TASK, {
-        newTask: {teamId, status, userId, content: markdownToTaskContent(content)}
+        newTask: {teamId, status, userId, content: markdownToTaskContent(content)},
+        canReadTasks: context.grant.scopes.includes('tasks:read')
       })
     )
 })

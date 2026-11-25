@@ -56,9 +56,7 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
     stage.endAt = now
   }
   const phase = getMeetingPhase(phases)
-  const storyCount = new Set(
-    estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
-  ).size
+  const storyCount = new Set(estimateStages.map(({taskId}) => taskId)).size
   const discussionIds = estimateStages.map((stage) => stage.discussionId)
   const [insights, commentCounts, team, teamMembers, removedTaskIds] = await Promise.all([
     gatherInsights(meeting, dataLoader),

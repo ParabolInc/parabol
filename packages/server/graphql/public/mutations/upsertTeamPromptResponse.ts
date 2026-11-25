@@ -1,4 +1,4 @@
-import {generateText, type JSONContent} from '@tiptap/core'
+import {generateText} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -7,8 +7,8 @@ import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTip
 import {isStandupResponseTooLong} from '../../../../client/shared/tiptap/standupResponseLength'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {parseEditorDoc} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
-import {stripUnsafeLinks} from '../../../utils/stripUnsafeLinks'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
@@ -40,16 +40,9 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     })
   }
 
-  let doc: JSONContent
-  let isEmpty: boolean
-  let plaintextContent: string
-  try {
-    doc = stripUnsafeLinks(JSON.parse(content))
-    isEmpty = isEmptyTipTapDoc(doc)
-    plaintextContent = generateText(doc, serverTipTapExtensions).trim()
-  } catch {
-    throw new GraphQLError('Invalid editor format', {extensions: {code: 'BAD_USER_INPUT'}})
-  }
+  const doc = parseEditorDoc(content)
+  const isEmpty = isEmptyTipTapDoc(doc)
+  const plaintextContent = generateText(doc, serverTipTapExtensions).trim()
   if (isStandupResponseTooLong(doc))
     throw new GraphQLError('Response is too long', {extensions: {code: 'BAD_USER_INPUT'}})
 

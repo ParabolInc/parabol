@@ -35,6 +35,7 @@ const schema = buildSchema(`
 
   type Task {
     id: ID!
+    parent: Task
   }
 
   type TaskEdge {
@@ -297,4 +298,21 @@ test.each([
 ])('throws for %s, naming the file', (_label, source, message) => {
   expect(() => compile(source)).toThrow(message)
   expect(() => compile(source)).toThrow(/^Test\.graphql: /)
+})
+
+test('throws when the operation costs more than the cap, naming the file, cost and cap', () => {
+  const tasksQuery = (first: number) =>
+    `# Q\nquery Q { viewer { tasks(first: ${first}) { edges { node { id } } } } }`
+  expect(() => compile(tasksQuery(15))).not.toThrow()
+  expect(() => compile(tasksQuery(16))).toThrow(
+    'Test.graphql: the operation costs 311, over the cap of 300'
+  )
+})
+
+test('throws when the operation nests deeper than the limit', () => {
+  const parents = 8
+  const source = `# Q\nquery Q { viewer { tasks(first: 1) { edges { node { ${'parent { '.repeat(parents)}id${' }'.repeat(parents)} } } } } }`
+  expect(() => compile(source)).toThrow(
+    'Test.graphql: the operation nests 13 deep, over the limit of 12'
+  )
 })

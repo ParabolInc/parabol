@@ -23,7 +23,8 @@ const validateRRule = (raw: string) => {
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  const {interval, frequency, count} = firstRule
+  const {frequency, count} = firstRule
+  const interval = firstRule.interval ?? 1
   if (!Number.isSafeInteger(interval)) {
     throw new GraphQLError('RRULE interval must be an integer', {
       extensions: {code: 'BAD_USER_INPUT'}
@@ -60,7 +61,6 @@ const validateRRule = (raw: string) => {
 
 const RRuleScalarType: RRuleScalarConfig = {
   name: 'RRule',
-  description: 'A custom scalar type for representing RRule strings',
   parseValue(value: unknown) {
     if (typeof value !== 'string') {
       throw new GraphQLError(`RRule is not a string, it is a: ${typeof value}`, {

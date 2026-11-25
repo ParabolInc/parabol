@@ -1,4 +1,4 @@
-# List meetings of every kind on the teams you pass. Newest first. Use get_meeting for what happened in one. Needs users:read and meetings:read.
+# List meetings of every kind on the teams you pass. Newest first. Use get_meeting for what happened in one. Timestamps are UTC. Needs users:read and meetings:read.
 query ListMeetings(
   # The teams to list meetings of, from get_me
   $teamIds: [ID!]!

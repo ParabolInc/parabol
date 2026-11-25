@@ -7,6 +7,7 @@ import renderGroupingHistory, {
 } from '../../../utils/groupReflections/renderGroupingHistory'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import omitPrivateTasks from '../../../utils/omitPrivateTasks'
 import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 
@@ -69,7 +70,7 @@ const loadMeetingHistory = async (
           }))
         ),
         tasks: await Promise.all(
-          tasks
+          omitPrivateTasks(tasks)
             .filter(({plaintextContent}) => plaintextContent.trim())
             .map(async ({userId, plaintextContent}) => ({
               owner: await nameOf(userId),
