@@ -139,6 +139,12 @@ const Organization: OrganizationResolvers = {
     return dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})
   },
 
+  viewerMeetingPartners: async ({id: orgId}, _args, {dataLoader, authToken}) => {
+    return dataLoader
+      .get('meetingPartnersByUserIdOrgId')
+      .load({userId: getUserId(authToken), orgId})
+  },
+
   organizationUsers: async ({id: orgId}, _args, {dataLoader}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
     organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
