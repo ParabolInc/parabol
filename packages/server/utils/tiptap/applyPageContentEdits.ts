@@ -6,6 +6,7 @@ import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllN
 import {parseMarkdownBlocks} from '../../../client/shared/tiptap/parseMarkdownBlocks'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
+import {assertNoAddedPageLinks} from './assertNoAddedPageLinks'
 import {getPageMarkdownBlocks, PAGE_BLOCK_SEPARATOR} from './getPageMarkdownBlocks'
 import {parsePageMarkdown} from './parsePageMarkdown'
 import {toYXmlNodes} from './toYXmlNodes'
@@ -142,7 +143,7 @@ const findUnsafeRemoval = (removed: Block[], isRewrite: boolean) => {
   return visible.find(({node}, idx) => !isSameNode(node, reparsed[idx]!))
 }
 
-export const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
+const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
   nodes.flatMap((node) => [
     ...(node.type === 'pageLinkBlock' && node.attrs?.canonical ? [node.attrs.pageCode] : []),
     ...collectCanonicalPageCodes(node.content ?? [])
@@ -350,6 +351,12 @@ export const applyPageContentEdits = (
     throw new GraphQLError('The page must still start with its title as a level-1 heading', {
       extensions: {code: 'BAD_USER_INPUT'}
     })
+  }
+  if (!canChangePageLinks) {
+    assertNoAddedPageLinks(
+      nodes,
+      blocks.map(({node}) => node)
+    )
   }
   const isUnchanged =
     blocks.length === nodes.length && blocks.every(({fragmentIndex}, idx) => fragmentIndex === idx)
