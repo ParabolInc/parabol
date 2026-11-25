@@ -1,14 +1,17 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {OpenInFull as OpenInFullIcon} from '~/ui/icons'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {useSignInAndReturn} from '../../../hooks/useSignInAndReturn'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {useEmbedNewUserAsset} from '../fileBlock/useEmbedNewUserAsset'
 import {BlockResizer} from './BlockResizer'
+import {getLightboxImages, OPEN_IMAGE_LIGHTBOX_META} from './getLightboxImages'
 import type {ImageBlockAttrs} from './ImageBlock'
 import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
 import {ImageBlockPlaceholder} from './ImageBlockPlaceholder'
+import {ImageLightbox, type LightboxImage} from './ImageLightbox'
 
 const NOTICES = {
   signIn: {
@@ -40,11 +43,34 @@ export const ImageBlockView = (props: NodeViewProps) => {
     editor
   )
   const signIn = useSignInAndReturn()
+  const [lightbox, setLightbox] = useState<{images: LightboxImage[]; startIndex: number} | null>(
+    null
+  )
+  const openLightbox = useCallback(() => {
+    const pos = getPos()
+    if (pos === undefined) return
+    setLightbox(getLightboxImages(editor.state.doc, pos))
+  }, [getPos, editor])
   const onClick = useCallback(() => {
+    if (!editor.isEditable) {
+      openLightbox()
+      return
+    }
     const pos = getPos()
     if (!pos) return
     editor.chain().focus().setNodeSelection(pos).run()
-  }, [getPos, editor])
+  }, [getPos, editor, openLightbox])
+
+  useEffect(() => {
+    const onTransaction = ({transaction}: {transaction: {getMeta: (key: string) => unknown}}) => {
+      const pos = transaction.getMeta(OPEN_IMAGE_LIGHTBOX_META)
+      if (pos !== undefined && pos === getPos()) openLightbox()
+    }
+    editor.on('transaction', onTransaction)
+    return () => {
+      editor.off('transaction', onTransaction)
+    }
+  }, [editor, getPos, openLightbox])
 
   const [maxHeight, setMaxHeight] = useState(
     // if no height is provided (first load), make sure the image is no taller than the editor
@@ -108,10 +134,14 @@ export const ImageBlockView = (props: NodeViewProps) => {
           <img
             draggable={false}
             data-uploading={isPending ? '' : undefined}
-            className='block data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
+            className={cn(
+              'block data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]',
+              !editor.isEditable && 'cursor-zoom-in'
+            )}
             src={src}
             alt=''
             onClick={onClick}
+            onDoubleClick={editor.isEditable ? openLightbox : undefined}
             style={{maxHeight: isFullWidth ? undefined : maxHeight}}
             width={isFullWidth ? '100%' : width}
             height={isFullWidth ? undefined : height}
@@ -125,6 +155,21 @@ export const ImageBlockView = (props: NodeViewProps) => {
               }
             }}
           />
+          {editor.storage.imageBlock.expandButton && !isPending && (
+            <button
+              type='button'
+              aria-label='Expand image'
+              title='Expand image'
+              className='absolute top-1.5 right-1.5 flex size-7 cursor-pointer items-center justify-center rounded-md border border-hairline-strong bg-surface-card text-fg-primary opacity-0 pointer-coarse:opacity-100 shadow-sm transition-opacity hover:bg-surface-raised focus-visible:opacity-100 group-hover:opacity-100'
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.stopPropagation()
+                openLightbox()
+              }}
+            >
+              <OpenInFullIcon className='text-base' />
+            </button>
+          )}
           {editor.isEditable && (
             <>
               {!isFullWidth && (
@@ -139,12 +184,20 @@ export const ImageBlockView = (props: NodeViewProps) => {
                 updateAttributes={updateAttributes}
                 width={width}
                 isFullWidth={isFullWidth}
-                isOpen={selected}
+                isOpen={selected && !lightbox}
+                onExpand={openLightbox}
               />
             </>
           )}
         </div>
       </div>
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.startIndex}
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </NodeViewWrapper>
   )
 }

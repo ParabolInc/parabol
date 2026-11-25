@@ -70,7 +70,7 @@ export const standupBlockExtensions = ({
   TableHeader,
   TableCell,
   Focus,
-  ImageBlock.configure({editorWidth, editorHeight: 88}),
+  ImageBlock.configure({editorWidth, editorHeight: 88, expandButton: true}),
   FileBlock,
   FileUpload.configure({
     scopeKey: teamId ?? '',
