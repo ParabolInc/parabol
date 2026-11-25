@@ -144,7 +144,7 @@ type Mutation {
     parentPageId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
-  Copy a page and all of its sub-pages
+  Copy a page and all of its sub-pages. An access token limited to specific organizations, teams or pages can't make a private copy: it copies a team page, or passes parentPageId for a page it can edit. A token given specific pages can't make a copy inside another page.
   """
   duplicatePage(
     "The page to copy"

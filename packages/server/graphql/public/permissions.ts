@@ -5,6 +5,7 @@ import {canDeleteUserAsset} from './rules/canDeleteUserAsset'
 import {hasNoPageGrantForParent} from './rules/hasNoPageGrantForParent'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasReachableDuplicatePlacement} from './rules/hasReachableDuplicatePlacement'
 import {hasScope} from './rules/hasScope'
 import {hasSearchTypeScope} from './rules/hasSearchTypeScope'
 import {hasTokenAudience} from './rules/hasTokenAudience'
@@ -189,6 +190,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isAuthenticated,
       hasPageAccess<'Mutation.duplicatePage'>('args.pageId', 'viewer', {ignorePublicLink: true}),
       hasPageAccess<'Mutation.duplicatePage'>('args.parentPageId', 'editor'),
+      hasReachableDuplicatePlacement,
       rateLimit({perMinute: 10, perHour: 50})
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),

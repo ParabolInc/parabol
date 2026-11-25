@@ -218,3 +218,62 @@ test('a token with no grant limits still copies a private page next to the origi
   expect(res.errors).toBeUndefined()
   expect(res.data.duplicatePage.page.title).toMatch(/^Copy of /)
 })
+
+const subPageRefusal = {
+  message: "An access token given specific pages can't create sub-pages",
+  extensions: {code: 'FORBIDDEN'}
+}
+
+test.each([
+  ['next to the original, under its editable parent', false, false],
+  ['into a page it can edit', true, false],
+  ['next to the original with a team grant as well', false, true]
+] as const)(
+  'a token given specific pages cannot copy a page %s',
+  async (_name, intoDestination, withTeamGrant) => {
+    const {cookie, userId} = await signUp()
+    const [{id: teamId}] = await getUserTeams(userId)
+    const parentId = await createPage(cookie)
+    const childId = await addChildPage(cookie, parentId)
+    const destinationId = await createPage(cookie)
+    const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {
+      cookie,
+      grantedOrgIds: [],
+      grantedTeamIds: withTeamGrant ? [teamId] : [],
+      grantedPageIds: [childId, parentId, destinationId]
+    })
+    const before = await countPages(userId)
+    const res = await duplicateAs(
+      {bearerToken},
+      childId,
+      intoDestination ? destinationId : undefined
+    )
+    expect(res.errors[0]).toMatchObject(subPageRefusal)
+    expect(await countPages(userId)).toBe(before)
+  }
+)
+
+test('a token limited to a team copies a team sub-page next to the original', async () => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const teamPageId = await createPage(cookie, teamId)
+  const childId = await addChildPage(cookie, teamPageId)
+  const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const res = await duplicateAs({bearerToken}, childId)
+  expect(res.errors).toBeUndefined()
+  expect(res.data.duplicatePage.page.parentPageId).toBe(teamPageId)
+})
+
+test('a token with no grant limits copies a page into a parent page', async () => {
+  const {cookie} = await signUp()
+  const pageId = await createPage(cookie)
+  const destinationId = await createPage(cookie)
+  const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {cookie})
+  const res = await duplicateAs({bearerToken}, pageId, destinationId)
+  expect(res.errors).toBeUndefined()
+  expect(res.data.duplicatePage.page.parentPageId).toBe(destinationId)
+})

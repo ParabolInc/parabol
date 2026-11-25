@@ -55,12 +55,6 @@ const duplicatePage: MutationResolvers['duplicatePage'] = async (
     dataLoader,
     resourceGrants
   })
-  if (placement.kind === 'private' && resourceGrants && !resourceGrants.isUnrestricted()) {
-    throw new GraphQLError(
-      "This access token is limited to specific organizations, teams or pages, so it can't make a private copy. Pass parentPageId to copy into a page it can edit",
-      {extensions: {code: 'FORBIDDEN'}}
-    )
-  }
   const page = await duplicatePageTree({
     viewerId,
     authToken,
