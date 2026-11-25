@@ -13,6 +13,7 @@ import useGotoTeamHealthStageInRetro from '../hooks/useGotoTeamHealthStageInRetr
 import {GQLID} from '../utils/GQLID'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
+import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import MeetingNavList from './MeetingNavList'
 import NewMeetingSidebar from './NewMeetingSidebar'
@@ -68,6 +69,7 @@ const RetroMeetingSidebar = (props: Props) => {
           }
         }
         teamHealthMeeting {
+          endedAt
           localPhase {
             phaseType
           }
@@ -95,9 +97,9 @@ const RetroMeetingSidebar = (props: Props) => {
     localStage,
     phases,
     meetingMembers,
-    summaryPageId,
-    teamHealthMeeting
+    summaryPageId
   } = meeting
+  const teamHealthMeeting = getTeamHealthCheckShownInRetro(meeting)
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
@@ -188,10 +190,7 @@ const RetroMeetingSidebar = (props: Props) => {
                     ? false
                     : localPhaseType === phaseType && !(hasCheck && isPastCheckIntro)
                 }
-                isCollapsible={
-                  collapsiblePhases.includes(phaseType) ||
-                  (phaseType === 'TEAM_HEALTH' && !!teamHealthMeeting)
-                }
+                isCollapsible={collapsiblePhases.includes(phaseType) || hasCheck}
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={
                   isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType

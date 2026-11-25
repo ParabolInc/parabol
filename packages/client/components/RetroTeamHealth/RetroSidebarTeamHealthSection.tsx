@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {RetroSidebarTeamHealthSection_meeting$key} from '~/__generated__/RetroSidebarTeamHealthSection_meeting.graphql'
 import type useGotoStageId from '../../hooks/useGotoStageId'
 import useGotoTeamHealthStageInRetro from '../../hooks/useGotoTeamHealthStageInRetro'
+import getTeamHealthCheckShownInRetro from '../../utils/meetings/getTeamHealthCheckShownInRetro'
 import TeamHealthSidebarQuestionSection from '../TeamHealth/TeamHealthSidebarQuestionSection'
 
 interface Props {
@@ -19,17 +20,20 @@ const RetroSidebarTeamHealthSection = (props: Props) => {
     graphql`
       fragment RetroSidebarTeamHealthSection_meeting on RetrospectiveMeeting {
         ...useGotoTeamHealthStageInRetro_meeting
+        endedAt
         localPhase {
           phaseType
         }
         teamHealthMeeting {
+          endedAt
           ...TeamHealthSidebarQuestionSection_meeting
         }
       }
     `,
     meetingRef
   )
-  const {localPhase, teamHealthMeeting} = meeting
+  const {localPhase} = meeting
+  const teamHealthMeeting = getTeamHealthCheckShownInRetro(meeting)
   const gotoCheckStage = useGotoTeamHealthStageInRetro(meeting, gotoStageId)
   if (localPhase?.phaseType !== 'TEAM_HEALTH' || !teamHealthMeeting) return null
   return (

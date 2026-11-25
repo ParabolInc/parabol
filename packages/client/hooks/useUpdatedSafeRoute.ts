@@ -5,6 +5,7 @@ import {readInlineData} from 'relay-runtime'
 import type {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
 
@@ -19,6 +20,7 @@ const useUpdatedSafeRoute = (
         ...fromStageIdToUrl_meeting
         ...updateLocalStage_meeting
         id
+        endedAt
         localStage {
           id
         }
@@ -38,6 +40,7 @@ const useUpdatedSafeRoute = (
         }
         ... on RetrospectiveMeeting {
           teamHealthMeeting {
+            endedAt
             localStage {
               id
             }
@@ -62,12 +65,14 @@ const useUpdatedSafeRoute = (
       setSafeRoute(true)
       return
     }
-    const {localStage, localPhase, facilitatorStageId, phases, teamHealthMeeting} = meeting
+    const {localStage, localPhase, facilitatorStageId, phases} = meeting
     const localStages = localPhase?.stages ?? null
     const localStageId = localStage?.id ?? null
     const oldLocalStages = oldMeeting?.localPhase?.stages ?? null
     const oldLocalStageId = oldMeeting?.localStage?.id
     oldMeetingRef.current = meeting
+    // the check as is, not as shown: the retro ending mustn't move the url while everyone heads to
+    // its summary
     const getCheckStageId = (shownMeeting: typeof meeting) =>
       shownMeeting.localPhase?.phaseType === 'TEAM_HEALTH'
         ? shownMeeting.teamHealthMeeting?.localStage?.id
@@ -81,7 +86,11 @@ const useUpdatedSafeRoute = (
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
         updateLocalStage(atmosphere, meeting, facilitatorStageId)
       }
-      const nextPathname = fromStageIdToUrl(localStageId, meeting, teamHealthMeeting)
+      const nextPathname = fromStageIdToUrl(
+        localStageId,
+        meeting,
+        getTeamHealthCheckShownInRetro(meeting)
+      )
       if (nextPathname !== location.pathname) {
         navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)

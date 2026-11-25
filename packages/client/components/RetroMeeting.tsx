@@ -14,6 +14,7 @@ import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
 import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
+import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import reportMissingMeetingPhase from '../utils/meetings/reportMissingMeetingPhase'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
@@ -108,7 +109,9 @@ const RetroMeeting = (props: Props) => {
             }
           }
         }
+        endedAt
         teamHealthMeeting {
+          endedAt
           viewerMeetingMember {
             id
           }
@@ -124,18 +127,24 @@ const RetroMeeting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {id: meetingId, showSidebar, localPhase, meetingSeries, rightDrawerOpen} = meeting
   const {phases, teamHealthMeeting} = meeting
+  const shownCheck = getTeamHealthCheckShownInRetro(meeting)
   const localPhaseType = localPhase?.phaseType
   const showInspiration = localPhaseType === 'reflect' || localPhaseType === 'group'
   const teamHealthDiscussionId =
-    localPhaseType === 'TEAM_HEALTH' && teamHealthMeeting
-      ? getTeamHealthDiscussionId(teamHealthMeeting)
+    localPhaseType === 'TEAM_HEALTH' && shownCheck
+      ? getTeamHealthDiscussionId(shownCheck)
       : undefined
   const [toggleDrawer] = useRightDrawer(
     meetingId,
     showInspiration ? 'inspiration' : teamHealthDiscussionId ? 'discussion' : 'settings',
     false
   )
-  useTeamHealthCheckInRetro(teamHealthMeeting ?? null, localPhaseType === 'TEAM_HEALTH')
+  // a check the retro started reveals just after the retro ends, so the retro keeps following its
+  // check, but joins only a check it shows
+  useTeamHealthCheckInRetro(
+    teamHealthMeeting ?? null,
+    localPhaseType === 'TEAM_HEALTH' && !!shownCheck
+  )
   useTemplateSwitchedSnackbar({
     meetingId,
     templateId: meeting.templateId,
@@ -188,7 +197,7 @@ const RetroMeeting = (props: Props) => {
           showInspiration={showInspiration}
           gotoStageId={gotoStageId}
           discussionId={teamHealthDiscussionId}
-          canComment={!!teamHealthMeeting?.viewerMeetingMember}
+          canComment={!!shownCheck?.viewerMeetingMember}
         />
       )}
       <MeetingControlBar

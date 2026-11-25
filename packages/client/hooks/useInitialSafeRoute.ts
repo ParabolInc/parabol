@@ -13,6 +13,7 @@ import findKeyByValue from '../utils/findKeyByValue'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
+import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import {phaseTypeToSlug} from '../utils/meetings/lookups'
 import updateLocalStage, {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
@@ -49,6 +50,7 @@ const useInitialSafeRoute = (
         ...updateLocalStage_meeting
         id
         meetingType
+        endedAt
         facilitatorStageId
         facilitatorUserId
         localStage {
@@ -77,6 +79,7 @@ const useInitialSafeRoute = (
         ... on RetrospectiveMeeting {
           teamHealthMeeting {
             id
+            endedAt
             localStage {
               id
             }
@@ -102,7 +105,7 @@ const useInitialSafeRoute = (
       return
     }
     const {facilitatorStageId, facilitatorUserId, localStage, id: meetingId, phases} = meeting
-    const {teamHealthMeeting} = meeting
+    const teamHealthMeeting = getTeamHealthCheckShownInRetro(meeting)
     const {viewerId} = atmosphere
 
     // I’m headed to the lobby but the meeting is already going, send me there
