@@ -35,6 +35,10 @@ const START_RECURRING_STANDUP = `
       meeting {
         id
         meetingSeriesId
+        prompts {
+          id
+          question
+        }
       }
     }
   }
@@ -128,6 +132,7 @@ const TEAM_HEALTH_QUESTIONS = `
             stages {
               id
               question {
+                id
                 question
               }
             }
@@ -157,7 +162,9 @@ const RESPOND = `
       comment: $comment
       isAnonymous: false
     ) {
-      meetingId
+      meeting {
+        id
+      }
     }
   }
 `
@@ -222,16 +229,12 @@ const startPokerWithStory = async () => {
   }
 }
 
-test('get_standup shows the prompts, who answered each, and the tasks it made', async () => {
+test('get_standup shows the prompts, each member’s responses with their discussion, and the tasks', async () => {
   const {cookie, teamId, userId} = await signUp()
-  const token = await createPersonalAccessToken(READ_SCOPES, {cookie})
+  const token = await createPersonalAccessToken([...READ_SCOPES, 'COMMENTS_READ'], {cookie})
   const started = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
-  const {id: meetingId, meetingSeriesId} = started.startTeamPrompt.meeting
-  expect(meetingSeriesId).toEqual(expect.any(String))
-
-  const before = await callToolForData(token, 'get_standup', {meetingId})
-  const [prompt] = before.viewer.meeting.prompts
-  expect(prompt).toEqual({id: expect.any(String), question: expect.any(String)})
+  const {id: meetingId, meetingSeriesId, prompts} = started.startTeamPrompt.meeting
+  const prompt = prompts[0]
   await send(
     UPSERT_RESPONSE,
     {meetingId, promptId: prompt.id, content: paragraph('Shipped the billing fix')},
@@ -245,34 +248,80 @@ test('get_standup shows the prompts, who answered each, and the tasks it made', 
 
   const {viewer} = await callToolForData(token, 'get_standup', {meetingId})
   expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'teamPrompt', meetingSeriesId})
-  expect(viewer.meeting.responses).toEqual([
+  expect(meetingSeriesId).toEqual(expect.any(String))
+  expect(viewer.meeting.prompts).toEqual(prompts)
+  expect(getStages(viewer.meeting)).toEqual([
     {
-      promptId: prompt.id,
-      userId,
-      user: {preferredName: await getPreferredName(cookie)},
-      plaintextContent: 'Shipped the billing fix'
+      discussionId: expect.any(String),
+      responses: [
+        {
+          promptId: prompt.id,
+          userId,
+          user: {preferredName: await getPreferredName(cookie)},
+          plaintextContent: 'Shipped the billing fix'
+        }
+      ]
     }
   ])
   expect(viewer.meeting.tasks).toEqual([
     expect.objectContaining({id: created.createTask.task.id, plaintextContent: 'Write notes'})
   ])
 
-  const meeting = await callToolForData(token, 'get_meeting', {meetingId})
-  expect(meeting.viewer.meeting.meetingSeriesId).toBe(meetingSeriesId)
+  const {discussionId} = getStages<{discussionId: string}>(viewer.meeting)[0]!
+  const commented = await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('Nice fix'), discussionId, threadSortOrder: 0}},
+    cookie
+  )
+  const discussion = await callToolForData(token, 'get_discussion', {discussionId})
+  expect(discussion.viewer.discussion.thread.edges).toEqual([
+    {
+      node: expect.objectContaining({
+        id: commented.addComment.comment.id,
+        plaintextContent: 'Nice fix'
+      })
+    }
+  ])
 })
 
-test('get_meeting says a one-off meeting has no series', async () => {
+test('get_meeting says which series a meeting belongs to, if any', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const recurring = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
+  const {id: meetingId, meetingSeriesId} = recurring.startTeamPrompt.meeting
+  const standup = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(standup.viewer.meeting.meetingSeriesId).toBe(meetingSeriesId)
+
   const started = await callToolForData(token, 'start_check_in', {teamId})
-  const {viewer} = await callToolForData(token, 'get_meeting', {
+  const checkIn = await callToolForData(token, 'get_meeting', {
     meetingId: started.startCheckIn.meeting.id
   })
-  expect(viewer.meeting).toHaveProperty('meetingSeriesId', null)
+  expect(checkIn.viewer.meeting).toHaveProperty('meetingSeriesId', null)
 })
 
-test('get_poker_meeting shows each story with its dimension, final score and revealed votes', async () => {
-  const {cookie, token, meetingId, taskId, stageId, discussionId, dimensionName, label} =
+test('get_poker_meeting says who has voted but leaves the votes out by default', async () => {
+  const {cookie, token, meetingId, taskId, stageId, discussionId, dimensionName, label, userId} =
+    await startPokerWithStory()
+  await send(VOTE, {meetingId, stageId, score: label}, cookie)
+
+  const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId})
+  expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'poker'})
+  expect(getStages(viewer.meeting)).toEqual([
+    {
+      id: stageId,
+      discussionId,
+      isVoting: true,
+      finalScore: null,
+      dimensionRef: {name: dimensionName},
+      taskId,
+      task: {plaintextContent: 'Build the login page'},
+      scores: [{userId}]
+    }
+  ])
+})
+
+test('get_poker_meeting with showVotes shows the revealed votes and the final score', async () => {
+  const {cookie, token, meetingId, taskId, stageId, discussionId, dimensionName, label, userId} =
     await startPokerWithStory()
   await send(VOTE, {meetingId, stageId, score: label}, cookie)
   await send(REVEAL, {meetingId, stageId}, cookie)
@@ -282,21 +331,17 @@ test('get_poker_meeting shows each story with its dimension, final score and rev
     cookie
   )
 
-  const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId})
-  expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'poker'})
-  const stages = getStages(viewer.meeting)
-  expect(stages).toEqual([
+  const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId, showVotes: true})
+  expect(getStages(viewer.meeting)).toEqual([
     {
+      id: stageId,
       discussionId,
       isVoting: false,
       finalScore: label,
       dimensionRef: {name: dimensionName},
-      task: {
-        id: taskId,
-        title: 'Build the login page',
-        plaintextContent: 'Build the login page'
-      },
-      scores: [{label, user: {preferredName: await getPreferredName(cookie)}}]
+      taskId,
+      task: {plaintextContent: 'Build the login page'},
+      scores: [{userId, label, user: {preferredName: await getPreferredName(cookie)}}]
     }
   ])
 })
@@ -310,7 +355,7 @@ test('get_team_health_meeting shows how many answered when too few did to show a
   })
   const meetingId = started.startTeamHealth.meetings[0].id as string
   const questions = await send(TEAM_HEALTH_QUESTIONS, {meetingId}, cookie)
-  const responseStages = getStages<{id: string; question: {question: string}}>(
+  const responseStages = getStages<{id: string; question: {id: string; question: string}}>(
     questions.viewer.meeting
   )
   const commented = responseStages[0]!
@@ -327,8 +372,10 @@ test('get_team_health_meeting shows how many answered when too few did to show a
     meetingType: 'teamHealth',
     respondentCount: 1
   })
-  const stages = getStages(viewer.meeting)
-  expect(stages).toHaveLength(responseStages.length)
+  const stages = getStages<{question: {id: string}}>(viewer.meeting)
+  expect(stages.map(({question}) => question.id).sort()).toEqual(
+    responseStages.map(({question}) => question.id).sort()
+  )
   expect(stages).toEqual(
     stages.map(() =>
       expect.objectContaining({discussionId: expect.any(String), score: null, respondentCount: 1})
@@ -336,7 +383,7 @@ test('get_team_health_meeting shows how many answered when too few did to show a
   )
   expect(stages).toContainEqual(
     expect.objectContaining({
-      question: {question: commented.question.question},
+      question: commented.question,
       responses: expect.arrayContaining([
         {
           commentParaphrased: 'Standups run long',
@@ -348,9 +395,7 @@ test('get_team_health_meeting shows how many answered when too few did to show a
 })
 
 test('get_discussion shows the comments and tasks in a story’s discussion', async () => {
-  const {cookie, teamId, userId, token, meetingId} = await startPokerWithStory()
-  const poker = await callToolForData(token, 'get_poker_meeting', {meetingId})
-  const {discussionId} = getStages<{discussionId: string}>(poker.viewer.meeting)[0]!
+  const {cookie, teamId, userId, meetingId, discussionId} = await startPokerWithStory()
   const commented = await send(
     ADD_COMMENT,
     {comment: {content: paragraph('Looks like a 3'), discussionId, threadSortOrder: 0}},

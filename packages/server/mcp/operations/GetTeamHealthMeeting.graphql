@@ -1,4 +1,4 @@
-# Show one team health check: how many members answered, and for each question its 1-5 average score, how many scored it, every score given, an AI summary and the comments the team can read. These stay empty until the check ends. A question fewer than 3 people scored shows respondentCount but no score, so no answer can be traced to its author. discussionId opens the question's discussion with get_discussion. summaryPageId, when set, is a page to open with read_page. Timestamps are UTC. Needs users:read and meetings:read.
+# Show one team health check: how many members have answered so far, and for each question its id, its 1-5 average score, how many scored it, the scores given, an AI summary when there is one, and the comment on each answer. Each question's results stay empty until the check ends. Then score is null when fewer than 3 people scored the question, and spreadScores when fewer than 4 did, so no answer can be traced to its author; respondentCount says how many did. discussionId opens the question's discussion with get_discussion. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no stages; use get_meeting. Timestamps are UTC. Needs users:read and meetings:read.
 query GetTeamHealthMeeting(
   # The team health check's meeting id, from list_meetings or start_team_health
   $meetingId: ID!
@@ -22,6 +22,7 @@ query GetTeamHealthMeeting(
           stages {
             discussionId
             question {
+              id
               question
             }
             score

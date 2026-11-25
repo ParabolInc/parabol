@@ -1,6 +1,6 @@
 # Show the comments and tasks in one discussion, in thread order. A deleted comment reads [deleted], and an anonymous or deleted comment has no author. Replies to comments are left out. Needs users:read, comments:read and tasks:read.
 query GetDiscussion(
-  # The discussion id, from get_poker_meeting or get_team_health_meeting
+  # The discussion id, from get_standup, get_poker_meeting or get_team_health_meeting
   $discussionId: ID!
 ) {
   viewer {
