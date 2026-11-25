@@ -347,6 +347,7 @@ test('get_poker_meeting says who has voted but leaves the votes out by default',
 
   const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId})
   expect(viewer.meeting).toMatchObject({id: meetingId})
+  expect(JSON.stringify(viewer.meeting.phases)).not.toContain('{}')
   expect(getStages(viewer.meeting)).toEqual([
     {
       id: stageId,
