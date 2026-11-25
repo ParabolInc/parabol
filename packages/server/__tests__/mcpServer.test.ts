@@ -732,3 +732,16 @@ test('tools/list lists exactly these tools, each once', async () => {
   expect(new Set(names).size).toBe(names.length)
   expect(names.toSorted()).toEqual(TOOL_NAMES)
 })
+
+test('llms.txt describes the server and names each tool once', async () => {
+  const response = await fetch(`${ORIGIN}/llms.txt`)
+  expect(response.status).toBe(200)
+  expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8')
+  const llmsTxt = await response.text()
+  expect(llmsTxt).toMatch(/^# Parabol\n\n> /)
+  expect(llmsTxt).toContain(`The MCP server is at ${MCP_URL}.`)
+  expect(llmsTxt).toContain(`${ORIGIN}/.well-known/oauth-protected-resource/mcp`)
+  const toolSection = llmsTxt.split('\n## Tools\n')[1]!.split('\n## ')[0]!
+  const names = [...toolSection.matchAll(/`([a-z_]+)`/g)].map(([, name]) => name)
+  expect(names.toSorted()).toEqual(TOOL_NAMES)
+})
