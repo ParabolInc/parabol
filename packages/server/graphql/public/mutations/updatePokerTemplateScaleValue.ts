@@ -49,7 +49,7 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
   }
   await pg
     .updateTable('TemplateScaleValue')
-    .set({label, color})
+    .set({label, color: color.toUpperCase()})
     .where('templateScaleId', '=', scaleId)
     .where('label', '=', oldScaleLabel)
     .execute()

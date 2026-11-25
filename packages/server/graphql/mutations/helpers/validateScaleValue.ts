@@ -2,8 +2,8 @@ import palettePickerOptions from '../../../../client/styles/palettePickerOptions
 import {Threshold} from '../../../../client/types/constEnums'
 
 const validateColorValue = (color: string) => {
-  const validHexes = palettePickerOptions.map(({hex}) => hex)
-  return validHexes.includes(color)
+  const validHexes = palettePickerOptions.map(({hex}) => hex.toUpperCase())
+  return validHexes.includes(color.toUpperCase())
 }
 
 const segmenter = new Intl.Segmenter('en', {granularity: 'grapheme'})

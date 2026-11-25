@@ -1,13 +1,11 @@
 import {RRuleSet} from 'rrule-rust'
 import RRuleScalarType from '../RRule'
 
-test('Should not allow for NaN interval values', () => {
+test('Should default a missing interval to 1', () => {
   const rrule = `DTSTART;TZID=America/Phoenix:20230121T090000
 RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`
 
-  expect(() => {
-    RRuleScalarType.parseValue?.(rrule)
-  }).toThrow(new Error('RRULE interval must be an integer'))
+  expect(RRuleScalarType.parseValue?.(rrule)).toBe(rrule)
 })
 
 test('Should not allow for interval values bigger than 52', () => {

@@ -17,6 +17,16 @@ test('errors come back with their code and no other detail', () => {
   ])
 })
 
+test('an error names the field it came from', () => {
+  const result = toolResult({
+    errors: [new GraphQLError('nope', {path: ['second', 'team'], extensions: {code: 'FORBIDDEN'}})],
+    data: null
+  })
+  expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual([
+    {message: 'nope', code: 'FORBIDDEN', path: ['second', 'team']}
+  ])
+})
+
 test('a rate-limit error carries the seconds to wait from Retry-After', () => {
   const result = toolResult({
     errors: [

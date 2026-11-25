@@ -83,11 +83,13 @@ type Mutation {
     orgId: ID!
   ): ArchiveOrganizationPayload! @scope(name: ORGS_WRITE)
   """
-  Archive a team. If the team has never been used, it will be permanently deleted.
+  Archive a team: it is hidden from its members, its open invitations expire, its meeting templates
+  are deactivated and the other members are notified. Nothing is deleted, and the team stays
+  readable with isArchived true. Needs a team lead, billing leader or super user.
   """
   archiveTeam(
     """
-    The teamId to archive (or delete, if team is unused)
+    The teamId to archive
     """
     teamId: ID!
   ): ArchiveTeamPayload! @scope(name: TEAMS_WRITE)
@@ -2124,7 +2126,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2158,7 +2160,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format. Applied to every selected team.
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now. Applied to every selected team.
     """
     rrule: RRule
 
@@ -2189,7 +2191,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2347,7 +2349,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format; null stops a recurring meeting, and
+    The weekly recurrence, see the RRule scalar for the format; null stops a recurring meeting, and
     leaving it out keeps the current recurrence
     """
     rrule: RRule
@@ -2373,7 +2375,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format; null cancels the series, and leaving
+    The weekly recurrence, see the RRule scalar for the format; null cancels the series, and leaving
     it out keeps the current recurrence
     """
     rrule: RRule
