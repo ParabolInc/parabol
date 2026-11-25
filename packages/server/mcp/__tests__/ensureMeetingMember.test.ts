@@ -35,14 +35,38 @@ test('opts a team health member who is sitting the check out in, and leaves one 
     .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: true}}}})
     .mockResolvedValueOnce({data: {setTeamHealthSpectate: {meetingMember: {isSpectating: false}}}})
     .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: false}}}})
-  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toBeNull()
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'teamHealth'})).toBeNull()
   expect(runGraphQL).toHaveBeenLastCalledWith(
     context,
     expect.stringContaining('setTeamHealthSpectate(meetingId: $meetingId, isSpectating: false)'),
     {meetingId: 'meeting-1'}
   )
-  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toBeNull()
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'teamHealth'})).toBeNull()
   expect(runGraphQL).toHaveBeenCalledTimes(3)
+})
+
+test('opts a poker member who sits votes out in, asking only about poker spectating', async () => {
+  jest
+    .mocked(runGraphQL)
+    .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: true}}}})
+    .mockResolvedValueOnce({data: {setPokerSpectate: {meetingMember: {isSpectating: false}}}})
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'poker'})).toBeNull()
+  const [joinDocument, optInDocument] = jest
+    .mocked(runGraphQL)
+    .mock.calls.map(([, document]) => document)
+  expect(joinDocument).toContain('... on PokerMeetingMember')
+  expect(joinDocument).not.toContain('TeamHealthMeetingMember')
+  expect(optInDocument).toContain('setPokerSpectate(meetingId: $meetingId, isSpectating: false)')
+  expect(runGraphQL).toHaveBeenCalledTimes(2)
+})
+
+test('answering a team health check asks only about team health spectating', async () => {
+  jest.mocked(runGraphQL).mockResolvedValue({data: {joinMeeting: {meetingMember: {}}}})
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'teamHealth'})).toBeNull()
+  const [joinDocument] = jest.mocked(runGraphQL).mock.calls.map(([, document]) => document)
+  expect(joinDocument).toContain('... on TeamHealthMeetingMember')
+  expect(joinDocument).not.toContain('PokerMeetingMember')
+  expect(runGraphQL).toHaveBeenCalledTimes(1)
 })
 
 test('only joins, never opting a team health member in, unless asked to', async () => {
@@ -81,7 +105,7 @@ test("answers with the server's coded error when the opt-in is refused", async (
       data: null,
       errors: [{message: 'Meeting has ended', extensions: {code: 'CONFLICT'}}]
     })
-  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: true})).toEqual({
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'teamHealth'})).toEqual({
     isError: true,
     content: [
       {type: 'text', text: JSON.stringify([{message: 'Meeting has ended', code: 'CONFLICT'}])}
@@ -89,12 +113,12 @@ test("answers with the server's coded error when the opt-in is refused", async (
   })
 })
 
-test("answers with the server's coded error when the caller cannot join", async () => {
+test("answers with the server's coded error when the caller cannot join to vote, and opts nothing in", async () => {
   jest.mocked(runGraphQL).mockResolvedValue({
     data: null,
     errors: [{message: 'Meeting has already ended', extensions: {code: 'CONFLICT'}}]
   })
-  expect(await ensureMeetingMember(context, 'meeting-1')).toEqual({
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInTo: 'poker'})).toEqual({
     isError: true,
     content: [
       {
@@ -103,4 +127,5 @@ test("answers with the server's coded error when the caller cannot join", async 
       }
     ]
   })
+  expect(runGraphQL).toHaveBeenCalledTimes(1)
 })

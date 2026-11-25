@@ -87,7 +87,12 @@ test('another team’s task cannot be added to the poker scope', async () => {
 
   const res = await addTasksToScope(meetingId, [foreignTaskId], outsider.cookie)
 
-  expect(res.errors).toEqual([expect.objectContaining({message: 'Could not add that issue'})])
+  expect(res.errors).toEqual([
+    expect.objectContaining({
+      message: "None of those tasks is on the meeting's team",
+      extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})
+    })
+  ])
   expect(await getEstimateStages(meetingId, outsider.cookie)).toEqual([])
 })
 
