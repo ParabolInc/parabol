@@ -223,7 +223,17 @@ test('a token limited to a team is refused a sub-page under a page outside the t
   expect(await countPages(userId)).toBe(before)
 })
 
-test('a token limited to pages creates sub-pages where it can edit but not where it can only view', async () => {
+test('a token limited to an org creates sub-pages under its org pages', async () => {
+  const {cookie, userId, orgId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const teamPageId = await createPageId({cookie}, {teamId})
+  const bearerToken = await createToken(cookie, {grantedOrgIds: [orgId], grantedTeamIds: []})
+
+  const subPageId = await createPageId({bearerToken}, {parentPageId: teamPageId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(teamPageId)
+})
+
+test('a token limited to pages is refused sub-pages, even under a page it can edit', async () => {
   const [owner, member] = await Promise.all([signUp(), signUp()])
   const editableId = await createPageId({cookie: member.cookie})
   const viewOnlyId = await createPageId({cookie: owner.cookie})
@@ -239,27 +249,40 @@ test('a token limited to pages creates sub-pages where it can edit but not where
     grantedPageIds: [editableId, viewOnlyId]
   })
 
-  const subPage = await createPage({bearerToken}, {parentPageId: editableId})
-  expect(subPage.errors).toBeUndefined()
-  const created = await getKysely()
-    .selectFrom('Page')
-    .select(['userId', 'parentPageId'])
-    .where('id', '=', CipherId.fromClient(subPage.data.createPage.page.id)[0])
-    .executeTakeFirstOrThrow()
-  expect(created).toEqual({
-    userId: member.userId,
-    parentPageId: CipherId.fromClient(editableId)[0]
-  })
-
   const before = await countPages(member.userId)
-  const refused = await createPage({bearerToken}, {parentPageId: viewOnlyId})
-  expect(refused.errors?.[0]).toMatchObject({
-    message: 'Insufficient permission. User role: viewer Role required: editor',
+  const underEditable = await createPage({bearerToken}, {parentPageId: editableId})
+  expect(underEditable.errors?.[0]).toMatchObject({
+    message:
+      "This access token can only reach the pages it was given, so it can't add pages inside them",
     extensions: {code: 'FORBIDDEN'}
   })
+  const underViewOnly = await createPage({bearerToken}, {parentPageId: viewOnlyId})
+  expect(underViewOnly.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
   const privatePage = await createPage({bearerToken})
   expect(privatePage.errors?.[0]).toMatchObject(limitedToken)
   expect(await countPages(member.userId)).toBe(before)
+})
+
+test.each([
+  ['a team-limited token with an empty parentPageId', 'team', {parentPageId: ''}],
+  ['a page-limited token with an empty parentPageId', 'page', {parentPageId: ''}],
+  ['a team-limited token with an empty teamId', 'team', {teamId: ''}],
+  ['a page-limited token with an empty teamId', 'page', {teamId: ''}]
+] as const)('%s is refused a private page', async (_name, limit, variables) => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const pageId = await createPageId({cookie})
+  const bearerToken = await createToken(
+    cookie,
+    limit === 'team'
+      ? {grantedOrgIds: [], grantedTeamIds: [teamId]}
+      : {grantedOrgIds: [], grantedTeamIds: [], grantedPageIds: [pageId]}
+  )
+
+  const before = await countPages(userId)
+  const res = await createPage({bearerToken}, variables)
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  expect(await countPages(userId)).toBe(before)
 })
 
 test('a token with no grant limits creates private and nested pages', async () => {

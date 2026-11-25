@@ -73,6 +73,10 @@ export class ResourceGrants {
     )
   }
 
+  hasPageGrants() {
+    return !!this.grantedPageIds?.size
+  }
+
   grantsPage(pageId: Expression<number>): Expression<SqlBool> {
     if (this.isUnrestricted()) return eb.lit(true)
     const {grantedOrgIds, grantedPageIds} = this

@@ -1,6 +1,7 @@
 import {allow, and, not, or} from 'graphql-shield'
 import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import {hasNoPageGrantForParent} from './rules/hasNoPageGrantForParent'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasScope} from './rules/hasScope'
@@ -16,6 +17,7 @@ import {isOrgTier} from './rules/isOrgTier'
 import {isReactableInMeeting} from './rules/isReactableInMeeting'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
+import {isSet} from './rules/isSet'
 import isSuperUser from './rules/isSuperUser'
 import {isTaskVisibleToViewer} from './rules/isTaskVisibleToViewer'
 import {isTeamMember} from './rules/isTeamMember'
@@ -175,11 +177,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       or(
         and(
           isNull<'Mutation.createPage'>('args.teamId'),
-          or(hasUnrestrictedGrant, not(isNull<'Mutation.createPage'>('args.parentPageId')))
+          or(hasUnrestrictedGrant, isSet<'Mutation.createPage'>('args.parentPageId'))
         ),
         isTeamMember<'Mutation.createPage'>('args.teamId')
       ),
-      hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor')
+      hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor'),
+      hasNoPageGrantForParent<'Mutation.createPage'>('args.parentPageId')
     ),
     duplicatePage: and(
       isAuthenticated,
