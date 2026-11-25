@@ -197,7 +197,7 @@ test('a token limited to pages cannot copy its private page, which would leave a
   const res = await duplicateAs({bearerToken}, pageId)
   expect(res.errors[0]).toMatchObject({
     message:
-      "This access token is limited to specific organizations, teams or pages, so it can't make a private copy. Pass parentPageId to copy into a page it can edit",
+      "This access token is limited to specific organizations, teams or pages, so it can't make a top-level private copy. Pass parentPageId to copy into a page it can edit",
     extensions: {code: 'FORBIDDEN'}
   })
   expect(await countPages(userId)).toBe(before)

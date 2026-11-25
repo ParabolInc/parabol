@@ -131,7 +131,7 @@ type Mutation {
   ): SetNotificationStatusPayload! @scope(name: USERS_WRITE)
 
   """
-  Create an empty page: a personal page, a team page, or a page inside another page. A personal page needs an access token that isn't limited to specific organizations, teams or pages. Any token can create a page inside a page it can edit, including a token given specific pages, which then reaches the new page too.
+  Create an empty page: a personal page, a team page, or a page inside another page. A top-level personal page needs an access token that isn't limited to specific organizations, teams or pages. Any token can create a page inside a page it can edit, including a token given specific pages, which then reaches the new page too.
   """
   createPage(
     """
@@ -144,7 +144,7 @@ type Mutation {
     parentPageId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
-  Copy a page and all of its sub-pages. Any access token can put the copy inside a page it can edit, by passing parentPageId or by copying a sub-page next to the original. A token limited to specific organizations, teams or pages can't make a private copy: it copies a team page into the team, or puts the copy inside a page it can edit.
+  Copy a page and all of its sub-pages. Any access token can put the copy inside a page it can edit, by passing parentPageId or by copying a sub-page next to the original. A token limited to specific organizations, teams or pages can't make a top-level private copy: it copies a team page into its team when the token can reach that team, or puts the copy inside a page it can edit.
   """
   duplicatePage(
     "The page to copy"

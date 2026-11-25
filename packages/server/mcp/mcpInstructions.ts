@@ -10,7 +10,7 @@ IDs are opaque. Pass back exactly the id you received; never build, parse or cha
 
 Each tool names the scopes it needs. A :read scope lets you look and a :write scope lets you change. A call needing a scope this connection lacks fails with FORBIDDEN, naming the scope.
 
-A connection may be limited to some organizations, teams or pages. A call for anything outside them fails.
+A connection may be limited to some organizations, teams or pages. A page includes the pages nested under it. A call for anything outside them fails.
 
 Start with get_me to learn who you are and which teams you can reach. To make a page, call create_page (teamId for a team, parentPageId to nest), then set_page_content. To change one, read_page, then edit_page. upload_from_url copies an online image. For another template, call select_template before start_*.
 

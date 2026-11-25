@@ -31,7 +31,7 @@ export const hasReachableDuplicatePlacement = rule('hasReachableDuplicatePlaceme
     })
     if (kind === 'private') {
       return new GraphQLError(
-        "This access token is limited to specific organizations, teams or pages, so it can't make a private copy. Pass parentPageId to copy into a page it can edit",
+        "This access token is limited to specific organizations, teams or pages, so it can't make a top-level private copy. Pass parentPageId to copy into a page it can edit",
         {extensions: {code: 'FORBIDDEN'}}
       )
     }

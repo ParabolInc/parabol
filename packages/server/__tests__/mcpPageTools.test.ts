@@ -87,7 +87,7 @@ const setUpGrantedPageTree = async () => {
     grantedTeamIds: [],
     grantedPageIds: [granted]
   })
-  return {token, pages: {parent, granted, sibling, child, grandchild}}
+  return {owner, token, pages: {parent, granted, sibling, child, grandchild}}
 }
 
 test('a page-limited connection creates a sub-page under its page, then reads and fills it', async () => {
@@ -325,6 +325,21 @@ test.each(['team', 'page'] as const)(
     )
   }
 )
+
+test('a page-limited connection cannot move a page from outside its page under a page nested in it', async () => {
+  const {owner, token, pages} = await setUpGrantedPageTree()
+  expect(
+    expectToolErrorCode(await setPageWithSubPage(token, pages.child, pages.sibling), 'FORBIDDEN')
+  ).toContain("can't make an existing page a sub-page")
+  expect(await readPlacement(owner, pages.sibling)).toEqual({
+    parentPageId: pages.parent,
+    isPrivate: true
+  })
+  expectToolError(
+    await callTool(token, 'read_page', {pageId: pages.sibling}),
+    'PAT does not grant access to this page'
+  )
+})
 
 test('a limited connection keeps the sub-pages a page already links when it replaces the page', async () => {
   const {cookie, teamId} = await signUp()
