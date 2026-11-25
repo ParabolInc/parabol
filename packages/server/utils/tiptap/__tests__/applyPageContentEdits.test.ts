@@ -283,6 +283,47 @@ describe('applyPageContentEdits', () => {
     expect(blocksOf(doc)[1]).toBe(kept)
   })
 
+  test('reads a task block as a quote naming its assignee and status, refuses to rewrite it, and keeps it through nearby edits', async () => {
+    const task: JSONContent = {
+      type: 'taskBlock',
+      attrs: {
+        id: 't1',
+        status: 'active',
+        preferredName: 'Ann',
+        avatar: 'https://example.com/a.png',
+        content: JSON.stringify({type: 'doc', content: [paragraph(text('Ship the widget'))]})
+      }
+    }
+    const doc = makeDoc(heading('Summary'), task, paragraph(text('Next steps')))
+    expect(await readPage(doc)).toBe(
+      '# Summary\n\n> **Task for Ann (active):**\n>\n> Ship the widget\n\nNext steps'
+    )
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'the widget', newText: 'it'}])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('a taskBlock block')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+    const [, kept] = blocksOf(doc)
+    expect(applyPageContentEdits(doc, [{oldText: 'Next steps', newText: 'Later'}])).toBeNull()
+    expect(blocksOf(doc)[1]).toBe(kept)
+  })
+
+  test('reads an unassigned task block with its status alone', async () => {
+    const task: JSONContent = {
+      type: 'taskBlock',
+      attrs: {
+        id: 't2',
+        status: 'done',
+        preferredName: '',
+        avatar: '',
+        content: JSON.stringify({type: 'doc', content: [paragraph(text('Book the room'))]})
+      }
+    }
+    expect(await readPage(makeDoc(heading('Summary'), task))).toBe(
+      '# Summary\n\n> **Task (done):**\n>\n> Book the room'
+    )
+  })
+
   test('refuses to remove the title heading', () => {
     expect(applyPageContentEdits(makePage(), [{oldText: '# Plan\n\n', newText: ''}])?.code).toBe(
       'BAD_USER_INPUT'

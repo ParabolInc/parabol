@@ -37,15 +37,27 @@ const formatErrors = (
     }
   })
 
+const isEmptyObject = (value: unknown) =>
+  typeof value === 'object' &&
+  value !== null &&
+  !Array.isArray(value) &&
+  Object.keys(value).length === 0
+
+const dropEmptyListObjects = (_key: string, value: unknown) =>
+  Array.isArray(value) ? value.filter((item) => !isEmptyObject(item)) : value
+
 const toolResult = (
   {data, errors}: FormattedExecutionResult,
   errorDetails?: Record<string, unknown>
 ): CallToolResult => {
   if (errors?.length) {
     const formatted = formatErrors(errors, errorDetails)
-    return textResult(JSON.stringify(data ? {errors: formatted, data} : formatted), true)
+    return textResult(
+      JSON.stringify(data ? {errors: formatted, data} : formatted, dropEmptyListObjects),
+      true
+    )
   }
-  return textResult(JSON.stringify(data ?? null))
+  return textResult(JSON.stringify(data ?? null, dropEmptyListObjects))
 }
 
 export default toolResult

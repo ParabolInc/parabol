@@ -1,4 +1,4 @@
-# Show one standup: its prompts, the tasks it made, and one stage per member holding their responses and the discussionId of the comments on them, for get_discussion. A response not yet shared shows only to its author. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no prompts, stages or tasks; use get_meeting. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
+# Show one standup: its prompts, the tasks it made, and one stage per member, with that member's userId and name, holding their responses (empty until they answer) and the discussionId of the comments on them, for get_discussion. A response not yet shared shows only to its author. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no prompts, stages or tasks; use get_meeting. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
 query GetStandup(
   # The standup's meeting id, from list_meetings or start_standup
   $meetingId: ID!
@@ -18,12 +18,14 @@ query GetStandup(
         ... on TeamPromptResponsesPhase {
           stages {
             discussionId
-            responses {
-              promptId
+            teamMember {
               userId
               user {
                 preferredName
               }
+            }
+            responses {
+              promptId
               plaintextContent
             }
           }

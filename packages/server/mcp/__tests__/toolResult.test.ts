@@ -7,6 +7,24 @@ test('data comes back as JSON text', () => {
   })
 })
 
+test('empty objects in lists are left out, other empties are kept', () => {
+  const result = toolResult({data: {phases: [{}, {stages: []}, {}], a: {}, b: [null, {}]}})
+  expect(result.content[0]).toEqual({
+    type: 'text',
+    text: '{"phases":[{"stages":[]}],"a":{},"b":[null]}'
+  })
+})
+
+test('data that rides along with errors leaves out empty list objects too', () => {
+  const result = toolResult({
+    data: {phases: [{}, {stages: []}]},
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  expect(JSON.parse((result.content[0] as {text: string}).text).data).toEqual({
+    phases: [{stages: []}]
+  })
+})
+
 test('errors come back with their code and no other detail', () => {
   const result = toolResult({
     errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN', secret: 1}})]

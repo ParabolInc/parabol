@@ -42,7 +42,10 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
 
   const {color, label} = newScaleValue
   if (!validateColorValue(color, oldScaleValues[oldScaleValueIndex]!.color)) {
-    throw new GraphQLError('Invalid scale color', {extensions: {code: 'BAD_USER_INPUT'}})
+    throw new GraphQLError(
+      'Invalid scale color. Use one of the hex values the pokerScaleColors query returns',
+      {extensions: {code: 'BAD_USER_INPUT'}}
+    )
   }
   if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
     throw new GraphQLError('Invalid scale label', {extensions: {code: 'BAD_USER_INPUT'}})

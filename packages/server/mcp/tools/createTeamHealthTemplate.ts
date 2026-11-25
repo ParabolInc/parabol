@@ -1,4 +1,5 @@
 import {z} from 'zod'
+import type {SharingScopeEnum} from '../../graphql/public/resolverTypes'
 import defineTool from '../defineTool'
 import type {MCPContext} from '../MCPContext'
 import runGraphQL from '../runGraphQL'
@@ -13,6 +14,7 @@ const ADD_TEAM_HEALTH_TEMPLATE = `
     addTeamHealthTemplate(teamId: $teamId) {
       teamHealthTemplate {
         id
+        scope
       }
     }
   }
@@ -82,7 +84,7 @@ const categorize = async (
 export default defineTool({
   name: 'create_team_health_template',
   title: 'Create a team health template',
-  description: `Create a team health template on a team with up to ${MAX_QUESTIONS} questions, each a statement the team scores from 1 (strongly disagree) to 5 (strongly agree), such as "I can raise problems and tough issues with this team." Each check asks one question from each category and rotates through a category's questions from one check to the next, so give every question you want asked each time a category of its own. Then call start_team_health with the template's id. It refuses a name another team health template on the team has. Team health templates can't be removed, so an error with unfinishedTemplateId names the empty template the tool made before it failed. unfinishedQuestionIds, when present, names questions it made but couldn't delete, which stay in your My Questions list. After any retryAfter, delete those with deleteTeamHealthQuestion through graphql_mutate, then call again with another name. Needs templates:write.`,
+  description: `Create a team health template on a team with up to ${MAX_QUESTIONS} questions, each a statement the team scores from 1 (strongly disagree) to 5 (strongly agree), such as "I can raise problems and tough issues with this team." Team health templates are always shared with the team's whole organization. Each check asks one question from each category and rotates through a category's questions from one check to the next, so give every question you want asked each time a category of its own. Then call start_team_health with the template's id. It refuses a name another team health template on the team has. Team health templates can't be removed, so an error with unfinishedTemplateId names the empty template the tool made before it failed. unfinishedQuestionIds, when present, names questions it made but couldn't delete, which stay in your My Questions list. After any retryAfter, delete those with deleteTeamHealthQuestion through graphql_mutate, then call again with another name. Needs templates:write.`,
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z
@@ -116,13 +118,12 @@ export default defineTool({
   }),
   annotations: writeAnnotations,
   run: async (context, {teamId, name, questions}) => {
-    const created = await runGraphQL<{addTeamHealthTemplate: {teamHealthTemplate: {id: string}}}>(
-      context,
-      ADD_TEAM_HEALTH_TEMPLATE,
-      {teamId}
-    )
-    const templateId = created.data?.addTeamHealthTemplate.teamHealthTemplate.id
-    if (created.errors?.length || !templateId) return toolResult(created)
+    const created = await runGraphQL<{
+      addTeamHealthTemplate: {teamHealthTemplate: {id: string; scope: SharingScopeEnum}}
+    }>(context, ADD_TEAM_HEALTH_TEMPLATE, {teamId})
+    const createdTemplate = created.data?.addTeamHealthTemplate.teamHealthTemplate
+    if (created.errors?.length || !createdTemplate) return toolResult(created)
+    const {id: templateId, scope} = createdTemplate
     const questionIds: string[] = []
     try {
       await renameMeetingTemplate(context, templateId, name)
@@ -137,7 +138,9 @@ export default defineTool({
         })
       }
       await runTemplateStep(context, ADD_TEMPLATE_QUESTIONS, {templateId, questionIds})
-      return toolResult({data: {template: {id: templateId, name, questions: savedQuestions}}})
+      return toolResult({
+        data: {template: {id: templateId, name, scope, questions: savedQuestions}}
+      })
     } catch (error) {
       const unfinishedQuestionIds: string[] = []
       for (const questionId of questionIds) {

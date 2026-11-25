@@ -133,7 +133,9 @@ test('a value on a copy of a built-in scale can be renamed and keep its colour, 
       newScaleValue: {label: 'XXS', color: '#45E595'}
     }
   })
-  expect(expectToolErrorCode(recoloured, 'BAD_USER_INPUT')).toBe('Invalid scale color')
+  expect(expectToolErrorCode(recoloured, 'BAD_USER_INPUT')).toBe(
+    'Invalid scale color. Use one of the hex values the pokerScaleColors query returns'
+  )
 })
 
 test('two teammates vote on stories an agent added, the facilitator reveals and scores one, and the summary counts both stories', async () => {

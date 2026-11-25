@@ -9,7 +9,7 @@ export default defineTool({
   name: 'create_retro_template',
   title: 'Create a retrospective template',
   description:
-    'Create a retrospective template on a team with the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish or remove it (removePromptTemplate) with graphql_mutate rather than retrying under a new name. Needs users:read, teams:read and templates:write.',
+    "Create a retro template owned by a team and shared with its whole organization, as Parabol's template editor does; the result's scope says so. To keep it to the team, call updateTemplateScope with scope TEAM through graphql_mutate. It has the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish or remove it (removePromptTemplate) with graphql_mutate rather than retrying under a new name. Needs users:read, teams:read and templates:write.",
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z
@@ -29,7 +29,7 @@ export default defineTool({
       prompts: columns
     })
     if ('error' in created) return created.error
-    const {id, prompts} = created.template
-    return toolResult({data: {template: {id, name, columns: prompts}}})
+    const {id, scope, prompts} = created.template
+    return toolResult({data: {template: {id, name, scope, columns: prompts}}})
   }
 })
