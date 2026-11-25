@@ -248,6 +248,11 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </div>
           )}
+          <NewTeamFormInvitees
+            invitees={invitees}
+            orgId={isNewOrg || !orgId ? null : orgId}
+            onSubmit={() => formRef.current?.requestSubmit()}
+          />
           <div className='mt-8 flex items-center'>
             <div className='flex flex-1 items-start'>
               <div>
@@ -300,11 +305,6 @@ const NewTeamForm = (props: Props) => {
               </Tooltip>
             </div>
           </div>
-          <NewTeamFormInvitees
-            invitees={invitees}
-            orgId={isNewOrg || !orgId ? null : orgId}
-            onSubmit={() => formRef.current?.requestSubmit()}
-          />
           <Button
             variant='primary'
             className='mx-auto mt-6 mb-0 w-64'

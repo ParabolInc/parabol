@@ -1,5 +1,5 @@
 import * as Popover from '@radix-ui/react-popover'
-import type {SyntheticEvent} from 'react'
+import {type RefObject, type SyntheticEvent, useState} from 'react'
 import {cn} from '../../ui/cn'
 import menuSectionTitleClass from '../../ui/Menu/menuSectionTitleClass'
 import {
@@ -10,6 +10,7 @@ import {
 import InviteeFieldOption from './InviteeFieldOption'
 
 interface Props {
+  inputRef: RefObject<HTMLInputElement | null>
   listId: string
   options: InviteeOptions
   orgName: string
@@ -22,15 +23,26 @@ interface Props {
 
 const keepInputFocus = (e: Event | SyntheticEvent) => e.preventDefault()
 
+const ROOMY_BELOW = 240
+
+const pickSide = (anchor: HTMLElement | null): 'top' | 'bottom' => {
+  if (!anchor) return 'bottom'
+  const {top, bottom} = anchor.getBoundingClientRect()
+  const below = window.innerHeight - bottom
+  return below >= ROOMY_BELOW || below >= top ? 'bottom' : 'top'
+}
+
 const InviteeFieldOptions = (props: Props) => {
-  const {listId, options, orgName, query, active, getOptionDomId, onHighlight, onPick} = props
+  const {inputRef, listId, options, orgName, query, active, getOptionDomId, onHighlight, onPick} =
+    props
   const {sections, emptyText} = options
   const hasQuery = query.trim() !== ''
+  const [side] = useState(() => pickSide(inputRef.current?.parentElement ?? null))
   return (
     <Popover.Portal>
       <Popover.Content
         role='presentation'
-        side='bottom'
+        side={side}
         align='start'
         avoidCollisions={false}
         sideOffset={4}
@@ -38,7 +50,7 @@ const InviteeFieldOptions = (props: Props) => {
         onOpenAutoFocus={keepInputFocus}
         onCloseAutoFocus={keepInputFocus}
         onMouseDown={keepInputFocus}
-        className='z-30 flex max-h-[min(28rem,var(--radix-popover-content-available-height))] w-(--radix-popper-anchor-width) animate-slide-down flex-col overflow-hidden rounded-md border border-hairline bg-surface-raised pt-1 text-fg-primary shadow-[var(--shadow-card-raised)] outline-hidden'
+        className='z-30 flex max-h-[min(28rem,var(--radix-popover-content-available-height))] w-(--radix-popper-anchor-width) flex-col overflow-hidden rounded-md border border-hairline bg-surface-raised pt-1 text-fg-primary shadow-[var(--shadow-card-raised)] outline-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
       >
         <div
           id={listId}

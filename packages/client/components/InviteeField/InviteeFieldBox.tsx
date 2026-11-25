@@ -27,7 +27,7 @@ const InviteeFieldBox = (props: Props) => {
           inputRef.current?.focus()
           onOpen()
         }}
-        className='flex min-h-[5.75rem] w-full cursor-text flex-wrap content-start items-center gap-1 rounded border border-hairline-field bg-surface-input p-1.5 focus-within:border-fg-primary hover:border-fg-primary'
+        className='flex w-full cursor-text flex-wrap content-start items-center gap-1 rounded border border-hairline-field bg-surface-input p-1.5 focus-within:border-fg-primary hover:border-fg-primary'
       >
         {drafts.length > 0 && (
           <ul className='contents'>

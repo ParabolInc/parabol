@@ -81,6 +81,7 @@ const InviteeField = (props: InviteeFieldProps) => {
         />
         {options && directory && (
           <InviteeFieldOptions
+            inputRef={inputRef}
             listId={listId}
             options={options}
             orgName={directory.orgName}
