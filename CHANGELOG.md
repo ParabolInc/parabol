@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.9.0](https://github.com/ParabolInc/parabol/compare/v16.8.0...v16.9.0) (2026-11-25)
+
+
+### Added
+
+* **mcp:** curated tools for ChatGPT and OpenAI's domain challenge ([#14399](https://github.com/ParabolInc/parabol/issues/14399)) ([d52a9b0](https://github.com/ParabolInc/parabol/commit/d52a9b00046a1032108d84c34655c0530ed8ba4b))
+* **mcp:** serve an llms.txt that describes the MCP server ([#14398](https://github.com/ParabolInc/parabol/issues/14398)) ([fc2f142](https://github.com/ParabolInc/parabol/commit/fc2f1423036334a989252253bd5e82675011a753))
+
+
+### Fixed
+
+* **client:** show a meeting only once its rendered data has a local phase ([#14396](https://github.com/ParabolInc/parabol/issues/14396)) ([74ae060](https://github.com/ParabolInc/parabol/commit/74ae060a31adca5d6bfe308758a5ceb754b735c8))
+
+
+### Changed
+
+* **client:** load my tasks, org billing and reports in route loaders ([#14395](https://github.com/ParabolInc/parabol/issues/14395)) ([550891c](https://github.com/ParabolInc/parabol/commit/550891c5fd21151ea1e1df85cd67ff06c3b8f245))
+
 ## [16.8.0](https://github.com/ParabolInc/parabol/compare/v16.7.0...v16.8.0) (2026-11-25)
 
 
