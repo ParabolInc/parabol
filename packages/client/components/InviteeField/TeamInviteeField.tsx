@@ -12,9 +12,13 @@ const TeamInviteeField = (props: TeamInviteeFieldProps) => {
   const {queryRef, ...fieldProps} = props
   const data = usePreloadedQuery<TeamInviteeFieldQuery>(
     graphql`
-      query TeamInviteeFieldQuery($teamId: ID!) {
+      query TeamInviteeFieldQuery(
+        $teamId: ID!
+        $meetingsAfter: DateTime!
+        $meetingsBefore: DateTime!
+      ) {
         viewer {
-          ...useInviteeDirectory_viewer
+          ...useInviteeDirectory_viewer @arguments(meetingsAfter: $meetingsAfter, meetingsBefore: $meetingsBefore)
           team(teamId: $teamId) {
             organization {
               ...useInviteeDirectory_organization

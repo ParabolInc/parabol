@@ -227,7 +227,6 @@
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
           "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
-          "MeetingPartner": "./types/MeetingPartner#MeetingPartnerSource",
           "OwnedFeatureFlag": "./types/OwnedFeatureFlag#OwnedFeatureFlagSource",
           "Page": "../../postgres/types/index#Page as PageDB",
           "PageAccess": "./types/PageAccess#PageAccessSource",

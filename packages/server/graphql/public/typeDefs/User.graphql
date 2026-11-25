@@ -519,8 +519,8 @@ type User {
     The max number of meetings to return
     """
     first: Int!
-    "Filter to meetings belonging to these teams"
-    teamIds: [ID!]!
+    "Filter to meetings belonging to these teams. Omit for every team the viewer is on"
+    teamIds: [ID!]
     "Filter to these meeting types"
     meetingTypes: [MeetingTypeEnum!]!
     """

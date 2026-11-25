@@ -189,11 +189,6 @@ type Organization {
   viewerOrganizationUser: OrganizationUser
 
   """
-  The people the viewer was in a meeting with on this organization's teams in the last 30 days, most recent first
-  """
-  viewerMeetingPartners: [MeetingPartner!]! @scope(name: USERS_READ)
-
-  """
   The users that are part of the organization
   """
   organizationUsers(after: String, first: Int): OrganizationUserConnection! @scope(name: USERS_READ)

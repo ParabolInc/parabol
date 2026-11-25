@@ -22,17 +22,36 @@ const viewerRef = {
       orgId: 'org2',
       teamMembers: [{isSelf: false, user: {id: 'bo'}}]
     }
-  ]
+  ],
+  meetings: {
+    edges: [
+      {
+        node: {
+          id: 'meeting1',
+          teamId: 'team1',
+          meetingType: 'retrospective',
+          createdAt: '2026-11-01T00:00:00.000Z',
+          meetingMembers: [{user: {id: 'viewer'}}, {user: {id: 'ana'}}]
+        }
+      },
+      {
+        node: {
+          id: 'meeting2',
+          teamId: 'team2',
+          meetingType: 'poker',
+          createdAt: '2026-11-02T00:00:00.000Z',
+          meetingMembers: [{user: {id: 'viewer'}}, {user: {id: 'bo'}}]
+        }
+      }
+    ]
+  }
 } as unknown as Parameters<typeof toInviteeDirectory>[0]
 
 const organizationRef = {
   id: 'org1',
   name: 'Acme',
   approvedDomains: ['acme.co'],
-  organizationUsers: {edges: [{node: makeUser('viewer')}, {node: makeUser('ana')}]},
-  viewerMeetingPartners: [
-    {lastMetAt: '2026-11-01T00:00:00.000Z', meetingType: 'retrospective', user: {id: 'ana'}}
-  ]
+  organizationUsers: {edges: [{node: makeUser('viewer')}, {node: makeUser('ana')}]}
 } as unknown as Parameters<typeof toInviteeDirectory>[1]
 
 describe('toInviteeDirectory', () => {
@@ -42,7 +61,7 @@ describe('toInviteeDirectory', () => {
     expect(directory.people.map(({id}) => id)).toEqual(['ana'])
   })
 
-  it('maps meeting partners to userId', () => {
+  it('derives meeting partners from the viewer meetings in the organization', () => {
     const directory = toInviteeDirectory(viewerRef, organizationRef)
     expect(directory.partners).toEqual([
       {userId: 'ana', lastMetAt: '2026-11-01T00:00:00.000Z', meetingType: 'retrospective'}

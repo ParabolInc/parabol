@@ -34,7 +34,7 @@ interface Props {
 
 const AddTeamDialogViewerFragment = graphql`
   fragment AddTeamDialog_viewer on User {
-    ...useInviteeDirectory_viewer
+    ...useInviteeDirectory_viewer @arguments(meetingsAfter: $meetingsAfter, meetingsBefore: $meetingsBefore)
     organization(orgId: $orgId) {
       id
       name
@@ -47,7 +47,11 @@ const AddTeamDialogViewerFragment = graphql`
 const NO_TEAM_EMAILS: readonly string[] = []
 
 const query = graphql`
-  query AddTeamDialogQuery($orgId: ID!) {
+  query AddTeamDialogQuery(
+    $orgId: ID!
+    $meetingsAfter: DateTime!
+    $meetingsBefore: DateTime!
+  ) {
     viewer {
       ...AddTeamDialog_viewer
     }

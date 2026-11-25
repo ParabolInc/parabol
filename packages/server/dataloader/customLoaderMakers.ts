@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader'
 import stringify from 'fast-json-stable-stringify'
 import {type SqlBool, sql} from 'kysely'
-import ms from 'ms'
 import type {AnyTaskIntegration} from 'parabol-client/shared/types/TaskIntegration'
 import {Threshold} from 'parabol-client/types/constEnums'
 import {canShowTeamHealthScore} from '../../client/shared/utils/teamHealthAnonymity'
@@ -14,7 +13,6 @@ import groupTeamPromptResponsesByUser, {
   type TeamPromptMemberResponse
 } from '../graphql/mutations/helpers/groupTeamPromptResponsesByUser'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
-import type {MeetingPartnerSource} from '../graphql/public/types/MeetingPartner'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import {containsPattern} from '../postgres/containsPattern'
 import getKysely from '../postgres/getKysely'
@@ -357,69 +355,6 @@ export const organizationUsersByUserIdOrgId = (
             .limit(1)
             .executeTakeFirst()
           return res || null
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.orgId}:${key.userId}`
-    }
-  )
-}
-
-export const meetingPartnersByUserIdOrgId = (
-  parent: RootDataLoader,
-  dependsOn: RegisterDependsOn
-) => {
-  dependsOn('meetingMembers')
-  dependsOn('newMeetings')
-  dependsOn('organizationUsers')
-  dependsOn('teamMembers')
-  return new DataLoader<{userId: string; orgId: string}, MeetingPartnerSource[], string>(
-    async (keys) => {
-      const pg = getKysely()
-      const windowStart = new Date(Date.now() - ms('30d'))
-      return Promise.all(
-        keys.map(async ({userId, orgId}) => {
-          const partners = await pg
-            .selectFrom('MeetingMember as viewerMember')
-            .innerJoin('NewMeeting', 'NewMeeting.id', 'viewerMember.meetingId')
-            .innerJoin('Team', 'Team.id', 'NewMeeting.teamId')
-            .innerJoin('MeetingMember as partnerMember', (join) =>
-              join
-                .onRef('partnerMember.meetingId', '=', 'NewMeeting.id')
-                .onRef('partnerMember.userId', '!=', 'viewerMember.userId')
-            )
-            .innerJoin('OrganizationUser', (join) =>
-              join
-                .onRef('OrganizationUser.userId', '=', 'partnerMember.userId')
-                .on('OrganizationUser.orgId', '=', orgId)
-                .on('OrganizationUser.removedAt', 'is', null)
-            )
-            .innerJoin('TeamMember', (join) =>
-              join
-                .onRef('TeamMember.userId', '=', 'partnerMember.userId')
-                .onRef('TeamMember.teamId', '=', 'NewMeeting.teamId')
-                .on('TeamMember.isNotRemoved', '=', true)
-            )
-            .where('viewerMember.userId', '=', userId)
-            .where('NewMeeting.createdAt', '>', windowStart)
-            .where('Team.orgId', '=', orgId)
-            .select([
-              'partnerMember.userId',
-              (eb) => eb.fn.max('NewMeeting.createdAt').as('lastMetAt'),
-              sql<MeetingTypeEnum>`(array_agg("NewMeeting"."meetingType" order by "NewMeeting"."createdAt" desc))[1]`.as(
-                'meetingType'
-              )
-            ])
-            .groupBy('partnerMember.userId')
-            .orderBy('lastMetAt', 'desc')
-            .execute()
-          return partners.map(({userId, lastMetAt, meetingType}) => ({
-            userId,
-            lastMetAt: lastMetAt!,
-            meetingType
-          }))
         })
       )
     },

@@ -10,12 +10,14 @@ import type {
   useInviteeDirectory_viewer$key
 } from '../__generated__/useInviteeDirectory_viewer.graphql'
 import {type InviteeDirectory, makeInviteeDirectory} from '../utils/inviteeDirectory'
+import toMeetingPartners from '../utils/toMeetingPartners'
 
 export const toInviteeDirectory = (
   viewer: useInviteeDirectory_viewer$data,
   organization: useInviteeDirectory_organization$data
-): InviteeDirectory =>
-  makeInviteeDirectory({
+): InviteeDirectory => {
+  const orgTeams = viewer.teams.filter(({orgId}) => orgId === organization.id)
+  return makeInviteeDirectory({
     orgName: organization.name,
     viewerId: viewer.id,
     approvedDomains: organization.approvedDomains ?? [],
@@ -25,19 +27,18 @@ export const toInviteeDirectory = (
       email: node.user.email,
       picture: node.user.picture
     })),
-    partners: organization.viewerMeetingPartners.map(({user, lastMetAt, meetingType}) => ({
-      userId: user.id,
-      lastMetAt,
-      meetingType
-    })),
-    teams: viewer.teams
-      .filter(({orgId}) => orgId === organization.id)
-      .map(({id, name, teamMembers}) => ({
-        id,
-        name,
-        memberIds: teamMembers.map(({user}) => user.id)
-      }))
+    partners: toMeetingPartners(
+      viewer.id,
+      orgTeams,
+      viewer.meetings.edges.map(({node}) => node)
+    ),
+    teams: orgTeams.map(({id, name, teamMembers}) => ({
+      id,
+      name,
+      memberIds: teamMembers.map(({user}) => user.id)
+    }))
   })
+}
 
 const useInviteeDirectory = (
   viewerRef: useInviteeDirectory_viewer$key,
@@ -45,7 +46,11 @@ const useInviteeDirectory = (
 ): InviteeDirectory => {
   const viewer = useFragment(
     graphql`
-      fragment useInviteeDirectory_viewer on User {
+      fragment useInviteeDirectory_viewer on User
+      @argumentDefinitions(
+        meetingsAfter: {type: "DateTime!"}
+        meetingsBefore: {type: "DateTime!"}
+      ) {
         id
         teams {
           id
@@ -54,6 +59,26 @@ const useInviteeDirectory = (
           teamMembers {
             user {
               id
+            }
+          }
+        }
+        meetings(
+          first: 200
+          meetingTypes: [action, retrospective, poker, teamPrompt, teamHealth]
+          after: $meetingsAfter
+          before: $meetingsBefore
+        ) {
+          edges {
+            node {
+              id
+              teamId
+              meetingType
+              createdAt
+              meetingMembers {
+                user {
+                  id
+                }
+              }
             }
           }
         }
@@ -77,13 +102,6 @@ const useInviteeDirectory = (
                 picture
               }
             }
-          }
-        }
-        viewerMeetingPartners {
-          lastMetAt
-          meetingType
-          user {
-            id
           }
         }
       }
