@@ -2,15 +2,16 @@ import {type Doc, XmlElement, XmlText, type YXmlEvent} from 'yjs'
 import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
 import getKysely from '../postgres/getKysely'
 import {CipherId} from '../utils/CipherId'
-import {sendPublic, sendTipTap, signUp} from './common'
+import {getUserTeams, sendPublic, sendTipTap, signUp} from './common'
+import {createPersonalAccessToken} from './mcpClient'
 
 afterAll(async () => {
   await getKysely().destroy()
 })
 
 const CREATE_PAGE = `
-  mutation CreatePage {
-    createPage {
+  mutation CreatePage($teamId: ID) {
+    createPage(teamId: $teamId) {
       page {
         id
       }
@@ -25,6 +26,7 @@ const DUPLICATE_PAGE = `
         id
         title
         parentPageId
+        teamId
       }
     }
   }
@@ -46,8 +48,8 @@ const SHARE_PUBLIC_LINK = `
   }
 `
 
-const createPage = async (cookie: string) => {
-  const res = await sendPublic({query: CREATE_PAGE, cookie})
+const createPage = async (cookie: string, teamId?: string) => {
+  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
   return res.data.createPage.page.id as string
 }
 
@@ -67,8 +69,22 @@ const addChildPage = async (cookie: string, parentPageId: string) => {
   return `page:${childPageCode}`
 }
 
+type Auth = {cookie: string} | {bearerToken: string}
+
+const duplicateAs = (auth: Auth, pageId: string, parentPageId?: string) =>
+  sendPublic({query: DUPLICATE_PAGE, variables: {pageId, parentPageId}, ...auth})
+
 const duplicate = (cookie: string, pageId: string, parentPageId?: string) =>
-  sendPublic({query: DUPLICATE_PAGE, variables: {pageId, parentPageId}, cookie})
+  duplicateAs({cookie}, pageId, parentPageId)
+
+const countPages = async (userId: string) => {
+  const {count} = await getKysely()
+    .selectFrom('Page')
+    .select(({fn}) => fn.countAll<number>().as('count'))
+    .where('userId', '=', userId)
+    .executeTakeFirstOrThrow()
+  return Number(count)
+}
 
 test('duplicates a child page next to the original', async () => {
   const {cookie} = await signUp()
@@ -154,4 +170,51 @@ test('the public link alone does not allow copying', async () => {
   expect(shared.errors).toBeUndefined()
   const res = await duplicate(stranger.cookie, pageId)
   expect(res.errors[0].extensions.code).toBe('FORBIDDEN')
+})
+
+const PAGE_SCOPES = ['PAGES_READ', 'PAGES_WRITE']
+
+test('a token limited to pages cannot copy its private page, which would leave a private page it cannot reach', async () => {
+  const {cookie, userId} = await signUp()
+  const pageId = await createPage(cookie)
+  const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [],
+    grantedPageIds: [pageId]
+  })
+  const before = await countPages(userId)
+  const res = await duplicateAs({bearerToken}, pageId)
+  expect(res.errors[0]).toMatchObject({
+    message:
+      "This access token is limited to specific organizations, teams or pages, so it can't make a private copy. Pass parentPageId to copy into a page it can edit",
+    extensions: {code: 'FORBIDDEN'}
+  })
+  expect(await countPages(userId)).toBe(before)
+})
+
+test('a token limited to a team copies a team page into the team', async () => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const teamPageId = await createPage(cookie, teamId)
+  const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const res = await duplicateAs({bearerToken}, teamPageId)
+  expect(res.errors).toBeUndefined()
+  expect(res.data.duplicatePage.page).toMatchObject({
+    title: expect.stringMatching(/^Copy of /),
+    teamId
+  })
+})
+
+test('a token with no grant limits still copies a private page next to the original', async () => {
+  const {cookie} = await signUp()
+  const pageId = await createPage(cookie)
+  const bearerToken = await createPersonalAccessToken(PAGE_SCOPES, {cookie})
+  const res = await duplicateAs({bearerToken}, pageId)
+  expect(res.errors).toBeUndefined()
+  expect(res.data.duplicatePage.page.title).toMatch(/^Copy of /)
 })

@@ -84,8 +84,8 @@ const listFields = (type: FieldedType) => {
     [
       header,
       ...fields.map(
-        ({name, args, type: returnType}) =>
-          `  ${name}${withArgumentNames && args.length ? `(${args.map((arg) => arg.name).join(', ')})` : ''}: ${returnType}`
+        ({name, args, type: returnType, deprecationReason}) =>
+          `  ${name}${withArgumentNames && args.length ? `(${args.map((arg) => arg.name).join(', ')})` : ''}: ${returnType}${typeof deprecationReason === 'string' ? ' @deprecated' : ''}`
       ),
       footer
     ].join('\n')

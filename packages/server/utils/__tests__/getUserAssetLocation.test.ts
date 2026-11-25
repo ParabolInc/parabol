@@ -1,6 +1,6 @@
 import {getUserAssetLocation} from '../getUserAssetLocation'
 
-jest.mock('../../../../../appOrigin', () => ({__esModule: true, default: 'https://parabol.test'}))
+jest.mock('../../appOrigin', () => ({__esModule: true, default: 'https://parabol.test'}))
 
 const FILE = 'm7HwiUHkF2xV0oNjD8OLElUuquAtaXdZPEraSQlKvHw.avif'
 

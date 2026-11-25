@@ -8,8 +8,7 @@ export const hasNoPageGrantForParent = <T>(dotPath: ResolverDotPath<T>) =>
     (source, args, {resourceGrants}: RuleContext) =>
       !getResolverDotPath(dotPath, source, args) || !resourceGrants?.hasPageGrants()
         ? true
-        : new GraphQLError(
-            "This access token can only reach the pages it was given, so it can't add pages inside them",
-            {extensions: {code: 'FORBIDDEN'}}
-          )
+        : new GraphQLError("An access token given specific pages can't create sub-pages", {
+            extensions: {code: 'FORBIDDEN'}
+          })
   )

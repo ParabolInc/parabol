@@ -2,6 +2,7 @@ import {z} from 'zod'
 import type {MeetingTypeEnum} from '../../graphql/public/resolverTypes'
 import defineTool from '../defineTool'
 import runGraphQL from '../runGraphQL'
+import {REMOVE_POKER_TEMPLATE_SCALE, REMOVE_PROMPT_TEMPLATE} from '../templateRemovalDocuments'
 import {writeAnnotations} from '../toolAnnotations'
 import toolError from '../toolError'
 import toolResult from '../toolResult'
@@ -11,17 +12,6 @@ const TEMPLATE_TYPE = `
     viewer {
       activity(activityId: $templateId) {
         type
-      }
-    }
-  }
-`
-
-const REMOVE_PROMPT_TEMPLATE = `
-  mutation RemovePromptTemplate($templateId: ID!) {
-    deleted: removePromptTemplate(templateId: $templateId) {
-      template {
-        id
-        name
       }
     }
   }
@@ -38,14 +28,6 @@ const REMOVE_POKER_TEMPLATE = `
   }
 `
 
-const REMOVE_POKER_TEMPLATE_SCALE = `
-  mutation RemovePokerTemplateScale($scaleId: ID!) {
-    removePokerTemplateScale(scaleId: $scaleId) {
-      __typename
-    }
-  }
-`
-
 const REMOVE_TEMPLATE_DOCUMENTS: Partial<Record<MeetingTypeEnum, string>> = {
   retrospective: REMOVE_PROMPT_TEMPLATE,
   teamPrompt: REMOVE_PROMPT_TEMPLATE,
@@ -56,7 +38,7 @@ export default defineTool({
   name: 'delete_template',
   title: 'Delete a template or poker scale',
   description:
-    "Delete a retrospective, standup or sprint poker template, or a poker scale. This can't be undone. Anyone on the team that owns a template or scale can delete it, and so can a billing leader for a template shared across their organization. It refuses everyone else, Parabol's built-in templates and scales, team health templates, which can't be deleted, and a retro or standup template a recurring meeting still uses: cancel that series with cancel_meeting_series first. If the template was the team's selected one, the team's next meeting of that kind uses another. Dimensions that used a deleted scale switch to Fibonacci. Deleting a scale needs only templates:write. Needs users:read, templates:read and templates:write.",
+    "Delete a retrospective, standup or sprint poker template, or a poker scale. This can't be undone. Anyone on the team that owns a template or scale can delete it, and so can a billing leader for a template shared across their organization. It refuses anyone else's template or scale, Parabol's built-in templates and scales, team health templates (they can't be deleted), and a retro or standup template that a recurring meeting still uses: cancel that series with cancel_meeting_series first. If the template was the team's selected one, the team's next meeting of that kind uses another. Dimensions that used a deleted scale switch to Fibonacci. Deleting a scale needs only templates:write. Needs users:read, templates:read and templates:write.",
   inputSchema: z.object({
     templateId: z
       .string()
@@ -70,7 +52,7 @@ export default defineTool({
   annotations: writeAnnotations,
   run: async (context, {templateId, scaleId}) => {
     if (!templateId === !scaleId) {
-      return toolError('Pass templateId or scaleId, not both.', 'BAD_USER_INPUT')
+      return toolError('Pass exactly one of templateId or scaleId.', 'BAD_USER_INPUT')
     }
     if (scaleId) {
       const removed = await runGraphQL(context, REMOVE_POKER_TEMPLATE_SCALE, {scaleId})

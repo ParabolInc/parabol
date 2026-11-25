@@ -1,8 +1,8 @@
 import {GraphQLError} from 'graphql'
-import makeAppURL from '../../../../../client/utils/makeAppURL'
-import appOrigin from '../../../../appOrigin'
-import type {PartialPath} from '../../../../fileStorage/FileStoreManager'
-import type {AssetScopeEnum} from '../../resolverTypes'
+import makeAppURL from '../../client/utils/makeAppURL'
+import appOrigin from '../appOrigin'
+import type {PartialPath} from '../fileStorage/FileStoreManager'
+import type {AssetScopeEnum} from '../graphql/public/resolverTypes'
 
 const USER_ASSET_PATH = /^\/assets\/(User|Team|Organization|Page)\/([\w|-]+)\/assets\/[\w-]+\.\w+$/
 const PAGE_CODE = /^(0|[1-9]\d*)$/

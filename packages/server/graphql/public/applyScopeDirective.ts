@@ -8,7 +8,7 @@ import {
 } from 'graphql'
 import type AuthToken from '../../database/types/AuthToken'
 import getAssetOwnerScope from '../../utils/getAssetOwnerScope'
-import {getUserAssetLocation} from './mutations/helpers/getUserAssetLocation'
+import {getUserAssetLocation} from '../../utils/getUserAssetLocation'
 import type {AssetScopeEnum, OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 export const PAT_PREFIX = 'pat_'

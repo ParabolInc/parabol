@@ -9,7 +9,7 @@ export default defineTool({
   name: 'create_retro_template',
   title: 'Create a retrospective template',
   description:
-    'Create a retrospective template on a team with the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish or remove it (removePromptTemplate) with graphql_mutate rather than retrying under a new name. Needs users:read, teams:read and templates:write.',
+    'Create a retrospective template on a team with the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish it with graphql_mutate or remove it with delete_template rather than retrying under a new name. Needs users:read, teams:read and templates:write.',
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z

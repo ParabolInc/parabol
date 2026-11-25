@@ -210,7 +210,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     deleteUserAsset: and(
       isAuthenticated,
       canDeleteUserAsset,
-      rateLimit({perMinute: 60, perHour: 600})
+      rateLimit({perMinute: 60, perHour: 600, cache: 'strict'})
     ),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),

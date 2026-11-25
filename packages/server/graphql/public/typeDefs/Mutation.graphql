@@ -131,7 +131,7 @@ type Mutation {
   ): SetNotificationStatusPayload! @scope(name: USERS_WRITE)
 
   """
-  Create an empty page: a personal page, a team page, or a page inside another page. A personal page or a page inside another page needs an access token that isn't limited to specific organizations, teams or pages.
+  Create an empty page: a personal page, a team page, or a page inside another page. A personal page needs an access token that isn't limited to specific organizations, teams or pages. A token limited to organizations or teams can create a page inside a page it can edit; a token given specific pages can't create sub-pages.
   """
   createPage(
     """
@@ -337,9 +337,9 @@ type Mutation {
 
   """
   Delete a file uploaded to Parabol, given its URL. Needs edit rights where the file lives: the user
-  themself for a User file (and a connection that isn't limited to some organizations, teams or
-  pages), a member of the Team, an editor or owner of the Page, or a billing leader or admin of the
-  Organization. Deleting a file that is already gone succeeds
+  themself for a User file (with an access token that isn't limited to specific organizations, teams
+  or pages), a member of the Team, an editor or owner of the Page (its public link doesn't count), or
+  a billing leader or admin of the Organization. Deleting a file that is already gone succeeds
   """
   deleteUserAsset(
     """

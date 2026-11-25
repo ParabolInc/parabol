@@ -229,6 +229,13 @@ test('list_templates lists standup and team health templates and needs a meeting
   expectToolErrorCode(await callTool(token, 'list_templates', {teamId}), 'BAD_USER_INPUT')
 })
 
+test('list_templates for sprint poker stays under the 300 cost cap of one operation', async () => {
+  const {userId, teamId, token} = await signUpAdmin()
+  const beforeList = await getChargedCost(userId)
+  await listTemplates(token, teamId, 'poker')
+  expect((await getChargedCost(userId)) - beforeList).toBeLessThanOrEqual(300)
+})
+
 test('a Starter agent can list templates, pick one and start a retro within the minute budget', async () => {
   const {userId, teamId, token} = await signUpAdmin()
   await callToolForData(token, 'get_me', {})
@@ -426,6 +433,16 @@ const SHARE_PAGE = `
   }
 `
 
+const SHARE_PAGE_BY_PUBLIC_LINK = `
+  mutation SharePageByPublicLink($pageId: ID!) {
+    updatePageAccess(pageId: $pageId, subjectType: external, subjectId: "*", role: editor) {
+      page {
+        id
+      }
+    }
+  }
+`
+
 const signUpUploader = async () => {
   const member = await signUpWithoutAI()
   return {
@@ -512,6 +529,27 @@ test('a page editor deletes a page file, and a commenter or viewer is refused', 
   const deleted = await callToolForData(editor.token, 'delete_upload', {url})
   expect(deleted.deleteUserAsset).toEqual({url})
   expect(await getUploadStatus(url, owner.token)).toBe(404)
+})
+
+test('someone holding only a public edit link to a page cannot delete its files', async () => {
+  const owner = await signUpUploader()
+  const created = await callToolForData(owner.token, 'create_page', {})
+  const pageId = created.createPage.page.id as string
+  const url = await uploadImage(owner.token, 'Page', pageId)
+  const shared = await sendPublic({
+    query: SHARE_PAGE_BY_PUBLIC_LINK,
+    variables: {pageId},
+    cookie: owner.cookie
+  })
+  expect(shared.errors).toBeUndefined()
+  const stranger = await signUpUploader()
+
+  const refusal = expectToolErrorCode(
+    await callTool(stranger.token, 'delete_upload', {url}),
+    'FORBIDDEN'
+  )
+  expect(refusal).toBe('Only editors and owners of the page can delete its files')
+  expect(await getUploadStatus(url, owner.token)).toBe(200)
 })
 
 test('an organization admin deletes an organization file and a plain member is refused', async () => {
@@ -635,6 +673,7 @@ test('describe_graphql lists the fields of a type too long for one answer and de
   expect(mutation.startsWith('type Mutation {\n')).toBe(true)
   expect(mutation).toContain('\n  createPage(teamId, parentPageId): CreatePagePayload!\n')
   expect(mutation).toContain('\n  createTask(newTask, area): CreateTaskPayload!\n')
+  expect(mutation).toMatch(/\n {2}autogroup\(meetingId\): AutogroupPayload! @deprecated\n/)
   expect(mutation).not.toContain('"""')
   expect(mutation).toMatch(
     /fields, too many to show in full\. Describe one as Mutation\.\w+ for its/

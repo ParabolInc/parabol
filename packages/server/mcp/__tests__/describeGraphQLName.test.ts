@@ -28,12 +28,16 @@ const catalogFields = Array.from(
   {length: CATALOG_FIELD_COUNT},
   (_, idx) =>
     `"Describes item ${idx} at length, so that the whole catalog is far too long to read in one go"\n item${idx}(kind: PageKindEnum, since: DateTime): Page`
-).join('\n')
+)
+  .concat('legacyItem(kind: PageKindEnum): Page @deprecated(reason: "Use item0")')
+  .join('\n')
 
 const warehouseFields = Array.from(
   {length: WAREHOUSE_FIELD_COUNT},
   (_, idx) => `shelf${idx}(kind: PageKindEnum, since: DateTime): Page`
-).join('\n')
+)
+  .concat('oldShelf(kind: PageKindEnum, since: DateTime): Page @deprecated')
+  .join('\n')
 
 const depotFields = Array.from({length: DEPOT_FIELD_COUNT}, (_, idx) => `shelf${idx}: Page`).join(
   '\n'
@@ -219,8 +223,14 @@ test('an object type too long for one answer comes back as one line per field wi
   expect(answer).toContain(`\n  item${CATALOG_FIELD_COUNT - 1}(kind, since): Page\n`)
   expect(answer).not.toContain('"""')
   expect(answer).toContain(
-    `${CATALOG_FIELD_COUNT + 2} fields, too many to show in full. Describe one as Catalog.id for its arguments and descriptions.`
+    `${CATALOG_FIELD_COUNT + 3} fields, too many to show in full. Describe one as Catalog.id for its arguments and descriptions.`
   )
+})
+
+test('a list keeps the deprecated marker on a deprecated field, with or without argument names', () => {
+  expect(sdlOf('Catalog')).toContain('\n  legacyItem(kind): Page @deprecated\n')
+  expect(sdlOf('Catalog')).not.toContain('item0(kind, since): Page @deprecated')
+  expect(sdlOf('Warehouse')).toContain('\n  oldShelf: Page @deprecated\n')
 })
 
 test('a field of a type that came back as a list is still described in full', () => {
@@ -236,7 +246,7 @@ test('a list that would still be too long drops the argument names', () => {
   expect(answer).toContain('\n  shelf0: Page\n')
   expect(answer).toContain(`\n  shelf${WAREHOUSE_FIELD_COUNT - 1}: Page\n`)
   expect(answer).not.toContain('shelf0(')
-  expect(answer).toContain(`${WAREHOUSE_FIELD_COUNT} fields, too many to show in full.`)
+  expect(answer).toContain(`${WAREHOUSE_FIELD_COUNT + 1} fields, too many to show in full.`)
 })
 
 test('a type too long even as a list is cut at a line under the cap with a plain note', () => {

@@ -1,8 +1,8 @@
 import {GraphQLError} from 'graphql'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
+import {getUserAssetLocation} from '../../../utils/getUserAssetLocation'
 import {Logger} from '../../../utils/Logger'
 import type {MutationResolvers} from '../resolverTypes'
-import {getUserAssetLocation} from './helpers/getUserAssetLocation'
 
 const deleteUserAsset: MutationResolvers['deleteUserAsset'] = async (_source, {url}) => {
   const {partialPath} = getUserAssetLocation(url)

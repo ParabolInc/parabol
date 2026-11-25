@@ -1,4 +1,4 @@
-# Select the template a team's next retrospective, sprint poker or standup runs with. Call it before start_retrospective, start_sprint_poker or start_standup to run one with another template. Needs teams:write.
+# Select the template a team's next retrospective, sprint poker or standup runs with. list_templates lists the templates a team can pick. Call it before start_retrospective, start_sprint_poker or start_standup to run one with another template. Needs teams:write.
 mutation SelectTemplate(
   # The template to select
   $templateId: ID!

@@ -4,6 +4,7 @@ import type {PromptTemplateTypeEnum} from '../graphql/public/resolverTypes'
 import type {MCPContext} from './MCPContext'
 import runGraphQL from './runGraphQL'
 import runTemplateStep, {renameMeetingTemplate, TemplateStepFailedError} from './runTemplateStep'
+import {REMOVE_PROMPT_TEMPLATE} from './templateRemovalDocuments'
 import toolError from './toolError'
 import toolResult from './toolResult'
 
@@ -76,14 +77,6 @@ const RENAME_TEMPLATE_PROMPT = `
 const UPDATE_TEMPLATE_PROMPT_DESCRIPTION = `
   mutation UpdateTemplatePromptDescription($promptId: ID!, $description: String!) {
     updateTemplatePromptDescription(promptId: $promptId, description: $description) {
-      __typename
-    }
-  }
-`
-
-const REMOVE_PROMPT_TEMPLATE = `
-  mutation RemovePromptTemplate($templateId: ID!) {
-    removePromptTemplate(templateId: $templateId) {
       __typename
     }
   }
