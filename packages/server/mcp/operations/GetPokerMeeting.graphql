@@ -1,0 +1,42 @@
+# Show one sprint poker meeting: each story it estimates, one stage per story and dimension (such as Story Points), with the task, the final score and the votes. While isVoting is true the team hasn't revealed the votes yet. discussionId opens the story's comments with get_discussion. summaryPageId, when set, is a page to open with read_page. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
+query GetPokerMeeting(
+  # The sprint poker meeting id, from list_meetings or start_sprint_poker
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      meetingType
+      teamId
+      meetingSeriesId
+      createdAt
+      endedAt
+      summary
+      summaryPageId
+      phases {
+        ... on EstimatePhase {
+          stages {
+            discussionId
+            isVoting
+            finalScore
+            dimensionRef {
+              name
+            }
+            task {
+              id
+              title
+              plaintextContent
+            }
+            scores {
+              label
+              user {
+                preferredName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

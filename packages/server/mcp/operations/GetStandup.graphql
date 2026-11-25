@@ -1,0 +1,39 @@
+# Show one standup: its prompts, each member's responses to them, and the tasks it made. A response not yet shared shows only to its author. summaryPageId, when set, is a page to open with read_page. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
+query GetStandup(
+  # The standup's meeting id, from list_meetings or start_standup
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      meetingType
+      teamId
+      meetingSeriesId
+      createdAt
+      endedAt
+      summary
+      summaryPageId
+      ... on TeamPromptMeeting {
+        prompts {
+          id
+          question
+        }
+        responses {
+          promptId
+          userId
+          user {
+            preferredName
+          }
+          plaintextContent
+        }
+        tasks {
+          id
+          plaintextContent
+          status
+          userId
+        }
+      }
+    }
+  }
+}
