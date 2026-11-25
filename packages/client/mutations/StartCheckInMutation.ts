@@ -23,7 +23,7 @@ const mutation = graphql`
   ) {
     startCheckIn(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
       meeting {
-        # lets useJoinedMeetingQuery subscribe while the starter joins
+        # lets joinMeeting subscribe while the starter joins
         viewerMeetingMember {
           id
         }

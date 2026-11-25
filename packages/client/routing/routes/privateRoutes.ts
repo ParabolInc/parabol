@@ -153,8 +153,33 @@ export const newMeetingRoute = createRoute({
 export const meetingRoute = createRoute({
   getParentRoute: () => privateLayoutRoute,
   path: 'meet/$meetingId',
+  // everyone in the meeting sees the viewer join, so only a visit joins, never a preload
+  preload: false,
+  // The viewer stays joined until the router drops this match and aborts its loader, as soon as another page
+  // commits. A gcTime would keep the match, and the viewer joined, that much longer
+  loader: async ({
+    context: {atmosphere, navigate, queryRefs},
+    params: {meetingId},
+    abortController
+  }) => {
+    // the subscription and the meeting query are too big for the entry bundle
+    const {default: joinMeeting} = await import(
+      /* webpackChunkName: 'joinMeeting' */ '../joinMeeting'
+    )
+    return {
+      queryRef: await joinMeeting(
+        atmosphere,
+        {navigate},
+        queryRefs,
+        meetingId,
+        abortController.signal
+      )
+    }
+  },
+  // a meeting replaces the whole page, so the page that opened it stays up until the meeting can show
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'MeetingRoot' */ '../../components/MeetingRoot')
+    () => import(/* webpackChunkName: 'MeetingRoute' */ '../../components/MeetingRoute')
   )
 })
 export const meetingIndexRoute = createRoute({

@@ -5,6 +5,7 @@ import {readInlineData} from 'relay-runtime'
 import type {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
 
@@ -62,7 +63,9 @@ const useUpdatedSafeRoute = (
         updateLocalStage(atmosphere, meeting, facilitatorStageId)
       }
       const nextPathname = fromStageIdToUrl(localStageId, meeting)
-      if (nextPathname !== location.pathname) {
+      // the router holds a meeting on screen while it loads the next page, whose URL the meeting must leave alone
+      const isMeetingUrl = getMeetingPathParams().meetingId === meeting.id
+      if (nextPathname !== location.pathname && isMeetingUrl) {
         navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)
         return
