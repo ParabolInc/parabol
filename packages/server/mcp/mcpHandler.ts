@@ -13,6 +13,7 @@ import getAPIGrant, {type APIGrant} from '../utils/getAPIGrant'
 import {getBearerToken} from '../utils/getRequestCredential'
 import uwsGetIP from '../utils/uwsGetIP'
 import createMCPServer from './createMCPServer'
+import getMCPToolset, {type MCPToolset} from './getMCPToolset'
 import type {MCPContext} from './MCPContext'
 
 const MAX_BODY_BYTES = 4 * 1024 * 1024
@@ -54,8 +55,8 @@ const authenticate = async (
   }
 }
 
-const handleMCPRequest = async (context: MCPContext, request: Request) => {
-  const server = createMCPServer(context)
+const handleMCPRequest = async (context: MCPContext, toolset: MCPToolset, request: Request) => {
+  const server = createMCPServer(context, toolset)
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
     enableJsonResponse: true
@@ -102,9 +103,11 @@ const mcpHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) =
       await writeUnauthorized(res, authentication.error)
       return
     }
-    const context = {authorization: `Bearer ${bearerToken}`, ip, grant: authentication.grant}
+    const {grant} = authentication
+    const context = {authorization: `Bearer ${bearerToken}`, ip, grant}
+    const toolset = await getMCPToolset(grant.clientId)
     const request = new Request(MCP_RESOURCE, {method: 'POST', headers, body})
-    await writeResponse(res, await handleMCPRequest(context, request))
+    await writeResponse(res, await handleMCPRequest(context, toolset, request))
   } finally {
     dataLoader.dispose()
   }
