@@ -1,4 +1,7 @@
 import {createRoute, lazyRouteComponent, redirect} from '@tanstack/react-router'
+import myDashboardTasksAndHeaderQuery, {
+  type MyDashboardTasksAndHeaderQuery
+} from '../../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
 import myDashboardTimelineQuery, {
   type MyDashboardTimelineQuery
 } from '../../__generated__/MyDashboardTimelineQuery.graphql'
@@ -12,9 +15,13 @@ import organizationsQuery, {
   type OrganizationsQuery
 } from '../../__generated__/OrganizationsQuery.graphql'
 import orgMembersQuery, {type OrgMembersQuery} from '../../__generated__/OrgMembersQuery.graphql'
+import orgPlansAndBillingQuery, {
+  type OrgPlansAndBillingQuery
+} from '../../__generated__/OrgPlansAndBillingQuery.graphql'
 import orgTeamMembersQuery, {
   type OrgTeamMembersQuery
 } from '../../__generated__/OrgTeamMembersQuery.graphql'
+import teamArchiveQuery, {type TeamArchiveQuery} from '../../__generated__/TeamArchiveQuery.graphql'
 import userProfileQuery, {type UserProfileQuery} from '../../__generated__/UserProfileQuery.graphql'
 import {
   AUTHENTICATION_PAGE,
@@ -84,10 +91,27 @@ export const organizationIndexRoute = createRoute({
 export const orgBillingRoute = createRoute({
   getParentRoute: () => organizationRoute,
   path: BILLING_PAGE,
+  loader: async ({context: {atmosphere, queryRefs}, params: {orgId}}) => {
+    // Only a billing leader may ask for invoices, so this waits for the organization, sharing its route's request
+    await queryRefs.load<OrganizationQuery>(organizationQuery, {orgId})
+    const organizationResponse = await atmosphere.fetchQuery<OrganizationQuery>(organizationQuery, {
+      orgId
+    })
+    const isBillingLeader =
+      !(organizationResponse instanceof Error) &&
+      !!organizationResponse.viewer.organization?.isBillingLeader
+    return {
+      queryRef: await queryRefs.load<OrgPlansAndBillingQuery>(orgPlansAndBillingQuery, {
+        orgId,
+        first: 4,
+        isBillingLeader
+      })
+    }
+  },
   component: lazyRouteComponent(
     () =>
       import(
-        /* webpackChunkName: 'OrgPlansAndBillingRoot' */ '../../modules/userDashboard/components/OrgBilling/OrgBillingRoute'
+        /* webpackChunkName: 'OrgBillingRoute' */ '../../modules/userDashboard/components/OrgBilling/OrgBillingRoute'
       )
   )
 })
@@ -173,8 +197,36 @@ export const userDashMainLayoutRoute = createRoute({
 export const myTasksRoute = createRoute({
   getParentRoute: () => userDashMainLayoutRoute,
   path: 'tasks',
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {atmosphere, queryRefs}, location}) => {
+    const {userIds, teamIds, showArchived} = parseQueryParams(
+      atmosphere.viewerId,
+      location.searchStr
+    )
+    return showArchived
+      ? {
+          archiveQueryRef: await queryRefs.load<TeamArchiveQuery>(teamArchiveQuery, {
+            userIds,
+            teamIds,
+            first: 40
+          }),
+          tasksQueryRef: null
+        }
+      : {
+          archiveQueryRef: null,
+          tasksQueryRef: await queryRefs.load<MyDashboardTasksAndHeaderQuery>(
+            myDashboardTasksAndHeaderQuery,
+            {userIds, teamIds}
+          )
+        }
+  },
+  // The tasks' header holds their filters, so the last tasks stay up while a new filter loads
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../../components/UserTaskViewRoot')
+    () =>
+      import(
+        /* webpackChunkName: 'MyDashboardTasksRoute' */ '../../components/MyDashboardTasksRoute'
+      )
   )
 })
 // The timeline and every other /me URL share one query, filtered by the URL's search

@@ -13,7 +13,10 @@ import reportsRedirectQuery, {
 import shareTopicModalQuery, {
   type ShareTopicModalQuery
 } from '../../__generated__/ShareTopicModalQuery.graphql'
+import findReportPin from '../../modules/reports/findReportPin'
+import loadReportPageQuery from '../../modules/reports/loadReportPageQuery'
 import {parseReportPeriodParam} from '../../modules/reports/reportPeriodParam'
+import {readReportSpecParams} from '../../modules/reports/reportSpecParam'
 import {GQLID} from '../../utils/GQLID'
 import {privateLayoutRoute} from './privateRoutes'
 
@@ -103,11 +106,7 @@ export const reportsHomeRoute = createRoute({
     const period = new URLSearchParams(location.searchStr).get('period')
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const variables = {orgId, timeZone, pagePeriod: parseReportPeriodParam(period)}
-    return {
-      queryRef: await queryRefs.load<ReportsHomeQuery>(reportsHomeQuery, variables, {
-        fetchPolicy: 'network-only'
-      })
-    }
+    return {queryRef: await queryRefs.load<ReportsHomeQuery>(reportsHomeQuery, variables)}
   },
   // The last period's numbers stay up while the next period loads
   pendingMs: Number.POSITIVE_INFINITY,
@@ -119,16 +118,42 @@ export const reportsHomeRoute = createRoute({
 export const reportPageRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports/$orgId/report',
+  // The question only names the report, so naming it once the server answers keeps the results
+  loaderDeps: ({search}) => ({...search, question: undefined}),
+  loader: async ({context: {queryRefs}, params: {orgId}, location}) => {
+    const searchParams = new URLSearchParams(location.searchStr)
+    const spec = readReportSpecParams(searchParams)
+    const period = parseReportPeriodParam(searchParams.get('period'))
+    return {queryRef: spec ? await loadReportPageQuery(queryRefs, orgId, spec, period) : null}
+  },
+  // The last results stay up, marked out of date, while a changed report loads
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
-    () => import(/* webpackChunkName: 'ReportPageRoot' */ '../../modules/reports/ReportPageRoot')
+    () => import(/* webpackChunkName: 'ReportPageRoute' */ '../../modules/reports/ReportPageRoute')
   )
 })
 export const reportPinRoute = createRoute({
   getParentRoute: () => dashboardLayoutRoute,
   path: 'reports/$orgId/pins/$pinParam',
-  loader: async ({context: {queryRefs}, params: {orgId}}) => ({
-    queryRef: await queryRefs.load<ReportPinQuery>(reportPinQuery, {orgId})
-  }),
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({context: {atmosphere, queryRefs}, params: {orgId, pinParam}, location}) => {
+    // The pin holds its report's spec, so the report's results wait for the pin
+    const queryRef = await queryRefs.load<ReportPinQuery>(reportPinQuery, {orgId})
+    const pinResponse = await atmosphere.fetchQuery<ReportPinQuery>(reportPinQuery, {orgId})
+    const reportPin =
+      pinResponse instanceof Error
+        ? null
+        : findReportPin(pinResponse.viewer.organization?.pinnedReports, pinParam)
+    const period = parseReportPeriodParam(new URLSearchParams(location.searchStr).get('period'))
+    return {
+      queryRef,
+      reportQueryRef: reportPin
+        ? await loadReportPageQuery(queryRefs, orgId, reportPin.spec, period)
+        : null
+    }
+  },
+  // The last period's numbers stay up while the next period loads
+  pendingMs: Number.POSITIVE_INFINITY,
   component: lazyRouteComponent(
     () => import(/* webpackChunkName: 'ReportPinRoute' */ '../../modules/reports/ReportPinRoute')
   )

@@ -9,13 +9,22 @@ const routeApi = getRouteApi(
 
 const ReportPinRoute = () => {
   const {orgId, pinParam} = routeApi.useParams()
-  const {queryRef} = routeApi.useLoaderData()
+  const {queryRef, reportQueryRef} = routeApi.useLoaderData()
   const period = useLocation({
     select: (location) =>
       parseReportPeriodParam(new URLSearchParams(location.searchStr).get('period'))
   })
   useQueryRefLease(queryRef)
-  return <ReportPin queryRef={queryRef} orgId={orgId} pinParam={pinParam} period={period} />
+  useQueryRefLease(reportQueryRef)
+  return (
+    <ReportPin
+      queryRef={queryRef}
+      reportQueryRef={reportQueryRef}
+      orgId={orgId}
+      pinParam={pinParam}
+      period={period}
+    />
+  )
 }
 
 export default ReportPinRoute

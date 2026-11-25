@@ -16,7 +16,7 @@ const query = graphql`
       organization(orgId: $orgId) {
         id
         ...OrgNav_organization
-        ...OrgPlansAndBillingRoot_organization
+        ...OrgPlansAndBilling_organization
         ...OrgDetails_organization
         ...OrgTeams_organization
         ...OrgIntegrations_organization
