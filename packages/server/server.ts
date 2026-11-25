@@ -15,6 +15,7 @@ import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhoo
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
 import {requireInstanceLicense} from './license/instanceLicense'
 import listenHandler from './listenHandler'
+import llmsTxtHandler from './mcp/llmsTxtHandler'
 import mcpHandler, {mcpMethodNotAllowedHandler, mcpPreflightHandler} from './mcp/mcpHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
 import authorizationServerMetadataHandler from './oauth2/authorizationServerMetadataHandler'
@@ -124,6 +125,7 @@ const app = uws
     '/.well-known/oauth-protected-resource/mcp',
     traceHttpRoute('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
   )
+  .get('/llms.txt', traceHttpRoute('/llms.txt', llmsTxtHandler))
   .post('/mcp', traceHttpRoute('/mcp', mcpHandler))
   .get('/mcp', mcpMethodNotAllowedHandler)
   .del('/mcp', mcpMethodNotAllowedHandler)
