@@ -3,7 +3,7 @@ Input for adding a new value to an existing poker template scale. Used with the 
 """
 input AddTemplateScaleInput {
   """
-  The hex color code used to visually distinguish this scale value from others on the scale, shown in the Poker voting UI next to the label. It must be one of these 12, in any letter case: #FD6157, #FE975D, #FFCC63, #C4CF66, #73A153, #66BC8C, #55C0CF, #329AE5, #7272E5, #A06BD6, #DB70DB, #ED4C86.
+  The hex color code used to visually distinguish this scale value from others on the scale, shown in the Poker voting UI next to the label. It must be one of the hex values the pokerScaleColors query returns, in any letter case.
   """
   color: String!
 

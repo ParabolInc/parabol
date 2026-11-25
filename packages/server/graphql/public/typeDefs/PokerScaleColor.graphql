@@ -1,0 +1,14 @@
+"""
+A color a Sprint Poker scale value may use
+"""
+type PokerScaleColor {
+  """
+  The display name of the color, e.g., "Tomato"
+  """
+  name: String!
+
+  """
+  The uppercase hex color code (e.g., "#FD6157") to pass as the color of a scale value
+  """
+  hex: String!
+}
