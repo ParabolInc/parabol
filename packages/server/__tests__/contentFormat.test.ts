@@ -6,6 +6,15 @@ type Member = Awaited<ReturnType<typeof signUp>>
 const MARKDOWN = 'Did **a thing** & fixed [the link](https://example.com)\n\n- one\n- two'
 const DRAFT_JS = JSON.stringify({blocks: [{text: 'old format', type: 'unstyled'}], entityMap: {}})
 const EXPECTED_FORMAT = 'stringified TipTap JSON'
+const INVALID_DOCUMENT = 'The content is not a valid editor document'
+const INVALID_DOCUMENTS = {
+  'an unknown node type': JSON.stringify({type: 'doc', content: [{type: 'bogus'}]}),
+  'content that is not a list': JSON.stringify({type: 'doc', content: 'hello'}),
+  'a top node that is not a doc': JSON.stringify({
+    type: 'paragraph',
+    content: [{type: 'text', text: 'x'}]
+  })
+}
 
 const paragraph = (text: string) =>
   JSON.stringify({type: 'doc', content: [{type: 'paragraph', content: [{type: 'text', text}]}]})
@@ -122,6 +131,18 @@ const UPDATE_REFLECTION_CONTENT = `
   }
 `
 
+const DELETE_COMMENT = `
+  mutation DeleteComment($commentId: ID!, $meetingId: ID!) {
+    deleteComment(commentId: $commentId, meetingId: $meetingId) {
+      comment {
+        id
+        isActive
+        plaintextContent
+      }
+    }
+  }
+`
+
 const THREAD_COMMENTS = `
   query ThreadComments($discussionId: ID!) {
     viewer {
@@ -191,6 +212,15 @@ const expectRefusal = (res: {errors?: {message: string; extensions: {code: strin
   ])
 }
 
+const expectInvalidDocument = (res: {errors?: {message: string; extensions: {code: string}}[]}) => {
+  expect(res.errors).toEqual([
+    expect.objectContaining({
+      message: expect.stringContaining(INVALID_DOCUMENT),
+      extensions: expect.objectContaining({code: 'BAD_USER_INPUT'})
+    })
+  ])
+}
+
 const createTask = async (owner: Member, content?: string) =>
   sendPublic({
     query: CREATE_TASK,
@@ -222,7 +252,7 @@ test('addComment refuses valid JSON that is not a TipTap document', async () => 
     cookie: owner.cookie
   })
 
-  expectRefusal(res)
+  expectInvalidDocument(res)
   expect(await commentCount(discussionId)).toBe(0)
 })
 
@@ -255,9 +285,9 @@ test('addComment stores TipTap JSON and Comment.plaintextContent returns its tex
   ])
 })
 
-test('Comment.plaintextContent is masked once the comment is deleted', async () => {
+test('deleteComment turns a comment with replies into a [deleted] tombstone', async () => {
   const owner = await signUp()
-  const {discussionId} = await startStandup(owner)
+  const {meetingId, discussionId} = await startStandup(owner)
   const added = await sendPublic({
     query: ADD_COMMENT,
     variables: {comment: {content: paragraph('Secret words'), discussionId, threadSortOrder: 0}},
@@ -277,11 +307,18 @@ test('Comment.plaintextContent is masked once the comment is deleted', async () 
     cookie: owner.cookie
   })
   const replyId = reply.data.addComment.comment.id as string
-  await getKysely()
-    .updateTable('Comment')
-    .set({isActive: false})
-    .where('id', '=', commentId)
-    .execute()
+
+  const deleted = await sendPublic({
+    query: DELETE_COMMENT,
+    variables: {commentId, meetingId},
+    cookie: owner.cookie
+  })
+  expect(deleted.errors).toBeUndefined()
+  expect(deleted.data.deleteComment.comment).toEqual({
+    id: commentId,
+    isActive: false,
+    plaintextContent: '[deleted]'
+  })
 
   const thread = await sendPublic({
     query: THREAD_COMMENTS,
@@ -300,6 +337,48 @@ test('Comment.plaintextContent is masked once the comment is deleted', async () 
       }
     }
   ])
+})
+
+test('deleteComment drops a comment with no replies from the thread, and a deleted reply from its parent', async () => {
+  const owner = await signUp()
+  const {meetingId, discussionId} = await startStandup(owner)
+  const addComment = async (text: string, threadParentId?: string) => {
+    const added = await sendPublic({
+      query: ADD_COMMENT,
+      variables: {
+        comment: {content: paragraph(text), discussionId, threadSortOrder: 0, threadParentId}
+      },
+      cookie: owner.cookie
+    })
+    return added.data.addComment.comment.id as string
+  }
+  const deleteComment = (commentId: string) =>
+    sendPublic({query: DELETE_COMMENT, variables: {commentId, meetingId}, cookie: owner.cookie})
+  const threadNodes = async () => {
+    const thread = await sendPublic({
+      query: THREAD_COMMENTS,
+      variables: {discussionId},
+      cookie: owner.cookie
+    })
+    return thread.data.viewer.discussion.thread.edges.map(
+      ({node}: {node: {id: string; replies: {id: string}[]}}) => ({
+        id: node.id,
+        replies: node.replies.map(({id}) => id)
+      })
+    )
+  }
+  const lonelyId = await addComment('Lonely')
+  const parentId = await addComment('Parent')
+  const replyId = await addComment('Reply', parentId)
+  expect(await threadNodes()).toEqual([
+    {id: lonelyId, replies: []},
+    {id: parentId, replies: [replyId]}
+  ])
+
+  await deleteComment(lonelyId)
+  await deleteComment(replyId)
+
+  expect(await threadNodes()).toEqual([{id: parentId, replies: []}])
 })
 
 test('updateCommentContent refuses markdown and keeps the comment as it was', async () => {
@@ -368,7 +447,7 @@ test('createTask refuses valid JSON that is not a TipTap document', async () => 
 
   const res = await createTask(owner, DRAFT_JS)
 
-  expectRefusal(res)
+  expectInvalidDocument(res)
   expect(await taskCount(owner.teamId)).toBe(before)
 })
 
@@ -488,4 +567,46 @@ test('upsertTeamPromptResponse names the format it expects when given markdown',
     .where('meetingId', '=', meetingId)
     .execute()
   expect(stored).toHaveLength(0)
+})
+
+test.each(Object.entries(INVALID_DOCUMENTS))(
+  'upsertTeamPromptResponse refuses %s and stores nothing',
+  async (_label, content) => {
+    const owner = await signUp()
+    const {meetingId, promptId} = await startStandup(owner)
+
+    const res = await sendPublic({
+      query: UPSERT_RESPONSE,
+      variables: {meetingId, promptId, content},
+      cookie: owner.cookie
+    })
+
+    expectInvalidDocument(res)
+    const stored = await getKysely()
+      .selectFrom('TeamPromptResponse')
+      .select('id')
+      .where('meetingId', '=', meetingId)
+      .execute()
+    expect(stored).toHaveLength(0)
+  }
+)
+
+test('addComment refuses a doc with an unknown node and stores nothing', async () => {
+  const owner = await signUp()
+  const {discussionId} = await startStandup(owner)
+
+  const res = await sendPublic({
+    query: ADD_COMMENT,
+    variables: {
+      comment: {
+        content: INVALID_DOCUMENTS['an unknown node type'],
+        discussionId,
+        threadSortOrder: 0
+      }
+    },
+    cookie: owner.cookie
+  })
+
+  expectInvalidDocument(res)
+  expect(await commentCount(discussionId)).toBe(0)
 })

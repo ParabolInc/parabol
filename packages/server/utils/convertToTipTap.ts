@@ -1,23 +1,49 @@
-import type {JSONContent} from '@tiptap/core'
+import {getSchema, type JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
+import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
 import {stripUnsafeLinks} from './stripUnsafeLinks'
+
+const schema = getSchema(serverTipTapExtensions)
 
 const emptyDoc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 
-export const createInvalidContentError = () =>
-  new GraphQLError(
-    'content must be stringified TipTap JSON, such as {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Hello"}]}]}. Markdown and plain text are refused.',
-    {extensions: {code: 'BAD_USER_INPUT'}}
-  )
+const badInput = (message: string) =>
+  new GraphQLError(message, {extensions: {code: 'BAD_USER_INPUT'}})
 
-export const convertToTipTap = (contentStr: string | null | undefined) => {
-  if (!contentStr) return emptyDoc
-  let parsedContent: JSONContent
+const invalidDocument = (reason: string) =>
+  badInput(`The content is not a valid editor document: ${reason}`)
+
+const hasNoBlocks = ({content}: JSONContent) =>
+  content === undefined || (Array.isArray(content) && content.length === 0)
+
+export const parseEditorDoc = (contentStr: string) => {
+  let doc: JSONContent
   try {
-    parsedContent = JSON.parse(contentStr)
+    doc = JSON.parse(contentStr)
   } catch {
-    throw createInvalidContentError()
+    throw badInput(
+      'content must be stringified TipTap JSON, such as {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Hello"}]}]}. Markdown and plain text are refused.'
+    )
   }
-  if (parsedContent?.type !== 'doc') throw createInvalidContentError()
-  return stripUnsafeLinks(parsedContent)
+  if (doc?.type !== 'doc') throw invalidDocument('the top node must be a doc')
+  if (!hasNoBlocks(doc)) {
+    try {
+      schema.nodeFromJSON(doc).check()
+    } catch (error) {
+      throw invalidDocument(error instanceof Error ? error.message : String(error))
+    }
+  }
+  return stripUnsafeLinks(doc)
+}
+
+export const convertToTipTap = (contentStr: string | null | undefined) =>
+  contentStr ? parseEditorDoc(contentStr) : emptyDoc
+
+export const readStoredTipTap = (contentStr: string | null | undefined) => {
+  if (!contentStr) return emptyDoc
+  try {
+    return stripUnsafeLinks(JSON.parse(contentStr))
+  } catch {
+    return emptyDoc
+  }
 }

@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
-import {convertToTipTap} from '../convertToTipTap'
+import {plaintextToTipTap} from '../../../client/shared/tiptap/plaintextToTipTap'
+import {convertToTipTap, parseEditorDoc, readStoredTipTap} from '../convertToTipTap'
 import {stripUnsafeLinks} from '../stripUnsafeLinks'
 
 const linkedText = (href: string): JSONContent => ({
@@ -92,11 +93,112 @@ test.each([
   'null',
   '[]',
   '{"blocks":[],"entityMap":{}}',
-  '{"type":"paragraph","content":[]}'
-])('refuses valid JSON %j that is not a TipTap document', (contentStr) => {
-  expect(refusalOf(contentStr)).toMatchObject({extensions: {code: 'BAD_USER_INPUT'}})
+  '{"type":"paragraph","content":[{"type":"text","text":"x"}]}'
+])('refuses valid JSON %j whose top node is not a doc', (contentStr) => {
+  const error = refusalOf(contentStr)
+  expect(error).toBeInstanceOf(GraphQLError)
+  expect(error).toMatchObject({
+    message: 'The content is not a valid editor document: the top node must be a doc',
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
 })
+
+test.each([
+  ['an unknown node type', '{"type":"doc","content":[{"type":"bogus"}]}', 'bogus'],
+  ['content that is not a list', '{"type":"doc","content":"hello"}', 'Fragment.fromJSON'],
+  [
+    'text straight under the doc',
+    '{"type":"doc","content":[{"type":"text","text":"x"}]}',
+    'Invalid content for node doc'
+  ],
+  [
+    'an unknown mark',
+    '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"x","marks":[{"type":"nope"}]}]}]}',
+    'nope'
+  ]
+])('refuses a doc with %s and says why', (_label, contentStr, reason) => {
+  const error = refusalOf(contentStr)
+  expect(error).toBeInstanceOf(GraphQLError)
+  expect(error).toMatchObject({
+    message: expect.stringContaining('The content is not a valid editor document: '),
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+  expect((error as GraphQLError).message).toContain(reason)
+  expect((error as GraphQLError).message).not.toContain('Markdown')
+})
+
+test.each(['{"type":"doc","content":[]}', '{"type":"doc"}'])(
+  'still takes the empty document %j',
+  (contentStr) => {
+    expect(convertToTipTap(contentStr)).toEqual(JSON.parse(contentStr))
+  }
+)
 
 test.each([undefined, null, ''])('turns %j into an empty document', (contentStr) => {
   expect(convertToTipTap(contentStr)).toEqual({type: 'doc', content: [{type: 'paragraph'}]})
+})
+
+test.each([
+  ['an empty reply box', plaintextToTipTap('')],
+  ['a task title with a tag', plaintextToTipTap('Fix it', {taskTags: ['archived']})],
+  [
+    'a task list',
+    {
+      type: 'doc',
+      content: [
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: {checked: true},
+              content: [{type: 'paragraph', content: [{type: 'text', text: 'Done'}]}]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  [
+    'a mention',
+    {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {type: 'text', text: 'Thanks '},
+            {type: 'mention', attrs: {id: 'user1', label: 'Ann'}}
+          ]
+        }
+      ]
+    }
+  ]
+])('takes the editor document for %s', (_label, doc) => {
+  expect(convertToTipTap(JSON.stringify(doc))).toEqual(doc)
+})
+
+test('parseEditorDoc refuses an empty string rather than clearing the content', () => {
+  expect(() => parseEditorDoc('')).toThrow(GraphQLError)
+})
+
+describe('readStoredTipTap', () => {
+  const emptyDoc = {type: 'doc', content: [{type: 'paragraph'}]}
+
+  test('reads stored content without checking it against the schema', () => {
+    const stored = JSON.stringify({type: 'doc', content: [{type: 'bogus'}]})
+    expect(readStoredTipTap(stored)).toEqual({type: 'doc', content: [{type: 'bogus'}]})
+  })
+
+  test('strips unsafe links like a write does', () => {
+    const content = readStoredTipTap(JSON.stringify(docWithLink('javascript:alert(1)')))
+    expect(content.content?.[0]?.content?.[0]?.marks).toEqual([{type: 'bold'}])
+  })
+
+  test.each([undefined, null, '', 'not json'])(
+    'falls back to an empty document for %j',
+    (stored) => {
+      expect(readStoredTipTap(stored)).toEqual(emptyDoc)
+    }
+  )
 })
