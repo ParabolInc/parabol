@@ -1441,35 +1441,3 @@ test('create_task joins a meeting and puts the task at the end of a discussion a
     'Post the designer role'
   )
 }, 60000)
-
-test('cancel_meeting_series lets anyone on the team stop a series, keeps the meeting it started, and refuses someone off the team', async () => {
-  const {cookie, teamId} = await signUpWithoutAI()
-  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
-  const started = await callToolForData(token, 'start_standup', {
-    teamId,
-    name: 'Agent Sync',
-    rrule: immediateRrule()
-  })
-  const {meeting, meetingSeries} = started.startTeamPrompt
-  const outsider = await createPersonalAccessToken(MEETING_SCOPES)
-  const refused = await callTool(outsider, 'cancel_meeting_series', {
-    meetingSeriesId: meetingSeries.id
-  })
-  expectToolErrorCode(refused, 'FORBIDDEN')
-
-  const teammate = await addTeammate(teamId)
-  const cancelled = await callToolForData(teammate.token, 'cancel_meeting_series', {
-    meetingSeriesId: meetingSeries.id
-  })
-  expect(cancelled).toEqual({
-    updateMeetingSeries: {
-      meetingSeries: {id: meetingSeries.id, title: 'Agent Sync', cancelledAt: expect.any(String)}
-    }
-  })
-  const again = await callToolForData(token, 'cancel_meeting_series', {
-    meetingSeriesId: meetingSeries.id
-  })
-  expect(again).toEqual(cancelled)
-  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId: meeting.id})
-  expect(viewer.meeting).toMatchObject({meetingSeriesId: meetingSeries.id, endedAt: null})
-})

@@ -115,7 +115,6 @@ const COMPILED_TOOLS = [
   'get_report',
   'list_pinned_reports',
   'rename_meeting',
-  'cancel_meeting_series',
   'list_retro_columns'
 ]
 
