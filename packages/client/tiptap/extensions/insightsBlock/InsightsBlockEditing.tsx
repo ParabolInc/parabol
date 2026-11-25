@@ -78,24 +78,25 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
     const request = getRequest(queryNode).params
     const {id, name} = request
     let buffer = `# ${title}\n`
+    const showError = (message: string | undefined) => {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'insightsBlockGenError',
+        message: message || 'Error generating insights',
+        autoDismiss: 5
+      })
+    }
     const sink = {
       error: (err: unknown) => {
         console.error(err)
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'insightsBlockGenError',
-          message: (err as Error).message || 'Error generating insights',
-          autoDismiss: 5
-        })
-        return
+        showError((err as Error).message)
       },
       next: (val: ExecutionResult) => {
         try {
           const chunk = val?.incremental?.flatMap((i) => i.items).join('')
           if (!chunk) {
             const error = val?.incremental?.flatMap((e) => e.errors)[0] || val?.errors?.[0]
-            if (error) {
-              sink.error(error)
-            }
+            // the server logs the errors it didn't expect, and the rest, like a short prompt, are the viewer's to fix
+            if (error) showError(error.message)
             return
           }
           buffer += chunk

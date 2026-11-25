@@ -5,6 +5,7 @@ import defineTool from '../defineTool'
 import ensureMeetingMember from '../ensureMeetingMember'
 import markdownToTaskContent from '../markdownToTaskContent'
 import runGraphQL from '../runGraphQL'
+import {withMarkdownContent} from '../tipTapContentToMarkdown'
 import {writeAnnotations} from '../toolAnnotations'
 import toolResult from '../toolResult'
 
@@ -24,6 +25,7 @@ const SHARE_TEAM_PROMPT_RESPONSES = `
       responses {
         id
         promptId
+        content
         plaintextContent
         sharedAt
       }
@@ -64,6 +66,8 @@ export default defineTool({
       })
       if (saved.errors?.length) return toolResult(saved, {promptId})
     }
-    return toolResult(await runGraphQL(context, SHARE_TEAM_PROMPT_RESPONSES, {meetingId}))
+    return toolResult(
+      withMarkdownContent(await runGraphQL(context, SHARE_TEAM_PROMPT_RESPONSES, {meetingId}))
+    )
   }
 })

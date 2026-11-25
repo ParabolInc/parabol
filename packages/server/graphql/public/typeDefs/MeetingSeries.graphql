@@ -58,7 +58,7 @@ type MeetingSeries {
   title: String!
 
   """
-  The RFC-2445 recurrence rule that determines when meetings should start
+  The RFC-2445 recurrence rule that determines when meetings should start. A cancelled series keeps its last rule, so check cancelledAt to see whether it still runs
   """
   recurrenceRule: String!
 

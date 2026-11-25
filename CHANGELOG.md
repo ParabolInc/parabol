@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.8.0](https://github.com/ParabolInc/parabol/compare/v16.7.0...v16.8.0) (2026-11-25)
+
+
+### Added
+
+* **server:** throw sign-in and invitation errors instead of userErrors ([#14311](https://github.com/ParabolInc/parabol/issues/14311)) ([aac70e4](https://github.com/ParabolInc/parabol/commit/aac70e444f40ce4299f4ed965e329afe7e9be724))
+
+
+### Fixed
+
+* **client:** line up the activity details back arrow with the library's ([#14366](https://github.com/ParabolInc/parabol/issues/14366)) ([0540a7e](https://github.com/ParabolInc/parabol/commit/0540a7e36ae0e1a10f9b2ac007d5d747b02797e2))
+* **client:** load the meeting picker's own query in the insights block ([#14389](https://github.com/ParabolInc/parabol/issues/14389)) ([296901d](https://github.com/ParabolInc/parabol/commit/296901d3a65fb829292efd54a88a775fb366d30a))
+* **client:** show no integrations when the server doesn't count the viewer on the team ([#14390](https://github.com/ParabolInc/parabol/issues/14390)) ([89bbf01](https://github.com/ParabolInc/parabol/commit/89bbf0148332117bcd8776f947dd317191ec0b47))
+* **client:** stop reporting the insights block's rejected requests as errors ([#14391](https://github.com/ParabolInc/parabol/issues/14391)) ([ce8d238](https://github.com/ParabolInc/parabol/commit/ce8d238c7adb80f96bec1b3f1b33f3d7d2e351e7))
+* **mcp:** fixes from the second agent test ([#14393](https://github.com/ParabolInc/parabol/issues/14393)) ([84d8466](https://github.com/ParabolInc/parabol/commit/84d846612a80130349df99fff48f81fed7f96de6))
+* **server:** refuse a Microsoft sign-in whose token has no email ([#14392](https://github.com/ParabolInc/parabol/issues/14392)) ([7f963ba](https://github.com/ParabolInc/parabol/commit/7f963ba5670266b7cef59ac2657cc7afaf51e7a7))
+
+
+### Changed
+
+* **client:** join and fetch a meeting in its route loader ([#14312](https://github.com/ParabolInc/parabol/issues/14312)) ([ae1b8b6](https://github.com/ParabolInc/parabol/commit/ae1b8b60d711ef1a5a1f3981d1a5891dc967f56a))
+* remove the old retro inspiration drawer and the InspirationItem table ([#14308](https://github.com/ParabolInc/parabol/issues/14308)) ([a1898c7](https://github.com/ParabolInc/parabol/commit/a1898c722fc3ecdfdcca40a8c814cfee5d203f69))
+
 ## [16.7.0](https://github.com/ParabolInc/parabol/compare/v16.6.0...v16.7.0) (2026-11-25)
 
 

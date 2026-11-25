@@ -27,6 +27,9 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
     throw new GraphQLError('Invalid login code', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   const {name, sub, tid} = id
+  if (!id.email) {
+    throw new GraphQLError('No email in Microsoft token', {extensions: {code: 'BAD_USER_INPUT'}})
+  }
   const email = id.email.toLowerCase()
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     throw new GraphQLError('Email is too long', {extensions: {code: 'BAD_USER_INPUT'}})

@@ -1,4 +1,4 @@
-import {createBlockMarkdownSpec, generateText} from '@tiptap/core'
+import {createBlockMarkdownSpec, generateText, type JSONContent} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
 import {emptyBlockContent} from '../emptyBlockContent'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
@@ -83,5 +83,18 @@ export const TaskBlockBase = Node.create({
   },
   ...createBlockMarkdownSpec({
     nodeName: 'taskBlock'
-  })
+  }),
+  renderMarkdown(node, h) {
+    const {content, preferredName, status} = node.attrs as TaskBlockAttrs
+    const task = JSON.parse(content || emptyBlockContent) as JSONContent
+    const label = preferredName ? `Task for ${preferredName} (${status}):` : `Task (${status}):`
+    const heading: JSONContent = {
+      type: 'paragraph',
+      content: [{type: 'text', text: label, marks: [{type: 'bold'}]}]
+    }
+    const blocks = (task.content ?? []).filter(
+      (block) => block.type !== 'paragraph' || block.content?.length
+    )
+    return h.renderChildren([{type: 'blockquote', content: [heading, ...blocks]}])
+  }
 })

@@ -157,6 +157,19 @@ test('network-only joins a request in flight, and a page showing the answered on
   expect(mockRequests[0]!.isReleased).toBe(true)
 })
 
+test('an answered query is reused while the store holds all of its data, and loads again once part goes missing', async () => {
+  const {queryRefs} = createRegistry()
+  const check = jest.spyOn(environment, 'check')
+  const [answeredRef] = await loadTeams(queryRefs, ['team1'])
+  check.mockReturnValue({status: 'available', fetchTime: null})
+  expect(await queryRefs.load(teamContainerQuery, {teamId: 'team1'})).toBe(answeredRef)
+  expect(mockRequests).toHaveLength(1)
+  check.mockReturnValue({status: 'missing'})
+  queryRefs.load(teamContainerQuery, {teamId: 'team1'})
+  expect(mockRequests).toHaveLength(2)
+  check.mockRestore()
+})
+
 test('a load after a failed request starts a new one', async () => {
   const {queryRefs} = createRegistry()
   const failedLoad = queryRefs.load(teamContainerQuery, {teamId: 'team1'})

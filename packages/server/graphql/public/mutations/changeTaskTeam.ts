@@ -120,7 +120,10 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
         .execute()
     }
     const deleted = task.integrationHash
-      ? await deleteConflictingIntegratedTask({teamId, integrationHash: task.integrationHash}, trx)
+      ? await deleteConflictingIntegratedTask(
+          {teamId, integrationHash: task.integrationHash, taskId},
+          trx
+        )
       : undefined
     await trx
       .updateTable('Task')

@@ -114,8 +114,6 @@ const draftStandupFromSources = async (options: Options) => {
     return [
       {
         id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${prompt.id}`,
-        meetingId,
-        userId: viewerId,
         service: INSPIRATION_DRAFT_SERVICE,
         title: null,
         promptId: prompt.id,

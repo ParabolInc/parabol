@@ -1,6 +1,4 @@
 import type {ComponentType, LazyExoticComponent, ReactNode} from 'react'
-import type {PreloadedQuery} from 'react-relay'
-import type {OperationType} from 'relay-runtime'
 import type {TaskIntegrationLink_integration$data} from '../../__generated__/TaskIntegrationLink_integration.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
@@ -84,24 +82,6 @@ export interface SettingsPanelProps {
   isNewlyConnected: boolean
 }
 
-export interface WorkDrawerPanelProps {
-  meetingId: string
-  teamId: string
-}
-
-export interface WorkDrawerQueryPanelProps<TQuery extends OperationType>
-  extends WorkDrawerPanelProps {
-  queryRef: PreloadedQuery<TQuery>
-}
-
-/** The retro work drawer tab for a service the team can use */
-export interface WorkDrawerCapability {
-  /** The tab body once the viewer is connected; build it with makeWorkDrawerPanel, or makeQueryRoot when it only needs the team */
-  Panel: ComponentType<WorkDrawerPanelProps>
-  /** Ends the connect prompt: "Connect to {title} to view your {connectDescription}." */
-  connectDescription: string
-}
-
 export interface SettingsCapability {
   /** Second line under the Remove menu item for services whose grant covers more than themselves */
   getDisconnectSubline?(grantedScopes: readonly string[]): string | undefined
@@ -130,7 +110,6 @@ export interface ClientIntegrationCapabilities {
   scoping?: ScopingCapability
   settings?: SettingsCapability
   taskLink?: TaskLinkCapability
-  workDrawer?: WorkDrawerCapability
 }
 
 /** The brand art for the 48px settings row; darkSrc is only for marks that vanish on a dark surface */

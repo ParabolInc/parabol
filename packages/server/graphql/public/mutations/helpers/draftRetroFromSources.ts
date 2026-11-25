@@ -162,8 +162,6 @@ const draftRetroFromSources = async (options: Options) => {
     sourceIssues.forEach(({id}) => claimedIds.add(id))
     inspirationItems.push({
       id: `${INSPIRATION_DRAFT_SERVICE}:${meetingId}:${createdAt.getTime()}:${inspirationItems.length}`,
-      meetingId,
-      userId: viewerId,
       service: INSPIRATION_DRAFT_SERVICE,
       title: null,
       promptId: prompt.id,

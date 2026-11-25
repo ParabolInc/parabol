@@ -1,7 +1,4 @@
 import {createElement, lazy} from 'react'
-import jiraServerIntegrationResultsQuery, {
-  type JiraServerIntegrationResultsQuery
-} from '../../__generated__/JiraServerIntegrationResultsQuery.graphql'
 import jiraServerScopingResultsQuery, {
   type JiraServerScopingResultsAdapterQuery
 } from '../../__generated__/JiraServerScopingResultsAdapterQuery.graphql'
@@ -17,12 +14,9 @@ import {
   ClientIntegrationDefinition,
   type ConnectParams,
   type ProviderLogoAsset,
-  type ScopingCapability,
-  type WorkDrawerCapability,
-  type WorkDrawerPanelProps
+  type ScopingCapability
 } from '../platform/ClientIntegrationDefinition'
 import {searchFiltersByKey} from '../platform/IntegrationSearchFilter'
-import makeQueryRoot from '../platform/makeQueryRoot'
 import makeScopingResults from '../platform/makeScopingResults'
 import JiraServerClientManager from './JiraServerClientManager'
 import jiraServerTaskLink from './jiraServerTaskLink'
@@ -65,20 +59,6 @@ const scoping: ScopingCapability = {
   filterChipLabel: (filter) => IntegrationRepoId.split(filter.value).projectKey ?? filter.value
 }
 
-const workDrawer: WorkDrawerCapability = {
-  Panel: makeQueryRoot<WorkDrawerPanelProps, JiraServerIntegrationResultsQuery>({
-    query: jiraServerIntegrationResultsQuery,
-    getVariables: ({teamId}) => ({teamId}),
-    Component: lazy(
-      () =>
-        import(
-          /* webpackChunkName: 'JiraServerIntegrationResults' */ '../../components/TeamPrompt/WorkDrawer/JiraServerIntegrationResults'
-        )
-    )
-  }),
-  connectDescription: 'issues'
-}
-
 export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly service = jiraServerIntegrationMeta.service
   readonly title = jiraServerIntegrationMeta.title
@@ -88,8 +68,7 @@ export class JiraServerClientIntegration extends ClientIntegrationDefinition {
   readonly logo: ProviderLogoAsset = {src: jiraServerLogo}
   readonly capabilities: ClientIntegrationCapabilities = {
     scoping,
-    taskLink: jiraServerTaskLink,
-    workDrawer
+    taskLink: jiraServerTaskLink
   }
   readonly contactUs = {url: ExternalLinks.INTEGRATIONS_JIRASERVER}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {

@@ -136,6 +136,16 @@ const ADD_COMMENT = `
   }
 `
 
+const DELETE_COMMENT = `
+  mutation DeleteComment($commentId: ID!, $meetingId: ID!) {
+    deleteComment(commentId: $commentId, meetingId: $meetingId) {
+      comment {
+        id
+      }
+    }
+  }
+`
+
 const TEAM_HEALTH_QUESTIONS = `
   query TeamHealthQuestions($meetingId: ID!) {
     viewer {
@@ -255,6 +265,7 @@ const startPokerWithStory = async () => {
 test('get_standup shows the prompts, each member’s responses with their discussion, and the tasks', async () => {
   const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken([...READ_SCOPES, 'COMMENTS_READ'], {cookie})
+  const silent = await addTeammate(teamId, READ_SCOPES)
   const started = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
   const {id: meetingId, meetingSeriesId, prompts} = started.startTeamPrompt.meeting
   const prompt = prompts[0]
@@ -273,24 +284,31 @@ test('get_standup shows the prompts, each member’s responses with their discus
   expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'teamPrompt', meetingSeriesId})
   expect(meetingSeriesId).toEqual(expect.any(String))
   expect(viewer.meeting.prompts).toEqual(prompts)
-  expect(getStages(viewer.meeting)).toEqual([
-    {
-      discussionId: expect.any(String),
-      responses: [
-        {
-          promptId: prompt.id,
-          userId,
-          user: {preferredName: await getPreferredName(cookie)},
-          plaintextContent: 'Shipped the billing fix'
-        }
-      ]
-    }
-  ])
+  const preferredName = await getPreferredName(cookie)
+  const stages = getStages<{discussionId: string; teamMember: {userId: string}}>(viewer.meeting)
+  expect(stages).toHaveLength(2)
+  expect(stages).toEqual(
+    expect.arrayContaining([
+      {
+        discussionId: expect.any(String),
+        teamMember: {userId, user: {preferredName}},
+        responses: [{promptId: prompt.id, plaintextContent: 'Shipped the billing fix'}]
+      },
+      {
+        discussionId: expect.any(String),
+        teamMember: {
+          userId: silent.userId,
+          user: {preferredName: await getPreferredName(silent.cookie)}
+        },
+        responses: []
+      }
+    ])
+  )
   expect(viewer.meeting.tasks).toEqual([
     expect.objectContaining({id: created.createTask.task.id, plaintextContent: 'Write notes'})
   ])
 
-  const {discussionId} = getStages<{discussionId: string}>(viewer.meeting)[0]!
+  const {discussionId} = stages.find(({teamMember}) => teamMember.userId === userId)!
   const commented = await send(
     ADD_COMMENT,
     {comment: {content: paragraph('Nice fix'), discussionId, threadSortOrder: 0}},
@@ -329,6 +347,7 @@ test('get_poker_meeting says who has voted but leaves the votes out by default',
 
   const {viewer} = await callToolForData(token, 'get_poker_meeting', {meetingId})
   expect(viewer.meeting).toMatchObject({id: meetingId})
+  expect(JSON.stringify(viewer.meeting.phases)).not.toContain('{}')
   expect(getStages(viewer.meeting)).toEqual([
     {
       id: stageId,
@@ -447,11 +466,13 @@ test('get_discussion shows the comments and tasks in a story’s discussion', as
   const preferredName = await getPreferredName(cookie)
   expect(viewer.discussion.thread.edges.map(({node}: {node: unknown}) => node)).toEqual([
     {
+      __typename: 'Comment',
       id: commented.addComment.comment.id,
       createdByUser: {preferredName},
       plaintextContent: 'Looks like a 3'
     },
     {
+      __typename: 'Task',
       id: created.createTask.task.id,
       createdByUser: {preferredName},
       plaintextContent: 'Split the story',
@@ -459,6 +480,26 @@ test('get_discussion shows the comments and tasks in a story’s discussion', as
       userId
     }
   ])
+
+  const doomed = await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('Wrong story'), discussionId, threadSortOrder: 2}},
+    cookie
+  )
+  const doomedId = doomed.addComment.comment.id as string
+  await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('Agreed'), discussionId, threadParentId: doomedId}},
+    cookie
+  )
+  await send(DELETE_COMMENT, {commentId: doomedId, meetingId}, cookie)
+  const after = await callToolForData(commentsToken, 'get_discussion', {discussionId})
+  expect(after.viewer.discussion.thread.edges.at(-1).node).toEqual({
+    __typename: 'Comment',
+    id: doomedId,
+    createdByUser: null,
+    plaintextContent: '[deleted]'
+  })
 })
 
 test('the meeting reads name the scope a connection lacks', async () => {
@@ -577,6 +618,7 @@ test('an agent builds a standup template, answers a standup made with it in mark
   expect(template).toEqual({
     id: expect.any(String),
     name: 'Agent Standup',
+    scope: 'ORGANIZATION',
     prompts: [
       {id: expect.any(String), question: 'What did you ship?', description: ''},
       {
@@ -602,11 +644,16 @@ test('an agent builds a standup template, answers a standup made with it in mark
   })
   expect(answered.shareTeamPromptResponses.responses).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({promptId: shipped.id, sharedAt: expect.any(String)}),
+      {
+        id: expect.any(String),
+        promptId: shipped.id,
+        content: 'Two things:\n\n- the **billing** fix\n- the login page',
+        sharedAt: expect.any(String)
+      },
       {
         id: expect.any(String),
         promptId: blocked.id,
-        plaintextContent: 'Nothing',
+        content: 'Nothing',
         sharedAt: expect.any(String)
       }
     ])
@@ -619,14 +666,10 @@ test('an agent builds a standup template, answers a standup made with it in mark
   expect(getStages(viewer.meeting)).toEqual([
     {
       discussionId: expect.any(String),
+      teamMember: {userId, user: {preferredName}},
       responses: expect.arrayContaining([
-        {
-          promptId: shipped.id,
-          userId,
-          user: {preferredName},
-          plaintextContent: expect.stringContaining('the billing fix')
-        },
-        {promptId: blocked.id, userId, user: {preferredName}, plaintextContent: 'Nothing'}
+        {promptId: shipped.id, plaintextContent: expect.stringContaining('the billing fix')},
+        {promptId: blocked.id, plaintextContent: 'Nothing'}
       ])
     }
   ])
@@ -786,6 +829,7 @@ test('an agent builds a team health template, and four teammates answer a check 
   expect(template).toEqual({
     id: expect.any(String),
     name: 'Agent Health',
+    scope: 'ORGANIZATION',
     questions: TEMPLATE_QUESTIONS.map(({question, category}) => ({
       id: expect.any(String),
       question,
@@ -1018,6 +1062,7 @@ test('create_team_health_template needs only templates:write and refuses a name 
     name: 'Agent Health',
     questions: [{question: 'I know what is expected of me'}]
   })
+  expect(template.scope).toBe('ORGANIZATION')
   expect(template.questions).toEqual([
     {
       id: expect.any(String),
@@ -1212,7 +1257,7 @@ test('add_comment joins a check-in and comments, at the end of the thread or as 
     content: 'Agreed, **this quarter**'
   })
   expect(added).toEqual({
-    addComment: {comment: {id: expect.any(String), plaintextContent: 'Agreed, this quarter'}}
+    addComment: {comment: {id: expect.any(String), content: 'Agreed, **this quarter**'}}
   })
   const reply = await callToolForData(teammate.token, 'add_comment', {
     meetingId: owner.meetingId,
@@ -1392,7 +1437,7 @@ test('create_task joins a meeting and puts the task at the end of a discussion a
     content: 'Post the **designer** role'
   })
   const taskId = created.createTask.task.id as string
-  expect(created.createTask.task).toMatchObject({plaintextContent: 'Post the designer role'})
+  expect(created.createTask.task).toMatchObject({content: 'Post the **designer** role'})
 
   const discussion = await callToolForData(teammate.token, 'get_discussion', {discussionId})
   expect(getThreadIds(discussion.viewer.discussion)).toEqual([
