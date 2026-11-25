@@ -1,7 +1,7 @@
 import {Outlet, RouterProvider, useLocation, useNavigate} from '@tanstack/react-router'
 import EventEmitter from 'eventemitter3'
 import {Window} from 'happy-dom'
-import {act, useState} from 'react'
+import {act, StrictMode, useState} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import type Atmosphere from '../../Atmosphere'
@@ -112,9 +112,11 @@ const renderInvitation = async (
   })
   await act(async () =>
     root.render(
-      <IsAuthenticatedProvider>
-        <RouterProvider router={router} />
-      </IsAuthenticatedProvider>
+      <StrictMode>
+        <IsAuthenticatedProvider>
+          <RouterProvider router={router} />
+        </IsAuthenticatedProvider>
+      </StrictMode>
     )
   )
 }
