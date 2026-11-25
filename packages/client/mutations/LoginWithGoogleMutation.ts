@@ -3,32 +3,17 @@ import {commitMutation} from 'react-relay'
 import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import type {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
-import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
-import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import redirectAfterSignIn from './handlers/redirectAfterSignIn'
 
 const mutation = graphql`
-  mutation LoginWithGoogleMutation(
-    $code: ID!
-    $invitationToken: ID!
-    $pseudoId: ID
-    $isInvitation: Boolean!
-    $params: String!
-  ) {
+  mutation LoginWithGoogleMutation($code: ID!, $invitationToken: ID, $pseudoId: ID, $params: String!) {
     loginWithGoogle(
       code: $code
       pseudoId: $pseudoId
       invitationToken: $invitationToken
       params: $params
     ) {
-      userErrors {
-        message
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
-    }
-    # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
-    # A default value is necessary even in the case of @include(if: false)
-    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
-      ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
 `
@@ -39,23 +24,14 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Naviga
 ) => {
   return commitMutation<TLoginWithGoogleMutation>(atmosphere, {
     mutation,
-    variables: {...variables, isInvitation: !!variables.invitationToken},
+    variables,
     onError,
     onCompleted: (res, errors) => {
-      const {acceptTeamInvitation, loginWithGoogle} = res
+      const {loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const [userError] = loginWithGoogle.userErrors
-      handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!userError && !errors) {
-        handleSuccessfulLogin(atmosphere, loginWithGoogle)
-        const redirectPath = '/meetings'
-
-        handleAuthenticationRedirect(acceptTeamInvitation, {
-          atmosphere,
-          navigate,
-          redirectPath
-        })
-      }
+      if (errors) return
+      handleSuccessfulLogin(atmosphere, loginWithGoogle)
+      redirectAfterSignIn(atmosphere, variables.invitationToken, navigate)
     }
   })
 }

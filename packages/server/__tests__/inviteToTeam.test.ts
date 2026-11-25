@@ -28,9 +28,6 @@ const INVITE_TO_TEAM_MUTATION = `
 const ACCEPT_TEAM_INVITATION_MUTATION = `
   mutation AcceptTeamInvitation($invitationToken: ID!) {
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      userErrors {
-        code
-      }
       team {
         id
       }
@@ -218,7 +215,7 @@ test('Invite to team explains the approved domains, but lets existing org member
     variables: {invitationToken: await getInvitationToken(user2.email, teamId)},
     cookie: user2.cookie
   })
-  expect(accepted.data.acceptTeamInvitation.userErrors).toEqual([])
+  expect(accepted).toMatchObject({data: {acceptTeamInvitation: {team: {id: teamId}}}})
 
   const approvedDomain = getTestDomain()
   await getKysely()
@@ -445,7 +442,6 @@ test('Team invite to an email acts as email verification', async () => {
     cookie: expect.anything(),
     data: {
       signUpWithPassword: {
-        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -470,14 +466,7 @@ test('Existing user cannot accept a team invitation sent to a different email', 
     cookie: user2Cookie
   })
 
-  expect(acceptResult).toMatchObject({
-    data: {
-      acceptTeamInvitation: {
-        userErrors: [{code: 'TOKEN_INVALID'}],
-        team: null
-      }
-    }
-  })
+  expect(acceptResult).toMatchObject({data: null, errors: [{extensions: {code: 'NOT_FOUND'}}]})
 })
 
 test('Team invite to an email acts as email verification only if the email matches', async () => {
@@ -505,13 +494,44 @@ test('Team invite to an email acts as email verification only if the email match
   })
 
   expect(signUpWithInvite).toMatchObject({
-    data: {
-      signUpWithPassword: {
-        userErrors: [{code: 'EMAIL_VERIFICATION_REQUIRED'}],
-        user: null
-      }
-    }
+    data: null,
+    errors: [{extensions: {code: 'EMAIL_VERIFICATION_REQUIRED'}}]
   })
+})
+
+test('Accepting an invitation again returns the team', async () => {
+  const [user1, user2] = await Promise.all([signUp(), signUp()])
+  const {cookie: user1Cookie, teamId} = user1
+  await inviteToTeam(user1Cookie, teamId, [user2.email])
+  const invitationToken = await getInvitationToken(user2.email, teamId)
+
+  const accepted = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION_MUTATION,
+    variables: {invitationToken},
+    cookie: user2.cookie
+  })
+  expect(accepted).toMatchObject({data: {acceptTeamInvitation: {team: {id: teamId}}}})
+
+  const authToken = accepted.cookie.split('__Host-Http-authToken=')[1].split(';')[0]
+  const acceptedAgain = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION_MUTATION,
+    variables: {invitationToken},
+    cookie: `__Host-Http-authToken=${authToken}`
+  })
+  expect(acceptedAgain.errors).toBeUndefined()
+  expect(acceptedAgain.data).toEqual({acceptTeamInvitation: {team: {id: teamId}}})
+})
+
+test('Accepting an invitation while signed out fails with UNAUTHENTICATED', async () => {
+  const {cookie, teamId} = await signUp()
+  const email = getTestEmail()
+  await inviteToTeam(cookie, teamId, [email])
+
+  const accepted = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION_MUTATION,
+    variables: {invitationToken: await getInvitationToken(email, teamId)}
+  })
+  expect(accepted).toMatchObject({data: null, errors: [{extensions: {code: 'UNAUTHENTICATED'}}]})
 })
 
 test('Accepted invite token cannot be reused after leaving the team', async () => {
@@ -530,14 +550,7 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
     cookie: user2Cookie
   })
 
-  expect(acceptResult).toMatchObject({
-    data: {
-      acceptTeamInvitation: {
-        userErrors: [],
-        team: {id: teamId}
-      }
-    }
-  })
+  expect(acceptResult).toMatchObject({data: {acceptTeamInvitation: {team: {id: teamId}}}})
 
   // User2 leaves the team
   const teamMemberId = `${user2Id}::${teamId}`
@@ -561,12 +574,8 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
   })
 
   expect(reAcceptResult).toMatchObject({
-    data: {
-      acceptTeamInvitation: {
-        userErrors: [{code: 'TOKEN_ALREADY_USED'}],
-        team: null
-      }
-    }
+    data: null,
+    errors: [{message: 'The invitation has already been accepted', extensions: {code: 'CONFLICT'}}]
   })
 })
 
@@ -622,11 +631,7 @@ test('Pending invites are invalidated when user is removed from org', async () =
   })
 
   expect(reAcceptResult).toMatchObject({
-    data: {
-      acceptTeamInvitation: {
-        userErrors: [{code: 'TOKEN_EXPIRED'}],
-        team: null
-      }
-    }
+    data: null,
+    errors: [{message: 'The invitation has expired', extensions: {code: 'CONFLICT'}}]
   })
 })

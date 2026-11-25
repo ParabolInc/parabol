@@ -159,14 +159,11 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID!
+    $invitationToken: ID
     $pseudoId: ID
     $params: String!
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, pseudoId: $pseudoId, params: $params) {
-      userErrors {
-        code
-      }
       user {
         tms
         id
@@ -178,16 +175,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
           id
         }
         organizations {
-          id
-        }
-      }
-    }
-    acceptTeamInvitation(invitationToken: $invitationToken) {
-      meetingId
-      team {
-        id
-        activeMeetings {
-          __typename
           id
         }
       }
@@ -219,9 +206,6 @@ const completeEmailVerification = async (
         $verificationToken: ID!
       ) {
         verifyEmail(verificationToken: $verificationToken) {
-          userErrors {
-            code
-          }
           user {
             tms
             id
@@ -248,7 +232,6 @@ const completeEmailVerification = async (
     cookie: expect.anything(),
     data: {
       verifyEmail: {
-        userErrors: [],
         user: {
           id: expect.anything(),
           email
@@ -283,18 +266,14 @@ export const signUpWithPasswordMutation = async (emailInput: string) => {
       email,
       password,
       pseudoId: null,
-      invitationToken: '',
+      invitationToken: null,
       params: ''
     }
   })
 
   expect(signUp).toMatchObject({
-    data: {
-      signUpWithPassword: {
-        userErrors: [{code: 'EMAIL_VERIFICATION_REQUIRED'}],
-        user: null
-      }
-    }
+    data: null,
+    errors: [{extensions: {code: 'EMAIL_VERIFICATION_REQUIRED'}}]
   })
 
   const pg = getKysely()

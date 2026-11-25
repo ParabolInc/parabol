@@ -139,8 +139,8 @@ const VIEWER_PERSONAL_ACCESS_TOKENS = `
 const ACCEPT_TEAM_INVITATION = `
   mutation AcceptTeamInvitation($invitationToken: ID!) {
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      userErrors {
-        code
+      team {
+        id
       }
     }
   }

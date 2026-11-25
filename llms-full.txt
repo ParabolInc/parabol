@@ -403,7 +403,9 @@ A mutation returns its payload or fails with a GraphQL error in the response's `
 
 Mutation fields are non-null, so when a mutation fails `data` is `null` and any mutation after it in the same operation doesn't run. Send one mutation per operation.
 
-A few sign-in and invitation flows return expected, user-fixable outcomes as data in a `userErrors` list instead (e.g. `acceptTeamInvitation` with an expired token). Integration issue lists (e.g. Jira issues) report a failed fetch in an `error` field on the list rather than failing the query.
+Sign-in and invitation mutations add a few codes of their own: `SIGN_IN_WITH_GOOGLE`, `SIGN_IN_WITH_MICROSOFT`, `SIGN_IN_WITH_SSO` and `SIGN_IN_WITH_PASSWORD` say how the account signs in, `EMAIL_VERIFICATION_REQUIRED` means the email address has to be verified first, and `ORGANIZATION_LOCKED` means one of the user's organizations has an overdue payment. Accepting an invitation to a team the user is already on returns that team.
+
+A failed integration search (e.g. Jira issues) makes only that list `null` and adds a coded error, so the rest of the query still returns.
 
 ## Pagination
 

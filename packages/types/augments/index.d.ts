@@ -21,6 +21,12 @@ type ParabolGraphQLErrorCodes =
   | 'MAX_TEAM_UPGRADE_SUGGESTED'
   | 'TOO_MANY_INVITEES'
   | 'UNACCEPTED_INVITATION_LIMIT'
+  | 'SIGN_IN_WITH_GOOGLE'
+  | 'SIGN_IN_WITH_MICROSOFT'
+  | 'SIGN_IN_WITH_PASSWORD'
+  | 'SIGN_IN_WITH_SSO'
+  | 'EMAIL_VERIFICATION_REQUIRED'
+  | 'ORGANIZATION_LOCKED'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {

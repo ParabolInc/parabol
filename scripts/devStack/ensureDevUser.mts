@@ -5,14 +5,9 @@ import type {Client} from 'pg'
 import getProjectRoot from '../webpack/utils/getProjectRoot.js'
 import type {DevStack} from './readStack.mts'
 
-type GraphQLResponse<TData> = {data: TData; errors?: {message: string}[]}
-type SignUpData = {signUpWithPassword: {error?: {message: string} | null}}
+type GraphQLResponse = {errors?: {message: string}[]}
 
-const callMutation = async <TData,>(
-  stack: DevStack,
-  name: string,
-  variables: Record<string, unknown>
-) => {
+const callMutation = async (stack: DevStack, name: string, variables: Record<string, unknown>) => {
   const queryMap: Record<string, string> = JSON.parse(
     fs.readFileSync(path.join(getProjectRoot(), 'queryMap.json'), 'utf8')
   )
@@ -23,9 +18,8 @@ const callMutation = async <TData,>(
     headers: {'content-type': 'application/json'},
     body: JSON.stringify({docId, variables})
   })
-  const {data, errors} = (await response.json()) as GraphQLResponse<TData>
-  if (errors?.[0]) throw new Error(`${name} failed: ${errors[0].message}`)
-  return data
+  const {errors} = (await response.json()) as GraphQLResponse
+  return errors?.[0]?.message
 }
 
 // tms mirrors the teamIdsByUserId dataloader: the teams the user is still on that are not archived
@@ -46,7 +40,8 @@ const getUser = async (client: Client, email: string) => {
 const signUp = async (stack: DevStack, client: Client, email: string) => {
   const password = crypto.randomBytes(24).toString('base64url')
   const invitation = {invitationToken: '', isInvitation: false}
-  const {signUpWithPassword} = await callMutation<SignUpData>(stack, 'SignUpWithPasswordMutation', {
+  // an email nobody invited has to be verified, so the sign up fails with EMAIL_VERIFICATION_REQUIRED
+  const signUpError = await callMutation(stack, 'SignUpWithPasswordMutation', {
     ...invitation,
     email,
     password,
@@ -59,10 +54,12 @@ const signUp = async (stack: DevStack, client: Client, email: string) => {
       [email]
     )
     const verificationToken = rows[0]?.token
-    if (!verificationToken) {
-      throw new Error(`Could not sign up ${email}: ${signUpWithPassword.error?.message}`)
-    }
-    await callMutation(stack, 'VerifyEmailMutation', {...invitation, verificationToken})
+    if (!verificationToken) throw new Error(`Could not sign up ${email}: ${signUpError}`)
+    const verifyError = await callMutation(stack, 'VerifyEmailMutation', {
+      ...invitation,
+      verificationToken
+    })
+    if (verifyError) throw new Error(`Could not verify ${email}: ${verifyError}`)
   }
   console.log(`Signed up ${email} with the password ${password}`)
 }

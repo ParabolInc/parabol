@@ -26,12 +26,8 @@ const VerifyEmail = () => {
     submitMutation()
     VerifyEmailMutation(
       atmosphere,
-      {
-        verificationToken: verificationToken!,
-        invitationToken: invitationToken || '',
-        isInvitation: !!invitationToken
-      },
-      {onCompleted, onError, navigate}
+      {verificationToken: verificationToken!},
+      {onCompleted, onError, navigate, invitationToken}
     )
   }, [])
   return (

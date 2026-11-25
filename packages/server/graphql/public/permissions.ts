@@ -62,8 +62,11 @@ const canAdministerTeam = or(
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isAuthenticated,
-    // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
-    acceptTeamInvitation: and(hasUnrestrictedGrant, rateLimit({perMinute: 50, perHour: 100})),
+    acceptTeamInvitation: and(
+      isAuthenticated,
+      hasUnrestrictedGrant,
+      rateLimit({perMinute: 50, perHour: 100})
+    ),
     askReportQuestion: and(
       or(isSuperUser, isViewerOnOrg<'Mutation.askReportQuestion'>('args.orgId')),
       rateLimit({perMinute: 10, perHour: 100})

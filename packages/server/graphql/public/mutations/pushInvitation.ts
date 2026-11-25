@@ -34,9 +34,7 @@ const pushInvitation: MutationResolvers['pushInvitation'] = async (
 
   const {orgId} = team
   const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
-  if (approvalError instanceof Error) {
-    throw new GraphQLError(approvalError.message, {extensions: {code: 'FORBIDDEN'}})
-  }
+  if (approvalError) throw approvalError
   const pushInvitations = await pg
     .selectFrom('PushInvitation')
     .selectAll()

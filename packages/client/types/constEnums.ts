@@ -182,8 +182,7 @@ export enum Gutters {
 export enum InvitationTokenError {
   NOT_FOUND = 'notFound',
   EXPIRED = 'expired',
-  ALREADY_ACCEPTED = 'accepted',
-  NOT_SIGNED_IN = 'notSignedIn'
+  ALREADY_ACCEPTED = 'accepted'
 }
 export enum InvoiceItemType {
   ADD_USER = 'addUser',

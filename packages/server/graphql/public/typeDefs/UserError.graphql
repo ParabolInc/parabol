@@ -1,5 +1,5 @@
 """
-A problem the user can fix, such as a wrong password or an expired link. Unlike a thrown error, it comes back with the payload, so a form can show it
+No longer returned. A problem the user can fix, such as a wrong password or an expired link, now throws an error with a code in its extensions
 """
 type UserError {
   """
