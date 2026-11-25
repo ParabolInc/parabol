@@ -16,9 +16,15 @@ const SCOPE_GROUPS = [
 interface Props {
   selectedScopes: Set<OAuthScopeEnum>
   toggleScope: (scope: OAuthScopeEnum, pairedRead?: OAuthScopeEnum) => void
+  // the scopes on offer; omitted means every scope
+  availableScopes?: ReadonlySet<OAuthScopeEnum>
 }
 
-export const TokenScopesTable = ({selectedScopes, toggleScope}: Props) => {
+export const TokenScopesTable = ({selectedScopes, toggleScope, availableScopes}: Props) => {
+  const isAvailable = (scope: OAuthScopeEnum) => !availableScopes || availableScopes.has(scope)
+  const scopeGroups = SCOPE_GROUPS.filter(
+    (group) => isAvailable(group.read) || isAvailable(group.write)
+  )
   return (
     <div className='flex flex-col gap-2'>
       <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>Scopes</label>
@@ -38,22 +44,30 @@ export const TokenScopesTable = ({selectedScopes, toggleScope}: Props) => {
             </tr>
           </thead>
           <tbody>
-            {SCOPE_GROUPS.map((group) => (
+            {scopeGroups.map((group) => (
               <tr key={group.resource} className='border-hairline border-b last:border-0'>
                 <td className='py-2 pr-3 pl-3 text-fg-primary'>{group.resource}</td>
                 <td className='w-10 py-2'>
-                  <Checkbox
-                    checked={selectedScopes.has(group.read)}
-                    onCheckedChange={() => toggleScope(group.read)}
-                    className='mx-auto'
-                  />
+                  {isAvailable(group.read) && (
+                    <Checkbox
+                      aria-label={`Read ${group.resource}`}
+                      checked={selectedScopes.has(group.read)}
+                      onCheckedChange={() => toggleScope(group.read)}
+                      className='mx-auto'
+                    />
+                  )}
                 </td>
                 <td className='w-10 py-2'>
-                  <Checkbox
-                    checked={selectedScopes.has(group.write)}
-                    onCheckedChange={() => toggleScope(group.write, group.read)}
-                    className='mx-auto'
-                  />
+                  {isAvailable(group.write) && (
+                    <Checkbox
+                      aria-label={`Write ${group.resource}`}
+                      checked={selectedScopes.has(group.write)}
+                      onCheckedChange={() =>
+                        toggleScope(group.write, isAvailable(group.read) ? group.read : undefined)
+                      }
+                      className='mx-auto'
+                    />
+                  )}
                 </td>
               </tr>
             ))}

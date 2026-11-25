@@ -62,7 +62,7 @@ export const PersonalAccessTokenPageGrant = ({
               checked={selectedPageIds.has(page.id)}
               onCheckedChange={() => togglePage(page)}
             />
-            <span className='text-fg-primary text-sm'>{page.title ?? '(Untitled)'}</span>
+            <span className='text-fg-primary text-sm'>{page.title || '<Untitled>'}</span>
           </label>
         ))
       )}

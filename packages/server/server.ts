@@ -15,8 +15,13 @@ import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhoo
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
 import {requireInstanceLicense} from './license/instanceLicense'
 import listenHandler from './listenHandler'
+import mcpHandler, {mcpMethodNotAllowedHandler, mcpPreflightHandler} from './mcp/mcpHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
+import authorizationServerMetadataHandler from './oauth2/authorizationServerMetadataHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
+import oauthPreflightHandler from './oauth2/oauthPreflightHandler'
+import protectedResourceMetadataHandler from './oauth2/protectedResourceMetadataHandler'
+import registrationHandler from './oauth2/registrationHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
 import {schemaProxyHandler} from './schemaProxyHandler'
@@ -106,6 +111,23 @@ const app = uws
   .post('/saml/:domain', traceHttpRoute('/saml/:domain', SAMLHandler))
   .get('/oauth/authorize', traceHttpRoute('/oauth/authorize', authorizeHandler))
   .post('/oauth/token', traceHttpRoute('/oauth/token', tokenHandler))
+  .options('/oauth/token', oauthPreflightHandler)
+  .post('/oauth/register', traceHttpRoute('/oauth/register', registrationHandler))
+  .options('/oauth/register', oauthPreflightHandler)
+  .options('/.well-known/oauth-authorization-server', oauthPreflightHandler)
+  .options('/.well-known/oauth-protected-resource/mcp', oauthPreflightHandler)
+  .get(
+    '/.well-known/oauth-authorization-server',
+    traceHttpRoute('/.well-known/oauth-authorization-server', authorizationServerMetadataHandler)
+  )
+  .get(
+    '/.well-known/oauth-protected-resource/mcp',
+    traceHttpRoute('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
+  )
+  .post('/mcp', traceHttpRoute('/mcp', mcpHandler))
+  .get('/mcp', mcpMethodNotAllowedHandler)
+  .del('/mcp', mcpMethodNotAllowedHandler)
+  .options('/mcp', mcpPreflightHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 registerSCIMHandlers(app, '/scim')

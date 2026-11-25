@@ -11,12 +11,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import normalizeEmail from '../../../utils/normalizeEmail'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
-import type {MutationResolvers, UserErrorCode} from '../resolverTypes'
-
-const noEmailSent = (code: UserErrorCode, message: string) => ({
-  success: false,
-  userErrors: [{code, message}]
-})
+import type {MutationResolvers} from '../resolverTypes'
 
 const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
   _source,
@@ -51,20 +46,23 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
       .executeTakeFirstOrThrow()
   ])
   if (failOnAccount.res || failOnTime.res) {
-    return noEmailSent(
-      'TOO_MANY_ATTEMPTS',
-      'Too many reset password attempts. Please try again later.'
-    )
+    throw new GraphQLError('Too many reset password attempts. Please try again later.', {
+      extensions: {code: 'TOO_MANY_REQUESTS'}
+    })
   }
   const domain = getSSODomainFromEmail(email)
   const saml = domain ? await dataLoader.get('samlByDomain').load(domain) : null
   const samlDomainExists = !!saml?.metadata
 
   if (samlDomainExists) {
-    return noEmailSent('SIGN_IN_WITH_SSO', 'Your organization requires you to login with SSO')
+    throw new GraphQLError('Your organization requires you to login with SSO', {
+      extensions: {code: 'SIGN_IN_WITH_SSO'}
+    })
   }
   if (!user) {
-    return noEmailSent('USER_NOT_FOUND', 'We couldn’t find that email. Please try again.')
+    throw new GraphQLError('We couldn’t find that email. Please try again.', {
+      extensions: {code: 'NOT_FOUND'}
+    })
   }
   const {id: userId, identities} = user
 
@@ -72,14 +70,18 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
     (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
   )
   if (googleIdentity) {
-    return noEmailSent('SIGN_IN_WITH_GOOGLE', 'Try logging in with Google')
+    throw new GraphQLError('Try logging in with Google', {
+      extensions: {code: 'SIGN_IN_WITH_GOOGLE'}
+    })
   }
 
   const microsoftIdentity = identities.find(
     (identity) => identity.type === AuthIdentityTypeEnum.MICROSOFT
   )
   if (microsoftIdentity) {
-    return noEmailSent('SIGN_IN_WITH_MICROSOFT', 'Try logging in with Microsoft')
+    throw new GraphQLError('Try logging in with Microsoft', {
+      extensions: {code: 'SIGN_IN_WITH_MICROSOFT'}
+    })
   }
 
   const localIdentity = identities.find(

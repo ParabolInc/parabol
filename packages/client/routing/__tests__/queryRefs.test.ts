@@ -166,10 +166,17 @@ test('a load after a failed request starts a new one', async () => {
   expect(mockRequests).toHaveLength(2)
 })
 
-test('a reconnect refreshes the queries open pages show, not idle ones', async () => {
+test('a reconnect refreshes the queries open pages show, not idle ones or ones their owner fetches', async () => {
   const {queryRefs, reconnect} = createRegistry()
   const [openPageRef] = await loadTeams(queryRefs, ['open', 'idle'])
+  const ownedLoad = queryRefs.load(
+    teamContainerQuery,
+    {teamId: 'owned'},
+    {fetchPolicy: 'store-only'}
+  )
+  mockRequests.at(-1)!.answer()
   queryRefs.lease(openPageRef!)
+  queryRefs.lease(await ownedLoad)
   reconnect()
   expect(mockRefreshedVariables).toEqual([{teamId: 'open'}])
 })

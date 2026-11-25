@@ -7,7 +7,8 @@ const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')
 const getVerifiedAuthToken = (
   jwt: string | undefined | null,
   logErrors = true,
-  audience = 'action'
+  audience = 'action',
+  ignoreExpiration = false
 ): AuthToken | null => {
   if (!jwt) {
     return null
@@ -15,7 +16,8 @@ const getVerifiedAuthToken = (
   try {
     const authToken = verify(jwt, SERVER_SECRET_BUFFER, {
       algorithms: ['HS256'],
-      clockTolerance: 10
+      clockTolerance: 10,
+      ignoreExpiration
     }) as AuthToken
     return authToken.aud === audience ? authToken : null
   } catch (e) {

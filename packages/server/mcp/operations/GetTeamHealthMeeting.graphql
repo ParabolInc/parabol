@@ -1,0 +1,43 @@
+# Show one team health check: how many members have answered so far, and for each question its id, its 1-5 average score, how many scored it, the scores given, an AI summary when there is one, and the comment on each answer. Each question's results stay empty until the check ends. Then score and the AI summary are null when fewer than 3 people scored the question, and spreadScores when fewer than 4 did, since numbers from so few people could be matched to who gave them; respondentCount says how many did. No score is ever shown with a name. A signed comment shows word for word with its author's name, however few people answered. An anonymous comment shows only as an AI rewrite with no name, and not at all while it is being rewritten, or if AI is off or fails. discussionId opens the question's discussion with get_discussion. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no stages; use get_meeting. Timestamps are UTC. Needs users:read and meetings:read.
+query GetTeamHealthMeeting(
+  # The team health check's meeting id, from list_meetings or start_team_health
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      meetingType
+      teamId
+      meetingSeriesId
+      createdAt
+      endedAt
+      summary
+      summaryPageId
+      ... on TeamHealthMeeting {
+        respondentCount
+      }
+      phases {
+        ... on TeamHealthResultPhase {
+          stages {
+            discussionId
+            question {
+              id
+              question
+            }
+            score
+            respondentCount
+            spreadScores
+            summary
+            responses {
+              commentParaphrased
+              commentAuthor {
+                preferredName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

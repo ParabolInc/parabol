@@ -12,17 +12,11 @@ import {Button} from '../../../ui/Button/Button'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
+import formatOAuthScope from '../../../utils/formatOAuthScope'
 import PersonalAccessTokenUpsertDialog, {type TokenForEdit} from './PersonalAccessTokenUpsertDialog'
 
 interface Props {
   viewerRef: PersonalAccessTokens_viewer$key
-}
-
-const formatScope = (scope: string) => {
-  const parts = scope.toLowerCase().split('_')
-  const action = parts[parts.length - 1]
-  const resource = parts.slice(0, -1).join('_')
-  return `${resource}:${action}`
 }
 
 const PersonalAccessTokens = ({viewerRef}: Props) => {
@@ -140,7 +134,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                         <td className='px-4 py-3 font-medium text-fg-primary'>{token.name}</td>
                         <td className='px-4 py-3 font-medium text-fg-primary'>{token.id}</td>
                         <td className='max-w-[200px] px-4 py-3 text-fg-primary'>
-                          {token.scopes.map(formatScope).join(', ')}
+                          {token.scopes.map(formatOAuthScope).join(', ')}
                         </td>
                         <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
                           {new Date(token.createdAt).toLocaleDateString()}

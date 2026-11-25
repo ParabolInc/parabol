@@ -23,5 +23,9 @@ export const addBreadcrumb = (type: BreadcrumbType, message: string, traceId?: s
 
 export const getBreadcrumbs = () => breadcrumbs.slice()
 
+// Reporting an error must work in the old browsers it tells to update, so this avoids findLast
 export const getLastTraceId = () =>
-  breadcrumbs.findLast((breadcrumb) => breadcrumb.traceId)?.traceId
+  breadcrumbs
+    .slice()
+    .reverse()
+    .find((breadcrumb) => breadcrumb.traceId)?.traceId

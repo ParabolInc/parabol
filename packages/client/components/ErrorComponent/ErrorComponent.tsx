@@ -2,13 +2,9 @@ import {useState} from 'react'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import {Button} from '~/ui/Button/Button'
 import {twStyled} from '../../ui/twStyled'
+import {isBrowserTooOld, UPDATE_BROWSER_URL} from '../../utils/browserSupport'
 import {isClientOutdated} from '../../utils/connectedServerVersion'
-import {
-  isExtensionError,
-  isIgnoredError,
-  isNetworkError,
-  isOldBrowserError
-} from '../../utils/errorFilters'
+import {isExtensionError, isIgnoredError, isNetworkError} from '../../utils/errorFilters'
 import {STALE_CLIENT_NOTE} from '../../utils/staleClientNote'
 
 const ErrorBlock = twStyled('div')(
@@ -48,14 +44,13 @@ const ErrorComponent = (props: Props) => {
     )
   }
 
-  if (isOldBrowserError(error)) {
-    const url = 'https://browser-update.org/update-browser.html'
+  if (isBrowserTooOld) {
     return (
       <ErrorBlock>
-        {"Oh no! You've found a bug because the browser you're using needs to be updated."}
-        <Button variant='primary' size='sm' className='mt-2'>
-          <a className='text-inherit' href={url} target='_blank' rel='noreferrer'>
-            Update now
+        Your browser is too old to run Parabol. Update it, then reload this page.
+        <Button asChild variant='primary' size='sm' className='mt-2'>
+          <a href={UPDATE_BROWSER_URL} target='_blank' rel='noreferrer'>
+            Update your browser
           </a>
         </Button>
       </ErrorBlock>

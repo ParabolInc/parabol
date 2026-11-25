@@ -1,0 +1,40 @@
+# Show one sprint poker meeting: one stage per story and dimension (such as Story Points), with the story's task id and text, the final score, and who has voted. Keep votes hidden while isVoting is true: pass showVotes only once it is false, to see each vote and who cast it. discussionId opens the story's comments with get_discussion. summaryPageId, when set, is a page to open with read_page. For another kind of meeting it returns no stages; use get_meeting. Timestamps are UTC. Needs users:read, meetings:read and tasks:read.
+query GetPokerMeeting(
+  # The sprint poker meeting id, from list_meetings or start_sprint_poker
+  $meetingId: ID!
+  # true to see each vote and its voter's name. Pass it only after the team reveals the votes, when isVoting is false
+  $showVotes: Boolean = false
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      name
+      endedAt
+      summaryPageId
+      phases {
+        ... on EstimatePhase {
+          stages {
+            id
+            discussionId
+            isVoting
+            finalScore
+            dimensionRef {
+              name
+            }
+            taskId
+            task {
+              plaintextContent
+            }
+            scores {
+              userId
+              label @include(if: $showVotes)
+              user @include(if: $showVotes) {
+                preferredName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

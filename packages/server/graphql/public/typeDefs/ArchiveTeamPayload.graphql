@@ -1,17 +1,18 @@
 """
-Return value for the archiveTeam mutation. When a team is archived (or deleted if unused),
-this payload delivers the updated team record, a notification sent to all former members,
-the IDs of any homepage suggested-action cards that were removed, and the IDs of meeting
-templates owned by the team so clients can remove them from local caches.
+Return value for the archiveTeam mutation. When a team is archived, this payload delivers the
+team record, a notification sent to the other members, the IDs of any homepage suggested-action
+cards that were removed, and the IDs of meeting templates owned by the team so clients can remove
+them from local caches.
 """
 type ArchiveTeamPayload {
   """
-  The team that was archived (or deleted). Inspect team.isArchived to distinguish the two cases.
+  The archived team. team.isArchived is true; the team is never deleted
   """
   team: Team
 
   """
-  A notification explaining that the team was archived and removed from view
+  A notification explaining that the team was archived and removed from view. Null for the person
+  who archived the team, who is not notified
   """
   notification: NotifyTeamArchived
 

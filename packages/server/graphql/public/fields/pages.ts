@@ -1,11 +1,35 @@
 import {GraphQLError} from 'graphql'
-import type {NotNull} from 'kysely'
+import {expressionBuilder, type NotNull} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
+import {containsPattern} from '../../../postgres/containsPattern'
 import getKysely from '../../../postgres/getKysely'
 import {selectPages} from '../../../postgres/select'
+import type {DB} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {UserResolvers} from '../resolverTypes'
+
+const eb = expressionBuilder<DB, 'Page'>()
+
+const isTopLevelPage = (viewerId: string, resourceGrants: ResourceGrants | undefined) =>
+  eb.or([
+    eb('Page.parentPageId', 'is', null),
+    ...(resourceGrants
+      ? [
+          eb.not(
+            eb.exists(
+              eb
+                .selectFrom('PageAccess as parentAccess')
+                .select('parentAccess.pageId')
+                .whereRef('parentAccess.pageId', '=', 'Page.parentPageId')
+                .where('parentAccess.userId', '=', viewerId)
+                .where(({ref}) => resourceGrants.grantsPage(ref('parentAccess.pageId')))
+            )
+          )
+        ]
+      : [])
+  ])
 
 export const pages: NonNullable<UserResolvers['pages']> = async (
   _source,
@@ -31,10 +55,10 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     const pagesPlusOne = await selectPages()
       .where('deletedBy', '=', viewerId)
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(dbParentPageId === null, (qb) => qb.where(isTopLevelPage(viewerId, resourceGrants)))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
       .$if(!!resourceGrants, (qb) =>
         qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id')))
       )
@@ -66,6 +90,9 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
           .select('teamId')
           .where('userId', '=', viewerId)
           .where('isNotRemoved', '=', true)
+          .$if(!!resourceGrants, (qb) =>
+            qb.where(({ref}) => resourceGrants!.grantsTeam(ref('TeamMember.teamId')))
+          )
       )
       .with('pages', (qc) =>
         selectPages(qc as any)
@@ -94,7 +121,7 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
         or([eb('teamId', 'is', null), eb('teamId', 'not in', selectFrom('teams').select('teamId'))])
       )
       .where('isPrivate', '=', false) // this must go down here so a shared child of a private page doesn't show up
-      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
       .leftJoin('PageUserSortOrder', (join) =>
         join
           .on('PageUserSortOrder.userId', '=', viewerId)
@@ -102,6 +129,8 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
       )
       .select(({ref}) => [ref('PageUserSortOrder.sortOrder').as('userSortOrder'), 'p.sortOrder'])
       .orderBy('userSortOrder', (od) => od.asc().nullsFirst())
+      .orderBy('p.sortOrder')
+      .orderBy('p.id')
       .$if(!!after, (qb) => qb.where('PageUserSortOrder.sortOrder', '>', after!))
       .limit(first + 1)
       .execute()
@@ -124,7 +153,16 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
                 userId: viewerId,
                 sortOrder: p.userSortOrder
               })
-              .execute()
+              .onConflict((oc) =>
+                oc
+                  .columns(['userId', 'pageId'])
+                  .doUpdateSet(({ref}) => ({sortOrder: ref('PageUserSortOrder.sortOrder')}))
+              )
+              .returning('sortOrder')
+              .executeTakeFirstOrThrow()
+              .then((saved) => {
+                p.userSortOrder = saved.sortOrder
+              })
           }
         })
       )
@@ -150,10 +188,10 @@ export const pages: NonNullable<UserResolvers['pages']> = async (
     .where('PageAccess.userId', '=', viewerId)
     .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
     .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-    .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+    .$if(dbParentPageId === null, (qb) => qb.where(isTopLevelPage(viewerId, resourceGrants)))
     .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
     .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-    .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+    .$if(!!textFilter, (qb) => qb.where('title', 'ilike', containsPattern(textFilter!)))
     .$if(!!resourceGrants, (qb) => qb.where(({ref}) => resourceGrants!.grantsPage(ref('Page.id'))))
     .where('deletedBy', 'is', null)
     .where('Page.isSyncedBlock', '=', false)

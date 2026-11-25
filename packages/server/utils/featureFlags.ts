@@ -9,15 +9,6 @@ export interface FeatureFlag {
 }
 
 export const FEATURE_FLAGS = {
-  oauthProvider: {
-    featureName: 'oauthProvider',
-    scope: 'Organization',
-    description: 'Create OAuth 2.0 tokens to execute custom GraphQL queries',
-    expiresAt: new Date('2026-11-30T23:59:59.999+00:00'),
-    createdAt: new Date('2026-01-15T12:56:35.316792+00:00'),
-    updatedAt: new Date('2026-01-15T12:56:35.316792+00:00'),
-    isPublic: false
-  },
   SCIM: {
     featureName: 'SCIM',
     scope: 'Organization',

@@ -2,6 +2,13 @@
 The meeting types whose templates are made of prompts
 """
 enum PromptTemplateTypeEnum {
+  """
+  A retrospective template
+  """
   retrospective
+
+  """
+  A standup template: a standup is called teamPrompt in the API
+  """
   teamPrompt
 }

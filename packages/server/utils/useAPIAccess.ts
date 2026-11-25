@@ -3,15 +3,24 @@ import type {DataLoaderWorker} from '../graphql/graphql'
 import type {ServerContext} from '../yoga'
 import getAPIAuthToken from './getAPIAuthToken'
 import getAPIGrant from './getAPIGrant'
+import getRequestCredential from './getRequestCredential'
 
 export const useAPIAccess = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker}> => {
   return {
     async onContextBuilding({context, extendContext}) {
       if (context.authToken) return
-      const authHeader: string | null | undefined = context.request?.headers?.get('authorization')
-      const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
-      if (!bearerToken) return
-      const grant = await getAPIGrant(bearerToken, context.dataLoader)
+      const headers = context.request?.headers
+      const credential = getRequestCredential({
+        cookie: headers?.get('cookie'),
+        authorization: headers?.get('authorization'),
+        applicationAuthorization: headers?.get('x-application-authorization')
+      })
+      if (credential.kind !== 'pat' && credential.kind !== 'oauth') return
+      const grant = await getAPIGrant(
+        credential.token,
+        context.dataLoader,
+        context.expectedResource
+      )
       if (!grant) return
       const authToken = await getAPIAuthToken(grant, context.dataLoader)
       extendContext({

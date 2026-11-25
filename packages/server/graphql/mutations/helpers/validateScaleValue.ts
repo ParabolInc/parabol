@@ -1,9 +1,10 @@
 import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import {Threshold} from '../../../../client/types/constEnums'
 
-const validateColorValue = (color: string) => {
-  const validHexes = palettePickerOptions.map(({hex}) => hex)
-  return validHexes.includes(color)
+const validateColorValue = (color: string, currentColor?: string) => {
+  const upperColor = color.toUpperCase()
+  if (upperColor === currentColor?.toUpperCase()) return true
+  return palettePickerOptions.some(({hex}) => hex.toUpperCase() === upperColor)
 }
 
 const segmenter = new Intl.Segmenter('en', {granularity: 'grapheme'})

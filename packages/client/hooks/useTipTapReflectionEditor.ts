@@ -106,7 +106,8 @@ export const useTipTapReflectionEditor = (
         Focus,
         ImageBlock.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88
+          editorHeight: 88,
+          expandButton: true
         }),
         LoomExtension,
         Mention.configure(

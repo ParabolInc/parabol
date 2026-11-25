@@ -1,0 +1,14 @@
+# Replace the whole content of a page with markdown, which also clears its content history. To change part of a page, use edit_page. Put each image on its own line as ![alt](url), with a url from upload_image. Needs pages:write.
+mutation SetPageContent(
+  # The page id, from create_page or search_pages
+  $pageId: ID!
+  # The page in markdown, which replaces the whole page. Start with a # heading for the title
+  $content: String!
+) {
+  editPageContent(pageId: $pageId, content: $content, format: markdown) {
+    page {
+      id
+      title
+    }
+  }
+}

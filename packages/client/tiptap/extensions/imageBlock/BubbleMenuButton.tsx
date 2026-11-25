@@ -17,6 +17,7 @@ export const BubbleMenuButton = (props: Props) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <button
+          aria-label={title}
           onClick={onClick}
           data-active={isActive ? '' : undefined}
           className={cn(

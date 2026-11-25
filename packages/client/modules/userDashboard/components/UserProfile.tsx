@@ -8,6 +8,7 @@ import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {AuthIdentityTypeEnum} from '../../../types/constEnums'
 import AppearancePanel from './AppearancePanel'
+import ConnectedApps from './ConnectedApps'
 import PersonalAccessTokens from './PersonalAccessTokens'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
@@ -23,6 +24,7 @@ const query = graphql`
       ...EmailNotifications_viewer
       ...DeleteAccount_viewer
       ...PersonalAccessTokens_viewer
+      ...ConnectedApps_viewer
       preferredName
       picture
       identities {
@@ -58,6 +60,7 @@ const UserProfile = ({queryRef}: Props) => {
           </div>
         </Panel>
         {true && <PersonalAccessTokens viewerRef={viewer} />}
+        <ConnectedApps viewerRef={viewer} />
         <Panel label='Danger Zone' casing={'capitalize'}>
           <div className='border-hairline border-t p-4 text-center'>
             <DeleteAccount viewerRef={viewer} />

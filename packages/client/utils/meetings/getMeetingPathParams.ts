@@ -23,9 +23,7 @@ const demoRoutes = [
   {path: TeamHealthDemo.ROUTE, meetingId: TeamHealthDemo.MEETING_ID}
 ]
 
-const getMeetingPathParams = (): MeetingPathResults => {
-  const {location} = window
-  const {pathname} = location
+const getMeetingPathParams = (pathname = window.location.pathname): MeetingPathResults => {
   const matchRes = matchPath({path: '/meet/:meetingId', end: false}, pathname)
   if (!matchRes) {
     const demoRoute = demoRoutes.find(({path}) => matchPath({path, end: false}, pathname))

@@ -154,17 +154,22 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .execute()
 }
 
+export const parseRRuleArg = (rruleString: string | null | undefined) =>
+  rruleString === undefined ? undefined : rruleString ? RRuleSet.parse(rruleString) : null
+
 /**
  * Applies a recurrence rule and/or a title to a series and every sibling in its group, keeping the
  * calendar invite in step. This is the one implementation: updateRecurrenceSettings addresses it by
  * meeting, updateMeetingSeries by series id, and both must behave identically once resolved.
+ *
+ * An undefined rrule leaves the recurrence as it is, so only the title changes; null cancels the group.
  *
  * Returns the group's series ids, and whether anything changed — cancelling an already-cancelled
  * series is a no-op rather than a second cancellation.
  */
 export const applySeriesRecurrence = async (
   meetingSeries: MeetingSeries,
-  {rrule, name}: {rrule: RRuleSet | null; name?: string | null},
+  {rrule, name}: {rrule: RRuleSet | null | undefined; name?: string | null},
   dataLoader: DataLoaderWorker
 ) => {
   const pg = getKysely()
@@ -175,18 +180,18 @@ export const applySeriesRecurrence = async (
   // update needs the recurrence rule as it was before this change.
   const groupSeries = (await dataLoader.get('meetingSeries').loadMany(seriesIds)).filter(isValid)
 
-  if (!rrule && cancelledAt) return {seriesIds, changed: false}
+  if (rrule === null && cancelledAt) return {seriesIds, changed: false}
 
-  if (!rrule) {
+  if (rrule === null) {
     await stopMeetingSeriesGroup(meetingSeries)
-  } else if (cancelledAt) {
+  } else if (rrule && cancelledAt) {
     // Restart a cancelled series: clear cancelledAt and update recurrenceRule atomically
     await pg
       .updateTable('MeetingSeries')
       .set({cancelledAt: null, recurrenceRule: rrule.toString()})
       .where('id', 'in', seriesIds)
       .execute()
-  } else {
+  } else if (rrule) {
     await pg
       .updateTable('MeetingSeries')
       .set({recurrenceRule: rrule.toString()})
@@ -216,7 +221,10 @@ export const applySeriesRecurrence = async (
   }
 
   // every team on the group has its own invite, so a group edit has to reach all of them
-  const newRrule = updateGCalRecurrenceRule(RRuleSet.parse(recurrenceRule), rrule)
+  const newRrule =
+    rrule === undefined
+      ? undefined
+      : updateGCalRecurrenceRule(RRuleSet.parse(recurrenceRule), rrule)
   await Promise.all(
     groupSeries.map(async (series) => {
       if (!series.gcalSeriesId) return
@@ -255,7 +263,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
+  const rrule = parseRRuleArg(rruleString)
 
   // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)

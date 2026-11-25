@@ -5,7 +5,7 @@ import {readInlineData} from 'relay-runtime'
 import type {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
-import getMeetingPathRoot from '../utils/meetings/getMeetingPathRoot'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import getTeamHealthCheckShownInRetro from '../utils/meetings/getTeamHealthCheckShownInRetro'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
@@ -91,13 +91,12 @@ const useUpdatedSafeRoute = (
         meeting,
         getTeamHealthCheckShownInRetro(meeting)
       )
-      // an ended meeting sends everyone on to its summary, so a late change, like the reveal of the
-      // check a retro started, mustn't pull them back. The router's location has them leaving before
-      // the address bar does, and a replace queued behind their push would take its place
-      const hasLeftEndedMeeting =
-        !!meeting.endedAt &&
-        !`${router.history.location.pathname}/`.startsWith(`${getMeetingPathRoot(meeting.id)}/`)
-      if (nextPathname !== location.pathname && !hasLeftEndedMeeting) {
+      // the router holds a meeting on screen while it loads the next page, whose URL the meeting must
+      // leave alone. The router has that page before the address bar does: when a meeting ends, a
+      // replace queued behind the push to its summary would otherwise take the push's place
+      const isMeetingUrl =
+        getMeetingPathParams(router.history.location.pathname).meetingId === meeting.id
+      if (nextPathname !== location.pathname && isMeetingUrl) {
         navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)
         return

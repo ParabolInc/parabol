@@ -17,6 +17,7 @@ import getAPIAuthToken from './utils/getAPIAuthToken'
 import getAPIGrant from './utils/getAPIGrant'
 import {canScopesReadAsset} from './utils/getAssetOwnerScope'
 import getReqAuth from './utils/getReqAuth'
+import {getBearerToken} from './utils/getRequestCredential'
 import {Logger} from './utils/Logger'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
 
@@ -154,15 +155,10 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const assetType = segmentMatch[3] as AssetType
   const rawFilename = segmentMatch[4] ?? ''
 
-  const authorization = req.getHeader('authorization')
+  const bearerToken = getBearerToken(req.getHeader('authorization'))
   const sessionAuthToken = getReqAuth(req)
-  if (!sessionAuthToken && authorization.startsWith('Bearer ')) {
-    const denialStatus = await getBearerDenialStatus(
-      authorization.slice(7),
-      scope,
-      scopeCode,
-      assetType
-    )
+  if (!sessionAuthToken && bearerToken) {
+    const denialStatus = await getBearerDenialStatus(bearerToken, scope, scopeCode, assetType)
     if (denialStatus) {
       res.writeStatus(denialStatus).end()
       return

@@ -5,6 +5,7 @@ import {selectPersonalAccessToken} from '../../../postgres/select'
 import {getUserId} from '../../../utils/authorization'
 import {PAT_PREFIX} from '../applyScopeDirective'
 import type {MutationResolvers} from '../resolverTypes'
+import assertResourceGrantLimits from './helpers/assertResourceGrantLimits'
 
 export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessToken'] = async (
   _,
@@ -37,21 +38,7 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  if (grantedOrgIds && grantedOrgIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 organizations', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
-  if (grantedTeamIds && grantedTeamIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 teams', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
-  if (grantedPageIds && grantedPageIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 pages', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
+  assertResourceGrantLimits({grantedOrgIds, grantedTeamIds, grantedPageIds})
   const maxExpiry = new Date(Date.now() + ms('1y'))
   if (expiresAt && expiresAt > maxExpiry) {
     throw new GraphQLError('Expiration date cannot be more than 1 year in the future', {

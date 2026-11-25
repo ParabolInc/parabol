@@ -72,6 +72,11 @@ type Query {
     reflectionsContent: [String!]!
   ): GetDemoGroupTitlePayload!
   """
+  The colors a Sprint Poker scale value may use. A scale value's color must be one of these hex codes
+  """
+  pokerScaleColors: [PokerScaleColor!]! @scope(name: TEMPLATES_READ)
+
+  """
   Look up the SAML identity provider SSO URL for a given email domain
   """
   SAMLIdP(

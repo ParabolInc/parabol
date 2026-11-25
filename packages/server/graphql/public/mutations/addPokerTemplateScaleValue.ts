@@ -36,7 +36,7 @@ export const addPokerTemplateScaleValue: MutationResolvers['addPokerTemplateScal
       .insertInto('TemplateScaleValue')
       .values({
         templateScaleId: scaleId,
-        color,
+        color: color.toUpperCase(),
         label,
         sortOrder
       })

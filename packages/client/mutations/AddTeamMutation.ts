@@ -21,7 +21,6 @@ graphql`
       id
       name
       ...PublicTeamsFrag_team
-      ...NewTeamForm_teams
       ...MeetingsDashActiveMeetings
       ...Team_team
       ...ActivityDetailsSidebar_teams

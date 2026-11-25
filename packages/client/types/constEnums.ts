@@ -182,8 +182,7 @@ export enum Gutters {
 export enum InvitationTokenError {
   NOT_FOUND = 'notFound',
   EXPIRED = 'expired',
-  ALREADY_ACCEPTED = 'accepted',
-  NOT_SIGNED_IN = 'notSignedIn'
+  ALREADY_ACCEPTED = 'accepted'
 }
 export enum InvoiceItemType {
   ADD_USER = 'addUser',
@@ -215,7 +214,8 @@ export enum LocalStorageKey {
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
   ERROR_PRONE_AT = 'errorProneAt',
-  THEME = 'theme'
+  THEME = 'theme',
+  REPORTS_ORG_ID = 'reportsOrgId'
 }
 
 export enum LOCKED_MESSAGE {

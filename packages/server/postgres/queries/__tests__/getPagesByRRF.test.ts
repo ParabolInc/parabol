@@ -5,6 +5,9 @@ import {
 } from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
+import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
+import {ResourceGrants} from '../../../graphql/public/ResourceGrants'
+import {CipherId} from '../../../utils/CipherId'
 import getKysely from '../../getKysely'
 import {getPagesByRRF} from '../getPagesByRRF'
 import {decodePageSearchCursor} from '../pageSearchCursor'
@@ -23,6 +26,7 @@ jest.mock('../../../../embedder/activeEmbeddingModel', () => {
 })
 
 const pg = getKysely()
+const dataLoader = getNewDataLoader('getPagesByRRFTest')
 const suffix = `pbr-${Date.now()}`
 const viewerId = `viewer-${suffix}`
 const otherUserId = `other-${suffix}`
@@ -236,6 +240,7 @@ afterAll(async () => {
     .deleteFrom('User')
     .where('id', 'in', [viewerId, otherUserId, bulkViewerId, junkViewerId])
     .execute()
+  dataLoader.dispose()
   await pg.destroy()
 })
 
@@ -249,6 +254,7 @@ const fused = (alpha: number, overrides: Partial<Parameters<typeof getPagesByRRF
     offset: 0,
     viewerId,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     ...overrides
   })
@@ -256,6 +262,19 @@ const fused = (alpha: number, overrides: Partial<Parameters<typeof getPagesByRRF
 it('returns each page found by either arm exactly once', async () => {
   const ids = (await fused(0.5)).edges.map((e) => e.nodeId)
   expect(ids.sort()).toEqual([keywordOnlyId, bothArmsId, vectorOnlyId].sort())
+})
+
+it('returns only the pages an access token was granted, from either arm', async () => {
+  const grantedIds = [keywordOnlyId, vectorOnlyId]
+  const resourceGrants = new ResourceGrants(
+    viewerId,
+    [],
+    [],
+    grantedIds.map((id) => CipherId.toClient(id, 'page')),
+    dataLoader
+  )
+  const ids = (await fused(0.5, {resourceGrants})).edges.map((e) => e.nodeId)
+  expect(ids.sort()).toEqual(grantedIds.sort())
 })
 
 it('drops vector-only pages below the similarity floor', async () =>

@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {pagePrefixTerms, pagePrefixTsQuery, pageQueryWords} from '../../expressions'
+import {pagePrefixTerms, pagePrefixTsQuery, pageQueryWords, pageSnippet} from '../../expressions'
 import getKysely from '../../getKysely'
 import {
   getPagesByKeyword,
@@ -223,6 +223,7 @@ const keywordSearch = (
     offset: 0,
     viewerId,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     ...overrides
   })
@@ -494,6 +495,15 @@ it('highlights matches in snippets', async () => {
   expect(edges[0]!.snippets[0]).toMatch(/<b>Laptop<\/b>/)
 })
 
+it('collapses blank lines and leaves file placeholders out of snippets', async () => {
+  const body = sql.val(
+    '<<cover.avif>>\n\nRetro notes\n\n\n\n\n<<abc.avif>>\n\n\nSecond idea\n\n\n\nfirst\n\nthird'
+  )
+  const snippet = pageSnippet(body, sql`to_tsquery('simple', 'second')`)
+  const {rows} = await sql<{snippet: string}>`select ${snippet} as snippet`.execute(pg)
+  expect(rows[0]!.snippet).toBe('Retro notes <b>Second</b> idea first third')
+})
+
 it('returns nothing for operator characters', async () =>
   expect(await ids(`'"); DROP & | !:*`)).toEqual([]))
 
@@ -735,6 +745,7 @@ describe('matches a plain reference query', () => {
     first,
     offset: 0,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     anyWordFallbackBelow: 0,
     anyWordMinShare: 0,

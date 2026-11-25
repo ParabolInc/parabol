@@ -3,7 +3,7 @@ A value for a scale
 """
 input TemplateScaleInput {
   """
-  The color used to visually group a scale value
+  The hex color used to visually group a scale value. It must be one of the hex values the pokerScaleColors query returns, in any letter case. A value that already has another color, such as one copied from a built-in scale, can keep it.
   """
   color: String!
 

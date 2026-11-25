@@ -1,19 +1,17 @@
 import {useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useId, useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getMutationError from '~/utils/relay/getMutationError'
 import type {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
 import type {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
-import {
-  AdhocTeamMultiSelect,
-  type Option
-} from '../components/AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {isRejected} from '../hooks/useTeamInviteeDrafts'
+import useTeamInviteeDrafts, {isRejected} from '../hooks/useTeamInviteeDrafts'
+import {MAX_TEAM_INVITEES} from '../shared/teamInvitees'
 import {Button} from '../ui/Button/Button'
+import {cn} from '../ui/cn'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -23,6 +21,8 @@ import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import plural from '../utils/plural'
+import validateTeamInvitees from '../utils/validateTeamInvitees'
+import OrgInviteeFieldDirectory from './InviteeField/OrgInviteeFieldDirectory'
 import Toggle from './Toggle/Toggle'
 
 interface Props {
@@ -34,17 +34,24 @@ interface Props {
 
 const AddTeamDialogViewerFragment = graphql`
   fragment AddTeamDialog_viewer on User {
-    ...AdhocTeamMultiSelect_viewer
+    ...useInviteeDirectory_viewer @arguments(meetingsAfter: $meetingsAfter, meetingsBefore: $meetingsBefore)
     organization(orgId: $orgId) {
       id
       name
       tier
+      ...useInviteeDirectory_organization
     }
   }
 `
 
+const NO_TEAM_EMAILS: readonly string[] = []
+
 const query = graphql`
-  query AddTeamDialogQuery($orgId: ID!) {
+  query AddTeamDialogQuery(
+    $orgId: ID!
+    $meetingsAfter: DateTime!
+    $meetingsBefore: DateTime!
+  ) {
     viewer {
       ...AddTeamDialog_viewer
     }
@@ -64,7 +71,9 @@ const AddTeamDialog = (props: Props) => {
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)
   const {organization} = viewer
 
-  const [selectedUsers, setSelectedUsers] = useState<Option[]>([])
+  const invitees = useTeamInviteeDrafts([])
+  const labelId = useId()
+  const hintId = useId()
   const [isPublic, setIsPublic] = useState(true)
   const [teamName, setTeamName] = useState('')
 
@@ -76,7 +85,21 @@ const AddTeamDialog = (props: Props) => {
     navigate({to: '/me/organizations/$orgId', params: {orgId: organization.id}})
   }
 
+  const excess = invitees.drafts.length - MAX_TEAM_INVITEES
+  const isValid = teamName.trim().length > 0 && excess <= 0
+
   const handleAddTeam = () => {
+    if (submitting || !isValid) return
+    const pendingText = invitees.inputValue.trim()
+    const result = validateTeamInvitees({
+      drafts: invitees.commitInput(),
+      pendingText,
+      hasDirectory: invitees.hasEmailCheck
+    })
+    if ('error' in result) {
+      onError(new Error(result.error))
+      return
+    }
     const newTeam = {
       name: teamName,
       orgId: organization.id,
@@ -86,7 +109,7 @@ const AddTeamDialog = (props: Props) => {
 
     AddTeamMutation(
       atmosphere,
-      {newTeam, invitees: selectedUsers.map((user) => user.email)},
+      {newTeam, invitees: result.emails},
       {
         onError,
         onCompleted: (res, errors) => {
@@ -121,8 +144,6 @@ const AddTeamDialog = (props: Props) => {
     )
   }
 
-  const isValid = teamName.trim().length > 0
-
   const labelStyles = `text-left text-sm font-semibold mb-3`
   const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
 
@@ -132,19 +153,25 @@ const AddTeamDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Add team</DialogTitle>
 
         <fieldset className={fieldsetStyles}>
-          <label className={labelStyles}>Add teammates</label>
+          <label id={labelId} className={cn(labelStyles, 'mb-1')}>
+            Add teammates
+          </label>
+          <p id={hintId} className='m-0 mb-3 text-fg-secondary text-xs leading-4'>
+            Add people by name or email.
+          </p>
 
-          <AdhocTeamMultiSelect
+          <OrgInviteeFieldDirectory
             viewerRef={viewer}
-            value={selectedUsers}
-            onChange={setSelectedUsers}
+            organizationRef={organization}
+            invitees={invitees}
+            teamEmails={NO_TEAM_EMAILS}
+            targetTeamId={null}
+            capacity={MAX_TEAM_INVITEES - invitees.drafts.length}
+            labelledBy={labelId}
+            describedBy={hintId}
+            onSubmit={handleAddTeam}
+            autoFocus
           />
-
-          {selectedUsers.some((user: Option) => !user.id) && (
-            <div className='mt-3 font-semibold text-fg-primary text-xs'>
-              Email invitations expire in 30 days.
-            </div>
-          )}
         </fieldset>
 
         <fieldset className={fieldsetStyles}>

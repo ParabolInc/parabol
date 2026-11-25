@@ -1,4 +1,4 @@
 """
-A custom scalar type for representing RRule strings
+An iCalendar (RFC 5545) recurrence for a weekly meeting series, written as two lines separated by a newline. Line 1 is DTSTART;TZID=<IANA time zone>:<YYYYMMDD>T<HHMMSS>, the local time of the first meeting; leave out TZID and the time is read as UTC. Line 2 is RRULE:FREQ=WEEKLY;INTERVAL=<1 to 52>;BYDAY=<MO,TU,WE,TH,FR,SA,SU>. The RRULE: prefix is required and there must be exactly one RRULE. Only FREQ=WEEKLY is allowed. INTERVAL defaults to 1. UNTIL is allowed and COUNT is not. Example: "DTSTART;TZID=America/New_York:20260105T090000\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR"
 """
 scalar RRule

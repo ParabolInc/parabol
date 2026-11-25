@@ -1,4 +1,4 @@
-import {type Expression, expressionBuilder, type SqlBool} from 'kysely'
+import {type Expression, expressionBuilder, type SqlBool, sql} from 'kysely'
 import getKysely from '../../postgres/getKysely'
 import type {DB} from '../../postgres/types/pg'
 import {CipherId} from '../../utils/CipherId'
@@ -75,32 +75,41 @@ export class ResourceGrants {
 
   grantsPage(pageId: Expression<number>): Expression<SqlBool> {
     if (this.isUnrestricted()) return eb.lit(true)
-    const {grantedOrgIds, grantedTeamIds, grantedPageIds} = this
+    const {grantedOrgIds, grantedPageIds} = this
     const orgShares = eb
       .selectFrom('PageOrganizationAccess')
       .select('orgId')
       .where('pageId', '=', pageId)
     const teamShares = eb.selectFrom('PageTeamAccess').select('teamId').where('pageId', '=', pageId)
     const grants: Expression<SqlBool>[] = []
-    if (grantedPageIds?.size) grants.push(eb(pageId, 'in', [...grantedPageIds]))
+    if (grantedPageIds?.size) {
+      const pageIds = [...grantedPageIds]
+      const grantedDescendant = eb
+        .selectFrom('Page as grantedDescendant')
+        .select('grantedDescendant.id')
+        .where('grantedDescendant.id', '=', pageId)
+        .where('grantedDescendant.ancestorIds', '&&', sql<number[]>`${pageIds}::int[]`)
+      grants.push(eb(pageId, 'in', pageIds), eb.exists(grantedDescendant))
+    }
     if (grantedOrgIds === null) {
       grants.push(eb.exists(orgShares))
     } else if (grantedOrgIds.length > 0) {
       grants.push(eb.exists(orgShares.where('orgId', 'in', grantedOrgIds)))
     }
-    if (grantedOrgIds === null || grantedTeamIds === null) {
-      grants.push(eb.exists(teamShares))
-    } else {
-      if (grantedTeamIds.length > 0) {
-        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedTeamIds)))
-      }
-      if (grantedOrgIds.length > 0) {
-        const grantedOrgTeams = eb
-          .selectFrom('Team')
-          .select('id')
-          .where('orgId', 'in', grantedOrgIds)
-        grants.push(eb.exists(teamShares.where('teamId', 'in', grantedOrgTeams)))
-      }
+    grants.push(
+      eb.exists(teamShares.where(({ref}) => this.grantsTeam(ref('PageTeamAccess.teamId'))))
+    )
+    return eb.or(grants)
+  }
+
+  grantsTeam(teamId: Expression<string>): Expression<SqlBool> {
+    const {grantedOrgIds, grantedTeamIds} = this
+    if (grantedTeamIds === null || grantedOrgIds === null) return eb.lit(true)
+    const grants: Expression<SqlBool>[] = []
+    if (grantedTeamIds.length > 0) grants.push(eb(teamId, 'in', grantedTeamIds))
+    if (grantedOrgIds.length > 0) {
+      const grantedOrgTeams = eb.selectFrom('Team').select('id').where('orgId', 'in', grantedOrgIds)
+      grants.push(eb(teamId, 'in', grantedOrgTeams))
     }
     return eb.or(grants)
   }

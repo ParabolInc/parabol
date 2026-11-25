@@ -1,0 +1,25 @@
+# Set the final score of a sprint poker story on one dimension, which becomes the task's estimate, usually once its votes are revealed. Setting it again replaces it. The score needn't be on the scale. For a story that is only a Parabol task, the estimate stays in Parabol. For a story linked to an issue in an integration such as Jira or GitHub, it also writes the score to that issue with the access of whoever linked the task to that issue, and saves nothing if that fails. In Parabol only the facilitator picks the final score; here anyone on the team can set it. It refuses a score over 4 characters, a meeting that isn't sprint poker, a dimension the meeting doesn't estimate, a task that isn't a story in the meeting, a team you aren't on and, on the free plan, a Jira story once the free Jira exports run out. Needs tasks:write.
+mutation SetPokerFinalScore(
+  # The sprint poker meeting id, from start_sprint_poker or list_meetings
+  $meetingId: ID!
+  # The story's taskId, from add_poker_stories or get_poker_meeting
+  $taskId: ID!
+  # The dimension's name, such as Story Points: dimensionRef.name from add_poker_stories or get_poker_meeting
+  $dimensionName: String!
+  # The final score, up to 4 characters, usually one of the scale's labels
+  $finalScore: String!
+) {
+  setTaskEstimate(
+    taskEstimate: {
+      meetingId: $meetingId
+      taskId: $taskId
+      dimensionName: $dimensionName
+      value: $finalScore
+    }
+  ) {
+    stage {
+      id
+      finalScore
+    }
+  }
+}

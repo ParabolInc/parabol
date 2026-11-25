@@ -2,13 +2,17 @@ import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTip
 import {getUserId} from '../../../utils/authorization'
 import type {CommentResolvers} from '../resolverTypes'
 
-const TOMBSTONE = JSON.stringify(plaintextToTipTap('[deleted]'))
+const TOMBSTONE_TEXT = '[deleted]'
+const TOMBSTONE = JSON.stringify(plaintextToTipTap(TOMBSTONE_TEXT))
 
 const Comment: CommentResolvers = {
   content: ({isActive, content}) => {
     if (!isActive) return TOMBSTONE
     return JSON.stringify(content)
   },
+
+  plaintextContent: ({isActive, plaintextContent}) =>
+    isActive ? plaintextContent : TOMBSTONE_TEXT,
 
   createdBy: ({createdBy, isAnonymous}) => {
     return isAnonymous ? null : createdBy

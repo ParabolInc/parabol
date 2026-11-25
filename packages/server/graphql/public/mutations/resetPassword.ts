@@ -14,7 +14,6 @@ import {blacklistJWT} from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import loadPasswordStrength from '../../../utils/loadPasswordStrength'
 import type {MutationResolvers} from '../resolverTypes'
-import userErrorResult from './helpers/userErrorResult'
 
 const resetPassword: MutationResolvers['resetPassword'] = async (
   _source,
@@ -35,13 +34,13 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     .executeTakeFirst()
 
   if (!resetRequest) {
-    return userErrorResult('TOKEN_INVALID', 'Invalid reset token')
+    throw new GraphQLError('Invalid reset token', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {id: resetRequestId, email, time, isValid} = resetRequest
   const isExpired = time.getTime() + Threshold.RESET_PASSWORD_LIFESPAN < Date.now()
   if (isExpired || !isValid) {
-    return userErrorResult('TOKEN_EXPIRED', 'Reset token expired')
+    throw new GraphQLError('Reset token expired', {extensions: {code: 'CONFLICT'}})
   }
 
   // token is legit, let's invalidate it & set the new password
@@ -54,7 +53,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
   const passwordStrength = await loadPasswordStrength()
   const weakError = passwordStrength(newPassword, email)
   if (weakError) {
-    return userErrorResult('PASSWORD_TOO_WEAK', weakError, {field: 'newPassword'})
+    throw new GraphQLError(weakError, {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const {id: userId, identities, rol} = user

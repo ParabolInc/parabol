@@ -1,5 +1,7 @@
+import {NodeSelection} from '@tiptap/pm/state'
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import {isLoadableEmbedSrc} from '../fileBlock/isLoadableEmbedSrc'
+import {OPEN_IMAGE_LIGHTBOX_META} from './getLightboxImages'
 import {ImageBlockBase} from './ImageBlockBase'
 import {ImageBlockView} from './ImageBlockView'
 
@@ -99,6 +101,19 @@ export const ImageBlock = ImageBlockBase.extend({
         (isFullWidth: boolean) =>
         ({commands}: {commands: any}) =>
           commands.updateAttributes('imageBlock', {isFullWidth})
+    }
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      Space: ({editor}) => {
+        const {selection} = editor.state
+        if (!(selection instanceof NodeSelection) || selection.node.type.name !== this.name) {
+          return false
+        }
+        editor.view.dispatch(editor.state.tr.setMeta(OPEN_IMAGE_LIGHTBOX_META, selection.from))
+        return true
+      }
     }
   },
 

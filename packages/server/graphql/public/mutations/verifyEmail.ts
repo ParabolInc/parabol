@@ -10,7 +10,6 @@ import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
-import userErrorResult from './helpers/userErrorResult'
 
 const verifyEmail: MutationResolvers['verifyEmail'] = async (
   _source,
@@ -27,12 +26,12 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     .executeTakeFirst()
 
   if (!emailVerification) {
-    return userErrorResult('TOKEN_INVALID', 'Invalid verification token')
+    throw new GraphQLError('Invalid verification token', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {email, expiration, hashedPassword, pseudoId, invitationToken} = emailVerification
   if (expiration < now) {
-    return userErrorResult('TOKEN_EXPIRED', 'Verification token expired')
+    throw new GraphQLError('Verification token expired', {extensions: {code: 'CONFLICT'}})
   }
 
   const user = await getUserByEmail(email)
@@ -40,7 +39,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   if (user) {
     const {id: userId, identities, rol, isRemoved} = user
     if (isRemoved) {
-      return userErrorResult('ACCOUNT_REMOVED', 'This account has been removed')
+      throw new GraphQLError('This account has been removed', {extensions: {code: 'FORBIDDEN'}})
     }
     const localIdentity = identities.find(
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL

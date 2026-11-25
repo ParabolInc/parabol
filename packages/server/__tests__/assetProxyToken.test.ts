@@ -1,6 +1,7 @@
 import getKysely from '../postgres/getKysely'
 import {
   createOrgAdmin,
+  createPage,
   getTestEmail,
   getUserOrgs,
   getUserTeams,
@@ -9,6 +10,7 @@ import {
   sendPublic,
   signUp
 } from './common'
+import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const CREATE_PERSONAL_ACCESS_TOKEN = `
   mutation CreatePersonalAccessToken(
@@ -119,22 +121,6 @@ test('a PAT limited to another org cannot fetch an org asset', async () => {
   expect((await fetchAsset(path, {authorization: `Bearer ${allowed}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${limited}`})).status).toBe(403)
 })
-
-const CREATE_PAGE = `
-  mutation CreatePage($teamId: ID) {
-    createPage(teamId: $teamId) {
-      page {
-        id
-      }
-    }
-  }
-`
-
-const createPage = async (cookie: string, teamId?: string) => {
-  const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
-  expect(res.errors).toBeUndefined()
-  return res.data.createPage.page.id as string
-}
 
 test('a PAT reads a page file only when it holds pages:read', async () => {
   const {cookie} = await signUp()
@@ -343,52 +329,10 @@ test('a PAT limited to org A reads org A team assets, not org B team assets', as
   expect((await fetchAsset(secondTeamPath, {authorization})).status).toBe(403)
 })
 
-const CREATE_OAUTH_API_PROVIDER = `
-  mutation CreateOAuthAPIProvider(
-    $orgId: ID!
-    $name: String!
-    $redirectUris: [RedirectURI!]!
-    $scopes: [OAuthScopeEnum!]!
-  ) {
-    createOAuthAPIProvider(
-      orgId: $orgId
-      name: $name
-      redirectUris: $redirectUris
-      scopes: $scopes
-    ) {
-      clientId
-      clientSecret
-    }
-  }
-`
-
-const CREATE_OAUTH_API_CODE = `
-  mutation CreateOAuthAPICode($request: OAuthAuthorizationRequestInput!) {
-    createOAuthAPICode(request: $request) {
-      redirectUri
-    }
-  }
-`
-
-const getOAuthAccessToken = async (
-  cookie: string,
-  orgId: string,
-  scopes: string[],
-  scope: string
-) => {
-  const redirectUri = 'https://example.com/callback'
-  const app = await sendPublic({
-    query: CREATE_OAUTH_API_PROVIDER,
-    variables: {orgId, name: 'Asset proxy app', redirectUris: [redirectUri], scopes},
-    cookie
-  })
-  expect(app.errors).toBeUndefined()
-  const {clientId, clientSecret} = app.data.createOAuthAPIProvider
-  const approved = await sendPublic({
-    query: CREATE_OAUTH_API_CODE,
-    variables: {request: {clientId, redirectUri, scope, state: 'xyz'}},
-    cookie
-  })
+const getOAuthAccessToken = async (cookie: string, scope: string) => {
+  const {clientId, redirectUri} = await createClient()
+  const {codeVerifier, codeChallenge} = createPKCEPair()
+  const approved = await createCode({clientId, redirectUri, scope, codeChallenge}, cookie)
   expect(approved.errors).toBeUndefined()
   const code = new URL(approved.data.createOAuthAPICode.redirectUri).searchParams.get('code')!
   const tokenResponse = await fetch(`${PROTOCOL}://${HOST}/oauth/token`, {
@@ -399,7 +343,7 @@ const getOAuthAccessToken = async (
       code,
       redirect_uri: redirectUri,
       client_id: clientId,
-      client_secret: clientSecret
+      code_verifier: codeVerifier
     })
   })
   expect(tokenResponse.status).toBe(200)
@@ -410,8 +354,8 @@ const getOAuthAccessToken = async (
 test('an OAuth access token fetches an org asset only when it holds orgs:read', async () => {
   const {orgId, cookie} = await createOrgAdmin(getTestEmail())
   const path = await uploadAsset({cookie}, 'Organization', orgId)
-  const withOrgs = await getOAuthAccessToken(cookie, orgId, ['ORGS_READ'], 'orgs:read')
-  const withoutOrgs = await getOAuthAccessToken(cookie, orgId, ['USERS_READ'], 'users:read')
+  const withOrgs = await getOAuthAccessToken(cookie, 'orgs:read')
+  const withoutOrgs = await getOAuthAccessToken(cookie, 'users:read')
   expect((await fetchAsset(path, {authorization: `Bearer ${withOrgs}`})).status).toBe(307)
   expect((await fetchAsset(path, {authorization: `Bearer ${withoutOrgs}`})).status).toBe(403)
 })
@@ -526,3 +470,11 @@ test('a PAT limited to org A, or without orgs:read, patching an org B asset src 
   expect((await patch(unrestricted, 'Third step')).errors).toBeUndefined()
   expect(await waitForCopy(pageId, cookie)).toMatch(COPIED_INTO_PAGE)
 }, 30_000)
+
+test('a lowercase bearer scheme still fetches an asset', async () => {
+  const {userId, cookie} = await signUp()
+  const path = await uploadAsset({cookie}, 'User', userId)
+  const token = await createToken(cookie, ['USERS_READ'])
+  const res = await fetchAsset(path, {authorization: `bearer ${token}`})
+  expect(res.status).toBe(307)
+})

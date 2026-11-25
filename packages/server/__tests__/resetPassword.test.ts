@@ -28,9 +28,6 @@ test('Reset password', async () => {
     query: `
       mutation ResetPassword($token: ID!, $newPassword: String!) {
         resetPassword(token: $token, newPassword: $newPassword) {
-          userErrors {
-            code
-          }
           userId
         }
       }
@@ -46,7 +43,6 @@ test('Reset password', async () => {
     cookie: expect.anything(),
     data: {
       resetPassword: {
-        userErrors: [],
         userId: expect.anything()
       }
     }
@@ -57,9 +53,6 @@ test('Reset password', async () => {
     query: `
       mutation LoginWithPassword($email: ID!, $password: String!) {
         loginWithPassword(email: $email, password: $password) {
-          userErrors {
-            code
-          }
           user {
             id
             email
@@ -73,7 +66,6 @@ test('Reset password', async () => {
   expect(login).toMatchObject({
     data: {
       loginWithPassword: {
-        userErrors: [],
         user: {
           email
         }
@@ -82,7 +74,7 @@ test('Reset password', async () => {
   })
 })
 
-test('An expired reset token comes back as a user error', async () => {
+test('An expired reset token fails with CONFLICT', async () => {
   const {email} = await signUp()
   const resetToken = base64url.encode(crypto.randomBytes(48))
   const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex')
@@ -95,10 +87,6 @@ test('An expired reset token comes back as a user error', async () => {
     query: `
       mutation ResetPassword($token: ID!, $newPassword: String!) {
         resetPassword(token: $token, newPassword: $newPassword) {
-          userErrors {
-            code
-            message
-          }
           userId
         }
       }
@@ -106,12 +94,8 @@ test('An expired reset token comes back as a user error', async () => {
     variables: {token: resetToken, newPassword: faker.internet.password(20)}
   })
 
-  expect(result).toEqual({
-    data: {
-      resetPassword: {
-        userErrors: [{code: 'TOKEN_EXPIRED', message: 'Reset token expired'}],
-        userId: null
-      }
-    }
+  expect(result).toMatchObject({
+    data: null,
+    errors: [{message: 'Reset token expired', extensions: {code: 'CONFLICT'}}]
   })
 })

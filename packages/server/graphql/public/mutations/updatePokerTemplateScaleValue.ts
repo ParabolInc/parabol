@@ -41,7 +41,7 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
   }
 
   const {color, label} = newScaleValue
-  if (!validateColorValue(color)) {
+  if (!validateColorValue(color, oldScaleValues[oldScaleValueIndex]!.color)) {
     throw new GraphQLError('Invalid scale color', {extensions: {code: 'BAD_USER_INPUT'}})
   }
   if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
@@ -49,7 +49,7 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
   }
   await pg
     .updateTable('TemplateScaleValue')
-    .set({label, color})
+    .set({label, color: color.toUpperCase()})
     .where('templateScaleId', '=', scaleId)
     .where('label', '=', oldScaleLabel)
     .execute()

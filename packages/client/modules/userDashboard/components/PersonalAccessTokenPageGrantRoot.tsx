@@ -2,11 +2,11 @@ import {Suspense, useState} from 'react'
 import type {PersonalAccessTokenPageGrantQuery} from '../../../__generated__/PersonalAccessTokenPageGrantQuery.graphql'
 import query from '../../../__generated__/PersonalAccessTokenPageGrantQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import type {GrantModeOption} from '../../../hooks/useResourceGrants'
 import plural from '../../../utils/plural'
 import {Loader} from '../../../utils/relay/renderLoader'
 import type {PageResult} from './PageGrant'
 import {PersonalAccessTokenPageGrant} from './PersonalAccessTokenPageGrant'
-import type {GrantModeOption} from './PersonalAccessTokenUpsertDialog'
 
 const buildSummary = (
   selectedPageIds: Set<string>,
@@ -61,7 +61,7 @@ export const PersonalAccessTokenPageGrantRoot = ({
         value={pageSearch}
         onChange={(e) => setPageSearch(e.target.value)}
         placeholder='Search pages…'
-        className='rounded-md border border-hairline-field bg-surface-input px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent'
+        className='rounded-md border border-hairline-field bg-surface-input px-3 py-2 text-base focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent md:text-sm'
       />
       <Suspense fallback={<Loader />}>
         {queryRef && (
@@ -74,6 +74,9 @@ export const PersonalAccessTokenPageGrantRoot = ({
           />
         )}
       </Suspense>
+      <p className='m-0 text-fg-muted text-xs'>
+        Each page you choose includes the pages nested under it, now and later.
+      </p>
       {summary && <p className='text-fg-muted text-xs'>{summary}</p>}
     </div>
   )

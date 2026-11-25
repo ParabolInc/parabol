@@ -1,4 +1,4 @@
-import {useId, useRef, useState} from 'react'
+import {useId, useState} from 'react'
 import {Error as ErrorIcon} from '~/ui/icons'
 import useTeamInviteeDrafts, {
   isDraftReady,
@@ -10,8 +10,7 @@ import {Button} from '../ui/Button/Button'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import GraphQLServerError from '../utils/relay/GraphQLServerError'
 import getMutationError, {type MutationError} from '../utils/relay/getMutationError'
-import TeamInviteeInput from './TeamInviteeInput'
-import TeamInviteeMessages from './TeamInviteeMessages'
+import TeamInviteeFieldRoot from './InviteeField/TeamInviteeFieldRoot'
 import TeamInviteSentList from './TeamInviteSentList'
 
 interface Props {
@@ -34,20 +33,13 @@ const AddTeamMemberEmailInvites = (props: Props) => {
   const {meetingId, teamId, teamEmails, initialResults, onClose} = props
   const headingId = useId()
   const hintId = useId()
-  const messagesId = useId()
-  const inputRef = useRef<HTMLInputElement>(null)
   const invitees = useTeamInviteeDrafts(teamEmails, initialResults)
-  const {inputValue, setInputValue, drafts, notes, sentEmails, readyEmails} = invitees
+  const {sentEmails, readyEmails} = invitees
   const [execute, submitting] = useInviteToTeamMutation()
   const [requestError, setRequestError] = useState<string | null>(null)
   const batchSize = Math.min(readyEmails.length, MAX_TEAM_INVITEES)
   const leftoverCount = readyEmails.length - batchSize
   const isDone = sentEmails.length > 0 && readyEmails.length === 0
-
-  const edit = (email: string) => {
-    invitees.editDraft(email)
-    inputRef.current?.focus()
-  }
 
   const send = () => {
     if (submitting) return
@@ -91,31 +83,20 @@ const AddTeamMemberEmailInvites = (props: Props) => {
         id={headingId}
         className='m-0 flex items-center pb-[3px] font-semibold text-[15px] leading-[21px]'
       >
-        Or, send invites by email
+        Or, invite people by name or email
       </h3>
       <p id={hintId} className='m-0 pb-4 text-[13px] leading-4'>
         Email invitations expire in 30 days.
       </p>
-      <TeamInviteeInput
-        inputRef={inputRef}
+      <TeamInviteeFieldRoot
+        invitees={invitees}
+        teamId={teamId}
+        teamEmails={teamEmails}
+        capacity={null}
         labelledBy={headingId}
-        describedBy={`${hintId} ${messagesId}`}
-        drafts={drafts}
-        inputValue={inputValue}
-        onInputChange={setInputValue}
-        onCommit={invitees.commitText}
-        onRemove={invitees.removeDraft}
-        onEdit={edit}
+        describedBy={hintId}
         onSubmit={send}
         autoFocus
-      />
-      <TeamInviteeMessages
-        id={messagesId}
-        drafts={drafts}
-        notes={notes}
-        onEdit={edit}
-        onRetry={invitees.retryDraft}
-        onReplace={invitees.replaceDraft}
       />
       <TeamInviteSentList sentEmails={sentEmails} />
       {requestError && (

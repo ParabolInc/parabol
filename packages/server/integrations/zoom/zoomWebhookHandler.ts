@@ -1,9 +1,8 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import {Editor} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import {createHmac, timingSafeEqual} from 'crypto'
 import ms from 'ms'
-import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
+import {markdownToTipTap} from 'parabol-client/shared/tiptap/markdownToTipTap'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
@@ -276,13 +275,10 @@ const processSummaryCompleted = async (payload: ZoomSummaryCompletedPayload) => 
   if (!meeting) return
 
   await releaseClaimOnFailure(externalId, async () => {
-    const editor = new Editor({
-      element: undefined,
-      content: markdown,
-      contentType: 'markdown',
-      extensions: serverTipTapExtensions
-    })
-    const content = editor.getJSON() as unknown as TipTapSerializedPageContent
+    const content = {
+      type: 'doc',
+      content: markdownToTipTap(markdown)
+    } as TipTapSerializedPageContent
     await attachTranscriptToSummaryPage(
       meeting.summaryPageId,
       [{title: `Zoom Summary for ${meeting.name}`, content}],

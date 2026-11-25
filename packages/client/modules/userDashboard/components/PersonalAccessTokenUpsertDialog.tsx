@@ -5,6 +5,8 @@ import type {PersonalAccessTokenUpsertDialog_viewer$key} from '~/__generated__/P
 import getMutationError from '~/utils/relay/getMutationError'
 import type {OAuthScopeEnum} from '../../../__generated__/useCreatePersonalAccessTokenMutation.graphql'
 import BasicInput from '../../../components/InputField/BasicInput'
+import useResourceGrants, {isGrantingNothing} from '../../../hooks/useResourceGrants'
+import useScopeSelection from '../../../hooks/useScopeSelection'
 import {useCreatePersonalAccessToken} from '../../../mutations/useCreatePersonalAccessToken'
 import {useUpdatePersonalAccessToken} from '../../../mutations/useUpdatePersonalAccessToken'
 import {Button} from '../../../ui/Button/Button'
@@ -14,13 +16,11 @@ import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import {ExpirationDatePicker} from './ExpirationDatePicker'
 import {OrgTeamGrant} from './OrgTeamGrant'
-import {PageGrant, type PageResult} from './PageGrant'
+import {PageGrant} from './PageGrant'
 import {PersonalAccessTokenCreateSuccess} from './PersonalAccessTokenCreateSuccess'
 import {TokenScopesTable} from './TokenScopesTable'
 
 const maxExpiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-
-export type GrantModeOption = 'all' | 'custom'
 
 export type TokenForEdit = {
   id: string
@@ -63,88 +63,13 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
   const [expiresAt, setExpiresAt] = useState<Date>(
     personalAccessToken?.expiresAt ? new Date(personalAccessToken.expiresAt) : maxExpiresAt
   )
-  const [selectedScopes, setSelectedScopes] = useState<Set<OAuthScopeEnum>>(
-    new Set((personalAccessToken?.scopes ?? []) as OAuthScopeEnum[])
+  const {selectedScopes, toggleScope} = useScopeSelection(
+    (personalAccessToken?.scopes ?? []) as OAuthScopeEnum[]
   )
   const [error, setError] = useState<string | null>(null)
-
-  const [orgGrantMode, setOrgGrantMode] = useState<GrantModeOption>(
-    personalAccessToken?.grantedOrgIds !== null && personalAccessToken?.grantedOrgIds !== undefined
-      ? 'custom'
-      : 'all'
-  )
-  const [selectedOrgIds, setSelectedOrgIds] = useState<Set<string>>(
-    new Set(personalAccessToken?.grantedOrgIds ?? [])
-  )
-  const [selectedTeamIds, setSelectedTeamIds] = useState<Set<string>>(
-    new Set(personalAccessToken?.grantedTeamIds ?? [])
-  )
-  const [expandedOrgIds, setExpandedOrgIds] = useState<Set<string>>(new Set())
-
-  const [pageGrantMode, setPageGrantMode] = useState<GrantModeOption>(
-    personalAccessToken?.grantedPageIds !== null &&
-      personalAccessToken?.grantedPageIds !== undefined
-      ? 'custom'
-      : 'all'
-  )
-  const [selectedPageIds, setSelectedPageIds] = useState<Set<string>>(
-    new Set(personalAccessToken?.grantedPageIds ?? [])
-  )
-  const [selectedPagesMap, setSelectedPagesMap] = useState<Map<string, PageResult>>(new Map())
-
+  const resourceGrants = useResourceGrants(personalAccessToken)
+  const grants = resourceGrants.getGrants(viewer.organizations)
   const [createdToken, setCreatedToken] = useState<string | null>(null)
-
-  const toggleScope = (scope: OAuthScopeEnum, pairedRead?: OAuthScopeEnum) => {
-    setSelectedScopes((prev) => {
-      const next = new Set(prev)
-      if (next.has(scope)) {
-        next.delete(scope)
-      } else {
-        next.add(scope)
-        if (pairedRead) next.add(pairedRead)
-      }
-      return next
-    })
-  }
-
-  const toggleExpandOrg = (orgId: string) => {
-    setExpandedOrgIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(orgId)) next.delete(orgId)
-      else next.add(orgId)
-      return next
-    })
-  }
-
-  const togglePage = (page: PageResult) => {
-    setSelectedPageIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(page.id)) {
-        next.delete(page.id)
-        setSelectedPagesMap((m) => {
-          const nm = new Map(m)
-          nm.delete(page.id)
-          return nm
-        })
-      } else {
-        next.add(page.id)
-        setSelectedPagesMap((m) => new Map(m).set(page.id, page))
-      }
-      return next
-    })
-  }
-
-  const computeGrantedTeamIds = (): string[] | null => {
-    if (orgGrantMode !== 'custom') return null
-    // Exclude teams whose org is fully covered by selectedOrgIds — the org grant suffices
-    const orgTeamIds = new Set(
-      viewer.organizations
-        .filter((org) => selectedOrgIds.has(org.id))
-        .flatMap((org) => org.teams.map((t) => t.id))
-    )
-    const partialTeamIds = [...selectedTeamIds].filter((id) => !orgTeamIds.has(id))
-    return partialTeamIds
-  }
 
   const handleSubmit = () => {
     if (!tokenName.trim()) {
@@ -156,17 +81,13 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
       return
     }
     setError(null)
-    const grantedTeamIds = computeGrantedTeamIds()
-
     if (isEdit) {
       commitUpdate({
         variables: {
           tokenId: personalAccessToken.id,
           name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
-          grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
-          grantedTeamIds,
-          grantedPageIds: pageGrantMode === 'custom' ? [...selectedPageIds] : null,
+          ...grants,
           expiresAt: expiresAt.toISOString()
         },
         onCompleted: (_response, errors) => {
@@ -184,9 +105,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
         variables: {
           name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
-          grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
-          grantedTeamIds,
-          grantedPageIds: pageGrantMode === 'custom' ? [...selectedPageIds] : null,
+          ...grants,
           expiresAt: expiresAt.toISOString()
         },
         onCompleted: (response, errors) => {
@@ -243,34 +162,20 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
                 it to specific organizations, teams, or pages below.
               </p>
             </div>
-            <OrgTeamGrant
-              viewerRef={viewer}
-              orgGrantMode={orgGrantMode}
-              setOrgGrantMode={setOrgGrantMode}
-              selectedOrgIds={selectedOrgIds}
-              setSelectedOrgIds={setSelectedOrgIds}
-              selectedTeamIds={selectedTeamIds}
-              setSelectedTeamIds={setSelectedTeamIds}
-              expandedOrgIds={expandedOrgIds}
-              toggleExpandOrg={toggleExpandOrg}
-            />
-            <PageGrant
-              pageGrantMode={pageGrantMode}
-              setPageGrantMode={setPageGrantMode}
-              selectedPageIds={selectedPageIds}
-              selectedPagesMap={selectedPagesMap}
-              togglePage={togglePage}
-              orgGrantMode={orgGrantMode}
-              selectedOrgIds={selectedOrgIds}
-              selectedTeamIds={selectedTeamIds}
-            />
+            <OrgTeamGrant viewerRef={viewer} {...resourceGrants} />
+            <PageGrant {...resourceGrants} />
           </div>
         </div>
         <DialogActions>
           <Button variant='outline' size='md' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='primary' size='md' onClick={handleSubmit} disabled={submitting}>
+          <Button
+            variant='primary'
+            size='md'
+            onClick={handleSubmit}
+            disabled={submitting || isGrantingNothing(grants)}
+          >
             {submitting
               ? isEdit
                 ? 'Saving…'

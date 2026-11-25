@@ -3,18 +3,18 @@ import {maxAliasesRule} from '@escape.tech/graphql-armor-max-aliases'
 import {maxDepthRule} from '@escape.tech/graphql-armor-max-depth'
 import {maxDirectivesRule} from '@escape.tech/graphql-armor-max-directives'
 import {MaxTokensParserWLexer} from '@escape.tech/graphql-armor-max-tokens'
-import {GraphQLError, print, Source} from 'graphql'
+import {type DocumentNode, GraphQLError, Source} from 'graphql'
 import {ParseOptions} from 'graphql/language/parser'
 import type {GraphQLParams, Plugin} from 'graphql-yoga'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import type {Tierenum} from '../postgres/types/pg'
 import type {ServerContext} from '../yoga'
 import {getUserId} from './authorization'
-import {BoundedCache} from './BoundedCache'
 import getRedis, {type RedisPipelineResponse} from './getRedis'
 import {Logger} from './Logger'
 
-const queryCostCache = new BoundedCache<string, number>(100)
+// Yoga skips validation for a document it already validated, keyed by the parsed document, so the cost is keyed the same way
+const queryCostByDocument = new WeakMap<DocumentNode, number>()
 
 const burstLimits = {
   enterprise: 500_000,
@@ -94,13 +94,13 @@ export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker
       const {authToken, docId} = context
       const isSuperUser = authToken?.rol === 'su'
       if (!docId && !isSuperUser) {
+        const cachedCost = queryCostByDocument.get(params.documentAST)
+        if (cachedCost !== undefined) extendContext({apiCost: cachedCost})
         addValidationRule(
           costLimitRule({
             onAccept: [
               (_ctx, {n: apiCost}) => {
-                const queryStr = print(params.documentAST)
-                queryCostCache.set(queryStr, apiCost)
-                // extend context so we don't have to print the AST twice
+                queryCostByDocument.set(params.documentAST, apiCost)
                 extendContext({apiCost})
               }
             ]
@@ -115,12 +115,11 @@ export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker
         addValidationRule(maxDirectivesRule())
       }
     },
-    async onExecute({args, context}) {
-      const {apiCost: contextCost, dataLoader, authToken, docId} = context
+    async onExecute({context}) {
+      const {apiCost, dataLoader, authToken, docId} = context
       const authTokenRole = authToken?.rol
       const isSuperUser = authTokenRole === 'su'
       if (docId || isSuperUser) return
-      const apiCost = contextCost || queryCostCache.get(print(args.document))
       if (!apiCost) {
         if (apiCost === 0) return
         // can remove after 5/20/26 to provide a decent test window

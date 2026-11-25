@@ -110,7 +110,10 @@ const addReflection = async (meetingId: string, promptId: string, cookie: string
     `,
     variables: {
       input: {
-        content: 'Test',
+        content: JSON.stringify({
+          type: 'doc',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Test'}]}]
+        }),
         meetingId: meetingId,
         promptId: promptId,
         sortOrder: 0

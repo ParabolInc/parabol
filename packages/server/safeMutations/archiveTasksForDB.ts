@@ -4,13 +4,13 @@ import {getTagsFromTipTapTask} from '../../client/shared/tiptap/getTagsFromTipTa
 import getKysely from '../postgres/getKysely'
 import type {Task} from '../postgres/types/index.d'
 import type {Json, Tasktagenum} from '../postgres/types/pg'
-import {convertToTipTap} from '../utils/convertToTipTap'
+import {readStoredTipTap} from '../utils/convertToTipTap'
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
   if (!tasks || tasks.length === 0) return []
   const pg = getKysely()
   const tasksToArchive = tasks.map((task) => {
-    const content = convertToTipTap(task.content)
+    const content = readStoredTipTap(task.content)
     const nextContent = addTagToTask(content, 'archived')
     const nextTags = getTagsFromTipTapTask(nextContent)
 

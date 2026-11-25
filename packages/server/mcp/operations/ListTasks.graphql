@@ -1,0 +1,37 @@
+# List the tasks on your teams, assigned or not, most recently updated first. Filter by team or status. When hasNextPage is true, pass pageInfo.endCursor as after for the next tasks. Timestamps and due dates are UTC. Needs users:read and tasks:read.
+query ListTasks(
+  # Most tasks to return
+  $first: Int = 50
+  # The pageInfo.endCursor of the previous list_tasks call
+  $after: DateTime
+  # Only list tasks of these teams, from get_me
+  $teamIds: [ID!]
+  # Only list tasks with these statuses
+  $statusFilters: [TaskStatusEnum!]
+) {
+  viewer {
+    tasks(
+      first: $first
+      after: $after
+      teamIds: $teamIds
+      statusFilters: $statusFilters
+      includeUnassigned: true
+    ) {
+      edges {
+        node {
+          id
+          plaintextContent
+          status
+          teamId
+          userId
+          dueDate
+          updatedAt
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

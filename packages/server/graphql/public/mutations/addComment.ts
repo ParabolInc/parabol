@@ -12,6 +12,7 @@ import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import type {MutationResolvers} from '../resolverTypes'
+import getNextThreadSortOrder from './helpers/getNextThreadSortOrder'
 import publishNotification from './helpers/publishNotification'
 
 const getMentionNotifications = (
@@ -73,7 +74,8 @@ const addComment: MutationResolvers['addComment'] = async (
       isAnonymous: isAnonymous ?? undefined,
       plaintextContent: plaintextContent.slice(0, 2000),
       createdBy: viewerId,
-      threadSortOrder,
+      threadSortOrder:
+        threadSortOrder ?? (await getNextThreadSortOrder(discussionId, threadParentId)),
       threadParentId,
       discussionId
     })

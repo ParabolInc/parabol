@@ -8,12 +8,14 @@ import {
   FormatAlignCenter as FormatAlignCenterIcon,
   FormatAlignLeft as FormatAlignLeftIcon,
   FormatAlignRight as FormatAlignRightIcon,
-  ImageSearch as ImageSearchIcon
+  ImageSearch as ImageSearchIcon,
+  OpenInFull as OpenInFullIcon
 } from '~/ui/icons'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {BubbleMenuButton} from './BubbleMenuButton'
+import {downloadImage} from './downloadImage'
 
 interface Props {
   editor: Editor
@@ -22,6 +24,7 @@ interface Props {
   width: number
   isFullWidth: boolean
   isOpen: boolean
+  onExpand: () => void
 }
 
 const Divider = () => <div className='mx-1 h-4 w-px bg-hairline' />
@@ -32,7 +35,7 @@ const alignButtons = [
 ]
 
 export const ImageBlockBubbleMenu = (props: Props) => {
-  const {align, width, updateAttributes, isFullWidth, editor, isOpen} = props
+  const {align, width, updateAttributes, isFullWidth, editor, isOpen, onExpand} = props
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleUpload = async (file: File) => {
@@ -57,6 +60,10 @@ export const ImageBlockBubbleMenu = (props: Props) => {
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
+          <BubbleMenuButton onClick={onExpand} Icon={OpenInFullIcon} title='Expand · Space' />
+
+          <Divider />
+
           {/* Align Controls */}
           <div className='flex rounded-sm'>
             {alignButtons.map(({name, Icon}) => (
@@ -96,18 +103,9 @@ export const ImageBlockBubbleMenu = (props: Props) => {
 
           {/* Download */}
           <BubbleMenuButton
-            onClick={async () => {
+            onClick={() => {
               const src = editor.getAttributes('imageBlock').src
-              if (!src) return
-              const res = await fetch(src)
-              const blob = await res.blob()
-              const blobUrl = window.URL.createObjectURL(blob)
-              const link = document.createElement('a')
-              link.href = blobUrl
-              const url = new URL(src)
-              link.download = url.pathname.split('/').pop()!
-              link.click()
-              window.URL.revokeObjectURL(blobUrl)
+              if (src) downloadImage(src)
             }}
             Icon={DownloadIcon}
             title='Download'

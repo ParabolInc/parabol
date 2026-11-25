@@ -83,11 +83,13 @@ type Mutation {
     orgId: ID!
   ): ArchiveOrganizationPayload! @scope(name: ORGS_WRITE)
   """
-  Archive a team. If the team has never been used, it will be permanently deleted.
+  Archive a team: it is hidden from its members, its open invitations expire, its meeting templates
+  are deactivated and the other members are notified. Nothing is deleted, and the team stays
+  readable with isArchived true. Needs a team lead, billing leader or super user.
   """
   archiveTeam(
     """
-    The teamId to archive (or delete, if team is unused)
+    The teamId to archive
     """
     teamId: ID!
   ): ArchiveTeamPayload! @scope(name: TEAMS_WRITE)
@@ -129,16 +131,20 @@ type Mutation {
   ): SetNotificationStatusPayload! @scope(name: USERS_WRITE)
 
   """
-  Create a new top-level page. To create a child page, insert a page block link inside an existing document.
+  Create an empty page: a personal page, a team page, or a page inside another page. A top-level personal page needs an access token that isn't limited to specific organizations, teams or pages. Any token can create a page inside a page it can edit, including a token given specific pages, which then reaches the new page too.
   """
   createPage(
     """
-    The team to scope this page under. If omitted, the page is created as a personal page.
+    The team to scope this page under. If omitted along with parentPageId, the page is created as a personal page.
     """
     teamId: ID
+    """
+    The page to create this page in. The new page is linked at the end of its parent and follows its parent's sharing, so it can't be combined with teamId.
+    """
+    parentPageId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
-  Copy a page and all of its sub-pages
+  Copy a page and all of its sub-pages. Any access token can put the copy inside a page it can edit, by passing parentPageId or by copying a sub-page next to the original. A token limited to specific organizations, teams or pages can't make a top-level private copy: it copies a team page into its team when the token can reach that team, or puts the copy inside a page it can edit.
   """
   duplicatePage(
     "The page to copy"
@@ -167,7 +173,7 @@ type Mutation {
     """
     grantedTeamIds: [ID!]
     """
-    Restrict token to specific pages; null means all pages the user can access
+    Restrict token to specific pages and the pages nested under them; null means all pages the user can access
     """
     grantedPageIds: [ID!]
     """
@@ -213,39 +219,25 @@ type Mutation {
   """
   Approve an OAuth 2.0 authorization request, issuing the application a single-use authorization code
   """
-  createOAuthAPICode(request: OAuthAuthorizationRequestInput!): CreateOAuthAPICodePayload!
-    @scope(name: USERS_WRITE)
-
-  """
-  Create a new OAuth 2.0 Application
-  """
-  createOAuthAPIProvider(
-    orgId: ID!
-    name: String!
-    redirectUris: [RedirectURI!]!
+  createOAuthAPICode(
+    request: OAuthAuthorizationRequestInput!
+    """
+    The scopes the viewer grants, some or all of the scopes the application asks for
+    """
     scopes: [OAuthScopeEnum!]!
-  ): CreateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Update an OAuth 2.0 Application
-  """
-  updateOAuthAPIProvider(
-    providerId: ID!
-    name: String
-    redirectUris: [RedirectURI!]
-    scopes: [OAuthScopeEnum!]
-  ): UpdateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Delete an OAuth 2.0 Application
-  """
-  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
-
-  """
-  Regenerate the OAuth 2.0 client secret for an application
-  """
-  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
-    @scope(name: ORGS_WRITE)
+    """
+    Restrict the application to specific orgs; null means all orgs the viewer belongs to
+    """
+    grantedOrgIds: [ID!]
+    """
+    Restrict the application to specific teams; null means all teams the viewer belongs to
+    """
+    grantedTeamIds: [ID!]
+    """
+    Restrict the application to specific pages and the pages nested under them; null means all pages the viewer can access
+    """
+    grantedPageIds: [ID!]
+  ): CreateOAuthAPICodePayload! @scope(name: USERS_WRITE)
 
   """
   Update SCIM settings for a SAML identity provider
@@ -447,6 +439,7 @@ type Mutation {
 
   """
   Replace the content of a page. Warning: this deletes the content history.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page.
   """
   editPageContent(
     "The ID of the page to edit"
@@ -459,7 +452,8 @@ type Mutation {
 
   """
   Apply find-and-replace edits to a page's Markdown content, in order and all or nothing.
-  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive
+  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page
   """
   patchPageContent(
     "The ID of the page to edit"
@@ -885,6 +879,16 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Disconnect an OAuth 2.0 application from the viewer's account. Its tokens stop working at once
+  """
+  revokeOAuthAPIGrant(
+    """
+    The ID of the connection to remove
+    """
+    grantId: ID!
+  ): RevokeOAuthAPIGrantPayload! @scope(name: USERS_WRITE)
+
+  """
   Update a personal access token's fields or revoke it
   """
   updatePersonalAccessToken(
@@ -909,7 +913,7 @@ type Mutation {
     """
     grantedTeamIds: [ID!]
     """
-    Restrict token to specific pages; null means all pages the user can access
+    Restrict token to specific pages and the pages nested under them; null means all pages the user can access
     """
     grantedPageIds: [ID!]
     """
@@ -1229,7 +1233,7 @@ type Mutation {
   ): VoteForReflectionGroupPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Cast a vote for the estimated points for a given dimension
+  Cast a vote for the estimated points for a given dimension. A vote cast after the votes are revealed changes the revealed scores.
   """
   voteForPokerStory(
     meetingId: ID!
@@ -2002,7 +2006,8 @@ type Mutation {
     comment: String
     """
     true if the comment should be paraphrased before the team reads it, so the author's writing
-    style can't identify them. Ignored when there is no comment
+    style can't identify them. Without AI for the organization and this Parabol instance, an
+    anonymous comment is not saved. Ignored when there is no comment
     """
     isAnonymous: Boolean!
   ): SetTeamHealthResponsePayload! @scope(name: MEETINGS_WRITE)
@@ -2123,7 +2128,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2157,7 +2162,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format. Applied to every selected team.
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now. Applied to every selected team.
     """
     rrule: RRule
 
@@ -2196,7 +2201,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2340,6 +2345,7 @@ type Mutation {
   1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
   2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
   3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
+  4. When the meeting is recurring and recurrenceRule is left out, only the name changes
   """
   updateRecurrenceSettings(
     """
@@ -2353,7 +2359,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    The weekly recurrence, see the RRule scalar for the format; null stops a recurring meeting, and
+    leaving it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateRecurrenceSettingsPayload! @scope(name: MEETINGS_WRITE)
@@ -2364,6 +2371,7 @@ type Mutation {
   rather than from inside a meeting.
   - Pass a non-null rrule to update the recurrence (also restarts a cancelled series)
   - Pass null rrule to cancel the series
+  - Leave rrule out to change only the name
   """
   updateMeetingSeries(
     """
@@ -2377,7 +2385,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format; null cancels the series
+    The weekly recurrence, see the RRule scalar for the format; null cancels the series, and leaving
+    it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateMeetingSeriesPayload! @scope(name: MEETINGS_WRITE)

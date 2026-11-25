@@ -106,7 +106,7 @@ const ActivityDetails = (props: Props) => {
         >
           <div
             className={cn(
-              'mb-14 ml-4 flex h-min w-max items-center max-md:mb-6',
+              'mb-14 ml-4 flex h-9.5 w-max items-center max-md:mb-6 md:ml-6',
               // team health has the most to show, so it trades page margins for fewer scrolls
               type === 'teamHealth' && 'mb-6'
             )}

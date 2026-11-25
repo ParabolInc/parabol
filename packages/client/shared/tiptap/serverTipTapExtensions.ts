@@ -17,9 +17,11 @@ import {DatabaseBase} from './extensions/DatabaseBase'
 import {EmbedBlockBase} from './extensions/EmbedBlockBase'
 import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
+import {ImageMarkdownBase} from './extensions/ImageMarkdownBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {LinkBase} from './extensions/LinkBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
+import {ParagraphBase} from './extensions/ParagraphBase'
 import {PopoverMentionBase} from './extensions/PopoverMentionBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
 import {SafeTextStyleKit} from './extensions/SafeTextStyleKit'
@@ -37,7 +39,8 @@ export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   }
 }
 export const serverTipTapExtensions: Extensions = [
-  StarterKit.configure({link: false}),
+  StarterKit.configure({link: false, paragraph: false}),
+  ParagraphBase,
   LinkBase.configure({isAllowedUri: isAllowedLinkHref}),
   Details.configure({
     persist: true
@@ -59,6 +62,7 @@ export const serverTipTapExtensions: Extensions = [
   FileBlockBase,
   FileUploadBase,
   ImageBlockBase,
+  ImageMarkdownBase,
   LoomExtension,
   Mention.configure(mentionConfig),
   MentionTaskTag,

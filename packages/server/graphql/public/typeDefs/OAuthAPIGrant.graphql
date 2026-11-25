@@ -1,0 +1,38 @@
+"""
+An OAuth 2.0 application the user connected to their Parabol account
+"""
+type OAuthAPIGrant {
+  id: ID!
+  """
+  The name the application registered itself with. Anyone can register an application under any name
+  """
+  appName: String!
+  """
+  Where the application receives authorization codes, which tells apart applications with the same name
+  """
+  redirectUris: [String!]!
+  """
+  The scopes the user granted the application
+  """
+  scopes: [OAuthScopeEnum!]!
+  """
+  The orgs the user limited the application to, leaving out any the user has since left. Null means the application can reach all orgs the user belongs to
+  """
+  grantedOrgs: [Organization!]
+  """
+  The teams the user limited the application to, leaving out any the user has since left. Null means the application can reach all teams the user belongs to
+  """
+  grantedTeams: [Team!]
+  """
+  The pages the user granted the application on top of those under its orgs and teams, leaving out any the user can no longer open. The grant covers these pages and every page nested under them, now and later. Null means the application can reach all pages the user can access, unless it is limited to some orgs or teams
+  """
+  grantedPages: [Page!]
+  """
+  When the user first connected the application
+  """
+  createdAt: DateTime!
+  """
+  The last time the application used its access, to within 5 minutes
+  """
+  lastUsedAt: DateTime
+}

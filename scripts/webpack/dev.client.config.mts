@@ -3,7 +3,7 @@ import {type Configuration, rspack} from '@rspack/core'
 import type {Configuration as DevServerConfiguration} from '@rspack/dev-server'
 import ReactRefreshRspackPlugin from '@rspack/plugin-react-refresh'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import type {IncomingMessage} from 'http'
+import type {IncomingMessage, ServerResponse} from 'http'
 import {createRequire} from 'module'
 import path from 'path'
 import clientTransformRules from './utils/clientTransformRules.js'
@@ -12,6 +12,7 @@ import getProjectRoot from './utils/getProjectRoot.js'
 import ServiceWorkerPlugin from './utils/ServiceWorkerPlugin.js'
 
 type OAuth2RedirectModule = {makeOAuth2Redirect: () => string}
+type DocumentHeadersModule = {default: (path: string) => Record<string, string>}
 
 const require = createRequire(import.meta.url)
 // node cannot run the app's TypeScript by itself (its imports have no extensions), so sucrase loads it
@@ -19,6 +20,9 @@ require('sucrase/register')
 const {
   makeOAuth2Redirect
 }: OAuth2RedirectModule = require('../../packages/server/utils/makeOAuth2Redirect')
+const {
+  default: getDocumentHeaders
+}: DocumentHeadersModule = require('../../packages/server/utils/getDocumentHeaders')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -58,6 +62,19 @@ export const devServer: DevServerConfiguration = {
   },
   hot: true,
   historyApiFallback: true,
+  setupMiddlewares: (middlewares) => [
+    {
+      name: 'document-headers',
+      middleware: (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+        const [path = ''] = (req.url ?? '').split('?')
+        for (const [name, value] of Object.entries(getDocumentHeaders(path))) {
+          res.setHeader(name, value)
+        }
+        next()
+      }
+    },
+    ...middlewares
+  ],
   port: PORT,
   proxy: [
     ...[
@@ -74,6 +91,8 @@ export const devServer: DevServerConfiguration = {
       'saml/',
       'scim',
       'oauth',
+      '.well-known',
+      'mcp',
       'zoom',
       'client-errors',
       'client-metrics'

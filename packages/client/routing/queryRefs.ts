@@ -1,6 +1,7 @@
-import {loadQuery, type PreloadedQuery, type PreloadFetchPolicy} from 'react-relay'
+import {loadQuery, type PreloadedQuery} from 'react-relay'
 import {
   type ConcreteRequest,
+  type FetchPolicy,
   fetchQuery,
   getRequestIdentifier,
   type IEnvironment,
@@ -22,6 +23,7 @@ interface QueryRefEntry {
   key: string
   query: ConcreteRequest
   queryRef: ReleasableQueryRef
+  fetchPolicy: FetchPolicy
   leases: number
   wasShown: boolean
   idleSince: number
@@ -30,7 +32,7 @@ interface QueryRefEntry {
 }
 
 interface LoadOptions {
-  fetchPolicy?: PreloadFetchPolicy
+  fetchPolicy?: FetchPolicy
 }
 
 export type QueryRefs = ReturnType<typeof createQueryRefs>
@@ -66,13 +68,14 @@ export const createQueryRefs = (environment: IEnvironment, reconnectHandlers: Se
     key: string,
     query: ConcreteRequest,
     variables: VariablesOf<OperationType>,
-    fetchPolicy: PreloadFetchPolicy
+    fetchPolicy: FetchPolicy
   ) => {
     const queryRef = loadQuery(environment, query, variables, {fetchPolicy}) as ReleasableQueryRef
     const entry: QueryRefEntry = {
       key,
       query,
       queryRef,
+      fetchPolicy,
       leases: 0,
       wasShown: false,
       idleSince: Date.now(),
@@ -136,10 +139,11 @@ export const createQueryRefs = (environment: IEnvironment, reconnectHandlers: Se
     }
   }
 
-  // After a reconnect, a shown page refreshes in place and keeps what it has if the refresh fails
+  // After a reconnect, a shown page refreshes in place and keeps what it has if the refresh fails.
+  // A store-only reference shows what its owner fetched, like a joined meeting, so the owner refreshes it
   const refetchShown = () => {
-    entries.forEach(({leases, query, queryRef}) => {
-      if (leases === 0) return
+    entries.forEach(({leases, query, queryRef, fetchPolicy}) => {
+      if (leases === 0 || fetchPolicy === 'store-only') return
       fetchQuery(environment, query, queryRef.variables, {fetchPolicy: 'network-only'}).subscribe({
         error: () => {
           addBreadcrumb('operation', `${query.params.name} did not refresh after reconnecting`)

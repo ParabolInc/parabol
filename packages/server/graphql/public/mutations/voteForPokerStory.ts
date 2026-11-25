@@ -102,7 +102,8 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
     // validate the score is a value on the scale
     const scoreValue = values.find((value) => value.label === score)
     if (!scoreValue) {
-      throw new GraphQLError('Score does not exist in scale', {
+      const labels = values.map(({label}) => label).join(', ')
+      throw new GraphQLError(`Score does not exist in scale. Vote one of: ${labels}`, {
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }

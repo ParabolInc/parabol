@@ -15,7 +15,6 @@ import {isDeadGrant} from '../../../utils/OAuth2TokenError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
 import type {MutationResolvers} from '../resolverTypes'
-import userErrorResult from './helpers/userErrorResult'
 
 const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   _source,
@@ -39,7 +38,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   }
   const email = id.email.toLowerCase()
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
-    return userErrorResult('EMAIL_INVALID', 'Email is too long')
+    throw new GraphQLError('Email is too long', {extensions: {code: 'BAD_USER_INPUT'}})
   }
 
   const [existingUser, samlURL] = await Promise.all([
@@ -48,9 +47,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   ])
 
   if (samlURL) {
-    return userErrorResult(
-      'SIGN_IN_WITH_SSO',
-      'Your organization requires you to login with SSO. Reach out to support@parabol.co for more help!'
+    throw new GraphQLError(
+      'Your organization requires you to login with SSO. Reach out to support@parabol.co for more help!',
+      {extensions: {code: 'SIGN_IN_WITH_SSO'}}
     )
   }
   if (existingUser) {
@@ -67,10 +66,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
         // if it's not, they need to reset the password
         if (!isEmailVerified) {
           if (type === AuthIdentityTypeEnum.LOCAL) {
-            return userErrorResult(
-              'SIGN_IN_WITH_PASSWORD',
-              'Try logging in with email and password'
-            )
+            throw new GraphQLError('Try logging in with email and password', {
+              extensions: {code: 'SIGN_IN_WITH_PASSWORD'}
+            })
           }
           throw new GraphQLError(`Unknown identity type: ${type}`, {
             extensions: {code: 'INTERNAL_SERVER_ERROR'}

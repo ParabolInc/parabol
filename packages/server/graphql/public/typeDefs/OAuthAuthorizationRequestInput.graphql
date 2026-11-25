@@ -19,11 +19,15 @@ input OAuthAuthorizationRequestInput {
   """
   state: String!
   """
-  The PKCE code challenge, base64url(SHA-256(code_verifier))
+  The PKCE code challenge, base64url(SHA-256(code_verifier)). Required
   """
   codeChallenge: String
   """
   The PKCE code challenge method. Only S256 is supported
   """
   codeChallengeMethod: String
+  """
+  The RFC 8707 resource indicator the token is for. Only <origin>/mcp is served
+  """
+  resource: String
 }

@@ -2,7 +2,6 @@ import type Atmosphere from '../../../Atmosphere'
 import handleAuthenticationRedirect from '../handleAuthenticationRedirect'
 
 const acceptedInvitation = {
-  userErrors: [],
   meetingId: null,
   team: {id: 'team-1', activeMeetings: []}
 }

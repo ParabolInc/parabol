@@ -28,6 +28,7 @@ import {
   selectPersonalAccessToken,
   selectTasks
 } from '../../../postgres/select'
+import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -153,11 +154,11 @@ const User: ReqResolvers<'User'> = {
     {authToken, dataLoader, resourceGrants}
   ) => {
     const viewerId = getUserId(authToken)
-    let validTeamIds = teamIds
-    if (authToken.rol !== 'su') {
+    let validTeamIds: string[] = teamIds ?? []
+    if (!teamIds || authToken.rol !== 'su') {
       const teamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
       const allTeamIds = teamMembers.map(({teamId}) => teamId)
-      validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
+      validTeamIds = teamIds ? teamIds.filter((teamId) => allTeamIds.includes(teamId)) : allTeamIds
     }
     if (resourceGrants) {
       const grantChecks = await Promise.all(validTeamIds.map((id) => resourceGrants.hasTeam(id)))
@@ -180,6 +181,7 @@ const User: ReqResolvers<'User'> = {
       .where('meetingType', 'in', meetingTypes)
       .$if<{}>(!!after, (qb) => qb.where('createdAt', '>=', after!))
       .$if<{}>(!!before, (qb) => qb.where('createdAt', '<=', before!))
+      .orderBy('createdAt', 'desc')
       .limit(first + 1)
       .execute()
     return {
@@ -892,11 +894,31 @@ const User: ReqResolvers<'User'> = {
     const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
     return tokens
   },
-  oauthAuthorizationRequest: async ({id: userId}, {request}, {dataLoader}) => {
-    const authorization = await validateOAuthAuthorizationRequest(request, userId, dataLoader)
+  oauthGrants: async ({id: userId}) => {
+    return getKysely()
+      .selectFrom('OAuthAPIGrant')
+      .innerJoin('OAuthAPIProvider', 'OAuthAPIProvider.clientId', 'OAuthAPIGrant.clientId')
+      .select([
+        'OAuthAPIGrant.id',
+        'OAuthAPIGrant.userId',
+        'OAuthAPIProvider.name as appName',
+        'OAuthAPIProvider.redirectUris',
+        'OAuthAPIGrant.grantedOrgIds',
+        'OAuthAPIGrant.grantedTeamIds',
+        'OAuthAPIGrant.grantedPageIds',
+        'OAuthAPIGrant.createdAt',
+        'OAuthAPIGrant.lastUsedAt',
+        sql<Oauthscopeenum[]>`to_json("OAuthAPIGrant"."scopes")`.as('scopes')
+      ])
+      .where('OAuthAPIGrant.userId', '=', userId)
+      .orderBy('OAuthAPIGrant.createdAt', 'desc')
+      .execute()
+  },
+  oauthAuthorizationRequest: async (_source, {request}) => {
+    const authorization = await validateOAuthAuthorizationRequest(request)
     if ('error' in authorization) return null
     const {provider, scopes} = authorization
-    return {name: provider.name, orgId: provider.orgId, scopes, redirectUri: request.redirectUri}
+    return {name: provider.name, scopes, redirectUri: request.redirectUri}
   }
 }
 

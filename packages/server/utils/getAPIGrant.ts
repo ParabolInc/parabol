@@ -7,10 +7,11 @@ import type {DataLoaderWorker} from '../graphql/graphql'
 import {PAT_PREFIX} from '../graphql/public/applyScopeDirective'
 import {ResourceGrants} from '../graphql/public/ResourceGrants'
 import getKysely from '../postgres/getKysely'
-import {selectOAuthAPIProvider, selectPersonalAccessToken} from '../postgres/select'
+import {selectPersonalAccessToken} from '../postgres/select'
+import {CipherId} from './CipherId'
 import checkBlacklistJWT from './checkBlacklistJWT'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
-import hashPersonalAccessToken from './hashPersonalAccessToken'
+import hashRandomToken from './hashRandomToken'
 import {Logger} from './Logger'
 
 export interface APIGrant {
@@ -20,6 +21,7 @@ export interface APIGrant {
   resourceGrants: ResourceGrants
   personalAccessTokenId?: string
   clientId?: string
+  grantId?: number
 }
 
 const PREFIX_LENGTH = 8
@@ -45,7 +47,7 @@ const getPersonalAccessTokenGrant = async (
     .where('expiresAt', '>', sql<Date>`CURRENT_TIMESTAMP`)
     .executeTakeFirst()
 
-  const hashedToken = hashPersonalAccessToken(rawToken)
+  const hashedToken = hashRandomToken(rawToken)
   if (!token || !(await isTokenMatch(rawToken, hashedToken, token.hashedToken))) {
     throw new GraphQLError('Invalid or revoked personal access token', {
       extensions: {code: 'UNAUTHENTICATED'}
@@ -80,39 +82,68 @@ const getPersonalAccessTokenGrant = async (
   }
 }
 
+const throwInvalidOAuthToken = (): never => {
+  throw new GraphQLError('Invalid or revoked OAuth access token', {
+    extensions: {code: 'UNAUTHENTICATED'}
+  })
+}
+
 const getOAuthAccessTokenGrant = async (
   jwt: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  expectedResource: string | undefined
 ): Promise<APIGrant | null> => {
-  const accessToken = getVerifiedAuthToken(jwt, false, 'action-oauth2')
+  const accessToken = getVerifiedAuthToken(jwt, false, 'action-oauth2', true)
   if (!accessToken) return null
-  const [isBlacklisted, provider] = await Promise.all([
-    checkBlacklistJWT(accessToken),
-    accessToken.client_id
-      ? selectOAuthAPIProvider().where('clientId', '=', accessToken.client_id).executeTakeFirst()
-      : undefined
-  ])
-  if (isBlacklisted || !provider) {
-    throw new GraphQLError('Invalid or revoked OAuth access token', {
+  if (accessToken.exp * 1000 + ms('10s') < Date.now()) {
+    throw new GraphQLError('OAuth access token expired', {extensions: {code: 'UNAUTHENTICATED'}})
+  }
+  if (accessToken.resource && accessToken.resource !== expectedResource) {
+    throw new GraphQLError(`This access token is for ${accessToken.resource}`, {
       extensions: {code: 'UNAUTHENTICATED'}
     })
   }
+  const {client_id: clientId, grant_id: grantCode, sub: userId} = accessToken
+  if (!clientId || grantCode === undefined) return throwInvalidOAuthToken()
+  const grantId = CipherId.decrypt(grantCode)
+  const [isBlacklisted, grant] = await Promise.all([
+    checkBlacklistJWT(accessToken),
+    dataLoader.get('oauthAPIGrants').load(grantId)
+  ])
+  if (isBlacklisted || !grant || grant.clientId !== clientId || grant.userId !== userId) {
+    return throwInvalidOAuthToken()
+  }
+  if (!grant.lastUsedAt || Date.now() - grant.lastUsedAt.getTime() > ms('5m')) {
+    getKysely()
+      .updateTable('OAuthAPIGrant')
+      .set({lastUsedAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', grant.id)
+      .execute()
+      .catch(Logger.error)
+  }
   return {
-    userId: accessToken.sub,
-    scopes: accessToken.scope ?? [],
+    userId,
+    scopes: (accessToken.scope ?? []).filter((scope) => grant.scopes.includes(scope)),
     aud: 'action-oauth2',
-    clientId: accessToken.client_id,
-    // The app reaches only the data of the organization that registered it
-    resourceGrants: new ResourceGrants(accessToken.sub, [provider.orgId], [], null, dataLoader)
+    clientId,
+    grantId: grant.id,
+    resourceGrants: new ResourceGrants(
+      userId,
+      grant.grantedOrgIds,
+      grant.grantedTeamIds,
+      grant.grantedPageIds,
+      dataLoader
+    )
   }
 }
 
 const getAPIGrant = async (
   bearerToken: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  expectedResource?: string
 ): Promise<APIGrant | null> =>
   bearerToken.startsWith(PAT_PREFIX)
     ? getPersonalAccessTokenGrant(bearerToken.slice(PAT_PREFIX.length), dataLoader)
-    : getOAuthAccessTokenGrant(bearerToken, dataLoader)
+    : getOAuthAccessTokenGrant(bearerToken, dataLoader, expectedResource)
 
 export default getAPIGrant

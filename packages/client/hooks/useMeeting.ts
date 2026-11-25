@@ -28,7 +28,6 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
         name
         showSidebar
         team {
-          id
           name
         }
       }
@@ -36,7 +35,7 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
     meetingRef
   )
   const {id: meetingId, meetingType, name: meetingName, team} = meeting
-  const {id: teamId, name: teamName} = team
+  const {name: teamName} = team
   const gotoStageId = useGotoStageId(meeting)
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
   const safeRoute = useMeetingLocalState(meeting)
@@ -47,7 +46,7 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   useDocumentTitle(`${meetingName} | ${teamName}`, meetingName)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(meetingId)
-  const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
+  const handleMenuClick = useHandleMenuClick(meetingId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
   return {
     demoPortal,

@@ -24,23 +24,8 @@ interface Config {
 
 type RootFieldResolver = GraphQLFieldResolver<unknown, ServerContext>
 
-interface UserErrorsPayload {
-  userErrors: {message: string}[]
-}
-
-const hasUserErrors = (result: unknown): result is UserErrorsPayload =>
-  typeof result === 'object' &&
-  result !== null &&
-  'userErrors' in result &&
-  Array.isArray(result.userErrors) &&
-  result.userErrors.length > 0
-
-// A mutation fails by throwing, by returning an Error (permission rules do), or by returning userErrors
-const getFailureReason = (result: unknown) => {
-  if (result instanceof Error) return result.message
-  if (hasUserErrors(result)) return result.userErrors[0]!.message
-  return undefined
-}
+// A mutation fails by throwing, or by returning an Error (permission rules do)
+const getFailureReason = (result: unknown) => (result instanceof Error ? result.message : undefined)
 
 const auditRootField =
   (resolve: RootFieldResolver, excludedArgs: (string | number | symbol)[]): RootFieldResolver =>

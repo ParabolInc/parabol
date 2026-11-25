@@ -51,21 +51,6 @@ const subscription = graphql`
       UpdateTemplateScopePayload {
         ...UpdateTemplateScopeMutation_organization @relay(mask: false)
       }
-
-
-      UpdateOAuthAPIProviderPayload{
-        provider {
-          id
-          name
-          clientId
-          redirectUris
-          scopes
-          updatedAt
-        }
-        organization {
-          ...OAuthProviderList_organization
-        }
-      }
     }
   }
 `

@@ -5,6 +5,89 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.7.0](https://github.com/ParabolInc/parabol/compare/v16.6.0...v16.7.0) (2026-11-25)
+
+
+### Added
+
+* **client:** invite teammates by name, starting with people you work with ([#14376](https://github.com/ParabolInc/parabol/issues/14376)) ([9d309bc](https://github.com/ParabolInc/parabol/commit/9d309bc92a352d68d03fb92aa512a265da0fb0d9))
+* **client:** open images in a full-screen lightbox ([#14377](https://github.com/ParabolInc/parabol/issues/14377)) ([b7085d2](https://github.com/ParabolInc/parabol/commit/b7085d21abdf248b79f765749abe0d38fa60129c))
+* **mcp:** list templates, describe_graphql, and page grants that cover nested pages ([#14383](https://github.com/ParabolInc/parabol/issues/14383)) ([3df1d0b](https://github.com/ParabolInc/parabol/commit/3df1d0bb0acc3887b537c065a5c1637d64fa5277))
+* **mcp:** play sprint poker from /mcp ([#14382](https://github.com/ParabolInc/parabol/issues/14382)) ([8f5694d](https://github.com/ParabolInc/parabol/commit/8f5694df0eb871ac835b884704e8164ad75d7089))
+* **mcp:** run standups, Team Health checks and meeting discussions from /mcp ([#14381](https://github.com/ParabolInc/parabol/issues/14381)) ([1ae27ad](https://github.com/ParabolInc/parabol/commit/1ae27ad8c776e7becda52b2b14e28dbe16c87c4c))
+* **server:** expose the allowed poker scale colors ([#14387](https://github.com/ParabolInc/parabol/issues/14387)) ([0fe42eb](https://github.com/ParabolInc/parabol/commit/0fe42eb154228c535e9066383b0ec02720d71e53))
+
+
+### Fixed
+
+* **client:** close the meeting sidebar on phones after tapping a row ([#14380](https://github.com/ParabolInc/parabol/issues/14380)) ([ea5e476](https://github.com/ParabolInc/parabol/commit/ea5e476ed6532142383bafbf1339cf867186f4b1))
+* **mcp:** refuse unreadable content, enforce task and comment scopes, and fix summary and search gaps ([#14379](https://github.com/ParabolInc/parabol/issues/14379)) ([0ce62fc](https://github.com/ParabolInc/parabol/commit/0ce62fc1ed3b7edec2f0f2b66deb68db9ffb5ec2))
+* **pages:** limited connections only link to pages they can reach ([#14384](https://github.com/ParabolInc/parabol/issues/14384)) ([e732797](https://github.com/ParabolInc/parabol/commit/e7327974379d700576dddd0a2d25468a254067d2))
+
+## [16.6.0](https://github.com/ParabolInc/parabol/compare/v16.5.0...v16.6.0) (2026-11-25)
+
+
+### Added
+
+* **reports:** open Reports to the org you looked at last ([#14325](https://github.com/ParabolInc/parabol/issues/14325)) ([80449a4](https://github.com/ParabolInc/parabol/commit/80449a4675f3122b562efbc4778ea84fdf6682b2))
+* **server:** private and nested pages, page listing and uploads by URL for /mcp ([#14370](https://github.com/ParabolInc/parabol/issues/14370)) ([8213e54](https://github.com/ParabolInc/parabol/commit/8213e54e38f78487d17e0345f1b2f2bf12296dde))
+* **server:** retro tools for /mcp and get_me without organization access ([#14372](https://github.com/ParabolInc/parabol/issues/14372)) ([ad5404e](https://github.com/ParabolInc/parabol/commit/ad5404eae5e9b5ecc0faa110a8e4d1e388ee5ad5))
+
+
+### Fixed
+
+* **pages:** round-trip page markdown and validate page writes ([#14368](https://github.com/ParabolInc/parabol/issues/14368)) ([58638ed](https://github.com/ParabolInc/parabol/commit/58638ed5b24015864ea5fff5153c3d7ba8d38eec))
+
+## [16.5.0](https://github.com/ParabolInc/parabol/compare/v16.4.0...v16.5.0) (2026-11-24)
+
+
+### Added
+
+* **oauth:** let AI agents sign in to Parabol ([#14279](https://github.com/ParabolInc/parabol/issues/14279)) ([569f88c](https://github.com/ParabolInc/parabol/commit/569f88c29afc86c143ebdb7fbc3e3e005af4edd8))
+* **server:** thin MCP server with tools compiled from .graphql files ([#14362](https://github.com/ParabolInc/parabol/issues/14362)) ([03b88c4](https://github.com/ParabolInc/parabol/commit/03b88c4c2785ef67429083d92d77bc936d0eceda))
+
+
+### Fixed
+
+* **client:** point the disabled insights block at org settings or an org admin ([#14359](https://github.com/ParabolInc/parabol/issues/14359)) ([53af9f8](https://github.com/ParabolInc/parabol/commit/53af9f8bbb7e98a1b34fbef93d6f5b688ef6897b))
+* **server:** let a GraphQL variable fall back to its default ([#14364](https://github.com/ParabolInc/parabol/issues/14364)) ([2420551](https://github.com/ParabolInc/parabol/commit/2420551c66d57c59e20fe0447afe3335df9cfb7c))
+* **server:** require the matching read scope to search ([#14361](https://github.com/ParabolInc/parabol/issues/14361)) ([c99851a](https://github.com/ParabolInc/parabol/commit/c99851a1c6fff6f812baaeefde663b770c0cba92))
+
+## [16.4.0](https://github.com/ParabolInc/parabol/compare/v16.3.1...v16.4.0) (2026-11-23)
+
+
+### Added
+
+* **ai:** give every team-scoped AI suggestion the team briefing ([#14340](https://github.com/ParabolInc/parabol/issues/14340)) ([2cc9022](https://github.com/ParabolInc/parabol/commit/2cc9022f1a4a8566479b4c6d6a48881ba3647f6c))
+
+
+### Fixed
+
+* **client:** don't register the service worker on a copy of the page a proxy serves from its own origin ([#14331](https://github.com/ParabolInc/parabol/issues/14331)) ([3ea2256](https://github.com/ParabolInc/parabol/commit/3ea22565f7843f88b767773b431b66069fd3477b))
+* **client:** tell people their browser is too old instead of crashing ([#14355](https://github.com/ParabolInc/parabol/issues/14355)) ([a74ceb5](https://github.com/ParabolInc/parabol/commit/a74ceb5203ee154f9856b947de4a68f3d9b1c82a))
+* **meeting:** stop the demo crashing when you press back ([#14348](https://github.com/ParabolInc/parabol/issues/14348)) ([13e7d6f](https://github.com/ParabolInc/parabol/commit/13e7d6f9fa25efa8fd08d3baf341892fa35032fa))
+* **pages:** read link previews in the page's own charset ([#14346](https://github.com/ParabolInc/parabol/issues/14346)) ([38c2350](https://github.com/ParabolInc/parabol/commit/38c2350a3d7754f275b18503c0043acbf25d3581))
+* **poker:** stop the AI estimate running a step low ([#14343](https://github.com/ParabolInc/parabol/issues/14343)) ([1709484](https://github.com/ParabolInc/parabol/commit/17094844a95103d90fecbdcd5f3eeefc342e35d8))
+* **retro:** open summaries of retros that ended before any topic in 2020-21 ([#14329](https://github.com/ParabolInc/parabol/issues/14329)) ([7d4914a](https://github.com/ParabolInc/parabol/commit/7d4914a0cbd2105e65277aa082dd66d62bb1ad32))
+* **retro:** show the demo's settings as view-only and open its tips on each phase ([#14337](https://github.com/ParabolInc/parabol/issues/14337)) ([f998e9d](https://github.com/ParabolInc/parabol/commit/f998e9dee738e542e5125df57cf1f1a455d8bdc2))
+* **server:** accept any zoned ISO 8601 timestamp as a DateTime input ([#14333](https://github.com/ParabolInc/parabol/issues/14333)) ([6510078](https://github.com/ParabolInc/parabol/commit/651007870c91eeeda2d7e19f9bc0dbf5c1713ec0))
+* **server:** give a demo group a simple title when the AI title fails ([#14332](https://github.com/ParabolInc/parabol/issues/14332)) ([6001f77](https://github.com/ParabolInc/parabol/commit/6001f7763fffe78007b2816a790f94792cd2fa08))
+* **server:** keep a socket signed in when another request refreshes its session ([#14335](https://github.com/ParabolInc/parabol/issues/14335)) ([49fb187](https://github.com/ParabolInc/parabol/commit/49fb1878f9de29dd78fced549f22748e82285fb8))
+* **server:** keep repeated API queries working after 100 others ([#14347](https://github.com/ParabolInc/parabol/issues/14347)) ([218e45d](https://github.com/ParabolInc/parabol/commit/218e45d4be57881845af605dadbf50231ffd3e83))
+* **server:** let Shared Pages listings run at once and return the saved order ([#14356](https://github.com/ParabolInc/parabol/issues/14356)) ([c21cc40](https://github.com/ParabolInc/parabol/commit/c21cc4015f47a9bd82f0dd9da3a2b2aedeb4f108))
+* **server:** list a team page shared with a token's team in Shared Pages ([#14352](https://github.com/ParabolInc/parabol/issues/14352)) ([7ce823b](https://github.com/ParabolInc/parabol/commit/7ce823bc6772139b2fe9113ee7e96f6a0bc062cd))
+* **server:** list a token's granted subpage among top-level pages ([#14354](https://github.com/ParabolInc/parabol/issues/14354)) ([2717a43](https://github.com/ParabolInc/parabol/commit/2717a432bb5b2cc3312dc7c3416b487528c60463))
+* **server:** list exactly the pages a token can open ([#14349](https://github.com/ParabolInc/parabol/issues/14349)) ([f376d45](https://github.com/ParabolInc/parabol/commit/f376d45055081ae4f68c7a50210c20e11743b280))
+* **server:** match % and _ as typed in page and task filters ([#14357](https://github.com/ParabolInc/parabol/issues/14357)) ([233b26e](https://github.com/ParabolInc/parabol/commit/233b26e11c09b838237e319d3795cb38380692b0))
+* **server:** search only the pages a token can open ([#14350](https://github.com/ParabolInc/parabol/issues/14350)) ([4e92069](https://github.com/ParabolInc/parabol/commit/4e920694945503e70c57292ecc18a9cbb7f61d26))
+* **tasks:** let teammates move each other's tasks to another team ([#14341](https://github.com/ParabolInc/parabol/issues/14341)) ([41f1813](https://github.com/ParabolInc/parabol/commit/41f181373869e96ece01bb90145c997c042b068b))
+
+
+### Changed
+
+* **claude:** drop the ask-before-commit rule ([#14338](https://github.com/ParabolInc/parabol/issues/14338)) ([6ae5cde](https://github.com/ParabolInc/parabol/commit/6ae5cdeca90beeb303b78550c2fe014adb1bec0e))
+* **client:** one helper for new-feature highlights, ended by a click or a date ([#14351](https://github.com/ParabolInc/parabol/issues/14351)) ([fd5d34d](https://github.com/ParabolInc/parabol/commit/fd5d34da90d60672367ba7133d02d76041a78311))
+
 ## [16.3.1](https://github.com/ParabolInc/parabol/compare/v16.3.0...v16.3.1) (2026-11-20)
 
 

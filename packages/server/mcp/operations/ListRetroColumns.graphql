@@ -1,0 +1,22 @@
+# List the columns of a retrospective. Use it to get the promptId that add_reflection needs. Needs users:read and meetings:read.
+query ListRetroColumns(
+  # The retrospective id, from start_retrospective or list_meetings
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      ... on RetrospectiveMeeting {
+        phases {
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
+              question
+              description
+            }
+          }
+        }
+      }
+    }
+  }
+}

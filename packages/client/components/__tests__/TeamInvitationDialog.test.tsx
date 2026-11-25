@@ -7,6 +7,7 @@ import type {TeamInvitationDialog_verifiedInvitation$key} from '../../__generate
 import type Atmosphere from '../../Atmosphere'
 import type AcceptTeamInvitationMutation from '../../mutations/AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from '../../mutations/handlers/handleAuthenticationRedirect'
+import redirectAfterSignIn from '../../mutations/handlers/redirectAfterSignIn'
 import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import type {NavigateFn} from '../../types/relayMutations'
 import {IsAuthenticatedProvider} from '../IsAuthenticatedProvider'
@@ -60,12 +61,11 @@ const invitationFor = (user: {preferredName: string} | null) =>
   }) as unknown as TeamInvitationDialog_verifiedInvitation$key
 
 const replyFor = (activeMeetingIds: string[]) => ({
-  userErrors: [],
   meetingId: null,
   team: {id: 'team-1', activeMeetings: activeMeetingIds.map((id) => ({id}))}
 })
 
-// what AcceptTeamInvitationMutation does with the server's reply, ALREADY_ACCEPTED included
+// what AcceptTeamInvitationMutation does with the server's reply, which is the same for an invitation accepted before
 const answerAcceptTeamInvitationRequests = (activeMeetingIds: string[]) => {
   mockAcceptTeamInvitation.mock.calls.forEach(([, , {navigate}]) => {
     handleAuthenticationRedirect(replyFor(activeMeetingIds), {
@@ -167,22 +167,19 @@ describe('TeamInvitationDialog', () => {
       await renderInvitation(invitationFor(user))
       const navigations = recordNavigations()
 
-      // the auth cookie lands before the login mutation, which accepts the invitation too, calls back
+      // the auth cookie lands before the login mutation calls back and accepts the invitation
       await act(async () => {
         mockAtmosphere.authObj = {sub: 'invitee'}
         mockAtmosphere.eventEmitter.emit('authChanged')
       })
       await act(async () => {
-        handleAuthenticationRedirect(replyFor(activeMeetingIds), {
-          atmosphere: mockAtmosphere as unknown as Atmosphere,
-          navigate: authFormNavigate
-        })
+        redirectAfterSignIn(mockAtmosphere as unknown as Atmosphere, 'token-1', authFormNavigate)
         answerAcceptTeamInvitationRequests(activeMeetingIds)
       })
 
       expect(currentPathname).toBe(nextPath)
       expect(navigations).toEqual([`replaceState ${nextPath}`])
-      expect(mockAcceptTeamInvitation).not.toHaveBeenCalled()
+      expect(mockAcceptTeamInvitation).toHaveBeenCalledTimes(1)
     }
   )
 

@@ -1,0 +1,9 @@
+"""
+Returned when the viewer disconnects an OAuth 2.0 application
+"""
+type RevokeOAuthAPIGrantPayload {
+  """
+  The viewer, whose connected applications no longer include the one removed
+  """
+  user: User!
+}

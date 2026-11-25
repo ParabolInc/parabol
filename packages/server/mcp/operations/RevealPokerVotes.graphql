@@ -1,0 +1,18 @@
+# Reveal the votes on one sprint poker stage, a story's dimension, so the team can discuss them and pick a final score with set_poker_final_score. Only the meeting's facilitator can reveal. Each meeting member who hasn't voted, except those sitting votes out, gets a Pass card, and the result lists every vote's label and voter. A vote cast after the reveal changes the revealed scores. It refuses anyone but the facilitator, a meeting that isn't sprint poker or has ended, a stage that isn't in the meeting and, on the free plan, a Jira story once the free Jira exports run out. Needs meetings:write.
+mutation RevealPokerVotes(
+  # The sprint poker meeting id, from start_sprint_poker or list_meetings
+  $meetingId: ID!
+  # The stage to reveal, from add_poker_stories or get_poker_meeting
+  $stageId: ID!
+) {
+  pokerRevealVotes(meetingId: $meetingId, stageId: $stageId) {
+    stage {
+      id
+      isVoting
+      scores {
+        userId
+        label
+      }
+    }
+  }
+}

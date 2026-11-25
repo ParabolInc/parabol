@@ -403,6 +403,7 @@ const scoreSweepQuery = async (
     offset: 0,
     viewerId,
     teamIds: undefined,
+    resourceGrants: undefined,
     dateRange: null,
     dropStopWords: stopWords === 'drop',
     anyWordFallbackBelow,

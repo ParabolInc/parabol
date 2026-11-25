@@ -39,7 +39,7 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
 
   await getKysely()
     .updateTable('Comment')
-    .set({updatedAt: now})
+    .set({isActive: false, updatedAt: now})
     .where('id', '=', commentId)
     .execute()
   dataLoader.clearAll('comments')

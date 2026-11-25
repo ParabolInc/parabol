@@ -2,13 +2,22 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
 import * as Y from 'yjs'
+import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {tipTapToMarkdown} from '../../../../client/shared/tiptap/tipTapToMarkdown'
+import appOrigin from '../../../appOrigin'
+import type {DataLoaderWorker} from '../../../graphql/graphql'
 import type {PageContentEditInput} from '../../../graphql/public/resolverTypes'
 import {
   applyPageContentEdits as applyEdits,
   validatePageContentEdits
 } from '../applyPageContentEdits'
+import {getPageContent} from '../getPageContent'
+import {parsePageMarkdown} from '../parsePageMarkdown'
+
+jest.mock('../../../hocusPocus', () => ({
+  redisHocusPocus: {handleEvent: async () => undefined}
+}))
 
 const text = (value: string, marks?: JSONContent['marks']): JSONContent => ({
   type: 'text',
@@ -43,6 +52,64 @@ const applyPageContentEdits = (
 }
 
 const blocksOf = (doc: Y.Doc) => doc.getXmlFragment('default').toArray()
+
+const readPage = (doc: Y.Doc) => {
+  const yDoc = Y.encodeStateAsUpdate(doc)
+  const dataLoader = {get: () => ({load: async () => ({yDoc})})} as unknown as DataLoaderWorker
+  return getPageContent(1, 'markdown', dataLoader)
+}
+
+const assetUrl = `${appOrigin}/assets/cat.png`
+const outsideUrl = 'https://outside.test/a.png'
+
+const imageSrcsOf = (content: JSONContent[]) =>
+  getAllNodesAttributesByType<{src?: unknown}>({content}, 'imageBlock').map((attrs) => attrs?.src)
+
+const cell = (type: 'tableHeader' | 'tableCell', value: string): JSONContent => ({
+  type,
+  content: [paragraph(text(value))]
+})
+
+const makeMixedPage = () =>
+  makeDoc(
+    heading('Plan'),
+    paragraph(text('Intro')),
+    {type: 'paragraph'},
+    {type: 'paragraph'},
+    paragraph(text('Before table')),
+    {
+      type: 'table',
+      content: [
+        {type: 'tableRow', content: [cell('tableHeader', 'Name'), cell('tableHeader', 'Owner')]},
+        {type: 'tableRow', content: [cell('tableCell', 'Alpha'), cell('tableCell', 'Ann')]}
+      ]
+    },
+    {
+      type: 'bulletList',
+      content: [
+        {type: 'listItem', content: [paragraph(text('one'))]},
+        {type: 'listItem', content: [paragraph(text('two'))]}
+      ]
+    },
+    {type: 'imageBlock', attrs: {src: assetUrl, alt: 'cat'}}
+  )
+
+const mixedPageBlocks = [
+  '# Plan',
+  'Intro',
+  '',
+  '',
+  'Before table',
+  '| Name  | Owner |\n| ----- | ----- |\n| Alpha | Ann   |',
+  '- one\n- two',
+  `![cat](${assetUrl})`
+]
+
+const editOfBlock = (block: string) => {
+  if (block.startsWith('|')) return block.replace('Alpha', 'Gamma')
+  if (block.startsWith('![')) return block.replace('![cat]', '![cat edited]')
+  return `${block} edited`
+}
 
 const makePage = () =>
   makeDoc(
@@ -190,6 +257,30 @@ describe('applyPageContentEdits', () => {
     ).toBeNull()
     expect(blocksOf(doc)[1]).toBe(red)
     expect(markdownOf(doc)).toBe('# Plan\n\nRed text\n\nSimple text')
+  })
+
+  test('reads a response block as a quote, refuses to rewrite it, and keeps it through nearby edits', async () => {
+    const response: JSONContent = {
+      type: 'responseBlock',
+      attrs: {
+        id: 'r1',
+        preferredName: 'Ann',
+        avatar: 'https://example.com/a.png',
+        content: JSON.stringify({type: 'doc', content: [paragraph(text('Shipped the widget'))]})
+      }
+    }
+    const doc = makeDoc(heading('Standup'), response, paragraph(text('Next steps')))
+    expect(await readPage(doc)).toBe(
+      '# Standup\n\n> **Ann:**\n>\n> Shipped the widget\n\nNext steps'
+    )
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'the widget', newText: 'it'}])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('a responseBlock block')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+    const [, kept] = blocksOf(doc)
+    expect(applyPageContentEdits(doc, [{oldText: 'Next steps', newText: 'Later'}])).toBeNull()
+    expect(blocksOf(doc)[1]).toBe(kept)
   })
 
   test('refuses to remove the title heading', () => {
@@ -347,6 +438,144 @@ describe('applyPageContentEdits', () => {
     const [, , pageLink] = blocksOf(doc)
     expect(applyPageContentEdits(doc, [{oldText: 'Intro', newText: 'Overview'}])).toBeNull()
     expect(blocksOf(doc)[2]).toBe(pageLink)
+  })
+
+  test('reads a page in the markdown that edits match', async () => {
+    const read = await readPage(makeMixedPage())
+    expect(read).not.toContain('&nbsp;')
+    expect(read).toBe(mixedPageBlocks.join('\n\n'))
+  })
+
+  test.each(mixedPageBlocks.flatMap((block, idx) => (block ? [[idx, block] as const] : [])))(
+    'an edit copied from the read page changes only block %i',
+    async (idx, block) => {
+      const doc = makeMixedPage()
+      const before = blocksOf(doc)
+      const read = await readPage(doc)
+      const newText = editOfBlock(block)
+      expect(applyPageContentEdits(doc, [{oldText: block, newText}])).toBeNull()
+      expect(await readPage(doc)).toBe(read.replace(block, newText))
+      const after = blocksOf(doc)
+      expect(after).toHaveLength(before.length)
+      after.forEach((element, position) => {
+        if (position === idx) expect(element).not.toBe(before[position])
+        else expect(element).toBe(before[position])
+      })
+    }
+  )
+
+  test('finds text copied from the read page across empty paragraphs, a table and an image', async () => {
+    const doc = makeMixedPage()
+    const read = await readPage(doc)
+    const spanOf = (from: string, to: string) =>
+      read.slice(read.indexOf(from), read.indexOf(to) + to.length)
+    for (const span of [
+      spanOf('Intro', 'Before'),
+      spanOf('table', '| Name'),
+      spanOf('Ann', '- one'),
+      spanOf('two', '![cat]')
+    ]) {
+      expect(applyPageContentEdits(doc, [{oldText: span, newText: span}])).toBeNull()
+    }
+  })
+
+  test('refuses an oldText that matches only when spacing is ignored', async () => {
+    const doc = makeMixedPage()
+    const error = applyPageContentEdits(doc, [
+      {oldText: '| Alpha | Ann |', newText: '| Gamma | Ann |'}
+    ])
+    expect(error?.code).toBe('CONFLICT')
+    expect(error?.message).toContain('only if spacing is ignored')
+    expect(error?.message).toContain("copy it exactly from the page's markdown content")
+    expect(error?.message).not.toContain('read_page')
+    expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
+  })
+
+  test('finds & < > as the read page writes them', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Tom & Jerry')), paragraph(text('a < b')))
+    expect(
+      applyPageContentEdits(doc, [
+        {oldText: 'Tom & Jerry', newText: 'Tom & Spike'},
+        {oldText: 'a < b', newText: 'a > b'}
+      ])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe('# Plan\n\nTom & Spike\n\na > b')
+  })
+
+  test('replaceAll never splits an escape', async () => {
+    const doc = makeDoc(
+      heading('Plan'),
+      paragraph(text('Tom & Jerry')),
+      paragraph(text('AT&T sells &copy; R&D')),
+      paragraph(text('&amp;'))
+    )
+    expect(
+      applyPageContentEdits(doc, [{oldText: '&', newText: 'and', replaceAll: true}])
+    ).toBeNull()
+    const read = await readPage(doc)
+    expect(read).toBe('# Plan\n\nTom and Jerry\n\nATandT sells &amp;copy; RandD\n\n&amp;amp;')
+    expect(read).not.toContain('andamp;')
+  })
+
+  test('refuses an oldText found only inside an escape', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('&copy; 2026')))
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'amp', newText: 'x'}])
+    expect(error?.code).toBe('CONFLICT')
+    expect(error?.message).toContain('&amp;')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+  })
+
+  test('refuses an edit that adds an image Parabol does not host', () => {
+    const doc = makePage()
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [
+      {oldText: 'First paragraph', newText: `First paragraph\n\n![x](${outsideUrl})`}
+    ])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('uploadUserAsset')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+  })
+
+  test('keeps an outside image the page already holds through edits around it', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Intro')), {
+      type: 'imageBlock',
+      attrs: {src: outsideUrl, alt: 'x'}
+    })
+    const image = `![x](${outsideUrl})`
+    expect(applyPageContentEdits(doc, [{oldText: 'Intro', newText: 'Overview'}])).toBeNull()
+    expect(
+      applyPageContentEdits(doc, [
+        {oldText: `Overview\n\n${image}`, newText: `Summary\n\n${image}`}
+      ])
+    ).toBeNull()
+    expect(
+      applyPageContentEdits(doc, [{oldText: image, newText: `![y](${outsideUrl})`}])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe(`# Plan\n\nSummary\n\n![y](${outsideUrl})`)
+  })
+
+  test('removes an outside image the page holds along with the text around it', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Intro')), {
+      type: 'imageBlock',
+      attrs: {src: outsideUrl, alt: 'x'}
+    })
+    expect(
+      applyPageContentEdits(doc, [{oldText: `Intro\n\n![x](${outsideUrl})`, newText: 'Overview'}])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe('# Plan\n\nOverview')
+  })
+
+  test('an outside image survives being read and written back', async () => {
+    const srcs = ['https://outside.test/a b.png', 'https://outside.test/c(1).png']
+    const doc = makeDoc(
+      heading('Plan'),
+      ...srcs.map((src) => ({type: 'imageBlock', attrs: {src, alt: 'pic'}}))
+    )
+    const nodes = (TiptapTransformer.fromYdoc(doc, 'default') as JSONContent).content ?? []
+    const pageImageSrcs = imageSrcsOf(nodes).filter((src): src is string => typeof src === 'string')
+    const written = parsePageMarkdown(await readPage(doc), new Set(pageImageSrcs))
+    expect(imageSrcsOf(written)).toEqual(srcs)
   })
 })
 

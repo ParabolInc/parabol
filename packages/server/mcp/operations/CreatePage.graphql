@@ -1,0 +1,13 @@
+# Create an empty page, then fill it with set_page_content. Leave out teamId and parentPageId for a private page, pass teamId for a page shared with that team, or parentPageId to nest it inside another page you can edit. A connection limited to some organizations, teams or pages can't make a top-level private page: it nests pages under pages it can edit, and makes team pages for the teams it can reach. Needs pages:write.
+mutation CreatePage(
+  # The team to share the page with, from get_me. Leave out for a private page
+  $teamId: ID
+  # The page to nest the new page inside, from search_pages or list_pages. Leave out if you pass teamId
+  $parentPageId: ID
+) {
+  createPage(teamId: $teamId, parentPageId: $parentPageId) {
+    page {
+      id
+    }
+  }
+}

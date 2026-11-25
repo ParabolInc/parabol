@@ -33,9 +33,21 @@ const getAddedPageLinks = (e: Y.YEvent<any>) => {
   return links
 }
 
+const isLiveSubPage = async (pageId: number, parentPageId: number) => {
+  const subPage = await getKysely()
+    .selectFrom('Page')
+    .select('id')
+    .where('id', '=', pageId)
+    .where('parentPageId', '=', parentPageId)
+    .where('deletedAt', 'is', null)
+    .executeTakeFirst()
+  return !!subPage
+}
+
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const userId = getUserIdFromTransaction(e.transaction)
   const {resourceGrants: grants, scopes} = getTokenContextFromTransaction(e.transaction)
+  const hasLimitedGrant = !!grants && Object.values(grants).some((ids) => ids !== null)
   getAddedPageLinks(e).forEach(async (node) => {
     const seed = node.getAttribute('content')
     if (seed !== undefined) node.removeAttribute('content')
@@ -101,6 +113,11 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         )
         if (existingNode) {
           // the viewer is programmatically attempting to inject a second canonical page link
+          node.setAttribute('canonical', false)
+        } else if (
+          hasLimitedGrant &&
+          !(await isLiveSubPage(CipherId.decrypt(childPageCode), parentPageId))
+        ) {
           node.setAttribute('canonical', false)
         } else {
           // a page link either got moved or the viewer is trying to programmatically add one

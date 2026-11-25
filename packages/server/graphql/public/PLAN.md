@@ -37,7 +37,6 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] changeTaskTeam — extracted `isTeamMember('args.teamId')`; secondary check on `oldTeamId` stays inline
 - [x] createImposterToken
 - [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
-- [x] createOAuthAPIProvider
 - [x] createPage
 - [x] createPoll — extracted `isTeamMember('args.newPoll.discussionId', 'discussions')`
 - [x] createReflection
@@ -45,7 +44,6 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] createTask — extracted `isTeamMember('args.newTask.teamId')`
 - [x] createTaskIntegration — extracted `isTeamMember('args.taskId', 'tasks')`
 - [x] deleteComment — extracted `isMeetingMember('args.meetingId')`
-- [x] deleteOAuthAPIProvider
 - [x] deleteTask — extracted `isTeamMember('args.taskId', 'tasks')`
 - [ ] deleteUser — complex: `or(isSuperUser, viewerDeletesSelf)` with re-auth time check
 - [x] denyPushInvitation
@@ -93,7 +91,6 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] reflectTemplatePromptUpdateDescription — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [x] reflectTemplatePromptUpdateGroupColor — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [x] refreshSession — no auth check; covered by wildcard
-- [x] regenerateOAuthAPIProviderSecret — extracted `hasProviderAccess('args.providerId')`
 - [x] removeAgendaItem — extracted `isTeamMember('args.agendaItemId', 'agendaItems')`
 - [x] removeApprovedOrganizationDomains
 - [x] removeAtlassianAuth — extracted `isTeamMember('args.teamId')`
@@ -122,6 +119,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] resetReflectionGroups — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] resetRetroMeetingToGroupStage — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] revealTeamHealthVotes
+- [x] revokeOAuthAPIGrant — `isUserViewer('args.grantId', 'oauthAPIGrants')`
 - [x] selectTemplate
 - [x] setDefaultSlackChannel
 - [x] setJiraDisplayFieldIds
@@ -169,7 +167,6 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] updateMeetingPrompt
 - [x] updateMeetingTemplate
 - [x] updateNewCheckInQuestion
-- [x] updateOAuthAPIProvider
 - [x] updateOrg
 - [x] updatePage
 - [x] updatePageAccess
@@ -291,9 +288,9 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] NotifyTeamArchived
 - [ ] NotifyTeamsLimitExceeded
 - [ ] NotifyTeamsLimitReminder
-- [ ] OAuthAPIProvider
+- [ ] OAuthAPIGrant
 - [ ] OAuthScopeEnum
-- [x] Organization *(oauthAPIProvider, saml, samls)*
+- [x] Organization *(saml, samls)*
 - [ ] OrgIntegrationProviders
 - [ ] OrganizationUser
 - [x] Page *(parentPage)*
@@ -312,7 +309,6 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] RRule
 - [ ] Reactable
 - [ ] Reactji
-- [ ] RedirectURI
 - [ ] ReflectPhase
 - [ ] ReflectPrompt
 - [ ] ReflectTemplate

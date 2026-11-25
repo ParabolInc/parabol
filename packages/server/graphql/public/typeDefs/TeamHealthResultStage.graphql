@@ -108,7 +108,8 @@ type TeamHealthResultStage implements NewMeetingStage & DiscussionThreadStage {
 
   """
   The average 1-5 Likert score this category earned this cycle. Null until the results are
-  revealed, or if nobody answered
+  revealed, and null when fewer than 3 people answered (see respondentCount), since an average
+  that small could be matched to the people who gave it
   """
   score: Float
 
@@ -120,8 +121,9 @@ type TeamHealthResultStage implements NewMeetingStage & DiscussionThreadStage {
   scoreHistory: [TeamHealthScorePoint!]!
 
   """
-  The number of people who scored this stage's question. A bare count only, so the spread can be
-  withheld for a small group while the average still shows. Null until the results are revealed
+  The number of people who scored this stage's question. A bare count only, so it tells you why
+  score or summary is null (fewer than 3 people) or spreadScores is (fewer than 4). Null until the
+  results are revealed
   """
   respondentCount: Int
 

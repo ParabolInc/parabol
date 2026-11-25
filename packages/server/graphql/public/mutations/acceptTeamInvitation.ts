@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {
   InvitationTokenError,
@@ -15,22 +16,6 @@ import handleInvitationToken from '../../mutations/helpers/handleInvitationToken
 import type {MutationResolvers} from '../resolverTypes'
 import {getIsAnyUserOrgLocked} from './helpers/getIsAnyUserOrgLocked'
 import {getIsUserIdApprovedByOrg} from './helpers/getIsUserIdApprovedByOrg'
-import userErrorResult from './helpers/userErrorResult'
-
-const invitationTokenUserError = {
-  [InvitationTokenError.NOT_FOUND]: ['TOKEN_INVALID', 'The invitation is not valid'],
-  [InvitationTokenError.EXPIRED]: ['TOKEN_EXPIRED', 'The invitation has expired'],
-  [InvitationTokenError.ALREADY_ACCEPTED]: [
-    'TOKEN_ALREADY_USED',
-    'The invitation has already been accepted'
-  ],
-  [InvitationTokenError.NOT_SIGNED_IN]: ['NOT_SIGNED_IN', 'Sign in to accept the invitation']
-} as const
-
-const invitationTokenErrorResult = (tokenError: InvitationTokenError) => {
-  const [code, message] = invitationTokenUserError[tokenError]
-  return userErrorResult(code, message)
-}
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
@@ -43,10 +28,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  // This can happen if login with an invitation failed. We want to handle this gracefully so the client shows a nice error message
-  if (!viewerId) {
-    return invitationTokenErrorResult(InvitationTokenError.NOT_SIGNED_IN)
-  }
   const invitationRes = await handleInvitationToken(
     invitationToken,
     viewerId,
@@ -55,20 +36,19 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   )
   if (invitationRes.error) {
     const {error: tokenError, teamId, meetingId} = invitationRes
-    // If the user already accepted the invite, then we want to send the needed data together with the error, unless they were removed in the meantime
-    if (
-      tokenError === InvitationTokenError.ALREADY_ACCEPTED &&
-      teamId &&
-      isTeamMember(authToken, teamId)
-    ) {
-      return {
-        ...invitationTokenErrorResult(tokenError),
-        teamId,
-        meetingId,
-        teamMemberId: toTeamMemberId(teamId!, viewerId)
+    if (tokenError === InvitationTokenError.ALREADY_ACCEPTED) {
+      // a viewer still on the team gets the same answer as the first time
+      if (teamId && isTeamMember(authToken, teamId)) {
+        return {teamId, meetingId, teamMemberId: toTeamMemberId(teamId, viewerId)}
       }
+      throw new GraphQLError('The invitation has already been accepted', {
+        extensions: {code: 'CONFLICT'}
+      })
     }
-    return invitationTokenErrorResult(tokenError)
+    if (tokenError === InvitationTokenError.EXPIRED) {
+      throw new GraphQLError('The invitation has expired', {extensions: {code: 'CONFLICT'}})
+    }
+    throw new GraphQLError('The invitation is not valid', {extensions: {code: 'NOT_FOUND'}})
   }
 
   const {invitation} = invitationRes
@@ -81,7 +61,9 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const redisLock = new RedisLock(`acceptTeamInvitation:${viewerId}:${orgId}`, ttl)
   const lockTTL = await redisLock.checkLock()
   if (lockTTL > 0) {
-    return userErrorResult('DUPLICATE_REQUEST', 'The invitation is already being accepted')
+    throw new GraphQLError('The invitation is already being accepted', {
+      extensions: {code: 'CONFLICT'}
+    })
   }
 
   const [approvalError, isAnyViewerOrgLocked] = await Promise.all([
@@ -90,11 +72,11 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   ])
   if (approvalError) {
     await redisLock.unlock()
-    return userErrorResult(approvalError.code, approvalError.message)
+    throw approvalError
   }
   if (isAnyViewerOrgLocked) {
     await redisLock.unlock()
-    return userErrorResult('ORGANIZATION_LOCKED', LOCKED_MESSAGE.TEAM_INVITE)
+    throw new GraphQLError(LOCKED_MESSAGE.TEAM_INVITE, {extensions: {code: 'ORGANIZATION_LOCKED'}})
   }
 
   // RESOLUTION

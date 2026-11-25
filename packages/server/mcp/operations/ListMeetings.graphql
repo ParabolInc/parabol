@@ -1,0 +1,37 @@
+# List meetings of every kind on the teams you pass. Newest first. Use get_meeting for what happened in one. Timestamps are UTC. Needs users:read and meetings:read.
+query ListMeetings(
+  # The teams to list meetings of, from get_me
+  $teamIds: [ID!]!
+  # Only list meetings created at or before this ISO date-time. Pass the current time for the latest meetings
+  $before: DateTime!
+  # Only list meetings created at or after this ISO date-time
+  $after: DateTime
+  # Most meetings to return
+  $first: Int = 20
+  # Only list meetings of these kinds
+  $meetingTypes: [MeetingTypeEnum!]! = [action, retrospective, poker, teamPrompt, teamHealth]
+) {
+  viewer {
+    meetings(
+      first: $first
+      teamIds: $teamIds
+      meetingTypes: $meetingTypes
+      after: $after
+      before: $before
+    ) {
+      edges {
+        node {
+          id
+          name
+          meetingType
+          teamId
+          createdAt
+          endedAt
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+}

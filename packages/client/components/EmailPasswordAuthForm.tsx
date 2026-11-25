@@ -6,7 +6,7 @@ import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
+import redirectAfterSignIn from '../mutations/handlers/redirectAfterSignIn'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
 import {LocalStorageKey, Security} from '../types/constEnums'
@@ -17,7 +17,6 @@ import getAnonymousId from '../utils/getAnonymousId'
 import getOAuthPopupFeatures from '../utils/getOAuthPopupFeatures'
 import getSAMLIdP from '../utils/getSAMLIdP'
 import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
 import loginSSO from '../utils/loginSSO'
 import Legitity from '../validation/Legitity'
@@ -185,17 +184,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       root.setValue(ga4Args.isNewUser, 'isNewUser')
     })
     emitGA4SignUpEvent(ga4Args)
-    if (invitationToken) {
-      localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      AcceptTeamInvitationMutation(
-        atmosphere,
-        {invitationToken},
-        {navigate, onCompleted, onError, ignoreApproval: true}
-      )
-    } else {
-      const nextUrl = getValidRedirectParam() || '/meetings'
-      navigate({href: nextUrl})
-    }
+    if (invitationToken) localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
+    redirectAfterSignIn(atmosphere, invitationToken, navigate)
     return true
   }
 
@@ -218,13 +208,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     if (isSignin) {
       LoginWithPasswordMutation(
         atmosphere,
-        {
-          email,
-          password,
-          invitationToken: invitationToken || '',
-          isInvitation: !!invitationToken
-        },
-        {onError, onCompleted, navigate}
+        {email, password},
+        {onError, onCompleted, navigate, invitationToken}
       )
     } else {
       const pseudoId = await getAnonymousId()
@@ -233,8 +218,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         {
           email,
           password,
-          invitationToken: invitationToken || '',
-          isInvitation: !!invitationToken,
+          invitationToken,
           pseudoId,
           params: location.searchStr
         },

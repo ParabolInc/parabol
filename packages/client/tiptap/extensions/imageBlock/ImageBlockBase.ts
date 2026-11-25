@@ -1,9 +1,16 @@
-import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig} from '@tiptap/core'
+import {
+  createBlockMarkdownSpec,
+  type JSONContent,
+  mergeAttributes,
+  type NodeConfig,
+  parseAttributes
+} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 
 export interface ImageBlockStorage {
   editorWidth: number
   editorHeight: number
+  expandButton: boolean
 }
 
 declare module '@tiptap/core' {
@@ -19,6 +26,23 @@ declare module '@tiptap/core' {
   }
 }
 
+const parseLegacyImageAttributes = (attrString: string) => {
+  const link = attrString.trim().match(/^\[(.*)\]\((.*)\)$/)
+  return link ? {alt: link[1] || null, src: link[2]} : parseAttributes(attrString)
+}
+
+const renderImageMarkdown = (node: JSONContent) => {
+  const {src, alt, title} = node.attrs ?? {}
+  const label = (alt ?? '').replace(/[\\[\]]/g, '\\$&')
+  const source: string = src ?? ''
+  const href = source.replace(/\r/g, '%0D').replace(/\n/g, '%0A')
+  const destination = /[\s()<>]/.test(href)
+    ? `<${href.replace(/[\\<>]/g, '\\$&')}>`
+    : href.replace(/\\/g, '\\$&')
+  const titleSuffix = title ? ` "${title.replace(/["\\]/g, '\\$&')}"` : ''
+  return `![${label}](${destination}${titleSuffix})`
+}
+
 export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>({
   name: 'imageBlock',
 
@@ -31,14 +55,16 @@ export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>
   addOptions() {
     return {
       editorWidth: 300,
-      editorHeight: 112
+      editorHeight: 112,
+      expandButton: false
     }
   },
 
   addStorage(this) {
     return {
       editorWidth: this.options.editorWidth,
-      editorHeight: this.options.editorHeight
+      editorHeight: this.options.editorHeight,
+      expandButton: this.options.expandButton
     }
   },
 
@@ -50,9 +76,8 @@ export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>
     ]
   },
   renderText({node}) {
-    const src = node.attrs.src as string
-    const fileName = src.split('/').pop()
-    return `\n<<${fileName}>>\n`
+    const src = node.attrs.src as string | null
+    return src ? `\n<<${src.split('/').pop()}>>\n` : ''
   },
   renderHTML({HTMLAttributes}) {
     const align = HTMLAttributes['data-align']
@@ -65,7 +90,8 @@ export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>
   },
   ...createBlockMarkdownSpec({
     nodeName: 'imageBlock',
-    serializeAttributes: ({alt, src}) => `[${alt || ''}](${src})`
-  })
+    parseAttributes: parseLegacyImageAttributes
+  }),
+  renderMarkdown: renderImageMarkdown
   // TipTap v3 got some types wrong, this cast shouldn't be necessary
 } as NodeConfig)

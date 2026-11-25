@@ -1,0 +1,14 @@
+# Change a page by finding exact runs of its markdown and replacing them, in order and all or nothing. Read the page first with read_page and copy the text to find exactly as it shows there, spaces and blank lines included. Each oldText must appear exactly once unless replaceAll is true. Put each image on its own line as ![alt](url), with a url from upload_image. Needs pages:write.
+mutation EditPage(
+  # The page id
+  $pageId: ID!
+  # The edits to apply
+  $edits: [PageContentEditInput!]!
+) {
+  patchPageContent(pageId: $pageId, edits: $edits) {
+    page {
+      id
+      title
+    }
+  }
+}

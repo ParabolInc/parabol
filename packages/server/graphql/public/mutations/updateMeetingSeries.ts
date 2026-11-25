@@ -1,12 +1,11 @@
 import {GraphQLError} from 'graphql'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RRuleSet} from 'rrule-rust'
 import publish from '../../../utils/publish'
 import isValid from '../../isValid'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import type {MutationResolvers} from '../resolverTypes'
-import {applySeriesRecurrence} from './updateRecurrenceSettings'
+import {applySeriesRecurrence, parseRRuleArg} from './updateRecurrenceSettings'
 
 const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   _source,
@@ -15,7 +14,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
+  const rrule = parseRRuleArg(rruleString)
 
   const numericId = MeetingSeriesId.split(meetingSeriesId)
   if (!Number.isFinite(numericId)) {

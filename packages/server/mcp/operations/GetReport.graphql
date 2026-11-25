@@ -1,0 +1,43 @@
+# Count an organization's people, meetings, tasks, pages and Team Health scores over a period, split by time, team, person, meeting type, template, task status, topic or Team Health category. Billing leaders and org admins get every team; everyone else gets the teams they're on. Each row has one key per breakdown and one value per measure; read notes before quoting the numbers. list_pinned_reports gives specs that work. Timestamps are UTC; days, weeks and months start in the time zone you pass, UTC by default. Needs orgs:read and reports:read, on a connection that reaches the whole organization.
+query GetReport(
+  # The organization, from get_me
+  $orgId: ID!
+  $spec: ReportSpecInput!
+  # The IANA time zone that days, weeks and months start in, such as America/New_York
+  $timeZone: String! = "UTC"
+) {
+  viewer {
+    organization(orgId: $orgId) {
+      report(spec: $spec, timeZone: $timeZone) {
+        from
+        to
+        step
+        breakdown {
+          dimension
+          levelName
+        }
+        rows {
+          keys {
+            value
+            label
+          }
+          values
+          previousValues
+        }
+        rowTotals {
+          keys {
+            value
+            label
+          }
+          values
+        }
+        totalRowCount
+        teamCount
+        notes {
+          kind
+          count
+        }
+      }
+    }
+  }
+}

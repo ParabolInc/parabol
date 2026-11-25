@@ -2,8 +2,9 @@ import crypto from 'node:crypto'
 import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import getKysely from '../../../postgres/getKysely'
-import hashPersonalAccessToken from '../../../utils/hashPersonalAccessToken'
+import hashRandomToken from '../../../utils/hashRandomToken'
 import type {MutationResolvers} from '../resolverTypes'
+import assertResourceGrantLimits from './helpers/assertResourceGrantLimits'
 
 let enabled = true
 export const createPersonalAccessToken: MutationResolvers['createPersonalAccessToken'] = async (
@@ -29,21 +30,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
       extensions: {code: 'BAD_USER_INPUT'}
     })
   }
-  if (grantedOrgIds && grantedOrgIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 organizations', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
-  if (grantedTeamIds && grantedTeamIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 teams', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
-  if (grantedPageIds && grantedPageIds.length > 100) {
-    throw new GraphQLError('Cannot grant access to more than 100 pages', {
-      extensions: {code: 'BAD_USER_INPUT'}
-    })
-  }
+  assertResourceGrantLimits({grantedOrgIds, grantedTeamIds, grantedPageIds})
   if (!enabled) {
     throw new GraphQLError(
       'PATs not enabled for your account. Reach out to sales to enable for free',
@@ -52,7 +39,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   }
   const rawToken = crypto.randomBytes(32).toString('base64url')
   const prefix = rawToken.slice(0, 8)
-  const hashedToken = hashPersonalAccessToken(rawToken)
+  const hashedToken = hashRandomToken(rawToken)
 
   const pg = getKysely()
   const pat = await pg

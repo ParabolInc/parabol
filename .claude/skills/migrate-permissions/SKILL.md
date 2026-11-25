@@ -31,7 +31,6 @@ Authorization lives in two places: `graphql/public/permissions.ts` (preferred) a
 | `isViewerOnOrg` | viewer is a member of the org |
 | `isOrgTier` | org is on a specific tier (`enterprise`, etc.) |
 | `hasPageAccess` | viewer has `viewer` or `owner` access to a page |
-| `hasProviderAccess` | viewer can access an OAuth provider |
 | `isNull` | an arg is null (used for conditional or() rules) |
 | `isEnvVarTrue` | an env var is set to true |
 | `rateLimit` | rate limits by perMinute/perHour |

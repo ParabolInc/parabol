@@ -1,47 +1,7 @@
-import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
+import omitPrivateTasks from '../../../utils/omitPrivateTasks'
 import type {DataLoaderWorker} from '../../graphql'
-
-const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
-  const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
-  const discussion = await getKysely()
-    .selectFrom('Discussion')
-    .selectAll()
-    .where('discussionTopicId', '=', reflectionGroupId)
-    .limit(1)
-    .executeTakeFirst()
-  if (!discussion) return null
-  const {id: discussionId} = discussion
-  const rawComments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
-  const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!))
-  const rootComments = humanComments.filter((c) => !c.threadParentId)
-  rootComments.sort((a, b) => (a.createdAt.getTime() < b.createdAt.getTime() ? -1 : 1))
-
-  const comments = await Promise.all(
-    rootComments.map(async (comment) => {
-      const {createdBy, isAnonymous, plaintextContent} = comment
-      const creator = createdBy ? await dataLoader.get('users').loadNonNull(createdBy) : null
-      const commentAuthor = isAnonymous || !creator ? 'Anonymous' : creator.preferredName
-      const commentReplies = await Promise.all(
-        humanComments
-          .filter((c) => c.threadParentId === comment.id)
-          .sort((a, b) => (a.createdAt.getTime() < b.createdAt.getTime() ? -1 : 1))
-          .map(async (reply) => {
-            const {createdBy, isAnonymous, plaintextContent} = reply
-            const creator = createdBy ? await dataLoader.get('users').loadNonNull(createdBy) : null
-            const replyAuthor = isAnonymous || !creator ? 'Anonymous' : creator.preferredName
-            return {text: plaintextContent, author: replyAuthor}
-          })
-      )
-      return {
-        text: plaintextContent,
-        author: commentAuthor,
-        replies: commentReplies
-      }
-    })
-  )
-  return comments
-}
+import {getComments} from '../../public/mutations/helpers/getComments'
 
 export const transformRetroToAIFormat = async (meetingId: string, dataLoader: DataLoaderWorker) => {
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
@@ -62,7 +22,7 @@ export const transformRetroToAIFormat = async (meetingId: string, dataLoader: Da
         ])
 
         const tasks = discussion
-          ? await dataLoader.get('tasksByDiscussionId').load(discussion.id)
+          ? omitPrivateTasks(await dataLoader.get('tasksByDiscussionId').load(discussion.id))
           : []
 
         const discussPhase = getPhase(meeting.phases, 'discuss')

@@ -13,6 +13,7 @@ import type {
 import getPhase from './getPhase'
 import getTeamHealthDisplayComment from './getTeamHealthDisplayComment'
 import {Logger} from './Logger'
+import omitPrivateTasks from './omitPrivateTasks'
 
 const serializeReflections = async (
   rawReflections: RetroReflection[],
@@ -42,7 +43,7 @@ const serializeTasks = async (
   dataLoader: DataLoaderInstance
 ) => {
   if (!discussionId) return []
-  const tasks = await dataLoader.get('tasksByDiscussionId').load(discussionId)
+  const tasks = omitPrivateTasks(await dataLoader.get('tasksByDiscussionId').load(discussionId))
   if (!tasks.length) return []
   return Promise.all(
     tasks.map(async (task) => {

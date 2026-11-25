@@ -1,0 +1,28 @@
+# Find pages by words in their title or content, best matches first, with snippets showing why each matched and where each page sits; teamId is set only on a team's top-level pages. Open one with read_page. updatedAt is UTC. Needs users:read and pages:read.
+query SearchPages(
+  # The words to look for
+  $query: String!
+  # Most pages to return
+  $first: Int = 20
+) {
+  viewer {
+    search(query: $query, first: $first, type: page) {
+      edges {
+        snippets
+        node {
+          ... on Page {
+            id
+            title
+            parentPageId
+            teamId
+            isPrivate
+            updatedAt
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+}

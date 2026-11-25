@@ -1,0 +1,26 @@
+# Start a standup on a team with the team's selected template, or schedule it to repeat weekly. To use another template, call select_template first. It returns the meeting's prompts, whose ids answer_standup takes. With an rrule whose DTSTART is more than a minute away, it only schedules the series: meeting is null and the first standup starts at DTSTART. It refuses a team you aren't on or whose organization can't start meetings until its bill is paid, and a standup or series started on the team moments after another. To cancel a series later, call graphql_mutate with updateMeetingSeries and rrule: null, passing meetingSeries.id from here or meetingSeriesId from get_meeting or get_standup. Needs meetings:write.
+mutation StartStandup(
+  # The team to meet, from get_me
+  $teamId: ID!
+  # The standup's name, or the series' name with rrule. Defaults to Standup
+  $name: String
+  # Repeat the standup weekly. Two lines joined by a newline: DTSTART;TZID=<IANA time zone>:<YYYYMMDD>T<HHMMSS>, the local time of the first standup, then RRULE:FREQ=WEEKLY;INTERVAL=<1 to 52>;BYDAY=<MO,TU,WE,TH,FR,SA,SU>. Leave out TZID and the time is UTC. INTERVAL defaults to 1. UNTIL is allowed and COUNT is not. A DTSTART more than a minute away only schedules the series. Example: DTSTART;TZID=UTC:20260105T150000\nRRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR. Omit for one standup
+  $rrule: RRule
+) {
+  startTeamPrompt(teamId: $teamId, name: $name, rrule: $rrule) {
+    meeting {
+      id
+      name
+      meetingType
+      teamId
+      prompts {
+        id
+        question
+      }
+    }
+    meetingSeries {
+      id
+      title
+    }
+  }
+}

@@ -1,16 +1,20 @@
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import getKysely from '../postgres/getKysely'
 import {toEpochSeconds} from './epochTime'
 import {getBlacklistJWTKey, getBlacklistJWTSessionKey} from './getBlacklistJWTKey'
 import getRedis from './getRedis'
 import publish from './publish'
 import {revalidateYjsConnections} from './tiptap/revalidateYjsConnections'
 
-// blacklist all tokens issued before iat
+// blacklist all tokens issued before iat, and disconnect every OAuth app so it can't refresh past it
 export const blacklistJWT = async (userId: string, iat: number, mutatorId?: string) => {
   const key = getBlacklistJWTKey(userId)
   const redis = getRedis()
   const expiresIn = iat - toEpochSeconds(new Date()) + Math.floor(Threshold.JWT_LIFESPAN / 1000)
-  await redis.set(key, iat, 'EX', expiresIn)
+  await Promise.all([
+    redis.set(key, iat, 'EX', expiresIn),
+    getKysely().deleteFrom('OAuthAPIGrant').where('userId', '=', userId).execute()
+  ])
   publish(
     SubscriptionChannel.NOTIFICATION,
     userId,

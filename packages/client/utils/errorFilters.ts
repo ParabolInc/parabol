@@ -1,7 +1,4 @@
-export const isOldBrowserError = ({message}: Error) => {
-  const oldBrowserErrors = ['flatMap is not a function', 'Intl.Segmenter is not a constructor']
-  return !!oldBrowserErrors.find((err) => message.includes(err))
-}
+import {isBrowserTooOld} from './browserSupport'
 
 export const isNetworkError = ({name}: Error) => {
   return name === 'ChunkLoadError' || name === 'AbortError'
@@ -48,9 +45,6 @@ export const isNotSignedInError = ({message}: Error) => {
 
 export const isIgnoredError = (error: Error) => {
   return (
-    isNetworkError(error) ||
-    isOldBrowserError(error) ||
-    isExtensionError(error) ||
-    isNotSignedInError(error)
+    isBrowserTooOld || isNetworkError(error) || isExtensionError(error) || isNotSignedInError(error)
   )
 }

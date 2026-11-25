@@ -8,6 +8,7 @@ import ReportPageHeader from './ReportPageHeader'
 import ReportPanel from './ReportPanel'
 import type {ReportPagePeriod} from './reportPeriodParam'
 import {describeReportSpec} from './reportSpecLabels'
+import useRememberReportsOrg from './useRememberReportsOrg'
 import useResultSpec from './useResultSpec'
 
 interface Props {
@@ -60,6 +61,7 @@ const ReportPage = ({
   const {viewer} = usePreloadedQuery<ReportPageQuery>(query, queryRef)
   const {resultSpec, isUpdating} = useResultSpec(queryRef.variables.spec, spec, period)
   const {organization} = viewer
+  useRememberReportsOrg(orgId, !!organization)
   const levels = organization?.structure ?? []
   const name = title ?? describeReportSpec(spec, levels)
   useDocumentTitle(`${name} | Reports | Parabol`, 'Reports')

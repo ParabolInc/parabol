@@ -1,9 +1,9 @@
+import {GraphQLError} from 'graphql'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import {logins} from '../../../metricsHandler'
 import {setAuthCookie} from '../../../utils/authCookie'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import type {MutationResolvers} from '../resolverTypes'
-import userErrorResult from './helpers/userErrorResult'
 
 const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   _source,
@@ -24,12 +24,16 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   }
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-    return userErrorResult('SIGN_IN_WITH_GOOGLE', 'Try logging in with Google')
+    throw new GraphQLError('Try logging in with Google', {
+      extensions: {code: 'SIGN_IN_WITH_GOOGLE'}
+    })
   }
   if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
-    return userErrorResult('SIGN_IN_WITH_MICROSOFT', 'Try logging in with Microsoft')
+    throw new GraphQLError('Try logging in with Microsoft', {
+      extensions: {code: 'SIGN_IN_WITH_MICROSOFT'}
+    })
   }
-  return userErrorResult('INVALID_CREDENTIALS', 'Invalid email or password')
+  throw new GraphQLError('Invalid email or password', {extensions: {code: 'UNAUTHENTICATED'}})
 }
 
 export default loginWithPassword
