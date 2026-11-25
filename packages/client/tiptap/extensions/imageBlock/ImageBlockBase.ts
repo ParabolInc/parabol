@@ -4,6 +4,7 @@ import {Image} from '@tiptap/extension-image'
 export interface ImageBlockStorage {
   editorWidth: number
   editorHeight: number
+  expandButton: boolean
 }
 
 declare module '@tiptap/core' {
@@ -31,14 +32,16 @@ export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>
   addOptions() {
     return {
       editorWidth: 300,
-      editorHeight: 112
+      editorHeight: 112,
+      expandButton: false
     }
   },
 
   addStorage(this) {
     return {
       editorWidth: this.options.editorWidth,
-      editorHeight: this.options.editorHeight
+      editorHeight: this.options.editorHeight,
+      expandButton: this.options.expandButton
     }
   },
 
