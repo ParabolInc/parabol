@@ -1,6 +1,7 @@
-import {useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import type {useInviteToTeamMutation$data} from '../__generated__/useInviteToTeamMutation.graphql'
 import {isValidEmail} from '../shared/emailAddress'
+import type {InviteeCheck} from '../utils/inviteeDirectory'
 import splitEmailList from '../utils/splitEmailList'
 
 export type TeamInviteeResult = useInviteToTeamMutation$data['inviteToTeam']['invitees'][number]
@@ -8,9 +9,11 @@ export type TeamInviteeResult = useInviteToTeamMutation$data['inviteToTeam']['in
 export type InviteeDraft = {
   email: string
   rejection: {
-    status: TeamInviteeResult['status']
+    status: TeamInviteeResult['status'] | 'closeToMember'
     message: string
     suggestedEmail: string | null
+    suggestedName: string | null
+    origin: 'server' | 'check'
   } | null
 }
 
@@ -29,9 +32,56 @@ const toRejectedDraft = (result: TeamInviteeResult): InviteeDraft => ({
   rejection: {
     status: result.status,
     message: result.message ?? '',
-    suggestedEmail: result.suggestedEmail ?? null
+    suggestedEmail: result.suggestedEmail ?? null,
+    suggestedName: null,
+    origin: 'server'
   }
 })
+
+type EmailCheck = (email: string) => InviteeCheck
+type InviteeRejection = NonNullable<InviteeDraft['rejection']>
+
+const toCheckRejection = (check: InviteeCheck): InviteeRejection | null => {
+  if (check.kind === 'closeToMember') {
+    return {
+      status: 'closeToMember',
+      message: check.message,
+      suggestedEmail: check.person.email,
+      suggestedName: check.person.name,
+      origin: 'check'
+    }
+  }
+  if (check.kind === 'notApproved') {
+    return {
+      status: 'notApproved',
+      message: check.message,
+      suggestedEmail: null,
+      suggestedName: null,
+      origin: 'check'
+    }
+  }
+  return null
+}
+
+const runEmailCheck = (
+  check: EmailCheck | null,
+  email: string,
+  keptEmails: ReadonlySet<string>
+): InviteeRejection | null => {
+  if (!check || !isValidEmail(email)) return null
+  const rejection = toCheckRejection(check(email))
+  return rejection?.status === 'closeToMember' && keptEmails.has(email) ? null : rejection
+}
+
+const isSameRejection = (a: InviteeRejection | null, b: InviteeRejection | null) =>
+  a === b ||
+  (!!a &&
+    !!b &&
+    a.status === b.status &&
+    a.message === b.message &&
+    a.suggestedEmail === b.suggestedEmail &&
+    a.suggestedName === b.suggestedName &&
+    a.origin === b.origin)
 
 const toNotes = (results: readonly TeamInviteeResult[]) =>
   results
@@ -49,6 +99,9 @@ const useTeamInviteeDrafts = (
   const [drafts, setDrafts] = useState(() => initialResults.filter(isRejected).map(toRejectedDraft))
   const [notes, setNotes] = useState(() => toNotes(initialResults))
   const [sentEmails, setSentEmails] = useState(() => toSentEmails(initialResults))
+  const emailCheckRef = useRef<EmailCheck | null>(null)
+  const [hasEmailCheck, setHasEmailCheck] = useState(false)
+  const keptEmailsRef = useRef(new Set<string>())
   const teamEmailSet = new Set(teamEmails)
   const draftEmailSet = new Set(drafts.map(({email}) => email))
   const isNewEmail = (email: string) => !draftEmailSet.has(email) && !teamEmailSet.has(email)
@@ -57,14 +110,38 @@ const useTeamInviteeDrafts = (
   )
   const readyEmails = [...drafts.filter(isDraftReady).map(({email}) => email), ...pendingEmails]
 
+  const checkEmail = (email: string) =>
+    runEmailCheck(emailCheckRef.current, email, keptEmailsRef.current)
+
+  const setEmailCheck = useCallback((check: EmailCheck | null) => {
+    emailCheckRef.current = check
+    setHasEmailCheck(check !== null)
+    setDrafts((current) => {
+      const next = current.map((draft) => {
+        if (draft.rejection && draft.rejection.origin !== 'check') return draft
+        const rejection = runEmailCheck(check, draft.email, keptEmailsRef.current)
+        return isSameRejection(draft.rejection, rejection) ? draft : {email: draft.email, rejection}
+      })
+      return next.every((draft, index) => draft === current[index]) ? current : next
+    })
+  }, [])
+
+  const keepDraft = (email: string) => {
+    keptEmailsRef.current.add(email)
+    setDrafts((current) =>
+      current.map((draft) => (draft.email === email ? {email, rejection: null} : draft))
+    )
+  }
+
   const addEmails = (text: string) => {
+    if (emailCheckRef.current && !text.includes('@')) return drafts
     const emails = splitEmailList(text).filter((email) => !draftEmailSet.has(email))
     const memberEmails = emails.filter((email) => teamEmailSet.has(email))
     const nextDrafts = [
       ...drafts,
       ...emails
         .filter((email) => !teamEmailSet.has(email))
-        .map((email) => ({email, rejection: null}))
+        .map((email) => ({email, rejection: checkEmail(email)}))
     ]
     setDrafts(nextDrafts)
     if (memberEmails.length > 0) {
@@ -77,11 +154,13 @@ const useTeamInviteeDrafts = (
   }
 
   const commitText = (text: string) => {
+    if (emailCheckRef.current && !text.includes('@')) return
     addEmails(text)
     setInputValue('')
   }
 
   const commitInput = () => {
+    if (emailCheckRef.current && !inputValue.includes('@')) return drafts
     setInputValue('')
     return inputValue.trim() ? addEmails(inputValue) : drafts
   }
@@ -146,7 +225,10 @@ const useTeamInviteeDrafts = (
     editDraft,
     retryDraft,
     replaceDraft,
-    applyResults
+    applyResults,
+    setEmailCheck,
+    hasEmailCheck,
+    keepDraft
   }
 }
 
