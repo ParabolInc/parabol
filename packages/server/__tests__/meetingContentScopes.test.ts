@@ -9,7 +9,7 @@ afterAll(async () => {
   await getKysely().destroy()
 })
 
-const MISSING_COMMENTS_READ = 'Access token is missing required scope: comments:read'
+const MISSING_SCOPE = 'Access token is missing required scope'
 const COMMENT_TEXT = 'A comment only comments:read may see'
 const REPLY_TEXT = 'A reply only comments:read may see'
 const TASK_TEXT = 'A task made in the discussion'
@@ -152,6 +152,21 @@ const THREAD_TASK_REPLIES = `
   }
 `
 
+const MEETING_TASKS = `
+  query MeetingTasks($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        ... on TeamPromptMeeting {
+          tasks {
+            id
+            plaintextContent
+          }
+        }
+      }
+    }
+  }
+`
+
 const REPLY_NOTIFICATIONS = `
   query ReplyNotifications {
     viewer {
@@ -253,22 +268,27 @@ const setUpThread = async () => {
   return {owner, meetingId}
 }
 
-const expectMissingCommentsRead = (res: {
-  data?: unknown
-  errors?: {message: string; extensions: {code: string}}[]
-}) => {
+const expectMissingScope = (
+  res: {data?: unknown; errors?: {message: string; extensions: {code: string}}[]},
+  scope: string,
+  hiddenTexts: string[]
+) => {
   expect(res.errors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        message: MISSING_COMMENTS_READ,
+        message: `${MISSING_SCOPE}: ${scope}`,
         extensions: expect.objectContaining({code: 'FORBIDDEN'})
       })
     ])
   )
   const data = JSON.stringify(res.data)
-  expect(data).not.toContain(COMMENT_TEXT)
-  expect(data).not.toContain(REPLY_TEXT)
+  for (const text of hiddenTexts) {
+    expect(data).not.toContain(text)
+  }
 }
+
+const expectMissingCommentsRead = (res: Parameters<typeof expectMissingScope>[0]) =>
+  expectMissingScope(res, 'comments:read', [COMMENT_TEXT, REPLY_TEXT])
 
 test('a token without comments:read gets FORBIDDEN on comments reached through a meeting', async () => {
   const {owner, meetingId} = await setUpThread()
@@ -343,4 +363,23 @@ test('comments:read and a session read the whole thread', async () => {
     expect(data).toContain(TASK_TEXT)
     expect(data).toContain(REPLY_TEXT)
   }
+})
+
+test('a token without tasks:read gets FORBIDDEN on tasks reached through a meeting', async () => {
+  const {owner, meetingId} = await setUpThread()
+  const withoutTasks = await createPersonalAccessToken(
+    ['USERS_READ', 'MEETINGS_READ', 'COMMENTS_READ'],
+    {cookie: owner.cookie}
+  )
+
+  for (const query of [MEETING_TASKS, THREAD_TASKS]) {
+    const res = await sendPublic({query, variables: {meetingId}, bearerToken: withoutTasks})
+    expectMissingScope(res, 'tasks:read', [TASK_TEXT])
+  }
+
+  const withTasks = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ', 'TASKS_READ'], {
+    cookie: owner.cookie
+  })
+  const data = await send(MEETING_TASKS, {meetingId}, {bearerToken: withTasks})
+  expect(data.viewer.meeting.tasks).toEqual([{id: expect.any(String), plaintextContent: TASK_TEXT}])
 })

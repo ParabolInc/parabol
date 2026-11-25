@@ -639,9 +639,12 @@ const permissionMap: PermissionMap<Resolvers> = {
   PinnedReport: {
     report: rateLimit({perMinute: 120, perHour: 3000})
   },
-  // A comment is reached through meetings, threads, replies & notifications, so the scope guards the comment itself
   Comment: {
     '*': hasScope('comments:read'),
+    id: allow
+  },
+  Task: {
+    '*': hasScope('tasks:read'),
     id: allow
   },
   RetroReflectionGroup: {
