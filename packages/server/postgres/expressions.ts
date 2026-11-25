@@ -69,7 +69,12 @@ export const pageSearchTsv = (title: Expression<string | null>, body: Expression
 export const pageSnippet = (body: Expression<string | null>, tsQuery: Expression<string | null>) =>
   sql<string | null>`ts_headline(
     'simple',
-    left(coalesce(${body}, ''), 20000),
+    regexp_replace(
+      regexp_replace(left(coalesce(${body}, ''), 20000), '<<[^<>[:space:]]+>>', ' ', 'g'),
+      '[[:space:]]+',
+      ' ',
+      'g'
+    ),
     ${tsQuery},
     'StartSel=<b>, StopSel=</b>, MaxWords=35, MinWords=15, MaxFragments=1'
   )`

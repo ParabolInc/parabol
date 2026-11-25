@@ -259,6 +259,30 @@ describe('applyPageContentEdits', () => {
     expect(markdownOf(doc)).toBe('# Plan\n\nRed text\n\nSimple text')
   })
 
+  test('reads a response block as a quote, refuses to rewrite it, and keeps it through nearby edits', async () => {
+    const response: JSONContent = {
+      type: 'responseBlock',
+      attrs: {
+        id: 'r1',
+        preferredName: 'Ann',
+        avatar: 'https://example.com/a.png',
+        content: JSON.stringify({type: 'doc', content: [paragraph(text('Shipped the widget'))]})
+      }
+    }
+    const doc = makeDoc(heading('Standup'), response, paragraph(text('Next steps')))
+    expect(await readPage(doc)).toBe(
+      '# Standup\n\n> **Ann:**\n>\n> Shipped the widget\n\nNext steps'
+    )
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'the widget', newText: 'it'}])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('a responseBlock block')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+    const [, kept] = blocksOf(doc)
+    expect(applyPageContentEdits(doc, [{oldText: 'Next steps', newText: 'Later'}])).toBeNull()
+    expect(blocksOf(doc)[1]).toBe(kept)
+  })
+
   test('refuses to remove the title heading', () => {
     expect(applyPageContentEdits(makePage(), [{oldText: '# Plan\n\n', newText: ''}])?.code).toBe(
       'BAD_USER_INPUT'
