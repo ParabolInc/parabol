@@ -106,7 +106,39 @@ A failure throws `new GraphQLError(message, {extensions: {code}})`. `scripts/bio
 - `INTERNAL_SERVER_ERROR`: a bug the server caught itself. Logging, tracing, the SLO counter and the client's error reports treat it like a crash, but its message still reaches the client
 - A domain code (`UPGRADE_REQUIRED`, `UNAPPROVED_UNLINK`, …) only when the client branches on it
 
-A plain `Error` should only ever come from something nobody caught. Yoga replaces its message with "Unexpected error." and adds the trace id as `extensions.traceId`.
+A plain `Error` should only ever come from something nobody caught. Yoga replaces its message with "Unexpected error." and adds the trace id as `extensions.traceId`. A bug the code detects itself ("Unhandled recurring meeting type", an insert that returned no row) is still a `GraphQLError` coded `INTERNAL_SERVER_ERROR`, so its message reaches the client; `utils/isExpectedError.ts` decides by code what logging and the SLO count as unexpected.
+
+Where an error comes from changes what the caller sees (graphql 16 + Yoga 5 + @graphql-tools/executor):
+- **Scalar `parseValue`** (variables): a plain Error becomes "Unexpected error."; a GraphQLError keeps its code inside `Variable "$x" got invalid value …`.
+- **`parseLiteral`** in an ad hoc op: a GraphQLError is reported as thrown; a plain Error becomes GRAPHQL_VALIDATION_FAILED. In a persisted op, `valueFromAST` swallows the throw and the caller gets `Argument "x" has invalid value …` with no code. It also runs twice per validated request (validation, then execution), so keep parsing stateless: a `/g` regex fails the second call.
+- **`serialize`:** the executor rethrows any GraphQLError as a plain Error, so a serialize failure is always "Unexpected error.".
+- **Yoga's validation cache** is keyed by document text, so probes need unique documents (an operation name will do).
+- **A shield rule that returns a string** becomes a plain `new Error(res)`; rules must return coded GraphQLErrors themselves.
+- Biome GritQL `message` strings: no backslash escapes (after `\"` the rest of the message mangles). Suppress one plugin with `// biome-ignore lint/plugin/<grit file name>: reason`.
+
+### Renaming types and fields: stale clients
+
+`yoga.ts` runs `usePersistedOperations({skipDocumentValidation: true})`, so an old tab's persisted document runs unvalidated against the new schema. graphql-js silently skips a field the type no longer has and a fragment whose type condition no longer exists. Nothing errors; data goes missing.
+- Relay flattens a `@relay(mask: false)` spread whose type matches its parent, so payload type names appear in persisted text only in union arms and masked named fragments.
+- Subscription payload field names and the `fieldName` a mutation publishes are what old clients key on: renaming a field's type is invisible to them, renaming the field is not.
+- PAT/OAuth callers send validated ad hoc operations, so the same rename fails loudly for them.
+- Server HTTP tests skip validation too (`sendPublic` persists each query and sends its `docId`), so a test still selecting a deleted `... on XSuccess` gets `{}` and fails later with `Cannot read properties of undefined`. When you delete a type, grep the test queries for its name.
+- Before renaming, grep `queryMap.json` for `on <Type>` and the field name. Turn a union into an object type while keeping the arm's type name; rename that type only after old clients have drained.
+
+---
+
+## Server gotchas
+
+- **Auth token claims are the trusted copy.** `authToken.tms` is what a session may see. When code disagrees with it (a resolver listing teams from the database while the `Team` rules check `tms`), make that code agree with the token. Don't re-read teams per request and don't re-issue the token or set cookies from a query field: the token refreshes on the socket upgrade (`getFreshTokenIfNeeded`), on membership mutations and in `refreshSession`, and a stale token until then is the accepted trade-off.
+- **The schema is chosen per request.** `yoga.ts` passes `schema: ({authToken}) => su ? getFullSchema() : rootSchema`. envelop's `setSchema` is orchestrator-wide, not per request, and every swap fires each plugin's `onSchemaChange`. A plugin that wraps `field.resolve` in place must dedupe by field object (as `useAuditLogs` and `@envelop/on-resolve` do), not by schema, or it wraps fields again on every swap. A per-request schema must already declare every directive a plugin would add (`@stream`), or the plugin rebuilds the schema on each request.
+- **Nested GitHub/GitLab/Linear schemas are pruned in prod builds** to what persisted operations use (`scripts/webpack/utils/getNestedUsage.js`, `pruneNestedTypeDefs.js`); `utils/useNestedSchemaFallback.ts` swaps in the full schema when an op needs a pruned field. Relay's persisted text keeps client-extension fields (`service` on TaskIntegration), so only a field the endpoint's own schema has counts as missing. Check new nested-type resolvers are covered by `getResolverUsage`.
+- **Nested query documents use unprefixed type names.** `nest-graphql-endpoint` forwards `utils/githubQueries/*.graphql` to GitHub as written, so they use `Issue`, not `_xGitHubIssue`, while runtime `__typename` is always prefixed. `scripts/prefixGitHubTypenames.js` prefixes the generated `githubTypes.ts` to match. The IDE flags unprefixed names as "Unknown type"; that's a false positive. Same for GitLab and Linear.
+- **Dataloaders must not import `integrations/platform/registry.ts`.** It imports every server integration, and GitHub's reaches `rootSchema`, which would drag the whole schema into every module and test that imports a loader. When a loader must dispatch by service, add a table of per-service functions in `integrations/platform/` (as `createOAuth2Manager.ts` and `loadIssues.ts` do) taking a bare `{get}` loader, teamId and userId, never GraphQL `context`/`info`. GitHub, GitLab and Linear reads need `info`, so they can't sit behind a loader.
+- **`@graphql-tools/utils` is overridden for every package** in `pnpm-workspace.yaml`. Its major must match what graphql-yoga's `@graphql-tools/executor` expects; a mismatch makes every `@include`/`@skip`/`@defer(if: $var)` throw "was provided the variable … which was not provided a runtime value". When touching the override or bumping Yoga, check `pnpm why @graphql-tools/executor`.
+- **Feature flags are defined in code**, in `FEATURE_FLAGS` in `packages/server/utils/featureFlags.ts`; the `FeatureFlag` table is gone. `FeatureFlagOwner` still holds grants, keyed by `featureName`.
+- **`TeamMember.updatedAt` isn't when someone left.** A mid-2025 migration rewrote it on every row, there's no `removedAt`, and rejoining reuses the row. For membership history use `OrganizationUser.joinedAt/removedAt` or `OrganizationUserAudit`, or add a real `removedAt`.
+- **Server fetch is `@whatwg-node/fetch`, a `node:http` ponyfill, not undici.** It takes `agent` in RequestInit (which also forces the `node:http` path). `redirect: 'follow'` has no redirect cap and copies every header, `Authorization` included, to the new origin, and it resolves `file:`, `data:` and `blob:` URLs. Fetch a user-supplied URL with `utils/fetchUntrusted.ts`.
+- **Lazy-load server modules with `await import(/* webpackMode: "eager" */ '…')`, never `require`.** Put the boundary at an async call site; a sync getter becomes async and memoizes one promise (`x ??= make()`).
 
 ---
 

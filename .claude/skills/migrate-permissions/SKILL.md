@@ -1,6 +1,6 @@
 ---
 name: migrate-permissions
-description: Guide for moving inline auth checks out of GraphQL resolvers and into permissions.ts using graphql-shield rules. Use when adding, reviewing, or migrating authorization logic for mutations or queries.
+description: Guide for authorization with graphql-shield rules in permissions.ts — the available rules, moving inline auth checks out of resolvers, and writing rules that can't throw (null authToken, parallel and()/or(), denial logging, the public rate limit). Use when adding, reviewing, or migrating authorization logic for mutations or queries.
 ---
 
 ## Permissions
@@ -54,6 +54,16 @@ When extracting inline auth:
 3. Add the entry to `permissionMap` in `permissions.ts` (keep fields alphabetical, `'*'` first)
 4. Remove the inline check from the resolver, along with any imports that are no longer used
 5. If no existing rule fits and the logic is reusable, ask before creating a new rule — most cases can reuse existing rules
+
+### Writing rules that can't throw
+
+- **`authToken` is null for a signed-out HTTP request**, though `GQLContext.authToken` is typed non-null, so TypeScript never flags `authToken.tms`. Every rule must tolerate it: use `getUserId(authToken)` or `authToken?.`.
+- **`and()` and `or()` run their rules in parallel** (Promise.all). `and(isAuthenticated, isTeamMember(...))` still runs the second rule for a signed-out caller, and `or(isNull('args.x'), ruleThatLoads('args.x'))` still loads with `x` undefined. A rule must handle a missing arg itself (return a NOT_FOUND error) rather than rely on a sibling to guard it. Don't use graphql-shield's `race()`: its cjs build throws `util_1.isUndefined is not a function`.
+- `composeResolvers.ts` runs shield with `debug: true`, so a rule that throws rejects the whole field as an `INTERNAL_SERVER_ERROR`, which counts against the availability SLO.
+- **Return coded GraphQLErrors.** A rule that returns a string becomes a plain `Error` with no code.
+- **A denial logs a warning per request** (`utils/useErrorLogging.ts`). For data merely scoped to the viewer on a type they can already read, shape the result in the resolver (return null or `[]`), as `Page.parentPage`, `Page.ancestors` and `PageAccess.pendingRequests` do. Keep rules for mutations and for fields the client only requests when allowed.
+- `Query.public` and `PublicRoot.page` share `rateLimit({perMinute: 20, perHour: 100})`, counted once per request, so a second `public { page }` query per page view halves how many pages a user can open. Put extra page data in `PageEntryQuery` instead of a new root.
+- `hasPageAccess` takes an optional third argument (`'pageThreads' | 'pageComments'`) to find the page from a thread or comment id.
 
 ### When a new rule is needed (ask first)
 
