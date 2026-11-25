@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import type {RuleContext} from '../../graphql'

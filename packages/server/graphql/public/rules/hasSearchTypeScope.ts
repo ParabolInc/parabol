@@ -1,4 +1,4 @@
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import type {RuleContext} from '../../graphql'
 import {getMissingScopeError} from '../applyScopeDirective'
 import type {OAuthScopeEnum, SearchTypeEnum, UserSearchArgs} from '../resolverTypes'

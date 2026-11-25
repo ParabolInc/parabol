@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import type {RuleContext} from '../../graphql'
 
 export const hasUnrestrictedGrant = rule('hasUnrestrictedGrant', {cache: 'contextual'})(

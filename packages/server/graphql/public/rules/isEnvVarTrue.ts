@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 
 const isEnvVarTrue = (varName: string) =>
   rule(`isEnvVarTrue-${varName}`, {cache: 'contextual'})(() => {

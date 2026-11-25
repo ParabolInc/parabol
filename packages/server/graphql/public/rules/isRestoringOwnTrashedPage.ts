@@ -1,4 +1,4 @@
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'

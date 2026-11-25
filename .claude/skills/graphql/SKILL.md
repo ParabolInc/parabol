@@ -30,7 +30,7 @@ Only add a mapper entry when you create a new source type file. If the payload's
 - old shared helpers (not yet migrated): `../../mutations/helpers/<helper>`
 
 ### Rate limiting / higher-order resolver wrappers
-Old mutations sometimes wrap their resolve function with a `rateLimit({perMinute, perHour})` higher-order function from `packages/server/graphql/rateLimit.ts`. In the SDL-first architecture, this pattern is replaced by a graphql-shield rule in `packages/server/graphql/public/permissions.ts`.
+Old mutations sometimes wrap their resolve function with a `rateLimit({perMinute, perHour})` higher-order function from `packages/server/graphql/rateLimit.ts`. In the SDL-first architecture, this pattern is replaced by a graphql-guard rule in `packages/server/graphql/public/permissions.ts`.
 
 ### Adding source types to existing GraphQL type resolvers (e.g. RetroDiscussStage)
 Some SDL types already have a resolver file in `public/types/` but no exported source type. When a payload field needs to return one of these types (e.g. `stage: RetroDiscussStage`), you must:

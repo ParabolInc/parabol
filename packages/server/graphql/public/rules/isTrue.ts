@@ -1,4 +1,4 @@
-import {rule} from 'graphql-shield'
+import {rule} from 'graphql-guard'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isTrue = <T>(dotPath: ResolverDotPath<T>) =>
