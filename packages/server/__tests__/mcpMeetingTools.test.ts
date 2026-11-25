@@ -136,6 +136,16 @@ const ADD_COMMENT = `
   }
 `
 
+const DELETE_COMMENT = `
+  mutation DeleteComment($commentId: ID!, $meetingId: ID!) {
+    deleteComment(commentId: $commentId, meetingId: $meetingId) {
+      comment {
+        id
+      }
+    }
+  }
+`
+
 const TEAM_HEALTH_QUESTIONS = `
   query TeamHealthQuestions($meetingId: ID!) {
     viewer {
@@ -455,11 +465,13 @@ test('get_discussion shows the comments and tasks in a story’s discussion', as
   const preferredName = await getPreferredName(cookie)
   expect(viewer.discussion.thread.edges.map(({node}: {node: unknown}) => node)).toEqual([
     {
+      __typename: 'Comment',
       id: commented.addComment.comment.id,
       createdByUser: {preferredName},
       plaintextContent: 'Looks like a 3'
     },
     {
+      __typename: 'Task',
       id: created.createTask.task.id,
       createdByUser: {preferredName},
       plaintextContent: 'Split the story',
@@ -467,6 +479,26 @@ test('get_discussion shows the comments and tasks in a story’s discussion', as
       userId
     }
   ])
+
+  const doomed = await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('Wrong story'), discussionId, threadSortOrder: 2}},
+    cookie
+  )
+  const doomedId = doomed.addComment.comment.id as string
+  await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('Agreed'), discussionId, threadParentId: doomedId}},
+    cookie
+  )
+  await send(DELETE_COMMENT, {commentId: doomedId, meetingId}, cookie)
+  const after = await callToolForData(commentsToken, 'get_discussion', {discussionId})
+  expect(after.viewer.discussion.thread.edges.at(-1).node).toEqual({
+    __typename: 'Comment',
+    id: doomedId,
+    createdByUser: null,
+    plaintextContent: '[deleted]'
+  })
 })
 
 test('the meeting reads name the scope a connection lacks', async () => {

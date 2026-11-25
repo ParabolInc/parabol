@@ -1,4 +1,4 @@
-# Show the comments and tasks in one discussion, in thread order. A deleted comment reads [deleted], and an anonymous or deleted comment has no author. Replies to comments are left out. Needs users:read, comments:read and tasks:read.
+# Show the comments and tasks in one discussion, in thread order; __typename says whether each item is a Comment or a Task. A deleted comment reads [deleted], and an anonymous or deleted comment has no author. Replies to comments are left out. Needs users:read, comments:read and tasks:read.
 query GetDiscussion(
   # The discussion id, from list_discussions, get_standup, get_poker_meeting or get_team_health_meeting
   $discussionId: ID!
@@ -9,6 +9,7 @@ query GetDiscussion(
       thread {
         edges {
           node {
+            __typename
             id
             createdByUser {
               preferredName
