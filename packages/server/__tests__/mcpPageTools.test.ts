@@ -1,5 +1,14 @@
+import {CipherId} from '../utils/CipherId'
 import {getUserTeams, HOST, PROTOCOL, signUp} from './common'
-import {callToolForData, createPersonalAccessToken, listTools, PNG_BASE64} from './mcpClient'
+import {
+  callTool,
+  callToolForData,
+  createPersonalAccessToken,
+  expectToolError,
+  expectToolErrorCode,
+  listTools,
+  PNG_BASE64
+} from './mcpClient'
 
 test('tools/list includes list_pages and upload_from_url', async () => {
   const token = await createPersonalAccessToken(['USERS_READ'])
@@ -111,4 +120,124 @@ test('upload_from_url copies an uploaded image into a page', async () => {
   expect(copied.embedUserAsset.url).not.toBe(sourceUrl)
   expect(copied.embedUserAsset.type).toBe('image/avif')
   expect(copied.embedUserAsset.size).toBeGreaterThan(0)
+})
+
+const SET_PAGE_JSON = `
+  mutation SetPageJson($pageId: ID!, $content: String!) {
+    editPageContent(pageId: $pageId, content: $content, format: json) {
+      page {
+        id
+      }
+    }
+  }
+`
+
+const PAGE_JSON = `
+  query PageJson($pageId: ID!) {
+    public {
+      page(pageId: $pageId) {
+        content(format: json)
+      }
+    }
+  }
+`
+
+const setPageWithSubPage = (token: string, pageId: string, subPageId: string) =>
+  callTool(token, 'graphql_mutate', {
+    query: SET_PAGE_JSON,
+    variables: {
+      pageId,
+      content: JSON.stringify({
+        type: 'doc',
+        content: [
+          {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Plans'}]},
+          {
+            type: 'pageLinkBlock',
+            attrs: {pageCode: CipherId.fromClient(subPageId)[1], title: 'Notes', canonical: true}
+          }
+        ]
+      })
+    }
+  })
+
+const readPlacement = async (token: string, pageId: string) => {
+  const read = await callToolForData(token, 'read_page', {pageId})
+  const {parentPageId, isPrivate} = read.public.page
+  return {parentPageId, isPrivate} as {parentPageId: string | null; isPrivate: boolean}
+}
+
+const waitForParent = async (token: string, pageId: string, parentPageId: string) => {
+  for (let attempt = 0; attempt < 50; attempt++) {
+    if ((await readPlacement(token, pageId)).parentPageId === parentPageId) return
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+  throw new Error('Timed out waiting for the page to move')
+}
+
+test.each(['team', 'page'] as const)(
+  'a %s-limited connection cannot make an existing page a sub-page by replacing page content',
+  async (grant) => {
+    const {cookie, teamId} = await signUp()
+    const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+    const parent = await callToolForData(owner, 'create_page', grant === 'team' ? {teamId} : {})
+    const parentPageId = parent.createPage.page.id as string
+    const outside = await callToolForData(owner, 'create_page', {})
+    const outsidePageId = outside.createPage.page.id as string
+    const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+      cookie,
+      grantedOrgIds: [],
+      grantedTeamIds: grant === 'team' ? [teamId] : [],
+      grantedPageIds: grant === 'page' ? [parentPageId] : []
+    })
+    expectToolErrorCode(await setPageWithSubPage(token, parentPageId, outsidePageId), 'FORBIDDEN')
+    expect(await readPlacement(owner, outsidePageId)).toEqual({parentPageId: null, isPrivate: true})
+    expectToolError(
+      await callTool(token, 'read_page', {pageId: outsidePageId}),
+      'PAT does not grant access to this page'
+    )
+  }
+)
+
+test('a limited connection keeps the sub-pages a page already links when it replaces the page', async () => {
+  const {cookie, teamId} = await signUp()
+  const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const parent = await callToolForData(owner, 'create_page', {teamId})
+  const parentPageId = parent.createPage.page.id as string
+  const child = await callToolForData(owner, 'create_page', {parentPageId})
+  const childPageId = child.createPage.page.id as string
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId],
+    grantedPageIds: []
+  })
+  const replaced = await setPageWithSubPage(token, parentPageId, childPageId)
+  expect(replaced.isError).toBeUndefined()
+  await new Promise((resolve) => setTimeout(resolve, 500))
+  expect((await readPlacement(owner, childPageId)).parentPageId).toBe(parentPageId)
+  const read = await callToolForData(owner, 'graphql_query', {
+    query: PAGE_JSON,
+    variables: {pageId: parentPageId}
+  })
+  expect(JSON.parse(read.public.page.content).content).toContainEqual(
+    expect.objectContaining({
+      type: 'pageLinkBlock',
+      attrs: expect.objectContaining({
+        pageCode: CipherId.fromClient(childPageId)[1],
+        canonical: true
+      })
+    })
+  )
+})
+
+test('an unrestricted connection makes an existing page a sub-page by replacing page content', async () => {
+  const {cookie} = await signUp()
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const parent = await callToolForData(token, 'create_page', {})
+  const parentPageId = parent.createPage.page.id as string
+  const outside = await callToolForData(token, 'create_page', {})
+  const outsidePageId = outside.createPage.page.id as string
+  const replaced = await setPageWithSubPage(token, parentPageId, outsidePageId)
+  expect(replaced.isError).toBeUndefined()
+  await waitForParent(token, outsidePageId, parentPageId)
 })
