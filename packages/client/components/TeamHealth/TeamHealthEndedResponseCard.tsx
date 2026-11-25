@@ -54,7 +54,9 @@ const TeamHealthEndedResponseCard = (props: Props) => {
         stageIndex={stageIndex}
         stageCount={stageCount}
       />
-      <h2 className='mt-6 text-center font-bold text-2xl text-fg-primary'>{question.question}</h2>
+      <h2 className='mt-6 flex min-h-[2lh] items-center justify-center text-center font-bold text-2xl text-fg-primary'>
+        {question.question}
+      </h2>
       <div className='mt-2 flex items-center justify-center gap-1.5 text-fg-muted text-sm'>
         <Lock className='size-4' />
         <span>This meeting has ended, so your answer is locked</span>

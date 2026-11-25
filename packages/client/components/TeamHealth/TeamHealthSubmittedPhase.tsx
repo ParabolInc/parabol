@@ -174,7 +174,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
   }[answerState]
 
   return (
-    <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
+    <div className='mx-auto flex h-full w-full max-w-2xl flex-col items-center justify-center px-6'>
       <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
         <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-jade-100 dark:bg-jade-900'>
           <Icon className='text-jade-500 dark:text-jade-300' />
