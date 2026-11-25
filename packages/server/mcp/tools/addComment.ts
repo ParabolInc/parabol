@@ -24,14 +24,10 @@ export default defineTool({
   name: 'add_comment',
   title: 'Comment in a discussion',
   description:
-    "Comment as yourself in a meeting discussion, after its last comment or as a reply to one, joining the meeting first if you haven't. Comments are markdown. The comment editor can't show tables, checklists or images, so a table or checklist becomes plain paragraphs and an image becomes a link. It returns the new comment id, and its text too when the connection has comments:read. It refuses a meeting that ended before you joined it, one on a team you aren't on, and a discussion in a meeting you aren't in. Needs meetings:write and comments:write.",
+    "Comment as yourself in a meeting discussion, after its last comment or as a reply to one, joining the meeting first if you haven't. Get the discussionId from list_discussions for a retrospective or check-in, or from get_standup, get_poker_meeting or get_team_health_meeting. Comments are markdown. The comment editor can't show tables, checklists or images, so a table or checklist becomes plain paragraphs and an image becomes a link. It returns the new comment id, and its text too when the connection has comments:read. It refuses a meeting that ended before you joined it, one on a team you aren't on, and a discussion in a meeting you aren't in. Needs meetings:write and comments:write.",
   inputSchema: z.object({
     meetingId: z.string().describe('The meeting the discussion is in'),
-    discussionId: z
-      .string()
-      .describe(
-        'The discussion id, from get_meeting, get_standup, get_poker_meeting or get_team_health_meeting'
-      ),
+    discussionId: z.string().describe('The discussion to comment in'),
     content: z.string().min(1).describe('What the comment says, in markdown'),
     threadParentId: z
       .string()

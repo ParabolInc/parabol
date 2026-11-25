@@ -33,8 +33,18 @@ const getColumns = (meetingResult: {
 
 const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_READ']
 
+const signUpWithoutAI = async () => {
+  const member = await signUp()
+  await getKysely()
+    .updateTable('Organization')
+    .set({useAI: false})
+    .where('id', '=', member.orgId)
+    .execute()
+  return member
+}
+
 test('an agent adds, edits and renames cards on a retro', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(RETRO_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
@@ -81,7 +91,7 @@ test('an agent adds, edits and renames cards on a retro', async () => {
 })
 
 test('a card too long for Parabol once formatted is refused with the limit named', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken(RETRO_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
@@ -121,7 +131,7 @@ test('a card too long for Parabol once formatted is refused with the limit named
 })
 
 test('a card can show an image uploaded to Parabol', async () => {
-  const {cookie, teamId} = await signUp()
+  const {cookie, teamId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken([...RETRO_SCOPES, 'TEAMS_WRITE'], {cookie})
   const uploaded = await callToolForData(token, 'upload_image', {
     filename: 'burndown.png',
@@ -228,7 +238,7 @@ test('a retro started with the new template has its columns', async () => {
 })
 
 test("a card can't go under a column from another template, and nothing is stored", async () => {
-  const [member, otherTeam] = await Promise.all([signUp(), signUp()])
+  const [member, otherTeam] = await Promise.all([signUpWithoutAI(), signUp()])
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: member.cookie})
   const otherToken = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie: otherTeam.cookie})
   const {template: foreignTemplate} = await callToolForData(otherToken, 'create_retro_template', {

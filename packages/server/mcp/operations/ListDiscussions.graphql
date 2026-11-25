@@ -1,0 +1,29 @@
+# List the discussions in a retrospective or check-in: each retrospective topic's discussionId with the title of the reflection group it discusses, and each check-in agenda item's discussionId with the item's text. get_discussion, add_comment and create_task take the discussionId. Until voting ends, a retrospective lists one placeholder topic titled Unknown, which has no discussion yet. Discussions in a standup, sprint poker meeting or team health check come from get_standup, get_poker_meeting or get_team_health_meeting. Needs users:read and meetings:read.
+query ListDiscussions(
+  # The retrospective or check-in id, from list_meetings or the tool that started it
+  $meetingId: ID!
+) {
+  viewer {
+    meeting(meetingId: $meetingId) {
+      id
+      phases {
+        ... on DiscussPhase {
+          stages {
+            discussionId
+            reflectionGroup {
+              title
+            }
+          }
+        }
+        ... on AgendaItemsPhase {
+          stages {
+            discussionId
+            agendaItem {
+              content
+            }
+          }
+        }
+      }
+    }
+  }
+}
