@@ -11,7 +11,9 @@ import {hasAllowlist, isAllowlistedHostname, isBlockedAddress} from './privateIp
 
 const TIMEOUT_MS = 15_000
 const MAX_429_RETRIES = 1
-const USER_AGENT = `Parabol/${__APP_VERSION__} (https://parabol.co)`
+// The schema and DB build scripts load this module through the integrations, without the webpack constants
+const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'unknown'
+const USER_AGENT = `Parabol/${APP_VERSION} (https://parabol.co)`
 
 // Per-domain serialization to prevent overwhelming external servers with
 // concurrent requests. When multiple fetches target the same hostname, they
