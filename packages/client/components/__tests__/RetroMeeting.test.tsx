@@ -1,6 +1,6 @@
 import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
-import {Component, type ReactNode, useLayoutEffect} from 'react'
+import {type ReactNode, useLayoutEffect} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {RelayEnvironmentProvider} from 'react-relay'
 import {
@@ -17,6 +17,7 @@ import type {RetroMeeting_meeting$key} from '../../__generated__/RetroMeeting_me
 import {createTestRouter, destroyTestRouters} from '../../routing/__tests__/testRouter'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import reportClientError from '../../utils/reportClientError'
+import ErrorBoundary from '../ErrorBoundary'
 import RetroMeeting from '../RetroMeeting'
 
 jest.mock('babel-plugin-relay/macro', () => ({
@@ -27,6 +28,20 @@ jest.mock('babel-plugin-relay/macro', () => ({
   }
 }))
 jest.mock('../../utils/reportClientError', () => ({__esModule: true, default: jest.fn()}))
+const mockLocalStageWrites = {areLost: false}
+jest.mock('../../utils/relay/updateLocalStage', () => {
+  const actual = jest.requireActual<typeof import('../../utils/relay/updateLocalStage')>(
+    '../../utils/relay/updateLocalStage'
+  )
+  return {
+    ...actual,
+    __esModule: true,
+    default: (...args: Parameters<typeof actual.default>) => {
+      if (!mockLocalStageWrites.areLost) actual.default(...args)
+    }
+  }
+})
+jest.mock('../ReportErrorFeedback', () => ({__esModule: true, default: () => null}))
 jest.mock('../NewMeetingCheckIn', () => ({__esModule: true, default: () => 'checkin phase'}))
 jest.mock('../RetroReflectPhase/RetroReflectPhase', () => ({
   __esModule: true,
@@ -121,16 +136,6 @@ const loadMeeting = (meetingId: string, extraPhases?: object[]) => {
   return viewer.meeting.RetroMeeting_meeting
 }
 
-class CrashBoundary extends Component<{children: ReactNode}, {error?: Error}> {
-  state: {error?: Error} = {}
-  static getDerivedStateFromError(error: Error) {
-    return {error}
-  }
-  render() {
-    return this.state.error ? `crashed: ${this.state.error.message}` : this.props.children
-  }
-}
-
 const happyWindow = new Window({url: 'https://parabol.test/'})
 const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
 let root: Root
@@ -157,7 +162,7 @@ const TeammateJoinsBeforeEffects = (props: {meetingId: string}) => {
 const renderMeeting = (meeting: ReactNode) => {
   const router = createTestRouter({
     routes: {
-      '/meet/$meetingId/$': <CrashBoundary>{meeting}</CrashBoundary>
+      '/meet/$meetingId/$': <ErrorBoundary>{meeting}</ErrorBoundary>
     }
   })
   root.render(
@@ -168,13 +173,14 @@ const renderMeeting = (meeting: ReactNode) => {
 }
 
 const waitForRender = async () => {
-  const isSettled = () => /phase|crashed/.test(container.textContent ?? '')
+  const isSettled = () => /phase|Try refreshing/.test(container.textContent ?? '')
   for (let i = 0; i < 100 && !isSettled(); i++) await tick()
   return container.textContent
 }
 
 beforeAll(() => {
   Object.assign(globalThis, {
+    __PRODUCTION__: false,
     window: happyWindow,
     document: happyWindow.document,
     self: happyWindow,
@@ -195,10 +201,13 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  jest.useRealTimers()
   root.unmount()
   destroyTestRouters()
   container.remove()
   jest.restoreAllMocks()
+  jest.mocked(reportClientError).mockClear()
+  mockLocalStageWrites.areLost = false
 })
 
 test('a retro that changes before its effects run still opens on its phase', async () => {
@@ -213,7 +222,33 @@ test('a retro that changes before its effects run still opens on its phase', asy
   expect(reportClientError).not.toHaveBeenCalled()
 })
 
-test('a retro on a phase it has no component for reports its local stage and stages', async () => {
+test('a retro whose local phase never arrives tells the viewer to refresh and reports why', async () => {
+  jest.useFakeTimers({
+    doNotFake: ['setImmediate', 'queueMicrotask', 'nextTick'],
+    advanceTimers: true
+  })
+  mockLocalStageWrites.areLost = true
+  happyWindow.history.replaceState(null, '', '/meet/meeting3/checkin/1')
+  renderMeeting(<RetroMeeting meeting={loadMeeting('meeting3')} />)
+  for (let i = 0; i < 10; i++) await tick()
+  expect(container.textContent).toBe('')
+  expect(reportClientError).not.toHaveBeenCalled()
+
+  jest.advanceTimersByTime(5000)
+  expect(await waitForRender()).toContain('Try refreshing the page')
+  expect(reportClientError).toHaveBeenCalledWith(
+    expect.objectContaining({
+      name: 'MissingMeetingPhase',
+      message:
+        'retrospective meeting meeting3 has no phase to show: localPhase unset of type unset, localStage unset, ' +
+        'facilitatorStage meeting3:checkin:1 (in the phases), 2 phases, 2 stages'
+    }),
+    expect.anything()
+  )
+  expect(reportClientError).toHaveBeenCalledTimes(1)
+})
+
+test('a retro on a phase it has no component for tells the viewer to refresh and reports why', async () => {
   happyWindow.history.replaceState(null, '', '/meet/meeting2/firstcall')
   const firstCallPhase = {
     __typename: 'GenericMeetingPhase',
@@ -222,14 +257,16 @@ test('a retro on a phase it has no component for reports its local stage and sta
     stages: [stage('meeting2:firstcall:1', 'GenericMeetingStage')]
   }
   renderMeeting(<RetroMeeting meeting={loadMeeting('meeting2', [firstCallPhase])} />)
-  expect(await waitForRender()).toMatch(/^crashed/)
+  expect(await waitForRender()).toContain('Try refreshing the page')
   expect(reportClientError).toHaveBeenCalledWith(
     expect.objectContaining({
       name: 'MissingMeetingPhase',
       message:
-        'RetroMeeting found no phase for meeting meeting2: localPhase meeting2:firstcall of type firstcall, ' +
+        'retrospective meeting meeting2 has no phase to show: localPhase meeting2:firstcall of type firstcall, ' +
         'localStage meeting2:firstcall:1 (in the phases), facilitatorStage meeting2:checkin:1 (in the phases), ' +
         '3 phases, 3 stages'
-    })
+    }),
+    expect.anything()
   )
+  expect(reportClientError).toHaveBeenCalledTimes(1)
 })

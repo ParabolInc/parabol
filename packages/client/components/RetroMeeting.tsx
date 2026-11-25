@@ -12,7 +12,7 @@ import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
 import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
-import reportMissingMeetingPhase from '../utils/meetings/reportMissingMeetingPhase'
+import getMissingMeetingPhaseError from '../utils/meetings/getMissingMeetingPhaseError'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
@@ -59,7 +59,7 @@ const RetroMeeting = (props: Props) => {
       fragment RetroMeeting_meeting on RetrospectiveMeeting {
         ...MeetingControlBar_meeting
         ...useMeeting_meeting
-        ...reportMissingMeetingPhase_meeting
+        ...getMissingMeetingPhaseError_meeting
         ...RetroMeetingSidebar_meeting
         ...NewMeetingCheckIn_meeting
         ...TeamHealth_meeting
@@ -114,7 +114,7 @@ const RetroMeeting = (props: Props) => {
   })
   if (!safeRoute) return null
   const Phase = phaseLookup[localPhaseType]!
-  if (!Phase) reportMissingMeetingPhase('RetroMeeting', meeting)
+  if (!Phase) throw getMissingMeetingPhaseError(meeting)
   const isDemo = meetingId === RetroDemo.MEETING_ID
   // Vote and discuss render their own drawer. The other phases share one, rendered here above the
   // swapped Phase so it stays mounted across phase changes instead of flickering. Hidden in the
