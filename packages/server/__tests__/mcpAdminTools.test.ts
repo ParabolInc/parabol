@@ -537,3 +537,56 @@ test('delete_upload refuses a URL that is not a Parabol upload and keeps the fil
   }
   expect(await getUploadStatus(url, token)).toBe(200)
 })
+
+const describeGraphql = async (token: string, name: string) => {
+  const result = await callTool(token, 'describe_graphql', {name})
+  expect(result.isError ? result.content[0]!.text : undefined).toBeUndefined()
+  return result.content[0]!.text
+}
+
+test('describe_graphql gives a mutation with its arguments and the input types of those arguments, to any connection', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+
+  const createPage = await describeGraphql(token, 'Mutation.createPage')
+  expect(createPage).toContain('createPage(')
+  expect(createPage).toContain('teamId: ID')
+  expect(createPage).toContain('parentPageId: ID')
+  expect(createPage).toContain('): CreatePagePayload!')
+  expect(createPage).not.toContain('deleteTask(')
+
+  const createTask = await describeGraphql(token, 'Mutation.createTask')
+  expect(createTask).toContain('newTask: CreateTaskInput!')
+  expect(createTask).toContain('input CreateTaskInput {')
+  expect(createTask).toContain('enum AreaEnum {')
+  expect(createTask).not.toContain('input CreateTaskIntegrationInput')
+})
+
+test('describe_graphql gives a type with the descriptions of its fields', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const task = await describeGraphql(token, 'Task')
+  expect(task).toContain('type Task implements Threadable {')
+  expect(task).toContain('"""The rich text body of the item"""\n  content: String!')
+})
+
+test('describe_graphql refuses a name that is not in the schema with the closest matches', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  expect(
+    expectToolErrorCode(await callTool(token, 'describe_graphql', {name: 'Taks'}), 'BAD_USER_INPUT')
+  ).toContain('Did you mean "Task"')
+  expect(
+    expectToolErrorCode(
+      await callTool(token, 'describe_graphql', {name: 'Mutation.createPag'}),
+      'BAD_USER_INPUT'
+    )
+  ).toContain('Did you mean "Mutation.createPage"')
+  expectToolErrorCode(await callTool(token, 'describe_graphql', {name: ' '}), 'BAD_USER_INPUT')
+})
+
+test('describe_graphql keeps the biggest answers under the result cap', async () => {
+  const token = await createPersonalAccessToken(['USERS_READ'])
+  const mutation = await describeGraphql(token, 'Mutation')
+  expect(mutation.length).toBeLessThanOrEqual(100_000)
+  expect(mutation).toContain('createPage(')
+  const createTask = await describeGraphql(token, 'Mutation.createTask')
+  expect(createTask.length).toBeLessThan(10_000)
+})

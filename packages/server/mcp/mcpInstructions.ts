@@ -14,7 +14,7 @@ A connection may be limited to some organizations, teams or pages. A call for an
 
 Start with get_me to learn who you are and which teams you can reach. To make a page, call create_page (teamId for a team, parentPageId to nest), then set_page_content. To change one, read_page, then edit_page. upload_from_url copies an online image. For another template, call select_template before start_*.
 
-For anything else, use graphql_query to read and graphql_mutate to change data. Learn the schema by introspecting, such as { __type(name: "Task") { fields { name description } } }.
+For anything else, use graphql_query to read and graphql_mutate to change data. Learn the schema with describe_graphql, such as Task or Mutation.createPage.
 
 Tool errors carry a code, such as FORBIDDEN, NOT_FOUND, BAD_USER_INPUT or TOO_MANY_REQUESTS (with retryAfter, the seconds to wait). Use it to decide what to do next. An argument of the wrong type, or a missing one, may come back as a plain message.`
 

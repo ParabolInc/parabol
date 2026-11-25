@@ -157,7 +157,8 @@ const expectInitialized = async (response: Response) => {
     'get_report',
     'list_pinned_reports',
     'graphql_query',
-    'graphql_mutate'
+    'graphql_mutate',
+    'describe_graphql'
   ]) {
     expect(instructions).toContain(tool)
   }
@@ -517,6 +518,7 @@ const TYPESCRIPT_TOOLS = [
   'end_meeting',
   'add_comment',
   'upload_image',
+  'describe_graphql',
   'graphql_query',
   'graphql_mutate'
 ]
@@ -600,6 +602,17 @@ test('graphql_query can introspect the schema', async () => {
     query: '{ __type(name: "Task") { fields { name } } }'
   })
   expect(data.__type.fields.map(({name}: {name: string}) => name)).toContain('plaintextContent')
+})
+
+test('graphql_query and graphql_mutate point at describe_graphql instead of a field-by-field introspection', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  for (const name of ['graphql_query', 'graphql_mutate']) {
+    const {description} = tools.find((tool: {name: string}) => tool.name === name)
+    expect(description).toContain('describe_graphql')
+    expect(description).not.toContain('type { name }')
+  }
+  const mutate = tools.find((tool: {name: string}) => tool.name === 'graphql_mutate')
+  expect(mutate.description).toContain('select only id when the connection lacks the read scope')
 })
 
 test('graphql_mutate runs a mutation', async () => {

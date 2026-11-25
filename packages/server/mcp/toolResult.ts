@@ -2,7 +2,7 @@ import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js'
 import type {FormattedExecutionResult} from 'graphql'
 import {z} from 'zod'
 
-const MAX_RESULT_LENGTH = 100_000
+export const MAX_RESULT_LENGTH = 100_000
 const TRUNCATION_NOTICE = '\n…truncated: ask for fewer fields or use pagination arguments'
 
 const retryAfterSchema = z.object({

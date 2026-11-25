@@ -15,6 +15,7 @@ import createStandupTemplate from './tools/createStandupTemplate'
 import createTask from './tools/createTask'
 import createTeamHealthTemplate from './tools/createTeamHealthTemplate'
 import deleteTemplate from './tools/deleteTemplate'
+import describeGraphql from './tools/describeGraphql'
 import endMeeting from './tools/endMeeting'
 import graphqlMutate from './tools/graphqlMutate'
 import graphqlQuery from './tools/graphqlQuery'
@@ -41,6 +42,7 @@ const typescriptTools: MCPToolEntry[] = [
   endMeeting,
   addComment,
   uploadImage,
+  describeGraphql,
   graphqlQuery,
   graphqlMutate
 ]
