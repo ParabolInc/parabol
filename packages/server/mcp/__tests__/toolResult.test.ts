@@ -69,6 +69,16 @@ test('data that arrives with errors keeps both and stays an error result', () =>
   })
 })
 
+test('errors come before data, so cutting a long result keeps them', () => {
+  const result = toolResult({
+    data: {big: 'x'.repeat(150_000)},
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  const {text} = result.content[0] as {text: string}
+  expect(text.length).toBeLessThan(100_100)
+  expect(text.startsWith('{"errors":[{"message":"nope","code":"FORBIDDEN"}],"data":')).toBe(true)
+})
+
 test('errors with null data stay an error result', () => {
   const result = toolResult({
     data: null,

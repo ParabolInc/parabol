@@ -1,4 +1,4 @@
-# Rename a meeting. The name must be 2 to 50 characters. Needs meetings:write.
+# Rename a meeting. Only its facilitator can rename it. The name must be 2 to 50 characters and can't contain a link. Needs meetings:write.
 mutation RenameMeeting(
   # The meeting id, from list_meetings or the tool that started it
   $meetingId: ID!

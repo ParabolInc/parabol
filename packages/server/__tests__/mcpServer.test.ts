@@ -545,6 +545,7 @@ const TYPESCRIPT_TOOLS = [
   'update_task',
   'add_reflection',
   'update_reflection',
+  'create_retro_template',
   'upload_image',
   'graphql_query',
   'graphql_mutate'

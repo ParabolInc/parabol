@@ -8,7 +8,7 @@ To run a retro with your own columns, call create_retro_template, select_templat
 
 IDs are opaque. Pass back exactly the id you received; never build, parse or change one.
 
-Each tool names the scopes it needs. A :read scope lets you look and a :write scope lets you change. A call needing a scope this connection lacks fails with FORBIDDEN.
+Each tool names the scopes it needs. A :read scope lets you look and a :write scope lets you change. A call needing a scope this connection lacks fails with FORBIDDEN, naming the scope.
 
 A connection may be limited to some organizations, teams or pages. A call for anything outside them fails.
 
