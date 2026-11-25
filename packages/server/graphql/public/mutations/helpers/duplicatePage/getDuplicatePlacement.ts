@@ -22,18 +22,18 @@ interface Params {
   resourceGrants: ResourceGrants | null | undefined
 }
 
-const getTopOfPrivate = async (viewerId: string): Promise<DuplicatePlacement> => ({
-  kind: 'private',
-  sortOrder: await getPageNextSortOrder(__START__, false, viewerId, true, null)
-})
+export type DuplicateDecision =
+  | {kind: 'parent'; parent: ParentPage; afterPageCode: number | null}
+  | {kind: 'team'; teamId: string}
+  | {kind: 'private'; afterSource: boolean}
 
-export const getDuplicatePlacement = async ({
+export const decideDuplicatePlacement = async ({
   viewerId,
   source,
   destination,
   dataLoader,
   resourceGrants
-}: Params): Promise<DuplicatePlacement> => {
+}: Params): Promise<DuplicateDecision> => {
   if (destination) return {kind: 'parent', parent: destination, afterPageCode: null}
   const {parentPageId, teamId} = source
   if (parentPageId) {
@@ -48,7 +48,7 @@ export const getDuplicatePlacement = async ({
       parent &&
       !parent.deletedAt &&
       !parent.isMeetingTOC
-    if (!canAddNextToSource) return getTopOfPrivate(viewerId)
+    if (!canAddNextToSource) return {kind: 'private', afterSource: false}
     return {kind: 'parent', parent, afterPageCode: CipherId.encrypt(source.id)}
   }
   if (teamId) {
@@ -56,13 +56,27 @@ export const getDuplicatePlacement = async ({
       dataLoader.get('teamMembers').load(toTeamMemberId(teamId, viewerId)),
       !resourceGrants || resourceGrants.hasTeam(teamId)
     ])
-    if (!teamMember?.isNotRemoved || !isTeamGranted) return getTopOfPrivate(viewerId)
-    const sortOrder = await getPageSortOrderAfter(source.sortOrder, viewerId, false, teamId)
-    return {kind: 'team', teamId, sortOrder}
+    if (!teamMember?.isNotRemoved || !isTeamGranted) return {kind: 'private', afterSource: false}
+    return {kind: 'team', teamId}
   }
-  if (source.isPrivate && source.userId === viewerId) {
-    const sortOrder = await getPageSortOrderAfter(source.sortOrder, viewerId, true, null)
-    return {kind: 'private', sortOrder}
+  return {kind: 'private', afterSource: source.isPrivate && source.userId === viewerId}
+}
+
+export const getDuplicatePlacement = async (params: Params): Promise<DuplicatePlacement> => {
+  const decision = await decideDuplicatePlacement(params)
+  if (decision.kind === 'parent') return decision
+  const {viewerId, source} = params
+  if (decision.kind === 'team') {
+    return {
+      kind: 'team',
+      teamId: decision.teamId,
+      sortOrder: await getPageSortOrderAfter(source.sortOrder, viewerId, false, decision.teamId)
+    }
   }
-  return getTopOfPrivate(viewerId)
+  return {
+    kind: 'private',
+    sortOrder: decision.afterSource
+      ? await getPageSortOrderAfter(source.sortOrder, viewerId, true, null)
+      : await getPageNextSortOrder(__START__, false, viewerId, true, null)
+  }
 }

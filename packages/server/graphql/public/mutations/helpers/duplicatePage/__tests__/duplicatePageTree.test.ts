@@ -449,11 +449,11 @@ test('keeps the copies when linking them into the parent fails', async () => {
   expect(mockSideEffects).toContain(`CreatePagePayload:${copy.id}`)
 }, 30_000)
 
-test('skips sub-pages outside the token grant', async () => {
+test('copies the sub-pages nested under a page the token was granted', async () => {
   const rootId = await insertPage(null)
   const childId = await insertPage(rootId)
   await setDoc(rootId, [heading('A'), pageLink(childId)])
-  await setDoc(childId, [heading('Not granted')])
+  await setDoc(childId, [heading('Nested')])
   const resourceGrants = new ResourceGrants(
     viewerId,
     [],
@@ -465,9 +465,11 @@ test('skips sub-pages outside the token grant', async () => {
 
   const copy = await duplicate(rootId, {resourceGrants})
 
-  expect(await countViewerPages()).toBe(before + 1)
+  expect(await countViewerPages()).toBe(before + 2)
+  const [childCopy] = await selectChildren(copy.id)
+  expect(childCopy).toMatchObject({title: 'Nested'})
   expect(await readLinks(copy.id)).toEqual([
-    {pageCode: CipherId.encrypt(childId), canonical: false}
+    {pageCode: CipherId.encrypt(childCopy!.id), canonical: true}
   ])
 }, 30_000)
 

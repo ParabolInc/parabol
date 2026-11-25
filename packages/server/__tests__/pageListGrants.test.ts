@@ -320,3 +320,37 @@ test('a token granted one private subpage lists it among top-level private pages
   expect(await canOpenPage(bearerToken, subpage)).toBe(true)
   expect(await listPageIds(bearerToken, {isPrivate: true, parentPageId: null})).toEqual([subpage])
 })
+
+test('a token granted one page lists, finds and opens the pages nested under it and no others', async () => {
+  const {cookie, pages} = await setUpPages()
+  const copyInto = async (parentPageId: string) => {
+    const copied = await sendPublic({
+      query: DUPLICATE_PAGE,
+      variables: {pageId: pages.otherPrivatePage, parentPageId},
+      cookie
+    })
+    expect(copied.errors).toBeUndefined()
+    return copied.data.duplicatePage.page.id as string
+  }
+  const child = await copyInto(pages.privatePage)
+  const grandchild = await copyInto(child)
+  const outsideCopy = await copyInto(pages.teamAPage)
+  const bearerToken = await createToken(cookie, ['USERS_READ', 'PAGES_READ'], {
+    grantedOrgIds: [],
+    grantedTeamIds: [],
+    grantedPageIds: [pages.privatePage]
+  })
+  const reachable = [pages.privatePage, child, grandchild].toSorted()
+
+  expect((await listPageIds(bearerToken)).toSorted()).toEqual(reachable)
+  expect((await searchPageIds(bearerToken, '')).toSorted()).toEqual(reachable)
+  const foundIds = await searchPageIds(bearerToken, 'Untitled')
+  expect(foundIds).toEqual(expect.arrayContaining([child, grandchild]))
+  expect(foundIds.filter((pageId) => !reachable.includes(pageId))).toEqual([])
+  expect(await listPageIds(bearerToken, {parentPageId: null})).toEqual([pages.privatePage])
+  expect(await canOpenPage(bearerToken, grandchild)).toBe(true)
+  expect(await canOpenPage(bearerToken, outsideCopy)).toBe(false)
+  for (const pageId of Object.values(pages)) {
+    expect(await canOpenPage(bearerToken, pageId)).toBe(pageId === pages.privatePage)
+  }
+})

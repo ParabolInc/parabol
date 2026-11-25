@@ -8,7 +8,8 @@ import {
   expectToolError,
   expectToolErrorCode,
   listTools,
-  PNG_BASE64
+  PNG_BASE64,
+  signUpWithoutAI
 } from './mcpClient'
 
 test('tools/list includes list_pages and upload_from_url', async () => {
@@ -42,6 +43,93 @@ test('create_page with parentPageId nests the page and list_pages finds it', asy
   const ids = listed.viewer.pages.edges.map(({node}: {node: {id: string}}) => node.id)
   expect(ids).toEqual([childPageId])
   expect(listed.viewer.pages.pageInfo.hasNextPage).toBe(false)
+})
+
+test('a team-limited connection nests a page under a team page and fills it, but gets no private page', async () => {
+  const {cookie, teamId} = await signUp()
+  const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const teamPage = await callToolForData(owner, 'create_page', {teamId})
+  const parentPageId = teamPage.createPage.page.id as string
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const child = await callToolForData(token, 'create_page', {parentPageId})
+  const pageId = child.createPage.page.id as string
+  await callToolForData(token, 'set_page_content', {pageId, content: '# Notes\n\nNested'})
+  const read = await callToolForData(token, 'read_page', {pageId})
+  expect(read.public.page.parentPageId).toBe(parentPageId)
+  expect(read.public.page.content).toContain('Nested')
+  expectToolErrorCode(await callTool(token, 'create_page', {}), 'FORBIDDEN')
+})
+
+const PAGE_TOOL_SCOPES = ['USERS_READ', 'PAGES_READ', 'PAGES_WRITE']
+
+const getPageIds = (result: {viewer: {pages: {edges: {node: {id: string}}[]}}}) =>
+  result.viewer.pages.edges.map(({node}) => node.id)
+
+const setUpGrantedPageTree = async () => {
+  const {cookie} = await signUpWithoutAI()
+  const owner = await createPersonalAccessToken(PAGE_TOOL_SCOPES, {cookie})
+  const addPage = async (parentPageId?: string) => {
+    const created = await callToolForData(owner, 'create_page', parentPageId ? {parentPageId} : {})
+    return created.createPage.page.id as string
+  }
+  const parent = await addPage()
+  const granted = await addPage(parent)
+  const sibling = await addPage(parent)
+  const child = await addPage(granted)
+  const grandchild = await addPage(child)
+  const token = await createPersonalAccessToken(PAGE_TOOL_SCOPES, {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [],
+    grantedPageIds: [granted]
+  })
+  return {owner, token, pages: {parent, granted, sibling, child, grandchild}}
+}
+
+test('a page-limited connection creates a sub-page under its page, then reads and fills it', async () => {
+  const {token, pages} = await setUpGrantedPageTree()
+  const created = await callToolForData(token, 'create_page', {parentPageId: pages.granted})
+  const pageId = created.createPage.page.id as string
+  await callToolForData(token, 'set_page_content', {pageId, content: '# Notes\n\nNested'})
+  const read = await callToolForData(token, 'read_page', {pageId})
+  expect(read.public.page.parentPageId).toBe(pages.granted)
+  expect(read.public.page.content).toContain('Nested')
+  expectToolErrorCode(await callTool(token, 'create_page', {}), 'FORBIDDEN')
+})
+
+test('a page-limited connection reads the pages nested under its page, but not its parent or a sibling', async () => {
+  const {token, pages} = await setUpGrantedPageTree()
+  for (const pageId of [pages.granted, pages.child, pages.grandchild]) {
+    const read = await callToolForData(token, 'read_page', {pageId})
+    expect(read.public.page.id).toBe(pageId)
+  }
+  for (const pageId of [pages.parent, pages.sibling]) {
+    expectToolError(
+      await callTool(token, 'read_page', {pageId}),
+      'PAT does not grant access to this page'
+    )
+  }
+})
+
+test('search_pages and list_pages find the pages nested under a granted page and no others', async () => {
+  const {token, pages} = await setUpGrantedPageTree()
+  const found = await callToolForData(token, 'search_pages', {query: ''})
+  const foundIds = found.viewer.search.edges.map(({node}: {node: {id: string}}) => node.id)
+  expect(foundIds.toSorted()).toEqual([pages.granted, pages.child, pages.grandchild].toSorted())
+  expect(getPageIds(await callToolForData(token, 'list_pages', {}))).toEqual([pages.granted])
+  expect(
+    getPageIds(await callToolForData(token, 'list_pages', {parentPageId: pages.parent}))
+  ).toEqual([pages.granted])
+  expect(
+    getPageIds(await callToolForData(token, 'list_pages', {parentPageId: pages.granted}))
+  ).toEqual([pages.child])
+  expect(
+    getPageIds(await callToolForData(token, 'list_pages', {parentPageId: pages.child}))
+  ).toEqual([pages.grandchild])
 })
 
 test('list_pages with no arguments returns top-level pages', async () => {
@@ -237,6 +325,21 @@ test.each(['team', 'page'] as const)(
     )
   }
 )
+
+test('a page-limited connection cannot move a page from outside its page under a page nested in it', async () => {
+  const {owner, token, pages} = await setUpGrantedPageTree()
+  expect(
+    expectToolErrorCode(await setPageWithSubPage(token, pages.child, pages.sibling), 'FORBIDDEN')
+  ).toContain("can't make an existing page a sub-page")
+  expect(await readPlacement(owner, pages.sibling)).toEqual({
+    parentPageId: pages.parent,
+    isPrivate: true
+  })
+  expectToolError(
+    await callTool(token, 'read_page', {pageId: pages.sibling}),
+    'PAT does not grant access to this page'
+  )
+})
 
 test('a limited connection keeps the sub-pages a page already links when it replaces the page', async () => {
   const {cookie, teamId} = await signUp()

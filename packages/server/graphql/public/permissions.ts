@@ -3,6 +3,7 @@ import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasReachableDuplicatePlacement} from './rules/hasReachableDuplicatePlacement'
 import {hasScope} from './rules/hasScope'
 import {hasSearchTypeScope} from './rules/hasSearchTypeScope'
 import {hasTokenAudience} from './rules/hasTokenAudience'
@@ -16,6 +17,7 @@ import {isOrgTier} from './rules/isOrgTier'
 import {isReactableInMeeting} from './rules/isReactableInMeeting'
 import {isReportTeamHealthCheck} from './rules/isReportTeamHealthCheck'
 import {isRestoringOwnTrashedPage} from './rules/isRestoringOwnTrashedPage'
+import {isSet} from './rules/isSet'
 import isSuperUser from './rules/isSuperUser'
 import {isTaskVisibleToViewer} from './rules/isTaskVisibleToViewer'
 import {isTeamMember} from './rules/isTeamMember'
@@ -173,7 +175,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     createPage: and(
       isAuthenticated,
       or(
-        and(isNull<'Mutation.createPage'>('args.teamId'), hasUnrestrictedGrant),
+        and(
+          isNull<'Mutation.createPage'>('args.teamId'),
+          or(hasUnrestrictedGrant, isSet<'Mutation.createPage'>('args.parentPageId'))
+        ),
         isTeamMember<'Mutation.createPage'>('args.teamId')
       ),
       hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor')
@@ -182,6 +187,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isAuthenticated,
       hasPageAccess<'Mutation.duplicatePage'>('args.pageId', 'viewer', {ignorePublicLink: true}),
       hasPageAccess<'Mutation.duplicatePage'>('args.parentPageId', 'editor'),
+      hasReachableDuplicatePlacement,
       rateLimit({perMinute: 10, perHour: 50})
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),

@@ -1,4 +1,4 @@
-import {type Expression, expressionBuilder, type SqlBool} from 'kysely'
+import {type Expression, expressionBuilder, type SqlBool, sql} from 'kysely'
 import getKysely from '../../postgres/getKysely'
 import type {DB} from '../../postgres/types/pg'
 import {CipherId} from '../../utils/CipherId'
@@ -82,7 +82,15 @@ export class ResourceGrants {
       .where('pageId', '=', pageId)
     const teamShares = eb.selectFrom('PageTeamAccess').select('teamId').where('pageId', '=', pageId)
     const grants: Expression<SqlBool>[] = []
-    if (grantedPageIds?.size) grants.push(eb(pageId, 'in', [...grantedPageIds]))
+    if (grantedPageIds?.size) {
+      const pageIds = [...grantedPageIds]
+      const grantedDescendant = eb
+        .selectFrom('Page as grantedDescendant')
+        .select('grantedDescendant.id')
+        .where('grantedDescendant.id', '=', pageId)
+        .where('grantedDescendant.ancestorIds', '&&', sql<number[]>`${pageIds}::int[]`)
+      grants.push(eb(pageId, 'in', pageIds), eb.exists(grantedDescendant))
+    }
     if (grantedOrgIds === null) {
       grants.push(eb.exists(orgShares))
     } else if (grantedOrgIds.length > 0) {

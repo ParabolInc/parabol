@@ -24,7 +24,7 @@ type OAuthAPIGrant {
   """
   grantedTeams: [Team!]
   """
-  The pages the user granted the application on top of those under its orgs and teams, leaving out any the user can no longer open. Null means the application can reach all pages the user can access, unless it is limited to some orgs or teams
+  The pages the user granted the application on top of those under its orgs and teams, leaving out any the user can no longer open. The grant covers these pages and every page nested under them, now and later. Null means the application can reach all pages the user can access, unless it is limited to some orgs or teams
   """
   grantedPages: [Page!]
   """

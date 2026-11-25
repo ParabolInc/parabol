@@ -116,7 +116,6 @@ const COMPILED_TOOLS = [
   'start_team_health',
   'get_report',
   'list_pinned_reports',
-  'rename_meeting',
   'list_retro_columns'
 ]
 
@@ -154,7 +153,8 @@ const expectInitialized = async (response: Response) => {
     'get_report',
     'list_pinned_reports',
     'graphql_query',
-    'graphql_mutate'
+    'graphql_mutate',
+    'describe_graphql'
   ]) {
     expect(instructions).toContain(tool)
   }
@@ -497,23 +497,52 @@ test('an unknown tool is a JSON-RPC error', async () => {
   expect(body.error.code).toBe(-32602)
 })
 
-const TYPESCRIPT_TOOLS = [
-  'create_task',
-  'update_task',
+const TOOL_NAMES = [
+  'add_comment',
+  'add_poker_stories',
   'add_reflection',
-  'update_reflection',
+  'answer_standup',
+  'answer_team_health',
+  'create_page',
   'create_retro_template',
   'create_standup_template',
-  'answer_standup',
+  'create_task',
   'create_team_health_template',
-  'answer_team_health',
-  'add_poker_stories',
-  'vote_poker_story',
+  'describe_graphql',
+  'edit_page',
   'end_meeting',
-  'add_comment',
-  'upload_image',
+  'get_discussion',
+  'get_me',
+  'get_meeting',
+  'get_poker_meeting',
+  'get_report',
+  'get_standup',
+  'get_team_health_meeting',
+  'graphql_mutate',
   'graphql_query',
-  'graphql_mutate'
+  'list_discussions',
+  'list_meetings',
+  'list_pages',
+  'list_pinned_reports',
+  'list_retro_columns',
+  'list_tasks',
+  'list_templates',
+  'read_page',
+  'reveal_poker_votes',
+  'search_pages',
+  'select_template',
+  'set_page_content',
+  'set_poker_final_score',
+  'start_check_in',
+  'start_retrospective',
+  'start_sprint_poker',
+  'start_standup',
+  'start_team_health',
+  'update_reflection',
+  'update_task',
+  'upload_from_url',
+  'upload_image',
+  'vote_poker_story'
 ]
 
 const JPEG_BASE64 = Buffer.from([
@@ -597,6 +626,17 @@ test('graphql_query can introspect the schema', async () => {
   expect(data.__type.fields.map(({name}: {name: string}) => name)).toContain('plaintextContent')
 })
 
+test('graphql_query and graphql_mutate point at describe_graphql instead of a field-by-field introspection', async () => {
+  const tools = await listTools(await createPersonalAccessToken())
+  for (const name of ['graphql_query', 'graphql_mutate']) {
+    const {description} = tools.find((tool: {name: string}) => tool.name === name)
+    expect(description).toContain('describe_graphql')
+    expect(description).not.toContain('type { name }')
+  }
+  const mutate = tools.find((tool: {name: string}) => tool.name === 'graphql_mutate')
+  expect(mutate.description).toContain('select only id when the connection lacks the read scope')
+})
+
 test('graphql_mutate runs a mutation', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(['PAGES_WRITE'], {cookie})
@@ -607,9 +647,9 @@ test('graphql_mutate runs a mutation', async () => {
   expect(data.createPage.page.id).toEqual(expect.any(String))
 })
 
-test('every tool name is unique', async () => {
+test('tools/list lists exactly these tools, each once', async () => {
   const tools = await listTools(await createPersonalAccessToken())
-  const names = tools.map(({name}: {name: string}) => name)
+  const names: string[] = tools.map(({name}: {name: string}) => name)
   expect(new Set(names).size).toBe(names.length)
-  expect(names).toEqual(expect.arrayContaining([...COMPILED_TOOLS, ...TYPESCRIPT_TOOLS]))
+  expect(names.toSorted()).toEqual(TOOL_NAMES)
 })

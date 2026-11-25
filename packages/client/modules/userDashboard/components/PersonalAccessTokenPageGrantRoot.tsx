@@ -74,6 +74,9 @@ export const PersonalAccessTokenPageGrantRoot = ({
           />
         )}
       </Suspense>
+      <p className='m-0 text-fg-muted text-xs'>
+        Each page you choose includes the pages nested under it, now and later.
+      </p>
       {summary && <p className='text-fg-muted text-xs'>{summary}</p>}
     </div>
   )

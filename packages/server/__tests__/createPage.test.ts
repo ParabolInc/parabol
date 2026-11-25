@@ -21,6 +21,7 @@ const PAGE_CONTENT = `
   query PageContent($pageId: ID!) {
     public {
       page(pageId: $pageId) {
+        parentPageId
         content(format: json)
       }
     }
@@ -46,13 +47,19 @@ const ARCHIVE_PAGE = `
 `
 
 const CREATE_TOKEN = `
-  mutation CreateToken($grantedOrgIds: [ID!], $grantedTeamIds: [ID!], $expiresAt: DateTime!) {
+  mutation CreateToken(
+    $grantedOrgIds: [ID!]
+    $grantedTeamIds: [ID!]
+    $grantedPageIds: [ID!]
+    $expiresAt: DateTime!
+  ) {
     createPersonalAccessToken(
       name: "agent"
-      scopes: [PAGES_WRITE]
+      scopes: [PAGES_READ, PAGES_WRITE]
       expiresAt: $expiresAt
       grantedOrgIds: $grantedOrgIds
       grantedTeamIds: $grantedTeamIds
+      grantedPageIds: $grantedPageIds
     ) {
       token
     }
@@ -73,7 +80,7 @@ const createPageId = async (auth: Auth, variables: CreatePageArgs = {}) => {
 
 const createToken = async (
   cookie: string,
-  grants: {grantedOrgIds?: string[]; grantedTeamIds?: string[]} = {}
+  grants: {grantedOrgIds?: string[]; grantedTeamIds?: string[]; grantedPageIds?: string[]} = {}
 ) => {
   const res = await sendPublic({
     query: CREATE_TOKEN,
@@ -89,11 +96,14 @@ const createToken = async (
 
 type PageNode = {type: string; attrs?: Record<string, unknown>}
 
-const readTopLevelNodes = async (cookie: string, pageId: string) => {
-  const res = await sendPublic({query: PAGE_CONTENT, variables: {pageId}, cookie})
+const readPage = async (auth: Auth, pageId: string) => {
+  const res = await sendPublic({query: PAGE_CONTENT, variables: {pageId}, ...auth})
   expect(res.errors).toBeUndefined()
-  return JSON.parse(res.data.public.page.content).content as PageNode[]
+  return res.data.public.page as {parentPageId: string | null; content: string}
 }
+
+const readTopLevelNodes = async (cookie: string, pageId: string) =>
+  JSON.parse((await readPage({cookie}, pageId)).content).content as PageNode[]
 
 const countPages = async (userId: string) => {
   const {count} = await getKysely()
@@ -173,7 +183,12 @@ test('a page cannot be created inside Meeting Summaries', async () => {
   expect(await countPages(userId)).toBe(before)
 })
 
-test('a token limited to a team creates team pages but not private or nested pages', async () => {
+const limitedToken = {
+  message: 'This access token is limited to specific organizations, teams or pages',
+  extensions: {code: 'FORBIDDEN'}
+}
+
+test('a token limited to a team creates team pages and sub-pages but not private pages', async () => {
   const {cookie, userId} = await signUp()
   const [{id: teamId}] = await getUserTeams(userId)
   const teamPageId = await createPageId({cookie}, {teamId})
@@ -182,16 +197,106 @@ test('a token limited to a team creates team pages but not private or nested pag
   const teamPage = await createPage({bearerToken}, {teamId})
   expect(teamPage.errors).toBeUndefined()
 
+  const subPage = await createPage({bearerToken}, {parentPageId: teamPageId})
+  expect(subPage.errors).toBeUndefined()
+  const subPageId = subPage.data.createPage.page.id as string
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(teamPageId)
+
   const before = await countPages(userId)
-  const limitedToken = {
-    message: 'This access token is limited to specific organizations, teams or pages',
-    extensions: {code: 'FORBIDDEN'}
-  }
   const privatePage = await createPage({bearerToken})
   expect(privatePage.errors?.[0]).toMatchObject(limitedToken)
+  expect(await countPages(userId)).toBe(before)
+})
 
-  const nestedPage = await createPage({bearerToken}, {parentPageId: teamPageId})
-  expect(nestedPage.errors?.[0]).toMatchObject(limitedToken)
+test('a token limited to a team is refused a sub-page under a page outside the team', async () => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const privatePageId = await createPageId({cookie})
+  const bearerToken = await createToken(cookie, {grantedOrgIds: [], grantedTeamIds: [teamId]})
+
+  const before = await countPages(userId)
+  const res = await createPage({bearerToken}, {parentPageId: privatePageId})
+  expect(res.errors?.[0]).toMatchObject({
+    message: 'PAT does not grant access to this page',
+    extensions: {code: 'FORBIDDEN'}
+  })
+  expect(await countPages(userId)).toBe(before)
+})
+
+test('a token limited to an org creates sub-pages under its org pages', async () => {
+  const {cookie, userId, orgId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const teamPageId = await createPageId({cookie}, {teamId})
+  const bearerToken = await createToken(cookie, {grantedOrgIds: [orgId], grantedTeamIds: []})
+
+  const subPageId = await createPageId({bearerToken}, {parentPageId: teamPageId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(teamPageId)
+})
+
+test('a token limited to pages creates sub-pages under a page it can edit and reads them', async () => {
+  const [owner, member] = await Promise.all([signUp(), signUp()])
+  const editableId = await createPageId({cookie: member.cookie})
+  const viewOnlyId = await createPageId({cookie: owner.cookie})
+  const shared = await sendPublic({
+    query: SHARE_PAGE,
+    variables: {pageId: viewOnlyId, subjectId: member.userId, role: 'viewer'},
+    cookie: owner.cookie
+  })
+  expect(shared.errors).toBeUndefined()
+  const bearerToken = await createToken(member.cookie, {
+    grantedOrgIds: [],
+    grantedTeamIds: [],
+    grantedPageIds: [editableId, viewOnlyId]
+  })
+
+  const subPageId = await createPageId({bearerToken}, {parentPageId: editableId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(editableId)
+  const grandchildId = await createPageId({bearerToken}, {parentPageId: subPageId})
+  expect((await readPage({bearerToken}, grandchildId)).parentPageId).toBe(subPageId)
+
+  const before = await countPages(member.userId)
+  const underViewOnly = await createPage({bearerToken}, {parentPageId: viewOnlyId})
+  expect(underViewOnly.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+  const privatePage = await createPage({bearerToken})
+  expect(privatePage.errors?.[0]).toMatchObject(limitedToken)
+  expect(await countPages(member.userId)).toBe(before)
+})
+
+test('a token given both a team and a page creates sub-pages under the page', async () => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const editableId = await createPageId({cookie})
+  const bearerToken = await createToken(cookie, {
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId],
+    grantedPageIds: [editableId]
+  })
+
+  const subPageId = await createPageId({bearerToken}, {parentPageId: editableId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(editableId)
+  const privatePage = await createPage({bearerToken})
+  expect(privatePage.errors?.[0]).toMatchObject(limitedToken)
+})
+
+test.each([
+  ['a team-limited token with an empty parentPageId', 'team', {parentPageId: ''}],
+  ['a page-limited token with an empty parentPageId', 'page', {parentPageId: ''}],
+  ['a team-limited token with an empty teamId', 'team', {teamId: ''}],
+  ['a page-limited token with an empty teamId', 'page', {teamId: ''}]
+] as const)('%s is refused a private page', async (_name, limit, variables) => {
+  const {cookie, userId} = await signUp()
+  const [{id: teamId}] = await getUserTeams(userId)
+  const pageId = await createPageId({cookie})
+  const bearerToken = await createToken(
+    cookie,
+    limit === 'team'
+      ? {grantedOrgIds: [], grantedTeamIds: [teamId]}
+      : {grantedOrgIds: [], grantedTeamIds: [], grantedPageIds: [pageId]}
+  )
+
+  const before = await countPages(userId)
+  const res = await createPage({bearerToken}, variables)
+  expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
   expect(await countPages(userId)).toBe(before)
 })
 
