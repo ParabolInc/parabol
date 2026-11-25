@@ -4,7 +4,6 @@ import type {RetroSidebarTeamHealthSection_meeting$key} from '~/__generated__/Re
 import type useGotoStageId from '../../hooks/useGotoStageId'
 import useGotoTeamHealthStageInRetro from '../../hooks/useGotoTeamHealthStageInRetro'
 import TeamHealthSidebarQuestionSection from '../TeamHealth/TeamHealthSidebarQuestionSection'
-import TeamHealthSidebarResultSection from '../TeamHealth/TeamHealthSidebarResultSection'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -12,8 +11,8 @@ interface Props {
   meeting: RetroSidebarTeamHealthSection_meeting$key
 }
 
-// while the viewer is on Team Health, the check's questions are listed beneath it, or its results once
-// they are revealed
+// while the viewer is on Team Health, the check's questions are listed beneath it, as beneath the
+// check's own Respond row. Its results go beneath the Results row (RetroSidebarTeamHealthResults)
 const RetroSidebarTeamHealthSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -24,9 +23,7 @@ const RetroSidebarTeamHealthSection = (props: Props) => {
           phaseType
         }
         teamHealthMeeting {
-          endedAt
           ...TeamHealthSidebarQuestionSection_meeting
-          ...TeamHealthSidebarResultSection_meeting
         }
       }
     `,
@@ -35,11 +32,8 @@ const RetroSidebarTeamHealthSection = (props: Props) => {
   const {localPhase, teamHealthMeeting} = meeting
   const gotoCheckStage = useGotoTeamHealthStageInRetro(meeting, gotoStageId)
   if (localPhase?.phaseType !== 'TEAM_HEALTH' || !teamHealthMeeting) return null
-  const Section = teamHealthMeeting.endedAt
-    ? TeamHealthSidebarResultSection
-    : TeamHealthSidebarQuestionSection
   return (
-    <Section
+    <TeamHealthSidebarQuestionSection
       gotoStageId={gotoCheckStage}
       handleMenuClick={handleMenuClick}
       meeting={teamHealthMeeting}

@@ -7,8 +7,9 @@ import useAtmosphere from './useAtmosphere'
 import type useGotoStageId from './useGotoStageId'
 
 // a check shown in a retro keeps its own local stage, beneath the retro's Team Health stage. Going to
-// one of its stages brings the viewer to that retro stage too, and leaving the questions for the
-// waiting room tells the facilitator the viewer is done
+// one of its stages brings the viewer to that retro stage too, and leaving the last question for the
+// waiting room tells the facilitator the viewer is done. Opening Results from an earlier question
+// in the sidebar doesn't
 const useGotoTeamHealthStageInRetro = (
   meetingRef: useGotoTeamHealthStageInRetro_meeting$key,
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -27,8 +28,8 @@ const useGotoTeamHealthStageInRetro = (
         }
         teamHealthMeeting {
           id
-          localPhase {
-            phaseType
+          localStage {
+            id
           }
           phases {
             phaseType
@@ -45,16 +46,21 @@ const useGotoTeamHealthStageInRetro = (
   return (stageId: string) => {
     const retroStageId = phases.find(({phaseType}) => phaseType === 'TEAM_HEALTH')?.stages[0]?.id
     if (!teamHealthMeeting || !retroStageId) return Promise.resolve()
-    const {id: teamHealthMeetingId, localPhase, phases: checkPhases} = teamHealthMeeting
+    const {id: teamHealthMeetingId, localStage, phases: checkPhases} = teamHealthMeeting
     const nextPhaseType = checkPhases.find(({stages}) =>
       stages.some(({id}) => id === stageId)
     )?.phaseType
+    const lastQuestionStageId = checkPhases
+      .find(({phaseType}) => phaseType === 'TEAM_HEALTH_RESPONSE')
+      ?.stages.at(-1)?.id
     commitLocalUpdate(atmosphere, (store) =>
       setLocalStageAndPhase(store, teamHealthMeetingId, stageId)
     )
-    const isLeavingQuestions =
-      localPhase?.phaseType === 'TEAM_HEALTH_RESPONSE' && nextPhaseType === 'TEAM_HEALTH_RESULT'
-    if (isLeavingQuestions && atmosphere.viewerId !== facilitatorUserId) {
+    const isLeavingLastQuestion =
+      !!lastQuestionStageId &&
+      localStage?.id === lastQuestionStageId &&
+      nextPhaseType === 'TEAM_HEALTH_RESULT'
+    if (isLeavingLastQuestion && atmosphere.viewerId !== facilitatorUserId) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: true, meetingId, stageId: retroStageId})
     }
     return gotoStageId(retroStageId)

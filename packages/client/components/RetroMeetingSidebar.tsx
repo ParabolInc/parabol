@@ -9,6 +9,7 @@ import type {
 import isDemoRoute from '~/utils/isDemoRoute'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import useGotoTeamHealthStageInRetro from '../hooks/useGotoTeamHealthStageInRetro'
 import {GQLID} from '../utils/GQLID'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
@@ -17,6 +18,7 @@ import MeetingNavList from './MeetingNavList'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import RetroSidebarPhaseListItemChildren from './RetroSidebarPhaseListItemChildren'
+import RetroSidebarTeamHealthResults from './RetroTeamHealth/RetroSidebarTeamHealthResults'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -66,7 +68,6 @@ const RetroMeetingSidebar = (props: Props) => {
           }
         }
         teamHealthMeeting {
-          endedAt
           localPhase {
             phaseType
           }
@@ -74,9 +75,12 @@ const RetroMeetingSidebar = (props: Props) => {
             phaseType
             stages {
               id
+              isNavigable
             }
           }
         }
+        ...useGotoTeamHealthStageInRetro_meeting
+        ...RetroSidebarTeamHealthResults_meeting
         summaryPageId
       }
     `,
@@ -101,13 +105,20 @@ const RetroMeetingSidebar = (props: Props) => {
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   const [confirmingPhase, setConfirmingPhase] = useState<NewMeetingPhaseTypeEnum | null>(null)
-  // beneath Team Health are the check's questions, or its results once revealed. Either one, while the
-  // viewer is on it, carries the active state
-  const checkPhaseType = teamHealthMeeting?.endedAt ? 'TEAM_HEALTH_RESULT' : 'TEAM_HEALTH_RESPONSE'
-  const checkStageCount = teamHealthMeeting?.phases.find(
-    ({phaseType}) => phaseType === checkPhaseType
-  )?.stages.length
-  const isOnCheckStage = teamHealthMeeting?.localPhase?.phaseType === checkPhaseType
+  const gotoCheckStage = useGotoTeamHealthStageInRetro(meeting, gotoStageId)
+  // with a check, Team Health is the check's Respond row: it opens the check's intro and lists its
+  // questions, and a Results row follows. The question or result the viewer is on carries the active
+  // state, so Team Health is active only on the intro
+  const findCheckStages = (checkPhaseType: NewMeetingPhaseTypeEnum) =>
+    teamHealthMeeting?.phases.find(({phaseType}) => phaseType === checkPhaseType)?.stages
+  const checkIntroStage = findCheckStages('TEAM_HEALTH_INTRO')?.[0]
+  const checkQuestionStages = findCheckStages('TEAM_HEALTH_RESPONSE')
+  const checkRespondStage = checkIntroStage?.isNavigable
+    ? checkIntroStage
+    : checkQuestionStages?.[0]
+  const checkResultStageId = findCheckStages('TEAM_HEALTH_RESULT')?.[0]?.id
+  const checkLocalPhaseType = teamHealthMeeting?.localPhase?.phaseType
+  const isPastCheckIntro = !!checkLocalPhaseType && checkLocalPhaseType !== 'TEAM_HEALTH_INTRO'
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -124,34 +135,40 @@ const RetroMeetingSidebar = (props: Props) => {
             isComplete = false
           } = itemStage ?? {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
-          const handleClick = () => {
-            const prevPhaseType = phases[index - 1]?.phaseType
-            const prevItemStage = prevPhaseType
-              ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
-              : null
+          const hasCheck = phaseType === 'TEAM_HEALTH' && !!teamHealthMeeting
+          const gotoPhase = () =>
+            hasCheck && checkRespondStage
+              ? gotoCheckStage(checkRespondStage.id)
+              : gotoStageId(itemStageId)
+          const handleClick =
+            (rowPhaseType: NewMeetingPhaseTypeEnum, go: () => Promise<void>) => () => {
+              const prevPhaseType = phases[index - 1]?.phaseType
+              const prevItemStage = prevPhaseType
+                ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
+                : null
 
-            const {isComplete: isPrevItemStageComplete = true, readyUserIds = []} =
-              prevItemStage ?? {}
+              const {isComplete: isPrevItemStageComplete = true, readyUserIds = []} =
+                prevItemStage ?? {}
 
-            const activeCount = meetingMembers.length
-            const isConfirmRequired =
-              isViewerFacilitator && readyUserIds.length < activeCount - 1 && activeCount > 1
+              const activeCount = meetingMembers.length
+              const isConfirmRequired =
+                isViewerFacilitator && readyUserIds.length < activeCount - 1 && activeCount > 1
 
-            if (
-              isComplete ||
-              isPrevItemStageComplete ||
-              !isConfirmRequired ||
-              confirmingPhase === phaseType
-            ) {
-              setConfirmingPhase(null)
-              gotoStageId(itemStageId).catch(() => {
-                /*ignore*/
-              })
-              handleMenuClick()
-            } else {
-              setConfirmingPhase(phaseType)
+              if (
+                isComplete ||
+                isPrevItemStageComplete ||
+                !isConfirmRequired ||
+                confirmingPhase === rowPhaseType
+              ) {
+                setConfirmingPhase(null)
+                go().catch(() => {
+                  /*ignore*/
+                })
+                handleMenuClick()
+              } else {
+                setConfirmingPhase(rowPhaseType)
+              }
             }
-          }
           const discussPhase = phases.find((phase) => {
             return phase.phaseType === 'discuss'
           })!
@@ -159,18 +176,17 @@ const RetroMeetingSidebar = (props: Props) => {
           const phaseCount =
             phaseType === 'discuss' && showDiscussSection
               ? discussPhase?.stages.length
-              : phaseType === 'TEAM_HEALTH'
-                ? checkStageCount
+              : hasCheck
+                ? checkQuestionStages?.length
                 : undefined
           return (
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem
-                handleClick={canNavigate ? handleClick : undefined}
+                handleClick={canNavigate ? handleClick(phaseType, gotoPhase) : undefined}
                 isActive={
                   phaseType === 'discuss' || phaseType === 'checkin' || phaseType === 'updates'
                     ? false
-                    : localPhaseType === phaseType &&
-                      !(phaseType === 'TEAM_HEALTH' && isOnCheckStage)
+                    : localPhaseType === phaseType && !(hasCheck && isPastCheckIntro)
                 }
                 isCollapsible={
                   collapsiblePhases.includes(phaseType) ||
@@ -193,6 +209,19 @@ const RetroMeetingSidebar = (props: Props) => {
                 phaseType={phaseType}
                 meeting={meeting}
               />
+              {hasCheck && (
+                <RetroSidebarTeamHealthResults
+                  handleClick={
+                    canNavigate && checkResultStageId
+                      ? handleClick('TEAM_HEALTH_RESULT', () => gotoCheckStage(checkResultStageId))
+                      : undefined
+                  }
+                  isConfirming={isViewerFacilitator && confirmingPhase === 'TEAM_HEALTH_RESULT'}
+                  gotoStageId={gotoStageId}
+                  handleMenuClick={handleMenuClick}
+                  meeting={meeting}
+                />
+              )}
             </Fragment>
           )
         })}
