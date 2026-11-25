@@ -76,6 +76,16 @@ const callToolForData = async (token: string, name: string, args: Record<string,
   return JSON.parse(result.content[0]!.text)
 }
 
+const expectToolErrorCode = (
+  result: {isError?: boolean; content: {text: string}[]},
+  code: string
+) => {
+  expect(result.isError).toBe(true)
+  const [error] = JSON.parse(result.content[0]!.text)
+  expect(error.code).toBe(code)
+  return error.message as string
+}
+
 const getColumns = (meetingResult: {
   viewer: {meeting: {phases: {reflectPrompts?: {id: string; question: string}[]}[]}}
 }) => meetingResult.viewer.meeting.phases.flatMap(({reflectPrompts}) => reflectPrompts ?? [])
@@ -129,27 +139,78 @@ test('an agent adds, edits and renames cards on a retro', async () => {
   ])
 })
 
-test('a card too long for Parabol is refused with the limit named', async () => {
+test('a card too long for Parabol once formatted is refused with the limit named', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
   const meeting = await callToolForData(token, 'list_retro_columns', {meetingId})
   const promptId = getColumns(meeting)[0]!.id
-  const tooLong = 'word '.repeat(500)
+  const shortButHeavilyFormatted = '**bold** '.repeat(150)
+  expect(shortButHeavilyFormatted.length).toBeLessThan(2000)
 
-  const added = await callTool(token, 'add_reflection', {meetingId, promptId, content: tooLong})
-  expect(added.isError).toBe(true)
-  const [error] = JSON.parse(added.content[0]!.text)
-  expect(error.code).toBe('BAD_USER_INPUT')
-  expect(error.message).toContain('2,000')
-
-  const updated = await callTool(token, 'update_reflection', {
-    reflectionId: 'whatever',
-    content: tooLong
+  const added = await callTool(token, 'add_reflection', {
+    meetingId,
+    promptId,
+    content: shortButHeavilyFormatted
   })
-  expect(updated.isError).toBe(true)
-  expect(JSON.parse(updated.content[0]!.text)[0].code).toBe('BAD_USER_INPUT')
+  const message = expectToolErrorCode(added, 'BAD_USER_INPUT')
+  expect(message).toContain('2,000')
+  expect(message).toContain('formatting included')
+
+  const card = await callToolForData(token, 'add_reflection', {
+    meetingId,
+    promptId,
+    content: 'Deploys are slow'
+  })
+  const reflectionId = card.createReflection.reflection.id as string
+  const updated = await callTool(token, 'update_reflection', {
+    reflectionId,
+    content: shortButHeavilyFormatted
+  })
+  expectToolErrorCode(updated, 'BAD_USER_INPUT')
+
+  const after = await callToolForData(token, 'get_meeting', {meetingId})
+  const groups = after.viewer.meeting.reflectionGroups as {
+    reflections: {id: string; plaintextContent: string}[]
+  }[]
+  expect(groups.flatMap(({reflections}) => reflections)).toEqual([
+    {id: reflectionId, plaintextContent: 'Deploys are slow'}
+  ])
+})
+
+const PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+
+test('a card can show an image uploaded to Parabol', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken([...RETRO_SCOPES, 'TEAMS_WRITE'], cookie)
+  const uploaded = await callToolForData(token, 'upload_image', {
+    filename: 'burndown.png',
+    mimeType: 'image/png',
+    base64: PNG_BASE64,
+    scope: 'Team',
+    scopeKey: teamId
+  })
+  const imageUrl = uploaded.uploadUserAsset.url as string
+  const started = await callToolForData(token, 'start_retrospective', {teamId})
+  const meetingId = started.startRetrospective.meeting.id as string
+  const meeting = await callToolForData(token, 'list_retro_columns', {meetingId})
+  const added = await callToolForData(token, 'add_reflection', {
+    meetingId,
+    promptId: getColumns(meeting)[0]!.id,
+    content: `Our burndown\n\n![burndown](${imageUrl})`
+  })
+
+  const stored = await getKysely()
+    .selectFrom('RetroReflection')
+    .select('content')
+    .where('id', '=', added.createReflection.reflection.id)
+    .executeTakeFirstOrThrow()
+  expect(JSON.parse(stored.content).content).toEqual([
+    {type: 'paragraph', content: [{type: 'text', text: 'Our burndown'}]},
+    expect.objectContaining({type: 'imageBlock', attrs: expect.objectContaining({src: imageUrl})})
+  ])
 })
 
 const TEMPLATE_SCOPES = [...RETRO_SCOPES, 'TEAMS_WRITE', 'TEMPLATES_WRITE']
@@ -186,16 +247,6 @@ const getActiveTemplateNames = async (teamId: string) => {
     .orderBy('createdAt')
     .execute()
   return templates.map(({name}) => name)
-}
-
-const expectToolErrorCode = (
-  result: {isError?: boolean; content: {text: string}[]},
-  code: string
-) => {
-  expect(result.isError).toBe(true)
-  const [error] = JSON.parse(result.content[0]!.text)
-  expect(error.code).toBe(code)
-  return error.message as string
 }
 
 test('create_retro_template makes a template with exactly those columns, in order', async () => {
@@ -319,13 +370,13 @@ test('a half-made template it could not remove is named in the error', async () 
     columns: defaultColumn
   })
   const spent = await getChargedCost(userId)
-  // that run cost the name check, the create and the rename, so this leaves room for only the first two
-  const headroom = spent - before - 1
+  const checkCreateAndRenameCost = spent - before
+  const roomForCheckAndCreateOnly = checkCreateAndRenameCost - 1
   const tenMinutesAgo = String(Math.floor(Date.now() / 60_000) * 60 - 600)
   await getRedis().hincrby(
     `adhocGQL:${userId}`,
     tenMinutesAgo,
-    STARTER_HOURLY_QUERY_BUDGET - spent - headroom
+    STARTER_HOURLY_QUERY_BUDGET - spent - roomForCheckAndCreateOnly
   )
 
   const result = await callTool(token, 'create_retro_template', {
