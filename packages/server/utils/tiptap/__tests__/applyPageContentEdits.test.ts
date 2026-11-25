@@ -259,6 +259,30 @@ describe('applyPageContentEdits', () => {
     expect(markdownOf(doc)).toBe('# Plan\n\nRed text\n\nSimple text')
   })
 
+  test('reads a response block as a quote, refuses to rewrite it, and keeps it through nearby edits', async () => {
+    const response: JSONContent = {
+      type: 'responseBlock',
+      attrs: {
+        id: 'r1',
+        preferredName: 'Ann',
+        avatar: 'https://example.com/a.png',
+        content: JSON.stringify({type: 'doc', content: [paragraph(text('Shipped the widget'))]})
+      }
+    }
+    const doc = makeDoc(heading('Standup'), response, paragraph(text('Next steps')))
+    expect(await readPage(doc)).toBe(
+      '# Standup\n\n> **Ann:**\n>\n> Shipped the widget\n\nNext steps'
+    )
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'the widget', newText: 'it'}])
+    expect(error?.code).toBe('BAD_USER_INPUT')
+    expect(error?.message).toContain('a responseBlock block')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+    const [, kept] = blocksOf(doc)
+    expect(applyPageContentEdits(doc, [{oldText: 'Next steps', newText: 'Later'}])).toBeNull()
+    expect(blocksOf(doc)[1]).toBe(kept)
+  })
+
   test('refuses to remove the title heading', () => {
     expect(applyPageContentEdits(makePage(), [{oldText: '# Plan\n\n', newText: ''}])?.code).toBe(
       'BAD_USER_INPUT'
@@ -465,6 +489,41 @@ describe('applyPageContentEdits', () => {
     expect(error?.message).toContain("copy it exactly from the page's markdown content")
     expect(error?.message).not.toContain('read_page')
     expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
+  })
+
+  test('finds & < > as the read page writes them', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Tom & Jerry')), paragraph(text('a < b')))
+    expect(
+      applyPageContentEdits(doc, [
+        {oldText: 'Tom & Jerry', newText: 'Tom & Spike'},
+        {oldText: 'a < b', newText: 'a > b'}
+      ])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe('# Plan\n\nTom & Spike\n\na > b')
+  })
+
+  test('replaceAll never splits an escape', async () => {
+    const doc = makeDoc(
+      heading('Plan'),
+      paragraph(text('Tom & Jerry')),
+      paragraph(text('AT&T sells &copy; R&D')),
+      paragraph(text('&amp;'))
+    )
+    expect(
+      applyPageContentEdits(doc, [{oldText: '&', newText: 'and', replaceAll: true}])
+    ).toBeNull()
+    const read = await readPage(doc)
+    expect(read).toBe('# Plan\n\nTom and Jerry\n\nATandT sells &amp;copy; RandD\n\n&amp;amp;')
+    expect(read).not.toContain('andamp;')
+  })
+
+  test('refuses an oldText found only inside an escape', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('&copy; 2026')))
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'amp', newText: 'x'}])
+    expect(error?.code).toBe('CONFLICT')
+    expect(error?.message).toContain('&amp;')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
   })
 
   test('refuses an edit that adds an image Parabol does not host', () => {

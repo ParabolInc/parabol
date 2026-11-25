@@ -3,6 +3,8 @@ import type {TeamHealthMeeting} from '../../../../postgres/types/Meeting'
 import type {InternalContext} from '../../../graphql'
 import {getInsightsBlocks} from './getInsightsBlocks'
 import {getSubtitleBlock} from './getSubtitleBlock'
+import {getTaskBlocks} from './getTaskBlocks'
+import {getTeamHealthDiscussionBlocks} from './getTeamHealthDiscussionBlocks'
 import {getTeamHealthMetaBlock} from './getTeamHealthMetaBlock'
 import {getTeamHealthSummaryTable} from './getTeamHealthSummaryTable'
 
@@ -17,6 +19,8 @@ export const generateTeamHealthMeetingSummaryPage = async function* (
     getSubtitleBlock(meeting, dataLoader),
     getTeamHealthMetaBlock(meeting, dataLoader),
     getInsightsBlocks(meetingId, dataLoader),
+    getTaskBlocks(meetingId, dataLoader),
+    getTeamHealthDiscussionBlocks(meeting, dataLoader),
     getTeamHealthSummaryTable(meetingId, dataLoader)
   ] as Promise<JSONContent[] | null>[]
   for (const promise of promises) {

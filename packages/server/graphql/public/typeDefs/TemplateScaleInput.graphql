@@ -3,7 +3,7 @@ A value for a scale
 """
 input TemplateScaleInput {
   """
-  The color used to visually group a scale value
+  The hex color used to visually group a scale value. It must be one of these 12, in any letter case: #FD6157, #FE975D, #FFCC63, #C4CF66, #73A153, #66BC8C, #55C0CF, #329AE5, #7272E5, #A06BD6, #DB70DB, #ED4C86.
   """
   color: String!
 

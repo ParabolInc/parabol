@@ -138,6 +138,73 @@ test('cancelling a series group cancels every team on it', async () => {
   }
 })
 
+test('renaming a series without an rrule keeps it recurring, and an explicit null cancels it', async () => {
+  const pg = getKysely()
+  const {userId, teamId, orgId} = await signUp()
+  const secondTeamId = await addTeam(orgId, userId, true)
+  const {rows} = await createGroupedSeries([teamId, secondTeamId], userId, userId)
+  const meetingSeriesId = MeetingSeriesId.join(rows[0]!.id)
+  const bearerToken = await authTokenFor(userId)
+  const readGroup = () =>
+    pg
+      .selectFrom('MeetingSeries')
+      .select(['title', 'recurrenceRule', 'cancelledAt'])
+      .where(
+        'id',
+        'in',
+        rows.map(({id}) => id)
+      )
+      .execute()
+
+  const renamed = await sendPublic({
+    query: UPDATE_MEETING_SERIES,
+    variables: {meetingSeriesId, name: 'Renamed Only'},
+    bearerToken
+  })
+  expect(renamed.errors).toBeUndefined()
+  expect(await readGroup()).toEqual([
+    {title: 'Renamed Only', recurrenceRule: RRULE, cancelledAt: null},
+    {title: 'Renamed Only', recurrenceRule: RRULE, cancelledAt: null}
+  ])
+
+  const cancelled = await sendPublic({
+    query: UPDATE_MEETING_SERIES,
+    variables: {meetingSeriesId, rrule: null},
+    bearerToken
+  })
+  expect(cancelled.errors).toBeUndefined()
+  for (const series of await readGroup()) {
+    expect(series.cancelledAt).not.toBeNull()
+  }
+})
+
+test('renaming a cancelled series without an rrule renames it and leaves it cancelled', async () => {
+  const pg = getKysely()
+  const {userId, teamId} = await signUp()
+  const {rows} = await createGroupedSeries([teamId], userId, userId)
+  const {id} = rows[0]!
+  await pg
+    .updateTable('MeetingSeries')
+    .set({cancelledAt: new Date()})
+    .where('id', '=', id)
+    .execute()
+
+  const res = await sendPublic({
+    query: UPDATE_MEETING_SERIES,
+    variables: {meetingSeriesId: MeetingSeriesId.join(id), name: 'Renamed While Cancelled'},
+    bearerToken: await authTokenFor(userId)
+  })
+  expect(res.errors).toBeUndefined()
+
+  const after = await pg
+    .selectFrom('MeetingSeries')
+    .select(['title', 'cancelledAt'])
+    .where('id', '=', id)
+    .executeTakeFirstOrThrow()
+  expect(after.title).toBe('Renamed While Cancelled')
+  expect(after.cancelledAt).not.toBeNull()
+})
+
 test('a team member who does not own the series cannot change it', async () => {
   const pg = getKysely()
   const owner = await signUp()
@@ -770,6 +837,27 @@ test('updateRecurrenceSettings fans out over the group like updateMeetingSeries'
   for (const series of after) {
     expect(series.title).toBe('Renamed By Meeting')
     expect(series.recurrenceRule).toMatch(/T160000/)
+  }
+
+  const renamedOnly = await sendPublic({
+    query: UPDATE_RECURRENCE_SETTINGS,
+    variables: {meetingId, name: 'Renamed Only By Meeting'},
+    bearerToken: await authTokenFor(userId)
+  })
+  expect(renamedOnly.errors).toBeUndefined()
+  const afterRename = await pg
+    .selectFrom('MeetingSeries')
+    .select(['title', 'recurrenceRule', 'cancelledAt'])
+    .where(
+      'id',
+      'in',
+      rows.map(({id}) => id)
+    )
+    .execute()
+  for (const series of afterRename) {
+    expect(series.title).toBe('Renamed Only By Meeting')
+    expect(series.recurrenceRule).toMatch(/T160000/)
+    expect(series.cancelledAt).toBeNull()
   }
 })
 

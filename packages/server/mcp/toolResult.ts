@@ -26,11 +26,12 @@ const formatErrors = (
   errors: NonNullable<FormattedExecutionResult['errors']>,
   errorDetails?: Record<string, unknown>
 ) =>
-  errors.map(({message, extensions}) => {
+  errors.map(({message, path, extensions}) => {
     const retryAfter = retryAfterSchema.safeParse(extensions)
     return {
       message,
       code: extensions?.code,
+      ...(path && {path}),
       ...(retryAfter.success && {retryAfter: retryAfter.data.http.headers['Retry-After']}),
       ...errorDetails
     }

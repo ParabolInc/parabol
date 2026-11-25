@@ -21,7 +21,7 @@ export default defineTool({
   name: 'add_reflection',
   title: 'Add a retrospective card',
   description:
-    'Add a reflection card to a column of a running retrospective, as you. Get the column ids (promptId) from list_retro_columns. The meeting must not be past the group phase. Needs meetings:write.',
+    'Add a reflection card to a column of a running retrospective, as you. Get the column ids (promptId) from list_retro_columns; a column from another meeting or template is refused. The meeting must not be past the group phase. Needs meetings:write.',
   inputSchema: z.object({
     meetingId: z
       .string()

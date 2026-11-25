@@ -17,6 +17,15 @@ import {
 import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
+const CREATE_TASK = `
+  mutation CreateTask($newTask: CreateTaskInput!) {
+    createTask(newTask: $newTask) {
+      task {
+        id
+      }
+    }
+  }
+`
 const ADD_ORG = `
   mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
     addOrg(newTeam: $newTeam, orgName: $orgName) {
@@ -351,6 +360,32 @@ test('start_check_in starts a meeting on the team that get_meeting shows', async
   expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'action', teamId})
 })
 
+test('get_meeting needs tasks:read to show the tasks a meeting made', async () => {
+  const {cookie, teamId, userId} = await signUp()
+  const withoutTasks = await createPersonalAccessToken(
+    ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
+    {cookie}
+  )
+  const started = await callToolForData(withoutTasks, 'start_check_in', {teamId})
+  const meetingId = started.startCheckIn.meeting.id
+  const created = await sendPublic({
+    query: CREATE_TASK,
+    variables: {newTask: {teamId, userId, meetingId, status: 'active'}},
+    cookie
+  })
+  expect(created.errors).toBeUndefined()
+
+  expectToolError(await callTool(withoutTasks, 'get_meeting', {meetingId}), 'tasks:read')
+
+  const withTasks = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ', 'TASKS_READ'], {
+    cookie
+  })
+  const {viewer} = await callToolForData(withTasks, 'get_meeting', {meetingId})
+  expect(viewer.meeting.tasks).toEqual([
+    expect.objectContaining({id: created.data.createTask.task.id})
+  ])
+})
+
 test('start_retrospective, start_sprint_poker and start_standup start meetings on the team', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(['MEETINGS_WRITE'], {cookie})
@@ -472,13 +507,32 @@ const JPEG_BASE64 = Buffer.from([
 
 test('create_task turns markdown into the task text', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const token = await createPersonalAccessToken(['TASKS_WRITE', 'TASKS_READ'], {cookie})
   const created = await callToolForData(token, 'create_task', {
     teamId,
     content: 'Fix the **login** bug'
   })
   expect(created.createTask.task.plaintextContent).toBe('Fix the login bug')
   expect(created.createTask.task.status).toBe('active')
+})
+
+test('create_task and update_task with only tasks:write write the task and return its id', async () => {
+  const {cookie, teamId} = await signUp()
+  const writeOnly = await createPersonalAccessToken(['TASKS_WRITE'], {cookie})
+  const created = await callToolForData(writeOnly, 'create_task', {
+    teamId,
+    content: 'Write without reading'
+  })
+  const taskId = created.createTask.task.id
+  expect(created.createTask.task).toEqual({id: expect.any(String)})
+  const updated = await callToolForData(writeOnly, 'update_task', {taskId, status: 'done'})
+  expect(updated.updateTask.task).toEqual({id: taskId})
+
+  const reader = await createPersonalAccessToken(['USERS_READ', 'TASKS_READ'], {cookie})
+  const listed = await callToolForData(reader, 'list_tasks', {teamIds: [teamId]})
+  expect(listed.viewer.tasks.edges.map(({node}: {node: object}) => node)).toContainEqual(
+    expect.objectContaining({id: taskId, plaintextContent: 'Write without reading', status: 'done'})
+  )
 })
 
 test('update_task with nothing to change is refused', async () => {

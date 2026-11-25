@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {meetingsStarted} from '../../../metricsHandler'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
@@ -14,6 +15,7 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
+import {createMeetingMember} from './joinMeeting'
 import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const MEETING_START_DELAY_MS = 3000
@@ -101,7 +103,16 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     throw new GraphQLError('Meeting already started', {extensions: {code: 'CONFLICT'}})
   }
   const {id: meetingId} = meeting
-  await updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)
+  const starterTeamMember = await dataLoader
+    .get('teamMembers')
+    .loadNonNull(toTeamMemberId(teamId, viewerId))
+  await Promise.all([
+    getKysely()
+      .insertInto('MeetingMember')
+      .values(createMeetingMember(meeting, starterTeamMember))
+      .execute(),
+    updateMeetingTemplateLastUsedAt(meeting.templateId, teamId)
+  ])
   const meetingSeries =
     rrule && (await startNewMeetingSeries(meeting, rrule, name, {templateId: meeting.templateId}))
   if (meetingSeries) {

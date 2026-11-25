@@ -83,11 +83,13 @@ type Mutation {
     orgId: ID!
   ): ArchiveOrganizationPayload! @scope(name: ORGS_WRITE)
   """
-  Archive a team. If the team has never been used, it will be permanently deleted.
+  Archive a team: it is hidden from its members, its open invitations expire, its meeting templates
+  are deactivated and the other members are notified. Nothing is deleted, and the team stays
+  readable with isArchived true. Needs a team lead, billing leader or super user.
   """
   archiveTeam(
     """
-    The teamId to archive (or delete, if team is unused)
+    The teamId to archive
     """
     teamId: ID!
   ): ArchiveTeamPayload! @scope(name: TEAMS_WRITE)
@@ -1231,7 +1233,7 @@ type Mutation {
   ): VoteForReflectionGroupPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Cast a vote for the estimated points for a given dimension
+  Cast a vote for the estimated points for a given dimension. A vote cast after the votes are revealed changes the revealed scores.
   """
   voteForPokerStory(
     meetingId: ID!
@@ -2124,7 +2126,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2158,7 +2160,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format. Applied to every selected team.
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now. Applied to every selected team.
     """
     rrule: RRule
 
@@ -2189,7 +2191,7 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    A weekly recurrence, see the RRule scalar for the format. A first meeting more than a minute away only schedules the series: no meeting starts now
     """
     rrule: RRule
 
@@ -2333,6 +2335,7 @@ type Mutation {
   1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
   2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
   3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
+  4. When the meeting is recurring and recurrenceRule is left out, only the name changes
   """
   updateRecurrenceSettings(
     """
@@ -2346,7 +2349,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    The weekly recurrence, see the RRule scalar for the format; null stops a recurring meeting, and
+    leaving it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateRecurrenceSettingsPayload! @scope(name: MEETINGS_WRITE)
@@ -2357,6 +2361,7 @@ type Mutation {
   rather than from inside a meeting.
   - Pass a non-null rrule to update the recurrence (also restarts a cancelled series)
   - Pass null rrule to cancel the series
+  - Leave rrule out to change only the name
   """
   updateMeetingSeries(
     """
@@ -2370,7 +2375,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format; null cancels the series
+    The weekly recurrence, see the RRule scalar for the format; null cancels the series, and leaving
+    it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateMeetingSeriesPayload! @scope(name: MEETINGS_WRITE)

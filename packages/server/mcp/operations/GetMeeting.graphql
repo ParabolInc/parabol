@@ -1,4 +1,4 @@
-# Show one meeting: its summary, its reflections (retrospectives) or responses (standups), and the tasks it made. summaryPageId, when set, is a page to open with read_page. Needs users:read and meetings:read.
+# Show one meeting: its summary, its reflections (retrospectives) or responses (standups), and the tasks it made. summaryPageId, when set, is a page to open with read_page. Timestamps, and the dates on the summary page, are UTC. Needs users:read, meetings:read and tasks:read.
 query GetMeeting(
   # The meeting id, from list_meetings or the tool that started it
   $meetingId: ID!

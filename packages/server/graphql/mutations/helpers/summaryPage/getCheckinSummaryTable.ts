@@ -1,4 +1,5 @@
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import omitPrivateTasks from '../../../../utils/omitPrivateTasks'
 import {getSummaryTable} from './getSummaryTable'
 
 const headers = [
@@ -28,8 +29,10 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
       ])
 
       const allItems = [
-        ...tasks.map((task) => ({...task, type: 'Task'})),
-        ...comments.map((comment) => ({...comment, type: 'Comment'}))
+        ...omitPrivateTasks(tasks).map((task) => ({...task, type: 'Task' as const})),
+        ...comments
+          .filter(({isActive}) => isActive)
+          .map((comment) => ({...comment, type: 'Comment' as const}))
       ]
 
       const findDiscussionThread = (threadParentId: string | null) => {
@@ -41,9 +44,11 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
       const rows = await Promise.all(
         allItems.map(async (item): Promise<Record<(typeof headers)[number], string>> => {
           const author =
-            (item.createdBy &&
-              (await dataLoader.get('users').load(item.createdBy))?.preferredName) ??
-            ''
+            item.type === 'Comment' && item.isAnonymous
+              ? 'Anonymous'
+              : ((item.createdBy &&
+                  (await dataLoader.get('users').load(item.createdBy))?.preferredName) ??
+                '')
           return {
             Author: author,
             'Agenda Item': content ?? '<Untitled>',
