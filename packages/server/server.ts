@@ -17,6 +17,7 @@ import {requireInstanceLicense} from './license/instanceLicense'
 import listenHandler from './listenHandler'
 import llmsTxtHandler from './mcp/llmsTxtHandler'
 import mcpHandler, {mcpMethodNotAllowedHandler, mcpPreflightHandler} from './mcp/mcpHandler'
+import openAIAppsChallengeHandler from './mcp/openAIAppsChallengeHandler'
 import {ENABLE_METRICS, METRICS_PORT, metricsHandler} from './metricsHandler'
 import authorizationServerMetadataHandler from './oauth2/authorizationServerMetadataHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
@@ -126,6 +127,10 @@ const app = uws
     traceHttpRoute('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
   )
   .get('/llms.txt', traceHttpRoute('/llms.txt', llmsTxtHandler))
+  .get(
+    '/.well-known/openai-apps-challenge',
+    traceHttpRoute('/.well-known/openai-apps-challenge', openAIAppsChallengeHandler)
+  )
   .post('/mcp', traceHttpRoute('/mcp', mcpHandler))
   .get('/mcp', mcpMethodNotAllowedHandler)
   .del('/mcp', mcpMethodNotAllowedHandler)

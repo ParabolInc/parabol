@@ -1,5 +1,6 @@
 import {Server} from '@modelcontextprotocol/sdk/server/index.js'
 import packageJSON from '../package.json'
+import type {MCPToolset} from './getMCPToolset'
 import type {MCPContext} from './MCPContext'
 import type MCPToolEntry from './MCPToolEntry'
 import mcpInstructions from './mcpInstructions'
@@ -23,6 +24,7 @@ import updateReflection from './tools/updateReflection'
 import updateTask from './tools/updateTask'
 import uploadImage from './tools/uploadImage'
 import votePokerStory from './tools/votePokerStory'
+import withoutSentencesNaming from './withoutSentencesNaming'
 
 const typescriptTools: MCPToolEntry[] = [
   createTask,
@@ -45,12 +47,39 @@ const typescriptTools: MCPToolEntry[] = [
   graphqlMutate
 ]
 
-const createMCPServer = (context: MCPContext) => {
+const allTools = [...operationToolEntries, ...typescriptTools]
+
+const GENERIC_TOOL_NAMES = [graphqlQuery, graphqlMutate, describeGraphql].map(
+  ({definition}) => definition.name
+)
+
+const curatedTools: MCPToolEntry[] = allTools
+  .filter(({definition}) => !GENERIC_TOOL_NAMES.includes(definition.name))
+  .map((entry) => ({
+    ...entry,
+    definition: {
+      ...entry.definition,
+      description:
+        entry.definition.description &&
+        withoutSentencesNaming(entry.definition.description, GENERIC_TOOL_NAMES)
+    }
+  }))
+
+const TOOLSETS = {
+  all: {tools: allTools, instructions: mcpInstructions},
+  curated: {
+    tools: curatedTools,
+    instructions: withoutSentencesNaming(mcpInstructions, GENERIC_TOOL_NAMES)
+  }
+} satisfies Record<MCPToolset, {tools: MCPToolEntry[]; instructions: string}>
+
+const createMCPServer = (context: MCPContext, toolset: MCPToolset) => {
+  const {tools, instructions} = TOOLSETS[toolset]
   const server = new Server(
     {name: 'parabol', version: packageJSON.version},
-    {capabilities: {tools: {}}, instructions: mcpInstructions}
+    {capabilities: {tools: {}}, instructions}
   )
-  registerTools(server, context, [...operationToolEntries, ...typescriptTools])
+  registerTools(server, context, tools)
   return server
 }
 

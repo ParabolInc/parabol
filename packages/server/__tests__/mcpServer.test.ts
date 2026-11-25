@@ -51,11 +51,15 @@ const INITIALIZE = {
 
 const createOAuthAccessToken = async (
   resource?: string,
-  {cookie: userCookie, scope = 'users:read'}: {cookie?: string; scope?: string} = {}
+  {
+    cookie: userCookie,
+    scope = 'users:read',
+    redirectUri: clientRedirectUri
+  }: {cookie?: string; scope?: string; redirectUri?: string} = {}
 ) => {
   const [cookie, {clientId, redirectUri}] = await Promise.all([
     userCookie ?? signUp().then((user) => user.cookie),
-    createClient()
+    createClient(clientRedirectUri)
   ])
   const {codeVerifier, codeChallenge} = createPKCEPair()
   const authorized = await createCode(
@@ -744,4 +748,54 @@ test('llms.txt describes the server and names each tool once', async () => {
   const toolSection = llmsTxt.split('\n## Tools\n')[1]!.split('\n## ')[0]!
   const names = [...toolSection.matchAll(/`([a-z_]+)`/g)].map(([, name]) => name)
   expect(names.toSorted()).toEqual(TOOL_NAMES)
+})
+
+const GENERIC_TOOLS = ['graphql_query', 'graphql_mutate', 'describe_graphql']
+
+test('a client that signs in through ChatGPT gets every tool but the generic GraphQL ones, and never reads their names', async () => {
+  const token = await createOAuthAccessToken(undefined, {
+    redirectUri: 'https://chatgpt.com/connector/oauth/test-callback'
+  })
+  const tools: {name: string; description: string}[] = await listTools(token)
+  expect(tools.map(({name}) => name).toSorted()).toEqual(
+    TOOL_NAMES.filter((name) => !GENERIC_TOOLS.includes(name))
+  )
+  for (const {description} of tools) {
+    for (const generic of GENERIC_TOOLS) expect(description).not.toContain(generic)
+  }
+  const standupTemplate = tools.find(({name}) => name === 'create_standup_template')!
+  expect(standupTemplate.description).toContain('Needs users:read, teams:read and templates:write.')
+
+  const initialized = await postMCP(INITIALIZE, bearer(token))
+  const {instructions} = (await initialized.json()).result
+  for (const generic of GENERIC_TOOLS) expect(instructions).not.toContain(generic)
+  expect(instructions).toContain('Start with get_me')
+
+  const response = await postMCP(
+    {
+      jsonrpc: '2.0',
+      id: 5,
+      method: 'tools/call',
+      params: {name: 'graphql_query', arguments: {query: '{ viewer { id } }'}}
+    },
+    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
+  )
+  expect((await response.json()).error.code).toBe(-32602)
+})
+
+test("OpenAI's domain challenge is plain text: the configured token, or 404 without one", async () => {
+  const response = await fetch(`${ORIGIN}/.well-known/openai-apps-challenge`)
+  expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8')
+  const token = process.env.OPENAI_APPS_CHALLENGE
+  if (token) {
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe(token)
+  } else {
+    expect(response.status).toBe(404)
+  }
+})
+
+test('an OAuth client signed in elsewhere gets every tool', async () => {
+  const tools: {name: string}[] = await listTools(await createOAuthAccessToken())
+  expect(tools.map(({name}) => name).toSorted()).toEqual(TOOL_NAMES)
 })
