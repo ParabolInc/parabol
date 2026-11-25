@@ -60,7 +60,15 @@ const InviteeField = (props: InviteeFieldProps) => {
     onEdit: edit,
     onSubmit
   })
-  const {active, getOptionDomId, hoverOption, clickOption, focusQuietly, inputProps} = keys
+  const {
+    active,
+    isPointerActive,
+    getOptionDomId,
+    hoverOption,
+    clickOption,
+    focusQuietly,
+    inputProps
+  } = keys
 
   return (
     <>
@@ -87,6 +95,7 @@ const InviteeField = (props: InviteeFieldProps) => {
             orgName={directory.orgName}
             query={inputValue}
             active={active}
+            isPointerActive={isPointerActive}
             getOptionDomId={getOptionDomId}
             onHighlight={hoverOption}
             onPick={clickOption}

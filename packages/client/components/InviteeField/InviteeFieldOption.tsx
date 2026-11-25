@@ -7,6 +7,7 @@ interface Props {
   option: InviteeOption
   domId: string
   isHighlighted: boolean
+  isPointerActive: boolean
   onHighlight: (option: InviteeOption) => void
   onPick: (option: InviteeOption) => void
 }
@@ -27,7 +28,7 @@ const getOptionText = (option: InviteeOption) => {
 const FADE_WHEN_DISABLED = 'group-aria-disabled:opacity-50'
 
 const InviteeFieldOption = (props: Props) => {
-  const {option, domId, isHighlighted, onHighlight, onPick} = props
+  const {option, domId, isHighlighted, isPointerActive, onHighlight, onPick} = props
   const isEnabled = isOptionEnabled(option)
   const {name, sub} = getOptionText(option)
   const TileIcon =
@@ -41,11 +42,11 @@ const InviteeFieldOption = (props: Props) => {
       data-highlighted={isHighlighted || undefined}
       onClick={() => onPick(option)}
       onPointerMove={() => {
-        if (isEnabled && !isHighlighted) onHighlight(option)
+        if (isEnabled) onHighlight(option)
       }}
       className={cn(
         'group mx-1 flex min-h-11 cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-fg-secondary text-xs leading-4 aria-disabled:cursor-default data-highlighted:bg-surface-hover',
-        isEnabled && 'hover:bg-surface-hover'
+        isEnabled && isPointerActive && 'hover:bg-surface-hover'
       )}
     >
       {option.kind === 'person' ? (

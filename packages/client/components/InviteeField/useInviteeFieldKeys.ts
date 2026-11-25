@@ -32,6 +32,7 @@ const useInviteeFieldKeys = (params: Params) => {
   const {setIsOpen, onShowMore, onAnnounce, onEdit, onSubmit} = params
   const {inputValue, drafts} = invitees
   const isQuietFocusRef = useRef(!!autoFocus)
+  const [isPointerActive, setIsPointerActive] = useState(false)
   const [highlight, setHighlight] = useState<{id: string | null; query: string}>({
     id: null,
     query: ''
@@ -56,7 +57,8 @@ const useInviteeFieldKeys = (params: Params) => {
   }
 
   const hoverOption = (option: InviteeOption) => {
-    if (inputValue.trim()) highlightOption(option)
+    setIsPointerActive(true)
+    if (inputValue.trim() && option.id !== active?.id) highlightOption(option)
   }
 
   const commitTyped = (text: string) => {
@@ -69,6 +71,7 @@ const useInviteeFieldKeys = (params: Params) => {
     if (count === 0) return
     const index = active ? enabledOptions.indexOf(active) : step === 1 ? -1 : 0
     const next = enabledOptions[(index + step + count) % count]!
+    setIsPointerActive(false)
     highlightOption(next)
     document.getElementById(getOptionDomId(next))?.scrollIntoView({block: 'nearest'})
   }
@@ -174,7 +177,15 @@ const useInviteeFieldKeys = (params: Params) => {
     onBlur
   }
 
-  return {active, getOptionDomId, hoverOption, clickOption, focusQuietly, inputProps}
+  return {
+    active,
+    isPointerActive,
+    getOptionDomId,
+    hoverOption,
+    clickOption,
+    focusQuietly,
+    inputProps
+  }
 }
 
 export default useInviteeFieldKeys

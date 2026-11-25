@@ -16,6 +16,7 @@ interface Props {
   orgName: string
   query: string
   active: InviteeOption | null
+  isPointerActive: boolean
   getOptionDomId: (option: InviteeOption) => string
   onHighlight: (option: InviteeOption) => void
   onPick: (option: InviteeOption) => void
@@ -33,8 +34,8 @@ const pickSide = (anchor: HTMLElement | null): 'top' | 'bottom' => {
 }
 
 const InviteeFieldOptions = (props: Props) => {
-  const {inputRef, listId, options, orgName, query, active, getOptionDomId, onHighlight, onPick} =
-    props
+  const {inputRef, listId, options, orgName, query, active, isPointerActive} = props
+  const {getOptionDomId, onHighlight, onPick} = props
   const {sections, emptyText} = options
   const hasQuery = query.trim() !== ''
   const [side] = useState(() => pickSide(inputRef.current?.parentElement ?? null))
@@ -85,6 +86,7 @@ const InviteeFieldOptions = (props: Props) => {
                     option={option}
                     domId={getOptionDomId(option)}
                     isHighlighted={option.id === active?.id}
+                    isPointerActive={isPointerActive}
                     onHighlight={onHighlight}
                     onPick={onPick}
                   />
