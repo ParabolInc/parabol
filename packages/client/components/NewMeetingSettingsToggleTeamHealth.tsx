@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsToggleTeamHealth_settings$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_settings.graphql'
 import type {NewMeetingSettingsToggleTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsToggleTeamHealth_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useFeatureLaunch from '../hooks/useFeatureLaunch'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import isTeamHealthAvailable from '../utils/features/isTeamHealthAvailable'
@@ -17,19 +18,15 @@ interface Props {
 
 const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   const {teamRef, settingsRef, className} = props
-
   const team = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleTeamHealth_team on Team {
         ...NewMeetingSettingsUpgradeForTeamHealth_team
-        id
         tier
       }
     `,
     teamRef
   )
-
-  // not part of the team fragment as we don't want to specify the meeting type here
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleTeamHealth_settings on TeamMeetingSettings {
@@ -39,14 +36,13 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     `,
     settingsRef
   )
-  const {tier} = team
-  const teamHealthAvailable = isTeamHealthAvailable(tier)
-
   const {id: settingsId, phaseTypes} = settings
   const hasTeamHealth = phaseTypes.includes('TEAM_HEALTH')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+  const [launch, dismissLaunch] = useFeatureLaunch('teamHealthInRetro')
   const toggleTeamHealth = () => {
+    dismissLaunch()
     if (submitting) return
     submitMutation()
     SetMeetingSettingsMutation(
@@ -55,14 +51,16 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
       {onError, onCompleted}
     )
   }
-  if (!teamHealthAvailable) {
+  if (!isTeamHealthAvailable(team.tier)) {
     return <NewMeetingSettingsUpgradeForTeamHealth teamRef={team} className={className} />
   }
   return (
     <NewMeetingSettingsToggleRow
       active={hasTeamHealth}
       className={className}
-      label={'Include Team Health check'}
+      label='Embed Team Health Check'
+      tooltip='Answer your team’s open Team Health check in the retro and talk through new results. Answers stay private.'
+      launch={launch}
       onClick={toggleTeamHealth}
     />
   )

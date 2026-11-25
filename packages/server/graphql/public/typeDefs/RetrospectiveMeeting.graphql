@@ -221,6 +221,18 @@ type RetrospectiveMeeting implements NewMeeting {
   reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
 
   """
+  The check this retro started itself, which ends when the retro ends. Null if the retro started none
+  """
+  startedTeamHealthMeeting: TeamHealthMeeting
+
+  """
+  The Team Health check the retro's Team Health phase shows, which never changes once set: the team's
+  open check when the retro started, else the one started or picked up from the retro. Null when
+  there is none, or the retro has no Team Health phase
+  """
+  teamHealthMeeting: TeamHealthMeeting
+
+  """
   The number of tasks generated in the meeting
   """
   taskCount: Int!

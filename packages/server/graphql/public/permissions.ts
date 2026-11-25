@@ -465,7 +465,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
-    startTeamHealth: isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
+    startTeamHealth: and(
+      isTeamMemberOrOrgLeader<'Mutation.startTeamHealth'>('args.teamIds'),
+      or(
+        isNull<'Mutation.startTeamHealth'>('args.retroMeetingId'),
+        isMeetingFacilitator<'Mutation.startTeamHealth'>('args.retroMeetingId')
+      )
+    ),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
     // no isAuthenticated: errors can occur pre-auth (parity with the legacy Google Form flow)
     submitErrorFeedback: rateLimit({perMinute: 5, perHour: 20}),
@@ -707,7 +713,10 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   RetrospectiveMeeting: {
     viewerInspirationIssues:
-      isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id')
+      isMeetingMember<'RetrospectiveMeeting.viewerInspirationIssues'>('source.id'),
+    startedTeamHealthMeeting:
+      isTeamMemberOfMeeting<'RetrospectiveMeeting.startedTeamHealthMeeting'>('source.id'),
+    teamHealthMeeting: isTeamMemberOfMeeting<'RetrospectiveMeeting.teamHealthMeeting'>('source.id')
   },
   TeamMember: {
     integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),

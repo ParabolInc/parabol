@@ -14,10 +14,14 @@ interface Props {
   meeting: RetroMeetingDrawer_meeting$key
   showInspiration: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
+  // the thread of the Team Health check's stage the viewer is on, if any
+  discussionId?: string
+  // the thread is the check's, so only its members write in it
+  canComment?: boolean
 }
 
 const RetroMeetingDrawer = (props: Props) => {
-  const {meeting: meetingRef, showInspiration, gotoStageId} = props
+  const {meeting: meetingRef, showInspiration, gotoStageId, discussionId, canComment} = props
   const meeting = useFragment(
     graphql`
       fragment RetroMeetingDrawer_meeting on RetrospectiveMeeting {
@@ -34,7 +38,7 @@ const RetroMeetingDrawer = (props: Props) => {
   const {id: meetingId, rightDrawerOpen} = meeting
   const [toggleDrawer, setActiveTab] = useRightDrawer(
     meetingId,
-    showInspiration ? 'inspiration' : 'settings',
+    showInspiration ? 'inspiration' : discussionId ? 'discussion' : 'settings',
     false
   )
   return (
@@ -51,9 +55,11 @@ const RetroMeetingDrawer = (props: Props) => {
         onClose={toggleDrawer}
       >
         <DiscussionDrawer
-          hideDiscussion
+          hideDiscussion={!discussionId}
+          discussionId={discussionId}
           onToggle={toggleDrawer}
-          allowedThreadables={[]}
+          allowedThreadables={discussionId && canComment ? ['comment', 'task', 'poll'] : []}
+          autoFocus={false}
           meetingRef={meeting}
           meetingId={meetingId}
           workContent={showInspiration ? <RetroWorkDrawer meetingRef={meeting} /> : undefined}

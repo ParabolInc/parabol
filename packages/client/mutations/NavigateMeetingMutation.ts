@@ -13,7 +13,7 @@ import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import {isViewerTyping} from '../utils/viewerTypingUtils'
+import {isViewerInTextField, isViewerTyping} from '../utils/viewerTypingUtils'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 import {snackOnError} from './handlers/snackOnError'
 
@@ -129,8 +129,14 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     const viewerPhaseType = meeting
       .getLinkedRecord('localPhase')!
       .getValue('phaseType') as NewMeetingPhaseTypeEnum
+    // a teammate answering the retro's Team Health check stays put while in a text box, even before
+    // they type in it
+    const isInterruptingViewer =
+      viewerPhaseType === 'TEAM_HEALTH'
+        ? isViewerTyping() || isViewerInTextField()
+        : isInterruptingChickenPhase(viewerPhaseType) && isViewerTyping()
     if (
-      (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) &&
+      !isInterruptingViewer &&
       // if i have spotlight open, i don't want the facilitator to move me around
       !meeting.getValue('spotlightReflectionId')
     ) {

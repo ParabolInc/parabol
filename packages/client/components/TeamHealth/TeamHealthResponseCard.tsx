@@ -108,7 +108,9 @@ const TeamHealthResponseCard = (props: Props) => {
         stageIndex={stageIndex}
         stageCount={stageCount}
       />
-      <h2 className='mt-6 text-center font-bold text-2xl text-fg-primary'>{question.question}</h2>
+      <h2 className='mt-6 flex min-h-[2lh] items-center justify-center text-center font-bold text-2xl text-fg-primary'>
+        {question.question}
+      </h2>
       {question.description && (
         <p className='mt-2 text-center text-fg-muted'>{question.description}</p>
       )}

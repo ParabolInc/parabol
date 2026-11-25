@@ -39,7 +39,8 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     <NewMeetingSettingsToggleRow
       active={hasCheckIn}
       className={className}
-      label={'Include Icebreaker'}
+      label='Include Icebreaker'
+      tooltip='Open with a warm-up question everyone answers'
       onClick={toggleCheckIn}
     />
   )

@@ -1,3 +1,4 @@
+import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
 const getRetroSettings = async (teamId: string, cookie: string) => {
@@ -43,8 +44,26 @@ const getRetroPhaseTypes = async (teamId: string, cookie: string) => {
   return res.data.viewer.team.meetingSettings
 }
 
+const setTeamHealthEnabled = (settingsId: string, teamHealthEnabled: boolean, cookie: string) =>
+  sendPublic({
+    query: `
+      mutation SetTeamHealth($settingsId: ID!, $teamHealthEnabled: Boolean) {
+        setMeetingSettings(settingsId: $settingsId, teamHealthEnabled: $teamHealthEnabled) {
+          settingsId
+        }
+      }
+    `,
+    variables: {settingsId, teamHealthEnabled},
+    cookie
+  })
+
 test('setMeetingSettings canonicalizes retro phase order: checkin, TEAM_HEALTH, updates, then rest', async () => {
   const user = await signUp()
+  await getKysely()
+    .updateTable('Organization')
+    .set({tier: 'team'})
+    .where('id', '=', user.orgId)
+    .execute()
   const before = await getRetroPhaseTypes(user.teamId, user.cookie)
   await sendPublic({
     query: `
@@ -77,6 +96,22 @@ test('setMeetingSettings canonicalizes retro phase order: checkin, TEAM_HEALTH, 
   const after = await getRetroPhaseTypes(user.teamId, user.cookie)
   expect(after.phaseTypes.slice(0, 3)).toEqual(['checkin', 'TEAM_HEALTH', 'updates'])
   expect(after.phaseTypes.slice(3)).toEqual(['reflect', 'group', 'vote', 'discuss'])
+})
+
+test('setMeetingSettings keeps the Team Health phase off for a Starter team', async () => {
+  const user = await signUp()
+  const {id: settingsId} = await getRetroPhaseTypes(user.teamId, user.cookie)
+  const turnOn = await setTeamHealthEnabled(settingsId, true, user.cookie)
+  expect(turnOn).toEqual({
+    data: null,
+    errors: [
+      expect.objectContaining({extensions: expect.objectContaining({code: 'UPGRADE_REQUIRED'})})
+    ]
+  })
+  const turnOff = await setTeamHealthEnabled(settingsId, false, user.cookie)
+  expect(turnOff.errors).toBeUndefined()
+  const after = await getRetroPhaseTypes(user.teamId, user.cookie)
+  expect(after.phaseTypes).not.toContain('TEAM_HEALTH')
 })
 
 test('setMeetingSettings reviewPastTasksEnabled=false removes updates from retro phaseTypes', async () => {

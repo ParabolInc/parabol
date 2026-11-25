@@ -297,6 +297,7 @@
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",
+          "RetroTeamHealthCheckPayload": "./types/RetroTeamHealthCheckPayload#RetroTeamHealthCheckPayloadSource",
           "RetrospectiveMeeting": "../../postgres/types/Meeting#RetrospectiveMeeting as RetrospectiveMeetingDB",
           "RetrospectiveMeetingMember": "../../postgres/types/Meeting.d#RetroMeetingMember as RetroMeetingMemberDB",
           "RetrospectiveMeetingSettings": "../../postgres/types/index#RetrospectiveMeetingSettings as RetrospectiveMeetingSettingsDB",

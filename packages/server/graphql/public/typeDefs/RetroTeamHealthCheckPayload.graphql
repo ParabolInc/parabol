@@ -1,0 +1,8 @@
+"""
+Published to a retrospective when a Team Health check is attached to it, or when the check it shows
+reveals its results, so the retro's Team Health phase follows along
+"""
+type RetroTeamHealthCheckPayload {
+  "The retrospective whose Team Health check changed"
+  meeting: RetrospectiveMeeting!
+}

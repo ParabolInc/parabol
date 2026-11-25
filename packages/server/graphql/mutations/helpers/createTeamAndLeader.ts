@@ -90,15 +90,7 @@ export default async function createTeamAndLeader(
             id: generateUID(),
             teamId,
             meetingType: 'retrospective',
-            phaseTypes: [
-              'checkin',
-              'TEAM_HEALTH',
-              'updates',
-              'reflect',
-              'group',
-              'vote',
-              'discuss'
-            ],
+            phaseTypes: ['checkin', 'updates', 'reflect', 'group', 'vote', 'discuss'],
             disableAnonymity: false,
             maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
             totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,

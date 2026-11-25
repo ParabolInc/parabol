@@ -123,6 +123,21 @@ const subscription = graphql`
       RevealTeamHealthVotesPayload {
         ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
       }
+      RetroTeamHealthCheckPayload {
+        meeting {
+          id
+          # the retro may now show a check, so everything it reads of one comes with it
+          ...RetroTeamHealthPhase_meeting
+          ...RetroMeetingSidebar_meeting
+          teamHealthMeeting {
+            viewerMeetingMember {
+              id
+            }
+            ...getTeamHealthDiscussionId_meeting
+            ...useTeamHealthCheckInRetro_meeting
+          }
+        }
+      }
       SetPhaseFocusPayload {
         ...SetPhaseFocusMutation_meeting @relay(mask: false)
       }

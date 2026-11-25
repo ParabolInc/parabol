@@ -10,7 +10,7 @@ interface Props {
   className?: string
 }
 
-const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
+const NewMeetingSettingsUpgradeForTeamHealth = (props: Props) => {
   const {teamRef, className} = props
 
   const team = useFragment(
@@ -38,10 +38,10 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
     >
       <div className='mt-1 flex w-full flex-col'>
         <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-fg-secondary text-xl'>
-          Health Check
+          Embed Team Health Check
         </div>
         <div className='w-full text-fg-primary'>
-          <u>Upgrade</u> to enable team health checks
+          <u>Upgrade</u> to embed checks in retros
         </div>
       </div>
       <Lock className='m-0.5 text-fg-secondary' />
@@ -49,4 +49,4 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   )
 }
 
-export default NewMeetingSettingsToggleTeamHealth
+export default NewMeetingSettingsUpgradeForTeamHealth

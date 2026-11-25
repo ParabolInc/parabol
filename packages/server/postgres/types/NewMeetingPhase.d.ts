@@ -53,6 +53,8 @@ export interface ReflectStage extends GenericMeetingStage {
   phaseType: 'reflect'
 }
 
+// a retro's Team Health stage. Older retros ran a one-question pulse here, with labels to vote on.
+// Without labels, the stage shows the team's Team Health check instead
 export interface TeamHealthStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH'
   votes: {
@@ -63,6 +65,11 @@ export interface TeamHealthStage extends GenericMeetingStage {
   question: string
   labels: string[]
   durations?: number[]
+  // the check this retro shows, set once so it never switches: the team's open check as the retro
+  // starts, else the one started or picked up from the retro
+  teamHealthMeetingId?: string | null
+  // the check this retro started itself, which ends with the retro
+  startedTeamHealthMeetingId?: string | null
 }
 
 export interface TeamPromptResponseStage extends GenericMeetingStage {

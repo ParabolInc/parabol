@@ -22,6 +22,16 @@ export const isViewerTyping = () => {
   return false
 }
 
+const textInputTypes = new Set(['text', 'search', 'email', 'url', 'tel', 'number'])
+
+// the cursor is in a text box, whether or not anything is typed in it yet
+export const isViewerInTextField = () => {
+  const activeElement = getActiveElement()
+  if (activeElement instanceof HTMLTextAreaElement) return true
+  if (activeElement instanceof HTMLInputElement) return textInputTypes.has(activeElement.type)
+  return activeElement instanceof HTMLElement && activeElement.isContentEditable
+}
+
 export const isViewerTypingInTask = () => {
   const activeElement = getActiveElement()
   const ariaLabel = getAriaLabel(activeElement)

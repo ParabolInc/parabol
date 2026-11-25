@@ -605,6 +605,8 @@ const initNewMeeting = (
     templateId: 'startStopContinueTemplate',
     nextAutoGroupThreshold: null,
     prevMeeting: null,
+    startedTeamHealthMeeting: null,
+    teamHealthMeeting: null,
     scheduledEndTime: null,
     viewerMeetingMember,
     reflectionGroups: [] as any[],

@@ -112,7 +112,7 @@ const TeamHealthResponsePhase = (props: Props) => {
   const responseStageRef = currentStage.TeamHealthResponseCard_stage
   const endedStageRef = currentStage.TeamHealthEndedResponseCard_stage
   return (
-    <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
+    <div className='mx-auto flex h-full w-full max-w-2xl flex-col items-center justify-center px-6'>
       {endedAt && endedStageRef ? (
         <TeamHealthEndedResponseCard
           key={currentStage.id}

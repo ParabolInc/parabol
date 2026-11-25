@@ -18,6 +18,7 @@ import queueTeamHealthCategorySummaries from './queueTeamHealthCategorySummaries
 import sortTeamHealthResultStages from './sortTeamHealthResultStages'
 import summarizeTeamHealthCategories from './summarizeTeamHealthCategories'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
+import syncRetrosWithTeamHealthCheck from './syncRetrosWithTeamHealthCheck'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeTeamHealth = async (meeting: TeamHealthMeeting, context: InternalContext) => {
@@ -116,6 +117,7 @@ const safeEndTeamHealth = async ({
     {operationId}
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamHealthPayload', data, subOptions)
+  syncRetrosWithTeamHealthCheck(meetingId).catch(logError)
   // do not await sending the email
   if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   return data
