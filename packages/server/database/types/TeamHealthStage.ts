@@ -5,6 +5,7 @@ export default class TeamHealthStage extends GenericMeetingStage {
   phaseType = 'TEAM_HEALTH' as const
   votes: TeamHealthVote[] = []
   isRevealed = false
+  teamHealthMeetingId?: string | null
 
   constructor(
     public question: string,

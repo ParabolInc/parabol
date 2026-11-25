@@ -9,7 +9,8 @@ interface Props {
   meeting: RetroTeamHealthStart_meeting$key
 }
 
-// a retro whose team has no check open: its facilitator can start one, which closes with the retro
+// a retro without a check: its facilitator can start one, which closes with the retro, or take the
+// one the team has open
 const RetroTeamHealthStart = (props: Props) => {
   const {meeting: meetingRef} = props
   const meeting = useFragment(

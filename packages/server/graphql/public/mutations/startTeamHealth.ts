@@ -14,6 +14,7 @@ import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import attachTeamHealthCheckToRetro from '../../mutations/helpers/attachTeamHealthCheckToRetro'
 import canAdminMeetingSeries from '../../mutations/helpers/canAdminMeetingSeries'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import getDefaultTeamFacilitator from '../../mutations/helpers/getDefaultTeamFacilitator'
@@ -21,7 +22,6 @@ import getOpenTeamHealthMeeting from '../../mutations/helpers/getOpenTeamHealthM
 import getRetroTeamHealthStage from '../../mutations/helpers/getRetroTeamHealthStage'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import recordTeamHealthCheckStartedInRetro from '../../mutations/helpers/recordTeamHealthCheckStartedInRetro'
 import rotateSeriesTeamHealthQuestionIds from '../../mutations/helpers/rotateSeriesTeamHealthQuestionIds'
 import safeCreateTeamHealth from '../../mutations/helpers/safeCreateTeamHealth'
 import syncRetrosWithTeamHealthCheck from '../../mutations/helpers/syncRetrosWithTeamHealthCheck'
@@ -261,15 +261,22 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }
-    if (!getRetroTeamHealthStage(retro.phases)) {
+    const checkStage = getRetroTeamHealthStage(retro.phases)
+    if (!checkStage) {
       throw new GraphQLError('The retrospective does not include a Team Health check', {
         extensions: {code: 'BAD_USER_INPUT'}
       })
     }
-    // a second check beside the open one would split the team's answers
+    if (checkStage.teamHealthMeetingId) {
+      throw new GraphQLError('The retrospective already has a Team Health check', {
+        extensions: {code: 'CONFLICT'}
+      })
+    }
+    // a second check beside the open one would split the team's answers, so the retro takes that one
     const openCheck = await getOpenTeamHealthMeeting(retro.teamId, dataLoader)
     if (openCheck) {
-      syncRetrosWithTeamHealthCheck(retro.teamId).catch(logError)
+      await attachTeamHealthCheckToRetro(retroMeetingId, openCheck.id, false)
+      syncRetrosWithTeamHealthCheck(openCheck.id).catch(logError)
       return {meetingIds: [openCheck.id], teamIds: [retro.teamId]}
     }
   }
@@ -340,12 +347,10 @@ const startTeamHealth: MutationResolvers['startTeamHealth'] = async (
   const meetingIds = started.flatMap(({meetingId}) => (meetingId ? [meetingId] : []))
   const [retroStartedMeetingId] = meetingIds
   if (retroMeetingId && retroStartedMeetingId) {
-    await recordTeamHealthCheckStartedInRetro(retroMeetingId, retroStartedMeetingId)
+    await attachTeamHealthCheckToRetro(retroMeetingId, retroStartedMeetingId, true)
     dataLoader.clearAll('newMeetings')
+    syncRetrosWithTeamHealthCheck(retroStartedMeetingId).catch(logError)
   }
-  started.forEach(({teamId, meetingId}) => {
-    if (meetingId) syncRetrosWithTeamHealthCheck(teamId).catch(logError)
-  })
 
   dataLoader.clearAll('meetingSeries')
 

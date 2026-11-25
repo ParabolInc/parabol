@@ -2,11 +2,12 @@ import getKysely from '../../../postgres/getKysely'
 import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import getRetroTeamHealthStage from './getRetroTeamHealthStage'
 
-// the retro remembers the check it started, so ending the retro ends that check too. Locked, since a
-// teammate joining the retro rewrites the same phases
-const recordTeamHealthCheckStartedInRetro = async (
+// a retro shows one check for good, so a check already attached stays. A check the retro started
+// also ends with the retro. Locked, since a teammate joining the retro rewrites the same phases
+const attachTeamHealthCheckToRetro = async (
   retroMeetingId: string,
-  teamHealthMeetingId: string
+  teamHealthMeetingId: string,
+  isStartedInRetro: boolean
 ) => {
   await getKysely()
     .transaction()
@@ -19,7 +20,10 @@ const recordTeamHealthCheckStartedInRetro = async (
         .executeTakeFirst()
       const checkStage = retro && getRetroTeamHealthStage(retro.phases)
       if (!retro || !checkStage) return
-      checkStage.startedTeamHealthMeetingId = teamHealthMeetingId
+      const attachedId = checkStage.teamHealthMeetingId
+      if (attachedId && attachedId !== teamHealthMeetingId) return
+      checkStage.teamHealthMeetingId = teamHealthMeetingId
+      if (isStartedInRetro) checkStage.startedTeamHealthMeetingId = teamHealthMeetingId
       await trx
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(retro.phases)})
@@ -28,4 +32,4 @@ const recordTeamHealthCheckStartedInRetro = async (
     })
 }
 
-export default recordTeamHealthCheckStartedInRetro
+export default attachTeamHealthCheckToRetro

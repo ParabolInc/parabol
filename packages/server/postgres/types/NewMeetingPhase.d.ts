@@ -65,6 +65,9 @@ export interface TeamHealthStage extends GenericMeetingStage {
   question: string
   labels: string[]
   durations?: number[]
+  // the check this retro shows, set once so it never switches: the team's open check as the retro
+  // starts, else the one started or picked up from the retro
+  teamHealthMeetingId?: string | null
   // the check this retro started itself, which ends with the retro
   startedTeamHealthMeetingId?: string | null
 }

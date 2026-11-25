@@ -232,9 +232,9 @@ type RetrospectiveMeeting implements NewMeeting {
   startedTeamHealthMeeting: TeamHealthMeeting
 
   """
-  The Team Health check the retro's Team Health phase shows: the one it started, else the team's open
-  check that closes soonest, else the last check revealed while the retro ran. Null when there is
-  none, or the retro has no Team Health phase
+  The Team Health check the retro's Team Health phase shows, which never changes once set: the team's
+  open check when the retro started, else the one started or picked up from the retro. Null when
+  there is none, or the retro has no Team Health phase
   """
   teamHealthMeeting: TeamHealthMeeting
 

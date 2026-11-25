@@ -126,7 +126,7 @@ const subscription = graphql`
       RetroTeamHealthCheckPayload {
         meeting {
           id
-          # the retro may now show another check, so everything it reads of one comes with it
+          # the retro may now show a check, so everything it reads of one comes with it
           ...RetroTeamHealthPhase_meeting
           ...RetroMeetingSidebar_meeting
           teamHealthMeeting {

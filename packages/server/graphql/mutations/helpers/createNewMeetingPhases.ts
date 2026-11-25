@@ -32,6 +32,7 @@ import type {DB} from '../../../postgres/types/pg'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import type {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import getOpenTeamHealthMeeting from './getOpenTeamHealthMeeting'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -102,10 +103,14 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
             meetingCount,
             stages: [new CheckInStage(facilitatorTeamMemberId, positionAfter(''))]
           })
-        case 'TEAM_HEALTH':
+        case 'TEAM_HEALTH': {
           // the one-question pulse is retired: with no question and no labels to vote on, the stage
-          // shows the team's Team Health check
-          return new TeamHealthPhase({stages: [new TeamHealthStage('', [])]})
+          // shows a Team Health check, starting with the one the team has open
+          const openCheck = await getOpenTeamHealthMeeting(teamId, dataLoader)
+          const stage = new TeamHealthStage('', [])
+          stage.teamHealthMeetingId = openCheck?.id ?? null
+          return new TeamHealthPhase({stages: [stage]})
+        }
         case REFLECT:
           return new ReflectPhase(teamId, durations)
         case DISCUSS: {

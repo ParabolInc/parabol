@@ -6,7 +6,6 @@ import type {
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
-import getOpenTeamHealthMeeting from '../../mutations/helpers/getOpenTeamHealthMeeting'
 import getRetroTeamHealthStage from '../../mutations/helpers/getRetroTeamHealthStage'
 import {resolveForSU} from '../../resolvers'
 import gatherInspirationIssues from '../mutations/helpers/gatherInspirationIssues'
@@ -120,28 +119,11 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     const meeting = await dataLoader.get('newMeetings').load(startedTeamHealthMeetingId)
     return meeting?.meetingType === 'teamHealth' ? meeting : null
   },
-  teamHealthMeeting: async (retro, _args, {dataLoader}) => {
-    const {teamId, phases, createdAt, endedAt} = retro
-    const checkStage = getRetroTeamHealthStage(phases)
-    if (!checkStage) return null
-    // the retro's own check comes first. It ends with the retro, after the window below has closed
-    const {startedTeamHealthMeetingId} = checkStage
-    const startedCheck = startedTeamHealthMeetingId
-      ? await dataLoader.get('newMeetings').load(startedTeamHealthMeetingId)
-      : null
-    if (startedCheck?.meetingType === 'teamHealth') return startedCheck
-    if (!endedAt) {
-      const openCheck = await getOpenTeamHealthMeeting(teamId, dataLoader)
-      if (openCheck) return openCheck
-    }
-    const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-    const revealedCheck = completedMeetings
-      .filter((meeting) => meeting.meetingType === 'teamHealth')
-      .find(
-        ({endedAt: revealedAt}) =>
-          !!revealedAt && revealedAt >= createdAt && (!endedAt || revealedAt <= endedAt)
-      )
-    return revealedCheck ?? null
+  teamHealthMeeting: async ({phases}, _args, {dataLoader}) => {
+    const teamHealthMeetingId = getRetroTeamHealthStage(phases)?.teamHealthMeetingId
+    if (!teamHealthMeetingId) return null
+    const teamHealthMeeting = await dataLoader.get('newMeetings').load(teamHealthMeetingId)
+    return teamHealthMeeting?.meetingType === 'teamHealth' ? teamHealthMeeting : null
   },
   votesRemaining: async ({id: meetingId}, _args, {dataLoader}) => {
     const meetingMembers = (await dataLoader
