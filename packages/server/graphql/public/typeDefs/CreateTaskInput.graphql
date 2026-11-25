@@ -44,7 +44,8 @@ input CreateTaskInput {
 
   """
   The sort position of this task within its parent thread, used to order threaded replies relative
-  to threadParentId. Only meaningful when threadParentId is set.
+  to threadParentId. Omit with a discussionId to add it after the last item of its thread, or after
+  the last reply to threadParentId.
   """
   threadSortOrder: Int
 

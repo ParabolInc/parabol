@@ -6,6 +6,14 @@ import toolResult from './toolResult'
 const JOIN_MEETING = `
   mutation JoinMeeting($meetingId: ID!) {
     joinMeeting(meetingId: $meetingId) {
+      meetingId
+    }
+  }
+`
+
+const JOIN_MEETING_TO_ANSWER = `
+  mutation JoinMeeting($meetingId: ID!) {
+    joinMeeting(meetingId: $meetingId) {
       meetingMember {
         ... on TeamHealthMeetingMember {
           isSpectating
@@ -27,11 +35,16 @@ const OPT_IN_TO_TEAM_HEALTH = `
 
 const ensureMeetingMember = async (
   context: MCPContext,
-  meetingId: string
+  meetingId: string,
+  {optInToTeamHealth = true}: {optInToTeamHealth?: boolean} = {}
 ): Promise<CallToolResult | null> => {
+  if (!optInToTeamHealth) {
+    const joined = await runGraphQL(context, JOIN_MEETING, {meetingId})
+    return joined.errors?.length ? toolResult(joined) : null
+  }
   const joined = await runGraphQL<{joinMeeting: {meetingMember: {isSpectating?: boolean}}}>(
     context,
-    JOIN_MEETING,
+    JOIN_MEETING_TO_ANSWER,
     {meetingId}
   )
   if (joined.errors?.length) return toolResult(joined)

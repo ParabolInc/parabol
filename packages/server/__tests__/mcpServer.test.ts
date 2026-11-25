@@ -114,6 +114,7 @@ const COMPILED_TOOLS = [
   'get_report',
   'list_pinned_reports',
   'rename_meeting',
+  'cancel_meeting_series',
   'list_retro_columns'
 ]
 
@@ -364,13 +365,10 @@ test('start_check_in starts a meeting on the team that get_meeting shows', async
   expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'action', teamId})
 })
 
-test('get_meeting needs tasks:read to show the tasks a meeting made', async () => {
+const startCheckInWithTask = async (scopes: string[]) => {
   const {cookie, teamId, userId} = await signUp()
-  const withoutTasks = await createPersonalAccessToken(
-    ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'],
-    {cookie}
-  )
-  const started = await callToolForData(withoutTasks, 'start_check_in', {teamId})
+  const token = await createPersonalAccessToken(scopes, {cookie})
+  const started = await callToolForData(token, 'start_check_in', {teamId})
   const meetingId = started.startCheckIn.meeting.id
   const created = await sendPublic({
     query: CREATE_TASK,
@@ -378,16 +376,26 @@ test('get_meeting needs tasks:read to show the tasks a meeting made', async () =
     cookie
   })
   expect(created.errors).toBeUndefined()
+  return {token, meetingId, taskId: created.data.createTask.task.id}
+}
 
-  expectToolError(await callTool(withoutTasks, 'get_meeting', {meetingId}), 'tasks:read')
+test('get_meeting needs tasks:read to show the tasks a meeting made', async () => {
+  const withoutTasks = await startCheckInWithTask(['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE'])
+  expectToolError(
+    await callTool(withoutTasks.token, 'get_meeting', {meetingId: withoutTasks.meetingId}),
+    'tasks:read'
+  )
 
-  const withTasks = await createPersonalAccessToken(['USERS_READ', 'MEETINGS_READ', 'TASKS_READ'], {
-    cookie
-  })
-  const {viewer} = await callToolForData(withTasks, 'get_meeting', {meetingId})
-  expect(viewer.meeting.tasks).toEqual([
-    expect.objectContaining({id: created.data.createTask.task.id})
+  const withTasks = await startCheckInWithTask([
+    'USERS_READ',
+    'MEETINGS_READ',
+    'MEETINGS_WRITE',
+    'TASKS_READ'
   ])
+  const {viewer} = await callToolForData(withTasks.token, 'get_meeting', {
+    meetingId: withTasks.meetingId
+  })
+  expect(viewer.meeting.tasks).toEqual([expect.objectContaining({id: withTasks.taskId})])
 })
 
 test('start_retrospective, start_sprint_poker and start_standup start meetings on the team', async () => {
@@ -505,6 +513,7 @@ const TYPESCRIPT_TOOLS = [
   'create_team_health_template',
   'answer_team_health',
   'end_meeting',
+  'add_comment',
   'upload_image',
   'graphql_query',
   'graphql_mutate'

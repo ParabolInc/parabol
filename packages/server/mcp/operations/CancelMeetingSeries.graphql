@@ -1,0 +1,13 @@
+# Cancel a recurring meeting series. This stops future meetings and leaves past ones: no new meeting starts from it, the meetings it already started are kept, and one still running stays open until someone ends it. Cancelling a cancelled series changes nothing. A series scheduled for one team can be cancelled by anyone on that team; one scheduled for several teams or by someone off the team only by whoever scheduled it or a billing leader of its organization. It refuses anyone else. Timestamps are UTC. Needs meetings:write.
+mutation CancelMeetingSeries(
+  # The series id: meetingSeriesId from get_meeting, or meetingSeries.id from start_standup
+  $meetingSeriesId: ID!
+) {
+  updateMeetingSeries(meetingSeriesId: $meetingSeriesId, rrule: null) {
+    meetingSeries {
+      id
+      title
+      cancelledAt
+    }
+  }
+}

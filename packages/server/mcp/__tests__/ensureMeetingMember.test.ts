@@ -45,6 +45,34 @@ test('opts a team health member who is sitting the check out in, and leaves one 
   expect(runGraphQL).toHaveBeenCalledTimes(3)
 })
 
+test('only joins, never opting a team health member in, when told not to opt in', async () => {
+  jest.mocked(runGraphQL).mockResolvedValue({data: {joinMeeting: {meetingId: 'meeting-1'}}})
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: false})).toBeNull()
+  expect(runGraphQL).toHaveBeenCalledTimes(1)
+  expect(runGraphQL).toHaveBeenCalledWith(
+    context,
+    expect.stringContaining('joinMeeting(meetingId: $meetingId)'),
+    {meetingId: 'meeting-1'}
+  )
+  expect(jest.mocked(runGraphQL).mock.calls[0]![1]).not.toContain('isSpectating')
+})
+
+test("answers with the server's coded error when it only joins and the caller cannot", async () => {
+  jest.mocked(runGraphQL).mockResolvedValue({
+    data: null,
+    errors: [{message: 'Meeting has already ended', extensions: {code: 'CONFLICT'}}]
+  })
+  expect(await ensureMeetingMember(context, 'meeting-1', {optInToTeamHealth: false})).toEqual({
+    isError: true,
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify([{message: 'Meeting has already ended', code: 'CONFLICT'}])
+      }
+    ]
+  })
+})
+
 test("answers with the server's coded error when the opt-in is refused", async () => {
   jest
     .mocked(runGraphQL)

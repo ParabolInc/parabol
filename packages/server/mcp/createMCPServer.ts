@@ -5,6 +5,7 @@ import type MCPToolEntry from './MCPToolEntry'
 import mcpInstructions from './mcpInstructions'
 import operationToolEntries from './operationToolEntries'
 import registerTools from './registerTools'
+import addComment from './tools/addComment'
 import addReflection from './tools/addReflection'
 import answerStandup from './tools/answerStandup'
 import answerTeamHealth from './tools/answerTeamHealth'
@@ -30,6 +31,7 @@ const typescriptTools: MCPToolEntry[] = [
   createTeamHealthTemplate,
   answerTeamHealth,
   endMeeting,
+  addComment,
   uploadImage,
   graphqlQuery,
   graphqlMutate

@@ -1,4 +1,4 @@
-# Show one meeting: its summary, its reflections (retrospectives) or responses (standups), and the tasks it made. summaryPageId, when set, is a page to open with read_page. For more on a standup, sprint poker meeting or team health check, use get_standup, get_poker_meeting or get_team_health_meeting. Timestamps, and the dates on the summary page, are UTC. Needs users:read, meetings:read and tasks:read.
+# Show one meeting: its summary, its reflections (retrospectives) or responses (standups), and the tasks it made. summaryPageId, when set, is a page to open with read_page. Its phases hold the discussions of a retrospective's topics and a check-in's agenda items, whose discussionId get_discussion, add_comment and create_task take. A topic's reflectionGroupId is the id of the reflection group it discusses; while it is empty, voting hasn't ended and the topic has no discussion yet. For more on a standup, sprint poker meeting or team health check, use get_standup, get_poker_meeting or get_team_health_meeting. Timestamps, and the dates on the summary page, are UTC. Needs users:read, meetings:read and tasks:read.
 query GetMeeting(
   # The meeting id, from list_meetings or the tool that started it
   $meetingId: ID!
@@ -14,8 +14,20 @@ query GetMeeting(
       endedAt
       summary
       summaryPageId
+      phases {
+        stages {
+          ... on RetroDiscussStage {
+            discussionId
+            reflectionGroupId
+          }
+          ... on AgendaItemsStage {
+            discussionId
+          }
+        }
+      }
       ... on RetrospectiveMeeting {
         reflectionGroups {
+          id
           title
           voteCount
           prompt {

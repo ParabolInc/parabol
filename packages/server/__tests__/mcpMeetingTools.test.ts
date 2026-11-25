@@ -309,8 +309,10 @@ test('get_meeting says which series a meeting belongs to, if any', async () => {
   const standup = await callToolForData(token, 'get_meeting', {meetingId})
   expect(standup.viewer.meeting.meetingSeriesId).toBe(meetingSeriesId)
 
-  const started = await callToolForData(token, 'start_check_in', {teamId})
-  const checkIn = await callToolForData(token, 'get_meeting', {
+  const other = await signUp()
+  const otherToken = await createPersonalAccessToken(MEETING_SCOPES, {cookie: other.cookie})
+  const started = await callToolForData(otherToken, 'start_check_in', {teamId: other.teamId})
+  const checkIn = await callToolForData(otherToken, 'get_meeting', {
     meetingId: started.startCheckIn.meeting.id
   })
   expect(checkIn.viewer.meeting).toHaveProperty('meetingSeriesId', null)
@@ -746,7 +748,7 @@ type TeamHealthResultStage = {
   responses: {commentParaphrased: string | null; commentAuthor: {preferredName: string} | null}[]
 }
 
-const addTeammate = async (teamId: string) => {
+const addTeammate = async (teamId: string, scopes = MEETING_SCOPES) => {
   const teammate = await signUp()
   await getKysely()
     .insertInto('TeamMember')
@@ -759,7 +761,7 @@ const addTeammate = async (teamId: string) => {
     .execute()
   return {
     ...teammate,
-    token: await createPersonalAccessToken(MEETING_SCOPES, {cookie: teammate.cookie})
+    token: await createPersonalAccessToken(scopes, {cookie: teammate.cookie})
   }
 }
 
@@ -972,4 +974,282 @@ test('create_team_health_template needs only templates:write and refuses a name 
     .where('removedAt', 'is', null)
     .execute()
   expect(questions).toEqual([{question: 'I know what is expected of me'}])
+})
+
+const COMMENT_SCOPES = [...MEETING_SCOPES, 'COMMENTS_READ', 'COMMENTS_WRITE']
+
+const START_RETROSPECTIVE = `
+  mutation StartRetrospective($teamId: ID!) {
+    startRetrospective(teamId: $teamId) {
+      meeting {
+        id
+        phases {
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+const CREATE_REFLECTION = `
+  mutation CreateReflection($input: CreateReflectionInput!) {
+    createReflection(input: $input) {
+      reflection {
+        reflectionGroupId
+      }
+    }
+  }
+`
+
+const ADD_AGENDA_ITEM = `
+  mutation AddAgendaItem($newAgendaItem: CreateAgendaItemInput!) {
+    addAgendaItem(newAgendaItem: $newAgendaItem) {
+      agendaItem {
+        id
+      }
+    }
+  }
+`
+
+const openFirstRetroTopic = async (
+  meetingId: string,
+  teamId: string,
+  reflectionGroupId: string
+) => {
+  const pg = getKysely()
+  const meeting = await pg
+    .selectFrom('NewMeeting')
+    .select('phases')
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+  const phases = meeting.phases as {phaseType: string; stages: Record<string, unknown>[]}[]
+  const discussStage = phases.find(({phaseType}) => phaseType === 'discuss')!.stages[0]!
+  discussStage.reflectionGroupId = reflectionGroupId
+  const discussionId = discussStage.discussionId as string
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify(phases)})
+    .where('id', '=', meetingId)
+    .execute()
+  await pg
+    .insertInto('Discussion')
+    .values({
+      id: discussionId,
+      meetingId,
+      teamId,
+      discussionTopicType: 'reflectionGroup',
+      discussionTopicId: reflectionGroupId
+    })
+    .execute()
+  return discussionId
+}
+
+const startCheckInWithAgendaItem = async () => {
+  const owner = await signUp()
+  await turnOffAI(owner.orgId)
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie: owner.cookie})
+  const started = await callToolForData(token, 'start_check_in', {teamId: owner.teamId})
+  const meetingId = started.startCheckIn.meeting.id as string
+  const added = await send(
+    ADD_AGENDA_ITEM,
+    {
+      newAgendaItem: {
+        content: 'Hiring plan',
+        pinned: false,
+        teamId: owner.teamId,
+        teamMemberId: TeamMemberId.join(owner.teamId, owner.userId),
+        meetingId
+      }
+    },
+    owner.cookie
+  )
+  return {...owner, token, meetingId, agendaItemId: added.addAgendaItem.agendaItem.id as string}
+}
+
+const getDiscussionIds = (meeting: {phases: {stages?: {discussionId?: string}[]}[]}) =>
+  getStages(meeting).flatMap(({discussionId}) => (discussionId ? [discussionId] : []))
+
+const getThreadIds = (discussion: {thread: {edges: {node: {id: string}}[]}}) =>
+  discussion.thread.edges.map(({node}) => node.id)
+
+const waitForSummaryText = async (meetingId: string, expectedText: string) => {
+  const deadline = Date.now() + 20000
+  while (true) {
+    const summaryPage = await getKysely()
+      .selectFrom('Page')
+      .select('plaintextContent')
+      .where('summaryMeetingId', '=', meetingId)
+      .executeTakeFirst()
+    const summaryText = summaryPage?.plaintextContent ?? ''
+    if (summaryText.includes(expectedText) || Date.now() > deadline) return summaryText
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
+}
+
+test('get_meeting gives each retro topic’s discussion and the reflection group it discusses', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const started = await send(START_RETROSPECTIVE, {teamId}, cookie)
+  const {id: meetingId, phases} = started.startRetrospective.meeting
+  const [prompt] = phases.flatMap(
+    ({reflectPrompts}: {reflectPrompts?: {id: string}[]}) => reflectPrompts ?? []
+  )
+  const created = await send(
+    CREATE_REFLECTION,
+    {input: {content: paragraph('Deploys are slow'), meetingId, promptId: prompt.id, sortOrder: 0}},
+    cookie
+  )
+  const {reflectionGroupId} = created.createReflection.reflection
+  const discussionId = await openFirstRetroTopic(meetingId, teamId, reflectionGroupId)
+
+  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(getStages(viewer.meeting)).toContainEqual({discussionId, reflectionGroupId})
+  expect(viewer.meeting.reflectionGroups).toEqual([
+    expect.objectContaining({
+      id: reflectionGroupId,
+      reflections: [expect.objectContaining({plaintextContent: 'Deploys are slow'})]
+    })
+  ])
+})
+
+test('add_comment joins a check-in and comments, at the end of the thread or as a reply, on an agenda item’s discussion from get_meeting', async () => {
+  const owner = await startCheckInWithAgendaItem()
+  const teammate = await addTeammate(owner.teamId, COMMENT_SCOPES)
+  const {viewer} = await callToolForData(teammate.token, 'get_meeting', {
+    meetingId: owner.meetingId
+  })
+  const discussionIds = getDiscussionIds(viewer.meeting)
+  expect(discussionIds).toHaveLength(1)
+  const [discussionId] = discussionIds
+  const earlier = await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('We need a designer'), discussionId, threadSortOrder: 5}},
+    owner.cookie
+  )
+  const earlierId = earlier.addComment.comment.id as string
+
+  const added = await callToolForData(teammate.token, 'add_comment', {
+    meetingId: owner.meetingId,
+    discussionId,
+    content: 'Agreed, **this quarter**'
+  })
+  expect(added).toEqual({
+    addComment: {comment: {id: expect.any(String), plaintextContent: 'Agreed, this quarter'}}
+  })
+  const reply = await callToolForData(teammate.token, 'add_comment', {
+    meetingId: owner.meetingId,
+    discussionId,
+    content: 'The budget is approved',
+    threadParentId: earlierId
+  })
+
+  const discussion = await callToolForData(teammate.token, 'get_discussion', {discussionId})
+  expect(getThreadIds(discussion.viewer.discussion)).toEqual([
+    earlierId,
+    added.addComment.comment.id
+  ])
+  const storedReply = await getKysely()
+    .selectFrom('Comment')
+    .select(['threadParentId', 'threadSortOrder', 'plaintextContent'])
+    .where('id', '=', reply.addComment.comment.id)
+    .executeTakeFirstOrThrow()
+  expect(storedReply).toEqual({
+    threadParentId: earlierId,
+    threadSortOrder: 1,
+    plaintextContent: 'The budget is approved'
+  })
+})
+
+test('add_comment without comments:read saves the comment and returns only its id', async () => {
+  const {cookie, meetingId, discussionId} = await startPokerWithStory()
+  const writeOnly = await createPersonalAccessToken(['MEETINGS_WRITE', 'COMMENTS_WRITE'], {cookie})
+
+  const added = await callToolForData(writeOnly, 'add_comment', {
+    meetingId,
+    discussionId,
+    content: 'Looks like a 3'
+  })
+  expect(added).toEqual({addComment: {comment: {id: expect.any(String)}}})
+  const stored = await getKysely()
+    .selectFrom('Comment')
+    .select(['discussionId', 'plaintextContent'])
+    .where('id', '=', added.addComment.comment.id)
+    .executeTakeFirstOrThrow()
+  expect(stored).toEqual({discussionId, plaintextContent: 'Looks like a 3'})
+})
+
+test('create_task joins a meeting and puts the task at the end of a discussion and in the summary', async () => {
+  const owner = await startCheckInWithAgendaItem()
+  const {id: discussionId} = await getKysely()
+    .selectFrom('Discussion')
+    .select('id')
+    .where('meetingId', '=', owner.meetingId)
+    .executeTakeFirstOrThrow()
+  const earlier = await send(
+    ADD_COMMENT,
+    {comment: {content: paragraph('We need a designer'), discussionId, threadSortOrder: 5}},
+    owner.cookie
+  )
+  const teammate = await addTeammate(owner.teamId, [...COMMENT_SCOPES, 'TASKS_WRITE'])
+  const withoutMeeting = await callTool(teammate.token, 'create_task', {
+    teamId: owner.teamId,
+    discussionId,
+    content: 'Post the designer role'
+  })
+  expectToolErrorCode(withoutMeeting, 'BAD_USER_INPUT')
+
+  const created = await callToolForData(teammate.token, 'create_task', {
+    teamId: owner.teamId,
+    meetingId: owner.meetingId,
+    discussionId,
+    userId: teammate.userId,
+    content: 'Post the **designer** role'
+  })
+  const taskId = created.createTask.task.id as string
+  expect(created.createTask.task).toMatchObject({plaintextContent: 'Post the designer role'})
+
+  const discussion = await callToolForData(teammate.token, 'get_discussion', {discussionId})
+  expect(getThreadIds(discussion.viewer.discussion)).toEqual([
+    earlier.addComment.comment.id,
+    taskId
+  ])
+  await callToolForData(owner.token, 'end_meeting', {meetingId: owner.meetingId})
+  expect(await waitForSummaryText(owner.meetingId, 'Post the designer role')).toContain(
+    'Post the designer role'
+  )
+}, 60000)
+
+test('cancel_meeting_series stops a series, keeps the meeting it started, and refuses someone off the team', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const started = await callToolForData(token, 'start_standup', {
+    teamId,
+    name: 'Agent Sync',
+    rrule: immediateRrule()
+  })
+  const {meeting, meetingSeries} = started.startTeamPrompt
+  const outsider = await createPersonalAccessToken(MEETING_SCOPES)
+  const refused = await callTool(outsider, 'cancel_meeting_series', {
+    meetingSeriesId: meetingSeries.id
+  })
+  expectToolErrorCode(refused, 'FORBIDDEN')
+
+  const cancelled = await callToolForData(token, 'cancel_meeting_series', {
+    meetingSeriesId: meetingSeries.id
+  })
+  expect(cancelled).toEqual({
+    updateMeetingSeries: {
+      meetingSeries: {id: meetingSeries.id, title: 'Agent Sync', cancelledAt: expect.any(String)}
+    }
+  })
+  const again = await callToolForData(token, 'cancel_meeting_series', {
+    meetingSeriesId: meetingSeries.id
+  })
+  expect(again).toEqual(cancelled)
+  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId: meeting.id})
+  expect(viewer.meeting).toMatchObject({meetingSeriesId: meetingSeries.id, endedAt: null})
 })
