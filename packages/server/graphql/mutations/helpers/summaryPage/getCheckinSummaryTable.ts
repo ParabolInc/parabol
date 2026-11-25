@@ -1,4 +1,5 @@
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import omitPrivateTasks from '../../../../utils/omitPrivateTasks'
 import {getSummaryTable} from './getSummaryTable'
 
 const headers = [
@@ -28,7 +29,7 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
       ])
 
       const allItems = [
-        ...tasks.map((task) => ({...task, type: 'Task'})),
+        ...omitPrivateTasks(tasks).map((task) => ({...task, type: 'Task'})),
         ...comments.map((comment) => ({...comment, type: 'Comment'}))
       ]
 

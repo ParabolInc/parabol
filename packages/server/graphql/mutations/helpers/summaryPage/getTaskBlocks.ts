@@ -1,12 +1,11 @@
-import isTaskPrivate from '../../../../../client/utils/isTaskPrivate'
 import plural from '../../../../../client/utils/plural'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import omitPrivateTasks from '../../../../utils/omitPrivateTasks'
 
 export const getTaskBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
   const tasks = await dataLoader.get('tasksByMeetingId').load(meetingId)
-  const sharedTasks = tasks.filter(({tags}) => !isTaskPrivate(tags))
   const taskBlocks = await Promise.all(
-    sharedTasks.map(async (task) => {
+    omitPrivateTasks(tasks).map(async (task) => {
       const {content, userId, status, integration} = task
       const user = userId ? await dataLoader.get('users').loadNonNull(userId) : null
       return {

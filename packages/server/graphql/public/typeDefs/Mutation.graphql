@@ -1231,7 +1231,7 @@ type Mutation {
   ): VoteForReflectionGroupPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Cast a vote for the estimated points for a given dimension
+  Cast a vote for the estimated points for a given dimension. A vote cast after the votes are revealed changes the revealed scores.
   """
   voteForPokerStory(
     meetingId: ID!

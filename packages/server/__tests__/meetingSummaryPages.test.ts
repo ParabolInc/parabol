@@ -1,3 +1,4 @@
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
@@ -19,7 +20,52 @@ const START_RETROSPECTIVE = `
     startRetrospective(teamId: $teamId) {
       meeting {
         id
+        phases {
+          ... on ReflectPhase {
+            reflectPrompts {
+              id
+            }
+          }
+        }
       }
+    }
+  }
+`
+
+const CREATE_REFLECTION = `
+  mutation CreateReflection($input: CreateReflectionInput!) {
+    createReflection(input: $input) {
+      ... on CreateReflectionPayload {
+        reflectionId
+      }
+    }
+  }
+`
+
+const START_CHECK_IN = `
+  mutation StartCheckIn($teamId: ID!) {
+    startCheckIn(teamId: $teamId) {
+      meeting {
+        id
+      }
+    }
+  }
+`
+
+const ADD_AGENDA_ITEM = `
+  mutation AddAgendaItem($newAgendaItem: CreateAgendaItemInput!) {
+    addAgendaItem(newAgendaItem: $newAgendaItem) {
+      agendaItem {
+        id
+      }
+    }
+  }
+`
+
+const END_CHECK_IN = `
+  mutation EndCheckIn($meetingId: ID!) {
+    endCheckIn(meetingId: $meetingId) {
+      __typename
     }
   }
 `
@@ -122,6 +168,32 @@ const waitForSummaryText = async (meetingId: string, lastExpectedText: string) =
     if (summaryText.includes(lastExpectedText) || Date.now() > deadline) return summaryText
     await new Promise((resolve) => setTimeout(resolve, 250))
   }
+}
+
+const addComment = async (
+  member: Member,
+  discussionId: string,
+  text: string,
+  threadParentId?: string
+) => {
+  const added = await sendPublic({
+    query: ADD_COMMENT,
+    variables: {
+      comment: {content: paragraph(text), discussionId, threadSortOrder: 0, threadParentId}
+    },
+    cookie: member.cookie
+  })
+  expect(added.errors).toBeUndefined()
+  return added.data.addComment.comment.id as string
+}
+
+const deleteComment = async (member: Member, meetingId: string, commentId: string) => {
+  const deleted = await sendPublic({
+    query: DELETE_COMMENT,
+    variables: {commentId, meetingId},
+    cookie: member.cookie
+  })
+  expect(deleted.errors).toBeUndefined()
 }
 
 const createTask = async (
@@ -235,32 +307,10 @@ test('a team health summary holds the meeting tasks and the comments on each que
   const discussionId = firstDiscussion!.id
   const otherDiscussionId = secondDiscussion!.id
 
-  const addComment = async (text: string, targetDiscussionId: string, threadParentId?: string) => {
-    const added = await sendPublic({
-      query: ADD_COMMENT,
-      variables: {
-        comment: {
-          content: paragraph(text),
-          discussionId: targetDiscussionId,
-          threadSortOrder: 0,
-          threadParentId
-        }
-      },
-      cookie: owner.cookie
-    })
-    expect(added.errors).toBeUndefined()
-    return added.data.addComment.comment.id as string
-  }
-  const parentId = await addComment('Deploys feel slow', discussionId)
-  await addComment('Agreed, the queue is the issue', discussionId, parentId)
-  await addComment('Support rota is working well', otherDiscussionId)
-  const deletedId = await addComment('Said by mistake', discussionId)
-  const deleted = await sendPublic({
-    query: DELETE_COMMENT,
-    variables: {commentId: deletedId, meetingId},
-    cookie: owner.cookie
-  })
-  expect(deleted.errors).toBeUndefined()
+  const parentId = await addComment(owner, discussionId, 'Deploys feel slow')
+  await addComment(owner, discussionId, 'Agreed, the queue is the issue', parentId)
+  await addComment(owner, otherDiscussionId, 'Support rota is working well')
+  await deleteComment(owner, meetingId, await addComment(owner, discussionId, 'Said by mistake'))
 
   await createTask(owner, {
     content: paragraph('Assigned health task'),
@@ -290,4 +340,139 @@ test('a team health summary holds the meeting tasks and the comments on each que
   expect(summary).toContain('Agreed, the queue is the issue')
   expect(summary).toContain('Support rota is working well')
   expect(summary).not.toContain('Said by mistake')
+}, 60000)
+
+test('a retro summary keeps private tasks and deleted comments out of its table and task blocks', async () => {
+  const owner = await signUp()
+  const started = await sendPublic({
+    query: START_RETROSPECTIVE,
+    variables: {teamId: owner.teamId},
+    cookie: owner.cookie
+  })
+  const {id: meetingId, phases} = started.data.startRetrospective.meeting
+  const [prompt] = phases.flatMap(
+    ({reflectPrompts}: {reflectPrompts?: {id: string}[]}) => reflectPrompts ?? []
+  )
+  for (const text of ['Went well', 'Went badly', 'Confusing']) {
+    await sendPublic({
+      query: CREATE_REFLECTION,
+      variables: {input: {content: paragraph(text), meetingId, promptId: prompt.id, sortOrder: 0}},
+      cookie: owner.cookie
+    })
+  }
+  const pg = getKysely()
+  const reflection = await pg
+    .selectFrom('RetroReflection')
+    .select('reflectionGroupId')
+    .where('meetingId', '=', meetingId)
+    .where('plaintextContent', '=', 'Went well')
+    .executeTakeFirstOrThrow()
+  const meeting = await pg
+    .selectFrom('NewMeeting')
+    .select('phases')
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+  const meetingPhases = meeting.phases as {phaseType: string; stages: Record<string, unknown>[]}[]
+  const discussStage = meetingPhases.find(({phaseType}) => phaseType === 'discuss')!.stages[0]!
+  discussStage.reflectionGroupId = reflection.reflectionGroupId
+  const discussionId = discussStage.discussionId as string
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify(meetingPhases)})
+    .where('id', '=', meetingId)
+    .execute()
+  await pg
+    .insertInto('Discussion')
+    .values({
+      id: discussionId,
+      meetingId,
+      teamId: owner.teamId,
+      discussionTopicType: 'reflectionGroup',
+      discussionTopicId: reflection.reflectionGroupId
+    })
+    .execute()
+
+  await createTask(owner, {
+    content: paragraph('Public discussion task'),
+    userId: owner.userId,
+    meetingId,
+    discussionId
+  })
+  const privateTaskId = await createTask(owner, {
+    content: paragraph('Private discussion task'),
+    userId: owner.userId,
+    meetingId,
+    discussionId
+  })
+  await makeTaskPrivate(privateTaskId)
+  await addComment(owner, discussionId, 'Kept comment')
+  await deleteComment(owner, meetingId, await addComment(owner, discussionId, 'Deleted comment'))
+
+  const ended = await sendPublic({
+    query: END_RETROSPECTIVE,
+    variables: {meetingId},
+    cookie: owner.cookie
+  })
+  expect(ended.errors).toBeUndefined()
+
+  const summary = await waitForSummaryText(meetingId, 'Discussion Thread')
+  expect(summary).toContain('Public discussion task')
+  expect(summary).toContain('Kept comment')
+  expect(summary).not.toContain('Private discussion task')
+  expect(summary).not.toContain('Deleted comment')
+}, 60000)
+
+test('a check-in summary keeps private tasks out of its table and task blocks', async () => {
+  const owner = await signUp()
+  const started = await sendPublic({
+    query: START_CHECK_IN,
+    variables: {teamId: owner.teamId},
+    cookie: owner.cookie
+  })
+  const meetingId: string = started.data.startCheckIn.meeting.id
+  const added = await sendPublic({
+    query: ADD_AGENDA_ITEM,
+    variables: {
+      newAgendaItem: {
+        content: 'Hiring plan',
+        pinned: false,
+        teamId: owner.teamId,
+        teamMemberId: TeamMemberId.join(owner.teamId, owner.userId),
+        meetingId
+      }
+    },
+    cookie: owner.cookie
+  })
+  expect(added.errors).toBeUndefined()
+  const {id: discussionId} = await getKysely()
+    .selectFrom('Discussion')
+    .select('id')
+    .where('meetingId', '=', meetingId)
+    .executeTakeFirstOrThrow()
+
+  await createTask(owner, {
+    content: paragraph('Public agenda task'),
+    userId: owner.userId,
+    meetingId,
+    discussionId
+  })
+  const privateTaskId = await createTask(owner, {
+    content: paragraph('Private agenda task'),
+    userId: owner.userId,
+    meetingId,
+    discussionId
+  })
+  await makeTaskPrivate(privateTaskId)
+
+  const ended = await sendPublic({
+    query: END_CHECK_IN,
+    variables: {meetingId},
+    cookie: owner.cookie
+  })
+  expect(ended.errors).toBeUndefined()
+
+  const summary = await waitForSummaryText(meetingId, 'Discussion Thread')
+  expect(summary).toContain('1 Task')
+  expect(summary).toContain('Public agenda task')
+  expect(summary).not.toContain('Private agenda task')
 }, 60000)

@@ -119,7 +119,7 @@ const readLabels = async (meetingId: string, cookie: string) => {
   return phases.find((phase) => phase.stages)!.stages![0]!.scores.map(({label}) => label)
 }
 
-test('a vote after the votes are revealed is refused and the revealed scores stay as they were', async () => {
+test('a vote after the votes are revealed replaces the revealed score', async () => {
   const {cookie, meetingId, stageId, firstLabel, secondLabel} = await startPokerWithStory()
   await sendPublic({
     query: VOTE,
@@ -127,36 +127,35 @@ test('a vote after the votes are revealed is refused and the revealed scores sta
     cookie
   })
   await sendPublic({query: REVEAL, variables: {meetingId, stageId}, cookie})
+  expect(await readLabels(meetingId, cookie)).toEqual([firstLabel])
 
   const changed = await sendPublic({
     query: VOTE,
     variables: {meetingId, stageId, score: secondLabel},
     cookie
   })
-  const removed = await sendPublic({query: VOTE, variables: {meetingId, stageId}, cookie})
 
-  for (const res of [changed, removed]) {
-    expect(res.errors).toEqual([
-      expect.objectContaining({
-        message: 'Voting is closed for this dimension',
-        extensions: expect.objectContaining({code: 'CONFLICT'})
-      })
-    ])
-  }
-  expect(await readLabels(meetingId, cookie)).toEqual([firstLabel])
+  expect(changed.errors).toBeUndefined()
+  expect(await readLabels(meetingId, cookie)).toEqual([secondLabel])
 })
 
-test('voting reopens when the dimension is reset', async () => {
-  const {cookie, meetingId, stageId, firstLabel} = await startPokerWithStory()
-  await sendPublic({query: REVEAL, variables: {meetingId, stageId}, cookie})
-  await sendPublic({query: RESET, variables: {meetingId, stageId}, cookie})
-
-  const res = await sendPublic({
+test('resetting the dimension clears the revealed votes and voting starts over', async () => {
+  const {cookie, meetingId, stageId, firstLabel, secondLabel} = await startPokerWithStory()
+  await sendPublic({
     query: VOTE,
     variables: {meetingId, stageId, score: firstLabel},
     cookie
   })
+  await sendPublic({query: REVEAL, variables: {meetingId, stageId}, cookie})
+  await sendPublic({query: RESET, variables: {meetingId, stageId}, cookie})
+  expect(await readLabels(meetingId, cookie)).toEqual([])
+
+  const res = await sendPublic({
+    query: VOTE,
+    variables: {meetingId, stageId, score: secondLabel},
+    cookie
+  })
 
   expect(res.errors).toBeUndefined()
-  expect(await readLabels(meetingId, cookie)).toEqual([firstLabel])
+  expect(await readLabels(meetingId, cookie)).toEqual([secondLabel])
 })
