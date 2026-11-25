@@ -89,6 +89,11 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
   if (!stage) {
     throw new GraphQLError('Invalid stageId provided', {extensions: {code: 'BAD_USER_INPUT'}})
   }
+  if (!stage.isVoting) {
+    throw new GraphQLError('Voting is closed for this dimension', {
+      extensions: {code: 'CONFLICT'}
+    })
+  }
 
   // RESOLUTION
   const {dimensionRefIdx} = stage
