@@ -8,7 +8,7 @@ import toolResult from '../toolResult'
 export default defineTool({
   name: 'create_standup_template',
   title: 'Create a standup template',
-  description: `Create a standup template on a team with the prompts you give, in order, up to ${Threshold.MAX_STANDUP_PROMPTS}. Then call select_template and start_standup to run a standup with it. It refuses a name another standup template on the team has. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish or remove it (removePromptTemplate) with graphql_mutate rather than retrying under a new name. Needs users:read, teams:read and templates:write.`,
+  description: `Create a standup template owned by a team and shared with its whole organization, as Parabol's template editor does; the result's scope says so. To keep it to the team, call updateTemplateScope with scope TEAM through graphql_mutate. It has the prompts you give, in order, up to ${Threshold.MAX_STANDUP_PROMPTS}. Then call select_template and start_standup to run a standup with it. It refuses a name another standup template on the team has. The Starter plan limits how many custom templates each person can make. An error with unfinishedTemplateId names a half-made template the tool could not remove, which already used a Starter free template: after any retryAfter, finish or remove it (removePromptTemplate) with graphql_mutate rather than retrying under a new name. Needs users:read, teams:read and templates:write.`,
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z
@@ -27,7 +27,7 @@ export default defineTool({
   run: async (context, {teamId, name, prompts}) => {
     const created = await createPromptTemplate(context, {teamId, type: 'teamPrompt', name, prompts})
     if ('error' in created) return created.error
-    const {id, prompts: savedPrompts} = created.template
-    return toolResult({data: {template: {id, name, prompts: savedPrompts}}})
+    const {id, scope, prompts: savedPrompts} = created.template
+    return toolResult({data: {template: {id, name, scope, prompts: savedPrompts}}})
   }
 })

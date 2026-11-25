@@ -577,6 +577,7 @@ test('an agent builds a standup template, answers a standup made with it in mark
   expect(template).toEqual({
     id: expect.any(String),
     name: 'Agent Standup',
+    scope: 'ORGANIZATION',
     prompts: [
       {id: expect.any(String), question: 'What did you ship?', description: ''},
       {
@@ -786,6 +787,7 @@ test('an agent builds a team health template, and four teammates answer a check 
   expect(template).toEqual({
     id: expect.any(String),
     name: 'Agent Health',
+    scope: 'ORGANIZATION',
     questions: TEMPLATE_QUESTIONS.map(({question, category}) => ({
       id: expect.any(String),
       question,
@@ -1018,6 +1020,7 @@ test('create_team_health_template needs only templates:write and refuses a name 
     name: 'Agent Health',
     questions: [{question: 'I know what is expected of me'}]
   })
+  expect(template.scope).toBe('ORGANIZATION')
   expect(template.questions).toEqual([
     {
       id: expect.any(String),

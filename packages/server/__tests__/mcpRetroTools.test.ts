@@ -194,6 +194,7 @@ test('create_retro_template makes a template with exactly those columns, in orde
     columns: COLUMNS
   })
   expect(template.name).toBe('Agent Columns')
+  expect(template.scope).toBe('ORGANIZATION')
   expect(template.columns).toEqual([
     {id: expect.any(String), question: 'What went well?', description: ''},
     {

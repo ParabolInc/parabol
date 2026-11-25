@@ -1,6 +1,6 @@
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js'
 import {z} from 'zod'
-import type {PromptTemplateTypeEnum} from '../graphql/public/resolverTypes'
+import type {PromptTemplateTypeEnum, SharingScopeEnum} from '../graphql/public/resolverTypes'
 import type {MCPContext} from './MCPContext'
 import runGraphQL from './runGraphQL'
 import runTemplateStep, {renameMeetingTemplate, TemplateStepFailedError} from './runTemplateStep'
@@ -43,6 +43,7 @@ const ADD_PROMPT_TEMPLATE = `
     addPromptTemplate(teamId: $teamId, type: $type) {
       template {
         id
+        scope
         prompts {
           id
           question
@@ -146,9 +147,13 @@ interface PromptTemplateInput {
   prompts: Omit<TemplatePrompt, 'id'>[]
 }
 
-type CreatePromptTemplateResult =
-  | {template: {id: string; prompts: TemplatePrompt[]}}
-  | {error: CallToolResult}
+interface CreatedPromptTemplate {
+  id: string
+  scope: SharingScopeEnum
+  prompts: TemplatePrompt[]
+}
+
+type CreatePromptTemplateResult = {template: CreatedPromptTemplate} | {error: CallToolResult}
 
 const createPromptTemplate = async (
   context: MCPContext,
@@ -167,12 +172,14 @@ const createPromptTemplate = async (
       )
     }
   }
-  const created = await runGraphQL<{
-    addPromptTemplate: {template: {id: string; prompts: TemplatePrompt[]}}
-  }>(context, ADD_PROMPT_TEMPLATE, {teamId, type})
+  const created = await runGraphQL<{addPromptTemplate: {template: CreatedPromptTemplate}}>(
+    context,
+    ADD_PROMPT_TEMPLATE,
+    {teamId, type}
+  )
   const template = created.data?.addPromptTemplate.template
   if (created.errors?.length || !template) return {error: toolResult(created)}
-  const {id: templateId, prompts: startingPrompts} = template
+  const {id: templateId, scope, prompts: startingPrompts} = template
   try {
     await renameMeetingTemplate(context, templateId, name)
     const savedPrompts: TemplatePrompt[] = []
@@ -181,7 +188,7 @@ const createPromptTemplate = async (
       const renamed = await renamePrompt(context, prompt, question)
       savedPrompts.push(await describePrompt(context, renamed, description))
     }
-    return {template: {id: templateId, prompts: savedPrompts}}
+    return {template: {id: templateId, scope, prompts: savedPrompts}}
   } catch (error) {
     const removed = await runGraphQL(context, REMOVE_PROMPT_TEMPLATE, {templateId})
     if (!(error instanceof TemplateStepFailedError)) throw error
