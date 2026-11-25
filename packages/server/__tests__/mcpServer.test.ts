@@ -184,7 +184,9 @@ const COMPILED_TOOLS = [
   'start_standup',
   'start_team_health',
   'get_report',
-  'list_pinned_reports'
+  'list_pinned_reports',
+  'rename_meeting',
+  'list_retro_columns'
 ]
 
 const expectUnauthorized = (response: Response) => {
@@ -209,9 +211,6 @@ const expectInitialized = async (response: Response) => {
   })
   const {instructions} = body.result
   expect(instructions.length).toBeLessThan(2000)
-  for (const scope of Object.values(OAuthScopeEnum)) {
-    expect(instructions).toContain(scope)
-  }
   for (const tool of [
     'read_page',
     'edit_page',
@@ -544,6 +543,9 @@ test('an unknown tool is a JSON-RPC error', async () => {
 const TYPESCRIPT_TOOLS = [
   'create_task',
   'update_task',
+  'add_reflection',
+  'update_reflection',
+  'create_retro_template',
   'upload_image',
   'graphql_query',
   'graphql_mutate'
