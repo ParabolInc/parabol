@@ -86,7 +86,7 @@ const categorize = async (
 export default defineTool({
   name: 'create_team_health_template',
   title: 'Create a team health template',
-  description: `Create a team health template on a team with up to ${MAX_QUESTIONS} questions, each a statement the team scores from 1 (strongly disagree) to 5 (strongly agree), such as "I can raise problems and tough issues with this team." Each check asks one question from each category and rotates through a category's questions from one check to the next, so give every question you want asked each time a category of its own. Then call start_team_health with the template's id. It refuses a name another team health template on the team has. Team health templates can't be removed, so an error with unfinishedTemplateId names the empty template the tool made before it failed: after any retryAfter, call again with another name, or leave it. Needs templates:write.`,
+  description: `Create a team health template on a team with up to ${MAX_QUESTIONS} questions, each a statement the team scores from 1 (strongly disagree) to 5 (strongly agree), such as "I can raise problems and tough issues with this team." Each check asks one question from each category and rotates through a category's questions from one check to the next, so give every question you want asked each time a category of its own. Then call start_team_health with the template's id. It refuses a name another team health template on the team has. Team health templates can't be removed, so an error with unfinishedTemplateId names the empty template the tool made before it failed. unfinishedQuestionIds, when present, names questions it made but couldn't delete, which stay in your My Questions list. After any retryAfter, delete those with deleteTeamHealthQuestion through graphql_mutate, then call again with another name. Needs templates:write.`,
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z
@@ -143,11 +143,16 @@ export default defineTool({
       await runTemplateStep(context, ADD_TEMPLATE_QUESTIONS, {templateId, questionIds})
       return toolResult({data: {template: {id: templateId, name, questions: savedQuestions}}})
     } catch (error) {
+      const unfinishedQuestionIds: string[] = []
       for (const questionId of questionIds) {
-        await runGraphQL(context, DELETE_TEAM_HEALTH_QUESTION, {questionId})
+        const deleted = await runGraphQL(context, DELETE_TEAM_HEALTH_QUESTION, {questionId})
+        if (deleted.errors?.length) unfinishedQuestionIds.push(questionId)
       }
       if (!(error instanceof TemplateStepFailedError)) throw error
-      return toolResult(error.result, {unfinishedTemplateId: templateId})
+      return toolResult(error.result, {
+        unfinishedTemplateId: templateId,
+        ...(unfinishedQuestionIds.length > 0 && {unfinishedQuestionIds})
+      })
     }
   }
 })

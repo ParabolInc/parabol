@@ -7,6 +7,8 @@ import {
   callToolForData,
   createPersonalAccessToken,
   expectToolErrorCode,
+  getChargedCost,
+  leaveHourlyQueryBudget,
   PNG_BASE64
 } from './mcpClient'
 
@@ -320,13 +322,6 @@ test('a name the team already uses is refused before a free template is spent', 
   expect(await getActiveTemplateNames(teamId)).toEqual(['Agent Columns', 'Other Columns'])
 })
 
-const STARTER_HOURLY_QUERY_BUDGET = 5000
-
-const getChargedCost = async (userId: string) => {
-  const buckets = await getRedis().hvals(`adhocGQL:${userId}`)
-  return buckets.reduce((total, cost) => total + Number(cost), 0)
-}
-
 test('a half-made template it could not remove is named in the error', async () => {
   const {userId, cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
@@ -337,15 +332,8 @@ test('a half-made template it could not remove is named in the error', async () 
     name: 'First Columns',
     columns: defaultColumn
   })
-  const spent = await getChargedCost(userId)
-  const checkCreateAndRenameCost = spent - before
-  const roomForCheckAndCreateOnly = checkCreateAndRenameCost - 1
-  const tenMinutesAgo = String(Math.floor(Date.now() / 60_000) * 60 - 600)
-  await getRedis().hincrby(
-    `adhocGQL:${userId}`,
-    tenMinutesAgo,
-    STARTER_HOURLY_QUERY_BUDGET - spent - roomForCheckAndCreateOnly
-  )
+  const checkCreateAndRenameCost = (await getChargedCost(userId)) - before
+  await leaveHourlyQueryBudget(userId, checkCreateAndRenameCost - 1)
 
   const result = await callTool(token, 'create_retro_template', {
     teamId,

@@ -1,4 +1,21 @@
+import getRedis from '../utils/getRedis'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+
+const STARTER_HOURLY_QUERY_BUDGET = 5000
+
+export const getChargedCost = async (userId: string) => {
+  const buckets = await getRedis().hvals(`adhocGQL:${userId}`)
+  return buckets.reduce((total, cost) => total + Number(cost), 0)
+}
+
+export const leaveHourlyQueryBudget = async (userId: string, room: number) => {
+  const tenMinutesAgo = String(Math.floor(Date.now() / 60_000) * 60 - 600)
+  await getRedis().hincrby(
+    `adhocGQL:${userId}`,
+    tenMinutesAgo,
+    STARTER_HOURLY_QUERY_BUDGET - (await getChargedCost(userId)) - room
+  )
+}
 
 export const MCP_URL = `${PROTOCOL}://${HOST}/mcp`
 export const PROTOCOL_VERSION = '2025-06-18'

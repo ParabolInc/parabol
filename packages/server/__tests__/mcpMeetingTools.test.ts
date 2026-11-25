@@ -9,7 +9,9 @@ import {
   callTool,
   callToolForData,
   createPersonalAccessToken,
-  expectToolErrorCode
+  expectToolErrorCode,
+  getChargedCost,
+  leaveHourlyQueryBudget
 } from './mcpClient'
 
 afterAll(async () => {
@@ -846,7 +848,7 @@ test('an agent builds a team health template, and four teammates answer a check 
       {questionId: safety.id, score: 2}
     ]
   })
-  await callToolForData(second.token, 'answer_team_health', {
+  const anonymous = await callToolForData(second.token, 'answer_team_health', {
     meetingId,
     answers: [
       {questionId: kept.id, score: 3},
@@ -854,6 +856,16 @@ test('an agent builds a team health template, and four teammates answer a check 
       {questionId: rituals.id, score: null, comment: 'We need more time to prepare'}
     ]
   })
+  expect(anonymous.setTeamHealthResponse.meeting).toMatchObject({isViewerComplete: true})
+  expect(anonymous.note).toContain(`but not the comment on question ${rituals.id}`)
+  expect(anonymous.note).toContain('isAnonymous false')
+  const storedComments = await getKysely()
+    .selectFrom('TeamHealthResponse')
+    .select('comment')
+    .where('meetingId', '=', meetingId)
+    .where('userId', '=', second.userId)
+    .execute()
+  expect(storedComments).toEqual([{comment: null}, {comment: null}, {comment: null}])
   await callToolForData(third.token, 'answer_team_health', {
     meetingId,
     answers: [
@@ -939,6 +951,71 @@ test('answer_team_health refuses a meeting that is not a team health check, and 
     .where('meetingId', '=', meetingId)
     .execute()
   expect(responses).toEqual([])
+})
+
+test('answer_team_health refuses a check that has ended, from a member and from a teammate who never joined', async () => {
+  const {teamId, token, meetingId, questions} = await startAristotleCheck()
+  const questionId = questions[0]!.id
+  await callToolForData(token, 'answer_team_health', {meetingId, answers: [{questionId, score: 4}]})
+  const latecomer = await addTeammate(teamId)
+  await callToolForData(token, 'end_meeting', {meetingId})
+
+  const member = await callTool(token, 'answer_team_health', {
+    meetingId,
+    answers: [{questionId, score: 1}]
+  })
+  expect(expectToolErrorCode(member, 'CONFLICT')).toBe('Meeting has ended')
+  const neverJoined = await callTool(latecomer.token, 'answer_team_health', {
+    meetingId,
+    answers: [{questionId, score: 1}]
+  })
+  expect(expectToolErrorCode(neverJoined, 'CONFLICT')).toBe('Meeting has already ended')
+  const scores = await getKysely()
+    .selectFrom('TeamHealthResponse')
+    .select('score')
+    .where('meetingId', '=', meetingId)
+    .execute()
+  expect(scores).toEqual([{score: 4}])
+})
+
+test('create_team_health_template names the questions it could not delete when a step fails part way', async () => {
+  const {userId, cookie, teamId, orgId} = await signUp()
+  await turnOffAI(orgId)
+  const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
+  const before = await getChargedCost(userId)
+  await callToolForData(token, 'create_team_health_template', {
+    teamId,
+    name: 'First Health',
+    questions: [{question: 'Our goals are clear'}]
+  })
+  const oneQuestionCost = (await getChargedCost(userId)) - before
+  await leaveHourlyQueryBudget(userId, oneQuestionCost - 1)
+
+  const result = await callTool(token, 'create_team_health_template', {
+    teamId,
+    name: 'Second Health',
+    questions: [
+      {question: 'I know what is expected of me'},
+      {question: 'Everyone pulls their weight'}
+    ]
+  })
+  expectToolErrorCode(result, 'TOO_MANY_REQUESTS')
+  const [error] = JSON.parse(result.content[0]!.text)
+  expect(error).toMatchObject({
+    unfinishedTemplateId: expect.any(String),
+    unfinishedQuestionIds: [expect.any(String)]
+  })
+  const questions = await getKysely()
+    .selectFrom('TeamHealthQuestion')
+    .select('question')
+    .where('createdBy', '=', userId)
+    .where('removedAt', 'is', null)
+    .orderBy('id')
+    .execute()
+  expect(questions).toEqual([
+    {question: 'Our goals are clear'},
+    {question: 'I know what is expected of me'}
+  ])
 })
 
 test('create_team_health_template needs only templates:write and refuses a name another team health template on the team has', async () => {

@@ -1,4 +1,3 @@
-import type {FormattedExecutionResult} from 'graphql'
 import {z} from 'zod'
 import defineTool from '../defineTool'
 import ensureMeetingMember from '../ensureMeetingMember'
@@ -27,7 +26,14 @@ const TEAM_HEALTH_QUESTION_STAGES = `
   }
 `
 
-const SET_TEAM_HEALTH_RESPONSE = `
+const COMMENT_READ_BACK = `
+      stage {
+        viewerResponse {
+          comment
+        }
+      }`
+
+const setTeamHealthResponseDocument = (hasComment: boolean) => `
   mutation SetTeamHealthResponse(
     $meetingId: ID!
     $stageId: ID!
@@ -46,10 +52,25 @@ const SET_TEAM_HEALTH_RESPONSE = `
         id
         respondentCount
         isViewerComplete
-      }
+      }${hasComment ? COMMENT_READ_BACK : ''}
     }
   }
 `
+
+type SavedResponse = {
+  setTeamHealthResponse: {
+    meeting: {id: string; respondentCount: number; isViewerComplete: boolean}
+    stage?: {viewerResponse: {comment: string | null} | null}
+  }
+}
+
+const unsavedCommentNote = (questionIds: string[]) => {
+  const comments =
+    questionIds.length === 1
+      ? `the comment on question ${questionIds[0]}`
+      : `the comments on questions ${questionIds.join(', ')}`
+  return `Your answers were saved, but not ${comments}: an anonymous comment needs AI to reword it, and AI is off for this organization or Parabol instance. To share it, send it again with isAnonymous false, which shows it word for word with your name.`
+}
 
 type QuestionStages = {
   viewer: {
@@ -64,7 +85,7 @@ export default defineTool({
   name: 'answer_team_health',
   title: 'Answer a team health check',
   description:
-    "Answer a team health check's questions as yourself, joining the check first if you haven't, and opting in if you were sitting it out, as team leads do by default. Each answer replaces your earlier answer to that question, comment included. Nobody sees a score with your name on it, and the team sees none of your answers until the check ends. A comment is plain text and anonymous by default: AI rewords it before the team reads it, so nobody can tell who wrote it, and if AI is off for your organization or this Parabol instance, or fails, the team never sees it. Set isAnonymous to false to share a comment word for word with your name. It refuses a question the check doesn't ask, a meeting that isn't a team health check, one that has ended and one on a team you aren't on. When it refuses an answer, the answers before it stay saved: fix it and call again. Needs users:read, meetings:read and meetings:write.",
+    "Answer a team health check's questions as yourself, joining the check first if you haven't, and opting in if you were sitting it out, as team leads do by default. Each answer replaces your earlier answer to that question, comment included. Nobody sees a score with your name on it, and the team sees none of your answers until the check ends. A comment is plain text and anonymous by default: AI rewords it before the team reads it, so nobody can tell who wrote it, and if the rewrite fails the team never sees it. When AI is off for your organization or this Parabol instance, an anonymous comment isn't saved, and the result's note names the questions whose comments weren't: send those again with isAnonymous false to share them word for word with your name. It refuses a question the check doesn't ask, a meeting that isn't a team health check, one that has ended and one on a team you aren't on. When it refuses an answer, the answers before it stay saved: fix it and call again. Needs users:read, meetings:read and meetings:write.",
   inputSchema: z.object({
     meetingId: z
       .string()
@@ -89,7 +110,7 @@ export default defineTool({
             .boolean()
             .default(true)
             .describe(
-              'true, the default, to have AI reword the comment so the team cannot tell who wrote it; false to share it word for word with your name'
+              'true, the default, to have AI reword the comment so the team cannot tell who wrote it, which without AI leaves it unsaved; false to share it word for word with your name'
             )
         })
       )
@@ -123,17 +144,35 @@ export default defineTool({
     }
     const notJoined = await ensureMeetingMember(context, meetingId)
     if (notJoined) return notJoined
-    let saved: FormattedExecutionResult = {}
+    let progress: SavedResponse['setTeamHealthResponse']['meeting'] | null = null
+    const unsavedCommentQuestionIds: string[] = []
     for (const {questionId, score, comment, isAnonymous} of answers) {
-      saved = await runGraphQL(context, SET_TEAM_HEALTH_RESPONSE, {
-        meetingId,
-        stageId: stageIdByQuestionId.get(questionId),
-        score,
-        comment: comment || null,
-        isAnonymous
-      })
-      if (saved.errors?.length) return toolResult(saved, {questionId})
+      const hasComment = !!comment
+      const saved = await runGraphQL<SavedResponse>(
+        context,
+        setTeamHealthResponseDocument(hasComment),
+        {
+          meetingId,
+          stageId: stageIdByQuestionId.get(questionId),
+          score,
+          comment: comment || null,
+          isAnonymous
+        }
+      )
+      const payload = saved.data?.setTeamHealthResponse
+      if (saved.errors?.length || !payload) return toolResult(saved, {questionId})
+      progress = payload.meeting
+      if (hasComment && !payload.stage?.viewerResponse?.comment) {
+        unsavedCommentQuestionIds.push(questionId)
+      }
     }
-    return toolResult(saved)
+    return toolResult({
+      data: {
+        setTeamHealthResponse: {meeting: progress},
+        ...(unsavedCommentQuestionIds.length > 0 && {
+          note: unsavedCommentNote(unsavedCommentQuestionIds)
+        })
+      }
+    })
   }
 })
