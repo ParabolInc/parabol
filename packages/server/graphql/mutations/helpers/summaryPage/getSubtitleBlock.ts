@@ -1,15 +1,18 @@
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import makeAppURL from '../../../../../client/utils/makeAppURL'
 import appOrigin from '../../../../appOrigin'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {AnyMeeting} from '../../../../postgres/types/Meeting'
 
+dayjs.extend(utc)
+
 export const getSubtitleBlock = async (meeting: AnyMeeting, dataLoader: DataLoaderInstance) => {
   const {endedAt, teamId, createdAt} = meeting
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {name: teamName} = team
-  const startTime = dayjs(createdAt)
-  const endTime = dayjs(endedAt)
+  const startTime = dayjs.utc(createdAt)
+  const endTime = dayjs.utc(endedAt)
   const startLabel = startTime.format('MMM D, YYYY')
   const endLabel = endTime.format('MMM D, YYYY')
   const teamHomeURL = makeAppURL(appOrigin, `team/${teamId}`)

@@ -174,12 +174,19 @@ const addComment = async (
   member: Member,
   discussionId: string,
   text: string,
-  threadParentId?: string
+  threadParentId?: string,
+  isAnonymous?: boolean
 ) => {
   const added = await sendPublic({
     query: ADD_COMMENT,
     variables: {
-      comment: {content: paragraph(text), discussionId, threadSortOrder: 0, threadParentId}
+      comment: {
+        content: paragraph(text),
+        discussionId,
+        threadSortOrder: 0,
+        threadParentId,
+        isAnonymous
+      }
     },
     cookie: member.cookie
   })
@@ -422,8 +429,7 @@ test('a retro summary keeps private tasks and deleted comments out of its table 
   expect(summary).not.toContain('Deleted comment')
 }, 60000)
 
-test('a check-in summary keeps private tasks out of its table and task blocks', async () => {
-  const owner = await signUp()
+const startCheckInWithAgendaItem = async (owner: Member) => {
   const started = await sendPublic({
     query: START_CHECK_IN,
     variables: {teamId: owner.teamId},
@@ -449,6 +455,21 @@ test('a check-in summary keeps private tasks out of its table and task blocks', 
     .select('id')
     .where('meetingId', '=', meetingId)
     .executeTakeFirstOrThrow()
+  return {meetingId, discussionId}
+}
+
+const endCheckIn = async (owner: Member, meetingId: string) => {
+  const ended = await sendPublic({
+    query: END_CHECK_IN,
+    variables: {meetingId},
+    cookie: owner.cookie
+  })
+  expect(ended.errors).toBeUndefined()
+}
+
+test('a check-in summary keeps private tasks out of its table and task blocks', async () => {
+  const owner = await signUp()
+  const {meetingId, discussionId} = await startCheckInWithAgendaItem(owner)
 
   await createTask(owner, {
     content: paragraph('Public agenda task'),
@@ -464,15 +485,32 @@ test('a check-in summary keeps private tasks out of its table and task blocks', 
   })
   await makeTaskPrivate(privateTaskId)
 
-  const ended = await sendPublic({
-    query: END_CHECK_IN,
-    variables: {meetingId},
-    cookie: owner.cookie
-  })
-  expect(ended.errors).toBeUndefined()
+  await endCheckIn(owner, meetingId)
 
   const summary = await waitForSummaryText(meetingId, 'Discussion Thread')
-  expect(summary).toContain('1 Task')
+  expect(summary).toMatch(/\b1 Task\b/)
   expect(summary).toContain('Public agenda task')
   expect(summary).not.toContain('Private agenda task')
+}, 60000)
+
+test('a check-in summary leaves deleted comments out and names anonymous commenters Anonymous', async () => {
+  const owner = await signUp()
+  const {preferredName} = await getKysely()
+    .selectFrom('User')
+    .select('preferredName')
+    .where('id', '=', owner.userId)
+    .executeTakeFirstOrThrow()
+  const {meetingId, discussionId} = await startCheckInWithAgendaItem(owner)
+
+  await addComment(owner, discussionId, 'Said in confidence', undefined, true)
+  await deleteComment(owner, meetingId, await addComment(owner, discussionId, 'Said by mistake'))
+
+  await endCheckIn(owner, meetingId)
+
+  const summary = await waitForSummaryText(meetingId, 'Discussion Thread')
+  const tableRows = summary.slice(summary.indexOf('Discussion Thread'))
+  expect(tableRows).toContain('Said in confidence')
+  expect(tableRows).toContain('Anonymous')
+  expect(tableRows).not.toContain(preferredName)
+  expect(tableRows).not.toContain('Said by mistake')
 }, 60000)

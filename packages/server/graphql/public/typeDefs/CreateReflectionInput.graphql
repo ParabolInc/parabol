@@ -20,6 +20,7 @@ input CreateReflectionInput {
   """
   The ID of the TemplatePrompt (category) this reflection answers, e.g. "What went well?".
   Determines which column the reflection appears in on the board. Immutable after creation.
+  It must be one of the meeting's columns (ReflectPhase.reflectPrompts); any other prompt is refused.
   """
   promptId: ID!
 

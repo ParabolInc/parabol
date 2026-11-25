@@ -115,7 +115,13 @@ test.each([
     'an unknown mark',
     '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"x","marks":[{"type":"nope"}]}]}]}',
     'nope'
-  ]
+  ],
+  [
+    'a text key on a paragraph',
+    '{"type":"doc","content":[{"type":"paragraph","text":"Hello"}]}',
+    'paragraph has a text key'
+  ],
+  ['a text key on the doc', '{"type":"doc","text":"Hi"}', 'doc has a text key']
 ])('refuses a doc with %s and says why', (_label, contentStr, reason) => {
   const error = refusalOf(contentStr)
   expect(error).toBeInstanceOf(GraphQLError)

@@ -126,6 +126,31 @@ const SELECT_TEMPLATE = `
   }
 `
 
+const UPDATE_MEETING_TEMPLATE = `
+  mutation UpdateMeetingTemplate($meetingId: ID!, $templateId: ID!) {
+    updateMeetingTemplate(meetingId: $meetingId, templateId: $templateId) {
+      meeting {
+        id
+      }
+    }
+  }
+`
+
+const EDIT_REFLECTION = `
+  mutation EditReflection($meetingId: ID!, $promptId: ID!, $isEditing: Boolean!) {
+    editReflection(meetingId: $meetingId, promptId: $promptId, isEditing: $isEditing) {
+      promptId
+    }
+  }
+`
+
+const editReflection = (cookie: string, meetingId: string, promptId: string) =>
+  sendPublic({
+    query: EDIT_REFLECTION,
+    variables: {meetingId, promptId, isEditing: true},
+    cookie
+  })
+
 const addRetroTemplate = async (teamId: string, cookie: string) => {
   const res = await sendPublic({query: ADD_RETRO_TEMPLATE, variables: {teamId}, cookie})
   expect(res.errors).toBeUndefined()
@@ -286,4 +311,56 @@ test('createReflection treats a prompt removed or added after the meeting starte
 
   const {reflections} = await getStoredCards(meetingId)
   expect(reflections.map(({promptId}) => promptId)).toEqual([removedLaterPromptId])
+})
+
+test('createReflection follows a meeting switched to another template before any reflection', async () => {
+  const {teamId, cookie} = await signUp()
+  const {meetingId, promptId: originalPromptId} = await startRetro(teamId, cookie)
+  const {id: templateId, prompts} = await addRetroTemplate(teamId, cookie)
+  const switchedPromptId = prompts[0]!.id
+
+  const switched = await sendPublic({
+    query: UPDATE_MEETING_TEMPLATE,
+    variables: {meetingId, templateId},
+    cookie
+  })
+  expect(switched.errors).toBeUndefined()
+
+  const intoOriginal = await createReflection(cookie, meetingId, originalPromptId)
+  expectNotThisMeetingsPrompt(intoOriginal)
+  expect((await getStoredCards(meetingId)).reflections).toEqual([])
+
+  const intoSwitched = await createReflection(cookie, meetingId, switchedPromptId)
+  expect(intoSwitched.errors).toBeUndefined()
+  const {reflections} = await getStoredCards(meetingId)
+  expect(reflections.map(({promptId}) => promptId)).toEqual([switchedPromptId])
+})
+
+test("editReflection signals editing in one of the meeting's own prompts", async () => {
+  const {teamId, cookie} = await signUp()
+  const {meetingId, promptId} = await startRetro(teamId, cookie)
+
+  const res = await editReflection(cookie, meetingId, promptId)
+
+  expect(res.errors).toBeUndefined()
+  expect(res.data.editReflection.promptId).toBe(promptId)
+})
+
+test("editReflection refuses a prompt from another template on the viewer's own team", async () => {
+  const {teamId, cookie} = await signUp()
+  const {meetingId} = await startRetro(teamId, cookie)
+  const {prompts} = await addRetroTemplate(teamId, cookie)
+
+  const res = await editReflection(cookie, meetingId, prompts[0]!.id)
+
+  expectNotThisMeetingsPrompt(res)
+})
+
+test('editReflection refuses a prompt id that does not exist', async () => {
+  const {teamId, cookie} = await signUp()
+  const {meetingId} = await startRetro(teamId, cookie)
+
+  const res = await editReflection(cookie, meetingId, 'noSuchPrompt')
+
+  expectNotThisMeetingsPrompt(res)
 })

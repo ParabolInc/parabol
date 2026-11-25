@@ -14,7 +14,24 @@ const badInput = (message: string) =>
 const invalidDocument = (reason: string) =>
   badInput(`The content is not a valid editor document: ${reason}`)
 
+const findMisplacedText = (node: JSONContent): string | undefined => {
+  if (!node || typeof node !== 'object') return undefined
+  if (node.type !== 'text' && 'text' in node) return String(node.type)
+  if (!Array.isArray(node.content)) return undefined
+  for (const child of node.content) {
+    const found = findMisplacedText(child)
+    if (found) return found
+  }
+  return undefined
+}
+
 const assertKnownNodes = (doc: JSONContent) => {
+  const misplacedText = findMisplacedText(doc)
+  if (misplacedText) {
+    throw invalidDocument(
+      `${misplacedText} has a text key; put text in a {"type":"text"} node inside its content`
+    )
+  }
   let root: Node
   try {
     root = schema.nodeFromJSON(doc)
