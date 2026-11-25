@@ -7,6 +7,7 @@ import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTip
 import {isStandupResponseTooLong} from '../../../../client/shared/tiptap/standupResponseLength'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {createInvalidContentError} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import {stripUnsafeLinks} from '../../../utils/stripUnsafeLinks'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -48,7 +49,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     isEmpty = isEmptyTipTapDoc(doc)
     plaintextContent = generateText(doc, serverTipTapExtensions).trim()
   } catch {
-    throw new GraphQLError('Invalid editor format', {extensions: {code: 'BAD_USER_INPUT'}})
+    throw createInvalidContentError()
   }
   if (isStandupResponseTooLong(doc))
     throw new GraphQLError('Response is too long', {extensions: {code: 'BAD_USER_INPUT'}})

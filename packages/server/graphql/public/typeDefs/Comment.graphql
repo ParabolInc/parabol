@@ -19,6 +19,12 @@ type Comment implements Reactable & Threadable {
   content: String!
 
   """
+  The comment's text without formatting. When the comment has been deleted (isActive is
+  false) this is tombstone placeholder text rather than the original text.
+  """
+  plaintextContent: String!
+
+  """
   The timestamp when this comment was first created.
   """
   createdAt: DateTime!

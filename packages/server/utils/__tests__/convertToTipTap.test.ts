@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {convertToTipTap} from '../convertToTipTap'
 import {stripUnsafeLinks} from '../stripUnsafeLinks'
 
@@ -58,4 +59,44 @@ test('strips unsafe links nested in lists and task items', () => {
 test('leaves content without marks unchanged', () => {
   const doc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
   expect(convertToTipTap(JSON.stringify(doc))).toEqual(doc)
+})
+
+const refusalOf = (contentStr: string) => {
+  try {
+    convertToTipTap(contentStr)
+  } catch (error) {
+    return error
+  }
+  return undefined
+}
+
+test.each([
+  'Did **a thing** & fixed [the link](https://example.com)',
+  '## Heading\n\n- one\n- two',
+  'plain words',
+  '{"type":"doc",',
+  '   '
+])('refuses %j as content that is not stringified TipTap JSON', (contentStr) => {
+  const error = refusalOf(contentStr)
+  expect(error).toBeInstanceOf(GraphQLError)
+  expect(error).toMatchObject({
+    message: expect.stringContaining('stringified TipTap JSON'),
+    extensions: {code: 'BAD_USER_INPUT'}
+  })
+})
+
+test.each([
+  '"just a string"',
+  '42',
+  'true',
+  'null',
+  '[]',
+  '{"blocks":[],"entityMap":{}}',
+  '{"type":"paragraph","content":[]}'
+])('refuses valid JSON %j that is not a TipTap document', (contentStr) => {
+  expect(refusalOf(contentStr)).toMatchObject({extensions: {code: 'BAD_USER_INPUT'}})
+})
+
+test.each([undefined, null, ''])('turns %j into an empty document', (contentStr) => {
+  expect(convertToTipTap(contentStr)).toEqual({type: 'doc', content: [{type: 'paragraph'}]})
 })
