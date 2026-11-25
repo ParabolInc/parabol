@@ -46,3 +46,43 @@ test('a result over 100,000 characters is cut with a notice', () => {
   expect(text.endsWith('\n…truncated: ask for fewer fields or use pagination arguments')).toBe(true)
   expect(text.length).toBeLessThan(100_100)
 })
+
+test('data that arrives with errors keeps both and stays an error result', () => {
+  const result = toolResult(
+    {
+      data: {viewer: {id: 'a'}},
+      errors: [
+        new GraphQLError('slow down', {
+          extensions: {
+            code: 'TOO_MANY_REQUESTS',
+            http: {status: 429, headers: {'Retry-After': '7'}}
+          }
+        })
+      ]
+    },
+    {orgId: 'org:1'}
+  )
+  expect(result.isError).toBe(true)
+  expect(JSON.parse((result.content[0] as {text: string}).text)).toEqual({
+    data: {viewer: {id: 'a'}},
+    errors: [{message: 'slow down', code: 'TOO_MANY_REQUESTS', retryAfter: 7, orgId: 'org:1'}]
+  })
+})
+
+test('errors come before data, so cutting a long result keeps them', () => {
+  const result = toolResult({
+    data: {big: 'x'.repeat(150_000)},
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  const {text} = result.content[0] as {text: string}
+  expect(text.length).toBeLessThan(100_100)
+  expect(text.startsWith('{"errors":[{"message":"nope","code":"FORBIDDEN"}],"data":')).toBe(true)
+})
+
+test('errors with null data stay an error result', () => {
+  const result = toolResult({
+    data: null,
+    errors: [new GraphQLError('nope', {extensions: {code: 'FORBIDDEN'}})]
+  })
+  expect(result.isError).toBe(true)
+})

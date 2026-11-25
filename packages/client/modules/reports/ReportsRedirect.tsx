@@ -4,6 +4,8 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import hrefOptions from '~/routing/hrefOptions'
 import Redirect from '~/routing/Redirect'
 import type {ReportsRedirectQuery} from '../../__generated__/ReportsRedirectQuery.graphql'
+import {getStoredReportsOrgId} from '../../utils/reportsOrgPreference'
+import pickReportsOrg from './pickReportsOrg'
 
 interface Props {
   queryRef: PreloadedQuery<ReportsRedirectQuery>
@@ -14,6 +16,8 @@ const query = graphql`
     viewer {
       organizations {
         id
+        tier
+        createdAt
       }
     }
   }
@@ -22,7 +26,7 @@ const query = graphql`
 const ReportsRedirect = ({queryRef}: Props) => {
   const {viewer} = usePreloadedQuery<ReportsRedirectQuery>(query, queryRef)
   const {searchStr: search} = useLocation()
-  const [org] = viewer.organizations
+  const org = pickReportsOrg(viewer.organizations, getStoredReportsOrgId())
   if (org) return <Redirect {...hrefOptions(`/reports/${org.id}${search}`)} replace />
   return (
     <p className='m-0 px-4 pt-4 text-fg-secondary sm:px-8'>

@@ -1,10 +1,11 @@
+import type {JSONContent} from '@tiptap/core'
 import {GraphQLError} from 'graphql'
-import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
+import {parseMarkdownContent} from '../../../utils/tiptap/parsePageMarkdown'
 import type {MutationResolvers} from '../resolverTypes'
 
 const editPageContent: MutationResolvers['editPageContent'] = async (
@@ -24,16 +25,19 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
       extensions: {code: 'BAD_USER_INPUT'}
     })
 
-  const jsonContent =
-    format === 'markdown'
-      ? {type: 'doc' as const, content: markdownToTipTap(content) as any[]}
-      : (() => {
-          try {
-            return JSON.parse(content)
-          } catch {
-            throw new GraphQLError('Invalid JSON content', {extensions: {code: 'BAD_USER_INPUT'}})
-          }
-        })()
+  let jsonContent: JSONContent
+  if (format === 'markdown') {
+    jsonContent = {
+      type: 'doc',
+      content: content.trim() ? parseMarkdownContent(content) : [{type: 'paragraph'}]
+    }
+  } else {
+    try {
+      jsonContent = JSON.parse(content)
+    } catch {
+      throw new GraphQLError('Invalid JSON content', {extensions: {code: 'BAD_USER_INPUT'}})
+    }
+  }
 
   const documentName = CipherId.toClient(dbPageId, 'page')
   await redisHocusPocus.handleEvent('replacePageContent', documentName, {

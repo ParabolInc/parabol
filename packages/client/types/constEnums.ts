@@ -215,7 +215,8 @@ export enum LocalStorageKey {
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
   ERROR_PRONE_AT = 'errorProneAt',
-  THEME = 'theme'
+  THEME = 'theme',
+  REPORTS_ORG_ID = 'reportsOrgId'
 }
 
 export enum LOCKED_MESSAGE {

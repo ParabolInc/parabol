@@ -129,13 +129,17 @@ type Mutation {
   ): SetNotificationStatusPayload! @scope(name: USERS_WRITE)
 
   """
-  Create a new top-level page. To create a child page, insert a page block link inside an existing document.
+  Create an empty page: a personal page, a team page, or a page inside another page. A personal page or a page inside another page needs an access token that isn't limited to specific organizations, teams or pages.
   """
   createPage(
     """
-    The team to scope this page under. If omitted, the page is created as a personal page.
+    The team to scope this page under. If omitted along with parentPageId, the page is created as a personal page.
     """
     teamId: ID
+    """
+    The page to create this page in. The new page is linked at the end of its parent and follows its parent's sharing, so it can't be combined with teamId.
+    """
+    parentPageId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
   Copy a page and all of its sub-pages
@@ -433,6 +437,7 @@ type Mutation {
 
   """
   Replace the content of a page. Warning: this deletes the content history.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page.
   """
   editPageContent(
     "The ID of the page to edit"
@@ -445,7 +450,8 @@ type Mutation {
 
   """
   Apply find-and-replace edits to a page's Markdown content, in order and all or nothing.
-  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive
+  Only the blocks an edit touches are rewritten, so concurrent edits elsewhere and content history survive.
+  Images must be uploaded to Parabol first (uploadUserAsset / embedUserAsset) unless the image is already on the page
   """
   patchPageContent(
     "The ID of the page to edit"

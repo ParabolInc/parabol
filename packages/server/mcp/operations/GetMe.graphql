@@ -1,13 +1,9 @@
-# Show who this connection acts as, with the organizations and teams it reaches. Start here to find the teamId other tools ask for. Needs users:read, orgs:read and teams:read.
+# Show who this connection acts as, with the teams it reaches. Start here to find the teamId other tools ask for. Organization names are available through graphql_query with orgs:read. Needs users:read and teams:read.
 query GetMe {
   viewer {
     id
     preferredName
     email
-    organizations {
-      id
-      name
-    }
     teams {
       id
       name

