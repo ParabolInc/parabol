@@ -3,34 +3,20 @@ import packageJSON from '../package.json'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {
+  bearer,
+  callTool,
+  callToolForData,
+  createPersonalAccessToken,
+  expectToolError,
+  listTools,
+  MCP_URL,
+  PROTOCOL_VERSION,
+  postMCP
+} from './mcpClient'
 import {createClient, createCode, createPKCEPair} from './oauthClient'
 
 const ORIGIN = `${PROTOCOL}://${HOST}`
-const MCP_URL = `${ORIGIN}/mcp`
-const PROTOCOL_VERSION = '2025-06-18'
-
-const CREATE_PERSONAL_ACCESS_TOKEN = `
-  mutation CreatePersonalAccessToken(
-    $name: String!
-    $scopes: [OAuthScopeEnum!]!
-    $expiresAt: DateTime!
-    $grantedOrgIds: [ID!]
-    $grantedTeamIds: [ID!]
-    $grantedPageIds: [ID!]
-  ) {
-    createPersonalAccessToken(
-      name: $name
-      scopes: $scopes
-      expiresAt: $expiresAt
-      grantedOrgIds: $grantedOrgIds
-      grantedTeamIds: $grantedTeamIds
-      grantedPageIds: $grantedPageIds
-    ) {
-      token
-    }
-  }
-`
-
 const ADD_ORG = `
   mutation AddOrg($newTeam: NewTeamInput!, $orgName: String!) {
     addOrg(newTeam: $newTeam, orgName: $orgName) {
@@ -51,44 +37,6 @@ const INITIALIZE = {
     capabilities: {},
     clientInfo: {name: 'mcpServer.test', version: '1.0.0'}
   }
-}
-
-const postMCP = (body: unknown, headers: Record<string, string> = {}) =>
-  fetch(MCP_URL, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json, text/event-stream',
-      'content-type': 'application/json',
-      ...headers
-    },
-    body: JSON.stringify(body)
-  })
-
-const bearer = (token: string) => ({authorization: `Bearer ${token}`})
-
-interface TokenOptions {
-  cookie?: string
-  grantedOrgIds?: string[]
-  grantedTeamIds?: string[]
-  grantedPageIds?: string[]
-}
-
-const createPersonalAccessToken = async (
-  scopes = ['USERS_READ'],
-  {cookie, ...grants}: TokenOptions = {}
-) => {
-  const res = await sendPublic({
-    query: CREATE_PERSONAL_ACCESS_TOKEN,
-    variables: {
-      name: 'mcp',
-      scopes,
-      ...grants,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-    },
-    cookie: cookie ?? (await signUp()).cookie
-  })
-  expect(res.errors).toBeUndefined()
-  return res.data.createPersonalAccessToken.token as string
 }
 
 const createOAuthAccessToken = async (
@@ -120,39 +68,6 @@ const createOAuthAccessToken = async (
   })
   expect(response.status).toBe(200)
   return (await response.json()).access_token as string
-}
-
-const callTool = async (token: string, name: string, args: Record<string, unknown>) => {
-  const response = await postMCP(
-    {jsonrpc: '2.0', id: 2, method: 'tools/call', params: {name, arguments: args}},
-    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
-  )
-  expect(response.status).toBe(200)
-  return (await response.json()).result as {
-    isError?: boolean
-    content: {type: string; text: string}[]
-  }
-}
-
-const expectToolError = (result: Awaited<ReturnType<typeof callTool>>, text: string) => {
-  expect(result.isError).toBe(true)
-  expect(result.content[0]!.text).toContain(text)
-}
-
-const callToolForData = async (token: string, name: string, args: Record<string, unknown>) => {
-  const result = await callTool(token, name, args)
-  expect(result.content[0]!.text).not.toContain('"code"')
-  expect(result.isError).toBeUndefined()
-  return JSON.parse(result.content[0]!.text)
-}
-
-const listTools = async (token: string) => {
-  const response = await postMCP(
-    {jsonrpc: '2.0', id: 3, method: 'tools/list'},
-    {...bearer(token), 'mcp-protocol-version': PROTOCOL_VERSION}
-  )
-  expect(response.status).toBe(200)
-  return (await response.json()).result.tools
 }
 
 const signUpWithTwoOrgs = async () => {

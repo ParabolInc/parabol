@@ -1,67 +1,22 @@
 import mcpInstructions from '../mcp/mcpInstructions'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
-import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+import {sendPublic, signUp} from './common'
+import {
+  callTool,
+  callToolForData,
+  createPersonalAccessToken,
+  expectToolErrorCode,
+  PNG_BASE64
+} from './mcpClient'
 
 afterAll(async () => {
   await getRedis().quit()
 })
 
-const MCP_URL = `${PROTOCOL}://${HOST}/mcp`
-const PROTOCOL_VERSION = '2025-06-18'
-
-const CREATE_PERSONAL_ACCESS_TOKEN = `
-  mutation CreatePersonalAccessToken(
-    $name: String!
-    $scopes: [OAuthScopeEnum!]!
-    $expiresAt: DateTime!
-  ) {
-    createPersonalAccessToken(name: $name, scopes: $scopes, expiresAt: $expiresAt) {
-      token
-    }
-  }
-`
-
-const createPersonalAccessToken = async (scopes: string[], cookie: string) => {
-  const res = await sendPublic({
-    query: CREATE_PERSONAL_ACCESS_TOKEN,
-    variables: {
-      name: 'mcp',
-      scopes,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-    },
-    cookie
-  })
-  expect(res.errors).toBeUndefined()
-  return res.data.createPersonalAccessToken.token as string
-}
-
-const callTool = async (token: string, name: string, args: Record<string, unknown>) => {
-  const response = await fetch(MCP_URL, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json, text/event-stream',
-      'content-type': 'application/json',
-      authorization: `Bearer ${token}`,
-      'mcp-protocol-version': PROTOCOL_VERSION
-    },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 2,
-      method: 'tools/call',
-      params: {name, arguments: args}
-    })
-  })
-  expect(response.status).toBe(200)
-  return (await response.json()).result as {
-    isError?: boolean
-    content: {type: string; text: string}[]
-  }
-}
-
 test('get_me answers on a connection without orgs:read', async () => {
   const {userId, cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(['USERS_READ', 'TEAMS_READ'], cookie)
+  const token = await createPersonalAccessToken(['USERS_READ', 'TEAMS_READ'], {cookie})
   const result = await callTool(token, 'get_me', {})
   expect(result.isError).toBeUndefined()
   const {viewer} = JSON.parse(result.content[0]!.text)
@@ -69,22 +24,6 @@ test('get_me answers on a connection without orgs:read', async () => {
   expect(viewer.organizations).toBeUndefined()
   expect(viewer.teams.map(({id}: {id: string}) => id)).toContain(teamId)
 })
-
-const callToolForData = async (token: string, name: string, args: Record<string, unknown>) => {
-  const result = await callTool(token, name, args)
-  expect(result.isError ? `${name}: ${result.content[0]!.text}` : undefined).toBeUndefined()
-  return JSON.parse(result.content[0]!.text)
-}
-
-const expectToolErrorCode = (
-  result: {isError?: boolean; content: {text: string}[]},
-  code: string
-) => {
-  expect(result.isError).toBe(true)
-  const [error] = JSON.parse(result.content[0]!.text)
-  expect(error.code).toBe(code)
-  return error.message as string
-}
 
 const getColumns = (meetingResult: {
   viewer: {meeting: {phases: {reflectPrompts?: {id: string; question: string}[]}[]}}
@@ -94,7 +33,7 @@ const RETRO_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TEAMS_RE
 
 test('an agent adds, edits and renames cards on a retro', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
+  const token = await createPersonalAccessToken(RETRO_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
 
@@ -141,7 +80,7 @@ test('an agent adds, edits and renames cards on a retro', async () => {
 
 test('a card too long for Parabol once formatted is refused with the limit named', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(RETRO_SCOPES, cookie)
+  const token = await createPersonalAccessToken(RETRO_SCOPES, {cookie})
   const started = await callToolForData(token, 'start_retrospective', {teamId})
   const meetingId = started.startRetrospective.meeting.id as string
   const meeting = await callToolForData(token, 'list_retro_columns', {meetingId})
@@ -179,12 +118,9 @@ test('a card too long for Parabol once formatted is refused with the limit named
   ])
 })
 
-const PNG_BASE64 =
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
-
 test('a card can show an image uploaded to Parabol', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken([...RETRO_SCOPES, 'TEAMS_WRITE'], cookie)
+  const token = await createPersonalAccessToken([...RETRO_SCOPES, 'TEAMS_WRITE'], {cookie})
   const uploaded = await callToolForData(token, 'upload_image', {
     filename: 'burndown.png',
     mimeType: 'image/png',
@@ -251,7 +187,7 @@ const getActiveTemplateNames = async (teamId: string) => {
 
 test('create_retro_template makes a template with exactly those columns, in order', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const {template} = await callToolForData(token, 'create_retro_template', {
     teamId,
     name: 'Agent Columns',
@@ -275,7 +211,7 @@ test('create_retro_template makes a template with exactly those columns, in orde
 
 test('a retro started with the new template has its columns', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const {template} = await callToolForData(token, 'create_retro_template', {
     teamId,
     name: 'Agent Columns',
@@ -291,7 +227,7 @@ test('a retro started with the new template has its columns', async () => {
 
 test("twelve described columns and the retro that uses them fit a starter user's query budget", async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const columns = Array.from({length: 12}, (_, idx) => ({
     question: `Column ${idx + 1}`,
     description: `What column ${idx + 1} is for`
@@ -312,7 +248,7 @@ test("twelve described columns and the retro that uses them fit a starter user's
 
 test('a starter user out of free custom templates gets that error and no template', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   for (const name of ['First Columns', 'Second Columns']) {
     await callToolForData(token, 'create_retro_template', {teamId, name, columns: COLUMNS})
   }
@@ -329,7 +265,7 @@ test('a starter user out of free custom templates gets that error and no templat
 
 test('a name the team already uses is refused before a free template is spent', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   await callToolForData(token, 'create_retro_template', {
     teamId,
     name: 'Agent Columns',
@@ -361,7 +297,7 @@ const getChargedCost = async (userId: string) => {
 
 test('a half-made template it could not remove is named in the error', async () => {
   const {userId, cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const defaultColumn = [{question: 'New prompt'}]
   const before = await getChargedCost(userId)
   await callToolForData(token, 'create_retro_template', {
@@ -396,7 +332,7 @@ test('a half-made template it could not remove is named in the error', async () 
 
 test('columns that repeat a question are refused before anything is made', async () => {
   const {cookie, teamId} = await signUp()
-  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, {cookie})
   const result = await callTool(token, 'create_retro_template', {
     teamId,
     name: 'Agent Columns',
