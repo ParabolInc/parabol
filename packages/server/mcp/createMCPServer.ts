@@ -6,9 +6,11 @@ import mcpInstructions from './mcpInstructions'
 import operationToolEntries from './operationToolEntries'
 import registerTools from './registerTools'
 import addComment from './tools/addComment'
+import addPokerStories from './tools/addPokerStories'
 import addReflection from './tools/addReflection'
 import answerStandup from './tools/answerStandup'
 import answerTeamHealth from './tools/answerTeamHealth'
+import createPokerScale from './tools/createPokerScale'
 import createRetroTemplate from './tools/createRetroTemplate'
 import createStandupTemplate from './tools/createStandupTemplate'
 import createTask from './tools/createTask'
@@ -19,6 +21,7 @@ import graphqlQuery from './tools/graphqlQuery'
 import updateReflection from './tools/updateReflection'
 import updateTask from './tools/updateTask'
 import uploadImage from './tools/uploadImage'
+import votePokerStory from './tools/votePokerStory'
 
 const typescriptTools: MCPToolEntry[] = [
   createTask,
@@ -30,6 +33,9 @@ const typescriptTools: MCPToolEntry[] = [
   answerStandup,
   createTeamHealthTemplate,
   answerTeamHealth,
+  addPokerStories,
+  votePokerStory,
+  createPokerScale,
   endMeeting,
   addComment,
   uploadImage,

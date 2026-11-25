@@ -1,3 +1,4 @@
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
@@ -135,4 +136,35 @@ export const listTools = async (token: string) => {
   )
   expect(response.status).toBe(200)
   return (await response.json()).result.tools
+}
+
+export const addTeammate = async (teamId: string, scopes: string[]) => {
+  const teammate = await signUpWithoutAI()
+  await getKysely()
+    .insertInto('TeamMember')
+    .values({
+      id: TeamMemberId.join(teamId, teammate.userId),
+      teamId,
+      userId: teammate.userId,
+      isLead: false
+    })
+    .execute()
+  return {
+    ...teammate,
+    token: await createPersonalAccessToken(scopes, {cookie: teammate.cookie})
+  }
+}
+
+export const waitForSummaryText = async (meetingId: string, expectedText: string) => {
+  const deadline = Date.now() + 20000
+  while (true) {
+    const summaryPage = await getKysely()
+      .selectFrom('Page')
+      .select('plaintextContent')
+      .where('summaryMeetingId', '=', meetingId)
+      .executeTakeFirst()
+    const summaryText = summaryPage?.plaintextContent ?? ''
+    if (summaryText.includes(expectedText) || Date.now() > deadline) return summaryText
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
 }

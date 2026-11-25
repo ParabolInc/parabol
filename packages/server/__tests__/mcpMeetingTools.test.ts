@@ -6,13 +6,15 @@ import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
 import {sendPublic} from './common'
 import {
+  addTeammate,
   callTool,
   callToolForData,
   createPersonalAccessToken,
   expectToolErrorCode,
   getChargedCost,
   leaveHourlyQueryBudget,
-  signUpWithoutAI
+  signUpWithoutAI,
+  waitForSummaryText
 } from './mcpClient'
 
 afterAll(async () => {
@@ -758,23 +760,6 @@ type TeamHealthResultStage = {
   responses: {commentParaphrased: string | null; commentAuthor: {preferredName: string} | null}[]
 }
 
-const addTeammate = async (teamId: string, scopes = MEETING_SCOPES) => {
-  const teammate = await signUpWithoutAI()
-  await getKysely()
-    .insertInto('TeamMember')
-    .values({
-      id: TeamMemberId.join(teamId, teammate.userId),
-      teamId,
-      userId: teammate.userId,
-      isLead: false
-    })
-    .execute()
-  return {
-    ...teammate,
-    token: await createPersonalAccessToken(scopes, {cookie: teammate.cookie})
-  }
-}
-
 const isSpectating = async (meetingId: string, userId: string) => {
   const member = await getKysely()
     .selectFrom('MeetingMember')
@@ -831,9 +816,9 @@ test('an agent builds a team health template, and four teammates answer a check 
   expect(getStages(meeting)).toHaveLength(questions.length)
   const [kept, safety, rituals] = questions
   const [first, second, third] = await Promise.all([
-    addTeammate(owner.teamId),
-    addTeammate(owner.teamId),
-    addTeammate(owner.teamId)
+    addTeammate(owner.teamId, MEETING_SCOPES),
+    addTeammate(owner.teamId, MEETING_SCOPES),
+    addTeammate(owner.teamId, MEETING_SCOPES)
   ])
 
   const answered = await callToolForData(token, 'answer_team_health', {
@@ -973,7 +958,7 @@ test('answer_team_health refuses a check that has ended, from a member and from 
   const {teamId, token, meetingId, questions} = await startAristotleCheck()
   const questionId = questions[0]!.id
   await callToolForData(token, 'answer_team_health', {meetingId, answers: [{questionId, score: 4}]})
-  const latecomer = await addTeammate(teamId)
+  const latecomer = await addTeammate(teamId, MEETING_SCOPES)
   await callToolForData(token, 'end_meeting', {meetingId})
 
   const member = await callTool(token, 'answer_team_health', {
@@ -1178,20 +1163,6 @@ const getSavedThread = async (discussionId: string) => {
     pg.selectFrom('Task').select('id').where('discussionId', '=', discussionId).execute()
   ])
   return [...comments, ...tasks]
-}
-
-const waitForSummaryText = async (meetingId: string, expectedText: string) => {
-  const deadline = Date.now() + 20000
-  while (true) {
-    const summaryPage = await getKysely()
-      .selectFrom('Page')
-      .select('plaintextContent')
-      .where('summaryMeetingId', '=', meetingId)
-      .executeTakeFirst()
-    const summaryText = summaryPage?.plaintextContent ?? ''
-    if (summaryText.includes(expectedText) || Date.now() > deadline) return summaryText
-    await new Promise((resolve) => setTimeout(resolve, 250))
-  }
 }
 
 test('list_discussions shows a placeholder topic until voting ends, then each retro topic’s discussion and title', async () => {
