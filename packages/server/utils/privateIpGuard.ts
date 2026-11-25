@@ -6,7 +6,8 @@ import {Logger} from './Logger'
 // By default anything on a private/loopback/link-local range is blocked so a user-supplied URL
 // (a webhook, an embedded image) can't be used to probe the server's own network. Self-hosted
 // deployments legitimately run integrations privately (e.g. Mattermost at http://mattermost.internal:8065),
-// so the operator can opt specific destinations back in with SSRF_ALLOWED_HOSTS.
+// so the operator can opt specific destinations back in with SSRF_ALLOWED_HOSTS. A dev server allows every
+// address, since the services it talks to run on the developer's own machine.
 //
 // SSRF_ALLOWED_HOSTS is a comma separated list where each entry is one of:
 //   - a hostname, matched exactly & case-insensitively: `mattermost.internal`, `localhost`
@@ -133,6 +134,7 @@ const parseAllowlist = (raw: string | undefined) => {
 }
 
 const allowlist = parseAllowlist(process.env.SSRF_ALLOWED_HOSTS)
+const isDevServer = !__PRODUCTION__
 
 /**
  * True if the operator configured SSRF_ALLOWED_HOSTS at all. Without one, a block is the guard
@@ -143,10 +145,11 @@ export const hasAllowlist = () => allowlist.hostnames.size > 0 || allowlist.rang
 
 /** True if the operator allowlisted this hostname, meaning whatever it resolves to is fair game. */
 export const isAllowlistedHostname = (hostname: string) =>
-  allowlist.hostnames.has(hostname.toLowerCase())
+  isDevServer || allowlist.hostnames.has(hostname.toLowerCase())
 
 /** True if connecting to this address is disallowed. Unparseable addresses fail closed. */
 export const isBlockedAddress = (ip: string) => {
+  if (isDevServer) return false
   const bytes = parseIP(ip)
   if (!bytes) return true
   if (!isPrivate(bytes)) return false

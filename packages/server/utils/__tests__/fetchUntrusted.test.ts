@@ -1,6 +1,9 @@
 import http from 'http'
 import type {AddressInfo} from 'net'
 
+// A dev server allows every address, so these check the guard a production build runs
+Object.assign(globalThis, {__PRODUCTION__: true})
+
 // SSRF_ALLOWED_HOSTS is read when the module loads, so each scenario needs a fresh copy
 const loadFetchUntrusted = (allowedHosts?: string) => {
   jest.resetModules()
