@@ -502,6 +502,8 @@ const TYPESCRIPT_TOOLS = [
   'create_retro_template',
   'create_standup_template',
   'answer_standup',
+  'create_team_health_template',
+  'answer_team_health',
   'end_meeting',
   'upload_image',
   'graphql_query',

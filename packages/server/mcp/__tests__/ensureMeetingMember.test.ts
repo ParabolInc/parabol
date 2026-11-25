@@ -5,6 +5,10 @@ import runGraphQL from '../runGraphQL'
 
 jest.mock('../runGraphQL', () => ({__esModule: true, default: jest.fn()}))
 
+afterEach(() => {
+  jest.mocked(runGraphQL).mockReset()
+})
+
 const resourceGrants: ResourceGrants = Object.create(ResourceGrants.prototype)
 
 const context: MCPContext = {
@@ -14,7 +18,7 @@ const context: MCPContext = {
 }
 
 test('joins the meeting as the caller each time and answers nothing when the server lets it', async () => {
-  jest.mocked(runGraphQL).mockResolvedValue({data: {joinMeeting: {meetingId: 'meeting-1'}}})
+  jest.mocked(runGraphQL).mockResolvedValue({data: {joinMeeting: {meetingMember: {}}}})
   expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
   expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
   expect(runGraphQL).toHaveBeenCalledTimes(2)
@@ -23,6 +27,38 @@ test('joins the meeting as the caller each time and answers nothing when the ser
     expect.stringContaining('joinMeeting(meetingId: $meetingId)'),
     {meetingId: 'meeting-1'}
   )
+})
+
+test('opts a team health member who is sitting the check out in, and leaves one who answers as they are', async () => {
+  jest
+    .mocked(runGraphQL)
+    .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: true}}}})
+    .mockResolvedValueOnce({data: {setTeamHealthSpectate: {meetingMember: {isSpectating: false}}}})
+    .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: false}}}})
+  expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
+  expect(runGraphQL).toHaveBeenLastCalledWith(
+    context,
+    expect.stringContaining('setTeamHealthSpectate(meetingId: $meetingId, isSpectating: false)'),
+    {meetingId: 'meeting-1'}
+  )
+  expect(await ensureMeetingMember(context, 'meeting-1')).toBeNull()
+  expect(runGraphQL).toHaveBeenCalledTimes(3)
+})
+
+test("answers with the server's coded error when the opt-in is refused", async () => {
+  jest
+    .mocked(runGraphQL)
+    .mockResolvedValueOnce({data: {joinMeeting: {meetingMember: {isSpectating: true}}}})
+    .mockResolvedValueOnce({
+      data: null,
+      errors: [{message: 'Meeting has ended', extensions: {code: 'CONFLICT'}}]
+    })
+  expect(await ensureMeetingMember(context, 'meeting-1')).toEqual({
+    isError: true,
+    content: [
+      {type: 'text', text: JSON.stringify([{message: 'Meeting has ended', code: 'CONFLICT'}])}
+    ]
+  })
 })
 
 test("answers with the server's coded error when the caller cannot join", async () => {

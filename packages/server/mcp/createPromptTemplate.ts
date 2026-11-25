@@ -97,7 +97,7 @@ const REMOVE_PROMPT_TEMPLATE = `
   }
 `
 
-class TemplateStepFailedError extends Error {
+export class TemplateStepFailedError extends Error {
   result: FormattedExecutionResult
 
   constructor(result: FormattedExecutionResult) {
@@ -106,7 +106,7 @@ class TemplateStepFailedError extends Error {
   }
 }
 
-const runStep = async <TData extends Record<string, unknown>>(
+export const runTemplateStep = async <TData extends Record<string, unknown>>(
   context: MCPContext,
   document: string,
   variables: Record<string, unknown>
@@ -116,8 +116,11 @@ const runStep = async <TData extends Record<string, unknown>>(
   return result.data
 }
 
+export const renameMeetingTemplate = (context: MCPContext, templateId: string, name: string) =>
+  runTemplateStep(context, RENAME_MEETING_TEMPLATE, {templateId, name})
+
 const addPrompt = async (context: MCPContext, templateId: string) => {
-  const {addTemplatePrompt} = await runStep<{addTemplatePrompt: {prompt: TemplatePrompt}}>(
+  const {addTemplatePrompt} = await runTemplateStep<{addTemplatePrompt: {prompt: TemplatePrompt}}>(
     context,
     ADD_TEMPLATE_PROMPT,
     {templateId}
@@ -127,13 +130,16 @@ const addPrompt = async (context: MCPContext, templateId: string) => {
 
 const renamePrompt = async (context: MCPContext, prompt: TemplatePrompt, question: string) => {
   if (prompt.question === question) return prompt
-  await runStep(context, RENAME_TEMPLATE_PROMPT, {promptId: prompt.id, question})
+  await runTemplateStep(context, RENAME_TEMPLATE_PROMPT, {promptId: prompt.id, question})
   return {...prompt, question}
 }
 
 const describePrompt = async (context: MCPContext, prompt: TemplatePrompt, description: string) => {
   if (prompt.description === description) return prompt
-  await runStep(context, UPDATE_TEMPLATE_PROMPT_DESCRIPTION, {promptId: prompt.id, description})
+  await runTemplateStep(context, UPDATE_TEMPLATE_PROMPT_DESCRIPTION, {
+    promptId: prompt.id,
+    description
+  })
   return {...prompt, description}
 }
 
@@ -198,7 +204,7 @@ const createPromptTemplate = async (
   if (created.errors?.length || !template) return {error: toolResult(created)}
   const {id: templateId, prompts: startingPrompts} = template
   try {
-    await runStep(context, RENAME_MEETING_TEMPLATE, {templateId, name})
+    await renameMeetingTemplate(context, templateId, name)
     const savedPrompts: TemplatePrompt[] = []
     for (const [idx, {question, description}] of prompts.entries()) {
       const prompt = startingPrompts[idx] ?? (await addPrompt(context, templateId))

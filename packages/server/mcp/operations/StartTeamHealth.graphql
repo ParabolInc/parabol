@@ -1,8 +1,8 @@
-# Start a team health check on a team with a team health template. Needs meetings:write.
+# Start a team health check on a team with a team health template. It returns the questions the check asks, one per category of the template, whose ids answer_team_health takes. Needs meetings:write.
 mutation StartTeamHealth(
   # The team to meet, from get_me
   $teamId: ID!
-  # The team health template to run the check with
+  # The team health template to run the check with, such as one from create_team_health_template
   $templateId: ID!
 ) {
   startTeamHealth(teamIds: [$teamId], templateId: $templateId) {
@@ -11,6 +11,16 @@ mutation StartTeamHealth(
       name
       meetingType
       teamId
+      phases {
+        ... on TeamHealthResponsePhase {
+          stages {
+            question {
+              id
+              question
+            }
+          }
+        }
+      }
     }
   }
 }

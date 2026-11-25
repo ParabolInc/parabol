@@ -1,4 +1,6 @@
 import dayjs from 'dayjs'
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
@@ -726,4 +728,248 @@ test("a standup template with five described prompts, and a standup run with it,
   })
   await callToolForData(token, 'get_standup', {meetingId: meeting.id})
   await callToolForData(token, 'end_meeting', {meetingId: meeting.id})
+})
+
+const TEAM_HEALTH_SCOPES = [...MEETING_SCOPES, 'TEMPLATES_WRITE']
+
+const TEMPLATE_QUESTIONS = [
+  {question: 'When we say we will do something, we do it', category: 'Dependability'},
+  {question: 'I can admit a mistake on this team', category: 'Psychological Safety'},
+  {question: 'Our retros change how we work', category: 'Agent Rituals'}
+]
+
+type TeamHealthResultStage = {
+  question: {id: string}
+  score: number | null
+  respondentCount: number | null
+  spreadScores: number[] | null
+  responses: {commentParaphrased: string | null; commentAuthor: {preferredName: string} | null}[]
+}
+
+const addTeammate = async (teamId: string) => {
+  const teammate = await signUp()
+  await getKysely()
+    .insertInto('TeamMember')
+    .values({
+      id: TeamMemberId.join(teamId, teammate.userId),
+      teamId,
+      userId: teammate.userId,
+      isLead: false
+    })
+    .execute()
+  return {
+    ...teammate,
+    token: await createPersonalAccessToken(MEETING_SCOPES, {cookie: teammate.cookie})
+  }
+}
+
+const isSpectating = async (meetingId: string, userId: string) => {
+  const member = await getKysely()
+    .selectFrom('MeetingMember')
+    .select('isSpectating')
+    .where('id', '=', MeetingMemberId.join(meetingId, userId))
+    .executeTakeFirstOrThrow()
+  return member.isSpectating
+}
+
+const startAristotleCheck = async () => {
+  const owner = await signUp()
+  await turnOffAI(owner.orgId)
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie: owner.cookie})
+  const started = await callToolForData(token, 'start_team_health', {
+    teamId: owner.teamId,
+    templateId: 'googleProjectAristotleTemplate'
+  })
+  const meeting = started.startTeamHealth.meetings[0]
+  const questions = getStages<{question: {id: string; question: string}}>(meeting).map(
+    ({question}) => question
+  )
+  return {...owner, token, meetingId: meeting.id as string, questions}
+}
+
+test('an agent builds a team health template, and four teammates answer a check made with it', async () => {
+  const owner = await signUp()
+  await turnOffAI(owner.orgId)
+  const token = await createPersonalAccessToken(TEAM_HEALTH_SCOPES, {cookie: owner.cookie})
+  const {template} = await callToolForData(token, 'create_team_health_template', {
+    teamId: owner.teamId,
+    name: 'Agent Health',
+    questions: TEMPLATE_QUESTIONS
+  })
+  expect(template).toEqual({
+    id: expect.any(String),
+    name: 'Agent Health',
+    questions: TEMPLATE_QUESTIONS.map(({question, category}) => ({
+      id: expect.any(String),
+      question,
+      category
+    }))
+  })
+  const started = await callToolForData(token, 'start_team_health', {
+    teamId: owner.teamId,
+    templateId: template.id
+  })
+  const meeting = started.startTeamHealth.meetings[0]
+  const meetingId = meeting.id as string
+  const questions = template.questions.map(({id, question}: {id: string; question: string}) => ({
+    id,
+    question
+  }))
+  expect(getStages(meeting)).toEqual(
+    expect.arrayContaining(questions.map((question: unknown) => ({question})))
+  )
+  expect(getStages(meeting)).toHaveLength(questions.length)
+  const [kept, safety, rituals] = questions
+  const [first, second, third] = await Promise.all([
+    addTeammate(owner.teamId),
+    addTeammate(owner.teamId),
+    addTeammate(owner.teamId)
+  ])
+
+  const answered = await callToolForData(token, 'answer_team_health', {
+    meetingId,
+    answers: [
+      {questionId: kept.id, score: 5},
+      {questionId: safety.id, score: 4},
+      {questionId: rituals.id, score: 2, comment: 'Retros feel rushed', isAnonymous: false}
+    ]
+  })
+  expect(answered).toEqual({
+    setTeamHealthResponse: {meeting: {id: meetingId, respondentCount: 1, isViewerComplete: true}}
+  })
+  await callToolForData(first.token, 'answer_team_health', {
+    meetingId,
+    answers: [
+      {questionId: kept.id, score: 4},
+      {questionId: safety.id, score: 2}
+    ]
+  })
+  await callToolForData(second.token, 'answer_team_health', {
+    meetingId,
+    answers: [
+      {questionId: kept.id, score: 3},
+      {questionId: safety.id, score: 3},
+      {questionId: rituals.id, score: null, comment: 'We need more time to prepare'}
+    ]
+  })
+  await callToolForData(third.token, 'answer_team_health', {
+    meetingId,
+    answers: [
+      {questionId: kept.id, score: 2},
+      {questionId: safety.id, score: null},
+      {questionId: rituals.id, score: 4}
+    ]
+  })
+
+  const inProgress = await callToolForData(first.token, 'get_team_health_meeting', {meetingId})
+  expect(inProgress.viewer.meeting.respondentCount).toBe(4)
+  expect(getStages(inProgress.viewer.meeting)).toEqual(
+    questions.map(() =>
+      expect.objectContaining({
+        score: null,
+        respondentCount: null,
+        spreadScores: null,
+        responses: []
+      })
+    )
+  )
+
+  await callToolForData(token, 'end_meeting', {meetingId})
+  const {viewer} = await callToolForData(second.token, 'get_team_health_meeting', {meetingId})
+  const stages = getStages<TeamHealthResultStage>(viewer.meeting)
+  const stageFor = (questionId: string) => stages.find(({question}) => question.id === questionId)!
+  expect(stageFor(kept.id)).toMatchObject({score: 3.5, respondentCount: 4, summary: null})
+  expect(stageFor(kept.id).spreadScores!.sort()).toEqual([2, 3, 4, 5])
+  expect(stageFor(safety.id)).toMatchObject({score: 3, respondentCount: 3, spreadScores: null})
+  const ritualsStage = stageFor(rituals.id)
+  expect(ritualsStage).toMatchObject({score: null, respondentCount: 2, spreadScores: null})
+  expect(ritualsStage.responses).toEqual(
+    expect.arrayContaining([
+      {
+        commentParaphrased: 'Retros feel rushed',
+        commentAuthor: {preferredName: await getPreferredName(owner.cookie)}
+      }
+    ])
+  )
+  expect(JSON.stringify(ritualsStage)).not.toContain('more time')
+}, 60000)
+
+test('answer_team_health opts in a team lead who sits checks out, but not on a call it refuses', async () => {
+  const {userId, token, meetingId, questions} = await startAristotleCheck()
+  expect(await isSpectating(meetingId, userId)).toBe(true)
+  const refused = await callTool(token, 'answer_team_health', {
+    meetingId,
+    answers: [{questionId: 'not-a-question', score: 3}]
+  })
+  expect(expectToolErrorCode(refused, 'BAD_USER_INPUT')).toContain('not-a-question')
+  expect(await isSpectating(meetingId, userId)).toBe(true)
+
+  const answered = await callToolForData(token, 'answer_team_health', {
+    meetingId,
+    answers: [{questionId: questions[0]!.id, score: 4}]
+  })
+  expect(answered.setTeamHealthResponse.meeting).toEqual({
+    id: meetingId,
+    respondentCount: 1,
+    isViewerComplete: false
+  })
+  expect(await isSpectating(meetingId, userId)).toBe(false)
+})
+
+test('answer_team_health refuses a meeting that is not a team health check, and one on a team the caller is not on', async () => {
+  const {teamId, token, meetingId, questions} = await startAristotleCheck()
+  const standup = await callToolForData(token, 'start_standup', {teamId})
+  const notTeamHealth = await callTool(token, 'answer_team_health', {
+    meetingId: standup.startTeamPrompt.meeting.id,
+    answers: [{questionId: questions[0]!.id, score: 4}]
+  })
+  expectToolErrorCode(notTeamHealth, 'BAD_USER_INPUT')
+
+  const outsider = await createPersonalAccessToken(MEETING_SCOPES)
+  const refused = await callTool(outsider, 'answer_team_health', {
+    meetingId,
+    answers: [{questionId: questions[0]!.id, score: 1}]
+  })
+  expectToolErrorCode(refused, 'FORBIDDEN')
+  const responses = await getKysely()
+    .selectFrom('TeamHealthResponse')
+    .select('id')
+    .where('meetingId', '=', meetingId)
+    .execute()
+  expect(responses).toEqual([])
+})
+
+test('create_team_health_template needs only templates:write and refuses a name another team health template on the team has', async () => {
+  const {cookie, teamId, orgId, userId} = await signUp()
+  await turnOffAI(orgId)
+  const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
+  const {template} = await callToolForData(token, 'create_team_health_template', {
+    teamId,
+    name: 'Agent Health',
+    questions: [{question: 'I know what is expected of me'}]
+  })
+  expect(template.questions).toEqual([
+    {
+      id: expect.any(String),
+      question: 'I know what is expected of me',
+      category: 'Psychological Safety'
+    }
+  ])
+
+  const duplicate = await callTool(token, 'create_team_health_template', {
+    teamId,
+    name: 'Agent Health',
+    questions: [{question: 'Our goals are clear', category: 'Structure & Clarity'}]
+  })
+  expectToolErrorCode(duplicate, 'CONFLICT')
+  const [error] = JSON.parse(duplicate.content[0]!.text)
+  expect(error.unfinishedTemplateId).toEqual(expect.any(String))
+  expect(error.unfinishedTemplateId).not.toBe(template.id)
+  const questions = await getKysely()
+    .selectFrom('TeamHealthQuestion')
+    .select('question')
+    .where('createdBy', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
+  expect(questions).toEqual([{question: 'I know what is expected of me'}])
 })
