@@ -5,6 +5,7 @@ import defineTool from '../defineTool'
 import type {MCPContext} from '../MCPContext'
 import runGraphQL from '../runGraphQL'
 import {writeAnnotations} from '../toolAnnotations'
+import toolError from '../toolError'
 import toolResult from '../toolResult'
 
 interface Column {
@@ -12,6 +13,22 @@ interface Column {
   question: string
   description: string
 }
+
+const RETRO_TEMPLATE_NAMES = `
+  query RetroTemplateNames($teamId: ID!) {
+    viewer {
+      team(teamId: $teamId) {
+        meetingSettings(meetingType: retrospective) {
+          ... on RetrospectiveMeetingSettings {
+            reflectTemplates {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 const ADD_PROMPT_TEMPLATE = `
   mutation AddPromptTemplate($teamId: ID!) {
@@ -31,9 +48,7 @@ const ADD_PROMPT_TEMPLATE = `
 const RENAME_MEETING_TEMPLATE = `
   mutation RenameMeetingTemplate($templateId: ID!, $name: String!) {
     renameMeetingTemplate(templateId: $templateId, name: $name) {
-      meetingTemplate {
-        id
-      }
+      __typename
     }
   }
 `
@@ -53,9 +68,7 @@ const ADD_TEMPLATE_PROMPT = `
 const RENAME_TEMPLATE_PROMPT = `
   mutation RenameTemplatePrompt($promptId: ID!, $question: String!) {
     renameTemplatePrompt(promptId: $promptId, question: $question) {
-      prompt {
-        id
-      }
+      __typename
     }
   }
 `
@@ -63,19 +76,7 @@ const RENAME_TEMPLATE_PROMPT = `
 const UPDATE_TEMPLATE_PROMPT_DESCRIPTION = `
   mutation UpdateTemplatePromptDescription($promptId: ID!, $description: String!) {
     updateTemplatePromptDescription(promptId: $promptId, description: $description) {
-      prompt {
-        id
-      }
-    }
-  }
-`
-
-const REMOVE_TEMPLATE_PROMPT = `
-  mutation RemoveTemplatePrompt($promptId: ID!) {
-    removeTemplatePrompt(promptId: $promptId) {
-      prompt {
-        id
-      }
+      __typename
     }
   }
 `
@@ -83,9 +84,7 @@ const REMOVE_TEMPLATE_PROMPT = `
 const REMOVE_PROMPT_TEMPLATE = `
   mutation RemovePromptTemplate($templateId: ID!) {
     removePromptTemplate(templateId: $templateId) {
-      template {
-        id
-      }
+      __typename
     }
   }
 `
@@ -120,12 +119,8 @@ const addColumn = async (context: MCPContext, templateId: string) => {
 
 const renameColumn = async (context: MCPContext, column: Column, question: string) => {
   if (column.question === question) return column
-  const {renameTemplatePrompt} = await runStep<{renameTemplatePrompt: {prompt: {id: string}}}>(
-    context,
-    RENAME_TEMPLATE_PROMPT,
-    {promptId: column.id, question}
-  )
-  return {...column, id: renameTemplatePrompt.prompt.id, question}
+  await runStep(context, RENAME_TEMPLATE_PROMPT, {promptId: column.id, question})
+  return {...column, question}
 }
 
 const describeColumn = async (context: MCPContext, column: Column, description: string) => {
@@ -148,7 +143,7 @@ export default defineTool({
   name: 'create_retro_template',
   title: 'Create a retrospective template',
   description:
-    'Create a retrospective template on a team with the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. Needs templates:write.',
+    'Create a retrospective template on a team with the columns you give, in order. Then call select_template and start_retrospective to run a retro with it. The Starter plan limits how many custom templates each person can make. Needs users:read, teams:read and templates:write.',
   inputSchema: z.object({
     teamId: z.string().describe('The team that owns the template, from get_me'),
     name: z
@@ -169,6 +164,17 @@ export default defineTool({
   }),
   annotations: writeAnnotations,
   run: async (context, {teamId, name, columns}) => {
+    const existing = await runGraphQL<{
+      viewer: {team: {meetingSettings: {reflectTemplates: {name: string}[]}} | null}
+    }>(context, RETRO_TEMPLATE_NAMES, {teamId})
+    if (existing.errors?.length) return toolResult(existing)
+    const templates = existing.data?.viewer.team?.meetingSettings.reflectTemplates ?? []
+    if (templates.some((template) => template.name === name)) {
+      return toolError(
+        `The team already has a retro template named "${name}". Pick another name.`,
+        'CONFLICT'
+      )
+    }
     const created = await runGraphQL<{
       addPromptTemplate: {template: {id: string; prompts: Column[]}}
     }>(context, ADD_PROMPT_TEMPLATE, {teamId})
@@ -177,9 +183,6 @@ export default defineTool({
     const {id: templateId, prompts: startingColumns} = template
     try {
       await runStep(context, RENAME_MEETING_TEMPLATE, {templateId, name})
-      for (const extraColumn of startingColumns.slice(columns.length)) {
-        await runStep(context, REMOVE_TEMPLATE_PROMPT, {promptId: extraColumn.id})
-      }
       const savedColumns: Column[] = []
       for (const [idx, {question, description}] of columns.entries()) {
         const column = startingColumns[idx] ?? (await addColumn(context, templateId))
@@ -188,9 +191,12 @@ export default defineTool({
       }
       return toolResult({data: {template: {id: templateId, name, columns: savedColumns}}})
     } catch (error) {
-      await runGraphQL(context, REMOVE_PROMPT_TEMPLATE, {templateId})
-      if (error instanceof TemplateStepFailedError) return toolResult(error.result)
-      throw error
+      const removed = await runGraphQL(context, REMOVE_PROMPT_TEMPLATE, {templateId})
+      if (!(error instanceof TemplateStepFailedError)) throw error
+      return toolResult(
+        error.result,
+        removed.errors?.length ? {unfinishedTemplateId: templateId} : undefined
+      )
     }
   }
 })

@@ -1,6 +1,11 @@
 import mcpInstructions from '../mcp/mcpInstructions'
 import getKysely from '../postgres/getKysely'
+import getRedis from '../utils/getRedis'
 import {HOST, PROTOCOL, sendPublic, signUp} from './common'
+
+afterAll(async () => {
+  await getRedis().quit()
+})
 
 const MCP_URL = `${PROTOCOL}://${HOST}/mcp`
 const PROTOCOL_VERSION = '2025-06-18'
@@ -271,16 +276,71 @@ test('a starter user out of free custom templates gets that error and no templat
   expect(await getActiveTemplateNames(teamId)).toEqual(['First Columns', 'Second Columns'])
 })
 
-test('a step that fails removes the half-made template', async () => {
+test('a name the team already uses is refused before a free template is spent', async () => {
   const {cookie, teamId} = await signUp()
   const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
-  const args = {teamId, name: 'Agent Columns', columns: COLUMNS}
-  await callToolForData(token, 'create_retro_template', args)
+  await callToolForData(token, 'create_retro_template', {
+    teamId,
+    name: 'Agent Columns',
+    columns: COLUMNS
+  })
 
-  const result = await callTool(token, 'create_retro_template', args)
-  const message = expectToolErrorCode(result, 'CONFLICT')
-  expect(message).toBe('Duplicate template name')
-  expect(await getActiveTemplateNames(teamId)).toEqual(['Agent Columns'])
+  const duplicate = await callTool(token, 'create_retro_template', {
+    teamId,
+    name: ' Agent Columns ',
+    columns: COLUMNS
+  })
+  const message = expectToolErrorCode(duplicate, 'CONFLICT')
+  expect(message).toContain('"Agent Columns"')
+
+  await callToolForData(token, 'create_retro_template', {
+    teamId,
+    name: 'Other Columns',
+    columns: COLUMNS
+  })
+  expect(await getActiveTemplateNames(teamId)).toEqual(['Agent Columns', 'Other Columns'])
+})
+
+const STARTER_HOURLY_QUERY_BUDGET = 5000
+
+const getChargedCost = async (userId: string) => {
+  const buckets = await getRedis().hvals(`adhocGQL:${userId}`)
+  return buckets.reduce((total, cost) => total + Number(cost), 0)
+}
+
+test('a half-made template it could not remove is named in the error', async () => {
+  const {userId, cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(TEMPLATE_SCOPES, cookie)
+  const defaultColumn = [{question: 'New prompt'}]
+  const before = await getChargedCost(userId)
+  await callToolForData(token, 'create_retro_template', {
+    teamId,
+    name: 'First Columns',
+    columns: defaultColumn
+  })
+  const spent = await getChargedCost(userId)
+  // that run cost the name check, the create and the rename, so this leaves room for only the first two
+  const headroom = spent - before - 1
+  const tenMinutesAgo = String(Math.floor(Date.now() / 60_000) * 60 - 600)
+  await getRedis().hincrby(
+    `adhocGQL:${userId}`,
+    tenMinutesAgo,
+    STARTER_HOURLY_QUERY_BUDGET - spent - headroom
+  )
+
+  const result = await callTool(token, 'create_retro_template', {
+    teamId,
+    name: 'Second Columns',
+    columns: defaultColumn
+  })
+  expectToolErrorCode(result, 'TOO_MANY_REQUESTS')
+  const [error] = JSON.parse(result.content[0]!.text)
+  const unfinished = await getKysely()
+    .selectFrom('MeetingTemplate')
+    .select('isActive')
+    .where('id', '=', error.unfinishedTemplateId)
+    .executeTakeFirst()
+  expect(unfinished?.isActive).toBe(true)
 })
 
 test('columns that repeat a question are refused before anything is made', async () => {
