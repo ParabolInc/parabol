@@ -106,11 +106,7 @@ export const reportsHomeRoute = createRoute({
     const period = new URLSearchParams(location.searchStr).get('period')
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const variables = {orgId, timeZone, pagePeriod: parseReportPeriodParam(period)}
-    return {
-      queryRef: await queryRefs.load<ReportsHomeQuery>(reportsHomeQuery, variables, {
-        fetchPolicy: 'network-only'
-      })
-    }
+    return {queryRef: await queryRefs.load<ReportsHomeQuery>(reportsHomeQuery, variables)}
   },
   // The last period's numbers stay up while the next period loads
   pendingMs: Number.POSITIVE_INFINITY,

@@ -1,6 +1,7 @@
 import {loadQuery, type PreloadedQuery} from 'react-relay'
 import {
   type ConcreteRequest,
+  createOperationDescriptor,
   type FetchPolicy,
   fetchQuery,
   getRequestIdentifier,
@@ -114,12 +115,16 @@ export const createQueryRefs = (environment: IEnvironment, reconnectHandlers: Se
     }
     const key = getRequestIdentifier(query.params, variables)
     const existing = entries.get(key)
-    // network-only joins a request in flight, never one that already answered
+    // network-only joins a request in flight, never one that already answered. An answered one is reused only while
+    // the store still holds all it selects, as Relay's own store-or-network requires, so a mutation that left part
+    // of it missing, like a new pin's card for another period, loads it again
     const canJoin =
       existing &&
       !existing.queryRef.isDisposed &&
       !existing.hasFailed &&
-      (fetchPolicy !== 'network-only' || !existing.isSettled)
+      (!existing.isSettled ||
+        (fetchPolicy !== 'network-only' &&
+          environment.check(createOperationDescriptor(query, variables)).status === 'available'))
     if (existing && !canJoin) replace(existing)
     const entry = existing && canJoin ? existing : start(key, query, variables, fetchPolicy)
     entry.idleSince = Date.now()
