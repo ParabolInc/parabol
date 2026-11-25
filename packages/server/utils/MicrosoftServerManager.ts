@@ -20,7 +20,7 @@ export interface MicrosoftIDToken {
   iat: number
   nbf: number
   exp: number
-  email: string
+  email?: string
   name: string
   oid: string
   preferred_username: string
