@@ -11,7 +11,7 @@ import type {SerializedResourceGrants} from '../../graphql/public/ResourceGrants
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {hocuspocus} from '../../hocusPocus'
 import {applyPageContentEdits} from './applyPageContentEdits'
-import {assertNoAddedPageLinks} from './assertNoAddedPageLinks'
+import {assertReachablePageLinks} from './assertReachablePageLinks'
 import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
@@ -261,9 +261,10 @@ export const replacePageContent = async (
     resourceGrants?: SerializedResourceGrants
     scopes?: string[]
     canChangePageLinks: boolean
+    reachablePageCodes: number[]
   }
 ) => {
-  const {content, userId, resourceGrants, scopes, canChangePageLinks} = payload
+  const {content, userId, resourceGrants, scopes, canChangePageLinks, reachablePageCodes} = payload
   await withDoc(
     documentName,
     (doc) => {
@@ -276,7 +277,11 @@ export const replacePageContent = async (
         .filter((src): src is string => typeof src === 'string')
       validatePageDoc(content, new Set(pageImageSrcs))
       if (!canChangePageLinks) {
-        assertNoAddedPageLinks(currentContent.content ?? [], content.content ?? [])
+        assertReachablePageLinks(
+          currentContent.content ?? [],
+          content.content ?? [],
+          reachablePageCodes
+        )
       }
       // build first: invalid content throws here, before the page is emptied
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
@@ -300,12 +305,13 @@ export const patchPageContent = async (
     resourceGrants?: SerializedResourceGrants
     scopes?: string[]
     canChangePageLinks: boolean
+    reachablePageCodes: number[]
   }
 ) => {
-  const {edits, userId, resourceGrants, scopes, canChangePageLinks} = payload
-  await withDoc(documentName, (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks}), {
-    userId,
-    resourceGrants,
-    scopes
-  })
+  const {edits, userId, resourceGrants, scopes, canChangePageLinks, reachablePageCodes} = payload
+  await withDoc(
+    documentName,
+    (doc) => applyPageContentEdits(doc, edits, {canChangePageLinks, reachablePageCodes}),
+    {userId, resourceGrants, scopes}
+  )
 }
