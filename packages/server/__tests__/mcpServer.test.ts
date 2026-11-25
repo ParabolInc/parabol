@@ -117,7 +117,9 @@ const COMPILED_TOOLS = [
   'get_report',
   'list_pinned_reports',
   'rename_meeting',
-  'list_retro_columns'
+  'list_retro_columns',
+  'archive_page',
+  'delete_task'
 ]
 
 const expectUnauthorized = (response: Response) => {
@@ -509,6 +511,8 @@ const TYPESCRIPT_TOOLS = [
   'answer_team_health',
   'add_poker_stories',
   'vote_poker_story',
+  'list_templates',
+  'delete_template',
   'end_meeting',
   'add_comment',
   'upload_image',
