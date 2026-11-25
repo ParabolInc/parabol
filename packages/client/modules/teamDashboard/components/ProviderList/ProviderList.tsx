@@ -74,8 +74,10 @@ const ProviderList = (props: Props) => {
     document.getElementById(hash.slice(1))?.scrollIntoView({block: 'start'})
   }, [hash])
   const [newlyConnectedService, setNewlyConnectedService] = useState<string>()
-  const integrations = viewer.teamMember?.integrations
-  const services = viewer.teamMember?.services ?? []
+  const {teamMember} = viewer
+  // null when the server doesn't count the viewer on this team, which every row needs
+  if (!teamMember) return null
+  const {integrations, services} = teamMember
 
   const taskIntegrations = services
     .filter(
@@ -102,23 +104,22 @@ const ProviderList = (props: Props) => {
     {
       name: Providers.CONFLUENCE_NAME,
       connected:
-        !!integrations?.atlassian?.accessToken &&
-        hasConfluenceScopes(integrations?.atlassian?.scope),
+        !!integrations.atlassian?.accessToken && hasConfluenceScopes(integrations.atlassian?.scope),
       component: <ConfluenceProviderRow key='confluence' teamId={teamId} viewerRef={viewer} />
     },
     {
       name: Providers.MATTERMOST_NAME,
-      connected: !!integrations?.mattermost.auth,
+      connected: !!integrations.mattermost.auth,
       component: <MattermostProviderRow key='mm' teamId={teamId} viewerRef={viewer} />
     },
     {
       name: Providers.SLACK_NAME,
-      connected: !!integrations?.slack?.isActive,
+      connected: !!integrations.slack?.isActive,
       component: <SlackProviderRow key='slack' teamId={teamId} viewer={viewer} />
     },
     {
       name: Providers.MSTEAMS_NAME,
-      connected: !!integrations?.msTeams.auth,
+      connected: !!integrations.msTeams.auth,
       component: <MSTeamsProviderRow key='teams' teamId={teamId} viewerRef={viewer} />
     }
   ]
