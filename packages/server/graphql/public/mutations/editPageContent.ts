@@ -44,7 +44,8 @@ const editPageContent: MutationResolvers['editPageContent'] = async (
     content: jsonContent,
     userId: viewerId,
     resourceGrants: resourceGrants?.serialize(),
-    scopes: authToken.scope
+    scopes: authToken.scope,
+    canChangePageLinks: !resourceGrants || resourceGrants.isUnrestricted()
   })
 
   dataLoader.get('pages').clearAll()

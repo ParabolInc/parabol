@@ -1,16 +1,18 @@
 import type {Document} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
 import {applyUpdate, encodeStateAsUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllNodesAttributesByType'
+import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {SerializedResourceGrants} from '../../graphql/public/ResourceGrants'
 import type {PageContentEditInput} from '../../graphql/public/resolverTypes'
 import {hocuspocus} from '../../hocusPocus'
-import {applyPageContentEdits} from './applyPageContentEdits'
+import {applyPageContentEdits, collectCanonicalPageCodes} from './applyPageContentEdits'
 import {insertCanonicalLink} from './insertCanonicalLink'
 import {PAGE_ASSET_ATTRS} from './pageAssetAttrs'
 import {setPageLinkTitles} from './setPageLinkTitles'
@@ -259,9 +261,10 @@ export const replacePageContent = async (
     userId: string
     resourceGrants?: SerializedResourceGrants
     scopes?: string[]
+    canChangePageLinks: boolean
   }
 ) => {
-  const {content, userId, resourceGrants, scopes} = payload
+  const {content, userId, resourceGrants, scopes, canChangePageLinks} = payload
   await withDoc(
     documentName,
     (doc) => {
@@ -272,6 +275,19 @@ export const replacePageContent = async (
         .map((attrs) => attrs?.src)
         .filter((src): src is string => typeof src === 'string')
       validatePageDoc(content, new Set(pageImageSrcs))
+      if (!canChangePageLinks) {
+        const linkedCodes = new Set(
+          getPageLinks(doc, true).map((link) => link.getAttribute('pageCode'))
+        )
+        if (
+          collectCanonicalPageCodes(content.content ?? []).some((code) => !linkedCodes.has(code))
+        ) {
+          throw new GraphQLError(
+            "An access token limited to specific organizations, teams or pages can't make an existing page a sub-page. Use createPage to add one",
+            {extensions: {code: 'FORBIDDEN'}}
+          )
+        }
+      }
       // build first: invalid content throws here, before the page is emptied
       const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
       doc.transact(() => {

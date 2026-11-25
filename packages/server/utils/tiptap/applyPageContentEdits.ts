@@ -142,7 +142,7 @@ const findUnsafeRemoval = (removed: Block[], isRewrite: boolean) => {
   return visible.find(({node}, idx) => !isSameNode(node, reparsed[idx]!))
 }
 
-const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
+export const collectCanonicalPageCodes = (nodes: JSONContent[]): number[] =>
   nodes.flatMap((node) => [
     ...(node.type === 'pageLinkBlock' && node.attrs?.canonical ? [node.attrs.pageCode] : []),
     ...collectCanonicalPageCodes(node.content ?? [])
