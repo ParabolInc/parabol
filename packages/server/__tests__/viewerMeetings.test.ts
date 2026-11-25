@@ -1,3 +1,6 @@
+import {sql} from 'kysely'
+import generateUID from '../generateUID'
+import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
 const START_CHECK_IN = `
@@ -61,4 +64,26 @@ test('omitting teamIds returns meetings on every team the viewer is on', async (
 
   expect(await getViewerMeetings(viewer.cookie)).toEqual([{id: meetingId, teamId: viewer.teamId}])
   expect(await getViewerMeetings(viewer.cookie, [])).toEqual([])
+})
+
+test('meetings come back newest first', async () => {
+  const viewer = await signUp()
+  const startRes = await sendPublic({
+    query: START_CHECK_IN,
+    variables: {teamId: viewer.teamId},
+    cookie: viewer.cookie
+  })
+  const newestId = startRes.data.startCheckIn.meeting.id
+  const olderId = generateUID()
+  const olderCreatedAt = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+  await sql`
+    INSERT INTO "NewMeeting"
+    SELECT (jsonb_populate_record(m, jsonb_build_object('id', ${olderId}::text, 'createdAt', ${olderCreatedAt}::text))).*
+    FROM "NewMeeting" m WHERE m.id = ${newestId}
+  `.execute(getKysely())
+
+  expect((await getViewerMeetings(viewer.cookie)).map(({id}: {id: string}) => id)).toEqual([
+    newestId,
+    olderId
+  ])
 })

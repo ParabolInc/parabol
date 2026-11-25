@@ -181,6 +181,7 @@ const User: ReqResolvers<'User'> = {
       .where('meetingType', 'in', meetingTypes)
       .$if<{}>(!!after, (qb) => qb.where('createdAt', '>=', after!))
       .$if<{}>(!!before, (qb) => qb.where('createdAt', '<=', before!))
+      .orderBy('createdAt', 'desc')
       .limit(first + 1)
       .execute()
     return {
