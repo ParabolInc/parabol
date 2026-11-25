@@ -44,6 +44,25 @@ test('create_page with parentPageId nests the page and list_pages finds it', asy
   expect(listed.viewer.pages.pageInfo.hasNextPage).toBe(false)
 })
 
+test('a team-limited connection nests a page under a team page and fills it, but gets no private page', async () => {
+  const {cookie, teamId} = await signUp()
+  const owner = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {cookie})
+  const teamPage = await callToolForData(owner, 'create_page', {teamId})
+  const parentPageId = teamPage.createPage.page.id as string
+  const token = await createPersonalAccessToken(['PAGES_READ', 'PAGES_WRITE'], {
+    cookie,
+    grantedOrgIds: [],
+    grantedTeamIds: [teamId]
+  })
+  const child = await callToolForData(token, 'create_page', {parentPageId})
+  const pageId = child.createPage.page.id as string
+  await callToolForData(token, 'set_page_content', {pageId, content: '# Notes\n\nNested'})
+  const read = await callToolForData(token, 'read_page', {pageId})
+  expect(read.public.page.parentPageId).toBe(parentPageId)
+  expect(read.public.page.content).toContain('Nested')
+  expectToolErrorCode(await callTool(token, 'create_page', {}), 'FORBIDDEN')
+})
+
 test('list_pages with no arguments returns top-level pages', async () => {
   const {cookie} = await signUp()
   const token = await createPersonalAccessToken(['USERS_READ', 'PAGES_READ', 'PAGES_WRITE'], {
