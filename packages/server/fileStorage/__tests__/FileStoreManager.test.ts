@@ -5,10 +5,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 class RateLimitedFileStore extends FileStoreManager {
   baseUrl = 'https://files.test/'
   writes: string[] = []
-  deletes: string[] = []
-  events: string[] = []
   failNextWrite = false
-  isRateLimited = true
   private lastWriteAtByPath = new Map<string, number>()
 
   protected async putFile(_file: ArrayBufferLike, fullPath: string) {
@@ -18,12 +15,11 @@ class RateLimitedFileStore extends FileStoreManager {
       throw new Error('GCS Upload Error: 503')
     }
     const lastWriteAt = this.lastWriteAtByPath.get(fullPath)
-    if (this.isRateLimited && lastWriteAt !== undefined && Date.now() - lastWriteAt < 1000) {
+    if (lastWriteAt !== undefined && Date.now() - lastWriteAt < 1000) {
       throw new Error('GCS Upload Error: 429')
     }
     this.lastWriteAtByPath.set(fullPath, Date.now())
     await wait(20)
-    this.events.push(`wrote ${fullPath}`)
   }
   prependPath(partialPath: string) {
     return `store/${partialPath}`
@@ -44,10 +40,6 @@ class RateLimitedFileStore extends FileStoreManager {
     return 0
   }
   async moveFile() {}
-  protected async deleteFile(fullPath: string) {
-    this.deletes.push(fullPath)
-    this.events.push(`deleted ${fullPath}`)
-  }
   async presignUrl() {
     return ''
   }
@@ -98,35 +90,5 @@ test('writes to different paths are independent', async () => {
     store.putUserFile(file, partialPath),
     store.putUserFile(file, 'Team/team456/assets/abc.png' as PartialPath)
   ])
-  expect(store.writes).toHaveLength(2)
-})
-
-test('an upload right after a delete goes to the store instead of reusing the deleted write', async () => {
-  const store = new RateLimitedFileStore()
-  store.isRateLimited = false
-  await store.putUserFile(file, partialPath)
-  await store.deleteUserFile(partialPath)
-  expect(store.deletes).toEqual([`store/${partialPath}`])
-  await store.putUserFile(file, partialPath)
-  expect(store.writes).toHaveLength(2)
-})
-
-test('a delete waits for a write still in flight to the same path', async () => {
-  const store = new RateLimitedFileStore()
-  const write = store.putUserFile(file, partialPath)
-  await store.deleteUserFile(partialPath)
-  await write
-  expect(store.events).toEqual([`wrote store/${partialPath}`, `deleted store/${partialPath}`])
-})
-
-test('a write after a delete keeps its own reuse window when the deleted write expires', async () => {
-  const store = new RateLimitedFileStore()
-  store.isRateLimited = false
-  await store.putUserFile(file, partialPath)
-  await store.deleteUserFile(partialPath)
-  await wait(600)
-  await store.putUserFile(file, partialPath)
-  await wait(600)
-  await store.putUserFile(file, partialPath)
   expect(store.writes).toHaveLength(2)
 })

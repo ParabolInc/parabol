@@ -120,10 +120,6 @@ export default class S3Manager extends FileStoreManager {
     await this.s3.send(new PutObjectCommand(s3Params))
   }
 
-  protected async deleteFile(fullPath: string) {
-    await this.s3.send(new DeleteObjectCommand({Bucket: this.bucket, Key: fullPath}))
-  }
-
   prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
     return path.join(this.envSubDir, assetDir, partialPath)
   }

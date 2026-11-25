@@ -21,10 +21,6 @@ export default class LocalFileStoreManager extends FileStoreManager {
     await fs.promises.writeFile(fsAbsLocation, Buffer.from(file) as any)
   }
 
-  protected async deleteFile(fullPath: string) {
-    await fs.promises.rm(path.join(process.cwd(), fullPath), {force: true})
-  }
-
   prependPath(partialPath: string): string {
     return path.join('self-hosted', partialPath)
   }

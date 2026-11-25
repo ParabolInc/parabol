@@ -8,7 +8,6 @@ import {
 } from 'graphql'
 import type AuthToken from '../../database/types/AuthToken'
 import getAssetOwnerScope from '../../utils/getAssetOwnerScope'
-import {getUserAssetLocation} from '../../utils/getUserAssetLocation'
 import type {AssetScopeEnum, OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 export const PAT_PREFIX = 'pat_'
@@ -53,26 +52,22 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
         )
       }
 
-      const ownerArg = ownerFromArg && field.args.find((arg) => arg.name === ownerFromArg)
-      const ownerArgType = ownerArg && getNamedType(ownerArg.type).name
-      if (ownerFromArg && ownerArgType !== 'AssetScopeEnum' && ownerArgType !== 'URL') {
-        // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
-        throw new Error(
-          `@scope ownerFromArg on ${type.name}.${field.name} must name an AssetScopeEnum or URL argument`
-        )
+      if (ownerFromArg) {
+        const ownerArg = field.args.find((arg) => arg.name === ownerFromArg)
+        if (!ownerArg || getNamedType(ownerArg.type).name !== 'AssetScopeEnum') {
+          // biome-ignore lint/plugin/noPlainErrorInGraphQL: runs while building the schema, before any request
+          throw new Error(
+            `@scope ownerFromArg on ${type.name}.${field.name} must name an AssetScopeEnum argument`
+          )
+        }
       }
 
       // FIXME: https://github.com/ardatan/graphql-tools/pull/8117
       // const requiredScope = OAuthScopeEnum[directiveValues.name as string] as TOAuthScopeEnum
-      const getRequiredScope = (args: Record<string, unknown>) => {
-        if (!ownerFromArg) return name as TOAuthScopeEnum
-        const owner = args[ownerFromArg]
-        const assetScope =
-          ownerArgType === 'URL'
-            ? getUserAssetLocation(owner as string).scope
-            : (owner as AssetScopeEnum)
-        return getAssetOwnerScope(assetScope, 'write')
-      }
+      const getRequiredScope = (args: Record<string, unknown>) =>
+        ownerFromArg
+          ? getAssetOwnerScope(args[ownerFromArg] as AssetScopeEnum, 'write')
+          : (name as TOAuthScopeEnum)
 
       const originalResolver = field.resolve ?? defaultFieldResolver
 

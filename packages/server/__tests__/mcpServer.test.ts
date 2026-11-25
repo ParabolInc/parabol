@@ -119,8 +119,7 @@ const COMPILED_TOOLS = [
   'rename_meeting',
   'list_retro_columns',
   'archive_page',
-  'delete_task',
-  'delete_upload'
+  'delete_task'
 ]
 
 const expectUnauthorized = (response: Response) => {

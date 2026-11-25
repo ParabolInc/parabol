@@ -1,8 +1,7 @@
 """
 Require a personal access token to have an OAuth scope. Give exactly one argument.
-`name` requires that scope. `ownerFromArg` names an AssetScopeEnum argument of the field, or a URL
-argument holding an uploaded file, and requires the write scope of the asset's owner (e.g. Team
-requires teams:write).
+`name` requires that scope. `ownerFromArg` names an AssetScopeEnum argument of the field and
+requires the write scope of the asset's owner (e.g. Team requires teams:write).
 No-op for requests authenticated with a regular JWT.
 """
 directive @scope(name: OAuthScopeEnum, ownerFromArg: String) on FIELD_DEFINITION

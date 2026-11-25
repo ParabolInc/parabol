@@ -27,7 +27,6 @@ export default abstract class FileStoreManager {
     fullPath: string,
     options?: PutFileOptions
   ): Promise<void>
-  protected abstract deleteFile(fullPath: string): Promise<void>
   protected getBuildFileCacheControl(partialPath: string) {
     return isContentHashed(partialPath) ? 'public, max-age=31536000, immutable' : undefined
   }
@@ -52,15 +51,10 @@ export default abstract class FileStoreManager {
     if (existingWrite) return existingWrite
     const write = this.writeUserFile(file, partialPath)
     this.userFileWritesByPath.set(partialPath, write)
-    const forgetWrite = () => {
-      if (this.userFileWritesByPath.get(partialPath) === write) {
-        this.userFileWritesByPath.delete(partialPath)
-      }
-    }
     write.then(
       // GCS allows one write per object per second, so a write right after this one would get a 429
-      () => setTimeout(forgetWrite, 1000).unref(),
-      forgetWrite
+      () => setTimeout(() => this.userFileWritesByPath.delete(partialPath), 1000).unref(),
+      () => this.userFileWritesByPath.delete(partialPath)
     )
     return write
   }
@@ -72,11 +66,6 @@ export default abstract class FileStoreManager {
     const fullPath = this.prependPath(partialPath)
     await this.putFile(file, fullPath, {contentDisposition: 'attachment'})
     return makeAppURL(appOrigin, `/assets/${partialPath}`)
-  }
-  async deleteUserFile(partialPath: PartialPath) {
-    await this.userFileWritesByPath.get(partialPath)?.catch(() => undefined)
-    this.userFileWritesByPath.delete(partialPath)
-    await this.deleteFile(this.prependPath(partialPath))
   }
   async putUserAvatar(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,

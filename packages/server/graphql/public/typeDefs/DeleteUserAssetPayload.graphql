@@ -1,9 +1,0 @@
-"""
-Return object for deleteUserAsset
-"""
-type DeleteUserAssetPayload {
-  """
-  The URL of the deleted file
-  """
-  url: URL!
-}

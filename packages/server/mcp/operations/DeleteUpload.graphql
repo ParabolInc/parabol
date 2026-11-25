@@ -1,9 +1,0 @@
-# Delete a file uploaded to Parabol, by the URL upload_image or upload_from_url returned. It is gone for good, and pages, tasks or cards that use it stop showing it. Only those who can edit where it lives can delete it: you for your own files, a team's members, a page's editors and owners, not someone with only its public link, or an organization's billing leaders and admins. It refuses a URL that isn't a Parabol upload, a file somewhere you can't edit, and your own files if the connection is limited to some organizations, teams or pages. A file already gone counts as deleted. Needs users:write, teams:write, pages:write or orgs:write to match the file's scope.
-mutation DeleteUpload(
-  # The file's URL, exactly as upload_image or upload_from_url returned it
-  $url: URL!
-) {
-  deleteUserAsset(url: $url) {
-    url
-  }
-}
