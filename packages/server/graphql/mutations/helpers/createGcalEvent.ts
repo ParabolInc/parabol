@@ -129,7 +129,7 @@ export type UpdateGcalSeriesInput = {
   gcalSeriesId: string
   name?: string
   meetingSeriesId?: number
-  rrule: RRuleSet | null
+  rrule?: RRuleSet | null
   userId: string
   teamId: string
   dataLoader: DataLoaderWorker
@@ -144,7 +144,7 @@ export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
     })
   }
   const calendar = makeGcalCalendar(gcalAuth)
-  const recurrence = convertRruleToGcal(rrule)
+  const recurrence = rrule === undefined ? undefined : convertRruleToGcal(rrule)
 
   const description =
     name && meetingSeriesId !== undefined

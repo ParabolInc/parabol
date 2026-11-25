@@ -361,6 +361,31 @@ test('a recurring standup started on its first occurrence runs until the next on
   expect(scheduledEndTime).toBeAfter(dayjs().add(6, 'day').toDate())
 })
 
+test('the starter is a member of the stand-up they start and can answer without joining', async () => {
+  for (const rrule of [undefined, immediateRrule()]) {
+    const {userId, teamId, cookie} = await signUp()
+    const {meeting} = await startStandup({cookie}, teamId, rrule)
+
+    const answered = await sendPublic({
+      query: UPSERT,
+      variables: {
+        meetingId: meeting.id,
+        promptId: meeting.prompts[0].id,
+        content: paragraph('Started it, answered it')
+      },
+      cookie
+    })
+    expect(answered.errors).toBeUndefined()
+
+    const members = await getKysely()
+      .selectFrom('MeetingMember')
+      .select('userId')
+      .where('meetingId', '=', meeting.id)
+      .execute()
+    expect(members).toEqual([{userId}])
+  }
+})
+
 test('a recurring standup inherits the series template and skips an inactive one', async () => {
   const pg = getKysely()
   const {userId, teamId, cookie} = await signUp()

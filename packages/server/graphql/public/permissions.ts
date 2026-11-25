@@ -3,6 +3,7 @@ import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasScope} from './rules/hasScope'
 import {hasSearchTypeScope} from './rules/hasSearchTypeScope'
 import {hasTokenAudience} from './rules/hasTokenAudience'
 import {hasUnrestrictedGrant} from './rules/hasUnrestrictedGrant'
@@ -637,6 +638,11 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   PinnedReport: {
     report: rateLimit({perMinute: 120, perHour: 3000})
+  },
+  // A comment is reached through meetings, threads, replies & notifications, so the scope guards the comment itself
+  Comment: {
+    '*': hasScope('comments:read'),
+    id: allow
   },
   RetroReflectionGroup: {
     smartTitle: isSuperUser,

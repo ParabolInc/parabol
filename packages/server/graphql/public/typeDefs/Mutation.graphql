@@ -2333,6 +2333,7 @@ type Mutation {
   1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
   2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
   3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
+  4. When the meeting is recurring and recurrenceRule is left out, only the name changes
   """
   updateRecurrenceSettings(
     """
@@ -2346,7 +2347,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format
+    The recurrence rule for the meeting series in RRULE format; null stops a recurring meeting, and
+    leaving it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateRecurrenceSettingsPayload! @scope(name: MEETINGS_WRITE)
@@ -2357,6 +2359,7 @@ type Mutation {
   rather than from inside a meeting.
   - Pass a non-null rrule to update the recurrence (also restarts a cancelled series)
   - Pass null rrule to cancel the series
+  - Leave rrule out to change only the name
   """
   updateMeetingSeries(
     """
@@ -2370,7 +2373,8 @@ type Mutation {
     name: String
 
     """
-    The recurrence rule for the meeting series in RRULE format; null cancels the series
+    The recurrence rule for the meeting series in RRULE format; null cancels the series, and leaving
+    it out keeps the current recurrence
     """
     rrule: RRule
   ): UpdateMeetingSeriesPayload! @scope(name: MEETINGS_WRITE)
