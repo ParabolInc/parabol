@@ -10,6 +10,10 @@ const INVALID_DOCUMENT = 'The content is not a valid editor document'
 const INVALID_DOCUMENTS = {
   'an unknown node type': JSON.stringify({type: 'doc', content: [{type: 'bogus'}]}),
   'content that is not a list': JSON.stringify({type: 'doc', content: 'hello'}),
+  'text directly under the doc': JSON.stringify({
+    type: 'doc',
+    content: [{type: 'text', text: 'x'}]
+  }),
   'a top node that is not a doc': JSON.stringify({
     type: 'paragraph',
     content: [{type: 'text', text: 'x'}]
@@ -466,6 +470,32 @@ test('createTask takes TipTap JSON, and no content at all as an empty task', asy
     .where('id', '=', withoutContent.data.createTask.task.id)
     .executeTakeFirstOrThrow()
   expect(stored.content).toEqual(EMPTY_PARAGRAPH)
+})
+
+test('createTask still takes a paragraph nested in a paragraph, as deployed clients send for archived tasks', async () => {
+  const owner = await signUp()
+  const nested = JSON.stringify({
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {type: 'text', text: 'Fix it'},
+          {
+            type: 'paragraph',
+            content: [
+              {type: 'taskTag', attrs: {id: 'archived', label: null, mentionSuggestionChar: '@'}}
+            ]
+          }
+        ]
+      }
+    ]
+  })
+
+  const res = await createTask(owner, nested)
+
+  expect(res.errors).toBeUndefined()
+  expect(res.data.createTask.task.plaintextContent).toContain('Fix it')
 })
 
 test('updateTask refuses markdown and keeps the task as it was', async () => {

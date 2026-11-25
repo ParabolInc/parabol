@@ -1,4 +1,5 @@
 import {getSchema, type JSONContent} from '@tiptap/core'
+import type {Node} from '@tiptap/pm/model'
 import {GraphQLError} from 'graphql'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
 import {stripUnsafeLinks} from './stripUnsafeLinks'
@@ -13,8 +14,21 @@ const badInput = (message: string) =>
 const invalidDocument = (reason: string) =>
   badInput(`The content is not a valid editor document: ${reason}`)
 
-const hasNoBlocks = ({content}: JSONContent) =>
-  content === undefined || (Array.isArray(content) && content.length === 0)
+const assertKnownNodes = (doc: JSONContent) => {
+  let root: Node
+  try {
+    root = schema.nodeFromJSON(doc)
+  } catch (error) {
+    throw invalidDocument(error instanceof Error ? error.message : String(error))
+  }
+  root.forEach((child) => {
+    if (!child.type.isBlock) {
+      throw invalidDocument(
+        `${child.type.name} is not a block, so it can't sit directly under the doc`
+      )
+    }
+  })
+}
 
 export const parseEditorDoc = (contentStr: string) => {
   let doc: JSONContent
@@ -26,13 +40,7 @@ export const parseEditorDoc = (contentStr: string) => {
     )
   }
   if (doc?.type !== 'doc') throw invalidDocument('the top node must be a doc')
-  if (!hasNoBlocks(doc)) {
-    try {
-      schema.nodeFromJSON(doc).check()
-    } catch (error) {
-      throw invalidDocument(error instanceof Error ? error.message : String(error))
-    }
-  }
+  assertKnownNodes(doc)
   return stripUnsafeLinks(doc)
 }
 

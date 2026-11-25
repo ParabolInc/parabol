@@ -109,7 +109,7 @@ test.each([
   [
     'text straight under the doc',
     '{"type":"doc","content":[{"type":"text","text":"x"}]}',
-    'Invalid content for node doc'
+    'text is not a block'
   ],
   [
     'an unknown mark',
@@ -175,6 +175,27 @@ test.each([
     }
   ]
 ])('takes the editor document for %s', (_label, doc) => {
+  expect(convertToTipTap(JSON.stringify(doc))).toEqual(doc)
+})
+
+test('still takes a paragraph nested in a paragraph, the shape deployed clients send for archived tasks', () => {
+  const doc = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {type: 'text', text: 'Fix it'},
+          {
+            type: 'paragraph',
+            content: [
+              {type: 'taskTag', attrs: {id: 'archived', label: null, mentionSuggestionChar: '@'}}
+            ]
+          }
+        ]
+      }
+    ]
+  }
   expect(convertToTipTap(JSON.stringify(doc))).toEqual(doc)
 })
 
