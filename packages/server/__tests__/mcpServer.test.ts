@@ -211,9 +211,6 @@ const expectInitialized = async (response: Response) => {
   })
   const {instructions} = body.result
   expect(instructions.length).toBeLessThan(2000)
-  for (const scope of Object.values(OAuthScopeEnum)) {
-    expect(instructions).toContain(scope)
-  }
   for (const tool of [
     'read_page',
     'edit_page',

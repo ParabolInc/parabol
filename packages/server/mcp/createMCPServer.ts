@@ -6,6 +6,7 @@ import mcpInstructions from './mcpInstructions'
 import operationToolEntries from './operationToolEntries'
 import registerTools from './registerTools'
 import addReflection from './tools/addReflection'
+import createRetroTemplate from './tools/createRetroTemplate'
 import createTask from './tools/createTask'
 import graphqlMutate from './tools/graphqlMutate'
 import graphqlQuery from './tools/graphqlQuery'
@@ -18,6 +19,7 @@ const typescriptTools: MCPToolEntry[] = [
   updateTask,
   addReflection,
   updateReflection,
+  createRetroTemplate,
   uploadImage,
   graphqlQuery,
   graphqlMutate
