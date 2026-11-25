@@ -1,9 +1,10 @@
 import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
-import {Component, type ReactNode, useState} from 'react'
+import {Component, type ReactNode, useLayoutEffect} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {RelayEnvironmentProvider} from 'react-relay'
 import {
+  commitLocalUpdate,
   createOperationDescriptor,
   Environment,
   getRequest,
@@ -66,7 +67,7 @@ const stage = (id: string, typename: string) => ({
   isNavigableByFacilitator: true
 })
 
-const retroPayload = (meetingId: string) => ({
+const retroPayload = (meetingId: string, extraPhases: object[] = []) => ({
   viewer: {
     __typename: 'User',
     id: 'viewer1',
@@ -94,7 +95,8 @@ const retroPayload = (meetingId: string) => ({
           id: `${meetingId}:reflect`,
           phaseType: 'reflect',
           stages: [stage(`${meetingId}:reflect:1`, 'GenericMeetingStage')]
-        }
+        },
+        ...extraPhases
       ]
     }
   }
@@ -109,9 +111,9 @@ const atmosphere = Object.assign(
   {viewerId: 'viewer1'}
 )
 
-const loadMeeting = (meetingId: string) => {
+const loadMeeting = (meetingId: string, extraPhases?: object[]) => {
   const operation = createOperationDescriptor(meetingQuery, {meetingId})
-  atmosphere.commitPayload(operation, retroPayload(meetingId))
+  atmosphere.commitPayload(operation, retroPayload(meetingId, extraPhases))
   atmosphere.retain(operation)
   const {viewer} = atmosphere.lookup(operation.fragment).data as {
     viewer: {meeting: {RetroMeeting_meeting: RetroMeeting_meeting$key}}
@@ -134,21 +136,28 @@ const tick = () => new Promise((resolve) => setTimeout(resolve, 10))
 let root: Root
 let container: HTMLElement
 
-let replaceMeeting: (meetingRef: RetroMeeting_meeting$key) => void = () => {}
-const ReplaceableRetroMeeting = (props: {meetingRef: RetroMeeting_meeting$key}) => {
-  const [meetingRef, setMeetingRef] = useState(props.meetingRef)
-  replaceMeeting = setMeetingRef
-  return <RetroMeeting meeting={meetingRef} />
+// Another member joining writes their check-in stage once the retro has rendered, before its effects run
+const TeammateJoinsBeforeEffects = (props: {meetingId: string}) => {
+  const {meetingId} = props
+  useLayoutEffect(() => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const checkInPhase = store.get(`${meetingId}:checkin`)!
+      const {__typename, ...fields} = stage(`${meetingId}:checkin:2`, 'CheckInStage')
+      const teammateStage = store.create(fields.id, __typename)
+      Object.entries(fields).forEach(([key, value]) => teammateStage.setValue(value, key))
+      checkInPhase.setLinkedRecords(
+        [...checkInPhase.getLinkedRecords('stages')!, teammateStage],
+        'stages'
+      )
+    })
+  }, [])
+  return null
 }
 
-const renderMeeting = (meetingRef: RetroMeeting_meeting$key) => {
+const renderMeeting = (meeting: ReactNode) => {
   const router = createTestRouter({
     routes: {
-      '/meet/$meetingId/$': (
-        <CrashBoundary>
-          <ReplaceableRetroMeeting meetingRef={meetingRef} />
-        </CrashBoundary>
-      )
+      '/meet/$meetingId/$': <CrashBoundary>{meeting}</CrashBoundary>
     }
   })
   root.render(
@@ -192,21 +201,35 @@ afterEach(() => {
   jest.restoreAllMocks()
 })
 
-test('a retro that has no phase to show reports its local stage and stages', async () => {
+test('a retro that changes before its effects run still opens on its phase', async () => {
   happyWindow.history.replaceState(null, '', '/meet/meeting1/checkin/1')
-  renderMeeting(loadMeeting('meeting1'))
+  renderMeeting(
+    <>
+      <RetroMeeting meeting={loadMeeting('meeting1')} />
+      <TeammateJoinsBeforeEffects meetingId='meeting1' />
+    </>
+  )
   expect(await waitForRender()).toBe('checkin phase')
   expect(reportClientError).not.toHaveBeenCalled()
+})
 
-  // a second meeting given to the same RetroMeeting never had its local stage set
-  replaceMeeting(loadMeeting('meeting2'))
-  await tick()
+test('a retro on a phase it has no component for reports its local stage and stages', async () => {
+  happyWindow.history.replaceState(null, '', '/meet/meeting2/firstcall')
+  const firstCallPhase = {
+    __typename: 'GenericMeetingPhase',
+    id: 'meeting2:firstcall',
+    phaseType: 'firstcall',
+    stages: [stage('meeting2:firstcall:1', 'GenericMeetingStage')]
+  }
+  renderMeeting(<RetroMeeting meeting={loadMeeting('meeting2', [firstCallPhase])} />)
+  expect(await waitForRender()).toMatch(/^crashed/)
   expect(reportClientError).toHaveBeenCalledWith(
     expect.objectContaining({
       name: 'MissingMeetingPhase',
       message:
-        'RetroMeeting found no phase for meeting meeting2: localPhase unset of type unset, localStage unset, ' +
-        'facilitatorStage meeting2:checkin:1 (in the phases), 2 phases, 2 stages'
+        'RetroMeeting found no phase for meeting meeting2: localPhase meeting2:firstcall of type firstcall, ' +
+        'localStage meeting2:firstcall:1 (in the phases), facilitatorStage meeting2:checkin:1 (in the phases), ' +
+        '3 phases, 3 stages'
     })
   )
 })

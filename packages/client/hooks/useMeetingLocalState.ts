@@ -11,13 +11,17 @@ const useMeetingLocalState = (meetingRef: any) => {
       fragment useMeetingLocalState_meeting on NewMeeting @inline {
         ...useInitialSafeRoute_meeting
         ...useUpdatedSafeRoute_meeting
+        localPhase {
+          id
+        }
       }
     `,
     meetingRef
   )
   useInitialSafeRoute(setSafeRoute, meeting)
   useUpdatedSafeRoute(setSafeRoute, meeting)
-  return safeRoute
+  // If the store changed before the effects that set the local phase ran, Relay delivers that phase a render later
+  return safeRoute && !!meeting.localPhase
 }
 
 export default useMeetingLocalState
