@@ -509,7 +509,6 @@ const TYPESCRIPT_TOOLS = [
   'answer_team_health',
   'add_poker_stories',
   'vote_poker_story',
-  'create_poker_scale',
   'end_meeting',
   'add_comment',
   'upload_image',

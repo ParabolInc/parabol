@@ -10,7 +10,6 @@ import addPokerStories from './tools/addPokerStories'
 import addReflection from './tools/addReflection'
 import answerStandup from './tools/answerStandup'
 import answerTeamHealth from './tools/answerTeamHealth'
-import createPokerScale from './tools/createPokerScale'
 import createRetroTemplate from './tools/createRetroTemplate'
 import createStandupTemplate from './tools/createStandupTemplate'
 import createTask from './tools/createTask'
@@ -35,7 +34,6 @@ const typescriptTools: MCPToolEntry[] = [
   answerTeamHealth,
   addPokerStories,
   votePokerStory,
-  createPokerScale,
   endMeeting,
   addComment,
   uploadImage,

@@ -9,7 +9,6 @@ import {
   expectToolErrorCode,
   getChargedCost,
   isSpectating,
-  leaveHourlyQueryBudget,
   signUpWithoutAI,
   waitForSummaryText
 } from './mcpClient'
@@ -20,20 +19,6 @@ afterAll(async () => {
 
 const POKER_SCOPES = ['USERS_READ', 'MEETINGS_READ', 'MEETINGS_WRITE', 'TASKS_READ', 'TASKS_WRITE']
 const FIBONACCI_LABELS = ['1', '2', '3', '5', '8', '13', '21', '34', '?', 'Pass']
-const PALETTE_COLORS = [
-  '#FD6157',
-  '#FE975D',
-  '#FFCC63',
-  '#C4CF66',
-  '#73A153',
-  '#66BC8C',
-  '#55C0CF',
-  '#329AE5',
-  '#7272E5',
-  '#A06BD6',
-  '#DB70DB',
-  '#ED4C86'
-]
 
 const COPY_SCALE = `
   mutation CopyScale($parentScaleId: ID!, $teamId: ID!) {
@@ -70,29 +55,6 @@ const UPDATE_SCALE_VALUE = `
   }
 `
 
-const ADD_POKER_TEMPLATE = `
-  mutation AddPokerTemplate($teamId: ID!) {
-    addPokerTemplate(teamId: $teamId) {
-      pokerTemplate {
-        id
-        dimensions {
-          id
-        }
-      }
-    }
-  }
-`
-
-const SET_DIMENSION_SCALE = `
-  mutation SetDimensionScale($dimensionId: ID!, $scaleId: ID!) {
-    updatePokerTemplateDimensionScale(dimensionId: $dimensionId, scaleId: $scaleId) {
-      dimension {
-        id
-      }
-    }
-  }
-`
-
 type NewStage = {
   id: string
   taskId: string
@@ -102,8 +64,6 @@ type NewStage = {
 
 const getStages = <Stage>(meeting: {phases: {stages?: Stage[]}[]}) =>
   meeting.phases.flatMap(({stages}) => stages ?? [])
-
-const getLabels = (values: {label: string}[]) => values.map(({label}) => label)
 
 const getPreferredName = async (userId: string) => {
   const {preferredName} = await getKysely()
@@ -339,102 +299,6 @@ test('set_poker_final_score refuses a dimension the meeting does not estimate an
     finalScore: '12345'
   })
   expect(expectToolErrorCode(tooLong, 'BAD_USER_INPUT')).toBe('Estimate score is too long')
-})
-
-test('create_poker_scale makes a scale with palette colours that a team poker template can vote with', async () => {
-  const {cookie, teamId} = await signUpWithoutAI()
-  const token = await createPersonalAccessToken(
-    [...POKER_SCOPES, 'TEMPLATES_WRITE', 'TEAMS_WRITE'],
-    {cookie}
-  )
-  const labels = Array.from({length: 13}, (_, idx) => String(idx + 1))
-  const {scale} = await callToolForData(token, 'create_poker_scale', {
-    teamId,
-    name: 'Effort',
-    values: labels.map((label) => ({label}))
-  })
-  expect(scale).toEqual({id: expect.any(String), name: 'Effort', values: expect.any(Array)})
-  expect(getLabels(scale.values)).toEqual([...labels, '?', 'Pass'])
-  expect(
-    scale.values.slice(0, labels.length).map(({color}: {color: string}) => color.toUpperCase())
-  ).toEqual([...PALETTE_COLORS, PALETTE_COLORS[0]])
-  for (const {color} of scale.values) expect(PALETTE_COLORS).toContain(color.toUpperCase())
-
-  const template = await callToolForData(token, 'graphql_mutate', {
-    query: ADD_POKER_TEMPLATE,
-    variables: {teamId}
-  })
-  const {id: templateId, dimensions} = template.addPokerTemplate.pokerTemplate
-  await callToolForData(token, 'graphql_mutate', {
-    query: SET_DIMENSION_SCALE,
-    variables: {dimensionId: dimensions[0].id, scaleId: scale.id}
-  })
-  await callToolForData(token, 'select_template', {templateId, teamId})
-  const started = await callToolForData(token, 'start_sprint_poker', {teamId})
-  const meetingId = started.startSprintPoker.meeting.id
-  const taskIds = await createTasks(token, teamId, ['Build the login page'])
-  const added = await callToolForData(token, 'add_poker_stories', {meetingId, taskIds})
-  const [stage]: NewStage[] = added.updatePokerScope.newStages
-  expect(getLabels(stage!.dimensionRef.scale.values)).toEqual([...labels, '?', 'Pass'])
-  await callToolForData(token, 'vote_poker_story', {meetingId, stageId: stage!.id, label: '13'})
-})
-
-test('create_poker_scale refuses a name another scale on the team has and removes the scale it made, and refuses the ? and Pass cards every scale has', async () => {
-  const {cookie, teamId} = await signUpWithoutAI()
-  const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
-  await callToolForData(token, 'create_poker_scale', {
-    teamId,
-    name: 'Risk',
-    values: [{label: 'Lo'}]
-  })
-  const duplicate = await callTool(token, 'create_poker_scale', {
-    teamId,
-    name: 'Risk',
-    values: [{label: 'Hi'}]
-  })
-  expect(expectToolErrorCode(duplicate, 'CONFLICT')).toBe('Duplicate name scale')
-  const scales = await getKysely()
-    .selectFrom('TemplateScale')
-    .select('name')
-    .where('teamId', '=', teamId)
-    .where('removedAt', 'is', null)
-    .execute()
-  expect(scales).toEqual([{name: 'Risk'}])
-
-  const specialCard = await callTool(token, 'create_poker_scale', {
-    teamId,
-    name: 'Size',
-    values: [{label: 'S'}, {label: '?'}]
-  })
-  expectToolErrorCode(specialCard, 'BAD_USER_INPUT')
-})
-
-test('create_poker_scale names a scale it could not remove when a step fails part way', async () => {
-  const {userId, cookie, teamId} = await signUpWithoutAI()
-  const token = await createPersonalAccessToken(['TEMPLATES_WRITE'], {cookie})
-  const before = await getChargedCost(userId)
-  await callToolForData(token, 'create_poker_scale', {
-    teamId,
-    name: 'Risk',
-    values: [{label: 'Lo'}]
-  })
-  const oneLabelCost = (await getChargedCost(userId)) - before
-  await leaveHourlyQueryBudget(userId, oneLabelCost - 1)
-
-  const result = await callTool(token, 'create_poker_scale', {
-    teamId,
-    name: 'Size',
-    values: [{label: 'S'}, {label: 'L'}]
-  })
-  expectToolErrorCode(result, 'TOO_MANY_REQUESTS')
-  const [error] = JSON.parse(result.content[0]!.text)
-  expect(error.unfinishedScaleId).toEqual(expect.any(String))
-  const unfinished = await getKysely()
-    .selectFrom('TemplateScale')
-    .select(['name', 'removedAt'])
-    .where('id', '=', error.unfinishedScaleId)
-    .executeTakeFirstOrThrow()
-  expect(unfinished).toEqual({name: 'Size', removedAt: null})
 })
 
 test("a sprint poker meeting an agent runs, and a teammate voting in it, fit a starter user's query budget", async () => {
