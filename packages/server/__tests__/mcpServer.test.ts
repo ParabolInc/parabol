@@ -9,6 +9,7 @@ import {
   callToolForData,
   createPersonalAccessToken,
   expectToolError,
+  expectToolErrorCode,
   listTools,
   MCP_URL,
   PROTOCOL_VERSION,
@@ -596,7 +597,71 @@ test('create_task and update_task with only tasks:write write the task and retur
 test('update_task with nothing to change is refused', async () => {
   const token = await createPersonalAccessToken(['TASKS_WRITE'])
   const result = await callTool(token, 'update_task', {taskId: 'task-1'})
-  expectToolError(result, 'Pass content, status or userId')
+  expectToolError(result, 'Pass content, status, userId or teamId')
+})
+
+const ADD_TEAM = `
+  mutation AddTeam($newTeam: NewTeamInput!) {
+    addTeam(newTeam: $newTeam) {
+      team {
+        id
+      }
+    }
+  }
+`
+
+const signUpOnTwoTeams = async () => {
+  const {cookie, teamId, orgId} = await signUp()
+  const added = await sendPublic({
+    query: ADD_TEAM,
+    variables: {newTeam: {name: 'Second team', orgId, isPublic: false}},
+    cookie
+  })
+  expect(added.errors).toBeUndefined()
+  const token = await createPersonalAccessToken(['TASKS_WRITE', 'TASKS_READ', 'USERS_READ'], {
+    cookie
+  })
+  return {cookie, token, teamId, secondTeamId: added.data.addTeam.team.id as string}
+}
+
+test('update_task moves a task to another team the caller is on, alone or with other changes', async () => {
+  const {token, teamId, secondTeamId} = await signUpOnTwoTeams()
+  const created = await callToolForData(token, 'create_task', {teamId, content: 'Move me'})
+  const taskId = created.createTask.task.id as string
+
+  const moved = await callToolForData(token, 'update_task', {taskId, teamId: secondTeamId})
+  expect(moved.changeTaskTeam.task).toMatchObject({id: taskId, teamId: secondTeamId})
+
+  const movedBack = await callToolForData(token, 'update_task', {taskId, teamId, status: 'done'})
+  expect(movedBack.updateTask.task).toMatchObject({id: taskId, teamId, status: 'done'})
+})
+
+test('update_task says where it moved a task when the changes after the move fail', async () => {
+  const {token, teamId, secondTeamId} = await signUpOnTwoTeams()
+  const stranger = await signUp()
+  const created = await callToolForData(token, 'create_task', {teamId, content: 'Half done'})
+  const taskId = created.createTask.task.id as string
+
+  const result = await callTool(token, 'update_task', {
+    taskId,
+    teamId: secondTeamId,
+    userId: stranger.userId
+  })
+  expect(result.isError).toBe(true)
+  const [error] = JSON.parse(result.content[0]!.text)
+  expect(error.movedToTeamId).toBe(secondTeamId)
+})
+
+test("update_task refuses a team the caller isn't on and leaves the task where it was", async () => {
+  const {token, teamId} = await signUpOnTwoTeams()
+  const stranger = await signUp()
+  const created = await callToolForData(token, 'create_task', {teamId, content: 'Stay put'})
+  const taskId = created.createTask.task.id as string
+
+  const refused = await callTool(token, 'update_task', {taskId, teamId: stranger.teamId})
+  expectToolErrorCode(refused, 'FORBIDDEN')
+  const listed = await callToolForData(token, 'list_tasks', {teamIds: [teamId]})
+  expect(listed.viewer.tasks.edges.map(({node}: {node: {id: string}}) => node.id)).toContain(taskId)
 })
 
 test('create_task advertises only the fields without a default as required', async () => {
