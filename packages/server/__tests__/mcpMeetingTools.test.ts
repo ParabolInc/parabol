@@ -255,6 +255,7 @@ const startPokerWithStory = async () => {
 test('get_standup shows the prompts, each member’s responses with their discussion, and the tasks', async () => {
   const {cookie, teamId, userId} = await signUpWithoutAI()
   const token = await createPersonalAccessToken([...READ_SCOPES, 'COMMENTS_READ'], {cookie})
+  const silent = await addTeammate(teamId, READ_SCOPES)
   const started = await send(START_RECURRING_STANDUP, {teamId, rrule: immediateRrule()}, cookie)
   const {id: meetingId, meetingSeriesId, prompts} = started.startTeamPrompt.meeting
   const prompt = prompts[0]
@@ -273,24 +274,31 @@ test('get_standup shows the prompts, each member’s responses with their discus
   expect(viewer.meeting).toMatchObject({id: meetingId, meetingType: 'teamPrompt', meetingSeriesId})
   expect(meetingSeriesId).toEqual(expect.any(String))
   expect(viewer.meeting.prompts).toEqual(prompts)
-  expect(getStages(viewer.meeting)).toEqual([
-    {
-      discussionId: expect.any(String),
-      responses: [
-        {
-          promptId: prompt.id,
-          userId,
-          user: {preferredName: await getPreferredName(cookie)},
-          plaintextContent: 'Shipped the billing fix'
-        }
-      ]
-    }
-  ])
+  const preferredName = await getPreferredName(cookie)
+  const stages = getStages<{discussionId: string; teamMember: {userId: string}}>(viewer.meeting)
+  expect(stages).toHaveLength(2)
+  expect(stages).toEqual(
+    expect.arrayContaining([
+      {
+        discussionId: expect.any(String),
+        teamMember: {userId, user: {preferredName}},
+        responses: [{promptId: prompt.id, plaintextContent: 'Shipped the billing fix'}]
+      },
+      {
+        discussionId: expect.any(String),
+        teamMember: {
+          userId: silent.userId,
+          user: {preferredName: await getPreferredName(silent.cookie)}
+        },
+        responses: []
+      }
+    ])
+  )
   expect(viewer.meeting.tasks).toEqual([
     expect.objectContaining({id: created.createTask.task.id, plaintextContent: 'Write notes'})
   ])
 
-  const {discussionId} = getStages<{discussionId: string}>(viewer.meeting)[0]!
+  const {discussionId} = stages.find(({teamMember}) => teamMember.userId === userId)!
   const commented = await send(
     ADD_COMMENT,
     {comment: {content: paragraph('Nice fix'), discussionId, threadSortOrder: 0}},
@@ -620,14 +628,10 @@ test('an agent builds a standup template, answers a standup made with it in mark
   expect(getStages(viewer.meeting)).toEqual([
     {
       discussionId: expect.any(String),
+      teamMember: {userId, user: {preferredName}},
       responses: expect.arrayContaining([
-        {
-          promptId: shipped.id,
-          userId,
-          user: {preferredName},
-          plaintextContent: expect.stringContaining('the billing fix')
-        },
-        {promptId: blocked.id, userId, user: {preferredName}, plaintextContent: 'Nothing'}
+        {promptId: shipped.id, plaintextContent: expect.stringContaining('the billing fix')},
+        {promptId: blocked.id, plaintextContent: 'Nothing'}
       ])
     }
   ])
