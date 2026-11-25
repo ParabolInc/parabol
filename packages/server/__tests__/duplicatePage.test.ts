@@ -48,6 +48,16 @@ const SHARE_PUBLIC_LINK = `
   }
 `
 
+const OPEN_PAGE = `
+  query OpenPage($pageId: ID!) {
+    public {
+      page(pageId: $pageId) {
+        id
+      }
+    }
+  }
+`
+
 const createPage = async (cookie: string, teamId?: string) => {
   const res = await sendPublic({query: CREATE_PAGE, variables: {teamId}, cookie})
   return res.data.createPage.page.id as string
@@ -219,17 +229,12 @@ test('a token with no grant limits still copies a private page next to the origi
   expect(res.data.duplicatePage.page.title).toMatch(/^Copy of /)
 })
 
-const subPageRefusal = {
-  message: "An access token given specific pages can't create sub-pages",
-  extensions: {code: 'FORBIDDEN'}
-}
-
 test.each([
-  ['next to the original, under its editable parent', false, false],
+  ['next to the original, under its granted parent', false, false],
   ['into a page it can edit', true, false],
   ['next to the original with a team grant as well', false, true]
 ] as const)(
-  'a token given specific pages cannot copy a page %s',
+  'a token given specific pages copies a page nested under them %s and reads the copy',
   async (_name, intoDestination, withTeamGrant) => {
     const {cookie, userId} = await signUp()
     const [{id: teamId}] = await getUserTeams(userId)
@@ -240,16 +245,19 @@ test.each([
       cookie,
       grantedOrgIds: [],
       grantedTeamIds: withTeamGrant ? [teamId] : [],
-      grantedPageIds: [childId, parentId, destinationId]
+      grantedPageIds: [parentId, destinationId]
     })
-    const before = await countPages(userId)
     const res = await duplicateAs(
       {bearerToken},
       childId,
       intoDestination ? destinationId : undefined
     )
-    expect(res.errors[0]).toMatchObject(subPageRefusal)
-    expect(await countPages(userId)).toBe(before)
+    expect(res.errors).toBeUndefined()
+    const copy = res.data.duplicatePage.page
+    expect(copy.parentPageId).toBe(intoDestination ? destinationId : parentId)
+    const opened = await sendPublic({query: OPEN_PAGE, variables: {pageId: copy.id}, bearerToken})
+    expect(opened.errors).toBeUndefined()
+    expect(opened.data.public.page.id).toBe(copy.id)
   }
 )
 

@@ -233,7 +233,7 @@ test('a token limited to an org creates sub-pages under its org pages', async ()
   expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(teamPageId)
 })
 
-test('a token limited to pages is refused sub-pages, even under a page it can edit', async () => {
+test('a token limited to pages creates sub-pages under a page it can edit and reads them', async () => {
   const [owner, member] = await Promise.all([signUp(), signUp()])
   const editableId = await createPageId({cookie: member.cookie})
   const viewOnlyId = await createPageId({cookie: owner.cookie})
@@ -249,12 +249,12 @@ test('a token limited to pages is refused sub-pages, even under a page it can ed
     grantedPageIds: [editableId, viewOnlyId]
   })
 
+  const subPageId = await createPageId({bearerToken}, {parentPageId: editableId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(editableId)
+  const grandchildId = await createPageId({bearerToken}, {parentPageId: subPageId})
+  expect((await readPage({bearerToken}, grandchildId)).parentPageId).toBe(subPageId)
+
   const before = await countPages(member.userId)
-  const underEditable = await createPage({bearerToken}, {parentPageId: editableId})
-  expect(underEditable.errors?.[0]).toMatchObject({
-    message: "An access token given specific pages can't create sub-pages",
-    extensions: {code: 'FORBIDDEN'}
-  })
   const underViewOnly = await createPage({bearerToken}, {parentPageId: viewOnlyId})
   expect(underViewOnly.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
   const privatePage = await createPage({bearerToken})
@@ -262,7 +262,7 @@ test('a token limited to pages is refused sub-pages, even under a page it can ed
   expect(await countPages(member.userId)).toBe(before)
 })
 
-test('a token given both a team and a page is refused sub-pages with the same message', async () => {
+test('a token given both a team and a page creates sub-pages under the page', async () => {
   const {cookie, userId} = await signUp()
   const [{id: teamId}] = await getUserTeams(userId)
   const editableId = await createPageId({cookie})
@@ -272,13 +272,10 @@ test('a token given both a team and a page is refused sub-pages with the same me
     grantedPageIds: [editableId]
   })
 
-  const before = await countPages(userId)
-  const res = await createPage({bearerToken}, {parentPageId: editableId})
-  expect(res.errors?.[0]).toMatchObject({
-    message: "An access token given specific pages can't create sub-pages",
-    extensions: {code: 'FORBIDDEN'}
-  })
-  expect(await countPages(userId)).toBe(before)
+  const subPageId = await createPageId({bearerToken}, {parentPageId: editableId})
+  expect((await readPage({bearerToken}, subPageId)).parentPageId).toBe(editableId)
+  const privatePage = await createPage({bearerToken})
+  expect(privatePage.errors?.[0]).toMatchObject(limitedToken)
 })
 
 test.each([

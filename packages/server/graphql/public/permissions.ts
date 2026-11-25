@@ -1,7 +1,6 @@
 import {allow, and, not, or} from 'graphql-shield'
 import {redactUnless, type ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
-import {hasNoPageGrantForParent} from './rules/hasNoPageGrantForParent'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasReachableDuplicatePlacement} from './rules/hasReachableDuplicatePlacement'
@@ -182,8 +181,7 @@ const permissionMap: PermissionMap<Resolvers> = {
         ),
         isTeamMember<'Mutation.createPage'>('args.teamId')
       ),
-      hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor'),
-      hasNoPageGrantForParent<'Mutation.createPage'>('args.parentPageId')
+      hasPageAccess<'Mutation.createPage'>('args.parentPageId', 'editor')
     ),
     duplicatePage: and(
       isAuthenticated,

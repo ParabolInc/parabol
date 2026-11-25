@@ -131,7 +131,7 @@ type Mutation {
   ): SetNotificationStatusPayload! @scope(name: USERS_WRITE)
 
   """
-  Create an empty page: a personal page, a team page, or a page inside another page. A personal page needs an access token that isn't limited to specific organizations, teams or pages. A token limited to organizations or teams can create a page inside a page it can edit; a token given specific pages can't create sub-pages.
+  Create an empty page: a personal page, a team page, or a page inside another page. A personal page needs an access token that isn't limited to specific organizations, teams or pages. Any token can create a page inside a page it can edit, including a token given specific pages, which then reaches the new page too.
   """
   createPage(
     """
@@ -144,7 +144,7 @@ type Mutation {
     parentPageId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
-  Copy a page and all of its sub-pages. An access token limited to specific organizations, teams or pages can't make a private copy: it copies a team page, or passes parentPageId for a page it can edit. A token given specific pages can't make a copy inside another page.
+  Copy a page and all of its sub-pages. Any access token can put the copy inside a page it can edit, by passing parentPageId or by copying a sub-page next to the original. A token limited to specific organizations, teams or pages can't make a private copy: it copies a team page into the team, or puts the copy inside a page it can edit.
   """
   duplicatePage(
     "The page to copy"
@@ -173,7 +173,7 @@ type Mutation {
     """
     grantedTeamIds: [ID!]
     """
-    Restrict token to specific pages; null means all pages the user can access
+    Restrict token to specific pages and the pages nested under them; null means all pages the user can access
     """
     grantedPageIds: [ID!]
     """
@@ -234,7 +234,7 @@ type Mutation {
     """
     grantedTeamIds: [ID!]
     """
-    Restrict the application to specific pages; null means all pages the viewer can access
+    Restrict the application to specific pages and the pages nested under them; null means all pages the viewer can access
     """
     grantedPageIds: [ID!]
   ): CreateOAuthAPICodePayload! @scope(name: USERS_WRITE)
@@ -913,7 +913,7 @@ type Mutation {
     """
     grantedTeamIds: [ID!]
     """
-    Restrict token to specific pages; null means all pages the user can access
+    Restrict token to specific pages and the pages nested under them; null means all pages the user can access
     """
     grantedPageIds: [ID!]
     """

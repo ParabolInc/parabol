@@ -5,7 +5,6 @@ import {CipherId} from '../../../utils/CipherId'
 import type {RuleContext} from '../../graphql'
 import {decideDuplicatePlacement} from '../mutations/helpers/duplicatePage/getDuplicatePlacement'
 import type {MutationDuplicatePageArgs} from '../resolverTypes'
-import {getPageGrantSubPageError} from './hasNoPageGrantForParent'
 
 export const hasReachableDuplicatePlacement = rule('hasReachableDuplicatePlacement', {
   cache: 'strict'
@@ -36,6 +35,6 @@ export const hasReachableDuplicatePlacement = rule('hasReachableDuplicatePlaceme
         {extensions: {code: 'FORBIDDEN'}}
       )
     }
-    return kind === 'parent' && resourceGrants.hasPageGrants() ? getPageGrantSubPageError() : true
+    return true
   }
 )
