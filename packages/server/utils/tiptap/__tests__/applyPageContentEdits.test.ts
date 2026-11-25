@@ -467,6 +467,41 @@ describe('applyPageContentEdits', () => {
     expect(await readPage(doc)).toBe(mixedPageBlocks.join('\n\n'))
   })
 
+  test('finds & < > as the read page writes them', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('Tom & Jerry')), paragraph(text('a < b')))
+    expect(
+      applyPageContentEdits(doc, [
+        {oldText: 'Tom & Jerry', newText: 'Tom & Spike'},
+        {oldText: 'a < b', newText: 'a > b'}
+      ])
+    ).toBeNull()
+    expect(await readPage(doc)).toBe('# Plan\n\nTom & Spike\n\na > b')
+  })
+
+  test('replaceAll never splits an escape', async () => {
+    const doc = makeDoc(
+      heading('Plan'),
+      paragraph(text('Tom & Jerry')),
+      paragraph(text('AT&T sells &copy; R&D')),
+      paragraph(text('&amp;'))
+    )
+    expect(
+      applyPageContentEdits(doc, [{oldText: '&', newText: 'and', replaceAll: true}])
+    ).toBeNull()
+    const read = await readPage(doc)
+    expect(read).toBe('# Plan\n\nTom and Jerry\n\nATandT sells &amp;copy; RandD\n\n&amp;amp;')
+    expect(read).not.toContain('andamp;')
+  })
+
+  test('refuses an oldText found only inside an escape', async () => {
+    const doc = makeDoc(heading('Plan'), paragraph(text('&copy; 2026')))
+    const before = Y.encodeStateAsUpdate(doc)
+    const error = applyPageContentEdits(doc, [{oldText: 'amp', newText: 'x'}])
+    expect(error?.code).toBe('CONFLICT')
+    expect(error?.message).toContain('&amp;')
+    expect(Y.encodeStateAsUpdate(doc)).toEqual(before)
+  })
+
   test('refuses an edit that adds an image Parabol does not host', () => {
     const doc = makePage()
     const before = Y.encodeStateAsUpdate(doc)

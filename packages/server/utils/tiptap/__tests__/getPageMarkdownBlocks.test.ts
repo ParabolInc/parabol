@@ -6,12 +6,17 @@ import type {DataLoaderWorker} from '../../../graphql/graphql'
 import {Logger} from '../../Logger'
 import {getPageContent} from '../getPageContent'
 import {getPageMarkdownBlocks} from '../getPageMarkdownBlocks'
+import {parsePageMarkdown} from '../parsePageMarkdown'
 
 jest.mock('../../../hocusPocus', () => ({
   redisHocusPocus: {handleEvent: async () => undefined}
 }))
 
-const text = (value: string): JSONContent => ({type: 'text', text: value})
+const text = (value: string, marks?: JSONContent['marks']): JSONContent => ({
+  type: 'text',
+  text: value,
+  ...(marks ? {marks} : {})
+})
 const paragraph = (...content: JSONContent[]): JSONContent => ({type: 'paragraph', content})
 const cell = (type: 'tableHeader' | 'tableCell', value: string): JSONContent => ({
   type,
@@ -51,6 +56,66 @@ describe('getPageMarkdownBlocks', () => {
     expect(blocks).toEqual(['Kept', ''])
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('bulletList'))
     warn.mockRestore()
+  })
+
+  test('writes & < > as typed where Markdown reads them as plain text', () => {
+    const blocks = getPageMarkdownBlocks([
+      paragraph(text('Tom & Jerry')),
+      paragraph(text('a < b > c')),
+      {type: 'heading', attrs: {level: 2}, content: [text('Q&A for R&D')]},
+      paragraph(text('AT&T', [{type: 'bold'}]), text(' rocks'))
+    ])
+    expect(blocks).toEqual(['Tom & Jerry', 'a < b > c', '## Q&A for R&D', '**AT&T** rocks'])
+  })
+
+  test('escapes & < > only where Markdown would read an entity, a tag or a quote', () => {
+    const blocks = getPageMarkdownBlocks([
+      paragraph(text('&copy; and &#39;')),
+      paragraph(text('<b>bold</b>')),
+      paragraph(text('> not a quote')),
+      paragraph(text('x_y*z [br] ~t~ `c`'))
+    ])
+    expect(blocks).toEqual([
+      '&amp;copy; and &amp;#39;',
+      '&lt;b>bold&lt;/b>',
+      '&gt; not a quote',
+      'x\\_y\\*z \\[br\\] \\~t\\~ \\`c\\`'
+    ])
+  })
+
+  test('keeps code as written', () => {
+    const blocks = getPageMarkdownBlocks([
+      paragraph(text('a &amp; <b>', [{type: 'code'}])),
+      {type: 'codeBlock', attrs: {language: null}, content: [text('a &amp; <b>')]}
+    ])
+    expect(blocks).toEqual(['`a &amp; <b>`', '```\na &amp; <b>\n```'])
+  })
+
+  const readBack = (...content: JSONContent[]) => {
+    const markdown = getPageMarkdownBlocks([paragraph(...content)]).join('\n\n')
+    const [block] = parsePageMarkdown(markdown, new Set())
+    return (block?.content ?? [])
+      .map((node) => (node.type === 'hardBreak' ? '\n' : node.text))
+      .join('')
+  }
+
+  test.each([
+    'Tom & Jerry',
+    'a < b > c',
+    '&copy; &amp; &#39; &#x27;',
+    '<b>bold</b> <https://x.test> <!-- note -->',
+    '> quote',
+    '  > indented quote',
+    'x_y*z [br] ~t~ `c` \\&amp;'
+  ])('%j reads back exactly', (value) => {
+    expect(readBack(text(value))).toBe(value)
+  })
+
+  test('reads back & < > exactly across a line break or a mark Markdown does not write', () => {
+    const textStyle = [{type: 'textStyle', attrs: {color: 'red'}}]
+    expect(readBack(text('a'), {type: 'hardBreak'}, text('> b'))).toBe('a\n> b')
+    expect(readBack(text('AT'), text('&', textStyle), text('amp;'))).toBe('AT&amp;')
+    expect(readBack(text('<', textStyle), text('b>'))).toBe('<b>')
   })
 })
 

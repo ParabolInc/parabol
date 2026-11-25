@@ -29,6 +29,7 @@ interface MatchGroup {
   lastIdx: number
   spanStart: number
   spanEnd: number
+  matchStarts: number[]
 }
 
 export const validatePageContentEdits = (edits: PageContentEditInput[]) => {
@@ -50,12 +51,25 @@ export const validatePageContentEdits = (edits: PageContentEditInput[]) => {
   }
 }
 
+const getOffsetsInsideEscapes = (text: string) =>
+  new Set(
+    [...text.matchAll(/&(?:amp|lt|gt);/g)].flatMap(({0: escape, index}) =>
+      Array.from({length: escape.length - 1}, (_, offset) => index + 1 + offset)
+    )
+  )
+
 const findMatchStarts = (text: string, search: string) => {
+  const insideEscapes = getOffsetsInsideEscapes(text)
   const starts: number[] = []
   let start = text.indexOf(search)
   while (start !== -1) {
-    starts.push(start)
-    start = text.indexOf(search, start + search.length)
+    const end = start + search.length
+    if (insideEscapes.has(start) || insideEscapes.has(end)) {
+      start = text.indexOf(search, start + 1)
+    } else {
+      starts.push(start)
+      start = text.indexOf(search, end)
+    }
   }
   return starts
 }
@@ -97,8 +111,9 @@ const groupMatches = (blocks: Block[], matchStarts: number[], matchLength: numbe
     if (previous && lastIdx >= firstIdx && firstIdx <= previous.lastIdx) {
       previous.lastIdx = Math.max(previous.lastIdx, lastIdx)
       previous.spanEnd = spanEnd
+      previous.matchStarts.push(spanStart)
     } else {
-      groups.push({firstIdx, lastIdx, spanStart, spanEnd})
+      groups.push({firstIdx, lastIdx, spanStart, spanEnd, matchStarts: [spanStart]})
     }
   }
   return {groups, blockStarts}
@@ -139,7 +154,7 @@ const rewriteGroup = (
   blocks: Block[],
   text: string,
   blockStarts: number[],
-  {firstIdx, lastIdx, spanStart, spanEnd}: MatchGroup,
+  {firstIdx, lastIdx, spanStart, spanEnd, matchStarts}: MatchGroup,
   {oldText, newText}: PageContentEditInput,
   canChangePageLinks: boolean,
   allowedImageSrcs: Set<string>
@@ -150,7 +165,11 @@ const rewriteGroup = (
     lastIdx >= firstIdx && lastBlock
       ? Math.max(spanEnd, blockStarts[lastIdx]! + lastBlock.markdown.length)
       : spanEnd
-  const replacement = text.slice(spanStart, spanEnd).split(oldText).join(newText)
+  const replacement = matchStarts
+    .map(
+      (start, idx) => newText + text.slice(start + oldText.length, matchStarts[idx + 1] ?? spanEnd)
+    )
+    .join('')
   // Blank lines at the edges are separators that joining the blocks adds back, not empty paragraphs
   const rangeMarkdown = (
     text.slice(rangeStart, spanStart) +
@@ -225,9 +244,11 @@ const applyEdit = (
   const text = blocks.map(({markdown}) => markdown).join(PAGE_BLOCK_SEPARATOR)
   const matchStarts = findMatchStarts(text, oldText)
   if (matchStarts.length === 0) {
-    const message = matchesIgnoringSpacing(text, oldText)
-      ? "oldText matches the page only if spacing is ignored, so copy it exactly from the page's markdown content"
-      : 'oldText was not found in the page. Read the page content again and retry'
+    const message = text.includes(oldText)
+      ? 'oldText matches the page only inside an escape such as &amp;, so include the whole escape'
+      : matchesIgnoringSpacing(text, oldText)
+        ? "oldText matches the page only if spacing is ignored, so copy it exactly from the page's markdown content"
+        : 'oldText was not found in the page. Read the page content again and retry'
     throw new GraphQLError(message, {extensions: {code: 'CONFLICT'}})
   }
   if (matchStarts.length > 1 && !replaceAll) {
