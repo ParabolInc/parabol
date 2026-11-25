@@ -4,6 +4,7 @@ import isScopeGranted from '../isScopeGranted'
 import markdownToTaskContent from '../markdownToTaskContent'
 import runGraphQL from '../runGraphQL'
 import taskStatusSchema from '../taskStatusSchema'
+import {withMarkdownContent} from '../tipTapContentToMarkdown'
 import {writeAnnotations} from '../toolAnnotations'
 import toolError from '../toolError'
 import toolResult from '../toolResult'
@@ -14,6 +15,7 @@ const UPDATE_TASK = `
       task {
         id
         ... @include(if: $canReadTasks) {
+          content
           plaintextContent
           status
           teamId
@@ -28,7 +30,7 @@ export default defineTool({
   name: 'update_task',
   title: 'Update a task',
   description:
-    'Change what a task says, its status, or who it is assigned to. Content replaces the whole task. It returns the task id, and its text and status too when the connection has tasks:read. Needs tasks:write.',
+    'Change what a task says, its status, or who it is assigned to. Content replaces the whole task. It returns the task id, and its text as markdown and its status too when the connection has tasks:read. Needs tasks:write.',
   inputSchema: z.object({
     taskId: z.string().describe('The task id, from list_tasks or create_task'),
     content: z.string().min(1).optional().describe('The new task text, in markdown'),
@@ -41,15 +43,17 @@ export default defineTool({
       return toolError('Pass content, status or userId to change.', 'BAD_USER_INPUT')
     }
     return toolResult(
-      await runGraphQL(context, UPDATE_TASK, {
-        updatedTask: {
-          id: taskId,
-          status,
-          userId,
-          content: content === undefined ? undefined : markdownToTaskContent(content, 'task')
-        },
-        canReadTasks: isScopeGranted(context, 'tasks:read')
-      })
+      withMarkdownContent(
+        await runGraphQL(context, UPDATE_TASK, {
+          updatedTask: {
+            id: taskId,
+            status,
+            userId,
+            content: content === undefined ? undefined : markdownToTaskContent(content, 'task')
+          },
+          canReadTasks: isScopeGranted(context, 'tasks:read')
+        })
+      )
     )
   }
 })

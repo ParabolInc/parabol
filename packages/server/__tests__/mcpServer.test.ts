@@ -556,8 +556,22 @@ test('create_task turns markdown into the task text', async () => {
     teamId,
     content: 'Fix the **login** bug'
   })
-  expect(created.createTask.task.plaintextContent).toBe('Fix the login bug')
+  expect(created.createTask.task.content).toBe('Fix the **login** bug')
+  expect(created.createTask.task).not.toHaveProperty('plaintextContent')
   expect(created.createTask.task.status).toBe('active')
+})
+
+test('create_task and update_task return a markdown list as a markdown list', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(['TASKS_WRITE', 'TASKS_READ'], {cookie})
+  const created = await callToolForData(token, 'create_task', {teamId, content: '- one\n- two'})
+  expect(created.createTask.task.content).toBe('- one\n- two')
+  const updated = await callToolForData(token, 'update_task', {
+    taskId: created.createTask.task.id,
+    content: 'Plan:\n\n1. one\n2. two'
+  })
+  expect(updated.updateTask.task.content).toBe('Plan:\n\n1. one\n2. two')
+  expect(updated.updateTask.task.content).not.toMatch(/\n{3,}/)
 })
 
 test('create_task and update_task with only tasks:write write the task and return its id', async () => {

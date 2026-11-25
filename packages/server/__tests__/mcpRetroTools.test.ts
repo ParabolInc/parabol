@@ -50,7 +50,7 @@ test('an agent adds and edits cards on a retro', async () => {
     content: 'Deploys are **slow**'
   })
   const reflectionId = added.createReflection.reflection.id as string
-  expect(added.createReflection.reflection.plaintextContent).toBe('Deploys are slow')
+  expect(added.createReflection.reflection.content).toBe('Deploys are **slow**')
 
   const second = await callToolForData(token, 'add_reflection', {
     meetingId,
@@ -64,7 +64,7 @@ test('an agent adds and edits cards on a retro', async () => {
     reflectionId,
     content: 'Deploys are *fast* now'
   })
-  expect(updated.updateReflectionContent.reflection.plaintextContent).toBe('Deploys are fast now')
+  expect(updated.updateReflectionContent.reflection.content).toBe('Deploys are *fast* now')
 
   const after = await callToolForData(token, 'get_meeting', {meetingId})
   const groups = after.viewer.meeting.reflectionGroups as {
@@ -255,7 +255,7 @@ test("a card can't go under a column from another template, and nothing is store
     promptId: ownColumns[0]!.id,
     content: 'Deploys are slow'
   })
-  expect(added.createReflection.reflection.plaintextContent).toBe('Deploys are slow')
+  expect(added.createReflection.reflection.content).toBe('Deploys are slow')
 })
 
 test("twelve described columns and the retro that uses them fit a starter user's query budget", async () => {

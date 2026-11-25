@@ -611,11 +611,16 @@ test('an agent builds a standup template, answers a standup made with it in mark
   })
   expect(answered.shareTeamPromptResponses.responses).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({promptId: shipped.id, sharedAt: expect.any(String)}),
+      {
+        id: expect.any(String),
+        promptId: shipped.id,
+        content: 'Two things:\n\n- the **billing** fix\n- the login page',
+        sharedAt: expect.any(String)
+      },
       {
         id: expect.any(String),
         promptId: blocked.id,
-        plaintextContent: 'Nothing',
+        content: 'Nothing',
         sharedAt: expect.any(String)
       }
     ])
@@ -1219,7 +1224,7 @@ test('add_comment joins a check-in and comments, at the end of the thread or as 
     content: 'Agreed, **this quarter**'
   })
   expect(added).toEqual({
-    addComment: {comment: {id: expect.any(String), plaintextContent: 'Agreed, this quarter'}}
+    addComment: {comment: {id: expect.any(String), content: 'Agreed, **this quarter**'}}
   })
   const reply = await callToolForData(teammate.token, 'add_comment', {
     meetingId: owner.meetingId,
@@ -1399,7 +1404,7 @@ test('create_task joins a meeting and puts the task at the end of a discussion a
     content: 'Post the **designer** role'
   })
   const taskId = created.createTask.task.id as string
-  expect(created.createTask.task).toMatchObject({plaintextContent: 'Post the designer role'})
+  expect(created.createTask.task).toMatchObject({content: 'Post the **designer** role'})
 
   const discussion = await callToolForData(teammate.token, 'get_discussion', {discussionId})
   expect(getThreadIds(discussion.viewer.discussion)).toEqual([

@@ -2,6 +2,7 @@ import {z} from 'zod'
 import defineTool from '../defineTool'
 import reflectionContentSchema from '../reflectionContentSchema'
 import runGraphQL from '../runGraphQL'
+import {withMarkdownContent} from '../tipTapContentToMarkdown'
 import {writeAnnotations} from '../toolAnnotations'
 import toolResult from '../toolResult'
 
@@ -10,6 +11,7 @@ const UPDATE_REFLECTION_CONTENT = `
     updateReflectionContent(reflectionId: $reflectionId, content: $content) {
       reflection {
         id
+        content
         plaintextContent
       }
     }
@@ -27,5 +29,9 @@ export default defineTool({
   }),
   annotations: writeAnnotations,
   run: async (context, {reflectionId, content}) =>
-    toolResult(await runGraphQL(context, UPDATE_REFLECTION_CONTENT, {reflectionId, content}))
+    toolResult(
+      withMarkdownContent(
+        await runGraphQL(context, UPDATE_REFLECTION_CONTENT, {reflectionId, content})
+      )
+    )
 })
