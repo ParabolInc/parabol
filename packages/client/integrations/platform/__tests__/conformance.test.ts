@@ -46,8 +46,4 @@ describe.each(entries)('%s conformance', (key, definition) => {
       isTaskClientIntegration(definition.service)
     )
   })
-
-  it('ships a retro work drawer tab', () => {
-    expect(definition.capabilities.workDrawer?.Panel).toBeTruthy()
-  })
 })

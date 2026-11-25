@@ -1,17 +1,20 @@
-import type {InspirationItem as InspirationItemDB} from '../../../postgres/types'
+import type {JSONContent} from '@tiptap/core'
 import type {InspirationIssueSource} from '../mutations/helpers/toInspirationIssue'
 import type {InspirationItemResolvers} from '../resolverTypes'
 
-// A draft is never saved, so it carries the issues it was drawn from; a saved item has none
-export type InspirationItemSource = Omit<InspirationItemDB, 'id'> & {
+export interface InspirationItemSource {
   id: string
-  issues?: InspirationIssueSource[]
+  service: string
+  title: string | null
+  promptId: string | null
+  content: JSONContent
+  createdAt: Date
+  issues: InspirationIssueSource[]
 }
 
 const InspirationItem: InspirationItemResolvers = {
-  // content is stored as a tiptap doc (jsonb); expose it as a JSON string, like TeamPromptResponse
-  content: ({content}) => JSON.stringify(content),
-  issues: ({issues}) => issues ?? []
+  // content is a tiptap doc; expose it as a JSON string, like TeamPromptResponse
+  content: ({content}) => JSON.stringify(content)
 }
 
 export default InspirationItem

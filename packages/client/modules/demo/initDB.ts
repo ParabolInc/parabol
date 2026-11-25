@@ -606,12 +606,6 @@ const initNewMeeting = (
     nextAutoGroupThreshold: null,
     prevMeeting: null,
     scheduledEndTime: null,
-    parabolInspirationItems: [],
-    githubInspirationItems: [],
-    jiraInspirationItems: [],
-    gcalInspirationItems: [],
-    linearInspirationItems: [],
-    azureDevOpsInspirationItems: [],
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     // The demo has no server to generate suggestions, so the hover outline & modal stay inert

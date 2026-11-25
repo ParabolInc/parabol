@@ -1,7 +1,3 @@
-import {lazy} from 'react'
-import gCalIntegrationPanelQuery, {
-  type GCalIntegrationPanelQuery
-} from '../../__generated__/GCalIntegrationPanelQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import googleCalendarLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import GcalClientManager from '../../utils/GcalClientManager'
@@ -9,25 +5,10 @@ import {
   type ClientIntegrationCapabilities,
   ClientIntegrationDefinition,
   type ConnectParams,
-  type ProviderLogoAsset,
-  type WorkDrawerCapability
+  type ProviderLogoAsset
 } from '../platform/ClientIntegrationDefinition'
-import makeWorkDrawerPanel from '../platform/makeWorkDrawerPanel'
 import GcalIcon from './GcalIcon'
 import {gcalIntegrationMeta} from './shared/gcalIntegrationMeta'
-
-const workDrawer: WorkDrawerCapability = {
-  Panel: makeWorkDrawerPanel<GCalIntegrationPanelQuery>({
-    query: gCalIntegrationPanelQuery,
-    Panel: lazy(
-      () =>
-        import(
-          /* webpackChunkName: 'GCalIntegrationPanel' */ '../../components/TeamPrompt/WorkDrawer/GCalIntegrationPanel'
-        )
-    )
-  }),
-  connectDescription: 'recent events'
-}
 
 export class GcalClientIntegration extends ClientIntegrationDefinition {
   readonly service = gcalIntegrationMeta.service
@@ -35,7 +16,7 @@ export class GcalClientIntegration extends ClientIntegrationDefinition {
   readonly description = gcalIntegrationMeta.description
   readonly Icon = GcalIcon
   readonly logo: ProviderLogoAsset = {src: googleCalendarLogo}
-  readonly capabilities: ClientIntegrationCapabilities = {workDrawer}
+  readonly capabilities: ClientIntegrationCapabilities = {}
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider?.clientId) return false
     GcalClientManager.openOAuth(atmosphere, provider.id, provider.clientId, teamId, mutationProps)

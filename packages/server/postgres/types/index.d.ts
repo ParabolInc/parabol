@@ -7,7 +7,6 @@ import {
   type selectComments,
   type selectDiscussion,
   type selectGitHubAuth,
-  type selectInspirationItems,
   type selectIntegrationDimensionFieldMap,
   type selectIntegrationSearchQuery,
   type selectMassInvitations,
@@ -125,7 +124,6 @@ export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
   typeof selectTeamMemberIntegrationAuth
 >
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
-export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
   typeof selectTeamHealthCategories
 >
