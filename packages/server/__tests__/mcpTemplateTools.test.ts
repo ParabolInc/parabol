@@ -1,3 +1,4 @@
+import {randomUUIDv7} from 'crypto'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
 import {sendPublic} from './common'
@@ -88,6 +89,7 @@ const listTemplates = async (token: string, teamId: string, meetingType: string)
   (await callToolForData(token, 'list_templates', {teamId, meetingType})) as {
     templates: ListedTemplate[]
     scales?: ListedScale[]
+    selectedTemplateId?: string
   }
 
 const getIds = (items: {id: string}[]) => items.map(({id}) => id)
@@ -260,6 +262,42 @@ test('a Starter agent can list templates, pick one and start a retro within the 
   await callToolForData(token, 'select_template', {templateId: sailboat.id, teamId})
   await callToolForData(token, 'start_retrospective', {teamId})
   expect(await getChargedCost(userId)).toBeLessThanOrEqual(500)
+})
+
+test("list_templates names the team's selected template for each kind of meeting that has one", async () => {
+  const retro = await signUpAdmin()
+  await callToolForData(retro.token, 'select_template', {
+    templateId: 'sailboatTemplate',
+    teamId: retro.teamId
+  })
+  const retros = await listTemplates(retro.token, retro.teamId, 'retrospective')
+  expect(retros.selectedTemplateId).toBe('sailboatTemplate')
+  expect(getIds(retros.templates)).toContain('sailboatTemplate')
+
+  const poker = await signUpAdmin()
+  const pokerTemplates = await listTemplates(poker.token, poker.teamId, 'poker')
+  expect(getIds(pokerTemplates.templates)).toContain(pokerTemplates.selectedTemplateId)
+
+  const standup = await signUpAdmin()
+  const standups = await listTemplates(standup.token, standup.teamId, 'teamPrompt')
+  expect(getIds(standups.templates)).toContain(standups.selectedTemplateId)
+
+  const checks = await listTemplates(standup.token, standup.teamId, 'teamHealth')
+  expect(checks).not.toHaveProperty('selectedTemplateId')
+})
+
+test("a billing leader off the team lists its organization's templates without a selected one", async () => {
+  const owner = await signUpAdmin()
+  const leader = await signUpAdmin()
+  await getKysely()
+    .insertInto('OrganizationUser')
+    .values({id: randomUUIDv7(), orgId: owner.orgId, userId: leader.userId, role: 'BILLING_LEADER'})
+    .execute()
+  const listed = await listTemplates(leader.token, owner.teamId, 'retrospective')
+  expect(listed.templates).toContainEqual(
+    expect.objectContaining({id: 'startStopContinueTemplate'})
+  )
+  expect(listed).not.toHaveProperty('selectedTemplateId')
 })
 
 test('list_templates refuses a caller off the team', async () => {
