@@ -24,6 +24,7 @@ const useUpdatedSafeRoute = (
         }
         localPhase {
           id
+          phaseType
           stages {
             id
           }
@@ -33,6 +34,19 @@ const useUpdatedSafeRoute = (
           id
           stages {
             id
+          }
+        }
+        ... on RetrospectiveMeeting {
+          teamHealthMeeting {
+            localStage {
+              id
+            }
+            phases {
+              phaseType
+              stages {
+                id
+              }
+            }
           }
         }
       }
@@ -48,20 +62,26 @@ const useUpdatedSafeRoute = (
       setSafeRoute(true)
       return
     }
-    const {localStage, localPhase, facilitatorStageId, phases} = meeting
+    const {localStage, localPhase, facilitatorStageId, phases, teamHealthMeeting} = meeting
     const localStages = localPhase?.stages ?? null
     const localStageId = localStage?.id ?? null
     const oldLocalStages = oldMeeting?.localPhase?.stages ?? null
     const oldLocalStageId = oldMeeting?.localStage?.id
     oldMeetingRef.current = meeting
-    // if the stage changes or the order of the stages changes, update the url
+    const getCheckStageId = (shownMeeting: typeof meeting) =>
+      shownMeeting.localPhase?.phaseType === 'TEAM_HEALTH'
+        ? shownMeeting.teamHealthMeeting?.localStage?.id
+        : undefined
+    // if the stage changes or the order of the stages changes, update the url. A retro's Team Health
+    // phase shows its check, whose own stage changes the url too
     const isNewLocalStageId = localStageId && localStageId !== oldLocalStageId
     const isUpdatedPhase = localStages !== oldLocalStages
-    if (isNewLocalStageId || isUpdatedPhase) {
+    const isNewCheckStageId = getCheckStageId(meeting) !== getCheckStageId(oldMeeting)
+    if (isNewLocalStageId || isUpdatedPhase || isNewCheckStageId) {
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
         updateLocalStage(atmosphere, meeting, facilitatorStageId)
       }
-      const nextPathname = fromStageIdToUrl(localStageId, meeting)
+      const nextPathname = fromStageIdToUrl(localStageId, meeting, teamHealthMeeting)
       if (nextPathname !== location.pathname) {
         navigate({href: nextPathname, replace: true})
         // do not set as unsafe (repro: start meeting, end, start again)

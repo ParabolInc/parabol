@@ -169,6 +169,8 @@ export const createTeamHealthDemoMeetingResponse = (
     summaryPageId: null,
     meetingSeriesId: null,
     meetingSeries: null,
+    // only a retro selects it, but Relay types it onto every meeting
+    teamHealthMeeting: null,
     teamId: TEAM_ID,
     facilitatorUserId: demoFacilitator.id,
     facilitatorStageId: resultStages[0]!.id,

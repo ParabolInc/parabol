@@ -29,8 +29,21 @@ const phaseIsMultiStage = {
   TEAM_HEALTH_RESULT: true
 } as Record<NewMeetingPhaseTypeEnum, boolean>
 
+// a retro shows its Team Health check inside its own Team Health phase, at the check's stage URLs
+interface TeamHealthCheck {
+  readonly localStage?: {readonly id: string} | null
+  readonly phases: ReadonlyArray<{
+    readonly phaseType: NewMeetingPhaseTypeEnum
+    readonly stages: ReadonlyArray<{readonly id: string}>
+  }>
+}
+
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
-const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$key) => {
+const fromStageIdToUrl = (
+  stageId: string,
+  meetingRef: fromStageIdToUrl_meeting$key,
+  teamHealthCheck?: TeamHealthCheck | null
+) => {
   const meeting = readInlineData(
     graphql`
       fragment fromStageIdToUrl_meeting on NewMeeting @inline {
@@ -54,7 +67,11 @@ const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$
     findStageById(phases, facilitatorStageId) ??
     findBestNavigableStage(phases)
   if (!stageRes) return '/'
-  const {phase, stageIdx} = stageRes
+  const checkStageRes =
+    stageRes.phase.phaseType === 'TEAM_HEALTH'
+      ? findStageById(teamHealthCheck?.phases, teamHealthCheck?.localStage?.id)
+      : undefined
+  const {phase, stageIdx} = checkStageRes ?? stageRes
   const {phaseType} = phase
   const phaseSlug = phaseTypeToSlug[phaseType]
   const isPhaseMultiStage = phaseIsMultiStage[phaseType]

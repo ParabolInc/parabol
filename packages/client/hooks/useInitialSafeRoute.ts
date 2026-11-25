@@ -1,6 +1,7 @@
 import {useLocation, useNavigate} from '@tanstack/react-router'
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect, useRef} from 'react'
+import {commitLocalUpdate} from 'react-relay'
 import {readInlineData} from 'relay-runtime'
 import type {
   useInitialSafeRoute_meeting$data,
@@ -13,8 +14,14 @@ import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import {phaseTypeToSlug} from '../utils/meetings/lookups'
-import updateLocalStage from '../utils/relay/updateLocalStage'
+import updateLocalStage, {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
+
+const teamHealthCheckPhaseTypes: ReadonlyArray<string> = [
+  'TEAM_HEALTH_INTRO',
+  'TEAM_HEALTH_RESPONSE',
+  'TEAM_HEALTH_RESULT'
+] satisfies ReadonlyArray<NewMeetingPhaseTypeEnum>
 
 // A reminder deep-links to /respond with no stage index, which means the viewer's first open
 // question, or the first question once they have answered them all
@@ -67,6 +74,20 @@ const useInitialSafeRoute = (
             }
           }
         }
+        ... on RetrospectiveMeeting {
+          teamHealthMeeting {
+            id
+            localStage {
+              id
+            }
+            phases {
+              phaseType
+              stages {
+                id
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
@@ -81,12 +102,13 @@ const useInitialSafeRoute = (
       return
     }
     const {facilitatorStageId, facilitatorUserId, localStage, id: meetingId, phases} = meeting
+    const {teamHealthMeeting} = meeting
     const {viewerId} = atmosphere
 
     // I’m headed to the lobby but the meeting is already going, send me there
     if (localStage && !phaseSlug) {
       const {id: localStageId} = localStage
-      const nextUrl = fromStageIdToUrl(localStageId, meeting)
+      const nextUrl = fromStageIdToUrl(localStageId, meeting, teamHealthMeeting)
       navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
@@ -95,18 +117,30 @@ const useInitialSafeRoute = (
 
     const localPhaseType = findKeyByValue(phaseTypeToSlug, phaseSlug as NewMeetingPhaseTypeEnum)
     const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0
-    const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
+    // a retro shows its Team Health check inside its own Team Health phase, at the check's stage
+    // URLs, so /respond/3 is the retro's Team Health stage with the check on its third question. A
+    // number the check doesn't have, like /respond/99, leaves the check on its default stage
+    const teamHealthPhase = phases.find((curPhase) => curPhase.phaseType === 'TEAM_HEALTH')
+    const isTeamHealthCheckRoute =
+      !!teamHealthPhase && !!localPhaseType && teamHealthCheckPhaseTypes.includes(localPhaseType)
+    const phase = isTeamHealthCheckRoute
+      ? teamHealthPhase
+      : phases.find((curPhase) => curPhase.phaseType === localPhaseType)
 
     // typo in url, send to the facilitator
     if (!phase) {
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting, teamHealthMeeting)
       navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return
     }
 
-    const stage = isOpenQuestionRoute() ? findOpenQuestionStage(phases) : phase.stages[stageIdx]
+    const stage = isTeamHealthCheckRoute
+      ? phase.stages[0]
+      : isOpenQuestionRoute()
+        ? findOpenQuestionStage(phases)
+        : phase.stages[stageIdx]
     const stageId = stage?.id
     const isViewerFacilitator = viewerId === facilitatorUserId
     const itemStage = stageId && findStageById(phases, stageId)
@@ -115,7 +149,7 @@ const useInitialSafeRoute = (
       const nextUrl =
         meetingId === RetroDemo.MEETING_ID
           ? '/retrospective-demo/reflect'
-          : fromStageIdToUrl(facilitatorStageId, meeting)
+          : fromStageIdToUrl(facilitatorStageId, meeting, teamHealthMeeting)
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       navigate({href: nextUrl, replace: true})
       setSafeRoute(false)
@@ -126,7 +160,7 @@ const useInitialSafeRoute = (
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting, teamHealthMeeting)
       navigate({href: nextUrl, replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
@@ -135,6 +169,15 @@ const useInitialSafeRoute = (
 
     // legit URL!
     updateLocalStage(atmosphere, meeting, stage.id)
+    const checkPhase = isTeamHealthCheckRoute
+      ? teamHealthMeeting?.phases.find((curPhase) => curPhase.phaseType === localPhaseType)
+      : undefined
+    const checkStageId = checkPhase?.stages[stageIdx]?.id
+    if (teamHealthMeeting && checkStageId) {
+      commitLocalUpdate(atmosphere, (store) =>
+        setLocalStageAndPhase(store, teamHealthMeeting.id, checkStageId)
+      )
+    }
     setSafeRoute(true)
   }, [])
 
