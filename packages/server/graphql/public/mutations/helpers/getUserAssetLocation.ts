@@ -22,7 +22,7 @@ export const getUserAssetLocation = (url: string) => {
   }
   return {
     scope: scope as AssetScopeEnum,
-    scopeKey: scope === 'Page' ? `page:${scopeCode}` : scopeCode,
+    scopeCode,
     partialPath: pathname.slice('/assets/'.length) as PartialPath
   }
 }

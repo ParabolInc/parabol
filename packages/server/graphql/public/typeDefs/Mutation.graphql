@@ -336,9 +336,10 @@ type Mutation {
   ): DeleteUserPayload! @scope(name: USERS_WRITE)
 
   """
-  Delete a file uploaded to Parabol, given its URL. Whoever may upload to the file's scope may delete
-  it, except that a connection limited to some organizations, teams or pages can't delete User files.
-  Deleting a file that is already gone succeeds
+  Delete a file uploaded to Parabol, given its URL. Needs edit rights where the file lives: the user
+  themself for a User file (and a connection that isn't limited to some organizations, teams or
+  pages), a member of the Team, an editor or owner of the Page, or a billing leader or admin of the
+  Organization. Deleting a file that is already gone succeeds
   """
   deleteUserAsset(
     """

@@ -1,6 +1,7 @@
+import {randomUUID, randomUUIDv7} from 'crypto'
 import getKysely from '../postgres/getKysely'
 import getRedis from '../utils/getRedis'
-import {HOST, PROTOCOL, sendPublic} from './common'
+import {createOrgAdmin, getTestEmail, HOST, PROTOCOL, sendPublic} from './common'
 import {
   addTeammate,
   bearer,
@@ -407,6 +408,14 @@ const UPLOAD_SCOPES = [
   'PAGES_WRITE'
 ]
 
+const UPLOAD_USER_ASSET = `
+  mutation UploadUserAsset($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
+    uploadUserAsset(file: $file, scope: $scope, scopeKey: $scopeKey) {
+      url
+    }
+  }
+`
+
 const SHARE_PAGE = `
   mutation SharePage($pageId: ID!, $subjectId: ID!, $role: PageRoleEnum) {
     updatePageAccess(pageId: $pageId, subjectType: user, subjectId: $subjectId, role: $role) {
@@ -473,14 +482,19 @@ test('a teammate deletes a team file; someone off the team, or without teams:wri
   expect(await getUploadStatus(url, owner.token)).toBe(404)
 })
 
-test('a page editor deletes a page file and a viewer is refused', async () => {
+test('a page editor deletes a page file, and a commenter or viewer is refused', async () => {
   const owner = await signUpUploader()
   const created = await callToolForData(owner.token, 'create_page', {})
   const pageId = created.createPage.page.id as string
   const url = await uploadImage(owner.token, 'Page', pageId)
-  const [viewer, editor] = await Promise.all([signUpUploader(), signUpUploader()])
+  const [viewer, commenter, editor] = await Promise.all([
+    signUpUploader(),
+    signUpUploader(),
+    signUpUploader()
+  ])
   for (const [subjectId, role] of [
     [viewer.userId, 'viewer'],
+    [commenter.userId, 'commenter'],
     [editor.userId, 'editor']
   ]) {
     const shared = await sendPublic({
@@ -492,11 +506,43 @@ test('a page editor deletes a page file and a viewer is refused', async () => {
   }
 
   expectToolErrorCode(await callTool(viewer.token, 'delete_upload', {url}), 'FORBIDDEN')
+  expectToolErrorCode(await callTool(commenter.token, 'delete_upload', {url}), 'FORBIDDEN')
   expect(await getUploadStatus(url, owner.token)).toBe(200)
 
   const deleted = await callToolForData(editor.token, 'delete_upload', {url})
   expect(deleted.deleteUserAsset).toEqual({url})
   expect(await getUploadStatus(url, owner.token)).toBe(404)
+})
+
+test('an organization admin deletes an organization file and a plain member is refused', async () => {
+  const admin = await createOrgAdmin(getTestEmail())
+  const adminToken = await createPersonalAccessToken(['ORGS_READ', 'ORGS_WRITE'], {
+    cookie: admin.cookie
+  })
+  const uploaded = await sendPublic({
+    query: UPLOAD_USER_ASSET,
+    variables: {file: null, scope: 'Organization', scopeKey: admin.orgId},
+    uploadables: {file: new File([randomUUID()], 'notes.txt', {type: 'text/plain'})},
+    cookie: admin.cookie
+  })
+  expect(uploaded.errors).toBeUndefined()
+  const url = uploaded.data.uploadUserAsset.url as string
+  const member = await signUpWithoutAI()
+  await getKysely()
+    .insertInto('OrganizationUser')
+    .values({id: randomUUIDv7(), orgId: admin.orgId, userId: member.userId})
+    .execute()
+  const memberToken = await createPersonalAccessToken(['ORGS_READ', 'ORGS_WRITE'], {
+    cookie: member.cookie
+  })
+  expect(await getUploadStatus(url, memberToken)).toBe(200)
+
+  expectToolErrorCode(await callTool(memberToken, 'delete_upload', {url}), 'FORBIDDEN')
+  expect(await getUploadStatus(url, adminToken)).toBe(200)
+
+  const deleted = await callToolForData(adminToken, 'delete_upload', {url})
+  expect(deleted.deleteUserAsset).toEqual({url})
+  expect(await getUploadStatus(url, adminToken)).toBe(404)
 })
 
 test('a connection limited to a team cannot delete your own files', async () => {

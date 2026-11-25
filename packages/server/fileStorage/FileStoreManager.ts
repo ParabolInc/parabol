@@ -52,10 +52,15 @@ export default abstract class FileStoreManager {
     if (existingWrite) return existingWrite
     const write = this.writeUserFile(file, partialPath)
     this.userFileWritesByPath.set(partialPath, write)
+    const forgetWrite = () => {
+      if (this.userFileWritesByPath.get(partialPath) === write) {
+        this.userFileWritesByPath.delete(partialPath)
+      }
+    }
     write.then(
       // GCS allows one write per object per second, so a write right after this one would get a 429
-      () => setTimeout(() => this.userFileWritesByPath.delete(partialPath), 1000).unref(),
-      () => this.userFileWritesByPath.delete(partialPath)
+      () => setTimeout(forgetWrite, 1000).unref(),
+      forgetWrite
     )
     return write
   }
@@ -69,6 +74,7 @@ export default abstract class FileStoreManager {
     return makeAppURL(appOrigin, `/assets/${partialPath}`)
   }
   async deleteUserFile(partialPath: PartialPath) {
+    await this.userFileWritesByPath.get(partialPath)?.catch(() => undefined)
     this.userFileWritesByPath.delete(partialPath)
     await this.deleteFile(this.prependPath(partialPath))
   }

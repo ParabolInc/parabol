@@ -8,25 +8,25 @@ test('finds the scope of each kind of upload from where it was stored', () => {
   expect(getUserAssetLocation(`https://parabol.test/assets/User/local|abc/assets/${FILE}`)).toEqual(
     {
       scope: 'User',
-      scopeKey: 'local|abc',
+      scopeCode: 'local|abc',
       partialPath: `User/local|abc/assets/${FILE}`
     }
   )
   expect(getUserAssetLocation(`https://parabol.test/assets/Team/team_1-a/assets/${FILE}`)).toEqual({
     scope: 'Team',
-    scopeKey: 'team_1-a',
+    scopeCode: 'team_1-a',
     partialPath: `Team/team_1-a/assets/${FILE}`
   })
   expect(
     getUserAssetLocation('https://parabol.test/assets/Organization/org1/assets/a.png')
   ).toEqual({
     scope: 'Organization',
-    scopeKey: 'org1',
+    scopeCode: 'org1',
     partialPath: 'Organization/org1/assets/a.png'
   })
   expect(getUserAssetLocation(`https://parabol.test/assets/Page/12345/assets/${FILE}`)).toEqual({
     scope: 'Page',
-    scopeKey: 'page:12345',
+    scopeCode: '12345',
     partialPath: `Page/12345/assets/${FILE}`
   })
 })

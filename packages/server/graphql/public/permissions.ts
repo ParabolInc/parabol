@@ -207,7 +207,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       'createdBy'
     ),
     deleteUser: and(isAuthenticated, hasTokenAudience(['action'])),
-    deleteUserAsset: and(isAuthenticated, canDeleteUserAsset),
+    deleteUserAsset: and(
+      isAuthenticated,
+      canDeleteUserAsset,
+      rateLimit({perMinute: 60, perHour: 600})
+    ),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     disconnectSAML: hasOrgRole<'Mutation.disconnectSAML'>('args.samlId', 'ORG_ADMIN', 'saml'),
     downgradeToStarter: or(
