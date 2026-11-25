@@ -1,8 +1,9 @@
-import {Suspense} from 'react'
+import {Suspense, useState} from 'react'
 import addTeamDialogQuery, {
   type AddTeamDialogQuery
 } from '../__generated__/AddTeamDialogQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import getInviteeMeetingsWindow from '../utils/getInviteeMeetingsWindow'
 import {Loader} from '../utils/relay/renderLoader'
 import AddTeamDialog from './AddTeamDialog'
 
@@ -16,8 +17,10 @@ interface Props {
 const AddTeamDialogRoot = (props: Props) => {
   const {isOpen, onClose, onTeamAdded, orgId} = props
 
+  const [meetingsWindow] = useState(getInviteeMeetingsWindow)
   const queryRef = useQueryLoaderNow<AddTeamDialogQuery>(addTeamDialogQuery, {
-    orgId
+    orgId,
+    ...meetingsWindow
   })
 
   return (

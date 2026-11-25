@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import {GraphQLError, type GraphQLErrorExtensions} from 'graphql'
 import ms from 'ms'
 import util from 'util'
+import {formatApprovedList, isEmailOnApprovedList} from '../../../../client/shared/approvedDomains'
 import {isValidEmail, normalizeEmail} from '../../../../client/shared/emailAddress'
 import {MAX_TEAM_INVITEES} from '../../../../client/shared/teamInvitees'
 import {Threshold} from '../../../../client/types/constEnums'
@@ -19,7 +20,6 @@ import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import logError from '../../../utils/logError'
 import type {GQLContext} from '../../graphql'
-import {isEmailOnApprovedList} from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
 import publishNotification from '../../public/mutations/helpers/publishNotification'
 import type {TeamInvitee} from '../../public/resolverTypes'
 
@@ -61,16 +61,6 @@ const getBlockedDomain = (email: string) => {
 const formatInvitedAgo = (invitedAt: Date, now: number) => {
   const minutes = Math.floor((now - invitedAt.getTime()) / ms('1m'))
   return minutes < 1 ? 'just now' : `${minutes} ${plural(minutes, 'minute')} ago`
-}
-
-const formatApprovedList = (approvedDomains: string[]) => {
-  const shown = approvedDomains.slice(0, 3)
-  const hiddenCount = approvedDomains.length - shown.length
-  if (hiddenCount > 0) {
-    return `${shown.join(', ')}, or ${hiddenCount} other ${plural(hiddenCount, 'domain')}`
-  }
-  if (shown.length === 1) return shown[0]!
-  return `${shown.slice(0, -1).join(', ')} or ${shown.at(-1)}`
 }
 
 const refuse = (email: string, status: TeamInvitee['status'], message: string): TeamInvitee => ({

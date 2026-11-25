@@ -154,11 +154,11 @@ const User: ReqResolvers<'User'> = {
     {authToken, dataLoader, resourceGrants}
   ) => {
     const viewerId = getUserId(authToken)
-    let validTeamIds = teamIds
-    if (authToken.rol !== 'su') {
+    let validTeamIds: string[] = teamIds ?? []
+    if (!teamIds || authToken.rol !== 'su') {
       const teamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
       const allTeamIds = teamMembers.map(({teamId}) => teamId)
-      validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
+      validTeamIds = teamIds ? teamIds.filter((teamId) => allTeamIds.includes(teamId)) : allTeamIds
     }
     if (resourceGrants) {
       const grantChecks = await Promise.all(validTeamIds.map((id) => resourceGrants.hasTeam(id)))
@@ -181,6 +181,7 @@ const User: ReqResolvers<'User'> = {
       .where('meetingType', 'in', meetingTypes)
       .$if<{}>(!!after, (qb) => qb.where('createdAt', '>=', after!))
       .$if<{}>(!!before, (qb) => qb.where('createdAt', '<=', before!))
+      .orderBy('createdAt', 'desc')
       .limit(first + 1)
       .execute()
     return {

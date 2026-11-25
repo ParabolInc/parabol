@@ -21,7 +21,7 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useTeamInviteeDrafts, {isDraftReady} from '../../../../hooks/useTeamInviteeDrafts'
+import useTeamInviteeDrafts from '../../../../hooks/useTeamInviteeDrafts'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {MAX_TEAM_INVITEES} from '../../../../shared/teamInvitees'
@@ -32,7 +32,7 @@ import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import linkify from '../../../../utils/linkify'
-import plural from '../../../../utils/plural'
+import validateTeamInvitees from '../../../../utils/validateTeamInvitees'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
@@ -71,16 +71,6 @@ interface Props {
 const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, defaultOrgId, organizationsRef} = props
 
-  graphql`
-    fragment NewTeamForm_teams on Team @relay(plural: true) {
-      teamMembers {
-        user {
-          email
-        }
-        isSelf
-      }
-    }
-  `
   const organizations = useFragment(
     graphql`
       fragment NewTeamForm_organizations on Organization @relay(plural: true) {
@@ -91,7 +81,6 @@ const NewTeamForm = (props: Props) => {
         tier
         teams {
           name
-          ...NewTeamForm_teams @relay(mask: false)
         }
       }
     `,
@@ -105,11 +94,6 @@ const NewTeamForm = (props: Props) => {
   const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
-  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
-    teamMembers.filter(({isSelf}) => !isSelf).map(({user}) => user.email)
-  )
-  const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
-  const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
   const isStarterTier = selectedOrg?.tier === 'starter'
   const disablePrivacyToggle = (!isNewOrg && isStarterTier) || isNewOrg
 
@@ -160,24 +144,18 @@ const NewTeamForm = (props: Props) => {
 
   // returns the addresses to invite, or null after explaining why the team can't be created yet
   const getInviteeEmails = () => {
+    const pendingText = invitees.inputValue.trim()
     const inviteeDrafts = invitees.commitInput()
-    const invalidCount = inviteeDrafts.filter((draft) => !isDraftReady(draft)).length
-    if (invalidCount > 0) {
-      const addresses = plural(invalidCount, 'invalid email address', 'invalid email addresses')
-      onError(new Error(`Fix or remove the ${addresses} above before creating the team`))
+    const result = validateTeamInvitees({
+      drafts: inviteeDrafts,
+      pendingText,
+      hasDirectory: invitees.hasEmailCheck
+    })
+    if ('error' in result) {
+      onError(new Error(result.error))
       return null
     }
-    const inviteeEmails = inviteeDrafts.map(({email}) => email)
-    const excess = inviteeEmails.length - MAX_TEAM_INVITEES
-    if (excess > 0) {
-      onError(
-        new Error(
-          `You can invite up to ${MAX_TEAM_INVITEES} people while creating a team. Remove ${excess}, then invite them from the team page`
-        )
-      )
-      return null
-    }
-    return inviteeEmails
+    return result.emails
   }
 
   const onSubmit = (e: FormEvent) => {
@@ -270,6 +248,11 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </div>
           )}
+          <NewTeamFormInvitees
+            invitees={invitees}
+            orgId={isNewOrg || !orgId ? null : orgId}
+            onSubmit={() => formRef.current?.requestSubmit()}
+          />
           <div className='mt-8 flex items-center'>
             <div className='flex flex-1 items-start'>
               <div>
@@ -322,16 +305,10 @@ const NewTeamForm = (props: Props) => {
               </Tooltip>
             </div>
           </div>
-          <NewTeamFormInvitees
-            invitees={invitees}
-            orgName={showInviteAll ? selectedOrg.name : null}
-            orgTeammateEmails={uniqueEmailsFromSelectedOrg}
-            onSubmit={() => formRef.current?.requestSubmit()}
-          />
           <Button
             variant='primary'
             className='mx-auto mt-6 mb-0 w-64'
-            disabled={disableFields || submitting}
+            disabled={disableFields || submitting || invitees.drafts.length > MAX_TEAM_INVITEES}
             size='lg'
           >
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
