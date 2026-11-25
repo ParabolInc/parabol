@@ -2,7 +2,12 @@ import dayjs from 'dayjs'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import getRedis from '../utils/getRedis'
 import {sendPublic, signUp} from './common'
-import {callTool, callToolForData, createPersonalAccessToken} from './mcpClient'
+import {
+  callTool,
+  callToolForData,
+  createPersonalAccessToken,
+  expectToolErrorCode
+} from './mcpClient'
 
 afterAll(async () => {
   await getRedis().quit()
@@ -173,6 +178,16 @@ const END_TEAM_HEALTH = `
   mutation EndTeamHealth($meetingId: ID!) {
     endTeamHealth(meetingId: $meetingId) {
       meetingId
+    }
+  }
+`
+
+const JOIN_MEETING = `
+  mutation JoinMeeting($meetingId: ID!) {
+    joinMeeting(meetingId: $meetingId) {
+      meetingMember {
+        id
+      }
     }
   }
 `
@@ -446,4 +461,75 @@ test('the meeting reads name the scope a connection lacks', async () => {
     await callTool(withoutTasks, 'get_discussion', {discussionId}),
     'comments:read'
   )
+})
+
+test('end_meeting ends a meeting of each type and refuses to end it twice', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const retrospective = await callToolForData(token, 'start_retrospective', {teamId})
+  const checkIn = await callToolForData(token, 'start_check_in', {teamId})
+  const poker = await callToolForData(token, 'start_sprint_poker', {teamId})
+  const standup = await callToolForData(token, 'start_standup', {teamId})
+  const teamHealth = await callToolForData(token, 'start_team_health', {
+    teamId,
+    templateId: 'googleProjectAristotleTemplate'
+  })
+  const meetings = [
+    retrospective.startRetrospective.meeting,
+    checkIn.startCheckIn.meeting,
+    poker.startSprintPoker.meeting,
+    standup.startTeamPrompt.meeting,
+    teamHealth.startTeamHealth.meetings[0]
+  ]
+  expect(meetings.map(({meetingType}) => meetingType)).toEqual([
+    'retrospective',
+    'action',
+    'poker',
+    'teamPrompt',
+    'teamHealth'
+  ])
+
+  for (const {id, name, meetingType} of meetings) {
+    const ended = await callToolForData(token, 'end_meeting', {meetingId: id})
+    expect(ended).toEqual({
+      endMeeting: {
+        meeting: {
+          id,
+          name,
+          meetingType,
+          endedAt: expect.any(String),
+          summaryPageId: expect.any(String)
+        }
+      }
+    })
+    const again = await callTool(token, 'end_meeting', {meetingId: id})
+    expect(expectToolErrorCode(again, 'CONFLICT')).toBe('Meeting already ended')
+  }
+})
+
+test('end_meeting refuses a meeting on a team the caller is not on, and leaves it running', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const started = await callToolForData(token, 'start_retrospective', {teamId})
+  const meetingId = started.startRetrospective.meeting.id as string
+  const outsider = await createPersonalAccessToken(MEETING_SCOPES)
+
+  const refused = await callTool(outsider, 'end_meeting', {meetingId})
+  expectToolErrorCode(refused, 'FORBIDDEN')
+  const {viewer} = await callToolForData(token, 'get_meeting', {meetingId})
+  expect(viewer.meeting.endedAt).toBeNull()
+})
+
+test('joining a meeting twice, as ensureMeetingMember does before each answer, changes nothing', async () => {
+  const {cookie, teamId} = await signUp()
+  const token = await createPersonalAccessToken(MEETING_SCOPES, {cookie})
+  const started = await callToolForData(token, 'start_standup', {teamId})
+  const meetingId = started.startTeamPrompt.meeting.id as string
+  const join = {query: JOIN_MEETING, variables: {meetingId}}
+
+  const first = await callToolForData(token, 'graphql_mutate', join)
+  const second = await callToolForData(token, 'graphql_mutate', join)
+  expect(second).toEqual(first)
+  const {viewer} = await callToolForData(token, 'get_standup', {meetingId})
+  expect(getStages(viewer.meeting)).toHaveLength(1)
 })

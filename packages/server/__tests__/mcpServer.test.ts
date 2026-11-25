@@ -500,6 +500,7 @@ const TYPESCRIPT_TOOLS = [
   'add_reflection',
   'update_reflection',
   'create_retro_template',
+  'end_meeting',
   'upload_image',
   'graphql_query',
   'graphql_mutate'
