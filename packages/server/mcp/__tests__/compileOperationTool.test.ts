@@ -238,13 +238,16 @@ mutation EditPage($pageId: ID!, $edits: [PageContentEditInput!]!) { patchPageCon
   expect(tool.inputSchema.required).toEqual(['pageId', 'edits'])
 })
 
-test('marks queries read-only and mutations destructive', () => {
-  expect(compile('# Q\nquery Q { viewer { id } }').annotations).toEqual(readAnnotations)
+test('marks queries read-only and mutations destructive, with the title in the annotations', () => {
+  expect(compile('# Q\nquery Q { viewer { id } }').annotations).toEqual({
+    ...readAnnotations,
+    title: 'Q'
+  })
   expect(
     compile(
       '# M\nmutation M($pageId: ID!, $edits: [PageContentEditInput!]!) { patchPageContent(pageId: $pageId, edits: $edits) { page { id } } }'
     ).annotations
-  ).toEqual(writeAnnotations)
+  ).toEqual({...writeAnnotations, title: 'M'})
 })
 
 test('a nullable variable without a default is optional', () => {

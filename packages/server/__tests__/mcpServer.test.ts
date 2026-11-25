@@ -737,6 +737,16 @@ test('tools/list lists exactly these tools, each once', async () => {
   expect(names.toSorted()).toEqual(TOOL_NAMES)
 })
 
+test("every tool's annotations carry its human-readable title", async () => {
+  const tools: {name: string; title?: string; annotations: {title?: string}}[] = await listTools(
+    await createPersonalAccessToken()
+  )
+  for (const {name, title, annotations} of tools) {
+    expect({name, title: annotations.title}).toEqual({name, title: expect.any(String)})
+    expect(annotations.title).toBe(title)
+  }
+})
+
 test('llms.txt describes the server and names each tool once', async () => {
   const response = await fetch(`${ORIGIN}/llms.txt`)
   expect(response.status).toBe(200)

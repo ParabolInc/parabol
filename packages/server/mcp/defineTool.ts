@@ -25,7 +25,7 @@ const defineTool = <Input extends z.ZodObject>({
     name,
     title,
     description,
-    annotations,
+    annotations: {...annotations, title},
     inputSchema: z.toJSONSchema(inputSchema, {
       io: 'input'
     }) as MCPToolEntry['definition']['inputSchema']

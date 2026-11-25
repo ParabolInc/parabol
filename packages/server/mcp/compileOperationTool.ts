@@ -134,17 +134,20 @@ const compileOperationTool = (
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
     .toLowerCase()
+  const title = words.charAt(0).toUpperCase() + words.slice(1)
   return {
     name: words.replace(/ /g, '_'),
-    title: words.charAt(0).toUpperCase() + words.slice(1),
+    title,
     description,
     inputSchema: {
       type: 'object',
       properties,
       ...(required.length > 0 ? {required} : {})
     },
-    annotations:
-      operation.operation === OperationTypeNode.QUERY ? readAnnotations : writeAnnotations,
+    annotations: {
+      ...(operation.operation === OperationTypeNode.QUERY ? readAnnotations : writeAnnotations),
+      title
+    },
     document: print(document)
   }
 }
