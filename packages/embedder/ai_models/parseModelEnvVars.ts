@@ -1,12 +1,13 @@
 import {resolveModelId} from './modelIdDefinitions'
 
-export type EmbeddingsModelType = 'text-embeddings-inference' | 'vllm'
+export type EmbeddingsModelType = 'text-embeddings-inference' | 'vllm' | 'openai'
 export type GenerationModelType = 'openai' | 'text-generation-inference'
 
 export interface ModelConfig {
   model: `${EmbeddingsModelType | GenerationModelType}:${string}`
   url: string
   maxTokens: number
+  apiModel?: string
 }
 
 export const parseModelEnvVars = (
@@ -36,8 +37,18 @@ export const parseModelEnvVars = (
     })
   })
   if (envVar === 'AI_GENERATION_MODELS') return models
+  const modelIds = new Set<string>()
   return models.map((config: ModelConfig) => {
     const [modelType, modelId] = config.model.split(':') as [EmbeddingsModelType, string]
-    return {...config, model: `${modelType}:${resolveModelId(modelId)}`}
+    const canonicalId = resolveModelId(modelId)
+    if (modelIds.has(canonicalId)) throw new Error(`Duplicate embedding model: ${canonicalId}`)
+    modelIds.add(canonicalId)
+    if (
+      config.apiModel !== undefined &&
+      (modelType !== 'openai' || typeof config.apiModel !== 'string' || !config.apiModel.trim())
+    ) {
+      throw new Error('Embedding apiModel must be a nonempty string for an openai provider')
+    }
+    return {...config, model: `${modelType}:${canonicalId}`}
   })
 }

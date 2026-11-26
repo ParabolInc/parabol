@@ -153,7 +153,11 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           chunks.push(section)
         } else {
           const nextDelimiter = delimiters[delimiters.indexOf(delimiter) + 1]!
-          splitOnDelimiter(section, nextDelimiter)
+          if (nextDelimiter) {
+            splitOnDelimiter(section, nextDelimiter)
+          } else {
+            chunks.push(section)
+          }
         }
       }
     }
