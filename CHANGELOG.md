@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.9.2](https://github.com/ParabolInc/parabol/compare/v16.9.1...v16.9.2) (2026-11-26)
+
+
+### Fixed
+
+* **client:** accept a team invitation once when React reruns the effect ([#14404](https://github.com/ParabolInc/parabol/issues/14404)) ([45bc431](https://github.com/ParabolInc/parabol/commit/45bc43180f17a70c576da4627debc8f873ff901f))
+
 ## [16.9.1](https://github.com/ParabolInc/parabol/compare/v16.9.0...v16.9.1) (2026-11-26)
 
 
