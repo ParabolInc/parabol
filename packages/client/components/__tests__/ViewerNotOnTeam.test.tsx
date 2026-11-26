@@ -1,5 +1,6 @@
 import {RouterProvider} from '@tanstack/react-router'
 import {Window} from 'happy-dom'
+import {StrictMode} from 'react'
 import {createRoot, type Root} from 'react-dom/client'
 import {loadQuery, RelayEnvironmentProvider} from 'react-relay'
 import {
@@ -91,9 +92,11 @@ test('a teammate sent here by an older auth token goes back with a fresh one', a
     }
   })
   root.render(
-    <RelayEnvironmentProvider environment={atmosphere}>
-      <RouterProvider router={router} />
-    </RelayEnvironmentProvider>
+    <StrictMode>
+      <RelayEnvironmentProvider environment={atmosphere}>
+        <RouterProvider router={router} />
+      </RelayEnvironmentProvider>
+    </StrictMode>
   )
   for (let i = 0; i < 100 && refreshSession.mock.calls.length === 0; i++) await tick()
   expect(refreshSession).toHaveBeenCalledTimes(1)

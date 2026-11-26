@@ -1,11 +1,14 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Redirect from '~/routing/Redirect'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 
 export const MakePage = () => {
   const [pageCode, setPageCode] = useState<number>()
   const [execute] = useCreatePageMutation()
+  const pageRequestedRef = useRef(false)
   useEffect(() => {
+    if (pageRequestedRef.current) return
+    pageRequestedRef.current = true
     execute({
       variables: {},
       onCompleted: (response) => {
