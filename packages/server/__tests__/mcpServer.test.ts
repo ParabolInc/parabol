@@ -737,6 +737,17 @@ test('tools/list lists exactly these tools, each once', async () => {
   expect(names.toSorted()).toEqual(TOOL_NAMES)
 })
 
+test('the GraphQL tools name the API they run against and link its docs', async () => {
+  const tools: {name: string; description: string}[] = await listTools(
+    await createPersonalAccessToken()
+  )
+  for (const name of ['graphql_query', 'graphql_mutate']) {
+    expect(tools.find((tool) => tool.name === name)!.description).toContain(
+      "Parabol's GraphQL API, documented at https://www.parabol.co/developers/"
+    )
+  }
+})
+
 test("every tool's annotations carry its human-readable title", async () => {
   const tools: {name: string; title?: string; annotations: {title?: string}}[] = await listTools(
     await createPersonalAccessToken()
