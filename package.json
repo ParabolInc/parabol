@@ -164,6 +164,7 @@
     "fast-xml-parser": "^5.8.0",
     "graphql-ws": "^6.2.1",
     "ioredis": "^5.11.1",
+    "js-tiktoken": "1.0.21",
     "kysely": "0.30.0-beta.1",
     "magic-bytes.js": "^1.13.0",
     "markdown-it": "^14.3.3",

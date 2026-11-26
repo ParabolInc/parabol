@@ -1,4 +1,5 @@
 import {ModelManager} from '../../../embedder/ai_models/ModelManager'
+import OpenAICompatibleEmbedding from '../../../embedder/ai_models/OpenAICompatibleEmbedding'
 import {Logger} from '../../utils/Logger'
 
 const ACTIVE = 'Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8'
@@ -67,4 +68,26 @@ it('takes a model under the id it went by before, and keys it by its id now', ()
   const manager = new ModelManager()
   expect([...manager.embeddingModels.keys()]).toEqual([FILLING])
   expect(manager.getEmbedder().modelId).toBe(FILLING)
+})
+
+it('selects an OpenAI-compatible embedder and keeps its storage identity', () => {
+  const savedKey = process.env.OPEN_AI_API_KEY
+  process.env.OPEN_AI_API_KEY = 'synthetic-test-value'
+  try {
+    process.env.AI_EMBEDDING_MODELS = JSON.stringify([
+      {
+        model: 'openai:text-embedding-3-small',
+        apiModel: 'gateway-embedding-alias',
+        url: 'http://localhost:1/v1',
+        maxTokens: 8192
+      }
+    ])
+    const manager = new ModelManager()
+    expect(manager.getEmbedder()).toBeInstanceOf(OpenAICompatibleEmbedding)
+    expect([...manager.embeddingModels.keys()]).toEqual(['text-embedding-3-small'])
+    expect(manager.getEmbedder().tableName).toBe('Embeddings_openai_te3_small')
+  } finally {
+    if (savedKey === undefined) delete process.env.OPEN_AI_API_KEY
+    else process.env.OPEN_AI_API_KEY = savedKey
+  }
 })

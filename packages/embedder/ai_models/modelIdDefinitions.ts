@@ -104,6 +104,24 @@ const legacySettings = {
 } as const
 
 export const modelIdDefinitions = {
+  'text-embedding-3-small': {
+    embeddingDimensions: 1536,
+    precision: 32,
+    tableSuffix: 'openai_te3_small',
+    languages: embeddingLanguages,
+    chunker: 'sections',
+    pageVectorFloor: 0.4,
+    pageAlpha: 0.01,
+    searchPrompt: '',
+    discussionText: 'plain',
+    relatedDiscussionPrompt: null,
+    relatedDiscussionFloor: 0.67,
+    relatedDiscussionCandidateFloor: 0.67,
+    reflectionPrompt: '',
+    similarWordingThreshold: 0.81,
+    templateSearchFloor: 0.5,
+    templateSearchGap: 0.05
+  },
   'BAAI/bge-large-en-v1.5': {
     embeddingDimensions: 1024,
     precision: 32,

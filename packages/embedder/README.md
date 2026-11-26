@@ -55,7 +55,8 @@ chunker, its prompts, and its cut-offs for page search, template search, Related
 Discussions and Similar Wording. A cut-off only means something for the model it
 was tuned on, so a new model brings its own.
 
-A model's id is the Hugging Face id of the weights its TEI serves. To rename one,
+A model's id identifies its weights and vector settings, independently of the API route
+used to reach it. For TEI it is the Hugging Face id of the weights. To rename one,
 keep its old id in `formerModelIds`, since an instance's `AI_EMBEDDING_MODELS` and
 the jobs already queued may still use it, and rename it in the queue with a
 migration.
@@ -71,6 +72,47 @@ model's. `pnpm pg:generate` and `pnpm dev` leave the others out with
 To try Harrier locally, start its service with
 `COMPOSE_PROFILES=harrier pnpm db:start` and use the commented line in
 `.env.example`. Stop it with `COMPOSE_PROFILES=harrier pnpm db:stop`.
+
+### OpenAI-compatible endpoints
+
+The `openai` embedding provider supports `text-embedding-3-small` with 1536 float32
+dimensions and the local `cl100k_base` tokenizer. `maxTokens` must be an integer
+between 1 and 8192. It needs no `/tokenize` or readiness endpoint.
+
+For the native OpenAI API, configure:
+
+```sh
+AI_EMBEDDING_MODELS='[{"model":"openai:text-embedding-3-small","url":"","maxTokens":8192}]'
+```
+
+Set `OPEN_AI_API_KEY` (the existing Parabol key), or `OPENAI_API_KEY` as a fallback.
+An empty `url` uses `OPENAI_BASE_URL` if set, otherwise `https://api.openai.com/v1`.
+An explicit `url` takes precedence. Include any API path prefix, such as `/v1`.
+Use HTTPS for remote endpoints; HTTP is accepted for trusted local deployments.
+URLs with credentials, a query or a fragment are rejected, and redirects are not
+followed. Keys and provider error bodies are not logged by this adapter.
+
+For LiteLLM or another compatible gateway, an optional `apiModel` sets the route
+name sent to its API:
+
+```sh
+AI_EMBEDDING_MODELS='[{"model":"openai:text-embedding-3-small","apiModel":"openai/text-embedding-3-small","url":"http://localhost:4000/v1","maxTokens":8192}]'
+```
+
+The route must serve the same underlying `text-embedding-3-small` model at 1536
+dimensions. `apiModel` does not change the canonical model id, vector tables or
+queued jobs. It cannot select arbitrary weights or dimensions. Configure each
+canonical model only once, including aliases of renamed models.
+
+Requests make at most three attempts for connection failures, 408, 409, 429 and
+5xx responses, within one 25-second deadline that also covers reading the response
+body and waiting for `Retry-After`. Invalid inputs and vectors fail without retrying.
+
+The new model's search and grouping cut-offs are initial values requiring quality
+review for each use case; transport tests do not establish retrieval quality. Adding
+this provider does not restrict which content is embedded: the normal fill described
+below still applies. Check which content may be sent to the configured provider
+before enabling it, including when it is not the active model.
 
 ### Moving to a new model
 

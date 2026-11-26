@@ -2,6 +2,7 @@ import {Logger} from '../../server/utils/Logger'
 import type {AbstractEmbeddingsModel} from './AbstractEmbeddingsModel'
 import type {AbstractGenerationModel} from './AbstractGenerationModel'
 import type {ModelId} from './modelIdDefinitions'
+import OpenAICompatibleEmbedding from './OpenAICompatibleEmbedding'
 import OpenAIEmbedding from './OpenAIEmbedding'
 import OpenAIGeneration from './OpenAIGeneration'
 import {
@@ -26,12 +27,18 @@ export class ModelManager {
     const embeddingConfig = parseModelEnvVars('AI_EMBEDDING_MODELS')
     this.embeddingModels = new Map(
       embeddingConfig.map((modelConfig) => {
-        const {model, url, maxTokens} = modelConfig
+        const {model, url, maxTokens, apiModel} = modelConfig
         const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
         switch (modelType) {
           case 'text-embeddings-inference': {
             const embeddingsModel = new TextEmbeddingsInference(modelId, url, maxTokens)
             return [modelId, embeddingsModel] as [ModelId, AbstractEmbeddingsModel]
+          }
+          case 'openai': {
+            return [modelId, new OpenAICompatibleEmbedding(modelId, url, maxTokens, apiModel)] as [
+              ModelId,
+              AbstractEmbeddingsModel
+            ]
           }
           case 'vllm': {
             const openAIModel = new OpenAIEmbedding(modelId, url, maxTokens)
