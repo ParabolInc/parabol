@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [16.9.1](https://github.com/ParabolInc/parabol/compare/v16.9.0...v16.9.1) (2026-11-26)
+
+
+### Fixed
+
+* **mcp:** put each tool's title in its annotations ([#14401](https://github.com/ParabolInc/parabol/issues/14401)) ([e2d1dd4](https://github.com/ParabolInc/parabol/commit/e2d1dd4bffed0bafb06b8f6c1e0bb9043a15569d))
+
+
+### Changed
+
+* **claude:** move Claude's codebase notes into repo skills ([#14400](https://github.com/ParabolInc/parabol/issues/14400)) ([53049a7](https://github.com/ParabolInc/parabol/commit/53049a7604c267099ef160b3836665f140356322))
+
 ## [16.9.0](https://github.com/ParabolInc/parabol/compare/v16.8.0...v16.9.0) (2026-11-25)
 
 
