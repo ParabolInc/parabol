@@ -47,9 +47,11 @@ const ViewerNotOnTeam = (props: Props) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {onError, onCompleted} = useMutationProps()
-  const hasAccepted = useRef(false)
+  const requestSentRef = useRef(false)
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
   useEffect(() => {
+    if (requestSentRef.current) return
+    requestSentRef.current = true
     if (isOnTeam) {
       const redirectTo = getValidRedirectParam() || '/meetings'
       // the page that sent the viewer here checked the teams in their auth token, which can be older than their team
@@ -60,8 +62,6 @@ const ViewerNotOnTeam = (props: Props) => {
         navigate({href: redirectTo, replace: true})
       })
     } else if (teamInvitation) {
-      if (hasAccepted.current) return
-      hasAccepted.current = true
       AcceptTeamInvitationMutation(
         atmosphere,
         {invitationToken: teamInvitation.token},
